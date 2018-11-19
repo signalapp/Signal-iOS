@@ -27,7 +27,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 // TSAttachmentPointer, which can be distinguished by the isDownloaded
 // property.
 @property (atomic, readwrite) UInt64 serverId;
-@property (atomic, readwrite) NSData *encryptionKey;
+@property (atomic, readwrite, nullable) NSData *encryptionKey;
 @property (nonatomic, readonly) NSString *contentType;
 @property (atomic, readwrite) BOOL isDownloaded;
 @property (nonatomic) TSAttachmentType attachmentType;
@@ -61,6 +61,13 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId;
+
+// This constructor is used for new instances of TSAttachmentPointer,
+// i.e. undownloaded restoring attachments.
+- (instancetype)initWithContentType:(NSString *)contentType
+                     sourceFilename:(nullable NSString *)sourceFilename
+                            caption:(nullable NSString *)caption
+                     albumMessageId:(nullable NSString *)albumMessageId;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent new, un-uploaded outgoing attachments.

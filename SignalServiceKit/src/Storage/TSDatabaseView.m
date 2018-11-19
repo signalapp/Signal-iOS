@@ -6,7 +6,7 @@
 #import "OWSDevice.h"
 #import "OWSReadTracking.h"
 #import "TSAttachment.h"
-#import "TSAttachmentStream.h"
+#import "TSAttachmentPointer.h"
 #import "TSIncomingMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSOutgoingMessage.h"
@@ -369,47 +369,47 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             OWSFailDebug(@"Unexpected entity %@ in collection: %@", [object class], collection);
             return nil;
         }
-        if (![object isKindOfClass:[TSAttachmentStream class]]) {
+        if (![object isKindOfClass:[TSAttachmentPointer class]]) {
             return nil;
         }
-        TSAttachmentStream *attachmentStream = (TSAttachmentStream *)object;
-        if (attachmentStream.lazyRestoreFragment) {
+        TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)object;
+        if (attachmentPointer.lazyRestoreFragment) {
             return TSLazyRestoreAttachmentsGroup;
         } else {
             return nil;
         }
     }];
 
-    YapDatabaseViewSorting *viewSorting = [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(
-        YapDatabaseReadTransaction *transaction,
-        NSString *group,
-        NSString *collection1,
-        NSString *key1,
-        id object1,
-        NSString *collection2,
-        NSString *key2,
-        id object2) {
-        if (![object1 isKindOfClass:[TSAttachmentStream class]]) {
-            OWSFailDebug(@"Unexpected entity %@ in collection: %@", [object1 class], collection1);
-            return NSOrderedSame;
-        }
-        if (![object2 isKindOfClass:[TSAttachmentStream class]]) {
-            OWSFailDebug(@"Unexpected entity %@ in collection: %@", [object2 class], collection2);
-            return NSOrderedSame;
-        }
+    YapDatabaseViewSorting *viewSorting =
+        [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *transaction,
+            NSString *group,
+            NSString *collection1,
+            NSString *key1,
+            id object1,
+            NSString *collection2,
+            NSString *key2,
+            id object2) {
+            if (![object1 isKindOfClass:[TSAttachmentPointer class]]) {
+                OWSFailDebug(@"Unexpected entity %@ in collection: %@", [object1 class], collection1);
+                return NSOrderedSame;
+            }
+            if (![object2 isKindOfClass:[TSAttachmentPointer class]]) {
+                OWSFailDebug(@"Unexpected entity %@ in collection: %@", [object2 class], collection2);
+                return NSOrderedSame;
+            }
 
-        // Specific ordering doesn't matter; we just need a stable ordering.
-        TSAttachmentStream *attachmentStream1 = (TSAttachmentStream *)object1;
-        TSAttachmentStream *attachmentStream2 = (TSAttachmentStream *)object2;
-        return [attachmentStream2.creationTimestamp compare:attachmentStream1.creationTimestamp];
-    }];
+            // Specific ordering doesn't matter; we just need a stable ordering.
+            TSAttachmentPointer *attachmentPointer1 = (TSAttachmentPointer *)object1;
+            TSAttachmentPointer *attachmentPointer2 = (TSAttachmentPointer *)object2;
+            return [attachmentPointer1.uniqueId compare:attachmentPointer2.uniqueId];
+        }];
 
     YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
     options.isPersistent = YES;
     options.allowedCollections =
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSAttachment collection]]];
     YapDatabaseView *view =
-        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
+        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"4" options:options];
     [storage asyncRegisterExtension:view withName:TSLazyRestoreAttachmentsDatabaseViewExtensionName];
 }
 

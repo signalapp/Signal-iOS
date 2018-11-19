@@ -39,9 +39,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 // This property should only be accessed on the main thread.
 @property (nullable, nonatomic) NSNumber *cachedAudioDurationSeconds;
 
-// Optional property.  Only set for attachments which need "lazy backup restore."
-@property (nonatomic, nullable) NSString *lazyRestoreFragmentId;
-
 @property (atomic, nullable) NSNumber *isValidImageCached;
 @property (atomic, nullable) NSNumber *isValidVideoCached;
 
@@ -358,10 +355,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     OWSAssertDebug(self.isImage || self.isAnimated);
 
-    if (self.lazyRestoreFragment) {
-        return NO;
-    }
-
     @synchronized(self) {
         if (!self.isValidImageCached) {
             self.isValidImageCached =
@@ -374,10 +367,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (BOOL)isValidVideo
 {
     OWSAssertDebug(self.isVideo);
-
-    if (self.lazyRestoreFragment) {
-        return NO;
-    }
 
     @synchronized(self) {
         if (!self.isValidVideoCached) {
@@ -629,14 +618,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return audioDurationSeconds;
 }
 
-- (nullable OWSBackupFragment *)lazyRestoreFragment
-{
-    if (!self.lazyRestoreFragmentId) {
-        return nil;
-    }
-    return [OWSBackupFragment fetchObjectWithUniqueID:self.lazyRestoreFragmentId];
-}
-
 #pragma mark - Thumbnails
 
 - (nullable UIImage *)thumbnailImageWithSizeHint:(CGSize)sizeHint
@@ -818,34 +799,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 }
 
 #pragma mark - Update With... Methods
-
-- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
-                           transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(lazyRestoreFragment);
-    OWSAssertDebug(transaction);
-
-    if (!lazyRestoreFragment.uniqueId) {
-        // If metadata hasn't been saved yet, save now.
-        [lazyRestoreFragment saveWithTransaction:transaction];
-
-        OWSAssertDebug(lazyRestoreFragment.uniqueId);
-    }
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSAttachmentStream *attachment) {
-                                 [attachment setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
-                             }];
-}
-
-- (void)updateWithLazyRestoreComplete
-{
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(TSAttachmentStream *attachment) {
-                                     [attachment setLazyRestoreFragmentId:nil];
-                                 }];
-    }];
-}
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail
 {

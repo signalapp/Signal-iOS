@@ -79,7 +79,7 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 
 - (NSArray<NSString *> *)attachmentIdsForLazyRestore;
 
-- (void)lazyRestoreAttachment:(TSAttachmentStream *)attachment
+- (void)lazyRestoreAttachment:(TSAttachmentPointer *)attachment
                      backupIO:(OWSBackupIO *)backupIO
                    completion:(OWSBackupBoolBlock)completion;
 

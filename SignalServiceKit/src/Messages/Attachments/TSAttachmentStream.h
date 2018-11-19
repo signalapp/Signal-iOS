@@ -3,7 +3,6 @@
 //
 
 #import "DataSource.h"
-#import "OWSBackupFragment.h"
 #import "TSAttachment.h"
 
 #if TARGET_OS_IPHONE
@@ -70,9 +69,6 @@ typedef void (^OWSThumbnailFailure)(void);
 
 + (nullable NSError *)migrateToSharedData;
 
-// Non-nil for attachments which need "lazy backup restore."
-- (nullable OWSBackupFragment *)lazyRestoreFragment;
-
 #pragma mark - Thumbnails
 
 // On cache hit, the thumbnail will be returned synchronously and completion will never be invoked.
@@ -98,12 +94,6 @@ typedef void (^OWSThumbnailFailure)(void);
 @property (nonatomic, readonly) BOOL isValidVisualMedia;
 
 #pragma mark - Update With... Methods
-
-// Marks attachment as needing "lazy backup restore."
-- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
-                           transaction:(YapDatabaseReadWriteTransaction *)transaction;
-// Marks attachment as having completed "lazy backup restore."
-- (void)updateWithLazyRestoreComplete;
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail;
 

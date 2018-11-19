@@ -3,10 +3,21 @@
 //
 
 #import "TSAttachmentPointer.h"
+#import "OWSBackupFragment.h"
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface TSAttachmentPointer ()
+
+// Optional property.  Only set for attachments which need "lazy backup restore."
+@property (nonatomic, nullable) NSString *lazyRestoreFragmentId;
+
+@end
+
+#pragma mark -
 
 @implementation TSAttachmentPointer
 
@@ -22,6 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
     // we know that it failed to complete before the session completed.
     if (![coder containsValueForKey:@"state"]) {
         _state = TSAttachmentPointerStateFailed;
+    }
+
+    if (![coder containsValueForKey:@"pointerType"]) {
+        _pointerType = TSAttachmentPointerTypeIncoming;
     }
 
     return self;
@@ -51,6 +66,28 @@ NS_ASSUME_NONNULL_BEGIN
     _digest = digest;
     _state = TSAttachmentPointerStateEnqueued;
     self.attachmentType = attachmentType;
+    _pointerType = TSAttachmentPointerTypeIncoming;
+
+    return self;
+}
+
+- (instancetype)initForRestoreWithContentType:(NSString *)contentType
+                               sourceFilename:(nullable NSString *)sourceFilename
+                                      caption:(nullable NSString *)caption
+                               albumMessageId:(nullable NSString *)albumMessageId
+                               attachmentType:(TSAttachmentType)attachmentType
+{
+    self = [super initWithContentType:contentType
+                       sourceFilename:sourceFilename
+                              caption:caption
+                       albumMessageId:albumMessageId];
+    if (!self) {
+        return self;
+    }
+
+    _state = TSAttachmentPointerStateEnqueued;
+    self.attachmentType = attachmentType;
+    _pointerType = TSAttachmentPointerTypeRestoring;
 
     return self;
 }
@@ -139,6 +176,34 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogError(@"invalid legacy attachment uniqueId: %@.", self.uniqueId);
         }
     }
+}
+
+- (nullable OWSBackupFragment *)lazyRestoreFragment
+{
+    if (!self.lazyRestoreFragmentId) {
+        return nil;
+    }
+    return [OWSBackupFragment fetchObjectWithUniqueID:self.lazyRestoreFragmentId];
+}
+
+#pragma mark - Update With... Methods
+
+- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssertDebug(lazyRestoreFragment);
+    OWSAssertDebug(transaction);
+
+    if (!lazyRestoreFragment.uniqueId) {
+        // If metadata hasn't been saved yet, save now.
+        [lazyRestoreFragment saveWithTransaction:transaction];
+
+        OWSAssertDebug(lazyRestoreFragment.uniqueId);
+    }
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSAttachmentPointer *attachment) {
+                                 [attachment setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
+                             }];
 }
 
 @end

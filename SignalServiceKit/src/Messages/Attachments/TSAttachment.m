@@ -65,6 +65,35 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     return self;
 }
 
+// This constructor is used for new instances of TSAttachmentPointer,
+// i.e. undownloaded restoring attachments.
+- (instancetype)initWithContentType:(NSString *)contentType
+                     sourceFilename:(nullable NSString *)sourceFilename
+                            caption:(nullable NSString *)caption
+                     albumMessageId:(nullable NSString *)albumMessageId
+{
+    if (contentType.length < 1) {
+        OWSLogWarn(@"incoming attachment has invalid content type");
+
+        contentType = OWSMimeTypeApplicationOctetStream;
+    }
+    OWSAssertDebug(contentType.length > 0);
+
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _contentType = contentType;
+    _sourceFilename = sourceFilename;
+    _caption = caption;
+    _albumMessageId = albumMessageId;
+
+    _attachmentSchemaVersion = TSAttachmentSchemaVersion;
+
+    return self;
+}
+
 // This constructor is used for new instances of TSAttachmentStream
 // that represent new, un-uploaded outgoing attachments.
 - (instancetype)initWithContentType:(NSString *)contentType

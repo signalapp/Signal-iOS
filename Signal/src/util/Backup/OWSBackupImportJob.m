@@ -281,10 +281,15 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 // Attachment-related errors are recoverable and can be ignored.
                 continue;
             }
-            TSAttachmentStream *_Nullable attachment =
-                [TSAttachmentStream fetchObjectWithUniqueID:item.attachmentId transaction:transaction];
+            TSAttachmentPointer *_Nullable attachment =
+                [TSAttachmentPointer fetchObjectWithUniqueID:item.attachmentId transaction:transaction];
             if (!attachment) {
                 OWSLogError(@"attachment to restore could not be found.");
+                // Attachment-related errors are recoverable and can be ignored.
+                continue;
+            }
+            if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                OWSFailDebug(@"attachment has unexpected type: %@.", attachment.class);
                 // Attachment-related errors are recoverable and can be ignored.
                 continue;
             }
