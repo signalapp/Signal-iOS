@@ -566,7 +566,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     } else {
         // Neither a group nor contact thread? This should never happen.
-        OWSFailDebug(@"Unknown message type: %@", [message class]);
+        OWSLogError(@"Unknown message type: %@", [message class]);
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
         [error setIsRetryable:NO];
         *errorHandle = error;

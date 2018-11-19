@@ -618,6 +618,11 @@ NS_ASSUME_NONNULL_BEGIN
         return completion(NO);
     }
 
+    if (![OWSFileSystem deleteFileIfExists:attachmentFilePath]) {
+        OWSLogError(@"Couldn't delete exist file at attachment path.");
+        return completion(NO);
+    }
+
     NSError *error;
     BOOL success =
         [NSFileManager.defaultManager moveItemAtPath:decryptedFilePath toPath:attachmentFilePath error:&error];

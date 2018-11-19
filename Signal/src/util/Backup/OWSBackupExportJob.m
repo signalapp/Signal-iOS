@@ -507,6 +507,17 @@ NS_ASSUME_NONNULL_BEGIN
                                                   TSYapDatabaseObject *entity = object;
                                                   count++;
 
+                                                  if ([entity isKindOfClass:[TSAttachmentStream class]]) {
+                                                      // Convert attachment streams to pointers,
+                                                      // since we'll need to restore them.
+                                                      TSAttachmentStream *attachmentStream
+                                                          = (TSAttachmentStream *)entity;
+                                                      TSAttachmentPointer *attachmentPointer =
+                                                          [[TSAttachmentPointer alloc]
+                                                              initForRestoreWithAttachmentStream:attachmentStream];
+                                                      entity = attachmentPointer;
+                                                  }
+
                                                   if (![exportStream writeObject:entity entityType:entityType]) {
                                                       *stop = YES;
                                                       aborted = YES;
@@ -536,6 +547,7 @@ NS_ASSUME_NONNULL_BEGIN
             [TSAttachment class],
             ^(id object) {
                 if (![object isKindOfClass:[TSAttachmentStream class]]) {
+                    // No need to backup the contents of attachment pointers.
                     return NO;
                 }
                 TSAttachmentStream *attachmentStream = object;

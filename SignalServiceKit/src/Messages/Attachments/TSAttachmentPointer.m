@@ -4,6 +4,7 @@
 
 #import "TSAttachmentPointer.h"
 #import "OWSBackupFragment.h"
+#import "TSAttachmentStream.h"
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
@@ -71,22 +72,21 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initForRestoreWithContentType:(NSString *)contentType
-                               sourceFilename:(nullable NSString *)sourceFilename
-                                      caption:(nullable NSString *)caption
-                               albumMessageId:(nullable NSString *)albumMessageId
-                               attachmentType:(TSAttachmentType)attachmentType
+- (instancetype)initForRestoreWithAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
-    self = [super initWithContentType:contentType
-                       sourceFilename:sourceFilename
-                              caption:caption
-                       albumMessageId:albumMessageId];
+    OWSAssertDebug(attachmentStream);
+
+    self = [super initWithUniqueId:attachmentStream.uniqueId
+                       contentType:attachmentStream.contentType
+                    sourceFilename:attachmentStream.sourceFilename
+                           caption:attachmentStream.caption
+                    albumMessageId:attachmentStream.albumMessageId];
     if (!self) {
         return self;
     }
 
     _state = TSAttachmentPointerStateEnqueued;
-    self.attachmentType = attachmentType;
+    self.attachmentType = attachmentStream.attachmentType;
     _pointerType = TSAttachmentPointerTypeRestoring;
 
     return self;

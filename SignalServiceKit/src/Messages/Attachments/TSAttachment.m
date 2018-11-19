@@ -4,6 +4,7 @@
 
 #import "TSAttachment.h"
 #import "MIMETypeUtil.h"
+#import "TSAttachmentPointer.h"
 #import "TSMessage.h"
 #import <SignalCoreKit/NSString+SSK.h>
 #import <SignalCoreKit/iOSVersions.h>
@@ -67,11 +68,13 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded restoring attachments.
-- (instancetype)initWithContentType:(NSString *)contentType
-                     sourceFilename:(nullable NSString *)sourceFilename
-                            caption:(nullable NSString *)caption
-                     albumMessageId:(nullable NSString *)albumMessageId
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                     contentType:(NSString *)contentType
+                  sourceFilename:(nullable NSString *)sourceFilename
+                         caption:(nullable NSString *)caption
+                  albumMessageId:(nullable NSString *)albumMessageId
 {
+    OWSAssertDebug(uniqueId.length > 0);
     if (contentType.length < 1) {
         OWSLogWarn(@"incoming attachment has invalid content type");
 
@@ -79,7 +82,8 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     }
     OWSAssertDebug(contentType.length > 0);
 
-    self = [super init];
+    // Once saved, this AttachmentStream will replace the AttachmentPointer in the attachments collection.
+    self = [super initWithUniqueId:uniqueId];
     if (!self) {
         return self;
     }
@@ -128,13 +132,15 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent downloaded incoming attachments.
-- (instancetype)initWithPointer:(TSAttachment *)pointer
+- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer
 {
-    OWSAssertDebug(pointer.serverId > 0);
-    OWSAssertDebug(pointer.encryptionKey.length > 0);
-    if (pointer.byteCount <= 0) {
-        // This will fail with legacy iOS clients which don't upload attachment size.
-        OWSLogWarn(@"Missing pointer.byteCount for attachment with serverId: %lld", pointer.serverId);
+    if (!pointer.lazyRestoreFragment) {
+        OWSAssertDebug(pointer.serverId > 0);
+        OWSAssertDebug(pointer.encryptionKey.length > 0);
+        if (pointer.byteCount <= 0) {
+            // This will fail with legacy iOS clients which don't upload attachment size.
+            OWSLogWarn(@"Missing pointer.byteCount for attachment with serverId: %lld", pointer.serverId);
+        }
     }
     OWSAssertDebug(pointer.contentType.length > 0);
 

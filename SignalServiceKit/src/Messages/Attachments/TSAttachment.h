@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class TSAttachmentPointer;
 @class TSMessage;
 
 typedef NS_ENUM(NSUInteger, TSAttachmentType) {
@@ -64,10 +65,11 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded restoring attachments.
-- (instancetype)initWithContentType:(NSString *)contentType
-                     sourceFilename:(nullable NSString *)sourceFilename
-                            caption:(nullable NSString *)caption
-                     albumMessageId:(nullable NSString *)albumMessageId;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                     contentType:(NSString *)contentType
+                  sourceFilename:(nullable NSString *)sourceFilename
+                         caption:(nullable NSString *)caption
+                  albumMessageId:(nullable NSString *)albumMessageId;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent new, un-uploaded outgoing attachments.
@@ -79,7 +81,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent downloaded incoming attachments.
-- (instancetype)initWithPointer:(TSAttachment *)pointer;
+- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder;
 
