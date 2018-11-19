@@ -200,7 +200,7 @@ void AssertIsOnDisappearingMessagesQueue()
     if ([message isKindOfClass:[TSIncomingMessage class]]) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
         remoteContactName =
-            [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId transaction:transaction];
+            [contactsManager displayNameForPhoneIdentifier:incomingMessage.authorId transaction:transaction];
     }
 
     [self becomeConsistentWithDisappearingDuration:message.expiresInSeconds

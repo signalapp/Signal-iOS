@@ -77,10 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 // This will be 0 for messages created before we were tracking sourceDeviceId
 @property (nonatomic, readonly) UInt32 sourceDeviceId;
 
-// NOTE: Use messageAuthorId instead wherever possible.
 @property (nonatomic, readonly) NSString *authorId;
-
-- (NSString *)messageAuthorId;
 
 // convenience method for expiring a message which was just read
 - (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt

@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                                if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
                                    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
-                                   return [authorId isEqual:incomingMessage.messageAuthorId];
+                                   return [authorId isEqual:incomingMessage.authorId];
                                } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
                                    return [authorId isEqual:[TSAccountManager localNumber]];
                                } else {
