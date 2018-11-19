@@ -88,7 +88,7 @@ public class ConversationMediaView: UIView {
         }
         guard attachmentPointer.pointerType == .incoming else {
             // TODO: Show "restoring" indicator and possibly progress.
-            owsFailDebug("Attachment is restorying from backup.")
+            owsFailDebug("Attachment is restoring from backup.")
             configure(forError: .missing)
             return
         }
