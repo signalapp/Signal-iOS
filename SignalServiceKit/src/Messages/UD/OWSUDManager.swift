@@ -104,6 +104,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     private let kUDCollection = "kUDCollection"
     private let kUDCurrentSenderCertificateKey_Production = "kUDCurrentSenderCertificateKey_Production"
     private let kUDCurrentSenderCertificateKey_Staging = "kUDCurrentSenderCertificateKey_Staging"
+    private let kUDCurrentSenderCertificateDateKey_Production = "kUDCurrentSenderCertificateDateKey_Production"
+    private let kUDCurrentSenderCertificateDateKey_Staging = "kUDCurrentSenderCertificateDateKey_Staging"
     private let kUDUnrestrictedAccessKey = "kUDUnrestrictedAccessKey"
 
     // MARK: Recipient State
@@ -134,6 +136,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                                                selector: #selector(registrationStateDidChange),
                                                name: .RegistrationStateDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didBecomeActive),
+                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               object: nil)
     }
 
     @objc
@@ -142,6 +148,19 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         // Any error is silently ignored
         ensureSenderCertificate().retainUntilComplete()
+    }
+
+    @objc func didBecomeActive() {
+        AssertIsOnMainThread()
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            guard TSAccountManager.isRegistered() else {
+                return
+            }
+
+            // Any error is silently ignored on startup.
+            self.ensureSenderCertificate().retainUntilComplete()
+        }
     }
 
     // MARK: -
@@ -313,6 +332,14 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     #endif
 
     private func senderCertificate() -> SMKSenderCertificate? {
+        guard let certificateDate = dbConnection.object(forKey: senderCertificateDateKey(), inCollection: kUDCollection) as? Date else {
+            return nil
+        }
+        guard certificateDate.timeIntervalSinceNow < kDayInterval else {
+            // Discard certificates that we obtained more than 24 hours ago.
+            return nil
+        }
+
         guard let certificateData = dbConnection.object(forKey: senderCertificateKey(), inCollection: kUDCollection) as? Data else {
             return nil
         }
@@ -333,11 +360,16 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     func setSenderCertificate(_ certificateData: Data) {
+        dbConnection.setObject(Date(), forKey: senderCertificateDateKey(), inCollection: kUDCollection)
         dbConnection.setObject(certificateData, forKey: senderCertificateKey(), inCollection: kUDCollection)
     }
 
     private func senderCertificateKey() -> String {
         return IsUsingProductionService() ? kUDCurrentSenderCertificateKey_Production : kUDCurrentSenderCertificateKey_Staging
+    }
+
+    private func senderCertificateDateKey() -> String {
+        return IsUsingProductionService() ? kUDCurrentSenderCertificateDateKey_Production : kUDCurrentSenderCertificateDateKey_Staging
     }
 
     @objc
