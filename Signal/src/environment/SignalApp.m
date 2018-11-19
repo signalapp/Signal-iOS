@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self clearAllNotifications];
 
     [DebugLogger.sharedLogger wipeLogs];
-    OWSFail(@"App data reset.");
+    exit(0);
 }
 
 + (void)clearAllNotifications
