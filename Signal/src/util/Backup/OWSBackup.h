@@ -22,7 +22,7 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 
 @class OWSBackupIO;
 @class OWSPrimaryStorage;
-@class TSAttachmentStream;
+@class TSAttachmentPointer;
 @class TSThread;
 
 @interface OWSBackup : NSObject

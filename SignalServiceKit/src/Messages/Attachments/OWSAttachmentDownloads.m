@@ -147,6 +147,10 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             [attachmentStreams addObject:attachmentStream];
         } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
+            if (attachmentPointer.pointerType != TSAttachmentPointerTypeIncoming) {
+                OWSLogInfo(@"Ignoring restoring attachment.");
+                continue;
+            }
             [attachmentPointers addObject:attachmentPointer];
         } else {
             OWSFailDebug(@"Unexpected attachment type: %@", attachment.class);

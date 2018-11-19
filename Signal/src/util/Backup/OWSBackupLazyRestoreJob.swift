@@ -68,7 +68,8 @@ public class OWSBackupLazyRestoreJob: NSObject {
             return
         }
         attachmentIdsCopy.removeLast()
-        guard let attachment = TSAttachmentStream.fetch(uniqueId: attachmentId) else {
+        guard let attachment = TSAttachment.fetch(uniqueId: attachmentId),
+        let attachmentPointer = attachment as? TSAttachmentPointer else {
             Logger.warn("could not load attachment.")
             // Not necessarily an error.
             // The attachment might have been deleted since the job began.
@@ -76,7 +77,7 @@ public class OWSBackupLazyRestoreJob: NSObject {
             tryToRestoreNextAttachment(attachmentIds: attachmentIds, backupIO: backupIO)
             return
         }
-        OWSBackup.shared().lazyRestoreAttachment(attachment,
+        OWSBackup.shared().lazyRestoreAttachment(attachmentPointer,
                                                  backupIO: backupIO,
                                                  completion: { (success) in
                                                     if success {

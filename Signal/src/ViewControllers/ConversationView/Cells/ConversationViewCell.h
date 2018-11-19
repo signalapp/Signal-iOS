@@ -8,7 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class ConversationViewCell;
 @class OWSContactOffersInteraction;
 @class OWSContactsManager;
-@class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSCall;
 @class TSErrorMessage;
