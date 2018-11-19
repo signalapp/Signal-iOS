@@ -46,19 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedManager
 {
-    static OWSBackup *sharedMyManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initDefault];
-    });
-    return sharedMyManager;
-}
+    OWSAssertDebug(AppEnvironment.shared.backup);
 
-- (instancetype)initDefault
-{
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-
-    return [self initWithPrimaryStorage:primaryStorage];
+    return AppEnvironment.shared.backup;
 }
 
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
@@ -77,6 +67,10 @@ NS_ASSUME_NONNULL_BEGIN
     _backupImportState = OWSBackupState_Idle;
 
     OWSSingletonAssert();
+
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [self setup];
+    }];
 
     return self;
 }
@@ -251,6 +245,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
+    if (!CurrentAppContext().isMainApp) {
+        return;
+    }
+
     // Start or abort a backup export if neccessary.
     if (!self.shouldHaveBackupExport && self.backupExportJob) {
         [self.backupExportJob cancel];
@@ -297,11 +295,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"");
 
-    [OWSBackupAPI checkForManifestInCloudWithSuccess:^(BOOL value) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            success(value);
-        });
-    }
+    [OWSBackupAPI
+        checkForManifestInCloudWithSuccess:^(BOOL value) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                success(value);
+            });
+        }
         failure:^(NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 failure(error);

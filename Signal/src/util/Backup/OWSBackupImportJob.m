@@ -80,20 +80,21 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                progress:nil];
 
     __weak OWSBackupImportJob *weakSelf = self;
-    [weakSelf downloadAndProcessManifestWithSuccess:^(OWSBackupManifestContents *manifest) {
-        OWSBackupImportJob *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
+    [weakSelf
+        downloadAndProcessManifestWithSuccess:^(OWSBackupManifestContents *manifest) {
+            OWSBackupImportJob *strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
+            if (self.isComplete) {
+                return;
+            }
+            OWSCAssertDebug(manifest.databaseItems.count > 0);
+            OWSCAssertDebug(manifest.attachmentsItems);
+            strongSelf.databaseItems = manifest.databaseItems;
+            strongSelf.attachmentsItems = manifest.attachmentsItems;
+            [strongSelf downloadAndProcessImport];
         }
-        if (self.isComplete) {
-            return;
-        }
-        OWSCAssertDebug(manifest.databaseItems.count > 0);
-        OWSCAssertDebug(manifest.attachmentsItems);
-        strongSelf.databaseItems = manifest.databaseItems;
-        strongSelf.attachmentsItems = manifest.attachmentsItems;
-        [strongSelf downloadAndProcessImport];
-    }
         failure:^(NSError *manifestError) {
             [weakSelf failWithError:manifestError];
         }

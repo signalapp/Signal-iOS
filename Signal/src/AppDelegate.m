@@ -1166,8 +1166,6 @@ static NSTimeInterval launchStartedAt;
 
     [self ensureRootViewController];
 
-    [OWSBackup.sharedManager setup];
-
     [self.messageManager startObserving];
 
 #ifdef DEBUG

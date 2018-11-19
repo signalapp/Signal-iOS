@@ -21,16 +21,16 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 };
 
 @class OWSBackupIO;
+@class OWSPrimaryStorage;
 @class TSAttachmentStream;
 @class TSThread;
 
 @interface OWSBackup : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager NS_SWIFT_NAME(shared());
-
-- (void)setup;
 
 #pragma mark - Backup Export
 

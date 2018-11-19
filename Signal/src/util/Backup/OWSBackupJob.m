@@ -162,18 +162,20 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     OWSLogVerbose(@"");
 
     __weak OWSBackupJob *weakSelf = self;
-    [OWSBackupAPI downloadManifestFromCloudWithSuccess:^(NSData *data) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [weakSelf processManifest:data
-                              success:success
-                              failure:^{
-                                  failure(OWSErrorWithCodeDescription(OWSErrorCodeImportBackupFailed,
-                                      NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                          @"Error indicating the backup import could not import the user's data.")));
-                              }
-                             backupIO:backupIO];
-        });
-    }
+    [OWSBackupAPI
+        downloadManifestFromCloudWithSuccess:^(NSData *data) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [weakSelf
+                    processManifest:data
+                            success:success
+                            failure:^{
+                                failure(OWSErrorWithCodeDescription(OWSErrorCodeImportBackupFailed,
+                                    NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+                                        @"Error indicating the backup import could not import the user's data.")));
+                            }
+                           backupIO:backupIO];
+            });
+        }
         failure:^(NSError *error) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 // The manifest file is critical so any error downloading it is unrecoverable.
