@@ -9,7 +9,7 @@ import PromiseKit
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: class {
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment])
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?)
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didCancelAttachments attachments: [SignalAttachment])
     @objc optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, addMoreToAttachments attachments: [SignalAttachment])
     @objc optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, changedCaptionOfAttachment attachment: SignalAttachment)
@@ -62,6 +62,10 @@ class SignalAttachmentItem: Hashable {
 
     // MARK: 
 
+    var captionText: String? {
+        return attachment.captionText
+    }
+
     var imageSize: CGSize = .zero
 
     func getThumbnailImage() -> Promise<UIImage> {
@@ -100,7 +104,7 @@ public enum AttachmentApprovalViewControllerMode: UInt {
 }
 
 @objc
-public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, MediaMessageTextToolbarDelegate {
+public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
 
     // MARK: - Properties
 
@@ -193,8 +197,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         self.setCurrentItem(firstItem, direction: .forward, animated: false)
-
-        mediaMessageTextToolbar.messageText = currentViewController.attachment.captionText
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -335,13 +337,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
 
             if transitionCompleted {
-                UIView.transition(with: self.mediaMessageTextToolbar,
-                                  duration: 0.1,
-                                  options: .transitionCrossDissolve,
-                                  animations: {
-                                    self.mediaMessageTextToolbar.messageText = self.currentViewController.attachment.captionText
-                },
-                                  completion: nil)
                 previousPage.zoomOut(animated: false)
                 updateMediaRail()
             }
@@ -411,6 +406,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         Logger.debug("cache miss.")
         let viewController = AttachmentPrepViewController(attachmentItem: item)
+        viewController.prepDelegate = self
         cachedPages[item] = viewController
 
         return viewController
@@ -483,9 +479,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     @objc func cancelPressed(sender: UIButton) {
         self.approvalDelegate?.attachmentApproval(self, didCancelAttachments: attachments)
     }
+}
 
-    // MARK: - MediaMessageTextToolbarDelegate
-
+extension AttachmentApprovalViewController: MediaMessageTextToolbarDelegate {
     var currentPageController: AttachmentPrepViewController {
         return viewControllers!.first as! AttachmentPrepViewController
     }
@@ -506,17 +502,17 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         mediaMessageTextToolbar.isUserInteractionEnabled = false
         mediaMessageTextToolbar.isHidden = true
 
-        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments)
-    }
-
-    func mediaMessageTextToolbar(_ mediaMessageTextToolbar: MediaMessageTextToolbar, textViewDidChange textView: UITextView) {
-        currentItem.attachment.captionText = textView.text
-
-        self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: currentItem.attachment)
+        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: mediaMessageTextToolbar.messageText)
     }
 
     func mediaMessageTextToolbarDidAddMore(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
         self.approvalDelegate?.attachmentApproval?(self, addMoreToAttachments: attachments)
+    }
+}
+
+extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate {
+    func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem) {
+        self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: attachmentItem.attachment)
     }
 }
 
@@ -563,6 +559,10 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
 
 // MARK: - Individual Page
 
+protocol AttachmentPrepViewControllerDelegate: class {
+    func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem)
+}
+
 public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
     // We sometimes shrink the attachment view so that it remains somewhat visible
     // when the keyboard is presented.
@@ -571,6 +571,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     }
 
     // MARK: - Properties
+
+    weak var prepDelegate: AttachmentPrepViewControllerDelegate?
 
     let attachmentItem: SignalAttachmentItem
     var attachment: SignalAttachment {
@@ -598,7 +600,9 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     // MARK: - View Lifecycle
 
-    let captionView = CaptionView()
+    lazy var captionView: CaptionView = {
+        return CaptionView(attachmentItem: attachmentItem)
+    }()
 
     override public func loadView() {
         self.view = UIView()
@@ -703,9 +707,9 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
         // Caption
 
-        captionView.captionText = attachment.captionText
-
         view.addSubview(captionView)
+        captionView.delegate = self
+
         captionView.autoPinWidthToSuperview()
 
         // MJK TODO ideal CaptionView placement
@@ -880,6 +884,14 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     }
 }
 
+extension AttachmentPrepViewController: CaptionViewDelegate {
+    func captionView(_ captionView: CaptionView, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem) {
+        let attachment = attachmentItem.attachment
+        attachment.captionText = captionText
+        prepDelegate?.prepViewController(self, didUpdateCaptionForAttachmentItem: attachmentItem)
+    }
+}
+
 extension AttachmentPrepViewController: UIScrollViewDelegate {
 
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -997,7 +1009,7 @@ class BottomToolView: UIView {
 }
 
 protocol CaptionViewDelegate: class {
-    func captionViewDidChange(_ captionView: CaptionView)
+    func captionView(_ captionView: CaptionView, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem)
 }
 
 class CaptionView: UIView {
@@ -1010,6 +1022,11 @@ class CaptionView: UIView {
         }
     }
 
+    let attachmentItem: SignalAttachmentItem
+    var attachment: SignalAttachment {
+        return attachmentItem.attachment
+    }
+
     weak var delegate: CaptionViewDelegate?
 
     private let kMinTextViewHeight: CGFloat = 38
@@ -1020,8 +1037,12 @@ class CaptionView: UIView {
 
     // MARK: Initializers
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(attachmentItem: SignalAttachmentItem) {
+        self.attachmentItem = attachmentItem
+
+        super.init(frame: .zero)
+
+        self.captionText = attachmentItem.captionText
 
         addSubview(placeholderTextView)
         placeholderTextView.autoPinEdgesToSuperviewMargins()
@@ -1094,12 +1115,6 @@ class CaptionView: UIView {
 }
 
 extension CaptionView: UITextViewDelegate {
-//    @available(iOS 2.0, *)
-//    optional public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool
-//
-//    @available(iOS 2.0, *)
-//    optional public func textViewShouldEndEditing(_ textView: UITextView) -> Bool
-//
     public func textViewDidBeginEditing(_ textView: UITextView) {
         updatePlaceholderTextViewVisibility()
     }
@@ -1143,33 +1158,14 @@ extension CaptionView: UITextViewDelegate {
     }
 
     public func textViewDidChange(_ textView: UITextView) {
-        self.delegate?.captionViewDidChange(self)
+        self.delegate?.captionView(self, didChangeCaptionText: textView.text, attachmentItem: attachmentItem)
     }
-//
-//
-//    @available(iOS 2.0, *)
-//    optional public func textViewDidChangeSelection(_ textView: UITextView)
-//
-//
-//    @available(iOS 10.0, *)
-//    optional public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool
-//
-//    @available(iOS 10.0, *)
-//    optional public func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool
-//
-//
-//    @available(iOS, introduced: 7.0, deprecated: 10.0, message: "Use textView:shouldInteractWithURL:inRange:forInteractionType: instead")
-//    optional public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool
-//
-//    @available(iOS, introduced: 7.0, deprecated: 10.0, message: "Use textView:shouldInteractWithTextAttachment:inRange:forInteractionType: instead")
-//    optional public func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange) -> Bool
 }
 
 protocol MediaMessageTextToolbarDelegate: class {
     func mediaMessageTextToolbarDidTapSend(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
     func mediaMessageTextToolbarDidBeginEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
     func mediaMessageTextToolbarDidEndEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
-    func mediaMessageTextToolbar(_ mediaMessageTextToolbar: MediaMessageTextToolbar, textViewDidChange: UITextView)
     func mediaMessageTextToolbarDidAddMore(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
 }
 
@@ -1342,7 +1338,6 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
 
     public func textViewDidChange(_ textView: UITextView) {
         updateHeight(textView: textView)
-        self.mediaMessageTextToolbarDelegate?.mediaMessageTextToolbar(self, textViewDidChange: textView)
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
