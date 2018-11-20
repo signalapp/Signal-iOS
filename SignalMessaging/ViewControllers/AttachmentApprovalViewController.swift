@@ -598,6 +598,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     // MARK: - View Lifecycle
 
+    let captionView = CaptionView()
+
     override public func loadView() {
         self.view = UIView()
 
@@ -698,7 +700,22 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
             playButton.autoCenterInSuperview()
         }
+
+        // Caption
+
+        captionView.captionText = attachment.captionText
+
+        view.addSubview(captionView)
+        captionView.autoPinWidthToSuperview()
+
+        // MJK TODO ideal CaptionView placement
+        // 1. when no keyboard is popped (e.g. initially) to be *just* above the rail
+        // 2. when the CaptionTextView is first responder, to be *just* above the keyboard
+        // 3. when the MessageTextView is first responder, to be behind the keyboard
+        captionView.autoPinEdge(toSuperviewMargin: .bottom, withInset: 136)
     }
+
+    var captionViewBottomConstraint: NSLayoutConstraint!
 
     override public func viewWillLayoutSubviews() {
         Logger.debug("")
@@ -977,6 +994,175 @@ class BottomToolView: UIView {
             return CGSize.zero
         }
     }
+}
+
+protocol CaptionViewDelegate: class {
+    func captionViewDidChange(_ captionView: CaptionView)
+}
+
+class CaptionView: UIView {
+
+    var captionText: String? {
+        get { return textView.text }
+        set {
+            textView.text = newValue
+            updatePlaceholderTextViewVisibility()
+        }
+    }
+
+    weak var delegate: CaptionViewDelegate?
+
+    private let kMinTextViewHeight: CGFloat = 38
+    private var textViewHeightConstraint: NSLayoutConstraint!
+
+    // TODO show length limit label
+    private let lengthLimitLabel: UILabel = UILabel()
+
+    // MARK: Initializers
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        addSubview(placeholderTextView)
+        placeholderTextView.autoPinEdgesToSuperviewMargins()
+
+        backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        addSubview(textView)
+        textView.autoPinEdgesToSuperviewMargins()
+        textView.delegate = self
+
+        self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: 
+
+    override var inputAccessoryView: UIView? {
+        return nil
+    }
+
+    // MARK: Subviews
+
+    func updatePlaceholderTextViewVisibility() {
+        let isHidden: Bool = {
+            guard !self.textView.isFirstResponder else {
+                return true
+            }
+
+            guard let captionText = self.textView.text else {
+                return false
+            }
+
+            guard captionText.count > 0 else {
+                return false
+            }
+
+            return true
+        }()
+
+        placeholderTextView.isHidden = isHidden
+    }
+
+    private lazy var placeholderTextView: UITextView = {
+        let placeholderTextView = UITextView()
+        placeholderTextView.text = NSLocalizedString("ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER", comment: "placeholder text for an empty captioning field")
+        placeholderTextView.isEditable = false
+
+        placeholderTextView.backgroundColor = .clear
+        placeholderTextView.keyboardAppearance = Theme.keyboardAppearance
+        placeholderTextView.font = UIFont.ows_dynamicTypeBody
+        // MJK FIXME always dark theme
+        placeholderTextView.textColor = Theme.placeholderColor
+        placeholderTextView.returnKeyType = .done
+
+        return placeholderTextView
+    }()
+
+    private lazy var textView: UITextView = {
+        let textView = UITextView()
+        textView.backgroundColor = .clear
+        textView.keyboardAppearance = Theme.keyboardAppearance
+        textView.font = UIFont.ows_dynamicTypeBody
+        textView.textColor = Theme.darkThemePrimaryColor
+        textView.returnKeyType = .done
+
+        return textView
+    }()
+}
+
+extension CaptionView: UITextViewDelegate {
+//    @available(iOS 2.0, *)
+//    optional public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool
+//
+//    @available(iOS 2.0, *)
+//    optional public func textViewShouldEndEditing(_ textView: UITextView) -> Bool
+//
+    public func textViewDidBeginEditing(_ textView: UITextView) {
+        updatePlaceholderTextViewVisibility()
+    }
+
+    public func textViewDidEndEditing(_ textView: UITextView) {
+        updatePlaceholderTextViewVisibility()
+    }
+
+    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let existingText: String = textView.text ?? ""
+        let proposedText: String = (existingText as NSString).replacingCharacters(in: range, with: text)
+
+        guard proposedText.utf8.count <= kOversizeTextMessageSizeThreshold else {
+            Logger.debug("long text was truncated")
+            self.lengthLimitLabel.isHidden = false
+
+            // `range` represents the section of the existing text we will replace. We can re-use that space.
+            // Range is in units of NSStrings's standard UTF-16 characters. Since some of those chars could be
+            // represented as single bytes in utf-8, while others may be 8 or more, the only way to be sure is
+            // to just measure the utf8 encoded bytes of the replaced substring.
+            let bytesAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").utf8.count
+
+            // Accept as much of the input as we can
+            let byteBudget: Int = Int(kOversizeTextMessageSizeThreshold) - bytesAfterDelete
+            if byteBudget >= 0, let acceptableNewText = text.truncated(toByteCount: UInt(byteBudget)) {
+                textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
+            }
+
+            return false
+        }
+        self.lengthLimitLabel.isHidden = true
+
+        // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
+        // allows the user to get the keyboard out of the way while in the attachment approval view.
+        if text == "\n" {
+            textView.resignFirstResponder()
+            return false
+        } else {
+            return true
+        }
+    }
+
+    public func textViewDidChange(_ textView: UITextView) {
+        self.delegate?.captionViewDidChange(self)
+    }
+//
+//
+//    @available(iOS 2.0, *)
+//    optional public func textViewDidChangeSelection(_ textView: UITextView)
+//
+//
+//    @available(iOS 10.0, *)
+//    optional public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool
+//
+//    @available(iOS 10.0, *)
+//    optional public func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool
+//
+//
+//    @available(iOS, introduced: 7.0, deprecated: 10.0, message: "Use textView:shouldInteractWithURL:inRange:forInteractionType: instead")
+//    optional public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool
+//
+//    @available(iOS, introduced: 7.0, deprecated: 10.0, message: "Use textView:shouldInteractWithTextAttachment:inRange:forInteractionType: instead")
+//    optional public func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange) -> Bool
 }
 
 protocol MediaMessageTextToolbarDelegate: class {
