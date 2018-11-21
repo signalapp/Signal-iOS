@@ -426,9 +426,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     OWSLogVerbose(@"");
 
-    [self checkCanImportBackup];
-    return;
-
     // Dismiss this view.
     switch (self.profileViewMode) {
         case ProfileViewMode_AppSettings:

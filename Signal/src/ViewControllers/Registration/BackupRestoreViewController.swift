@@ -115,18 +115,27 @@ public class BackupRestoreViewController: OWSTableViewController {
 
         backup.setHasPendingRestoreDecision(false)
 
-        self.dismiss(animated: true)
+        dismiss(animated: true)
     }
 
     @objc
     private func startImport() {
         Logger.info("")
 
+        hasBegunImport = true
+
         backup.tryToImport()
     }
 
     private func showHomeView() {
-        SignalApp.shared().showHomeView()
+        let isModal = navigationController?.presentingViewController != nil
+        if isModal {
+            dismiss(animated: true, completion: {
+                SignalApp.shared().showHomeView()
+            })
+        } else {
+            SignalApp.shared().showHomeView()
+        }
     }
 
     // MARK: - Notifications
@@ -134,7 +143,12 @@ public class BackupRestoreViewController: OWSTableViewController {
     @objc func backupStateDidChange() {
         AssertIsOnMainThread()
 
+        Logger.verbose("backup.backupImportState: \(NSStringForBackupImportState(backup.backupImportState))")
+        Logger.flush()
+
         if backup.backupImportState == .succeeded {
+            backup.setHasPendingRestoreDecision(false)
+
             showHomeView()
         } else {
             updateTableContents()

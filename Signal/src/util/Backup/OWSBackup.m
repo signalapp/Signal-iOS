@@ -259,6 +259,11 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
     if (!self.isBackupEnabled) {
         return NO;
     }
+    if (self.hasPendingRestoreDecision) {
+        // Don't backup while awaiting user decision about
+        // whether to import previous backup.
+        return NO;
+    }
     if (UIApplication.sharedApplication.applicationState != UIApplicationStateActive) {
         // Don't start backups when app is in the background.
         return NO;

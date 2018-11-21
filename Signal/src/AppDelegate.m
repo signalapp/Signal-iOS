@@ -142,6 +142,11 @@ static NSTimeInterval launchStartedAt;
     return Environment.shared.windowManager;
 }
 
+- (OWSBackup *)backup
+{
+    return AppEnvironment.shared.backup;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -547,6 +552,10 @@ static NSTimeInterval launchStartedAt;
         OWSFailDebug(@"app launch failed");
         return NO;
     }
+    if (self.backup.hasPendingRestoreDecision) {
+        OWSLogInfo(@"Ignoring URL; pending restore decision.");
+        return NO;
+    }
 
     if (!AppReadiness.isAppReady) {
         OWSLogWarn(@"Ignoring openURL: app not ready.");
@@ -744,6 +753,12 @@ static NSTimeInterval launchStartedAt;
 
     if (self.didAppLaunchFail) {
         OWSFailDebug(@"app launch failed");
+        completionHandler(NO);
+        return;
+    }
+    if (self.backup.hasPendingRestoreDecision) {
+        OWSLogInfo(@"Ignoring shortcut action; pending restore decision.");
+        completionHandler(NO);
         return;
     }
 
@@ -793,6 +808,10 @@ static NSTimeInterval launchStartedAt;
 
     if (self.didAppLaunchFail) {
         OWSFailDebug(@"app launch failed");
+        return NO;
+    }
+    if (self.backup.hasPendingRestoreDecision) {
+        OWSLogInfo(@"Ignoring user activity; pending restore decision.");
         return NO;
     }
 
@@ -950,6 +969,10 @@ static NSTimeInterval launchStartedAt;
         OWSFailDebug(@"app launch failed");
         return;
     }
+    if (self.backup.hasPendingRestoreDecision) {
+        OWSLogInfo(@"Ignoring remote notification; pending restore decision.");
+        return;
+    }
 
     // It is safe to continue even if the app isn't ready.
     [[PushManager sharedManager] application:application didReceiveRemoteNotification:userInfo];
@@ -964,6 +987,10 @@ static NSTimeInterval launchStartedAt;
         OWSFailDebug(@"app launch failed");
         return;
     }
+    if (self.backup.hasPendingRestoreDecision) {
+        OWSLogInfo(@"Ignoring remote notification; pending restore decision.");
+        return;
+    }
 
     // It is safe to continue even if the app isn't ready.
     [[PushManager sharedManager] application:application
@@ -976,6 +1003,10 @@ static NSTimeInterval launchStartedAt;
 
     if (self.didAppLaunchFail) {
         OWSFailDebug(@"app launch failed");
+        return;
+    }
+    if (self.backup.hasPendingRestoreDecision) {
+        OWSLogInfo(@"Ignoring local notification; pending restore decision.");
         return;
     }
 
@@ -994,6 +1025,12 @@ static NSTimeInterval launchStartedAt;
 
     if (self.didAppLaunchFail) {
         OWSFailDebug(@"app launch failed");
+        completionHandler();
+        return;
+    }
+    if (self.backup.hasPendingRestoreDecision) {
+        OWSLogInfo(@"Ignoring action; pending restore decision.");
+        completionHandler();
         return;
     }
 
@@ -1023,6 +1060,12 @@ static NSTimeInterval launchStartedAt;
 
     if (self.didAppLaunchFail) {
         OWSFailDebug(@"app launch failed");
+        completionHandler();
+        return;
+    }
+    if (self.backup.hasPendingRestoreDecision) {
+        OWSLogInfo(@"Ignoring action; pending restore decision.");
+        completionHandler();
         return;
     }
 
@@ -1220,18 +1263,21 @@ static NSTimeInterval launchStartedAt;
     NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
     OWSLogInfo(@"Presenting app %.2f seconds after launch started.", startupDuration);
 
+    UIViewController *rootViewController;
     if ([self.tsAccountManager isRegistered]) {
-        HomeViewController *homeView = [HomeViewController new];
-        SignalsNavigationController *navigationController =
-            [[SignalsNavigationController alloc] initWithRootViewController:homeView];
-        self.window.rootViewController = navigationController;
+        if (self.backup.hasPendingRestoreDecision) {
+            rootViewController = [BackupRestoreViewController new];
+        } else {
+            rootViewController = [HomeViewController new];
+        }
     } else {
-        RegistrationViewController *viewController = [RegistrationViewController new];
-        OWSNavigationController *navigationController =
-            [[OWSNavigationController alloc] initWithRootViewController:viewController];
-        navigationController.navigationBarHidden = YES;
-        self.window.rootViewController = navigationController;
+        rootViewController = [RegistrationViewController new];
     }
+    OWSAssertDebug(rootViewController);
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
+    navigationController.navigationBarHidden = YES;
+    self.window.rootViewController = navigationController;
 
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
 }
