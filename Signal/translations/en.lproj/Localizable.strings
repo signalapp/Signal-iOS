@@ -230,6 +230,18 @@
 /* Indicates that the backup import data is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restoring Files";
 
+/* Label for the backup restore decision section. */
+"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+
+/* Label for the backup restore description. */
+"BACKUP_RESTORE_DESCRIPTION" = "BACKUP_RESTORE_DESCRIPTION";
+
+/* Label for the backup restore progress. */
+"BACKUP_RESTORE_PROGRESS" = "BACKUP_RESTORE_PROGRESS";
+
+/* Label for the backup restore status. */
+"BACKUP_RESTORE_STATUS" = "BACKUP_RESTORE_STATUS";
+
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will no longer receive messages or updates from this group.";
 
@@ -391,6 +403,9 @@
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Error";
+
+/* The label for the 'restore backup' button. */
+"CHECK_FOR_BACKUP_RESTORE" = "Restore";
 
 /* Error indicating that the app could not determine that user's CloudKit account status */
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "There was an error communicating with iCloud for backups.";
@@ -1612,9 +1627,6 @@
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Save";
-
-/* Alert title that indicates the user's profile view is being saved. */
-"PROFILE_VIEW_SAVING" = "Saving…";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profile";
