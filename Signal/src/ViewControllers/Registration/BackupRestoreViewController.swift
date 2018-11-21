@@ -14,6 +14,8 @@ public class BackupRestoreViewController: OWSTableViewController {
     }
 
     override public func loadView() {
+        super.loadView()
+
         navigationItem.title = NSLocalizedString("SETTINGS_BACKUP", comment: "Label for the backup view in app settings.")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancelButton))

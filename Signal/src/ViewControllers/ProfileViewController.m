@@ -383,35 +383,30 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     }
 
     // Show an activity indicator to block the UI during the profile upload.
-    UIAlertController *alertController = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"PROFILE_VIEW_SAVING",
-                                     @"Alert title that indicates the user's profile view is being saved.")
-                         message:nil
-                  preferredStyle:UIAlertControllerStyleAlert];
-
-    [self presentViewController:alertController
-                       animated:YES
-                     completion:^{
-                         [OWSProfileManager.sharedManager updateLocalProfileName:normalizedProfileName
-                             avatarImage:self.avatar
-                             success:^{
-                                 [alertController dismissViewControllerAnimated:NO
-                                                                     completion:^{
-                                                                         [weakSelf updateProfileCompleted];
-                                                                     }];
-                             }
-                             failure:^{
-                                 [alertController
-                                     dismissViewControllerAnimated:NO
-                                                        completion:^{
-                                                            [OWSAlerts showErrorAlertWithMessage:
-                                                                           NSLocalizedString(
+    [ModalActivityIndicatorViewController
+        presentFromViewController:self
+                        canCancel:NO
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                      [OWSProfileManager.sharedManager updateLocalProfileName:normalizedProfileName
+                          avatarImage:self.avatar
+                          success:^{
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  [modalActivityIndicator dismissWithCompletion:^{
+                                      [weakSelf updateProfileCompleted];
+                                  }];
+                              });
+                          }
+                          failure:^{
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  [modalActivityIndicator dismissWithCompletion:^{
+                                      [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(
                                                                                @"PROFILE_VIEW_ERROR_UPDATE_FAILED",
                                                                                @"Error message shown when a "
                                                                                @"profile update fails.")];
-                                                        }];
-                             }];
-                     }];
+                                  }];
+                              });
+                          }];
+                  }];
 }
 
 - (NSString *)normalizedProfileName
@@ -450,6 +445,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)showHomeView
 {
+    OWSAssertIsOnMainThread();
     OWSLogVerbose(@"");
 
     [SignalApp.sharedApp showHomeView];
@@ -457,6 +453,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)showBackupRestoreView
 {
+    OWSAssertIsOnMainThread();
     OWSLogVerbose(@"");
 
     BackupRestoreViewController *restoreView = [BackupRestoreViewController new];
