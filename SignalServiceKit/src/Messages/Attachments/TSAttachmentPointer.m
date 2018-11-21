@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
         _state = TSAttachmentPointerStateFailed;
     }
 
-    if (![coder containsValueForKey:@"pointerType"]) {
+    if (_pointerType == TSAttachmentPointerTypeUnknown) {
         _pointerType = TSAttachmentPointerTypeIncoming;
     }
 
@@ -76,11 +76,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(attachmentStream);
 
-    self = [super initWithUniqueId:attachmentStream.uniqueId
-                       contentType:attachmentStream.contentType
-                    sourceFilename:attachmentStream.sourceFilename
-                           caption:attachmentStream.caption
-                    albumMessageId:attachmentStream.albumMessageId];
+    self = [super initForRestoreWithUniqueId:attachmentStream.uniqueId
+                                 contentType:attachmentStream.contentType
+                              sourceFilename:attachmentStream.sourceFilename
+                                     caption:attachmentStream.caption
+                              albumMessageId:attachmentStream.albumMessageId];
     if (!self) {
         return self;
     }

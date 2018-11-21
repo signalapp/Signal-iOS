@@ -51,17 +51,13 @@ NS_ASSUME_NONNULL_BEGIN
     return AppEnvironment.shared.backup;
 }
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)init
 {
     self = [super init];
 
     if (!self) {
         return self;
     }
-
-    OWSAssertDebug(primaryStorage);
-
-    _dbConnection = primaryStorage.newDatabaseConnection;
 
     _backupExportState = OWSBackupState_Idle;
     _backupImportState = OWSBackupState_Idle;
@@ -101,6 +97,25 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
+- (YapDatabaseConnection *)dbConnection
+{
+    @synchronized(self) {
+        if (!_dbConnection) {
+            _dbConnection = self.primaryStorage.newDatabaseConnection;
+        }
+        return _dbConnection;
+    }
+}
+
+#pragma mark - Dependencies
+
+- (OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
+
+    return SSKEnvironment.shared.primaryStorage;
+}
+
 #pragma mark - Backup Export
 
 - (void)tryToExportBackup
@@ -121,8 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _backupExportState = OWSBackupState_InProgress;
 
-    self.backupExportJob =
-        [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
+    self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:self.primaryStorage];
     [self.backupExportJob startAsync];
 
     [self postDidChangeNotification];
@@ -254,8 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.backupExportJob cancel];
         self.backupExportJob = nil;
     } else if (self.shouldHaveBackupExport && !self.backupExportJob) {
-        self.backupExportJob =
-            [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
+        self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:self.primaryStorage];
         [self.backupExportJob startAsync];
     }
 
@@ -321,8 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _backupImportState = OWSBackupState_InProgress;
 
-    self.backupImportJob =
-        [[OWSBackupImportJob alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
+    self.backupImportJob = [[OWSBackupImportJob alloc] initWithDelegate:self primaryStorage:self.primaryStorage];
     [self.backupImportJob startAsync];
 
     [self postDidChangeNotification];
@@ -619,7 +631,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (![OWSFileSystem deleteFileIfExists:attachmentFilePath]) {
-        OWSLogError(@"Couldn't delete exist file at attachment path.");
+        OWSFailDebug(@"Couldn't delete existing file at attachment path.");
         return completion(NO);
     }
 

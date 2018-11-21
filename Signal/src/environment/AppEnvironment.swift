@@ -69,8 +69,7 @@ import SignalMessaging
         self.pushRegistrationManager = PushRegistrationManager()
         self.pushManager = PushManager()
         self.sessionResetJobQueue = SessionResetJobQueue()
-        assert(SSKEnvironment.shared.primaryStorage != nil)
-        self.backup = OWSBackup(primaryStorage: SSKEnvironment.shared.primaryStorage)
+        self.backup = OWSBackup()
 
         super.init()
 

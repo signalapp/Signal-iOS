@@ -68,11 +68,11 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded restoring attachments.
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                     contentType:(NSString *)contentType
-                  sourceFilename:(nullable NSString *)sourceFilename
-                         caption:(nullable NSString *)caption
-                  albumMessageId:(nullable NSString *)albumMessageId
+- (instancetype)initForRestoreWithUniqueId:(NSString *)uniqueId
+                               contentType:(NSString *)contentType
+                            sourceFilename:(nullable NSString *)sourceFilename
+                                   caption:(nullable NSString *)caption
+                            albumMessageId:(nullable NSString *)albumMessageId
 {
     OWSAssertDebug(uniqueId.length > 0);
     if (contentType.length < 1) {
@@ -82,7 +82,9 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     }
     OWSAssertDebug(contentType.length > 0);
 
-    // Once saved, this AttachmentStream will replace the AttachmentPointer in the attachments collection.
+    // If saved, this AttachmentPointer would replace the AttachmentStream in the attachments collection.
+    // However we only use this AttachmentPointer should only be used during the export process so it
+    // won't be saved until we restore the backup (when there will be no AttachmentStream to replace).
     self = [super initWithUniqueId:uniqueId];
     if (!self) {
         return self;

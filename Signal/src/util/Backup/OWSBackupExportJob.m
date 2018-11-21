@@ -547,8 +547,10 @@ NS_ASSUME_NONNULL_BEGIN
             [TSAttachment class],
             ^(id object) {
                 if (![object isKindOfClass:[TSAttachmentStream class]]) {
-                    // No need to backup the contents of attachment pointers.
-                    return NO;
+                    // No need to backup the contents (e.g. the file on disk)
+                    // of attachment pointers.
+                    // After a restore, users will be able "tap to retry".
+                    return YES;
                 }
                 TSAttachmentStream *attachmentStream = object;
                 NSString *_Nullable filePath = attachmentStream.originalFilePath;

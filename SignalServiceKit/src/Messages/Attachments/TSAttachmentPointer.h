@@ -12,7 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSMessage;
 
 typedef NS_ENUM(NSUInteger, TSAttachmentPointerType) {
-    TSAttachmentPointerTypeIncoming = 0,
+    TSAttachmentPointerTypeUnknown = 0,
+    TSAttachmentPointerTypeIncoming = 1,
     TSAttachmentPointerTypeRestoring = 2,
 };
 
