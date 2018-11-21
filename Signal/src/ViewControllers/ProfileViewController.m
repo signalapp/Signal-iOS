@@ -287,7 +287,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         [self profileCompletedOrSkipped];
         return;
     }
-
+ 
+    __weak ProfileViewController *weakSelf = self;
     UIAlertController *controller = [UIAlertController
         alertControllerWithTitle:
             NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
@@ -301,7 +302,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                                      @"The label for the 'discard' button in alerts and action sheets.")
                                            style:UIAlertActionStyleDestructive
                                          handler:^(UIAlertAction *action) {
-                                             [self profileCompletedOrSkipped];
+                                             [weakSelf profileCompletedOrSkipped];
                                          }]];
     [controller addAction:[OWSAlerts cancelAction]];
     [self presentViewController:controller animated:YES completion:nil];
@@ -388,7 +389,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       [OWSProfileManager.sharedManager updateLocalProfileName:normalizedProfileName
-                          avatarImage:self.avatar
+                          avatarImage:weakSelf.avatar
                           success:^{
                               dispatch_async(dispatch_get_main_queue(), ^{
                                   [modalActivityIndicator dismissWithCompletion:^{
@@ -424,6 +425,9 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 - (void)profileCompletedOrSkipped
 {
     OWSLogVerbose(@"");
+
+    [self checkCanImportBackup];
+    return;
 
     // Dismiss this view.
     switch (self.profileViewMode) {
@@ -467,6 +471,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     OWSLogVerbose(@"");
 
+    __weak ProfileViewController *weakSelf = self;
     [OWSBackup.sharedManager
         checkCanImportBackup:^(BOOL value) {
             OWSLogInfo(@"has backup available for import? %d", value);
@@ -474,13 +479,13 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
             if (value) {
                 [OWSBackup.sharedManager setHasPendingRestoreDecision:YES];
 
-                [self showBackupRestoreView];
+                [weakSelf showBackupRestoreView];
             } else {
-                [self showHomeView];
+                [weakSelf showHomeView];
             }
         }
         failure:^(NSError *error) {
-            [self showBackupCheckFailedAlert];
+            [weakSelf showBackupCheckFailedAlert];
         }];
 }
 
@@ -488,6 +493,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     OWSLogVerbose(@"");
 
+    __weak ProfileViewController *weakSelf = self;
     UIAlertController *controller = [UIAlertController
         alertControllerWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_TITLE",
                                      @"Title for alert shown when the app failed to check for an existing backup.")
@@ -498,13 +504,13 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_FAILED_TRY_AGAIN", nil)
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *action) {
-                                                     [self checkCanImportBackup];
+                                                     [weakSelf checkCanImportBackup];
                                                  }]];
     [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_DO_NOT_RESTORE",
                                                              @"The label for the 'do not restore backup' button.")
                                                    style:UIAlertActionStyleDestructive
                                                  handler:^(UIAlertAction *action) {
-                                                     [self showHomeView];
+                                                     [weakSelf showHomeView];
                                                  }]];
     [self presentViewController:controller animated:YES completion:nil];
 }

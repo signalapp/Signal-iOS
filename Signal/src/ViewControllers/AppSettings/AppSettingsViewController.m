@@ -248,7 +248,8 @@
 
 - (OWSTableItem *)destructiveButtonItemWithTitle:(NSString *)title selector:(SEL)selector color:(UIColor *)color
 {
-    return [OWSTableItem
+    __weak AppSettingsViewController *weakSelf = self;
+   return [OWSTableItem
         itemWithCustomCellBlock:^{
             UITableViewCell *cell = [OWSTableItem newCell];
             cell.preservesSuperviewLayoutMargins = YES;
@@ -260,7 +261,7 @@
                                                               font:[OWSFlatButton fontForHeight:kButtonHeight]
                                                         titleColor:[UIColor whiteColor]
                                                    backgroundColor:color
-                                                            target:self
+                                                            target:weakSelf
                                                           selector:selector];
             [cell.contentView addSubview:button];
             [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
@@ -423,6 +424,8 @@
 
 - (void)showDeleteAccountUI:(BOOL)isRegistered
 {
+    __weak AppSettingsViewController *weakSelf = self;
+    
     UIAlertController *alertController =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")
                                             message:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TEXT", @"")
@@ -430,7 +433,7 @@
     [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
                                                         style:UIAlertActionStyleDestructive
                                                       handler:^(UIAlertAction *action) {
-                                                          [self deleteAccount:isRegistered];
+                                                          [weakSelf deleteAccount:isRegistered];
                                                       }]];
     [alertController addAction:[OWSAlerts cancelAction]];
 
