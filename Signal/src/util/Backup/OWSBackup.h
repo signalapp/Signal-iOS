@@ -48,6 +48,9 @@ NSString *NSStringForBackupImportState(OWSBackupState state);
 - (BOOL)isBackupEnabled;
 - (void)setIsBackupEnabled:(BOOL)value;
 
+- (BOOL)hasPendingRestoreDecision;
+- (void)setHasPendingRestoreDecision:(BOOL)value;
+
 - (void)tryToExportBackup;
 - (void)cancelExportBackup;
 

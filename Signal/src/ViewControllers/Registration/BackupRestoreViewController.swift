@@ -7,12 +7,14 @@ import UIKit
 @objc
 public class BackupRestoreViewController: OWSTableViewController {
 
+    private var hasBegunImport = false
+
     private var backup: OWSBackup {
         return AppEnvironment.shared.backup
     }
 
     override public func loadView() {
-        navigationItem.title = NSLocalizedString("REMINDER_2FA_NAV_TITLE", comment: "Navbar title for when user is periodically prompted to enter their registration lock PIN")
+        navigationItem.title = NSLocalizedString("SETTINGS_BACKUP", comment: "Label for the backup view in app settings.")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancelButton))
     }
@@ -25,12 +27,44 @@ public class BackupRestoreViewController: OWSTableViewController {
                                                name: NSNotification.Name(NSNotificationNameBackupStateDidChange),
                                                object: nil)
 
-        backup.tryToImport()
-
         updateTableContents()
     }
 
     private func updateTableContents() {
+        if hasBegunImport {
+            updateProgressContents()
+        } else {
+            updateDecisionContents()
+        }
+    }
+
+    private func updateDecisionContents() {
+        let contents = OWSTableContents()
+
+        let section = OWSTableSection()
+
+        section.headerTitle = NSLocalizedString("BACKUP_RESTORE_DECISION_TITLE", comment: "Label for the backup restore decision section.")
+
+        section.add(OWSTableItem.actionItem(withText: NSLocalizedString("CHECK_FOR_BACKUP_DO_NOT_RESTORE",
+                                                                        comment: "The label for the 'do not restore backup' button."), actionBlock: { [weak self] in
+                guard let strongSelf = self else {
+                    return
+                }
+                strongSelf.cancelAndDismiss()
+        }))
+        section.add(OWSTableItem.actionItem(withText: NSLocalizedString("CHECK_FOR_BACKUP_RESTORE",
+                                                                        comment: "The label for the 'restore backup' button."), actionBlock: { [weak self] in
+                guard let strongSelf = self else {
+                    return
+                }
+                strongSelf.startImport()
+        }))
+
+        contents.addSection(section)
+        self.contents = contents
+    }
+
+    private func updateProgressContents() {
         let contents = OWSTableContents()
 
         let section = OWSTableSection()
@@ -70,7 +104,23 @@ public class BackupRestoreViewController: OWSTableViewController {
 
         // TODO: Cancel import.
 
+        cancelAndDismiss()
+    }
+
+    @objc
+    private func cancelAndDismiss() {
+        Logger.info("")
+
+        backup.setHasPendingRestoreDecision(false)
+
         self.dismiss(animated: true)
+    }
+
+    @objc
+    private func startImport() {
+        Logger.info("")
+
+        backup.tryToImport()
     }
 
     private func showHomeView() {

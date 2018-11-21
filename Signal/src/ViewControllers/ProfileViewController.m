@@ -421,11 +421,15 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)updateProfileCompleted
 {
+    OWSLogVerbose(@"");
+
     [self profileCompletedOrSkipped];
 }
 
 - (void)profileCompletedOrSkipped
 {
+    OWSLogVerbose(@"");
+
     // Dismiss this view.
     switch (self.profileViewMode) {
         case ProfileViewMode_AppSettings:
@@ -446,11 +450,15 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)showHomeView
 {
+    OWSLogVerbose(@"");
+
     [SignalApp.sharedApp showHomeView];
 }
 
 - (void)showBackupRestoreView
 {
+    OWSLogVerbose(@"");
+
     BackupRestoreViewController *restoreView = [BackupRestoreViewController new];
     [self.navigationController setViewControllers:@[
         restoreView,
@@ -460,39 +468,48 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)checkCanImportBackup
 {
+    OWSLogVerbose(@"");
+
     [OWSBackup.sharedManager
         checkCanImportBackup:^(BOOL value) {
             OWSLogInfo(@"has backup available for import? %d", value);
 
             if (value) {
+                [OWSBackup.sharedManager setHasPendingRestoreDecision:YES];
+
                 [self showBackupRestoreView];
             } else {
                 [self showHomeView];
             }
         }
         failure:^(NSError *error) {
-            UIAlertController *controller = [UIAlertController
-                alertControllerWithTitle:
-                    NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_TITLE",
-                        @"Title for alert shown when the app failed to check for an existing backup.")
-                                 message:NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_MESSAGE",
-                                             @"Message for alert shown when the app failed to check for an existing "
-                                             @"backup.")
-                          preferredStyle:UIAlertControllerStyleAlert];
-            [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_FAILED_TRY_AGAIN", nil)
-                                                           style:UIAlertActionStyleDefault
-                                                         handler:^(UIAlertAction *action) {
-                                                             [self checkCanImportBackup];
-                                                         }]];
-            [controller
-                addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_DO_NOT_RESTORE",
+            [self showBackupCheckFailedAlert];
+        }];
+}
+
+- (void)showBackupCheckFailedAlert
+{
+    OWSLogVerbose(@"");
+
+    UIAlertController *controller = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_TITLE",
+                                     @"Title for alert shown when the app failed to check for an existing backup.")
+                         message:NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_MESSAGE",
+                                     @"Message for alert shown when the app failed to check for an existing "
+                                     @"backup.")
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_FAILED_TRY_AGAIN", nil)
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction *action) {
+                                                     [self checkCanImportBackup];
+                                                 }]];
+    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_DO_NOT_RESTORE",
                                                              @"The label for the 'do not restore backup' button.")
                                                    style:UIAlertActionStyleDestructive
                                                  handler:^(UIAlertAction *action) {
                                                      [self showHomeView];
                                                  }]];
-            [self presentViewController:controller animated:YES completion:nil];
-        }];
+    [self presentViewController:controller animated:YES completion:nil];
 }
 
 #pragma mark - UITextFieldDelegate
