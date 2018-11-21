@@ -6,8 +6,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSBackupFragment;
 @class SSKProtoAttachmentPointer;
+@class TSAttachmentStream;
 @class TSMessage;
+
+typedef NS_ENUM(NSUInteger, TSAttachmentPointerType) {
+    TSAttachmentPointerTypeUnknown = 0,
+    TSAttachmentPointerTypeIncoming = 1,
+    TSAttachmentPointerTypeRestoring = 2,
+};
 
 typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
     TSAttachmentPointerStateEnqueued = 0,
@@ -19,6 +27,17 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
  * A TSAttachmentPointer is a yet-to-be-downloaded attachment.
  */
 @interface TSAttachmentPointer : TSAttachment
+
+@property (nonatomic) TSAttachmentPointerType pointerType;
+@property (atomic) TSAttachmentPointerState state;
+@property (nullable, atomic) NSString *mostRecentFailureLocalizedText;
+
+// Though now required, `digest` may be null for pre-existing records or from
+// messages received from other clients
+@property (nullable, nonatomic, readonly) NSData *digest;
+
+// Non-nil for attachments which need "lazy backup restore."
+- (nullable OWSBackupFragment *)lazyRestoreFragment;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
@@ -32,6 +51,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                   albumMessageId:(nullable NSString *)albumMessageId
                   attachmentType:(TSAttachmentType)attachmentType NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)initForRestoreWithAttachmentStream:(TSAttachmentStream *)attachmentStream NS_DESIGNATED_INITIALIZER;
+
 + (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
                                                 albumMessage:(nullable TSMessage *)message;
 
@@ -39,12 +60,11 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                                         (NSArray<SSKProtoAttachmentPointer *> *)attachmentProtos
                                                     albumMessage:(TSMessage *)message;
 
-@property (atomic) TSAttachmentPointerState state;
-@property (nullable, atomic) NSString *mostRecentFailureLocalizedText;
+#pragma mark - Update With... Methods
 
-// Though now required, `digest` may be null for pre-existing records or from
-// messages received from other clients
-@property (nullable, nonatomic, readonly) NSData *digest;
+// Marks attachment as needing "lazy backup restore."
+- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

@@ -4,6 +4,7 @@
 
 #import "TSAttachment.h"
 #import "MIMETypeUtil.h"
+#import "TSAttachmentPointer.h"
 #import "TSMessage.h"
 #import <SignalCoreKit/NSString+SSK.h>
 #import <SignalCoreKit/iOSVersions.h>
@@ -65,6 +66,40 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     return self;
 }
 
+// This constructor is used for new instances of TSAttachmentPointer,
+// i.e. undownloaded restoring attachments.
+- (instancetype)initForRestoreWithUniqueId:(NSString *)uniqueId
+                               contentType:(NSString *)contentType
+                            sourceFilename:(nullable NSString *)sourceFilename
+                                   caption:(nullable NSString *)caption
+                            albumMessageId:(nullable NSString *)albumMessageId
+{
+    OWSAssertDebug(uniqueId.length > 0);
+    if (contentType.length < 1) {
+        OWSLogWarn(@"incoming attachment has invalid content type");
+
+        contentType = OWSMimeTypeApplicationOctetStream;
+    }
+    OWSAssertDebug(contentType.length > 0);
+
+    // If saved, this AttachmentPointer would replace the AttachmentStream in the attachments collection.
+    // However we only use this AttachmentPointer should only be used during the export process so it
+    // won't be saved until we restore the backup (when there will be no AttachmentStream to replace).
+    self = [super initWithUniqueId:uniqueId];
+    if (!self) {
+        return self;
+    }
+
+    _contentType = contentType;
+    _sourceFilename = sourceFilename;
+    _caption = caption;
+    _albumMessageId = albumMessageId;
+
+    _attachmentSchemaVersion = TSAttachmentSchemaVersion;
+
+    return self;
+}
+
 // This constructor is used for new instances of TSAttachmentStream
 // that represent new, un-uploaded outgoing attachments.
 - (instancetype)initWithContentType:(NSString *)contentType
@@ -99,13 +134,15 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent downloaded incoming attachments.
-- (instancetype)initWithPointer:(TSAttachment *)pointer
+- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer
 {
-    OWSAssertDebug(pointer.serverId > 0);
-    OWSAssertDebug(pointer.encryptionKey.length > 0);
-    if (pointer.byteCount <= 0) {
-        // This will fail with legacy iOS clients which don't upload attachment size.
-        OWSLogWarn(@"Missing pointer.byteCount for attachment with serverId: %lld", pointer.serverId);
+    if (!pointer.lazyRestoreFragment) {
+        OWSAssertDebug(pointer.serverId > 0);
+        OWSAssertDebug(pointer.encryptionKey.length > 0);
+        if (pointer.byteCount <= 0) {
+            // This will fail with legacy iOS clients which don't upload attachment size.
+            OWSLogWarn(@"Missing pointer.byteCount for attachment with serverId: %lld", pointer.serverId);
+        }
     }
     OWSAssertDebug(pointer.contentType.length > 0);
 

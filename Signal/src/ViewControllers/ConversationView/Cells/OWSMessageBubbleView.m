@@ -835,6 +835,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 {
     OWSAssertDebug(self.attachmentPointer);
 
+    // TODO: We probably want to do something different for attachments
+    // being restored from backup.
     AttachmentPointerView *downloadView =
         [[AttachmentPointerView alloc] initWithAttachmentPointer:self.attachmentPointer
                                                       isIncoming:self.isIncoming

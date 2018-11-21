@@ -21,14 +21,12 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 };
 
 @class OWSBackupIO;
-@class OWSPrimaryStorage;
-@class TSAttachmentStream;
+@class TSAttachmentPointer;
 @class TSThread;
 
 @interface OWSBackup : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager NS_SWIFT_NAME(shared());
 
@@ -79,7 +77,7 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 
 - (NSArray<NSString *> *)attachmentIdsForLazyRestore;
 
-- (void)lazyRestoreAttachment:(TSAttachmentStream *)attachment
+- (void)lazyRestoreAttachment:(TSAttachmentPointer *)attachment
                      backupIO:(OWSBackupIO *)backupIO
                    completion:(OWSBackupBoolBlock)completion;
 

@@ -86,6 +86,12 @@ public class ConversationMediaView: UIView {
             configure(forError: .invalid)
             return
         }
+        guard attachmentPointer.pointerType == .incoming else {
+            // TODO: Show "restoring" indicator and possibly progress.
+            owsFailDebug("Attachment is restoring from backup.")
+            configure(forError: .missing)
+            return
+        }
         guard let attachmentId = attachmentPointer.uniqueId else {
             owsFailDebug("Attachment missing unique ID.")
             configure(forError: .invalid)

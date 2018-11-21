@@ -51,17 +51,13 @@ NS_ASSUME_NONNULL_BEGIN
     return AppEnvironment.shared.backup;
 }
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)init
 {
     self = [super init];
 
     if (!self) {
         return self;
     }
-
-    OWSAssertDebug(primaryStorage);
-
-    _dbConnection = primaryStorage.newDatabaseConnection;
 
     _backupExportState = OWSBackupState_Idle;
     _backupImportState = OWSBackupState_Idle;
@@ -101,6 +97,25 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
+- (YapDatabaseConnection *)dbConnection
+{
+    @synchronized(self) {
+        if (!_dbConnection) {
+            _dbConnection = self.primaryStorage.newDatabaseConnection;
+        }
+        return _dbConnection;
+    }
+}
+
+#pragma mark - Dependencies
+
+- (OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
+
+    return SSKEnvironment.shared.primaryStorage;
+}
+
 #pragma mark - Backup Export
 
 - (void)tryToExportBackup
@@ -121,8 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _backupExportState = OWSBackupState_InProgress;
 
-    self.backupExportJob =
-        [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
+    self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:self.primaryStorage];
     [self.backupExportJob startAsync];
 
     [self postDidChangeNotification];
@@ -254,8 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.backupExportJob cancel];
         self.backupExportJob = nil;
     } else if (self.shouldHaveBackupExport && !self.backupExportJob) {
-        self.backupExportJob =
-            [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
+        self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:self.primaryStorage];
         [self.backupExportJob startAsync];
     }
 
@@ -321,8 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _backupImportState = OWSBackupState_InProgress;
 
-    self.backupImportJob =
-        [[OWSBackupImportJob alloc] initWithDelegate:self primaryStorage:[OWSPrimaryStorage sharedManager]];
+    self.backupImportJob = [[OWSBackupImportJob alloc] initWithDelegate:self primaryStorage:self.primaryStorage];
     [self.backupImportJob startAsync];
 
     [self postDidChangeNotification];
@@ -500,18 +512,18 @@ NS_ASSUME_NONNULL_BEGIN
         [ext enumerateKeysAndObjectsInGroup:TSLazyRestoreAttachmentsGroup
                                  usingBlock:^(
                                      NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                     if (![object isKindOfClass:[TSAttachmentStream class]]) {
+                                     if (![object isKindOfClass:[TSAttachmentPointer class]]) {
                                          OWSFailDebug(
                                              @"Unexpected object: %@ in collection:%@", [object class], collection);
                                          return;
                                      }
-                                     TSAttachmentStream *attachmentStream = object;
-                                     if (!attachmentStream.lazyRestoreFragment) {
+                                     TSAttachmentPointer *attachmentPointer = object;
+                                     if (!attachmentPointer.lazyRestoreFragment) {
                                          OWSFailDebug(
                                              @"Invalid object: %@ in collection:%@", [object class], collection);
                                          return;
                                      }
-                                     [recordNames addObject:attachmentStream.lazyRestoreFragment.recordName];
+                                     [recordNames addObject:attachmentPointer.lazyRestoreFragment.recordName];
                                  }];
     }];
     return recordNames;
@@ -535,23 +547,13 @@ NS_ASSUME_NONNULL_BEGIN
     return attachmentIds;
 }
 
-- (void)lazyRestoreAttachment:(TSAttachmentStream *)attachment
+- (void)lazyRestoreAttachment:(TSAttachmentPointer *)attachment
                      backupIO:(OWSBackupIO *)backupIO
                    completion:(OWSBackupBoolBlock)completion
 {
     OWSAssertDebug(attachment);
     OWSAssertDebug(backupIO);
     OWSAssertDebug(completion);
-
-    NSString *_Nullable attachmentFilePath = [attachment originalFilePath];
-    if (attachmentFilePath.length < 1) {
-        OWSLogError(@"Attachment has invalid file path.");
-        return completion(NO);
-    }
-    if ([NSFileManager.defaultManager fileExistsAtPath:attachmentFilePath]) {
-        OWSLogError(@"Attachment already has file.");
-        return completion(NO);
-    }
 
     OWSBackupFragment *_Nullable lazyRestoreFragment = attachment.lazyRestoreFragment;
     if (!lazyRestoreFragment) {
@@ -587,13 +589,13 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)lazyRestoreAttachment:(TSAttachmentStream *)attachment
+- (void)lazyRestoreAttachment:(TSAttachmentPointer *)attachmentPointer
                      backupIO:(OWSBackupIO *)backupIO
             encryptedFilePath:(NSString *)encryptedFilePath
                 encryptionKey:(NSData *)encryptionKey
                    completion:(OWSBackupBoolBlock)completion
 {
-    OWSAssertDebug(attachment);
+    OWSAssertDebug(attachmentPointer);
     OWSAssertDebug(backupIO);
     OWSAssertDebug(encryptedFilePath.length > 0);
     OWSAssertDebug(encryptionKey.length > 0);
@@ -614,7 +616,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    NSString *_Nullable attachmentFilePath = [attachment originalFilePath];
+    TSAttachmentStream *stream = [[TSAttachmentStream alloc] initWithPointer:attachmentPointer];
+
+    NSString *attachmentFilePath = stream.originalFilePath;
     if (attachmentFilePath.length < 1) {
         OWSLogError(@"Attachment has invalid file path.");
         return completion(NO);
@@ -626,6 +630,11 @@ NS_ASSUME_NONNULL_BEGIN
         return completion(NO);
     }
 
+    if (![OWSFileSystem deleteFileIfExists:attachmentFilePath]) {
+        OWSFailDebug(@"Couldn't delete existing file at attachment path.");
+        return completion(NO);
+    }
+
     NSError *error;
     BOOL success =
         [NSFileManager.defaultManager moveItemAtPath:decryptedFilePath toPath:attachmentFilePath error:&error];
@@ -634,7 +643,10 @@ NS_ASSUME_NONNULL_BEGIN
         return completion(NO);
     }
 
-    [attachment updateWithLazyRestoreComplete];
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        // This should overwrite the attachment pointer with an attachment stream.
+        [stream saveWithTransaction:transaction];
+    }];
 
     completion(YES);
 }
