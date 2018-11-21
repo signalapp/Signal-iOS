@@ -252,6 +252,8 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
     [self.dbConnection setBool:value
                         forKey:OWSBackup_HasPendingRestoreDecisionKey
                   inCollection:OWSPrimaryStorage_OWSBackupCollection];
+    
+    [self postDidChangeNotification];
 }
 
 - (BOOL)canBackupExport
