@@ -287,13 +287,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
     }
 
-    var videoPlayBarButton: UIBarButtonItem = {
+    lazy var videoPlayBarButton: UIBarButtonItem = {
         let videoPlayBarButton = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(didPressPlayBarButton))
         videoPlayBarButton.tintColor = Theme.darkThemePrimaryColor
         return videoPlayBarButton
     }()
 
-    let videoPauseBarButton: UIBarButtonItem = {
+    lazy var videoPauseBarButton: UIBarButtonItem = {
         let videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action:
             #selector(didPressPauseBarButton))
         videoPauseBarButton.tintColor = Theme.darkThemePrimaryColor
@@ -770,7 +770,7 @@ extension MediaPageViewController: GalleryRailViewDelegate {
             owsFailDebug("unexpected imageRailItem: \(imageRailItem)")
             return
         }
- 
+
         let direction: UIPageViewControllerNavigationDirection
         direction = currentItem.albumIndex < targetItem.albumIndex ? .forward : .reverse
 
