@@ -1264,6 +1264,7 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"Presenting app %.2f seconds after launch started.", startupDuration);
 
     UIViewController *rootViewController;
+    BOOL navigationBarHidden = NO;
     if ([self.tsAccountManager isRegistered]) {
         if (self.backup.hasPendingRestoreDecision) {
             rootViewController = [BackupRestoreViewController new];
@@ -1272,11 +1273,12 @@ static NSTimeInterval launchStartedAt;
         }
     } else {
         rootViewController = [RegistrationViewController new];
+        navigationBarHidden = YES;
     }
     OWSAssertDebug(rootViewController);
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
-    navigationController.navigationBarHidden = YES;
+    navigationController.navigationBarHidden = navigationBarHidden;
     self.window.rootViewController = navigationController;
 
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
