@@ -133,8 +133,8 @@ import CloudKit
                                          success: @escaping (String) -> Void,
                                          failure: @escaping (Error) -> Void) {
 
-        database().save(record) {
-            (_, error) in
+        let saveOperation = CKModifyRecordsOperation(recordsToSave: [record ], recordIDsToDelete: nil)
+        saveOperation.modifyRecordsCompletionBlock = { (records, recordIds, error) in
 
             let outcome = outcomeForCloudKitError(error: error,
                                                     remainingRetries: remainingRetries,
@@ -164,6 +164,14 @@ import CloudKit
                 failure(invalidServiceResponseError())
             }
         }
+
+        // These APIs are only available in iOS 9.3 and later.
+        if #available(iOS 9.3, *) {
+            saveOperation.isLongLived = true
+            saveOperation.qualityOfService = .background
+        }
+
+        database().add(saveOperation)
     }
 
     // Compare:
