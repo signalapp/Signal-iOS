@@ -626,4 +626,44 @@ import CloudKit
             return .success
         }
     }
+
+    // MARK: -
+
+    @objc
+    public class func setup() {
+        cancelAllLongLivedOperations()
+    }
+
+    private class func cancelAllLongLivedOperations() {
+        // These APIs are only available in iOS 9.3 and later.
+        guard #available(iOS 9.3, *) else {
+            return
+        }
+
+        let container = CKContainer.default()
+        container.fetchAllLongLivedOperationIDs { (operationIds, error) in
+            if let error = error {
+                Logger.error("Could not get all long lived operations: \(error)")
+                return
+            }
+            guard let operationIds = operationIds else {
+                Logger.error("No operation ids.")
+                return
+            }
+
+            for operationId in operationIds {
+                container.fetchLongLivedOperation(withID: operationId, completionHandler: { (operation, error) in
+                    if let error = error {
+                        Logger.error("Could not get long lived operation [\(operationId)]: \(error)")
+                        return
+                    }
+                    guard let operation = operation else {
+                        Logger.error("No operation.")
+                        return
+                    }
+                    operation.cancel()
+                })
+            }
+        }
+    }
 }
