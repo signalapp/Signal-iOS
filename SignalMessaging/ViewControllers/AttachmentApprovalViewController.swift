@@ -197,6 +197,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         self.setCurrentItem(firstItem, direction: .forward, animated: false)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillChangeFrame(notification:)),
+                                               name: .UIKeyboardWillChangeFrame,
+                                               object: nil)
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -228,6 +233,35 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     override public var canBecomeFirstResponder: Bool {
         return true
+    }
+
+    var lastKnownBottomToolbarInset: CGFloat = 0
+
+    @objc
+    func keyboardWillChangeFrame(notification: Notification) {
+        Logger.debug("")
+
+        //        NSDictionary *userInfo = [notification userInfo];
+        guard let userInfo = notification.userInfo else {
+            owsFailDebug("userInfo was unexpectedly nil")
+            return
+        }
+
+        guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
+            owsFailDebug("keyboardEndFrame was unexpectedly nil")
+            return
+        }
+
+        lastKnownBottomToolbarInset = keyboardEndFrame.size.height
+
+        viewControllers?.forEach { viewController in
+            guard let prepViewController = viewController as? AttachmentPrepViewController else {
+                owsFailDebug("unexpected prepViewController: \(viewController)")
+                return
+            }
+
+            prepViewController.update(bottomToolbarInset: lastKnownBottomToolbarInset)
+        }
     }
 
     // MARK: - View Helpers
@@ -516,6 +550,10 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem) {
         self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: attachmentItem.attachment)
     }
+
+    var bottomToolbarInset: CGFloat {
+        return lastKnownBottomToolbarInset
+    }
 }
 
 // MARK: GalleryRail
@@ -563,6 +601,8 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
 
 protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem)
+
+    var bottomToolbarInset: CGFloat { get }
 }
 
 public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
@@ -718,52 +758,15 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         // 1. when no keyboard is popped (e.g. initially) to be *just* above the rail
         // 2. when the CaptionTextView is first responder, to be *just* above the keyboard
         // 3. when the MessageTextView is first responder, to be behind the keyboard
-        captionViewBottomConstraint = captionView.autoPinEdge(toSuperviewMargin: .bottom, withInset: kDefaultCaptionViewBottomInset)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(notification:)), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
-    }
-
-    @objc
-    func keyboardWillChangeFrame(notification: Notification) {
-        Logger.debug("")
-
-        //        NSDictionary *userInfo = [notification userInfo];
-        guard let userInfo = notification.userInfo else {
-            owsFailDebug("userInfo was unexpectedly nil")
+        guard let prepDelegate = self.prepDelegate else {
+            owsFailDebug("prepDelegate was unexpectedly nil")
             return
         }
 
-//        NSValue *_Nullable keyboardBeginFrameValue = userInfo[UIKeyboardFrameBeginUserInfoKey];
-//        if (!keyboardBeginFrameValue) {
-//            OWSFailDebug(@"Missing keyboard begin frame");
-//            return;
-//        }
-//
-//        NSValue *_Nullable keyboardEndFrameValue = userInfo[UIKeyboardFrameEndUserInfoKey];
-//        if (!keyboardEndFrameValue) {
-//            OWSFailDebug(@"Missing keyboard end frame");
-//            return;
-//        }
-//
-//        CGRect keyboardEndFrame = [keyboardEndFrameValue CGRectValue];
-
-        guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
-            owsFailDebug("keyboardEndFrame was unexpectedly nil")
-            return
-        }
-
-        Logger.debug("keyboardEndFrame: \(keyboardEndFrame)")
-        let totalInset = kDefaultCaptionViewBottomInset + keyboardEndFrame.size.height
-        captionViewBottomConstraint.constant = -totalInset
-
-        captionView.superview?.layoutIfNeeded()
-//
-//        UIEdgeInsets oldInsets = self.collectionView.contentInset;
-//        UIEdgeInsets newInsets = oldInsets;
+        let bottomToolbarInset = prepDelegate.bottomToolbarInset
+        captionViewBottomConstraint = captionView.autoPinEdge(toSuperviewMargin: .bottom, withInset: bottomToolbarInset)
     }
-
-    let kDefaultCaptionViewBottomInset: CGFloat = 0
-    var captionViewBottomConstraint: NSLayoutConstraint!
 
     override public func viewWillLayoutSubviews() {
         Logger.debug("")
@@ -773,6 +776,14 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         updateMinZoomScaleForSize(view.bounds.size)
 
         ensureAttachmentViewScale(animated: false)
+    }
+
+    // MARK: CaptionView lifts with keyboard
+
+    var captionViewBottomConstraint: NSLayoutConstraint!
+    func update(bottomToolbarInset: CGFloat) {
+        captionViewBottomConstraint.constant = -bottomToolbarInset
+        captionView.superview?.layoutIfNeeded()
     }
 
     // MARK: -
