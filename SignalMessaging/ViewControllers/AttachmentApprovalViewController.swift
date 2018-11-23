@@ -681,7 +681,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - View Lifecycle
+    // MARK: - Subviews
 
     lazy var captionView: CaptionView = {
         return CaptionView(attachmentItem: attachmentItem)
@@ -694,6 +694,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
         return touchInterceptorView
     }()
+
+    // MARK: - View Lifecycle
 
     override public func loadView() {
         self.view = UIView()
@@ -821,6 +823,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     // MARK: CaptionView lifts with keyboard
 
+    var hasLaidOutCaptionView: Bool = false
     var captionViewBottomConstraint: NSLayoutConstraint!
     func updateCaptionViewBottomInset() {
         guard let prepDelegate = self.prepDelegate else {
@@ -828,8 +831,21 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             return
         }
 
-        captionViewBottomConstraint.constant = -prepDelegate.desiredCaptionViewBottomInset
-        captionView.superview?.layoutIfNeeded()
+        let changeBlock = {
+            self.captionViewBottomConstraint.constant = -prepDelegate.desiredCaptionViewBottomInset
+            self.captionView.superview?.layoutIfNeeded()
+        }
+
+        // To avoid an animation glitch, we apply this update without animation before initial
+        // appearance. But after that, we want to apply the constraint change within the existing
+        // animation context, since we call this while handling a UIKeyboard notification, which
+        // allows us to slide up the CaptionView in lockstep with the keyboard.
+        if hasLaidOutCaptionView {
+            changeBlock()
+        } else {
+            hasLaidOutCaptionView = true
+            UIView.performWithoutAnimation { changeBlock() }
+        }
     }
 
     // MARK: - Event Handlers
