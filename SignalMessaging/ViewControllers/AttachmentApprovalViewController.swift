@@ -718,9 +718,51 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         // 1. when no keyboard is popped (e.g. initially) to be *just* above the rail
         // 2. when the CaptionTextView is first responder, to be *just* above the keyboard
         // 3. when the MessageTextView is first responder, to be behind the keyboard
-        captionView.autoPinEdge(toSuperviewMargin: .bottom, withInset: 136)
+        captionViewBottomConstraint = captionView.autoPinEdge(toSuperviewMargin: .bottom, withInset: kDefaultCaptionViewBottomInset)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(notification:)), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
     }
 
+    @objc
+    func keyboardWillChangeFrame(notification: Notification) {
+        Logger.debug("")
+
+        //        NSDictionary *userInfo = [notification userInfo];
+        guard let userInfo = notification.userInfo else {
+            owsFailDebug("userInfo was unexpectedly nil")
+            return
+        }
+
+//        NSValue *_Nullable keyboardBeginFrameValue = userInfo[UIKeyboardFrameBeginUserInfoKey];
+//        if (!keyboardBeginFrameValue) {
+//            OWSFailDebug(@"Missing keyboard begin frame");
+//            return;
+//        }
+//
+//        NSValue *_Nullable keyboardEndFrameValue = userInfo[UIKeyboardFrameEndUserInfoKey];
+//        if (!keyboardEndFrameValue) {
+//            OWSFailDebug(@"Missing keyboard end frame");
+//            return;
+//        }
+//
+//        CGRect keyboardEndFrame = [keyboardEndFrameValue CGRectValue];
+
+        guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
+            owsFailDebug("keyboardEndFrame was unexpectedly nil")
+            return
+        }
+
+        Logger.debug("keyboardEndFrame: \(keyboardEndFrame)")
+        let totalInset = kDefaultCaptionViewBottomInset + keyboardEndFrame.size.height
+        captionViewBottomConstraint.constant = -totalInset
+
+        captionView.superview?.layoutIfNeeded()
+//
+//        UIEdgeInsets oldInsets = self.collectionView.contentInset;
+//        UIEdgeInsets newInsets = oldInsets;
+    }
+
+    let kDefaultCaptionViewBottomInset: CGFloat = 0
     var captionViewBottomConstraint: NSLayoutConstraint!
 
     override public func viewWillLayoutSubviews() {
