@@ -989,10 +989,7 @@ class BottomToolView: UIView {
         stackView.axis = .vertical
 
         addSubview(stackView)
-        stackView.autoPinEdge(toSuperviewEdge: .leading)
-        stackView.autoPinEdge(toSuperviewEdge: .trailing)
-        stackView.autoPinEdge(toSuperviewEdge: .top)
-        stackView.autoPinEdge(toSuperviewMargin: .bottom)
+        stackView.autoPinEdgesToSuperviewEdges()
     }
 
     required init?(coder aDecoder: NSCoder) {
