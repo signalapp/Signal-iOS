@@ -551,6 +551,14 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
         self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: attachmentItem.attachment)
     }
 
+//    func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView) {
+//        self.touchInterceptorView.isHidden = false
+//    }
+//
+//    func prepViewController(_ prepViewController: AttachmentPrepViewController, didEndEditingCaptionView captionView: CaptionView) {
+//        self.touchInterceptorView.isHidden = true
+//    }
+
     var bottomToolbarInset: CGFloat {
         return lastKnownBottomToolbarInset
     }
@@ -602,6 +610,9 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
 protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem)
 
+//    func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView)
+//    func prepViewController(_ prepViewController: AttachmentPrepViewController, didEndEditingCaptionView captionView: CaptionView)
+
     var bottomToolbarInset: CGFloat { get }
 }
 
@@ -644,6 +655,15 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     lazy var captionView: CaptionView = {
         return CaptionView(attachmentItem: attachmentItem)
+    }()
+
+    lazy var touchInterceptorView: UIView = {
+        let touchInterceptorView = UIView()
+        touchInterceptorView.backgroundColor = UIColor.yellow.withAlphaComponent(0.6)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapTouchInterceptorView(gesture:)))
+        touchInterceptorView.addGestureRecognizer(tapGesture)
+
+        return touchInterceptorView
     }()
 
     override public func loadView() {
@@ -749,6 +769,10 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
         // Caption
 
+        view.addSubview(touchInterceptorView)
+        touchInterceptorView.autoPinEdgesToSuperviewEdges()
+        touchInterceptorView.isHidden = true
+
         view.addSubview(captionView)
         captionView.delegate = self
 
@@ -786,14 +810,20 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         captionView.superview?.layoutIfNeeded()
     }
 
-    // MARK: -
+    // MARK: - Event Handlers
 
-    @objc public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
+    @objc
+    func didTapTouchInterceptorView(gesture: UITapGestureRecognizer) {
+        Logger.info("")
+        captionView.endEditing()
+        touchInterceptorView.isHidden = true
+    }
+
+    @objc
+    public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
         assert(self.videoPlayer != nil)
         self.pauseVideo()
     }
-
-    // MARK: - Event Handlers
 
     @objc
     public func playButtonTapped() {
@@ -945,6 +975,21 @@ extension AttachmentPrepViewController: CaptionViewDelegate {
         attachment.captionText = captionText
         prepDelegate?.prepViewController(self, didUpdateCaptionForAttachmentItem: attachmentItem)
     }
+
+    func captionViewDidBeginEditing(_ captionView: CaptionView) {
+        // Don't allow user to pan until they've dismissed the keyboard.
+        // This avoids a really ugly animation from  simultaneously dismissing the keyboard
+        // while loading a new PrepViewController, and it's CaptionView, whose layout depends
+        // on the keyboard's position.
+        self.touchInterceptorView.isHidden = false
+        //self.prepDelegate?.prepViewController(self, didBeginEditingCaptionView: captionView)
+    }
+
+    func captionViewDidEndEditing(_ captionView: CaptionView) {
+        self.touchInterceptorView.isHidden = true
+
+//        self.prepDelegate?.prepViewController(self, didEndEditingCaptionView: captionView)
+    }
 }
 
 extension AttachmentPrepViewController: UIScrollViewDelegate {
@@ -1062,6 +1107,8 @@ class BottomToolView: UIView {
 
 protocol CaptionViewDelegate: class {
     func captionView(_ captionView: CaptionView, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem)
+    func captionViewDidBeginEditing(_ captionView: CaptionView)
+    func captionViewDidEndEditing(_ captionView: CaptionView)
 }
 
 class CaptionView: UIView {
@@ -1113,7 +1160,12 @@ class CaptionView: UIView {
 
     // MARK: 
 
+    func endEditing() {
+        textView.resignFirstResponder()
+    }
+
     override var inputAccessoryView: UIView? {
+        // Don't inherit the vc's inputAccessoryView
         return nil
     }
 
@@ -1169,10 +1221,12 @@ class CaptionView: UIView {
 extension CaptionView: UITextViewDelegate {
     public func textViewDidBeginEditing(_ textView: UITextView) {
         updatePlaceholderTextViewVisibility()
+        delegate?.captionViewDidBeginEditing(self)
     }
 
     public func textViewDidEndEditing(_ textView: UITextView) {
         updatePlaceholderTextViewVisibility()
+        delegate?.captionViewDidEndEditing(self)
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
