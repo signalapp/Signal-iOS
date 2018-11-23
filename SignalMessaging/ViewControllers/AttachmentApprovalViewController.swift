@@ -235,7 +235,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return true
     }
 
-    var lastKnownBottomToolbarInset: CGFloat = 0
+    var lastObservedKeyboardHeight: CGFloat = 0
 
     @objc
     func keyboardWillChangeFrame(notification: Notification) {
@@ -252,7 +252,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
 
-        lastKnownBottomToolbarInset = keyboardEndFrame.size.height
+        lastObservedKeyboardHeight = keyboardEndFrame.size.height
 
         viewControllers?.forEach { viewController in
             guard let prepViewController = viewController as? AttachmentPrepViewController else {
@@ -260,7 +260,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                 return
             }
 
-            prepViewController.update(bottomToolbarInset: lastKnownBottomToolbarInset)
+            prepViewController.updateCaptionViewBottomInset()
         }
     }
 
@@ -355,6 +355,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // use compact scale when keyboard is popped.
             let scale: AttachmentPrepViewController.AttachmentViewScale = self.isFirstResponder ? .fullsize : .compact
             pendingPage.setAttachmentViewScale(scale, animated: false)
+            pendingPage.updateCaptionViewBottomInset()
         }
     }
 
@@ -565,8 +566,21 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
         enablePaging()
     }
 
-    var bottomToolbarInset: CGFloat {
-        return lastKnownBottomToolbarInset
+    var desiredCaptionViewBottomInset: CGFloat {
+        // CaptionView bottom offset scenarios:
+        //
+        // 1. when no keyboard is popped (e.g. initially) to be *just* above the rail
+        // 2. when the CaptionView becomes first responder, to be *just* above the keyboard, so the
+        //    user can see what they're typing.
+        //
+        // For these cases we apply the observed `lastKnownBottomToolbar
+        guard bottomToolView.mediaMessageTextToolbar.textView.isFirstResponder else {
+            return lastObservedKeyboardHeight
+        }
+
+        // 3. when the MessageTextView becomes first responder, the keyboard should shift up
+        //    "in front" of the CaptionView
+        return 0
     }
 
     // MARK: Helpers
@@ -629,7 +643,7 @@ protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView)
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didEndEditingCaptionView captionView: CaptionView)
 
-    var bottomToolbarInset: CGFloat { get }
+    var desiredCaptionViewBottomInset: CGFloat { get }
 }
 
 public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
@@ -792,19 +806,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         captionView.delegate = self
 
         captionView.autoPinWidthToSuperview()
-
-        // MJK TODO ideal CaptionView placement
-        // 1. when no keyboard is popped (e.g. initially) to be *just* above the rail
-        // 2. when the CaptionTextView is first responder, to be *just* above the keyboard
-        // 3. when the MessageTextView is first responder, to be behind the keyboard
-
-        guard let prepDelegate = self.prepDelegate else {
-            owsFailDebug("prepDelegate was unexpectedly nil")
-            return
-        }
-
-        let bottomToolbarInset = prepDelegate.bottomToolbarInset
-        captionViewBottomConstraint = captionView.autoPinEdge(toSuperviewMargin: .bottom, withInset: bottomToolbarInset)
+        captionViewBottomConstraint = captionView.autoPinEdge(toSuperviewMargin: .bottom)
     }
 
     override public func viewWillLayoutSubviews() {
@@ -820,8 +822,13 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     // MARK: CaptionView lifts with keyboard
 
     var captionViewBottomConstraint: NSLayoutConstraint!
-    func update(bottomToolbarInset: CGFloat) {
-        captionViewBottomConstraint.constant = -bottomToolbarInset
+    func updateCaptionViewBottomInset() {
+        guard let prepDelegate = self.prepDelegate else {
+            owsFailDebug("prepDelegate was unexpectedly nil")
+            return
+        }
+
+        captionViewBottomConstraint.constant = -prepDelegate.desiredCaptionViewBottomInset
         captionView.superview?.layoutIfNeeded()
     }
 
@@ -1294,7 +1301,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
     weak var mediaMessageTextToolbarDelegate: MediaMessageTextToolbarDelegate?
     private let addMoreButton: UIButton
     private let sendButton: UIButton
-    private let textView: UITextView
+    let textView: UITextView
 
     var messageText: String? {
         get { return self.textView.text }
