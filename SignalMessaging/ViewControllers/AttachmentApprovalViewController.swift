@@ -167,6 +167,78 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return bottomToolView
     }()
 
+//        - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+//    {
+//    UIView *hitView = [super hitTest:point withEvent:event];
+//
+//    // If the hitView is THIS view, return the view that you want to receive the touch instead:
+//    if (hitView == self) {
+//    return otherView;
+//    }
+//    // Else return the hitView (as it could be one of this view's buttons):
+//    return hitView;
+//    }
+//
+
+//    protocol TouchInterceptorViewDelegate: class {
+//
+//    }
+    class TouchInterceptorView: UIView {
+//        weak var delegate: TouchInterceptorViewDelegate?
+
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+
+//            let touchInterceptorView = TouchInterceptorView()
+//            touchInterceptorView.backgroundColor = UIColor.yellow.withAlphaComponent(0.6)
+//            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(gesture:)))
+//            touchInterceptorView.addGestureRecognizer(tapGesture)
+        }
+
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        // MARK: -
+
+        var deadZoneView: UIView?
+
+        override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+            guard let deadZoneView = self.deadZoneView else {
+                return super.hitTest(point, with: event)
+            }
+
+            guard !self.isHidden else {
+                return super.hitTest(point, with: event)
+            }
+
+            let convertedPoint = deadZoneView.convert(point, from: self)
+            if deadZoneView.point(inside: convertedPoint, with: event) {
+                return deadZoneView
+            } else {
+                return super.hitTest(point, with: event)
+            }
+        }
+    }
+
+    lazy var touchInterceptorView: TouchInterceptorView = {
+        let touchInterceptorView = TouchInterceptorView()
+        touchInterceptorView.backgroundColor = UIColor.yellow.withAlphaComponent(0.6)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapTouchInterceptorView(gesture:)))
+        touchInterceptorView.addGestureRecognizer(tapGesture)
+
+        return touchInterceptorView
+    }()
+
+    @objc
+    func didTapTouchInterceptorView(gesture: UITapGestureRecognizer) {
+        let point = gesture.location(in: currentPageController.captionView)
+        guard point
+        Logger.info("")
+        self.becomeFirstResponder()
+        touchInterceptorView.isHidden = true
+    }
+
     // MARK: - View Lifecycle
 
     override public func viewDidLoad() {
@@ -202,6 +274,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                                                selector: #selector(keyboardWillChangeFrame(notification:)),
                                                name: .UIKeyboardWillChangeFrame,
                                                object: nil)
+
+        view.addSubview(touchInterceptorView)
+        touchInterceptorView.autoPinEdgesToSuperviewEdges()
+        touchInterceptorView.isHidden = true
+        touchInterceptorView.deadZoneView = currentPageController.captionView
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -551,13 +628,13 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
         self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: attachmentItem.attachment)
     }
 
-//    func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView) {
-//        self.touchInterceptorView.isHidden = false
-//    }
-//
-//    func prepViewController(_ prepViewController: AttachmentPrepViewController, didEndEditingCaptionView captionView: CaptionView) {
-//        self.touchInterceptorView.isHidden = true
-//    }
+    func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView) {
+        self.touchInterceptorView.isHidden = false
+    }
+
+    func prepViewController(_ prepViewController: AttachmentPrepViewController, didEndEditingCaptionView captionView: CaptionView) {
+        self.touchInterceptorView.isHidden = true
+    }
 
     var bottomToolbarInset: CGFloat {
         return lastKnownBottomToolbarInset
@@ -610,8 +687,8 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
 protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem)
 
-//    func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView)
-//    func prepViewController(_ prepViewController: AttachmentPrepViewController, didEndEditingCaptionView captionView: CaptionView)
+    func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView)
+    func prepViewController(_ prepViewController: AttachmentPrepViewController, didEndEditingCaptionView captionView: CaptionView)
 
     var bottomToolbarInset: CGFloat { get }
 }
@@ -657,14 +734,14 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         return CaptionView(attachmentItem: attachmentItem)
     }()
 
-    lazy var touchInterceptorView: UIView = {
-        let touchInterceptorView = UIView()
-        touchInterceptorView.backgroundColor = UIColor.yellow.withAlphaComponent(0.6)
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapTouchInterceptorView(gesture:)))
-        touchInterceptorView.addGestureRecognizer(tapGesture)
-
-        return touchInterceptorView
-    }()
+//    lazy var touchInterceptorView: UIView = {
+//        let touchInterceptorView = UIView()
+//        touchInterceptorView.backgroundColor = UIColor.yellow.withAlphaComponent(0.6)
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapTouchInterceptorView(gesture:)))
+//        touchInterceptorView.addGestureRecognizer(tapGesture)
+//
+//        return touchInterceptorView
+//    }()
 
     override public func loadView() {
         self.view = UIView()
@@ -769,9 +846,9 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
         // Caption
 
-        view.addSubview(touchInterceptorView)
-        touchInterceptorView.autoPinEdgesToSuperviewEdges()
-        touchInterceptorView.isHidden = true
+//        view.addSubview(touchInterceptorView)
+//        touchInterceptorView.autoPinEdgesToSuperviewEdges()
+//        touchInterceptorView.isHidden = true
 
         view.addSubview(captionView)
         captionView.delegate = self
@@ -812,12 +889,12 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     // MARK: - Event Handlers
 
-    @objc
-    func didTapTouchInterceptorView(gesture: UITapGestureRecognizer) {
-        Logger.info("")
-        captionView.endEditing()
-        touchInterceptorView.isHidden = true
-    }
+//    @objc
+//    func didTapTouchInterceptorView(gesture: UITapGestureRecognizer) {
+//        Logger.info("")
+//        captionView.endEditing()
+//        touchInterceptorView.isHidden = true
+//    }
 
     @objc
     public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
@@ -981,14 +1058,14 @@ extension AttachmentPrepViewController: CaptionViewDelegate {
         // This avoids a really ugly animation from  simultaneously dismissing the keyboard
         // while loading a new PrepViewController, and it's CaptionView, whose layout depends
         // on the keyboard's position.
-        self.touchInterceptorView.isHidden = false
-        //self.prepDelegate?.prepViewController(self, didBeginEditingCaptionView: captionView)
+//        self.touchInterceptorView.isHidden = false
+        self.prepDelegate?.prepViewController(self, didBeginEditingCaptionView: captionView)
     }
 
     func captionViewDidEndEditing(_ captionView: CaptionView) {
-        self.touchInterceptorView.isHidden = true
+//        self.touchInterceptorView.isHidden = true
 
-//        self.prepDelegate?.prepViewController(self, didEndEditingCaptionView: captionView)
+        self.prepDelegate?.prepViewController(self, didEndEditingCaptionView: captionView)
     }
 }
 
