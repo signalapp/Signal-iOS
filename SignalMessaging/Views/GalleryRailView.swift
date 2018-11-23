@@ -118,7 +118,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
     // MARK: Public
 
-    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?) {
+    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?, cellViewDecoratorBlock: (GalleryRailCellView) -> Void) {
         let animationDuration: TimeInterval = 0.2
 
         guard let itemProvider = itemProvider else {
@@ -169,7 +169,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
             self.isHidden = false
         }
 
-        let cellViews = buildCellViews(items: itemProvider.railItems)
+        let cellViews = buildCellViews(items: itemProvider.railItems, cellViewDecoratorBlock: cellViewDecoratorBlock)
         self.cellViews = cellViews
         let stackView = UIStackView(arrangedSubviews: cellViews)
         stackView.axis = .horizontal
@@ -203,10 +203,11 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         return scrollView
     }()
 
-    private func buildCellViews(items: [GalleryRailItem]) -> [GalleryRailCellView] {
+    private func buildCellViews(items: [GalleryRailItem], cellViewDecoratorBlock: (GalleryRailCellView) -> Void) -> [GalleryRailCellView] {
         return items.map { item in
             let cellView = GalleryRailCellView()
             cellView.configure(item: item, delegate: self)
+            cellViewDecoratorBlock(cellView)
             return cellView
         }
     }

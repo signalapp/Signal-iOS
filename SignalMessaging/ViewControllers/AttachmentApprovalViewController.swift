@@ -263,29 +263,27 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         })
     }
 
-    func addDeleteIcon(cellViews: [GalleryRailCellView]) {
-        for cellView in cellViews {
-            guard let attachmentItem = cellView.item as? SignalAttachmentItem else {
-                owsFailDebug("attachmentItem was unexpectedly nil")
-                return
-            }
-
-            let button = OWSButton { [weak self] in
-                guard let strongSelf = self else { return }
-                strongSelf.remove(attachmentItem: attachmentItem)
-            }
-            button.setImage(#imageLiteral(resourceName: "ic_small_x"), for: .normal)
-
-            let kInsetDistance: CGFloat = 5
-            button.imageEdgeInsets = UIEdgeInsets(top: kInsetDistance, left: kInsetDistance, bottom: kInsetDistance, right: kInsetDistance)
-
-            cellView.addSubview(button)
-
-            let kButtonWidth: CGFloat = 9 + kInsetDistance * 2
-            button.autoSetDimensions(to: CGSize(width: kButtonWidth, height: kButtonWidth))
-            button.autoPinEdge(toSuperviewMargin: .top)
-            button.autoPinEdge(toSuperviewMargin: .trailing)
+    func addDeleteIcon(cellView: GalleryRailCellView) {
+        guard let attachmentItem = cellView.item as? SignalAttachmentItem else {
+            owsFailDebug("attachmentItem was unexpectedly nil")
+            return
         }
+
+        let button = OWSButton { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.remove(attachmentItem: attachmentItem)
+        }
+        button.setImage(#imageLiteral(resourceName: "ic_small_x"), for: .normal)
+
+        let kInsetDistance: CGFloat = 5
+        button.imageEdgeInsets = UIEdgeInsets(top: kInsetDistance, left: kInsetDistance, bottom: kInsetDistance, right: kInsetDistance)
+
+        cellView.addSubview(button)
+
+        let kButtonWidth: CGFloat = 9 + kInsetDistance * 2
+        button.autoSetDimensions(to: CGSize(width: kButtonWidth, height: kButtonWidth))
+        button.autoPinEdge(toSuperviewMargin: .top)
+        button.autoPinEdge(toSuperviewMargin: .trailing)
     }
 
     var pagerScrollView: UIScrollView?
@@ -428,8 +426,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
 
-        galleryRailView.configureCellViews(itemProvider: attachmentItemCollection, focusedItem: currentItem)
-        addDeleteIcon(cellViews: galleryRailView.cellViews)
+        let cellViewDecoratorBlock = { (cellView: GalleryRailCellView) in
+            self.addDeleteIcon(cellView: cellView)
+        }
+        galleryRailView.configureCellViews(itemProvider: attachmentItemCollection,
+                                           focusedItem: currentItem,
+                                           cellViewDecoratorBlock: cellViewDecoratorBlock)
 
         galleryRailView.isHidden = attachmentItemCollection.attachmentItems.count < 2
     }

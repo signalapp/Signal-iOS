@@ -331,7 +331,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
 
-        galleryRailView.configureCellViews(itemProvider: currentItem.album, focusedItem: currentItem)
+        galleryRailView.configureCellViews(itemProvider: currentItem.album, focusedItem: currentItem, cellViewDecoratorBlock: { _ in })
     }
 
     // MARK: Actions
