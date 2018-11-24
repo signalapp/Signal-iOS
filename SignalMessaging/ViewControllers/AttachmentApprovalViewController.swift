@@ -145,7 +145,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             owsFailDebug("navigationBar was nil or unexpected class")
             return navController
         }
-        navigationBar.makeClear()
+        navigationBar.overrideTheme(type: .clear)
 
         return navController
     }
@@ -247,6 +247,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         super.viewWillAppear(animated)
 
         CurrentAppContext().setStatusBarHidden(true, animated: animated)
+
+        guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else {
+            owsFailDebug("navigationBar was nil or unexpected class")
+            return
+        }
+        navigationBar.overrideTheme(type: .clear)
     }
 
     override public func viewDidAppear(_ animated: Bool) {

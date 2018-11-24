@@ -59,14 +59,11 @@ public class OWSNavigationBar: UINavigationBar {
 
     private func applyTheme() {
         guard respectsTheme else {
-            removeBlurEffectView()
-
-            self.setBackgroundImage(nil, for: .default)
             return
         }
 
         if UIAccessibilityIsReduceTransparencyEnabled() {
-            removeBlurEffectView()
+            blurEffectView?.isHidden = true
             let color = Theme.navbarBackgroundColor
             let backgroundImage = UIImage(color: color)
             self.setBackgroundImage(backgroundImage, for: .default)
@@ -189,38 +186,37 @@ public class OWSNavigationBar: UINavigationBar {
         }
     }
 
-    // MARK: 
+    // MARK: Override Theme
 
     @objc
-    public func makeClear() {
-        self.backgroundColor = .clear
-        // Making a toolbar transparent requires setting an empty uiimage
-        self.setBackgroundImage(UIImage(), for: .default)
-        self.shadowImage = UIImage()
-        self.clipsToBounds = true
-        removeBlurEffectView()
+    public enum NavigationBarThemeOverride: Int {
+        case clear, alwaysDark
     }
 
-    // MARK:
+    @objc
+    public func overrideTheme(type: NavigationBarThemeOverride) {
+        respectsTheme = false
 
-    private func removeBlurEffectView() {
-        // Avoid crash on iOS 10.3.3 and iOS 9.4.
-        //
-        // Last Exception Backtrace:
-        // 0   CoreFoundation                    0x1b6bfb38 __exceptionPreprocess + 124 (NSException.m:165)
-        // 1   libobjc.A.dylib                   0x1a947062 objc_exception_throw + 34 (objc-exception.mm:521)
-        // 2   CoreFoundation                    0x1b6bfa80 +[NSException raise:format:] + 104 (NSException.m:140)
-        // 3   UIKit                             0x20bfc9fe -[UINavigationBar removeConstraint:] + 84 (UINavigationBar.m:4618)
-        // 4   UIKit                             0x208ee3d4 _UIViewRemoveConstraintsMadeDanglyByChangingSuperview + 534 // (NSLayoutConstraint_UIKitAdditions.m:4716)
-        // 5   UIKit                             0x208ede90 __45-[UIView(Hierarchy) _postMovedFromSuperview:]_block_invoke + 40 // (UIView.m:9467)
-        // 6   UIKit                             0x208edd6c -[UIView(Hierarchy) _postMovedFromSuperview:] + 710 (UIView.m:361)
-        // 7   UIKit                             0x20bd19e8 __UIViewWasRemovedFromSuperview + 154 (UIView.m:8889)
-        // 8   UIKit                             0x208ecf6a -[UIView(Hierarchy) removeFromSuperview] + 528 (UIView.m:8961)
-        // 9   SignalMessaging                   0x1d42b64 OWSNavigationBar.applyTheme() + 218 (OWSNavigationBar.swift:62)
-        if #available(iOS 11, *) {
-            self.blurEffectView?.removeFromSuperview()
-        } else {
-            self.blurEffectView?.isHidden = true
+        barStyle = .black
+        titleTextAttributes = [NSAttributedStringKey.foregroundColor: Theme.darkThemePrimaryColor]
+        barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
+        tintColor = Theme.darkThemePrimaryColor
+
+        switch type {
+        case .clear:
+            blurEffectView?.isHidden = true
+            clipsToBounds = true
+
+            // Making a toolbar transparent requires setting an empty uiimage
+            setBackgroundImage(UIImage(), for: .default)
+            shadowImage = UIImage()
+            backgroundColor = .clear
+        case .alwaysDark:
+            blurEffectView?.isHidden = false
+            clipsToBounds = false
+
+            setBackgroundImage(nil, for: .default)
+            shadowImage = nil
         }
     }
 }

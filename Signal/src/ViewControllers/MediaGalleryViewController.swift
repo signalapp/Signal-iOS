@@ -291,11 +291,7 @@ class MediaGalleryNavigationController: OWSNavigationController {
             return
         }
 
-        navigationBar.respectsTheme = false
-        navigationBar.barStyle = .black
-        navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: Theme.darkThemePrimaryColor]
-        navigationBar.barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
-        navigationBar.tintColor = Theme.darkThemePrimaryColor
+        navigationBar.overrideTheme(type: .alwaysDark)
     }
 
     override func viewDidAppear(_ animated: Bool) {
