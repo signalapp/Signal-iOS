@@ -1168,8 +1168,22 @@ class CaptionView: UIView {
     private let kMinTextViewHeight: CGFloat = 38
     private var textViewHeightConstraint: NSLayoutConstraint!
 
-    // TODO show length limit label
-    private let lengthLimitLabel: UILabel = UILabel()
+    private lazy var lengthLimitLabel: UILabel = {
+        let lengthLimitLabel = UILabel()
+
+        // Length Limit Label shown when the user inputs too long of a message
+        lengthLimitLabel.textColor = .white
+        lengthLimitLabel.text = NSLocalizedString("ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED", comment: "One-line label indicating the user can add no more text to the attachment caption.")
+        lengthLimitLabel.textAlignment = .center
+
+        // Add shadow in case overlayed on white content
+        lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
+        lengthLimitLabel.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        lengthLimitLabel.layer.shadowOpacity = 0.8
+        lengthLimitLabel.isHidden = true
+
+        return lengthLimitLabel
+    }()
 
     // MARK: Initializers
 
@@ -1196,6 +1210,13 @@ class CaptionView: UIView {
 
         addSubview(hStack)
         hStack.autoPinEdgesToSuperviewMargins()
+
+        addSubview(lengthLimitLabel)
+        lengthLimitLabel.autoPinEdge(toSuperviewMargin: .left)
+        lengthLimitLabel.autoPinEdge(toSuperviewMargin: .right)
+        lengthLimitLabel.autoPinEdge(.bottom, to: .top, of: textView, withOffset: -9)
+        lengthLimitLabel.setContentHuggingHigh()
+        lengthLimitLabel.setCompressionResistanceHigh()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -1285,6 +1306,7 @@ class CaptionView: UIView {
     }()
 }
 
+let kMaxCaptionCharacterCount = 240
 extension CaptionView: UITextViewDelegate {
     public func textViewDidBeginEditing(_ textView: UITextView) {
         updatePlaceholderTextViewVisibility()
@@ -1306,8 +1328,9 @@ extension CaptionView: UITextViewDelegate {
         let existingText: String = textView.text ?? ""
         let proposedText: String = (existingText as NSString).replacingCharacters(in: range, with: text)
 
-        guard proposedText.utf8.count <= kOversizeTextMessageSizeThreshold else {
-            Logger.debug("long text was truncated")
+        let kMaxCaptionByteCount = kOversizeTextMessageSizeThreshold / 4
+        guard proposedText.utf8.count <= kMaxCaptionByteCount else {
+            Logger.debug("hit caption byte count limit")
             self.lengthLimitLabel.isHidden = false
 
             // `range` represents the section of the existing text we will replace. We can re-use that space.
@@ -1324,16 +1347,29 @@ extension CaptionView: UITextViewDelegate {
 
             return false
         }
-        self.lengthLimitLabel.isHidden = true
 
-        // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
-        // allows the user to get the keyboard out of the way while in the attachment approval view.
-        if text == "\n" {
-            textView.resignFirstResponder()
+        // After verifying the byte-length is sufficiently small, verify the character count is within bounds.
+        // Normally this character count should entail *much* less byte count.
+        guard proposedText.count <= kMaxCaptionCharacterCount else {
+            Logger.debug("hit caption character count limit")
+
+            self.lengthLimitLabel.isHidden = false
+
+            // `range` represents the section of the existing text we will replace. We can re-use that space.
+            let charsAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").count
+
+            // Accept as much of the input as we can
+            let charBudget: Int = Int(kMaxCaptionCharacterCount) - charsAfterDelete
+            if charBudget >= 0 {
+                let acceptableNewText = String(text.prefix(charBudget))
+                textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
+            }
+
             return false
-        } else {
-            return true
         }
+
+        self.lengthLimitLabel.isHidden = true
+        return true
     }
 
     public func textViewDidChange(_ textView: UITextView) {
@@ -1360,7 +1396,22 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
         set { self.textView.text = newValue }
     }
 
-    private let lengthLimitLabel: UILabel = UILabel()
+    private lazy var lengthLimitLabel: UILabel = {
+        let lengthLimitLabel = UILabel()
+
+        // Length Limit Label shown when the user inputs too long of a message
+        lengthLimitLabel.textColor = .white
+        lengthLimitLabel.text = NSLocalizedString("ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED", comment: "One-line label indicating the user can add no more text to the media message field.")
+        lengthLimitLabel.textAlignment = .center
+
+        // Add shadow in case overlayed on white content
+        lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
+        lengthLimitLabel.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        lengthLimitLabel.layer.shadowOpacity = 0.8
+        lengthLimitLabel.isHidden = true
+
+        return lengthLimitLabel
+    }()
 
     // Layout Constants
 
@@ -1436,17 +1487,6 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
 
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
-
-        // Length Limit Label shown when the user inputs too long of a message
-        lengthLimitLabel.textColor = .white
-        lengthLimitLabel.text = NSLocalizedString("ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED", comment: "One-line label indicating the user can add no more text to the attachment caption.")
-        lengthLimitLabel.textAlignment = .center
-
-        // Add shadow in case overlayed on white content
-        lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
-        lengthLimitLabel.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
-        lengthLimitLabel.layer.shadowOpacity = 0.8
-        self.lengthLimitLabel.isHidden = true
 
         let contentView = UIView()
         contentView.addSubview(sendButton)
