@@ -322,6 +322,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     var lastObservedKeyboardHeight: CGFloat = 0
+    var firstObservedKeyboardHeight: CGFloat?
 
     @objc
     func keyboardWillShow(notification: Notification) {
@@ -343,6 +344,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
 
         lastObservedKeyboardHeight = keyboardEndFrame.size.height
+        if firstObservedKeyboardHeight == nil {
+            firstObservedKeyboardHeight = keyboardEndFrame.size.height
+        }
 
         viewControllers?.forEach { viewController in
             guard let prepViewController = viewController as? AttachmentPrepViewController else {
@@ -699,6 +703,16 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
         //
         // For these cases we apply the observed `lastKnownBottomToolbar
         guard bottomToolView.mediaMessageTextToolbar.textView.isFirstResponder else {
+            // 3. between dismissing the CaptionView and the ViewController regaining first
+            //    responder there is an instant where the lastObservedKeyboardHeight is effectively
+            //    0. Rather than animate the CaptionView all the way to the bottom screen edge, and
+            //    then immediately back up as the inputAccessoryView becomes visible, we never inset
+            //    the CaptionView nearer to the bottom edge than it's initial position, which should
+            //    be the height of the inputAccessoryView.
+            if let firstObservedKeyboardHeight = firstObservedKeyboardHeight {
+                return max(firstObservedKeyboardHeight, lastObservedKeyboardHeight)
+            }
+
             return lastObservedKeyboardHeight
         }
 
@@ -956,7 +970,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         }
 
         let changeBlock = {
-            self.captionViewBottomConstraint.constant = -prepDelegate.desiredCaptionViewBottomInset
+            let offset: CGFloat = -1 * prepDelegate.desiredCaptionViewBottomInset
+            self.captionViewBottomConstraint.constant = offset
             self.captionView.superview?.layoutIfNeeded()
         }
 
