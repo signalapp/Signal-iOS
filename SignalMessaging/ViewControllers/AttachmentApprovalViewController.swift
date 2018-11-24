@@ -1419,7 +1419,9 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
         textView.textContainerInset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
 
-        addMoreButton.setImage(UIImage(named: "album_add_more"), for: .normal)
+        let addMoreIcon = #imageLiteral(resourceName: "album_add_more").withRenderingMode(.alwaysTemplate)
+        addMoreButton.setImage(addMoreIcon, for: .normal)
+        addMoreButton.tintColor = Theme.darkThemePrimaryColor
         addMoreButton.addTarget(self, action: #selector(didTapAddMore), for: .touchUpInside)
 
         let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
