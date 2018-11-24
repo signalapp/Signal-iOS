@@ -198,100 +198,19 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         self.setCurrentItem(firstItem, direction: .forward, animated: false)
 
-//        NotificationCenter.default.addObserver(self,
-//                                               selector: #selector(keyboardWillChangeFrame(notification:)),
-//                                               name: .UIKeyboardWillChangeFrame,
-//                                               object: nil)
-
-        observers = [
-            NotificationCenter.default.addObserver(forName: .UIKeyboardWillShow, object: nil, queue: nil) { [weak self] notification in
-                guard let strongSelf = self else { return }
-
-                guard let userInfo = notification.userInfo else {
-                    owsFailDebug("userInfo was unexpectedly nil")
-                    return
-                }
-
-                guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
-                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
-                    return
-                }
-
-                guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
-                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
-                    return
-                }
-
-                Logger.debug("UIKeyboardWillShow frame: \(keyboardStartFrame) -> \(keyboardEndFrame)")
-                strongSelf.keyboardWillShow(notification: notification)
-            },
-
-            NotificationCenter.default.addObserver(forName: .UIKeyboardDidShow, object: nil, queue: nil) { [weak self] notification in
-                guard let strongSelf = self else { return }
-
-                guard let userInfo = notification.userInfo else {
-                    owsFailDebug("userInfo was unexpectedly nil")
-                    return
-                }
-
-                guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
-                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
-                    return
-                }
-
-                guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
-                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
-                    return
-                }
-
-                Logger.debug("UIKeyboardDidShow frame: \(keyboardStartFrame) -> \(keyboardEndFrame)")
-                strongSelf.keyboardDidShow(notification: notification)
-            },
-
-            NotificationCenter.default.addObserver(forName: .UIKeyboardWillHide, object: nil, queue: nil) { [weak self] notification in
-                guard let strongSelf = self else { return }
-
-                guard let userInfo = notification.userInfo else {
-                    owsFailDebug("userInfo was unexpectedly nil")
-                    return
-                }
-
-                guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
-                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
-                    return
-                }
-
-                guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
-                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
-                    return
-                }
-
-                Logger.debug("UIKeyboardWillHide frame: \(keyboardStartFrame) -> \(keyboardEndFrame)")
-                strongSelf.keyboardWillHide(notification: notification)
-            }
-
-//            NotificationCenter.default.addObserver(forName: .UIKeyboardDidHide, object: nil, queue: nil) { [weak self] notification in
-//                guard let userInfo = notification.userInfo else {
-//                    owsFailDebug("userInfo was unexpectedly nil")
-//                    return
-//                }
-//
-//                guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
-//                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
-//                    return
-//                }
-//
-//                guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
-//                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
-//                    return
-//                }
-//
-//                Logger.debug("UIKeyboardDidHide frame: \(keyboardStartFrame) -> \(keyboardEndFrame)")
-//            },
-        ]
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillShow(notification:)),
+                                               name: .UIKeyboardWillShow,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardDidShow(notification:)),
+                                               name: .UIKeyboardDidShow,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillHide(notification:)),
+                                               name: .UIKeyboardWillHide,
+                                               object: nil)
     }
-
-    var observers: [NSObjectProtocol] = []
 
     override public func viewWillAppear(_ animated: Bool) {
         Logger.debug("")
@@ -325,39 +244,20 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     var lastObservedKeyboardHeight: CGFloat = 0
-    var firstObservedKeyboardHeight: CGFloat?
     var inputAccessorySnapshotView: UIView?
 
     @objc
     func keyboardDidShow(notification: Notification) {
-        if self.isFirstResponder {
-            if self.inputAccessorySnapshotView != nil {
-                removeToolbarSnapshot()
-            } else {
-                Logger.verbose("nothing to remove")
-            }
-        } else {
-            if self.inputAccessorySnapshotView == nil {
-                // addToolbarSnapshot()
-                Logger.verbose("no-op")
-            } else {
-                Logger.verbose("nothing to show")
-            }
+        // If this is a result of the vc becoming first responder, they keyboard isn't actually
+        // showing, rather the inputAccessoryView is now showing, so we want to remove any
+        // previously added toolbar snapshot.
+        if isFirstResponder, inputAccessorySnapshotView != nil {
+            removeToolbarSnapshot()
         }
     }
 
     @objc
     func keyboardWillShow(notification: Notification) {
-        if self.isFirstResponder {
-            Logger.verbose("no-op")
-        } else {
-            if self.inputAccessorySnapshotView == nil {
-//                addToolbarSnapshot()
-                Logger.verbose("no-op")
-            } else {
-                Logger.verbose("nothing to show")
-            }
-        }
         guard let userInfo = notification.userInfo else {
             owsFailDebug("userInfo was unexpectedly nil")
             return
@@ -374,11 +274,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
-
         lastObservedKeyboardHeight = keyboardEndFrame.size.height
-        if firstObservedKeyboardHeight == nil {
-            firstObservedKeyboardHeight = keyboardEndFrame.size.height
-        }
 
         viewControllers?.forEach { viewController in
             guard let prepViewController = viewController as? AttachmentPrepViewController else {
@@ -713,7 +609,7 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     }
 
     func prepViewController(_ prepViewController: AttachmentPrepViewController, willBeginEditingCaptionView captionView: CaptionView) {
-        addToolbarSnapshot()
+        addInputAccessorySnapshot()
     }
 
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView) {
@@ -726,7 +622,7 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
         disablePaging()
     }
 
-    func addToolbarSnapshot() {
+    func addInputAccessorySnapshot() {
         assert(inputAccessorySnapshotView == nil)
         // To fix a layout glitch where the snapshot view is 1/2 the width of the screen, it's key
         // that we use `bottomToolView` and not `inputAccessoryView` which can trigger a layout of
@@ -771,18 +667,13 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
             //    responder there is an instant where the lastObservedKeyboardHeight is effectively
             //    0. Rather than animate the CaptionView all the way to the bottom screen edge, and
             //    then immediately back up as the inputAccessoryView becomes visible, we never inset
-            //    the CaptionView nearer to the bottom edge than it's initial position, which should
-            //    be the height of the inputAccessoryView.
-            if let firstObservedKeyboardHeight = firstObservedKeyboardHeight {
-                return max(bottomToolView.bounds.height, lastObservedKeyboardHeight)
-            }
-
-            return lastObservedKeyboardHeight
+            //    the CaptionView nearer to the bottom edge than the `bottomToolView.height`
+            return max(bottomToolView.bounds.height, lastObservedKeyboardHeight)
         }
 
-        // 3. when the MessageTextView becomes first responder, the keyboard should shift up
+        // 4. when the MessageTextView becomes first responder, the keyboard should shift up
         //    "in front" of the CaptionView
-        return 0
+        return bottomToolView.bounds.height
     }
 
     // MARK: Helpers
