@@ -306,9 +306,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
 
         lastObservedKeyboardHeight = keyboardEndFrame.size.height
-        if keyboardStartFrame.height == keyboardEndFrame.height {
-            lastObservedKeyboardHeight -= keyboardEndFrame.maxY - keyboardStartFrame.maxY
-        }
+        lastObservedKeyboardHeight -= keyboardEndFrame.maxY - keyboardStartFrame.maxY
 
         viewControllers?.forEach { viewController in
             guard let prepViewController = viewController as? AttachmentPrepViewController else {
@@ -655,6 +653,14 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     }
 
     var desiredCaptionViewBottomInset: CGFloat {
+
+        let safeAreaInset: CGFloat
+        if #available(iOS 11, *) {
+            safeAreaInset = view.safeAreaInsets.bottom
+        } else {
+            safeAreaInset = 0
+        }
+
         // CaptionView bottom offset scenarios:
         //
         // 1. when no keyboard is popped (e.g. initially) to be *just* above the rail
@@ -668,12 +674,12 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
             //    0. Rather than animate the CaptionView all the way to the bottom screen edge, and
             //    then immediately back up as the inputAccessoryView becomes visible, we never inset
             //    the CaptionView nearer to the bottom edge than the `bottomToolView.height`
-            return max(bottomToolView.bounds.height, lastObservedKeyboardHeight)
+            return max(bottomToolView.bounds.height, lastObservedKeyboardHeight) - safeAreaInset
         }
 
         // 4. when the MessageTextView becomes first responder, the keyboard should shift up
         //    "in front" of the CaptionView
-        return bottomToolView.bounds.height
+        return bottomToolView.bounds.height - safeAreaInset
     }
 
     // MARK: Helpers
