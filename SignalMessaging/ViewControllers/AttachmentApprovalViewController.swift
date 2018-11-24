@@ -740,13 +740,8 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
             return
         }
 
-        guard let firstObservedKeyboardHeight = firstObservedKeyboardHeight else {
-            owsFailDebug("firstObservedKeyboardHeight was unexpectedly nil")
-            return
-        }
-
         view.addSubview(inputAccessorySnapshotView)
-        inputAccessorySnapshotView.autoSetDimension(.height, toSize: firstObservedKeyboardHeight)
+        inputAccessorySnapshotView.autoSetDimension(.height, toSize: bottomToolView.bounds.height)
         inputAccessorySnapshotView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
     }
 
@@ -779,7 +774,7 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
             //    the CaptionView nearer to the bottom edge than it's initial position, which should
             //    be the height of the inputAccessoryView.
             if let firstObservedKeyboardHeight = firstObservedKeyboardHeight {
-                return max(firstObservedKeyboardHeight, lastObservedKeyboardHeight)
+                return max(bottomToolView.bounds.height, lastObservedKeyboardHeight)
             }
 
             return lastObservedKeyboardHeight
