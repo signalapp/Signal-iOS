@@ -243,12 +243,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return true
     }
 
-    var lastObservedKeyboardHeight: CGFloat = 0
+    var lastObservedKeyboardTop: CGFloat = 0
     var inputAccessorySnapshotView: UIView?
 
     @objc
     func keyboardDidShow(notification: Notification) {
-        // If this is a result of the vc becoming first responder, they keyboard isn't actually
+        // If this is a result of the vc becoming first responder, the keyboard isn't actually
         // showing, rather the inputAccessoryView is now showing, so we want to remove any
         // previously added toolbar snapshot.
         if isFirstResponder, inputAccessorySnapshotView != nil {
@@ -274,16 +274,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
-        lastObservedKeyboardHeight = keyboardEndFrame.size.height
+        lastObservedKeyboardTop = keyboardEndFrame.size.height
 
-        viewControllers?.forEach { viewController in
-            guard let prepViewController = viewController as? AttachmentPrepViewController else {
-                owsFailDebug("unexpected prepViewController: \(viewController)")
-                return
-            }
-
-            prepViewController.updateCaptionViewBottomInset()
-        }
+        currentPageController.updateCaptionViewBottomInset()
     }
 
     @objc
@@ -305,17 +298,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
 
-        lastObservedKeyboardHeight = keyboardEndFrame.size.height
-        lastObservedKeyboardHeight -= keyboardEndFrame.maxY - keyboardStartFrame.maxY
+        lastObservedKeyboardTop = keyboardEndFrame.size.height + keyboardStartFrame.minY - keyboardEndFrame.minY
 
-        viewControllers?.forEach { viewController in
-            guard let prepViewController = viewController as? AttachmentPrepViewController else {
-                owsFailDebug("unexpected prepViewController: \(viewController)")
-                return
-            }
-
-            prepViewController.updateCaptionViewBottomInset()
-        }
+        currentPageController.updateCaptionViewBottomInset()
     }
 
     // MARK: - View Helpers
@@ -607,6 +592,9 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     }
 
     func prepViewController(_ prepViewController: AttachmentPrepViewController, willBeginEditingCaptionView captionView: CaptionView) {
+        // When the CaptionView becomes first responder, the AttachmentApprovalViewController will
+        // consequently resignFirstResponder, which means the bottomToolView would disappear from
+        // the screen, so before that happens, we add a snapshot to holds it's place.
         addInputAccessorySnapshot()
     }
 
@@ -667,14 +655,19 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
         // 2. when the CaptionView becomes first responder, to be *just* above the keyboard, so the
         //    user can see what they're typing.
         //
-        // For these cases we apply the observed `lastKnownBottomToolbar
+        // For both these cases we apply the `lastObservedKeyboardTop`
         guard bottomToolView.mediaMessageTextToolbar.textView.isFirstResponder else {
-            // 3. between dismissing the CaptionView and the ViewController regaining first
-            //    responder there is an instant where the lastObservedKeyboardHeight is effectively
-            //    0. Rather than animate the CaptionView all the way to the bottom screen edge, and
-            //    then immediately back up as the inputAccessoryView becomes visible, we never inset
-            //    the CaptionView nearer to the bottom edge than the `bottomToolView.height`
-            return max(bottomToolView.bounds.height, lastObservedKeyboardHeight) - safeAreaInset
+            // 3. Immediately after dismissing the CaptionView but before the ViewController
+            //    regains firstResponder, there is an instant where the inputAccessoryView is
+            //    not shown, so the lastObservedKeyboardTop is effectively 0. A moment later
+            //    when the ViewController regains firstResponder, the inputAccessoryView will be
+            //    presented. Naively, this would result in the CaptionView undesirably bouncing to
+            //    the bottom of the ViewController, and then immediately back up as the
+            //    inputAccessoryView is presented.
+            //    Instead, we position the CaptionView where it will end up, by using
+            //    `bottomToolView.height`, which will only be greater than
+            //    `lastObserveredKeyboardTop` when the keyboard is not presented.
+            return max(bottomToolView.bounds.height, lastObservedKeyboardTop) - safeAreaInset
         }
 
         // 4. when the MessageTextView becomes first responder, the keyboard should shift up
