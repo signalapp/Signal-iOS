@@ -1245,6 +1245,7 @@ class CaptionView: UIView {
         placeholderTextView.font = UIFont.ows_dynamicTypeBody
 
         placeholderTextView.textColor = Theme.darkThemePrimaryColor
+        placeholderTextView.tintColor = Theme.darkThemePrimaryColor
         placeholderTextView.returnKeyType = .done
 
         return placeholderTextView
@@ -1256,7 +1257,7 @@ class CaptionView: UIView {
         textView.keyboardAppearance = Theme.keyboardAppearance
         textView.font = UIFont.ows_dynamicTypeBody
         textView.textColor = Theme.darkThemePrimaryColor
-        textView.returnKeyType = .done
+        textView.tintColor = Theme.darkThemePrimaryColor
 
         return textView
     }()
@@ -1395,7 +1396,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
     init(isAddMoreVisible: Bool) {
         self.addMoreButton = UIButton(type: .custom)
         self.sendButton = UIButton(type: .system)
-        self.textView =  MessageTextView()
+        self.textView = MessageTextView()
         self.textViewHeight = kMinTextViewHeight
 
         super.init(frame: CGRect.zero)
@@ -1409,6 +1410,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
         textView.delegate = self
         textView.keyboardAppearance = Theme.keyboardAppearance
         textView.backgroundColor = Theme.darkThemeBackgroundColor
+        textView.tintColor = Theme.darkThemePrimaryColor
         textView.layer.borderColor = Theme.darkThemePrimaryColor.cgColor
         textView.layer.borderWidth = 0.5
         textView.layer.cornerRadius = kMinTextViewHeight / 2
