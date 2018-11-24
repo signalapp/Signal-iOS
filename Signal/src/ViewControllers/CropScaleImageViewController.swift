@@ -444,8 +444,7 @@ import SignalMessaging
         cancelButton.autoPinEdge(toSuperviewEdge: .bottom)
         cancelButton.autoPinEdge(toSuperviewEdge: .left)
 
-        let doneButton = createButton(title: NSLocalizedString("BUTTON_DONE",
-                                                               comment: "Label for generic done button."),
+        let doneButton = createButton(title: CommonStrings.doneButton,
                                       action: #selector(donePressed))
         buttonRow.addSubview(doneButton)
         doneButton.autoPinEdge(toSuperviewEdge: .top)

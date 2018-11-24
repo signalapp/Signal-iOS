@@ -1178,17 +1178,24 @@ class CaptionView: UIView {
 
         super.init(frame: .zero)
 
-        self.captionText = attachmentItem.captionText
-
-        addSubview(placeholderTextView)
-        placeholderTextView.autoPinEdgesToSuperviewMargins()
-
         backgroundColor = UIColor.black.withAlphaComponent(0.6)
-        addSubview(textView)
-        textView.autoPinEdgesToSuperviewMargins()
+
+        self.captionText = attachmentItem.captionText
         textView.delegate = self
 
-        self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
+        let textContainer = UIView()
+        textContainer.addSubview(placeholderTextView)
+        placeholderTextView.autoPinEdgesToSuperviewEdges()
+
+        textContainer.addSubview(textView)
+        textView.autoPinEdgesToSuperviewEdges()
+        textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
+
+        let hStack = UIStackView(arrangedSubviews: [addCaptionButton, textContainer, doneButton])
+        doneButton.isHidden = true
+
+        addSubview(hStack)
+        hStack.autoPinEdgesToSuperviewMargins()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -1236,8 +1243,8 @@ class CaptionView: UIView {
         placeholderTextView.backgroundColor = .clear
         placeholderTextView.keyboardAppearance = Theme.keyboardAppearance
         placeholderTextView.font = UIFont.ows_dynamicTypeBody
-        // MJK FIXME always dark theme
-        placeholderTextView.textColor = Theme.placeholderColor
+
+        placeholderTextView.textColor = Theme.darkThemePrimaryColor
         placeholderTextView.returnKeyType = .done
 
         return placeholderTextView
@@ -1253,16 +1260,44 @@ class CaptionView: UIView {
 
         return textView
     }()
+
+    lazy var addCaptionButton: UIButton = {
+        let addCaptionButton =  OWSButton { [weak self] in
+            self?.textView.becomeFirstResponder()
+        }
+
+        let icon = #imageLiteral(resourceName: "ic_add_caption").withRenderingMode(.alwaysTemplate)
+        addCaptionButton.setImage(icon, for: .normal)
+        addCaptionButton.tintColor = Theme.darkThemePrimaryColor
+
+        return addCaptionButton
+    }()
+
+    lazy var doneButton: UIButton = {
+        let doneButton = OWSButton { [weak self] in
+            self?.textView.resignFirstResponder()
+        }
+        doneButton.setTitle(CommonStrings.doneButton, for: .normal)
+        doneButton.tintColor = Theme.darkThemePrimaryColor
+
+        return doneButton
+    }()
 }
 
 extension CaptionView: UITextViewDelegate {
     public func textViewDidBeginEditing(_ textView: UITextView) {
         updatePlaceholderTextViewVisibility()
+        doneButton.isHidden = false
+        addCaptionButton.isHidden = true
+
         delegate?.captionViewDidBeginEditing(self)
     }
 
     public func textViewDidEndEditing(_ textView: UITextView) {
         updatePlaceholderTextViewVisibility()
+        doneButton.isHidden = true
+        addCaptionButton.isHidden = false
+
         delegate?.captionViewDidEndEditing(self)
     }
 
