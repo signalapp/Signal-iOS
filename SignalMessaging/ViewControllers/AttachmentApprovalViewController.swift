@@ -198,11 +198,97 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         self.setCurrentItem(firstItem, direction: .forward, animated: false)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillChangeFrame(notification:)),
-                                               name: .UIKeyboardWillChangeFrame,
-                                               object: nil)
+//        NotificationCenter.default.addObserver(self,
+//                                               selector: #selector(keyboardWillChangeFrame(notification:)),
+//                                               name: .UIKeyboardWillChangeFrame,
+//                                               object: nil)
+
+        observers = [
+            NotificationCenter.default.addObserver(forName: .UIKeyboardWillShow, object: nil, queue: nil) { [weak self] notification in
+                guard let strongSelf = self else { return }
+
+                guard let userInfo = notification.userInfo else {
+                    owsFailDebug("userInfo was unexpectedly nil")
+                    return
+                }
+
+                guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
+                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
+                    return
+                }
+
+                guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
+                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
+                    return
+                }
+
+                Logger.debug("UIKeyboardWillShow frame: \(keyboardStartFrame) -> \(keyboardEndFrame)")
+                strongSelf.keyboardWillShow(notification: notification)
+            },
+
+//            NotificationCenter.default.addObserver(forName: .UIKeyboardDidShow, object: nil, queue: nil) { [weak self] notification in
+//                guard let userInfo = notification.userInfo else {
+//                    owsFailDebug("userInfo was unexpectedly nil")
+//                    return
+//                }
+//
+//                guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
+//                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
+//                    return
+//                }
+//
+//                guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
+//                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
+//                    return
+//                }
+//
+//                Logger.debug("UIKeyboardDidShow frame: \(keyboardStartFrame) -> \(keyboardEndFrame)")
+//            },
+
+            NotificationCenter.default.addObserver(forName: .UIKeyboardWillHide, object: nil, queue: nil) { [weak self] notification in
+                guard let strongSelf = self else { return }
+
+                guard let userInfo = notification.userInfo else {
+                    owsFailDebug("userInfo was unexpectedly nil")
+                    return
+                }
+
+                guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
+                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
+                    return
+                }
+
+                guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
+                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
+                    return
+                }
+
+                Logger.debug("UIKeyboardWillHide frame: \(keyboardStartFrame) -> \(keyboardEndFrame)")
+                strongSelf.keyboardWillHide(notification: notification)
+            }
+
+//            NotificationCenter.default.addObserver(forName: .UIKeyboardDidHide, object: nil, queue: nil) { [weak self] notification in
+//                guard let userInfo = notification.userInfo else {
+//                    owsFailDebug("userInfo was unexpectedly nil")
+//                    return
+//                }
+//
+//                guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
+//                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
+//                    return
+//                }
+//
+//                guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
+//                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
+//                    return
+//                }
+//
+//                Logger.debug("UIKeyboardDidHide frame: \(keyboardStartFrame) -> \(keyboardEndFrame)")
+//            },
+        ]
     }
+
+    var observers: [NSObjectProtocol] = []
 
     override public func viewWillAppear(_ animated: Bool) {
         Logger.debug("")
@@ -238,12 +324,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     var lastObservedKeyboardHeight: CGFloat = 0
 
     @objc
-    func keyboardWillChangeFrame(notification: Notification) {
-        Logger.debug("")
-
-        //        NSDictionary *userInfo = [notification userInfo];
+    func keyboardWillShow(notification: Notification) {
         guard let userInfo = notification.userInfo else {
             owsFailDebug("userInfo was unexpectedly nil")
+            return
+        }
+
+        guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
+            owsFailDebug("keyboardEndFrame was unexpectedly nil")
             return
         }
 
@@ -252,7 +340,43 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
 
+        Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
+
         lastObservedKeyboardHeight = keyboardEndFrame.size.height
+
+        viewControllers?.forEach { viewController in
+            guard let prepViewController = viewController as? AttachmentPrepViewController else {
+                owsFailDebug("unexpected prepViewController: \(viewController)")
+                return
+            }
+
+            prepViewController.updateCaptionViewBottomInset()
+        }
+    }
+
+    @objc
+    func keyboardWillHide(notification: Notification) {
+        guard let userInfo = notification.userInfo else {
+            owsFailDebug("userInfo was unexpectedly nil")
+            return
+        }
+
+        guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
+            owsFailDebug("keyboardEndFrame was unexpectedly nil")
+            return
+        }
+
+        guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
+            owsFailDebug("keyboardEndFrame was unexpectedly nil")
+            return
+        }
+
+        Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
+
+        lastObservedKeyboardHeight = keyboardEndFrame.size.height
+        if keyboardStartFrame.height == keyboardEndFrame.height {
+            lastObservedKeyboardHeight -= keyboardEndFrame.maxY - keyboardStartFrame.maxY
+        }
 
         viewControllers?.forEach { viewController in
             guard let prepViewController = viewController as? AttachmentPrepViewController else {
