@@ -175,14 +175,16 @@ NS_ASSUME_NONNULL_BEGIN
     [self.readReceiptManager applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:outgoingMessage
                                                                           transaction:transaction];
 
-    [self.attachmentDownloads
-        downloadAttachmentsForMessage:outgoingMessage
-                          transaction:transaction
-                              success:attachmentHandler
-                              failure:^(NSError *error) {
-                                  OWSLogError(
-                                      @"failed to fetch transcripts attachments for message: %@", outgoingMessage);
-                              }];
+    if (outgoingMessage.hasAttachments) {
+        [self.attachmentDownloads
+            downloadAttachmentsForMessage:outgoingMessage
+                              transaction:transaction
+                                  success:attachmentHandler
+                                  failure:^(NSError *error) {
+                                      OWSLogError(
+                                          @"failed to fetch transcripts attachments for message: %@", outgoingMessage);
+                                  }];
+    }
 }
 
 @end
