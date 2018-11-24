@@ -226,24 +226,27 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                 strongSelf.keyboardWillShow(notification: notification)
             },
 
-//            NotificationCenter.default.addObserver(forName: .UIKeyboardDidShow, object: nil, queue: nil) { [weak self] notification in
-//                guard let userInfo = notification.userInfo else {
-//                    owsFailDebug("userInfo was unexpectedly nil")
-//                    return
-//                }
-//
-//                guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
-//                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
-//                    return
-//                }
-//
-//                guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
-//                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
-//                    return
-//                }
-//
-//                Logger.debug("UIKeyboardDidShow frame: \(keyboardStartFrame) -> \(keyboardEndFrame)")
-//            },
+            NotificationCenter.default.addObserver(forName: .UIKeyboardDidShow, object: nil, queue: nil) { [weak self] notification in
+                guard let strongSelf = self else { return }
+
+                guard let userInfo = notification.userInfo else {
+                    owsFailDebug("userInfo was unexpectedly nil")
+                    return
+                }
+
+                guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
+                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
+                    return
+                }
+
+                guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
+                    owsFailDebug("keyboardEndFrame was unexpectedly nil")
+                    return
+                }
+
+                Logger.debug("UIKeyboardDidShow frame: \(keyboardStartFrame) -> \(keyboardEndFrame)")
+                strongSelf.keyboardDidShow(notification: notification)
+            },
 
             NotificationCenter.default.addObserver(forName: .UIKeyboardWillHide, object: nil, queue: nil) { [weak self] notification in
                 guard let strongSelf = self else { return }
@@ -323,9 +326,38 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     var lastObservedKeyboardHeight: CGFloat = 0
     var firstObservedKeyboardHeight: CGFloat?
+    var inputAccessorySnapshotView: UIView?
+
+    @objc
+    func keyboardDidShow(notification: Notification) {
+        if self.isFirstResponder {
+            if self.inputAccessorySnapshotView != nil {
+                removeToolbarSnapshot()
+            } else {
+                Logger.verbose("nothing to remove")
+            }
+        } else {
+            if self.inputAccessorySnapshotView == nil {
+                // addToolbarSnapshot()
+                Logger.verbose("no-op")
+            } else {
+                Logger.verbose("nothing to show")
+            }
+        }
+    }
 
     @objc
     func keyboardWillShow(notification: Notification) {
+        if self.isFirstResponder {
+            Logger.verbose("no-op")
+        } else {
+            if self.inputAccessorySnapshotView == nil {
+//                addToolbarSnapshot()
+                Logger.verbose("no-op")
+            } else {
+                Logger.verbose("nothing to show")
+            }
+        }
         guard let userInfo = notification.userInfo else {
             owsFailDebug("userInfo was unexpectedly nil")
             return
@@ -680,6 +712,10 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
         self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: attachmentItem.attachment)
     }
 
+    func prepViewController(_ prepViewController: AttachmentPrepViewController, willBeginEditingCaptionView captionView: CaptionView) {
+        addToolbarSnapshot()
+    }
+
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView) {
         // Disable paging while captions are being edited to avoid a clunky animation.
         //
@@ -688,6 +724,39 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
         // from the page we're leaving as well as the page we're entering. Instead we require the
         // user to dismiss *then* swipe.
         disablePaging()
+    }
+
+    func addToolbarSnapshot() {
+        assert(inputAccessorySnapshotView == nil)
+        // To fix a layout glitch where the snapshot view is 1/2 the width of the screen, it's key
+        // that we use `bottomToolView` and not `inputAccessoryView` which can trigger a layout of
+        // the `bottomToolView`.
+        // Presumably the frame of the inputAccessoryView has just changed because we're in the
+        // middle of switching first responders. We want a snapshot as it *was*, not reflecting any
+        // just-applied superview layout changes.
+        inputAccessorySnapshotView = bottomToolView.snapshotView(afterScreenUpdates: true)
+        guard let inputAccessorySnapshotView = inputAccessorySnapshotView else {
+            owsFailDebug("inputAccessorySnapshotView was unexpectedly nil")
+            return
+        }
+
+        guard let firstObservedKeyboardHeight = firstObservedKeyboardHeight else {
+            owsFailDebug("firstObservedKeyboardHeight was unexpectedly nil")
+            return
+        }
+
+        view.addSubview(inputAccessorySnapshotView)
+        inputAccessorySnapshotView.autoSetDimension(.height, toSize: firstObservedKeyboardHeight)
+        inputAccessorySnapshotView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+    }
+
+    func removeToolbarSnapshot() {
+        guard let inputAccessorySnapshotView = self.inputAccessorySnapshotView else {
+            owsFailDebug("inputAccessorySnapshotView was unexpectedly nil")
+            return
+        }
+        inputAccessorySnapshotView.removeFromSuperview()
+        self.inputAccessorySnapshotView = nil
     }
 
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didEndEditingCaptionView captionView: CaptionView) {
@@ -778,6 +847,7 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
 protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem)
 
+    func prepViewController(_ prepViewController: AttachmentPrepViewController, willBeginEditingCaptionView captionView: CaptionView)
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView)
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didEndEditingCaptionView captionView: CaptionView)
 
@@ -1147,6 +1217,10 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 }
 
 extension AttachmentPrepViewController: CaptionViewDelegate {
+    func captionViewWillBeginEditing(_ captionView: CaptionView) {
+        prepDelegate?.prepViewController(self, willBeginEditingCaptionView: captionView)
+    }
+
     func captionView(_ captionView: CaptionView, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem) {
         let attachment = attachmentItem.attachment
         attachment.captionText = captionText
@@ -1158,13 +1232,13 @@ extension AttachmentPrepViewController: CaptionViewDelegate {
         // This avoids a really ugly animation from  simultaneously dismissing the keyboard
         // while loading a new PrepViewController, and it's CaptionView, whose layout depends
         // on the keyboard's position.
-        self.touchInterceptorView.isHidden = false
-        self.prepDelegate?.prepViewController(self, didBeginEditingCaptionView: captionView)
+        touchInterceptorView.isHidden = false
+        prepDelegate?.prepViewController(self, didBeginEditingCaptionView: captionView)
     }
 
     func captionViewDidEndEditing(_ captionView: CaptionView) {
-        self.touchInterceptorView.isHidden = true
-        self.prepDelegate?.prepViewController(self, didEndEditingCaptionView: captionView)
+        touchInterceptorView.isHidden = true
+        prepDelegate?.prepViewController(self, didEndEditingCaptionView: captionView)
     }
 }
 
@@ -1283,6 +1357,7 @@ class BottomToolView: UIView {
 
 protocol CaptionViewDelegate: class {
     func captionView(_ captionView: CaptionView, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem)
+    func captionViewWillBeginEditing(_ captionView: CaptionView)
     func captionViewDidBeginEditing(_ captionView: CaptionView)
     func captionViewDidEndEditing(_ captionView: CaptionView)
 }
@@ -1447,6 +1522,12 @@ class CaptionView: UIView {
 
 let kMaxCaptionCharacterCount = 240
 extension CaptionView: UITextViewDelegate {
+
+    public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        delegate?.captionViewWillBeginEditing(self)
+        return true
+    }
+
     public func textViewDidBeginEditing(_ textView: UITextView) {
         updatePlaceholderTextViewVisibility()
         doneButton.isHidden = false
