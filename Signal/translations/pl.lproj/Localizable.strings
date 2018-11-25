@@ -132,7 +132,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Nie udało się przetworzyć video";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Unable to parse image.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Nie można przetworzyć załączonej grafiki.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Nie udało się usunąć metadanych z grafiki";
@@ -165,7 +165,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Nie udało się wybrać dokumentu.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Nieobsługiwany typ pliku. Spróbuj go skompresować przed ponownym wysyłaniem.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nieobsługiwany plik";
@@ -339,7 +339,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Wycisz";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can enable iOS Call Integration in your Signal privacy settings to answer incoming calls from your lock screen.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Możesz włączyć integrację połączeń iOS w ustawieniach prywatności Signal, aby odbierać połączenia przychodzące z ekranu blokady.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Możesz włączyć integrację połączeń iOS w ustawieniach prywatności Signal, aby zobaczyć nazwę i numer telefonu połączeń przychodzących.";
@@ -390,7 +390,7 @@
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Wybierz kolor wiadomości wychodzących w tej rozmowie.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Only you will see the color you choose.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Tylko Ty zobaczysz wybrany kolor.";
 
 /* Modal Sheet title when picking a conversation color. */
 "COLOR_PICKER_SHEET_TITLE" = "Kolor rozmowy";
@@ -408,10 +408,10 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Zaproś";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Możesz zezwolić na dostęp do kontaktów w Ustawieniach systemu iOS, aby sprawdzić, którzy z Twoich kontaktów są użytkownikami Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Spowoduje to zresetowanie aplikacji poprzez usunięcie Twoich wiadomości i wyrejestrowanie Ciebie z serwera. Aplikacja zostanie zamknięta po zakończeniu tego procesu.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Czy na pewno chcesz skasować swoje konto?";
@@ -730,7 +730,7 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lokalizacja dla omijania cenzury";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Możesz przyznać dostęp w Ustawieniach iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal potrzebuje dostępu do Kontaktów w celu edycji";
@@ -844,13 +844,13 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Nie udało się wysłać wiadomości.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Nie można wysłać ze względu na nieaktualne dane.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Wysyłanie wiadomości nie powiodło się ponieważ zablokowałeś/aś tego użytkownika.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed to write and send attachment.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Nie udało się zapisać i wysłać załącznika.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal nie mógł połączyć się z internetem. Spróbuj ponownie.";
@@ -1051,10 +1051,10 @@
 "IN_CALL_TERMINATED" = "Połącznie zakończone.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Te rozmowy są zarchiwizowane i pojawią się w Odebranych tylko po otrzymaniu nowych wiadomości.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Signal conversation list.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Aby wyświetlać nazwy kontaktów na liście Signal, musisz zezwolić na dostęp do kontaktów w Ustawieniach iOS.";
 
 /* notification body */
 "INCOMING_CALL" = "Połączenie przychodzące";
@@ -1075,7 +1075,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Niepoprawny plik dźwiękowy.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "You can enable contacts access in the iOS Settings app to invite your friends to join Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Aby zaprosić znajomych, musisz pozwolić Signal na dostęp do Twoich kontaktów w Ustawieniach iOS.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Zezwól na dostęp do kontaktów";
@@ -1162,7 +1162,7 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Usuń wiadomość";
 
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ on %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ %@";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -1322,14 +1322,14 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Aby nawiązać połączenia video w Signal, musisz zezwolić na dostęp do kamery w Ustawieniach iOS.";
 
 /* Alert title
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal potrzebuje dostępu do aparatu.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Możesz przyznać dostęp do uprawnień w Ustawieniach systemu iOS.";
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal wymaga w tym celu dostępu do zdjęć.";
@@ -1413,7 +1413,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Odszukaj kontakty po numerze telefonu";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Możliwe, że otrzymałeś wiadomości podczas restartowania %@.";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Nie udało się wysłać wiadomość do %@.";
@@ -1506,7 +1506,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Fax w pracy";
 
 /* navbar title when viewing the default photo album, which includes all photos */
-"PHOTO_PICKER_DEFAULT_ALBUM" = "All Photos";
+"PHOTO_PICKER_DEFAULT_ALBUM" = "Wszystkie zdjęcia";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Odtwórz";
@@ -2097,10 +2097,10 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Blokada rejestracji";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "Wskaźnik pisania";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Wyświetlaj i udostępniaj informację, kiedy wiadomości są wpisywane. Te ustawienie jest opcjonalne i dotyczy wszystkich rozmów.";
 
 /* Label for a link to more info about unidentified delivery. */
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Dowiedz się więcej";
@@ -2115,7 +2115,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Pozwól każdemu";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Zezwól wszystkim";
 
 /* table section footer */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
@@ -2313,13 +2313,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Przedstawiamy potwierdzenia odczytania";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "Enable typing indicators in your privacy settings.";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "Włącz wskaźnik pisania w ustawieniach prywatności.";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Możesz teraz opcjonalnie wyświetlać i udostępniać informację, gdy wiadomości są wpisywane.";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Przedstawiamy Wskaźnik pisania";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal teraz wspiera bezpieczne wideo rozmowy. Zacznij dzwonić jak zwykle, naciśnij przycisk kamery i powiedz \"cześć\".";

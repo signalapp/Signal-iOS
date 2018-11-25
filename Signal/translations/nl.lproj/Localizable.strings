@@ -2118,7 +2118,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Verzegelde afzender inschakelen voor berichten van niet-contacten en mensen waarmee je je profiel niet hebt gedeeld.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versie";

@@ -1162,7 +1162,7 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "删除消息";
 
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ on %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ 于 %@";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -1350,7 +1350,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "跳过";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Please check if you are online and try again.";
+"NETWORK_ERROR_RECOVERY" = "请检查您的网络后再试。";
 
 /* Indicates to the user that censorship circumvention has been activated. */
 "NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "审查规避：打开";
@@ -1506,7 +1506,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "工作传真";
 
 /* navbar title when viewing the default photo album, which includes all photos */
-"PHOTO_PICKER_DEFAULT_ALBUM" = "All Photos";
+"PHOTO_PICKER_DEFAULT_ALBUM" = "所有照片";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放媒体";
@@ -1548,7 +1548,7 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "您的好友版本过低。请对方升级后继续验证。";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "此二维码不是一个有效的安全码，请确保双方都使用了最新版的 Signal。";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "如需确认你和 %@ 的端对端加密安全性，请在双方设备上面比较上述数字。\n\n或者可以通过扫描上述二维码进行验证。";
@@ -1599,7 +1599,7 @@
 "PROFILE_VIEW_SAVE_BUTTON" = "保存";
 
 /* Alert title that indicates the user's profile view is being saved. */
-"PROFILE_VIEW_SAVING" = "Saving…";
+"PROFILE_VIEW_SAVING" = "保存中...";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "资料";
@@ -1722,7 +1722,7 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "电话号码";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "您需要先注册才能发送消息。";
 
 /* No comment provided by engineer. */
 "REGISTRATION_TITLE_LABEL" = "您的电话号码";
@@ -1866,7 +1866,7 @@
 "SEND_INVITE_FAILURE" = "发送邀请失败, 请稍候再试.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "您已邀请了一位好友使用 Signal！";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "通过短信邀请：%@";
@@ -1971,7 +1971,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "始终使用中继进行通话";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "使用 Signal 服务器中继所有通话，这能防止联系人获取您的 IP 地址，但此功能会降低通话质量。";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "清除聊天记录";
