@@ -90,12 +90,22 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)navbarBackgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_blackColor : UIColor.ows_whiteColor);
+    return (Theme.isDarkThemeEnabled ? self.darkThemeNavbarBackgroundColor : UIColor.ows_whiteColor);
+}
+
++ (UIColor *)darkThemeNavbarBackgroundColor
+{
+    return UIColor.ows_blackColor;
 }
 
 + (UIColor *)navbarIconColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray25Color : UIColor.ows_gray60Color);
+    return (Theme.isDarkThemeEnabled ? self.darkThemeNavbarIconColor : UIColor.ows_gray60Color);
+}
+
++ (UIColor *)darkThemeNavbarIconColor;
+{
+    return UIColor.ows_gray25Color;
 }
 
 + (UIColor *)navbarTitleColor
@@ -135,8 +145,13 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIBlurEffect *)barBlurEffect
 {
-    return Theme.isDarkThemeEnabled ? [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark]
+    return Theme.isDarkThemeEnabled ? self.darkThemeBarBlurEffect
                                     : [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+}
+
++ (UIBlurEffect *)darkThemeBarBlurEffect
+{
+    return [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
 }
 
 + (UIKeyboardAppearance)keyboardAppearance

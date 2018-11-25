@@ -54,6 +54,32 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         notImplemented()
     }
 
+    // MARK: Subviews
+
+    lazy var footerBar: UIToolbar = {
+        let footerBar = UIToolbar()
+        let footerItems = [
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+            deleteButton,
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        ]
+        footerBar.setItems(footerItems, animated: false)
+
+        footerBar.barTintColor = Theme.darkThemeNavbarBackgroundColor
+        footerBar.tintColor = Theme.darkThemeNavbarIconColor
+
+        return footerBar
+    }()
+
+    lazy var deleteButton: UIBarButtonItem = {
+        let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash,
+                                           target: self,
+                                           action: #selector(didPressDelete))
+        deleteButton.tintColor = Theme.darkThemeNavbarIconColor
+
+        return deleteButton
+    }()
+
     // MARK: View Lifecycle Overrides
 
     override public func viewDidLoad() {
@@ -76,19 +102,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
         // feels a bit weird to have content smashed all the way to the bottom edge.
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
-
-        let footerBar = UIToolbar()
-        self.footerBar = footerBar
-        let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash,
-                                          target: self,
-                                          action: #selector(didPressDelete))
-        self.deleteButton =  deleteButton
-        let footerItems = [
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-            deleteButton,
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        ]
-        footerBar.setItems(footerItems, animated: false)
 
         self.view.addSubview(self.footerBar)
         footerBar.autoPinWidthToSuperview()
@@ -592,8 +605,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         present(actionSheet, animated: true)
     }
 
-    var footerBar: UIToolbar!
-    var deleteButton: UIBarButtonItem!
     var footerBarBottomConstraint: NSLayoutConstraint!
     let kFooterBarHeight: CGFloat = 40
 
@@ -812,16 +823,16 @@ private class MediaGallerySectionHeader: UICollectionReusableView {
 
     override init(frame: CGRect) {
         label = UILabel()
-        label.textColor = Theme.primaryColor
+        label.textColor = Theme.darkThemePrimaryColor
 
-        let blurEffect = Theme.barBlurEffect
+        let blurEffect = Theme.darkThemeBarBlurEffect
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
 
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
         super.init(frame: frame)
 
-        self.backgroundColor = Theme.navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+        self.backgroundColor = Theme.darkThemeNavbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
 
         self.addSubview(blurEffectView)
         self.addSubview(label)
@@ -859,7 +870,7 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
 
         addSubview(label)
 
-        label.textColor = Theme.primaryColor
+        label.textColor = Theme.darkThemePrimaryColor
         label.textAlignment = .center
         label.numberOfLines = 0
         label.autoPinEdgesToSuperviewMargins()
