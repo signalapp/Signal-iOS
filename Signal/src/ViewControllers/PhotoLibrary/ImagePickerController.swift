@@ -8,7 +8,7 @@ import PromiseKit
 
 @objc(OWSImagePickerControllerDelegate)
 protocol ImagePickerControllerDelegate {
-    func imagePicker(_ imagePicker: ImagePickerGridController, didPickImageAttachments attachments: [SignalAttachment])
+    func imagePicker(_ imagePicker: ImagePickerGridController, didPickImageAttachments attachments: [SignalAttachment], messageText: String?)
 }
 
 @objc(OWSImagePickerGridController)
@@ -386,9 +386,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     // MARK: - AttachmentApprovalViewControllerDelegate
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment]) {
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
         self.dismiss(animated: true) {
-            self.delegate?.imagePicker(self, didPickImageAttachments: attachments)
+            self.delegate?.imagePicker(self, didPickImageAttachments: attachments, messageText: messageText)
         }
     }
 

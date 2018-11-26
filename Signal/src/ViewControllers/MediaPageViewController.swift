@@ -50,7 +50,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     public func setCurrentItem(_ item: MediaGalleryItem, direction: UIPageViewControllerNavigationDirection, animated isAnimated: Bool) {
         guard let galleryPage = self.buildGalleryPage(galleryItem: item) else {
-            owsFailDebug("unexpetedly unable to build new gallery page")
+            owsFailDebug("unexpectedly unable to build new gallery page")
             return
         }
 
@@ -83,7 +83,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         self.delegate = self
 
         guard let initialPage = self.buildGalleryPage(galleryItem: initialItem) else {
-            owsFailDebug("unexpetedly unable to build initial gallery item")
+            owsFailDebug("unexpectedly unable to build initial gallery item")
             return
         }
         self.initialPage = initialPage

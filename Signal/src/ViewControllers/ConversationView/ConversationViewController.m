@@ -2481,7 +2481,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertDebug(attachment);
 
-    [self tryToSendAttachmentIfApproved:attachment];
+    [self showApprovalDialogForAttachment:attachment];
 
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [self.conversationViewModel ensureDynamicInteractions];
@@ -2580,14 +2580,14 @@ typedef enum : NSUInteger {
     // Although we want to be able to send higher quality attachments through the document picker
     // it's more imporant that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
     if ([SignalAttachment isInvalidVideoWithDataSource:dataSource dataUTI:type]) {
-        [self sendQualityAdjustedAttachmentForVideo:url filename:filename skipApprovalDialog:NO];
+        [self showApprovalDialogAfterProcessingVideoURL:url filename:filename];
         return;
     }
 
     // "Document picker" attachments _SHOULD NOT_ be resized, if possible.
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:type imageQuality:TSImageQualityOriginal];
-    [self tryToSendAttachmentIfApproved:attachment];
+    [self showApprovalDialogForAttachment:attachment];
 }
 
 #pragma mark - UIImagePickerController
@@ -2673,11 +2673,16 @@ typedef enum : NSUInteger {
     self.view.frame = frame;
 }
 
+#pragma mark - OWSImagePickerControllerDelegate
+
 - (void)imagePicker:(OWSImagePickerGridController *)imagePicker
     didPickImageAttachments:(NSArray<SignalAttachment *> *)attachments
+                messageText:(NSString *_Nullable)messageText
 {
-    [self tryToSendAttachmentsIfApproved:attachments skipApprovalDialog:YES];
+    [self tryToSendAttachments:attachments messageText:messageText];
 }
+
+#pragma mark - UIImagePickerControllerDelegate
 
 /*
  *  Fetching data from UIImagePickerController
@@ -2725,9 +2730,7 @@ typedef enum : NSUInteger {
         NSURL *videoURL = info[UIImagePickerControllerMediaURL];
         [self dismissViewControllerAnimated:YES
                                  completion:^{
-                                     [self sendQualityAdjustedAttachmentForVideo:videoURL
-                                                                        filename:filename
-                                                              skipApprovalDialog:NO];
+                                     [self showApprovalDialogAfterProcessingVideoURL:videoURL filename:filename];
                                  }];
     } else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
         // Static Image captured from camera
@@ -2751,7 +2754,7 @@ typedef enum : NSUInteger {
                                              [self showErrorAlertForAttachment:attachment];
                                              failedToPickAttachment(nil);
                                          } else {
-                                             [self tryToSendAttachmentIfApproved:attachment skipApprovalDialog:NO];
+                                             [self showApprovalDialogForAttachment:attachment];
                                          }
                                      } else {
                                          failedToPickAttachment(nil);
@@ -2808,31 +2811,10 @@ typedef enum : NSUInteger {
                                                             [self showErrorAlertForAttachment:attachment];
                                                             failedToPickAttachment(nil);
                                                         } else {
-                                                            [self tryToSendAttachmentIfApproved:attachment];
+                                                            [self showApprovalDialogForAttachment:attachment];
                                                         }
                                                     }];
                        }];
-    }
-}
-
-- (void)sendMessageAttachments:(NSArray<SignalAttachment *> *)attachments
-{
-    OWSAssertIsOnMainThread();
-    for (SignalAttachment *attachment in attachments) {
-        OWSAssertDebug(![attachment hasError]);
-        OWSAssertDebug([attachment mimeType].length > 0);
-    }
-
-    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithAttachments:attachments
-                                                               messageBody:nil
-                                                                  inThread:self.thread
-                                                          quotedReplyModel:self.inputToolbar.quotedReply];
-
-    [self messageWasSent:message];
-
-    if (didAddToProfileWhitelist) {
-        [self.conversationViewModel ensureDynamicInteractions];
     }
 }
 
@@ -2864,9 +2846,7 @@ typedef enum : NSUInteger {
         }];
 }
 
-- (void)sendQualityAdjustedAttachmentForVideo:(NSURL *)movieURL
-                                     filename:(nullable NSString *)filename
-                           skipApprovalDialog:(BOOL)skipApprovalDialog
+- (void)showApprovalDialogAfterProcessingVideoURL:(NSURL *)movieURL filename:(nullable NSString *)filename
 {
     OWSAssertIsOnMainThread();
 
@@ -2895,7 +2875,7 @@ typedef enum : NSUInteger {
                                       attachment ? [attachment errorName] : @"Missing data");
                                   [self showErrorAlertForAttachment:attachment];
                               } else {
-                                  [self tryToSendAttachmentIfApproved:attachment skipApprovalDialog:skipApprovalDialog];
+                                  [self showApprovalDialogForAttachment:attachment];
                               }
                           }];
                       }) retainUntilComplete];
@@ -3086,7 +3066,7 @@ typedef enum : NSUInteger {
         OWSLogWarn(@"Invalid attachment: %@.", attachment ? [attachment errorName] : @"Missing data");
         [self showErrorAlertForAttachment:attachment];
     } else {
-        [self tryToSendAttachmentIfApproved:attachment skipApprovalDialog:YES];
+        [self tryToSendAttachments:@[ attachment ] messageText:nil];
     }
 }
 
@@ -3480,37 +3460,28 @@ typedef enum : NSUInteger {
 {
     OWSLogError(@"");
 
-    [self tryToSendAttachmentIfApproved:attachment];
+    [self showApprovalDialogForAttachment:attachment];
 }
 
-- (void)tryToSendAttachmentIfApproved:(SignalAttachment *_Nullable)attachment
+- (void)showApprovalDialogForAttachment:(SignalAttachment *_Nullable)attachment
 {
     if (attachment == nil) {
-        OWSLogWarn(@"Missing attachment");
+        OWSFailDebug(@"attachment was unexpectedly nil");
         [self showErrorAlertForAttachment:nil];
         return;
     }
-    [self tryToSendAttachmentsIfApproved:@[ attachment ]];
+    [self showApprovalDialogForAttachments:@[ attachment ]];
 }
 
-- (void)tryToSendAttachmentIfApproved:(SignalAttachment *_Nullable)attachment
-                   skipApprovalDialog:(BOOL)skipApprovalDialog
+- (void)showApprovalDialogForAttachments:(NSArray<SignalAttachment *> *)attachments
 {
-    if (attachment == nil) {
-        OWSLogWarn(@"Missing attachment");
-        [self showErrorAlertForAttachment:nil];
-        return;
-    }
-    [self tryToSendAttachmentsIfApproved:@[ attachment ] skipApprovalDialog:skipApprovalDialog];
+    OWSNavigationController *modal =
+        [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:attachments approvalDelegate:self];
+
+    [self presentViewController:modal animated:YES completion:nil];
 }
 
-- (void)tryToSendAttachmentsIfApproved:(NSArray<SignalAttachment *> *)attachments
-{
-    [self tryToSendAttachmentsIfApproved:attachments skipApprovalDialog:NO];
-}
-
-- (void)tryToSendAttachmentsIfApproved:(NSArray<SignalAttachment *> *)attachments
-                    skipApprovalDialog:(BOOL)skipApprovalDialog
+- (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments messageText:(NSString *_Nullable)messageText
 {
     OWSLogError(@"");
 
@@ -3519,7 +3490,7 @@ typedef enum : NSUInteger {
         if ([self isBlockedConversation]) {
             [self showUnblockConversationUI:^(BOOL isBlocked) {
                 if (!isBlocked) {
-                    [weakSelf tryToSendAttachmentsIfApproved:attachments];
+                    [weakSelf tryToSendAttachments:attachments messageText:messageText];
                 }
             }];
             return;
@@ -3529,8 +3500,8 @@ typedef enum : NSUInteger {
             showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[SafetyNumberStrings confirmSendButton]
                                                              completion:^(BOOL didConfirmIdentity) {
                                                                  if (didConfirmIdentity) {
-                                                                     [weakSelf
-                                                                         tryToSendAttachmentsIfApproved:attachments];
+                                                                     [weakSelf tryToSendAttachments:attachments
+                                                                                        messageText:messageText];
                                                                  }
                                                              }];
         if (didShowSNAlert) {
@@ -3545,13 +3516,16 @@ typedef enum : NSUInteger {
             }
         }
 
-        if (skipApprovalDialog) {
-            [self sendMessageAttachments:attachments];
-        } else {
-            OWSNavigationController *modal =
-                [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:attachments
-                                                                       approvalDelegate:self];
-            [self presentViewController:modal animated:YES completion:nil];
+        BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+        TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithAttachments:attachments
+                                                                   messageBody:messageText
+                                                                      inThread:self.thread
+                                                              quotedReplyModel:self.inputToolbar.quotedReply];
+
+        [self messageWasSent:message];
+
+        if (didAddToProfileWhitelist) {
+            [self.conversationViewModel ensureDynamicInteractions];
         }
     });
 }
@@ -3660,10 +3634,13 @@ typedef enum : NSUInteger {
     [self updateNavigationBarSubtitleLabel];
 }
 
+#pragma mark - AttachmentApprovalViewControllerDelegate
+
 - (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
      didApproveAttachments:(NSArray<SignalAttachment *> *)attachments
+               messageText:(NSString *_Nullable)messageText
 {
-    [self sendMessageAttachments:attachments];
+    [self tryToSendAttachments:attachments messageText:messageText];
     [self dismissViewControllerAnimated:YES completion:nil];
     // We always want to scroll to the bottom of the conversation after the local user
     // sends a message.  Normally, this is taken care of in yapDatabaseModified:, but

@@ -616,7 +616,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         Logger.debug("with deletedSections: \(deletedSections) deletedItems: \(deletedItems)")
 
         guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpetedly nil")
+            owsFailDebug("collectionView was unexpectedly nil")
             return
         }
 

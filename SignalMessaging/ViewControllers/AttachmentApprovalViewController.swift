@@ -9,7 +9,7 @@ import PromiseKit
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: class {
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment])
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?)
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didCancelAttachments attachments: [SignalAttachment])
     @objc optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, addMoreToAttachments attachments: [SignalAttachment])
     @objc optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, changedCaptionOfAttachment attachment: SignalAttachment)
@@ -62,6 +62,10 @@ class SignalAttachmentItem: Hashable {
 
     // MARK: 
 
+    var captionText: String? {
+        return attachment.captionText
+    }
+
     var imageSize: CGSize = .zero
 
     func getThumbnailImage() -> Promise<UIImage> {
@@ -100,15 +104,13 @@ public enum AttachmentApprovalViewControllerMode: UInt {
 }
 
 @objc
-public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, CaptioningToolbarDelegate {
+public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
 
     // MARK: - Properties
 
     private let mode: AttachmentApprovalViewControllerMode
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
-
-    private(set) var captioningToolbar: CaptioningToolbar!
 
     // MARK: - Initializers
 
@@ -148,10 +150,24 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return navController
     }
 
-    // MARK: - View Lifecycle
+    // MARK: - Subviews
 
-    let galleryRailView = GalleryRailView()
-    let railContainerView = UIView()
+    var galleryRailView: GalleryRailView {
+        return bottomToolView.galleryRailView
+    }
+
+    var mediaMessageTextToolbar: MediaMessageTextToolbar {
+        return bottomToolView.mediaMessageTextToolbar
+    }
+
+    lazy var bottomToolView: BottomToolView = {
+        let isAddMoreVisible = mode == .sharedNavigation
+        let bottomToolView = BottomToolView(isAddMoreVisible: isAddMoreVisible)
+
+        return bottomToolView
+    }()
+
+    // MARK: - View Lifecycle
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -160,33 +176,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         disablePagingIfNecessary()
 
-        railContainerView.backgroundColor = UIColor.black.withAlphaComponent(0.6)
-        view.addSubview(railContainerView)
-        railContainerView.preservesSuperviewLayoutMargins = true
-        railContainerView.layoutMargins.bottom = 50
-        railContainerView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-
-        let footerGradientView = GradientView(from: .clear, to: .black)
-        railContainerView.addSubview(footerGradientView)
-        footerGradientView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-        footerGradientView.autoSetDimension(.height, toSize: ScaleFromIPhone5(100))
-
-        railContainerView.addSubview(galleryRailView)
-        galleryRailView.delegate = self
-        galleryRailView.scrollFocusMode = .keepWithinBounds
-
-        galleryRailView.autoPinEdge(toSuperviewEdge: .leading)
-        galleryRailView.autoPinEdge(toSuperviewEdge: .trailing)
-        galleryRailView.autoPinEdge(toSuperviewMargin: .top)
-        galleryRailView.autoPinEdge(toSuperviewMargin: .bottom)
-        galleryRailView.autoSetDimension(.height, toSize: 72)
-
         // Bottom Toolbar
-
-        let isAddMoreVisible = mode == .sharedNavigation
-        let captioningToolbar = CaptioningToolbar(isAddMoreVisible: isAddMoreVisible)
-        captioningToolbar.captioningToolbarDelegate = self
-        self.captioningToolbar = captioningToolbar
+        galleryRailView.delegate = self
+        mediaMessageTextToolbar.mediaMessageTextToolbarDelegate = self
 
         // Navigation
 
@@ -205,8 +197,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         self.setCurrentItem(firstItem, direction: .forward, animated: false)
-
-        captioningToolbar.captionText = currentViewController.attachment.captionText
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -232,8 +222,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     override public var inputAccessoryView: UIView? {
-        self.captioningToolbar.layoutIfNeeded()
-        return self.captioningToolbar
+        bottomToolView.layoutIfNeeded()
+        return bottomToolView
     }
 
     override public var canBecomeFirstResponder: Bool {
@@ -347,13 +337,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
 
             if transitionCompleted {
-                UIView.transition(with: self.captioningToolbar,
-                                  duration: 0.1,
-                                  options: .transitionCrossDissolve,
-                                  animations: {
-                                    self.captioningToolbar.captionText = self.currentViewController.attachment.captionText
-                },
-                                  completion: nil)
                 previousPage.zoomOut(animated: false)
                 updateMediaRail()
             }
@@ -423,6 +406,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         Logger.debug("cache miss.")
         let viewController = AttachmentPrepViewController(attachmentItem: item)
+        viewController.prepDelegate = self
         cachedPages[item] = viewController
 
         return viewController
@@ -430,7 +414,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     private func setCurrentItem(_ item: SignalAttachmentItem, direction: UIPageViewControllerNavigationDirection, animated isAnimated: Bool) {
         guard let page = self.buildPage(item: item) else {
-            owsFailDebug("unexpetedly unable to build new page")
+            owsFailDebug("unexpectedly unable to build new page")
             return
         }
 
@@ -447,8 +431,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         galleryRailView.configureCellViews(itemProvider: attachmentItemCollection, focusedItem: currentItem)
         addDeleteIcon(cellViews: galleryRailView.cellViews)
 
-        railContainerView.isHidden = attachmentItemCollection.attachmentItems.count < 2
-        captioningToolbar.alwaysShowGradient = railContainerView.isHidden
+        galleryRailView.isHidden = attachmentItemCollection.attachmentItems.count < 2
     }
 
     let attachmentItemCollection: AttachmentItemCollection
@@ -496,40 +479,40 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     @objc func cancelPressed(sender: UIButton) {
         self.approvalDelegate?.attachmentApproval(self, didCancelAttachments: attachments)
     }
+}
 
-    // MARK: - CaptioningToolbarDelegate
-
+extension AttachmentApprovalViewController: MediaMessageTextToolbarDelegate {
     var currentPageController: AttachmentPrepViewController {
         return viewControllers!.first as! AttachmentPrepViewController
     }
 
-    func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar) {
+    func mediaMessageTextToolbarDidBeginEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
         currentPageController.setAttachmentViewScale(.compact, animated: true)
     }
 
-    func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar) {
+    func mediaMessageTextToolbarDidEndEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
         currentPageController.setAttachmentViewScale(.fullsize, animated: true)
     }
 
-    func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar) {
+    func mediaMessageTextToolbarDidTapSend(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
         // Toolbar flickers in and out if there are errors
         // and remains visible momentarily after share extension is dismissed.
         // It's easiest to just hide it at this point since we're done with it.
         currentViewController.shouldAllowAttachmentViewResizing = false
-        captioningToolbar.isUserInteractionEnabled = false
-        captioningToolbar.isHidden = true
+        mediaMessageTextToolbar.isUserInteractionEnabled = false
+        mediaMessageTextToolbar.isHidden = true
 
-        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments)
+        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: mediaMessageTextToolbar.messageText)
     }
 
-    func captioningToolbar(_ captioningToolbar: CaptioningToolbar, textViewDidChange textView: UITextView) {
-        currentItem.attachment.captionText = textView.text
-
-        self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: currentItem.attachment)
-    }
-
-    func captioningToolbarDidAddMore(_ captioningToolbar: CaptioningToolbar) {
+    func mediaMessageTextToolbarDidAddMore(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
         self.approvalDelegate?.attachmentApproval?(self, addMoreToAttachments: attachments)
+    }
+}
+
+extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate {
+    func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem) {
+        self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: attachmentItem.attachment)
     }
 }
 
@@ -576,6 +559,10 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
 
 // MARK: - Individual Page
 
+protocol AttachmentPrepViewControllerDelegate: class {
+    func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem)
+}
+
 public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
     // We sometimes shrink the attachment view so that it remains somewhat visible
     // when the keyboard is presented.
@@ -584,6 +571,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     }
 
     // MARK: - Properties
+
+    weak var prepDelegate: AttachmentPrepViewControllerDelegate?
 
     let attachmentItem: SignalAttachmentItem
     var attachment: SignalAttachment {
@@ -610,6 +599,10 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     }
 
     // MARK: - View Lifecycle
+
+    lazy var captionView: CaptionView = {
+        return CaptionView(attachmentItem: attachmentItem)
+    }()
 
     override public func loadView() {
         self.view = UIView()
@@ -711,7 +704,22 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
             playButton.autoCenterInSuperview()
         }
+
+        // Caption
+
+        view.addSubview(captionView)
+        captionView.delegate = self
+
+        captionView.autoPinWidthToSuperview()
+
+        // MJK TODO ideal CaptionView placement
+        // 1. when no keyboard is popped (e.g. initially) to be *just* above the rail
+        // 2. when the CaptionTextView is first responder, to be *just* above the keyboard
+        // 3. when the MessageTextView is first responder, to be behind the keyboard
+        captionView.autoPinEdge(toSuperviewMargin: .bottom, withInset: 136)
     }
+
+    var captionViewBottomConstraint: NSLayoutConstraint!
 
     override public func viewWillLayoutSubviews() {
         Logger.debug("")
@@ -876,6 +884,14 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     }
 }
 
+extension AttachmentPrepViewController: CaptionViewDelegate {
+    func captionView(_ captionView: CaptionView, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem) {
+        let attachment = attachmentItem.attachment
+        attachment.captionText = captionText
+        prepDelegate?.prepViewController(self, didUpdateCaptionForAttachmentItem: attachmentItem)
+    }
+}
+
 extension AttachmentPrepViewController: UIScrollViewDelegate {
 
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -944,27 +960,227 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
     }
 }
 
-protocol CaptioningToolbarDelegate: class {
-    func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar)
-    func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar)
-    func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar)
-    func captioningToolbar(_ captioningToolbar: CaptioningToolbar, textViewDidChange: UITextView)
-    func captioningToolbarDidAddMore(_ captioningToolbar: CaptioningToolbar)
+class BottomToolView: UIView {
+    let mediaMessageTextToolbar: MediaMessageTextToolbar
+    let galleryRailView: GalleryRailView
+
+    let kGalleryRailViewHeight: CGFloat = 72
+
+    required init(isAddMoreVisible: Bool) {
+        mediaMessageTextToolbar = MediaMessageTextToolbar(isAddMoreVisible: isAddMoreVisible)
+
+        galleryRailView = GalleryRailView()
+        galleryRailView.scrollFocusMode = .keepWithinBounds
+        galleryRailView.autoSetDimension(.height, toSize: kGalleryRailViewHeight)
+
+        super.init(frame: .zero)
+
+        // Specifying autorsizing mask and an intrinsic content size allows proper
+        // sizing when used as an input accessory view.
+        self.autoresizingMask = .flexibleHeight
+        self.translatesAutoresizingMaskIntoConstraints = false
+
+        backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        preservesSuperviewLayoutMargins = true
+
+        let stackView = UIStackView(arrangedSubviews: [self.galleryRailView, self.mediaMessageTextToolbar])
+        stackView.axis = .vertical
+
+        addSubview(stackView)
+        stackView.autoPinEdge(toSuperviewEdge: .leading)
+        stackView.autoPinEdge(toSuperviewEdge: .trailing)
+        stackView.autoPinEdge(toSuperviewEdge: .top)
+        stackView.autoPinEdge(toSuperviewMargin: .bottom)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: 
+
+    override var intrinsicContentSize: CGSize {
+        get {
+            // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
+            // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
+            return CGSize.zero
+        }
+    }
 }
 
-class CaptioningToolbar: UIView, UITextViewDelegate {
+protocol CaptionViewDelegate: class {
+    func captionView(_ captionView: CaptionView, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem)
+}
 
-    weak var captioningToolbarDelegate: CaptioningToolbarDelegate?
+class CaptionView: UIView {
+
+    var captionText: String? {
+        get { return textView.text }
+        set {
+            textView.text = newValue
+            updatePlaceholderTextViewVisibility()
+        }
+    }
+
+    let attachmentItem: SignalAttachmentItem
+    var attachment: SignalAttachment {
+        return attachmentItem.attachment
+    }
+
+    weak var delegate: CaptionViewDelegate?
+
+    private let kMinTextViewHeight: CGFloat = 38
+    private var textViewHeightConstraint: NSLayoutConstraint!
+
+    // TODO show length limit label
+    private let lengthLimitLabel: UILabel = UILabel()
+
+    // MARK: Initializers
+
+    init(attachmentItem: SignalAttachmentItem) {
+        self.attachmentItem = attachmentItem
+
+        super.init(frame: .zero)
+
+        self.captionText = attachmentItem.captionText
+
+        addSubview(placeholderTextView)
+        placeholderTextView.autoPinEdgesToSuperviewMargins()
+
+        backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        addSubview(textView)
+        textView.autoPinEdgesToSuperviewMargins()
+        textView.delegate = self
+
+        self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: 
+
+    override var inputAccessoryView: UIView? {
+        return nil
+    }
+
+    // MARK: Subviews
+
+    func updatePlaceholderTextViewVisibility() {
+        let isHidden: Bool = {
+            guard !self.textView.isFirstResponder else {
+                return true
+            }
+
+            guard let captionText = self.textView.text else {
+                return false
+            }
+
+            guard captionText.count > 0 else {
+                return false
+            }
+
+            return true
+        }()
+
+        placeholderTextView.isHidden = isHidden
+    }
+
+    private lazy var placeholderTextView: UITextView = {
+        let placeholderTextView = UITextView()
+        placeholderTextView.text = NSLocalizedString("ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER", comment: "placeholder text for an empty captioning field")
+        placeholderTextView.isEditable = false
+
+        placeholderTextView.backgroundColor = .clear
+        placeholderTextView.keyboardAppearance = Theme.keyboardAppearance
+        placeholderTextView.font = UIFont.ows_dynamicTypeBody
+        // MJK FIXME always dark theme
+        placeholderTextView.textColor = Theme.placeholderColor
+        placeholderTextView.returnKeyType = .done
+
+        return placeholderTextView
+    }()
+
+    private lazy var textView: UITextView = {
+        let textView = UITextView()
+        textView.backgroundColor = .clear
+        textView.keyboardAppearance = Theme.keyboardAppearance
+        textView.font = UIFont.ows_dynamicTypeBody
+        textView.textColor = Theme.darkThemePrimaryColor
+        textView.returnKeyType = .done
+
+        return textView
+    }()
+}
+
+extension CaptionView: UITextViewDelegate {
+    public func textViewDidBeginEditing(_ textView: UITextView) {
+        updatePlaceholderTextViewVisibility()
+    }
+
+    public func textViewDidEndEditing(_ textView: UITextView) {
+        updatePlaceholderTextViewVisibility()
+    }
+
+    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let existingText: String = textView.text ?? ""
+        let proposedText: String = (existingText as NSString).replacingCharacters(in: range, with: text)
+
+        guard proposedText.utf8.count <= kOversizeTextMessageSizeThreshold else {
+            Logger.debug("long text was truncated")
+            self.lengthLimitLabel.isHidden = false
+
+            // `range` represents the section of the existing text we will replace. We can re-use that space.
+            // Range is in units of NSStrings's standard UTF-16 characters. Since some of those chars could be
+            // represented as single bytes in utf-8, while others may be 8 or more, the only way to be sure is
+            // to just measure the utf8 encoded bytes of the replaced substring.
+            let bytesAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").utf8.count
+
+            // Accept as much of the input as we can
+            let byteBudget: Int = Int(kOversizeTextMessageSizeThreshold) - bytesAfterDelete
+            if byteBudget >= 0, let acceptableNewText = text.truncated(toByteCount: UInt(byteBudget)) {
+                textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
+            }
+
+            return false
+        }
+        self.lengthLimitLabel.isHidden = true
+
+        // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
+        // allows the user to get the keyboard out of the way while in the attachment approval view.
+        if text == "\n" {
+            textView.resignFirstResponder()
+            return false
+        } else {
+            return true
+        }
+    }
+
+    public func textViewDidChange(_ textView: UITextView) {
+        self.delegate?.captionView(self, didChangeCaptionText: textView.text, attachmentItem: attachmentItem)
+    }
+}
+
+protocol MediaMessageTextToolbarDelegate: class {
+    func mediaMessageTextToolbarDidTapSend(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
+    func mediaMessageTextToolbarDidBeginEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
+    func mediaMessageTextToolbarDidEndEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
+    func mediaMessageTextToolbarDidAddMore(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
+}
+
+class MediaMessageTextToolbar: UIView, UITextViewDelegate {
+
+    weak var mediaMessageTextToolbarDelegate: MediaMessageTextToolbarDelegate?
     private let addMoreButton: UIButton
     private let sendButton: UIButton
     private let textView: UITextView
 
-    var captionText: String? {
+    var messageText: String? {
         get { return self.textView.text }
         set { self.textView.text = newValue }
     }
 
-    private let bottomGradient: GradientView = GradientView(from: .clear, to: .black)
     private let lengthLimitLabel: UILabel = UILabel()
 
     // Layout Constants
@@ -1051,7 +1267,6 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         self.lengthLimitLabel.isHidden = true
 
         let contentView = UIView()
-        contentView.addSubview(bottomGradient)
         contentView.addSubview(sendButton)
         contentView.addSubview(textView)
         contentView.addSubview(lengthLimitLabel)
@@ -1103,11 +1318,6 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         lengthLimitLabel.autoPinEdge(.bottom, to: .top, of: textView, withOffset: -6)
         lengthLimitLabel.setContentHuggingHigh()
         lengthLimitLabel.setCompressionResistanceHigh()
-
-        bottomGradient.isHidden = true
-        let bottomGradientHeight = ScaleFromIPhone5(100)
-        bottomGradient.autoSetDimension(.height, toSize: bottomGradientHeight)
-        bottomGradient.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -1117,18 +1327,17 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     // MARK: -
 
     @objc func didTapSend() {
-        self.captioningToolbarDelegate?.captioningToolbarDidTapSend(self)
+        mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidTapSend(self)
     }
 
     @objc func didTapAddMore() {
-        self.captioningToolbarDelegate?.captioningToolbarDidAddMore(self)
+        mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidAddMore(self)
     }
 
     // MARK: - UITextViewDelegate
 
     public func textViewDidChange(_ textView: UITextView) {
         updateHeight(textView: textView)
-        self.captioningToolbarDelegate?.captioningToolbar(self, textViewDidChange: textView)
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -1166,30 +1375,12 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         }
     }
 
-    var alwaysShowGradient: Bool = false {
-        didSet {
-            if alwaysShowGradient {
-                bottomGradient.isHidden = false
-            }
-        }
-    }
-
     public func textViewDidBeginEditing(_ textView: UITextView) {
-        self.captioningToolbarDelegate?.captioningToolbarDidBeginEditing(self)
-        if !alwaysShowGradient {
-            UIView.animate(withDuration: 0.2) {
-                self.bottomGradient.isHidden = false
-            }
-        }
+        mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidBeginEditing(self)
     }
 
     public func textViewDidEndEditing(_ textView: UITextView) {
-        self.captioningToolbarDelegate?.captioningToolbarDidEndEditing(self)
-        if !alwaysShowGradient {
-            UIView.animate(withDuration: 0.2) {
-                self.bottomGradient.isHidden = true
-            }
-        }
+        mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidEndEditing(self)
     }
 
     // MARK: - Helpers
@@ -1199,11 +1390,11 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         let currentSize = textView.frame.size
         let newHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
 
-        if newHeight != self.textViewHeight {
-            Logger.debug("TextView height changed: \(self.textViewHeight) -> \(newHeight)")
-            self.textViewHeight = newHeight
-            self.textViewHeightConstraint?.constant = textViewHeight
-            self.invalidateIntrinsicContentSize()
+        if newHeight != textViewHeight {
+            Logger.debug("TextView height changed: \(textViewHeight) -> \(newHeight)")
+            textViewHeight = newHeight
+            textViewHeightConstraint?.constant = textViewHeight
+            invalidateIntrinsicContentSize()
         }
     }
 
