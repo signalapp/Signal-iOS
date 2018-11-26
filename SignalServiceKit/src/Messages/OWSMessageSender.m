@@ -686,7 +686,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         failureHandlerParam(error);
     };
 
-    __block TSThread *_Nullable thread = message.thread;
+    TSThread *_Nullable thread = message.thread;
 
     BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
     if (!thread && !isSyncMessage) {
