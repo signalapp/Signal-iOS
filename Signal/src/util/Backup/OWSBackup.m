@@ -148,6 +148,13 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
     return SSKEnvironment.shared.primaryStorage;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark - Backup Export
 
 - (void)tryToExportBackup
@@ -270,7 +277,7 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
         // Don't start backups when app is in the background.
         return NO;
     }
-    if (![TSAccountManager isRegistered]) {
+    if (![self.tsAccountManager isRegistered]) {
         return NO;
     }
     return YES;

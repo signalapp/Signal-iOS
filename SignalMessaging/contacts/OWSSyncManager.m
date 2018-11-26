@@ -215,7 +215,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (void)sendConfigurationSyncMessage {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (!TSAccountManager.isRegistered) {
+        if (!self.tsAccountManager.isRegistered) {
             return;
         }
 

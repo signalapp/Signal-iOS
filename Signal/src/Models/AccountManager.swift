@@ -25,7 +25,7 @@ public class AccountManager: NSObject {
         SwiftSingletons.register(self)
     }
 
-    // MARK: - Singletons
+    // MARK: - Dependencies
 
     private var networkManager: TSNetworkManager {
         return SSKEnvironment.shared.networkManager

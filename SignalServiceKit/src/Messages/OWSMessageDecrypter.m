@@ -131,6 +131,13 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     return SSKEnvironment.shared.udManager;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark - Blocking
 
 - (BOOL)isEnvelopeSenderBlocked:(SSKProtoEnvelope *)envelope
@@ -138,11 +145,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     OWSAssertDebug(envelope);
 
     return [self.blockingManager.blockedPhoneNumbers containsObject:envelope.source];
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    return TSAccountManager.sharedInstance;
 }
 
 #pragma mark - Decryption
@@ -156,7 +158,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     OWSAssertDebug(envelopeData);
     OWSAssertDebug(successBlockParameter);
     OWSAssertDebug(failureBlockParameter);
-    OWSAssertDebug([TSAccountManager isRegistered]);
+    OWSAssertDebug([self.tsAccountManager isRegistered]);
 
     // successBlock is called synchronously so that we can avail ourselves of
     // the transaction.

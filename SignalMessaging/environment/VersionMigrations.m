@@ -30,7 +30,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation VersionMigrations
 
-#pragma mark Utility methods
+#pragma mark - Dependencies
+
++ (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+#pragma mark - Utility methods
 
 + (void)performUpdateCheckWithCompletion:(VersionMigrationCompletion)completion
 {
@@ -76,12 +85,12 @@ NS_ASSUME_NONNULL_BEGIN
         [CurrentAppContext().frontmostViewController presentViewController:alertController animated:YES completion:nil];
     }
 
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [TSAccountManager isRegistered]) {
+    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [self.tsAccountManager isRegistered]) {
         [self clearVideoCache];
         [self blockingAttributesUpdate];
     }
 
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [TSAccountManager isRegistered]) {
+    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [self.tsAccountManager isRegistered]) {
         [self clearBloomFilterCache];
     }
 

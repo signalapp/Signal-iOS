@@ -38,6 +38,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation CodeVerificationViewController
 
+#pragma mark - Dependencies
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+#pragma mark -
+
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super initWithCoder:aDecoder];
@@ -352,7 +363,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [_requestCodeAgainSpinner startAnimating];
     __weak CodeVerificationViewController *weakSelf = self;
-    [TSAccountManager
+    [self.tsAccountManager
         rerequestSMSWithSuccess:^{
             OWSLogInfo(@"Successfully requested SMS code");
             [weakSelf enableServerActions:YES];
@@ -375,7 +386,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [_requestCallSpinner startAnimating];
     __weak CodeVerificationViewController *weakSelf = self;
-    [TSAccountManager
+    [self.tsAccountManager
         rerequestVoiceWithSuccess:^{
             OWSLogInfo(@"Successfully requested voice code");
 

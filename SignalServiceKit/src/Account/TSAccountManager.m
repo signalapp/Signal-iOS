@@ -135,11 +135,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                                                            userInfo:nil];
 }
 
-+ (BOOL)isRegistered
-{
-    return [[self sharedInstance] isRegistered];
-}
-
 - (BOOL)isRegistered
 {
     @synchronized (self) {
@@ -294,7 +289,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }];
 }
 
-+ (void)registerWithPhoneNumber:(NSString *)phoneNumber
+- (void)registerWithPhoneNumber:(NSString *)phoneNumber
                         success:(void (^)(void))successBlock
                         failure:(void (^)(NSError *error))failureBlock
                 smsVerification:(BOOL)isSMS
@@ -308,8 +303,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     // The country code of TSAccountManager.phoneNumberAwaitingVerification is used to
     // determine whether or not to use domain fronting, so it needs to be set _before_
     // we make our verification code request.
-    TSAccountManager *manager = [self sharedInstance];
-    manager.phoneNumberAwaitingVerification = phoneNumber;
+    self.phoneNumberAwaitingVerification = phoneNumber;
 
     TSRequest *request =
         [OWSRequestFactory requestVerificationCodeRequestWithPhoneNumber:phoneNumber
@@ -331,21 +325,17 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }];
 }
 
-+ (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
+- (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
 {
-    TSAccountManager *manager = [self sharedInstance];
-    NSString *number          = manager.phoneNumberAwaitingVerification;
-
+    NSString *number          = self.phoneNumberAwaitingVerification;
     OWSAssertDebug(number);
 
     [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:YES];
 }
 
-+ (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
+- (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
 {
-    TSAccountManager *manager = [self sharedInstance];
-    NSString *number          = manager.phoneNumberAwaitingVerification;
-
+    NSString *number          = self.phoneNumberAwaitingVerification;
     OWSAssertDebug(number);
 
     [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:NO];

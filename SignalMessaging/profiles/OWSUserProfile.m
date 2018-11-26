@@ -105,6 +105,13 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     return SSKEnvironment.shared.syncManager;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark -
 
 - (nullable NSString *)avatarUrlPath
@@ -219,7 +226,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             // We populate an initial (empty) profile on launch of a new install, but until
             // we have a registered account, syncing will fail (and there could not be any
             // linked device to sync to at this point anyway).
-            if ([TSAccountManager isRegistered] && CurrentAppContext().isMainApp) {
+            if ([self.tsAccountManager isRegistered] && CurrentAppContext().isMainApp) {
                 [self.syncManager syncLocalContact];
             }
 

@@ -17,6 +17,12 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 @class TSNetworkManager;
 @class YapDatabaseReadWriteTransaction;
 
+typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
+    OWSRegistrationState_Unregistered,
+    OWSRegistrationState_PendingBackupRestore,
+    OWSRegistrationState_Registered,
+};
+
 @interface TSAccountManager : NSObject
 
 // This property is exposed for testing purposes only.
@@ -37,7 +43,6 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
  *
  *  @return registered or not
  */
-+ (BOOL)isRegistered;
 - (BOOL)isRegistered;
 
 /**
@@ -76,14 +81,14 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 #pragma mark - Register with phone number
 
-+ (void)registerWithPhoneNumber:(NSString *)phoneNumber
+- (void)registerWithPhoneNumber:(NSString *)phoneNumber
                         success:(void (^)(void))successBlock
                         failure:(void (^)(NSError *error))failureBlock
                 smsVerification:(BOOL)isSMS;
 
-+ (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
+- (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
 
-+ (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
+- (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                           pin:(nullable NSString *)pin
