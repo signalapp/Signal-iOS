@@ -579,10 +579,15 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
     }
     
     private func objectForIndexPath(indexPath: IndexPath) -> NSObject {
-        var object = NSObject()
         
+        var viewExtensionName = FLTagDatabaseViewExtensionName
+        if searchBar?.text?.count ?? 0 > 0 {
+            viewExtensionName = FLFilteredTagDatabaseViewExtensionName
+        }
+
+        var object = NSObject()
         self.uiDBConnection.read { transaction in
-            let viewTransaction: YapDatabaseViewTransaction = transaction.ext(FLFilteredTagDatabaseViewExtensionName) as! YapDatabaseViewTransaction
+            let viewTransaction: YapDatabaseViewTransaction = transaction.ext(viewExtensionName) as! YapDatabaseViewTransaction
             object = viewTransaction.object(at: indexPath, with: self.tagMappings!) as! NSObject
         }
         return object
