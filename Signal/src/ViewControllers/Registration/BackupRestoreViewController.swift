@@ -66,6 +66,14 @@ public class BackupRestoreViewController: OWSTableViewController {
         self.contents = contents
     }
 
+    private var progressFormatter: NumberFormatter = {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .percent
+        numberFormatter.maximumFractionDigits = 0
+        numberFormatter.multiplier = 1
+        return numberFormatter
+    }()
+
     private func updateProgressContents() {
         let contents = OWSTableContents()
 
@@ -80,11 +88,7 @@ public class BackupRestoreViewController: OWSTableViewController {
 
             if let backupImportProgress = backup.backupImportProgress {
                 let progressInt = backupImportProgress.floatValue * 100
-                let numberFormatter = NumberFormatter()
-                numberFormatter.numberStyle = .percent
-                numberFormatter.maximumFractionDigits = 0
-                numberFormatter.multiplier = 1
-                if let progressString = numberFormatter.string(from: NSNumber(value: progressInt)) {
+                if let progressString = progressFormatter.string(from: NSNumber(value: progressInt)) {
                     section.add(OWSTableItem.label(withText: NSLocalizedString("BACKUP_RESTORE_PROGRESS", comment: "Label for the backup restore progress."), accessoryText: progressString))
                 } else {
                     owsFailDebug("Could not format progress: \(progressInt)")
@@ -136,6 +140,8 @@ public class BackupRestoreViewController: OWSTableViewController {
         } else {
             SignalApp.shared().showHomeView()
         }
+
+        NotificationCenter.default.removeObserver(self)
     }
 
     // MARK: - Notifications
