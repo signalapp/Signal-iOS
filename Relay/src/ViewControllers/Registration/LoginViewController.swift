@@ -36,22 +36,26 @@ class LoginViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-//        self.navigationController?.navigationBar.isHidden = true
-        
-//        self.createAccountButton.isEnabled = false
-//        self.createAccountButton.alpha = 0.5
+
+        NotificationCenter.default.addObserver(self,
+                                               selector:#selector(updateLoginButton),
+                                               name: NSNotification.Name.UITextFieldTextDidChange,
+                                               object: nil)
+        self.updateLoginButton()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        NotificationCenter.default.removeObserver(self)
-        
         super.viewWillDisappear(animated)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
+
+        super.viewDidDisappear(animated)
     }
 
     override func didReceiveMemoryWarning() {
@@ -59,7 +63,6 @@ class LoginViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
 
- 
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -77,21 +80,21 @@ class LoginViewController: UITableViewController {
     }
     
     private func proceedWithSMSAuth() {
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe({
             self.performSegue(withIdentifier: "smsAuthSegue", sender: self)
-        }
+        })
     }
     
     private func proceedWithPasswordAuth() {
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe({
             self.performSegue(withIdentifier: "passwordAuthSegue", sender: self)
-        }
+        })
     }
     
     private func proceedWithTOTPAuth() {
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe({
             self.performSegue(withIdentifier: "totpAuthSegue", sender: self)
-        }
+        })
     }
     
     // MARK: - Actions
@@ -127,6 +130,16 @@ class LoginViewController: UITableViewController {
         }
     }
     
+    // MARK: - Notification handler(s)
+    @objc func updateLoginButton() {
+        if self.usernameTextField.text!.count > 0 {
+            self.loginButton.enable()
+        } else {
+            self.loginButton.disable()
+        }
+    }
+
+    
     // MARK: - Helpers
     private func isValidOrg(org: String) -> Bool {
         // TODO: Someday apply regex here for more thorough validation
@@ -139,32 +152,26 @@ class LoginViewController: UITableViewController {
         return (username.count > 0)
     }
     
-        private func startSpinner() {
-            DispatchQueue.main.async {
-                self.spinner.startAnimating()
-                self.loginButton.isEnabled = false
-                self.loginButton.alpha = 0.5
-                self.createAccountButton.isEnabled = false
-                self.createAccountButton.alpha = 0.5
-            }
-        }
+    private func startSpinner() {
+        DispatchMainThreadSafe({
+            self.spinner.startAnimating()
+            self.loginButton.disable()
+            self.createAccountButton.disable()
+        })
+    }
     
     private func stopSpinner() {
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe({
             self.spinner.stopAnimating()
-            self.loginButton.isEnabled = true
-            self.loginButton.alpha = 1.0
-            
-            // TODO: uncomment after implementation
-//            self.createAccountButton.isEnabled = true
-//            self.createAccountButton.alpha = 1.0
-        }
+            self.loginButton.enable()
+            self.createAccountButton.enable()
+        })
     }
 }
 
 extension UIViewController {
     func presentInfoAlert(message: String) {
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe({
             let alert = UIAlertController(title: nil,
                                           message: message,
                                           preferredStyle: .alert)
@@ -176,6 +183,7 @@ extension UIViewController {
             } else if self.tabBarController != nil {
                 self.tabBarController?.present(alert, animated: true, completion: nil)
             }
-        }
+        })
     }
 }
+
