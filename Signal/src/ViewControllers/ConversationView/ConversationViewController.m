@@ -3466,7 +3466,7 @@ typedef enum : NSUInteger {
 - (void)showApprovalDialogForAttachment:(SignalAttachment *_Nullable)attachment
 {
     if (attachment == nil) {
-        OWSFailDebug(@"attachment was unexpetedly nil");
+        OWSFailDebug(@"attachment was unexpectedly nil");
         [self showErrorAlertForAttachment:nil];
         return;
     }

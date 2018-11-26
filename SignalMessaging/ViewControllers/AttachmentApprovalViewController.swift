@@ -414,7 +414,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     private func setCurrentItem(_ item: SignalAttachmentItem, direction: UIPageViewControllerNavigationDirection, animated isAnimated: Bool) {
         guard let page = self.buildPage(item: item) else {
-            owsFailDebug("unexpetedly unable to build new page")
+            owsFailDebug("unexpectedly unable to build new page")
             return
         }
 
