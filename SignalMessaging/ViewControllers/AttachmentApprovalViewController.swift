@@ -306,7 +306,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
         lastObservedKeyboardTop = keyboardEndFrame.size.height
 
-        currentPageController.updateCaptionViewBottomInset()
+        let keyboardScenario: KeyboardScenario = bottomToolView.isEditingMediaMessage ? .editingMessage : .editingCaption
+        currentPageController.updateCaptionViewBottomInset(keyboardScenario: keyboardScenario)
     }
 
     @objc
@@ -328,9 +329,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
 
-        lastObservedKeyboardTop = keyboardEndFrame.size.height + keyboardStartFrame.minY - keyboardEndFrame.minY
-
-        currentPageController.updateCaptionViewBottomInset()
+        lastObservedKeyboardTop = UIScreen.main.bounds.height - keyboardEndFrame.size.height
+        currentPageController.updateCaptionViewBottomInset(keyboardScenario: .hidden)
     }
 
     // MARK: - View Helpers
@@ -424,7 +424,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // use compact scale when keyboard is popped.
             let scale: AttachmentPrepViewController.AttachmentViewScale = self.isFirstResponder ? .fullsize : .compact
             pendingPage.setAttachmentViewScale(scale, animated: false)
-            pendingPage.updateCaptionViewBottomInset()
+
+            let keyboardScenario: KeyboardScenario = bottomToolView.isEditingMediaMessage ? .editingMessage : .hidden
+            pendingPage.updateCaptionViewBottomInset(keyboardScenario: keyboardScenario)
         }
     }
 
@@ -670,39 +672,13 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
         enablePaging()
     }
 
-    var desiredCaptionViewBottomInset: CGFloat {
-
-        let safeAreaInset: CGFloat
-        if #available(iOS 11, *) {
-            safeAreaInset = view.safeAreaInsets.bottom
-        } else {
-            safeAreaInset = 0
+    func desiredCaptionViewBottomInset(keyboardScenario: KeyboardScenario) -> CGFloat {
+        switch keyboardScenario {
+        case .hidden, .editingMessage:
+            return bottomToolView.bounds.height
+        case .editingCaption:
+            return lastObservedKeyboardTop
         }
-
-        // CaptionView bottom offset scenarios:
-        //
-        // 1. when no keyboard is popped (e.g. initially) to be *just* above the rail
-        // 2. when the CaptionView becomes first responder, to be *just* above the keyboard, so the
-        //    user can see what they're typing.
-        //
-        // For both these cases we apply the `lastObservedKeyboardTop`
-        guard bottomToolView.mediaMessageTextToolbar.textView.isFirstResponder else {
-            // 3. Immediately after dismissing the CaptionView but before the ViewController
-            //    regains firstResponder, there is an instant where the inputAccessoryView is
-            //    not shown, so the lastObservedKeyboardTop is effectively 0. A moment later
-            //    when the ViewController regains firstResponder, the inputAccessoryView will be
-            //    presented. Naively, this would result in the CaptionView undesirably bouncing to
-            //    the bottom of the ViewController, and then immediately back up as the
-            //    inputAccessoryView is presented.
-            //    Instead, we position the CaptionView where it will end up, by using
-            //    `bottomToolView.height`, which will only be greater than
-            //    `lastObserveredKeyboardTop` when the keyboard is not presented.
-            return max(bottomToolView.bounds.height, lastObservedKeyboardTop) - safeAreaInset
-        }
-
-        // 4. when the MessageTextView becomes first responder, the keyboard should shift up
-        //    "in front" of the CaptionView
-        return bottomToolView.bounds.height - safeAreaInset
     }
 
     // MARK: Helpers
@@ -759,6 +735,10 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
 
 // MARK: - Individual Page
 
+enum KeyboardScenario {
+    case hidden, editingMessage, editingCaption
+}
+
 protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem)
 
@@ -766,7 +746,7 @@ protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView)
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didEndEditingCaptionView captionView: CaptionView)
 
-    var desiredCaptionViewBottomInset: CGFloat { get }
+    func desiredCaptionViewBottomInset(keyboardScenario: KeyboardScenario) -> CGFloat
 }
 
 public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
@@ -931,7 +911,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         captionView.delegate = self
 
         captionView.autoPinWidthToSuperview()
-        captionViewBottomConstraint = captionView.autoPinEdge(toSuperviewMargin: .bottom)
+        captionViewBottomConstraint = captionView.autoPinEdge(toSuperviewEdge: .bottom)
     }
 
     override public func viewWillLayoutSubviews() {
@@ -948,14 +928,14 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     var hasLaidOutCaptionView: Bool = false
     var captionViewBottomConstraint: NSLayoutConstraint!
-    func updateCaptionViewBottomInset() {
+    func updateCaptionViewBottomInset(keyboardScenario: KeyboardScenario) {
         guard let prepDelegate = self.prepDelegate else {
             owsFailDebug("prepDelegate was unexpectedly nil")
             return
         }
 
         let changeBlock = {
-            let offset: CGFloat = -1 * prepDelegate.desiredCaptionViewBottomInset
+            let offset: CGFloat = -1 * prepDelegate.desiredCaptionViewBottomInset(keyboardScenario: keyboardScenario)
             self.captionViewBottomConstraint.constant = offset
             self.captionView.superview?.layoutIfNeeded()
         }
@@ -1228,6 +1208,10 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
 class BottomToolView: UIView {
     let mediaMessageTextToolbar: MediaMessageTextToolbar
     let galleryRailView: GalleryRailView
+
+    var isEditingMediaMessage: Bool {
+        return mediaMessageTextToolbar.textView.isFirstResponder
+    }
 
     let kGalleryRailViewHeight: CGFloat = 72
 
