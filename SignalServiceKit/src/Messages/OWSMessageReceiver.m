@@ -14,6 +14,7 @@
 #import "OWSQueues.h"
 #import "OWSStorage.h"
 #import "SSKEnvironment.h"
+#import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
 #import "TSYapDatabaseObject.h"
@@ -254,6 +255,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         }
     }];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(registrationStateDidChange:)
+                                                 name:RegistrationStateDidChangeNotification
+                                               object:nil];
+
     return self;
 }
 
@@ -271,6 +277,26 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     OWSAssertDebug(SSKEnvironment.shared.batchMessageProcessor);
 
     return SSKEnvironment.shared.batchMessageProcessor;
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+#pragma mark - Notifications
+
+- (void)registrationStateDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (CurrentAppContext().isMainApp) {
+            [self drainQueue];
+        }
+    }];
 }
 
 #pragma mark - Instance methods
@@ -296,6 +322,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     // Don't decrypt messages in app extensions.
     if (!CurrentAppContext().isMainApp) {
+        return;
+    }
+    if (!self.tsAccountManager.isRegisteredAndReady) {
         return;
     }
 

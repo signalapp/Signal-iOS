@@ -14,6 +14,7 @@
 #import "OWSQueues.h"
 #import "OWSStorage.h"
 #import "SSKEnvironment.h"
+#import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
 #import "TSYapDatabaseObject.h"
@@ -267,6 +268,10 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                                              selector:@selector(applicationDidEnterBackground:)
                                                  name:OWSApplicationDidEnterBackgroundNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(registrationStateDidChange:)
+                                                 name:RegistrationStateDidChangeNotification
+                                               object:nil];
 
     // Start processing.
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
@@ -292,6 +297,13 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     return SSKEnvironment.shared.messageManager;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark - Notifications
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -302,6 +314,17 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     self.isAppInBackground = YES;
+}
+
+- (void)registrationStateDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (CurrentAppContext().isMainApp) {
+            [self drainQueue];
+        }
+    }];
 }
 
 #pragma mark - instance methods
@@ -333,6 +356,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
     // Don't process incoming messages in app extensions.
     if (!CurrentAppContext().isMainApp) {
+        return;
+    }
+    if (!self.tsAccountManager.isRegisteredAndReady) {
         return;
     }
 

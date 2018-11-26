@@ -622,7 +622,7 @@ static NSTimeInterval launchStartedAt;
 - (void)enableBackgroundRefreshIfNecessary
 {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (OWS2FAManager.sharedManager.is2FAEnabled && [self.tsAccountManager isRegistered]) {
+        if (OWS2FAManager.sharedManager.is2FAEnabled && [self.tsAccountManager isRegisteredAndReady]) {
             // Ping server once a day to keep-alive 2FA clients.
             const NSTimeInterval kBackgroundRefreshInterval = 24 * 60 * 60;
             [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:kBackgroundRefreshInterval];
