@@ -13,6 +13,15 @@ public enum OWSUDError: Error {
 }
 
 @objc
+public enum OWSUDCertificateExpirationPolicy: Int {
+    // We want to try to rotate the sender certificate
+    // on a frequent basis, but we don't want to block
+    // sending on this.
+    case strict
+    case permissive
+}
+
+@objc
 public enum UnidentifiedAccessMode: Int {
     case unknown
     case enabled
@@ -130,7 +139,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
 
             // Any error is silently ignored on startup.
-            self.ensureSenderCertificate().retainUntilComplete()
+            self.ensureSenderCertificate(certificateExpirationPolicy: .strict).retainUntilComplete()
         }
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
@@ -147,7 +156,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         AssertIsOnMainThread()
 
         // Any error is silently ignored
-        ensureSenderCertificate().retainUntilComplete()
+        ensureSenderCertificate(certificateExpirationPolicy: .strict).retainUntilComplete()
     }
 
     @objc func didBecomeActive() {
@@ -159,7 +168,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
 
             // Any error is silently ignored on startup.
-            self.ensureSenderCertificate().retainUntilComplete()
+            self.ensureSenderCertificate(certificateExpirationPolicy: .strict).retainUntilComplete()
         }
     }
 
@@ -327,17 +336,19 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     #if DEBUG
     @objc
     public func hasSenderCertificate() -> Bool {
-        return senderCertificate() != nil
+        return senderCertificate(certificateExpirationPolicy: .permissive) != nil
     }
     #endif
 
-    private func senderCertificate() -> SMKSenderCertificate? {
-        guard let certificateDate = dbConnection.object(forKey: senderCertificateDateKey(), inCollection: kUDCollection) as? Date else {
-            return nil
-        }
-        guard certificateDate.timeIntervalSinceNow < kDayInterval else {
-            // Discard certificates that we obtained more than 24 hours ago.
-            return nil
+    private func senderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> SMKSenderCertificate? {
+        if certificateExpirationPolicy == .strict {
+            guard let certificateDate = dbConnection.object(forKey: senderCertificateDateKey(), inCollection: kUDCollection) as? Date else {
+                return nil
+            }
+            guard certificateDate.timeIntervalSinceNow < kDayInterval else {
+                // Discard certificates that we obtained more than 24 hours ago.
+                return nil
+            }
         }
 
         guard let certificateData = dbConnection.object(forKey: senderCertificateKey(), inCollection: kUDCollection) as? Data else {
@@ -375,8 +386,16 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func ensureSenderCertificate(success:@escaping (SMKSenderCertificate) -> Void,
                                         failure:@escaping (Error) -> Void) {
+        return ensureSenderCertificate(certificateExpirationPolicy: .permissive,
+                                        success: success,
+                                        failure: failure)
+    }
+
+    private func ensureSenderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy,
+                                        success:@escaping (SMKSenderCertificate) -> Void,
+                                        failure:@escaping (Error) -> Void) {
         firstly {
-            ensureSenderCertificate()
+            ensureSenderCertificate(certificateExpirationPolicy: certificateExpirationPolicy)
         }.map { certificate in
             success(certificate)
         }.catch { error in
@@ -384,9 +403,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }.retainUntilComplete()
     }
 
-    public func ensureSenderCertificate() -> Promise<SMKSenderCertificate> {
+    public func ensureSenderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SMKSenderCertificate> {
         // If there is a valid cached sender certificate, use that.
-        if let certificate = senderCertificate() {
+        //
+        // NOTE: We use a "strict" expiration policy.
+        if let certificate = senderCertificate(certificateExpirationPolicy: certificateExpirationPolicy) {
             return Promise.value(certificate)
         }
 
