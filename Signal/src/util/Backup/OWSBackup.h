@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const NSNotificationNameBackupStateDidChange;
 
 typedef void (^OWSBackupBoolBlock)(BOOL value);
+typedef void (^OWSBackupStringListBlock)(NSArray<NSString *> *value);
 typedef void (^OWSBackupErrorBlock)(NSError *error);
 
 typedef NS_ENUM(NSUInteger, OWSBackupState) {
@@ -65,6 +66,8 @@ NSString *NSStringForBackupImportState(OWSBackupState state);
 // current phase.
 @property (nonatomic, readonly, nullable) NSString *backupImportDescription;
 @property (nonatomic, readonly, nullable) NSNumber *backupImportProgress;
+
+- (void)allRecipientIdsWithManifestsInCloud:(OWSBackupStringListBlock)success failure:(OWSBackupErrorBlock)failure;
 
 - (void)checkCanImportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure;
 

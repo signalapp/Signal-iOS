@@ -373,6 +373,25 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
 
 #pragma mark - Backup Import
 
+- (void)allRecipientIdsWithManifestsInCloud:(OWSBackupStringListBlock)success failure:(OWSBackupErrorBlock)failure
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"");
+
+    [OWSBackupAPI
+        allRecipientIdsWithManifestsInCloudWithSuccess:^(NSArray<NSString *> *recipientIds) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                success(recipientIds);
+            });
+        }
+        failure:^(NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                failure(error);
+            });
+        }];
+}
+
 - (void)checkCanImportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure
 {
     OWSAssertIsOnMainThread();

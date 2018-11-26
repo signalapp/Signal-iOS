@@ -19,6 +19,7 @@ import CloudKit
     //
     // TODO: Change the record types when we ship to production.
     static let signalBackupRecordType = "signalBackup"
+    static let manifestRecordNameSuffix = "manifest"
     static let payloadKey = "payload"
     static let maxRetries = 5
 
@@ -84,11 +85,15 @@ import CloudKit
     // backups can reuse the same record.
     @objc
     public class func recordNameForManifest(recipientId: String) -> String {
-        return "\(recordNamePrefix(forRecipientId: recipientId))manifest"
+        return "\(recordNamePrefix(forRecipientId: recipientId))\(manifestRecordNameSuffix)"
+    }
+
+    private class func isManifest(recordName: String) -> Bool {
+        return recordName.hasSuffix(manifestRecordNameSuffix)
     }
 
     private class func recordNamePrefix(forRecipientId recipientId: String) -> String {
-        return "\(recipientId)-"
+    return "\(recipientId)-"
     }
 
     private class func recipientId(forRecordName recordName: String) -> String? {
@@ -413,6 +418,31 @@ import CloudKit
     }
 
     @objc
+    public class func allRecipientIdsWithManifestsInCloud(success: @escaping ([String]) -> Void,
+                                                          failure: @escaping (Error) -> Void) {
+
+        let processResults = { (recordNames: [String]) in
+            DispatchQueue.global().async {
+                let manifestRecordNames = recordNames.filter({ (recordName) -> Bool in
+                    self.isManifest(recordName: recordName)
+                })
+                let recipientIds = self.recipientIds(forRecordNames: manifestRecordNames)
+                success(recipientIds)
+            }
+        }
+
+        let query = CKQuery(recordType: signalBackupRecordType, predicate: NSPredicate(value: true))
+        // Fetch the first page of results for this query.
+        fetchAllRecordNamesStep(recipientId: nil,
+                                query: query,
+                                previousRecordNames: [String](),
+                                cursor: nil,
+                                remainingRetries: maxRetries,
+                                success: processResults,
+                                failure: failure)
+    }
+
+    @objc
     public class func fetchAllRecordNames(recipientId: String,
                                           success: @escaping ([String]) -> Void,
                                           failure: @escaping (Error) -> Void) {
@@ -428,27 +458,27 @@ import CloudKit
                                 failure: failure)
     }
 
-    @objc
-    public class func fetchAllBackupRecipientIds(success: @escaping ([String]) -> Void,
-                                                 failure: @escaping (Error) -> Void) {
-
-        let processResults = { (recordNames: [String]) in
-            DispatchQueue.global().async {
-                let recipientIds = self.recipientIds(forRecordNames: recordNames)
-                success(recipientIds)
-            }
-        }
-
-        let query = CKQuery(recordType: signalBackupRecordType, predicate: NSPredicate(value: true))
-        // Fetch the first page of results for this query.
-        fetchAllRecordNamesStep(recipientId: nil,
-                                query: query,
-                                previousRecordNames: [String](),
-                                cursor: nil,
-                                remainingRetries: maxRetries,
-                                success: processResults,
-                                failure: failure)
-    }
+//    @objc
+//    public class func fetchAllBackupRecipientIds(success: @escaping ([String]) -> Void,
+//                                                 failure: @escaping (Error) -> Void) {
+//
+//        let processResults = { (recordNames: [String]) in
+//            DispatchQueue.global().async {
+//                let recipientIds = self.recipientIds(forRecordNames: recordNames)
+//                success(recipientIds)
+//            }
+//        }
+//
+//        let query = CKQuery(recordType: signalBackupRecordType, predicate: NSPredicate(value: true))
+//        // Fetch the first page of results for this query.
+//        fetchAllRecordNamesStep(recipientId: nil,
+//                                query: query,
+//                                previousRecordNames: [String](),
+//                                cursor: nil,
+//                                remainingRetries: maxRetries,
+//                                success: processResults,
+//                                failure: failure)
+//    }
 
     private class func fetchAllRecordNamesStep(recipientId: String?,
                                                query: CKQuery,
