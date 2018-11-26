@@ -198,6 +198,36 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         self.setCurrentItem(firstItem, direction: .forward, animated: false)
 
+        // As a refresher, the _Information Architecture_ here is:
+        //
+        // You are approving an "Album", which has multiple "Attachments"
+        //
+        // The "media message text" and the "media rail" belong to the Album as a whole, whereas
+        // each caption belongs to the individual Attachment.
+        //
+        // The _UI Architecture_ reflects this hierarchy by putting the MediaRail and
+        // MediaMessageText input into the bottomToolView which is then the AttachmentApprovalView's
+        // inputAccessoryView.
+        //
+        // Whereas a CaptionView lives in each page of the PageViewController, per Attachment.
+        //
+        // So as you page, the CaptionViews move out of view with its page, whereas the input
+        // accessory view (rail/media message text) will remain fixed in the viewport.
+        //
+        // However (and here's the kicker), at rest, the media's CaptionView rests just above the
+        // input accessory view. So when things are static, they appear as a single piece of
+        // interface.
+        //
+        // I'm not totally sure if this is what Myles had in mind, but the screenshots left a lot of
+        // behavior ambiguous, and this was my best interpretation.
+        //
+        // Because of this complexity, it is insufficient to observe only the
+        // KeyboardWillChangeFrame, since the keyboard could be changing frame when the CaptionView
+        // became/resigned first responder, when AttachmentApprovalViewController became/resigned
+        // first responder, or when the AttachmentApprovalView's inputAccessoryView.textView
+        // became/resigned first responder, and because these things can happen in immediatre
+        // sequence, getting a single smooth animation requires handling each notification slightly
+        // differently.
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardWillShow(notification:)),
                                                name: .UIKeyboardWillShow,
