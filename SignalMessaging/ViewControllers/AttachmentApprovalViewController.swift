@@ -1327,11 +1327,11 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
     // MARK: -
 
     @objc func didTapSend() {
-        self.mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidTapSend(self)
+        mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidTapSend(self)
     }
 
     @objc func didTapAddMore() {
-        self.mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidAddMore(self)
+        mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidAddMore(self)
     }
 
     // MARK: - UITextViewDelegate
@@ -1376,11 +1376,11 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
     }
 
     public func textViewDidBeginEditing(_ textView: UITextView) {
-        self.mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidBeginEditing(self)
+        mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidBeginEditing(self)
     }
 
     public func textViewDidEndEditing(_ textView: UITextView) {
-        self.mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidEndEditing(self)
+        mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidEndEditing(self)
     }
 
     // MARK: - Helpers
@@ -1390,11 +1390,11 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
         let currentSize = textView.frame.size
         let newHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
 
-        if newHeight != self.textViewHeight {
-            Logger.debug("TextView height changed: \(self.textViewHeight) -> \(newHeight)")
-            self.textViewHeight = newHeight
-            self.textViewHeightConstraint?.constant = textViewHeight
-            self.invalidateIntrinsicContentSize()
+        if newHeight != textViewHeight {
+            Logger.debug("TextView height changed: \(textViewHeight) -> \(newHeight)")
+            textViewHeight = newHeight
+            textViewHeightConstraint?.constant = textViewHeight
+            invalidateIntrinsicContentSize()
         }
     }
 
