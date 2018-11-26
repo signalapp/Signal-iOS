@@ -569,6 +569,15 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     return promise;
 }
 
+- (void)succeed
+{
+    // Make sure backup is enabled once we complete
+    // a backup restore.
+    [OWSBackup.sharedManager setIsBackupEnabled:YES];
+
+    [super succeed];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
