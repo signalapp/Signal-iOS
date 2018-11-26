@@ -164,6 +164,7 @@ import CloudKit
                 failure(invalidServiceResponseError())
             }
         }
+        saveOperation.isAtomic = false
 
         // These APIs are only available in iOS 9.3 and later.
         if #available(iOS 9.3, *) {
