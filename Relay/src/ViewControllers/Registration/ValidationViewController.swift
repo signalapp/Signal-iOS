@@ -340,10 +340,18 @@ class ValidationViewController: UITableViewController {
     }
     
     @objc func updateSubmitButton() {
-        if self.validationCode1TextField.text!.count > 0 && (self.validationCode2TextField.isHidden || self.validationCode2TextField.text!.count > 0) {
-            self.submitButton.enable()
+        if self.authType == .totp {
+            if self.validationCode1TextField.text!.count > 0 && self.validationCode2TextField.text!.count > 0 {
+                self.submitButton.enable()
+            } else {
+                self.submitButton.disable()
+            }
         } else {
-            self.submitButton.disable()
+            if self.validationCode1TextField.text!.count > 0 {
+                self.submitButton.enable()
+            } else {
+                self.submitButton.disable()
+            }
         }
     }
 
