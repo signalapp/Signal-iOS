@@ -31,18 +31,7 @@ class ValidationViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
         self.navigationController?.navigationBar.isHidden = false
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updateInfoLabelWithNotification),
-                                               name: NSNotification.Name(rawValue: FLRegistrationStatusUpdateNotification),
-                                               object: nil)
         self.infoLabel.text = ""
         
         switch self.authType {
@@ -55,6 +44,22 @@ class ValidationViewController: UITableViewController {
         }
         
         self.submitButton.titleLabel?.text = NSLocalizedString("SUBMIT_BUTTON_LABEL", comment: "")
+   }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateInfoLabelWithNotification),
+                                               name: NSNotification.Name(rawValue: FLRegistrationStatusUpdateNotification),
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector:#selector(updateSubmitButton),
+                                               name: NSNotification.Name.UITextFieldTextDidChange,
+                                               object: nil)
+        self.updateSubmitButton()
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -129,9 +134,9 @@ class ValidationViewController: UITableViewController {
             TSSocketManager.requestSocketOpen()
             CCSMCommManager.refreshCCSMData()
         }
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe({
             self.performSegue(withIdentifier: "mainSegue", sender: self)
-        }
+        })
     }
     
     
@@ -140,9 +145,9 @@ class ValidationViewController: UITableViewController {
     @IBAction func onValidationButtonTap(sender: Any) {
         self.startSpinner()
         
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe({
             self.infoLabel.text = NSLocalizedString("Validating...", comment: "")
-        }
+        })
         
         let orgName = CCSMStorage.sharedInstance().getOrgName()!
         let userName = CCSMStorage.sharedInstance().getUserName()!
@@ -192,9 +197,9 @@ class ValidationViewController: UITableViewController {
                                      orgName: CCSMStorage.sharedInstance().getOrgName(),
                                      success: {
                                         Logger.info("Request for code resend succeeded.")
-                                        DispatchQueue.main.async {
+                                        DispatchMainThreadSafe({
                                             self.validationCode1TextField.text = ""
-                                        }
+                                        })
         },
                                      failure: { error in
                                         Logger.debug("Request for code resend failed.  Error: \(String(describing: error?.localizedDescription))");
@@ -203,7 +208,7 @@ class ValidationViewController: UITableViewController {
     }
     
     private func forgotPassword() {
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe({
             let alert = UIAlertController(title: NSLocalizedString("RESET_PASSWORD", comment: ""), message: NSLocalizedString("RESET_PASSWORD_MESSAGE", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .default, handler: nil))
             alert.addAction(UIAlertAction(title: NSLocalizedString("Proceed", comment: ""), style: .destructive, handler: { (action) in
@@ -221,16 +226,16 @@ class ValidationViewController: UITableViewController {
                 })
             }))
             self.navigationController?.present(alert, animated: true, completion: nil)
-        }
+        })
     }
     
     private func ccsmValidationSucceeded() {
         // Check if registered and proceed to next storyboard accordingly
         if TSAccountManager.isRegistered() {
             // We are, move onto main
-            DispatchQueue.main.async {
+            DispatchMainThreadSafe({
                 self.infoLabel.text = NSLocalizedString("This device is already registered.", comment: "")
-            }
+            })
             self.proceedToMain()
         } else {
             FLDeviceRegistrationService.sharedInstance().registerWithTSS { error in
@@ -282,24 +287,24 @@ class ValidationViewController: UITableViewController {
                                                                                                     }
                                                                                                 })
                                                         }))
-                                                        DispatchQueue.main.async {
+                                                        DispatchMainThreadSafe({
                                                             self.navigationController?.present(verifyAlert, animated: true, completion: {
                                                                 self.infoLabel.text = ""
                                                                 self.stopSpinner()
                                                             })
-                                                        }
+                                                        })
                         }))
-                        DispatchQueue.main.async {
+                        DispatchMainThreadSafe({
                             self.navigationController?.present(alert, animated: true, completion: {
                                 self.infoLabel.text = ""
                                 self.stopSpinner()
                             })
-                        }
+                        })
                         
                         
                     } else {
                         Logger.error("TSS Validation error: \(String(describing: error?.localizedDescription))");
-                        DispatchQueue.main.async {
+                        DispatchMainThreadSafe({
                             // TODO: More user-friendly alert here
                             let alert = UIAlertController(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
                                                           message: NSLocalizedString("REGISTRATION_CONNECTION_FAILED", comment: ""),
@@ -311,7 +316,7 @@ class ValidationViewController: UITableViewController {
                                 self.infoLabel.text = ""
                                 self.stopSpinner()
                             })
-                        }
+                        })
                     }
                 }
             }
@@ -334,32 +339,39 @@ class ValidationViewController: UITableViewController {
         }
     }
     
-    func updateInfoLabel(string: String) {
-        DispatchQueue.main.async {
-            self.infoLabel.text = string
+    @objc func updateSubmitButton() {
+        if self.validationCode1TextField.text!.count > 0 && (self.validationCode2TextField.isHidden || self.validationCode2TextField.text!.count > 0) {
+            self.submitButton.enable()
+        } else {
+            self.submitButton.disable()
         }
+    }
+
+    
+    func updateInfoLabel(string: String) {
+        DispatchMainThreadSafe({
+            self.infoLabel.text = string
+        })
     }
     
     
     // MARK: - Helper methods
     private func startSpinner() {
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe({
             self.spinner.startAnimating()
-            self.submitButton.isEnabled = false
-            self.submitButton.alpha = 0.5
-        }
+            self.submitButton.disable()
+        })
     }
     
     private func stopSpinner() {
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe({
             self.spinner.stopAnimating()
-            self.submitButton.isEnabled = true
-            self.submitButton.alpha = 1.0
-        }
+            self.submitButton.enable()
+        })
     }
     
     private func presentAlertWithMessage(message: String) {
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe({
             let alertView = UIAlertController(title: nil,
                                               message: message,
                                               preferredStyle: .alert)
@@ -369,6 +381,6 @@ class ValidationViewController: UITableViewController {
                                          handler: nil)
             alertView.addAction(okAction)
             self.navigationController?.present(alertView, animated: true, completion: nil)
-        }
+        })
     }
 }

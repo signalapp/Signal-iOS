@@ -767,6 +767,8 @@
 		7DD5A730211B7C7100965478 /* HttpRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A72F211B7C7100965478 /* HttpRequestOrResponse.m */; };
 		7DD5A733211B7CA500965478 /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A732211B7CA500965478 /* HttpResponse.m */; };
 		7DD9C9ED2114A60C000A1CDC /* RelayMessaging.h in Headers */ = {isa = PBXBuildFile; fileRef = 453518941FC63DBF00210559 /* RelayMessaging.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7DDED1AE21AC977400CB7361 /* UIControl+Forsta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DDED1AD21AC977400CB7361 /* UIControl+Forsta.swift */; };
+		7DDED1AF21AC977400CB7361 /* UIControl+Forsta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DDED1AD21AC977400CB7361 /* UIControl+Forsta.swift */; };
 		7DF2E98F212360B400855424 /* FLContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF2E98E212360B400855424 /* FLContactsManager.swift */; };
 		93B5A7A62605C8DB0E8C6399 /* Pods_RelayDev.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B8661366C8D98511544433B /* Pods_RelayDev.framework */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
@@ -1549,6 +1551,7 @@
 		7DD5A72F211B7C7100965478 /* HttpRequestOrResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestOrResponse.m; sourceTree = "<group>"; };
 		7DD5A731211B7CA500965478 /* HttpResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpResponse.h; sourceTree = "<group>"; };
 		7DD5A732211B7CA500965478 /* HttpResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpResponse.m; sourceTree = "<group>"; };
+		7DDED1AD21AC977400CB7361 /* UIControl+Forsta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+Forsta.swift"; sourceTree = "<group>"; };
 		7DF2E98E212360B400855424 /* FLContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FLContactsManager.swift; sourceTree = "<group>"; };
 		8300824C7D94C76E7FEA1BED /* Pods-Common-RelayMessaging.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-RelayMessaging.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Common-RelayMessaging/Pods-Common-RelayMessaging.app store release.xcconfig"; sourceTree = "<group>"; };
 		8BDF00953362DF77BCB051B3 /* Pods-Common-Relay-RelayShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-Relay-RelayShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Common-Relay-RelayShareExtension/Pods-Common-Relay-RelayShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -3022,6 +3025,7 @@
 				EF764C331DB67CC5000D9A87 /* UIViewController+Permissions.h */,
 				EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */,
 				45B5360D206DD8BB00D61655 /* UIResponder+OWS.swift */,
+				7DDED1AD21AC977400CB7361 /* UIControl+Forsta.swift */,
 			);
 			name = "UI Categories";
 			path = ..;
@@ -4211,6 +4215,7 @@
 				7D2CD581214C3C9C004E957A /* HttpRequestOrResponse.m in Sources */,
 				7D2CD582214C3C9C004E957A /* DismissableTextField.swift in Sources */,
 				7D2CD583214C3C9C004E957A /* MenuActionsViewController.swift in Sources */,
+				7DDED1AF21AC977400CB7361 /* UIControl+Forsta.swift in Sources */,
 				7D2CD584214C3C9C004E957A /* MultiDeviceProfileKeyUpdateJob.swift in Sources */,
 				7D2CD585214C3C9C004E957A /* SessionResetJob.swift in Sources */,
 				7D2CD586214C3C9C004E957A /* NotificationSettingsOptionsViewController.m in Sources */,
@@ -4421,6 +4426,7 @@
 				7DD5A730211B7C7100965478 /* HttpRequestOrResponse.m in Sources */,
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */,
+				7DDED1AE21AC977400CB7361 /* UIControl+Forsta.swift in Sources */,
 				451686AB1F520CDA00AC3D4B /* MultiDeviceProfileKeyUpdateJob.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
