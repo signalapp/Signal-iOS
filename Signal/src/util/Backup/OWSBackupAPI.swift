@@ -19,7 +19,6 @@ import CloudKit
     //
     // TODO: Change the record types when we ship to production.
     static let signalBackupRecordType = "signalBackup"
-    static let manifestRecordName = "manifest"
     static let payloadKey = "payload"
     static let maxRetries = 5
 
@@ -42,11 +41,13 @@ import CloudKit
     // MARK: - Upload
 
     @objc
-    public class func saveTestFileToCloud(fileUrl: URL,
+    public class func saveTestFileToCloud(recipientId: String,
+                                          fileUrl: URL,
                                           success: @escaping (String) -> Void,
                                           failure: @escaping (Error) -> Void) {
+        let recordName = "\(recordNamePrefix(forRecipientId: recipientId))test-\(NSUUID().uuidString)"
         saveFileToCloud(fileUrl: fileUrl,
-                        recordName: NSUUID().uuidString,
+                        recordName: recordName,
                         recordType: signalBackupRecordType,
                         success: success,
                         failure: failure)
@@ -57,11 +58,13 @@ import CloudKit
     // We wouldn't want to overwrite previous images until the entire backup export is
     // complete.
     @objc
-    public class func saveEphemeralDatabaseFileToCloud(fileUrl: URL,
+    public class func saveEphemeralDatabaseFileToCloud(recipientId: String,
+                                                       fileUrl: URL,
                                                        success: @escaping (String) -> Void,
                                                        failure: @escaping (Error) -> Void) {
+        let recordName = "\(recordNamePrefix(forRecipientId: recipientId))ephemeralFile-\(NSUUID().uuidString)"
         saveFileToCloud(fileUrl: fileUrl,
-                        recordName: "ephemeralFile-\(NSUUID().uuidString)",
+                        recordName: recordName,
             recordType: signalBackupRecordType,
             success: success,
             failure: failure)
@@ -71,19 +74,65 @@ import CloudKit
     // once.  For example, attachment files should only be uploaded once.  Subsequent
     // backups can reuse the same record.
     @objc
-    public class func recordNameForPersistentFile(fileId: String) -> String {
-        return "persistentFile-\(fileId)"
+    public class func recordNameForPersistentFile(recipientId: String,
+                                                  fileId: String) -> String {
+        return "\(recordNamePrefix(forRecipientId: recipientId))persistentFile-\(fileId)"
     }
 
     // "Persistent" files may be shared between backup export; they should only be saved
     // once.  For example, attachment files should only be uploaded once.  Subsequent
     // backups can reuse the same record.
     @objc
-    public class func savePersistentFileOnceToCloud(fileId: String,
+    public class func recordNameForManifest(recipientId: String) -> String {
+        return "\(recordNamePrefix(forRecipientId: recipientId))manifest"
+    }
+
+    private class func recordNamePrefix(forRecipientId recipientId: String) -> String {
+        return "\(recipientId)-"
+    }
+
+    private class func recipientId(forRecordName recordName: String) -> String? {
+        let recipientIds = self.recipientIds(forRecordNames: [recordName])
+        guard let recipientId = recipientIds.first else {
+            return nil
+        }
+        return recipientId
+    }
+
+    private class func recipientIds(forRecordNames recordNames: [String]) -> [String] {
+        let regex: NSRegularExpression
+        do {
+            regex = try NSRegularExpression(pattern: "(\\+[0-9]+)\\-")
+        } catch {
+            Logger.error("couldn't compile regex: \(error)")
+            return []
+        }
+        var recipientIds = [String]()
+        for recordName in recordNames {
+            guard let match = regex.firstMatch(in: recordName, options: [], range: NSRange(location: 0, length: recordName.count)) else {
+                continue
+            }
+            guard match.range.location == 0 else {
+                // Match must be at start of string.
+                continue
+            }
+            let recipientId = (recordName as NSString).substring(with: match.range) as String
+            recipientIds.append(recipientId)
+        }
+        return recipientIds
+    }
+
+    // "Persistent" files may be shared between backup export; they should only be saved
+    // once.  For example, attachment files should only be uploaded once.  Subsequent
+    // backups can reuse the same record.
+    @objc
+    public class func savePersistentFileOnceToCloud(recipientId: String,
+                                                    fileId: String,
                                                     fileUrlBlock: @escaping () -> URL?,
                                                     success: @escaping (String) -> Void,
                                                     failure: @escaping (Error) -> Void) {
-        saveFileOnceToCloud(recordName: recordNameForPersistentFile(fileId: fileId),
+        let recordName = recordNameForPersistentFile(recipientId: recipientId, fileId: fileId)
+        saveFileOnceToCloud(recordName: recordName,
             recordType: signalBackupRecordType,
             fileUrlBlock: fileUrlBlock,
             success: success,
@@ -91,12 +140,14 @@ import CloudKit
     }
 
     @objc
-    public class func upsertManifestFileToCloud(fileUrl: URL,
+    public class func upsertManifestFileToCloud(recipientId: String,
+                                                fileUrl: URL,
                                                 success: @escaping (String) -> Void,
                                                 failure: @escaping (Error) -> Void) {
         // We want to use a well-known record id and type for manifest files.
+        let recordName = recordNameForManifest(recipientId: recipientId)
         upsertFileToCloud(fileUrl: fileUrl,
-                          recordName: manifestRecordName,
+                          recordName: recordName,
                           recordType: signalBackupRecordType,
                           success: success,
                           failure: failure)
@@ -348,10 +399,12 @@ import CloudKit
     }
 
     @objc
-    public class func checkForManifestInCloud(success: @escaping (Bool) -> Void,
+    public class func checkForManifestInCloud(recipientId: String,
+                                              success: @escaping (Bool) -> Void,
                                               failure: @escaping (Error) -> Void) {
 
-        checkForFileInCloud(recordName: manifestRecordName,
+        let recordName = recordNameForManifest(recipientId: recipientId)
+        checkForFileInCloud(recordName: recordName,
                             remainingRetries: maxRetries,
                             success: { (record) in
                                 success(record != nil)
@@ -360,12 +413,14 @@ import CloudKit
     }
 
     @objc
-    public class func fetchAllRecordNames(success: @escaping ([String]) -> Void,
+    public class func fetchAllRecordNames(recipientId: String,
+                                          success: @escaping ([String]) -> Void,
                                           failure: @escaping (Error) -> Void) {
 
         let query = CKQuery(recordType: signalBackupRecordType, predicate: NSPredicate(value: true))
         // Fetch the first page of results for this query.
-        fetchAllRecordNamesStep(query: query,
+        fetchAllRecordNamesStep(recipientId: recipientId,
+                                query: query,
                                 previousRecordNames: [String](),
                                 cursor: nil,
                                 remainingRetries: maxRetries,
@@ -373,7 +428,30 @@ import CloudKit
                                 failure: failure)
     }
 
-    private class func fetchAllRecordNamesStep(query: CKQuery,
+    @objc
+    public class func fetchAllBackupRecipientIds(success: @escaping ([String]) -> Void,
+                                                 failure: @escaping (Error) -> Void) {
+
+        let processResults = { (recordNames: [String]) in
+            DispatchQueue.global().async {
+                let recipientIds = self.recipientIds(forRecordNames: recordNames)
+                success(recipientIds)
+            }
+        }
+
+        let query = CKQuery(recordType: signalBackupRecordType, predicate: NSPredicate(value: true))
+        // Fetch the first page of results for this query.
+        fetchAllRecordNamesStep(recipientId: nil,
+                                query: query,
+                                previousRecordNames: [String](),
+                                cursor: nil,
+                                remainingRetries: maxRetries,
+                                success: processResults,
+                                failure: failure)
+    }
+
+    private class func fetchAllRecordNamesStep(recipientId: String?,
+                                               query: CKQuery,
                                                previousRecordNames: [String],
                                                cursor: CKQueryCursor?,
                                                remainingRetries: Int,
@@ -390,7 +468,18 @@ import CloudKit
         queryOperation.desiredKeys = []
         queryOperation.recordFetchedBlock = { (record) in
             assert(record.recordID.recordName.count > 0)
-            allRecordNames.append(record.recordID.recordName)
+
+            let recordName = record.recordID.recordName
+
+            if let recipientId = recipientId {
+                let prefix = recordNamePrefix(forRecipientId: recipientId)
+                guard recordName.hasPrefix(prefix) else {
+                    Logger.info("Ignoring record: \(recordName)")
+                    return
+                }
+            }
+
+            allRecordNames.append(recordName)
         }
         queryOperation.queryCompletionBlock = { (cursor, error) in
 
@@ -402,7 +491,8 @@ import CloudKit
                 if let cursor = cursor {
                     Logger.verbose("fetching more record names \(allRecordNames.count).")
                     // There are more pages of results, continue fetching.
-                    fetchAllRecordNamesStep(query: query,
+                    fetchAllRecordNamesStep(recipientId: recipientId,
+                                            query: query,
                                             previousRecordNames: allRecordNames,
                                             cursor: cursor,
                                             remainingRetries: maxRetries,
@@ -416,7 +506,8 @@ import CloudKit
                 failure(outcomeError)
             case .failureRetryAfterDelay(let retryDelay):
                 DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
-                    fetchAllRecordNamesStep(query: query,
+                    fetchAllRecordNamesStep(recipientId: recipientId,
+                                            query: query,
                                             previousRecordNames: allRecordNames,
                                             cursor: cursor,
                                             remainingRetries: remainingRetries - 1,
@@ -425,7 +516,8 @@ import CloudKit
                 })
             case .failureRetryWithoutDelay:
                 DispatchQueue.global().async {
-                    fetchAllRecordNamesStep(query: query,
+                    fetchAllRecordNamesStep(recipientId: recipientId,
+                                            query: query,
                                             previousRecordNames: allRecordNames,
                                             cursor: cursor,
                                             remainingRetries: remainingRetries - 1,
@@ -443,10 +535,12 @@ import CloudKit
     // MARK: - Download
 
     @objc
-    public class func downloadManifestFromCloud(
-        success: @escaping (Data) -> Void,
-        failure: @escaping (Error) -> Void) {
-        downloadDataFromCloud(recordName: manifestRecordName,
+    public class func downloadManifestFromCloud(recipientId: String,
+                                                success: @escaping (Data) -> Void,
+                                                failure: @escaping (Error) -> Void) {
+
+        let recordName = recordNameForManifest(recipientId: recipientId)
+        downloadDataFromCloud(recordName: recordName,
                               success: success,
                               failure: failure)
     }

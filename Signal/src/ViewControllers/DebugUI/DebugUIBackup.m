@@ -14,6 +14,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIBackup
 
+#pragma mark - Dependencies
+
++ (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark - Factory Methods
 
 - (NSString *)name
@@ -66,15 +75,17 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL success = [data writeToFile:filePath atomically:YES];
     OWSAssertDebug(success);
 
+    NSString *recipientId = self.tsAccountManager.localNumber;
     [OWSBackupAPI checkCloudKitAccessWithCompletion:^(BOOL hasAccess) {
         if (hasAccess) {
-            [OWSBackupAPI saveTestFileToCloudWithFileUrl:[NSURL fileURLWithPath:filePath]
-                                                 success:^(NSString *recordName) {
-                                                     // Do nothing, the API method will log for us.
-                                                 }
-                                                 failure:^(NSError *error){
-                                                     // Do nothing, the API method will log for us.
-                                                 }];
+            [OWSBackupAPI saveTestFileToCloudWithRecipientId:recipientId
+                                                     fileUrl:[NSURL fileURLWithPath:filePath]
+                                                     success:^(NSString *recordName) {
+                                                         // Do nothing, the API method will log for us.
+                                                     }
+                                                     failure:^(NSError *error){
+                                                         // Do nothing, the API method will log for us.
+                                                     }];
         }
     }];
 }

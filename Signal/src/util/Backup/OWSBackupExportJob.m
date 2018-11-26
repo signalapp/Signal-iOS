@@ -310,6 +310,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSBackupExportJob
 
+#pragma mark - Dependencies
+
+- (OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
+
+    return SSKEnvironment.shared.primaryStorage;
+}
+
+#pragma mark -
+
 - (void)startAsync
 {
     OWSAssertIsOnMainThread();
@@ -439,8 +450,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogVerbose(@"");
 
     __weak OWSBackupExportJob *weakSelf = self;
-    [OWSBackupAPI
-        fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
+    [OWSBackupAPI fetchAllRecordNamesWithRecipientId:self.recipientId
+        success:^(NSArray<NSString *> *recordNames) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 OWSBackupExportJob *strongSelf = weakSelf;
                 if (!strongSelf) {
@@ -719,7 +730,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertDebug(item.encryptedItem.filePath.length > 0);
 
-    [OWSBackupAPI saveEphemeralDatabaseFileToCloudWithFileUrl:[NSURL fileURLWithPath:item.encryptedItem.filePath]
+    [OWSBackupAPI saveEphemeralDatabaseFileToCloudWithRecipientId:self.recipientId
+        fileUrl:[NSURL fileURLWithPath:item.encryptedItem.filePath]
         success:^(NSString *recordName) {
             // Ensure that we continue to work off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -765,7 +777,9 @@ NS_ASSUME_NONNULL_BEGIN
         // * That we already know the metadata for this fragment (from a previous backup
         //   or restore).
         // * That this record does in fact exist in our CloudKit database.
-        NSString *lastRecordName = [OWSBackupAPI recordNameForPersistentFileWithFileId:attachmentExport.attachmentId];
+        NSString *lastRecordName =
+            [OWSBackupAPI recordNameForPersistentFileWithRecipientId:self.recipientId
+                                                              fileId:attachmentExport.attachmentId];
         OWSBackupFragment *_Nullable lastBackupFragment = [OWSBackupFragment fetchObjectWithUniqueID:lastRecordName];
         if (lastBackupFragment && [self.lastValidRecordNames containsObject:lastRecordName]) {
             OWSAssertDebug(lastBackupFragment.encryptionKey.length > 0);
@@ -803,7 +817,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssertDebug(attachmentExport.encryptedItem);
     }
 
-    [OWSBackupAPI savePersistentFileOnceToCloudWithFileId:attachmentExport.attachmentId
+    [OWSBackupAPI savePersistentFileOnceToCloudWithRecipientId:self.recipientId
+        fileId:attachmentExport.attachmentId
         fileUrlBlock:^{
             if (attachmentExport.encryptedItem.filePath.length < 1) {
                 OWSLogError(@"attachment export missing temp file path");
@@ -882,7 +897,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak OWSBackupExportJob *weakSelf = self;
 
-    [OWSBackupAPI upsertManifestFileToCloudWithFileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]
+    [OWSBackupAPI upsertManifestFileToCloudWithRecipientId:self.recipientId
+        fileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]
         success:^(NSString *recordName) {
             // Ensure that we continue to work off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -1036,8 +1052,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __weak OWSBackupExportJob *weakSelf = self;
-    [OWSBackupAPI
-        fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
+    [OWSBackupAPI fetchAllRecordNamesWithRecipientId:self.recipientId
+        success:^(NSArray<NSString *> *recordNames) {
             // Ensure that we continue to work off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 NSMutableSet<NSString *> *obsoleteRecordNames = [NSMutableSet new];

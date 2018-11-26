@@ -53,22 +53,20 @@ typedef void (^OWSBackupJobManifestFailure)(NSError *error);
 
 #pragma mark -
 
-@class OWSPrimaryStorage;
-
 @interface OWSBackupJob : NSObject
 
 @property (nonatomic, weak, readonly) id<OWSBackupJobDelegate> delegate;
 
+@property (nonatomic, readonly) NSString *recipientId;
+
 // Indicates that the backup succeeded, failed or was cancelled.
 @property (atomic, readonly) BOOL isComplete;
-
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 
 @property (nonatomic, readonly) NSString *jobTempDirPath;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithDelegate:(id<OWSBackupJobDelegate>)delegate primaryStorage:(OWSPrimaryStorage *)primaryStorage;
+- (instancetype)initWithDelegate:(id<OWSBackupJobDelegate>)delegate recipientId:(NSString *)recipientId;
 
 #pragma mark - Private
 
