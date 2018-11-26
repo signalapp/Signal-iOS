@@ -144,6 +144,9 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 - (AnyPromise *)updateAccountAttributes;
 
+// This should only be used during the registration process.
+- (AnyPromise *)performUpdateAccountAttributes;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -688,6 +688,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     TSThread *_Nullable thread = message.thread;
 
+    BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
+    if (!thread && !isSyncMessage) {
+        OWSFailDebug(@"Missing thread for non-sync message.");
+
+        // This thread has been deleted since the message was enqueued.
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageSendNoValidRecipients,
+            NSLocalizedString(@"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS",
+                @"Error indicating that an outgoing message had no valid recipients."));
+        [error setIsRetryable:NO];
+        return failureHandler(error);
+    }
+
     // In the "self-send" special case, we ony need to send a sync message with a delivery receipt.
     if ([thread isKindOfClass:[TSContactThread class]] &&
         [((TSContactThread *)thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]) {

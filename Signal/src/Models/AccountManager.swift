@@ -19,8 +19,7 @@ public class AccountManager: NSObject {
     }
 
     @objc
-    public override init()
-    {
+    public override init() {
         super.init()
 
         SwiftSingletons.register(self)
@@ -72,7 +71,9 @@ public class AccountManager: NSObject {
             default:
                 throw error
             }
-        }.done {
+        }.then { (_) in
+            self.tsAccountManager.performUpdateAccountAttributes()
+        }.done { (_) in
             self.completeRegistration()
         }
 

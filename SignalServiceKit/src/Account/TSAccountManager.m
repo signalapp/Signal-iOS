@@ -659,8 +659,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     if (!updateRequestDate) {
         return [AnyPromise promiseWithValue:@(1)];
     }
-
-    AnyPromise *promise = [[SignalServiceRestClient new] updateAccountAttributesObjC];
+    AnyPromise *promise = [self performUpdateAccountAttributes];
     promise = promise.then(^(id value) {
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             // Clear the update request unless a new update has been requested
@@ -673,7 +672,14 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                                    inCollection:TSAccountManager_UserAccountCollection];
             }
         }];
+    });
+    return promise;
+}
 
+- (AnyPromise *)performUpdateAccountAttributes
+{
+    AnyPromise *promise = [[SignalServiceRestClient new] updateAccountAttributesObjC];
+    promise = promise.then(^(id value) {
         // Fetch the local profile, as we may have changed its
         // account attributes.  Specifically, we need to determine
         // if all devices for our account now support UD for sync

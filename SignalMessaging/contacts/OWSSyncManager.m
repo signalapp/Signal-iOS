@@ -226,6 +226,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 - (void)sendConfigurationSyncMessage_AppReady {
     DDLogInfo(@"");
 
+    if (![TSAccountManager sharedInstance].isRegistered) {
+        return;
+    }
+
     BOOL areReadReceiptsEnabled = SSKEnvironment.shared.readReceiptManager.areReadReceiptsEnabled;
     BOOL showUnidentifiedDeliveryIndicators = Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators;
     BOOL showTypingIndicators = self.typingIndicators.areTypingIndicatorsEnabled;
