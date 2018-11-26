@@ -187,8 +187,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                                  name:YapDatabaseModifiedExternallyNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(deregistrationStateDidChange:)
-                                                 name:DeregistrationStateDidChangeNotification
+                                             selector:@selector(registrationStateDidChange:)
+                                                 name:RegistrationStateDidChangeNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(outageStateDidChange:)
@@ -218,7 +218,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self reloadTableViewData];
 }
 
-- (void)deregistrationStateDidChange:(id)notification
+- (void)registrationStateDidChange:(id)notification
 {
     OWSAssertIsOnMainThread();
 

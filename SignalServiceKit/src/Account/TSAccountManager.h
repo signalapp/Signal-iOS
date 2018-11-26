@@ -9,7 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const TSRegistrationErrorDomain;
 extern NSString *const TSRegistrationErrorUserInfoHTTPStatus;
 extern NSString *const RegistrationStateDidChangeNotification;
-extern NSString *const DeregistrationStateDidChangeNotification;
 extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 @class AnyPromise;
@@ -21,6 +20,8 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
     OWSRegistrationState_Unregistered,
     OWSRegistrationState_PendingBackupRestore,
     OWSRegistrationState_Registered,
+    OWSRegistrationState_Deregistered,
+    OWSRegistrationState_Reregistering,
 };
 
 @interface TSAccountManager : NSObject
@@ -38,12 +39,15 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 + (instancetype)sharedInstance;
 
+- (OWSRegistrationState)registrationState;
+
 /**
  *  Returns if a user is registered or not
  *
  *  @return registered or not
  */
 - (BOOL)isRegistered;
+- (BOOL)isRegisteredAndReady;
 
 /**
  *  Returns current phone number for this device, which may not yet have been registered.
@@ -128,6 +132,9 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 //   valid registration.
 - (BOOL)isDeregistered;
 - (void)setIsDeregistered:(BOOL)isDeregistered;
+
+- (BOOL)hasPendingBackupRestoreDecision;
+- (void)setHasPendingBackupRestoreDecision:(BOOL)value;
 
 #pragma mark - Re-registration
 

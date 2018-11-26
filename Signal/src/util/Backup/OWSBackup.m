@@ -18,7 +18,6 @@ NSString *const OWSPrimaryStorage_OWSBackupCollection = @"OWSPrimaryStorage_OWSB
 NSString *const OWSBackup_IsBackupEnabledKey = @"OWSBackup_IsBackupEnabledKey";
 NSString *const OWSBackup_LastExportSuccessDateKey = @"OWSBackup_LastExportSuccessDateKey";
 NSString *const OWSBackup_LastExportFailureDateKey = @"OWSBackup_LastExportFailureDateKey";
-NSString *const OWSBackup_HasPendingRestoreDecisionKey = @"OWSBackup_HasPendingRestoreDecisionKey";
 
 NSString *NSStringForBackupExportState(OWSBackupState state)
 {
@@ -247,20 +246,12 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
 
 - (BOOL)hasPendingRestoreDecision
 {
-    return [self.dbConnection boolForKey:OWSBackup_HasPendingRestoreDecisionKey
-                            inCollection:OWSPrimaryStorage_OWSBackupCollection
-                            defaultValue:NO];
+    return [self.tsAccountManager hasPendingBackupRestoreDecision];
 }
 
 - (void)setHasPendingRestoreDecision:(BOOL)value
 {
-    OWSLogInfo(@"%d", value);
-
-    [self.dbConnection setBool:value
-                        forKey:OWSBackup_HasPendingRestoreDecisionKey
-                  inCollection:OWSPrimaryStorage_OWSBackupCollection];
-    
-    [self postDidChangeNotification];
+    [self.tsAccountManager setHasPendingBackupRestoreDecision:value];
 }
 
 - (BOOL)canBackupExport
@@ -426,6 +417,8 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
     OWSAssertIsOnMainThread();
 
     [self ensureBackupExportState];
+
+    [self postDidChangeNotification];
 }
 
 #pragma mark - OWSBackupJobDelegate

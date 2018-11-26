@@ -552,10 +552,6 @@ static NSTimeInterval launchStartedAt;
         OWSFailDebug(@"app launch failed");
         return NO;
     }
-    if (self.backup.hasPendingRestoreDecision) {
-        OWSLogInfo(@"Ignoring URL; pending restore decision.");
-        return NO;
-    }
 
     if (!AppReadiness.isAppReady) {
         OWSLogWarn(@"Ignoring openURL: app not ready.");
@@ -756,14 +752,9 @@ static NSTimeInterval launchStartedAt;
         completionHandler(NO);
         return;
     }
-    if (self.backup.hasPendingRestoreDecision) {
-        OWSLogInfo(@"Ignoring shortcut action; pending restore decision.");
-        completionHandler(NO);
-        return;
-    }
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (![self.tsAccountManager isRegistered]) {
+        if (![self.tsAccountManager isRegisteredAndReady]) {
             UIAlertController *controller =
                 [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
                                                     message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)
@@ -810,10 +801,6 @@ static NSTimeInterval launchStartedAt;
         OWSFailDebug(@"app launch failed");
         return NO;
     }
-    if (self.backup.hasPendingRestoreDecision) {
-        OWSLogInfo(@"Ignoring user activity; pending restore decision.");
-        return NO;
-    }
 
     if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
@@ -838,6 +825,11 @@ static NSTimeInterval launchStartedAt;
         }
 
         [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+            if (![self.tsAccountManager isRegisteredAndReady]) {
+                OWSLogInfo(@"Ignoring user activity; app not ready.");
+                return;
+            }
+
             NSString *_Nullable phoneNumber = handle;
             if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
                 phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
@@ -895,6 +887,11 @@ static NSTimeInterval launchStartedAt;
         }
 
         [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+            if (![self.tsAccountManager isRegisteredAndReady]) {
+                OWSLogInfo(@"Ignoring user activity; app not ready.");
+                return;
+            }
+
             NSString *_Nullable phoneNumber = handle;
             if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
                 phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
@@ -969,8 +966,8 @@ static NSTimeInterval launchStartedAt;
         OWSFailDebug(@"app launch failed");
         return;
     }
-    if (self.backup.hasPendingRestoreDecision) {
-        OWSLogInfo(@"Ignoring remote notification; pending restore decision.");
+    if (!(AppReadiness.isAppReady && [self.tsAccountManager isRegisteredAndReady])) {
+        OWSLogInfo(@"Ignoring remote notification; app not ready.");
         return;
     }
 
@@ -987,8 +984,8 @@ static NSTimeInterval launchStartedAt;
         OWSFailDebug(@"app launch failed");
         return;
     }
-    if (self.backup.hasPendingRestoreDecision) {
-        OWSLogInfo(@"Ignoring remote notification; pending restore decision.");
+    if (!(AppReadiness.isAppReady && [self.tsAccountManager isRegisteredAndReady])) {
+        OWSLogInfo(@"Ignoring remote notification; app not ready.");
         return;
     }
 
@@ -1005,13 +1002,14 @@ static NSTimeInterval launchStartedAt;
         OWSFailDebug(@"app launch failed");
         return;
     }
-    if (self.backup.hasPendingRestoreDecision) {
-        OWSLogInfo(@"Ignoring local notification; pending restore decision.");
-        return;
-    }
 
     OWSLogInfo(@"%@", notification);
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (![self.tsAccountManager isRegisteredAndReady]) {
+            OWSLogInfo(@"Ignoring action; app not ready.");
+            return;
+        }
+
         [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
     }];
 }
@@ -1028,11 +1026,6 @@ static NSTimeInterval launchStartedAt;
         completionHandler();
         return;
     }
-    if (self.backup.hasPendingRestoreDecision) {
-        OWSLogInfo(@"Ignoring action; pending restore decision.");
-        completionHandler();
-        return;
-    }
 
     // The docs for handleActionWithIdentifier:... state:
     // "You must call [completionHandler] at the end of your method.".
@@ -1041,6 +1034,12 @@ static NSTimeInterval launchStartedAt;
     //
     // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (![self.tsAccountManager isRegisteredAndReady]) {
+            OWSLogInfo(@"Ignoring action; app not ready.");
+            completionHandler();
+            return;
+        }
+
         [[PushManager sharedManager] application:application
                       handleActionWithIdentifier:identifier
                             forLocalNotification:notification
@@ -1063,11 +1062,6 @@ static NSTimeInterval launchStartedAt;
         completionHandler();
         return;
     }
-    if (self.backup.hasPendingRestoreDecision) {
-        OWSLogInfo(@"Ignoring action; pending restore decision.");
-        completionHandler();
-        return;
-    }
 
     // The docs for handleActionWithIdentifier:... state:
     // "You must call [completionHandler] at the end of your method.".
@@ -1076,6 +1070,12 @@ static NSTimeInterval launchStartedAt;
     //
     // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (![self.tsAccountManager isRegisteredAndReady]) {
+            OWSLogInfo(@"Ignoring action; app not ready.");
+            completionHandler();
+            return;
+        }
+
         [[PushManager sharedManager] application:application
                       handleActionWithIdentifier:identifier
                             forLocalNotification:notification
