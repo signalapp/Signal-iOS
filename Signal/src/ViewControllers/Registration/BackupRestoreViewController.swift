@@ -132,6 +132,8 @@ public class BackupRestoreViewController: OWSTableViewController {
     }
 
     private func showHomeView() {
+        // In production, this view will never be presented in a modal.
+        // During testing (debug UI, etc.), it may be a modal.
         let isModal = navigationController?.presentingViewController != nil
         if isModal {
             dismiss(animated: true, completion: {
