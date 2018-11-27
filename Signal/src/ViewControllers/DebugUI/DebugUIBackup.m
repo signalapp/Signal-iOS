@@ -45,6 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIBackup logBackupRecords];
                                      }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Log CloudKit backup manifests"
+                                     actionBlock:^{
+                                         [DebugUIBackup logBackupManifests];
+                                     }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Restore CloudKit backup"
                                      actionBlock:^{
                                          [DebugUIBackup tryToImportBackup];
@@ -108,6 +112,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"logBackupRecords.");
 
     [OWSBackup.sharedManager logBackupRecords];
+}
+
++ (void)logBackupManifests
+{
+    OWSLogInfo(@"logBackupManifests.");
+
+    [OWSBackup.sharedManager
+        allRecipientIdsWithManifestsInCloud:^(NSArray<NSString *> *recipientIds) {
+            OWSLogInfo(@"recipientIds: %@", recipientIds);
+        }
+        failure:^(NSError *error) {
+            OWSLogError(@"error: %@", error);
+        }];
 }
 
 + (void)tryToImportBackup

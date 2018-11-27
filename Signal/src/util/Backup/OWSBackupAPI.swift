@@ -93,7 +93,7 @@ import CloudKit
     }
 
     private class func recordNamePrefix(forRecipientId recipientId: String) -> String {
-    return "\(recipientId)-"
+        return "\(recipientId)-"
     }
 
     private class func recipientId(forRecordName recordName: String) -> String? {
@@ -104,24 +104,31 @@ import CloudKit
         return recipientId
     }
 
+    private static var recordNamePrefixRegex = {
+        return try! NSRegularExpression(pattern: "^(\\+[0-9]+)\\-")
+    }()
+
     private class func recipientIds(forRecordNames recordNames: [String]) -> [String] {
-        let regex: NSRegularExpression
-        do {
-            regex = try NSRegularExpression(pattern: "(\\+[0-9]+)\\-")
-        } catch {
-            Logger.error("couldn't compile regex: \(error)")
-            return []
-        }
         var recipientIds = [String]()
         for recordName in recordNames {
-            guard let match = regex.firstMatch(in: recordName, options: [], range: NSRange(location: 0, length: recordName.count)) else {
+            let regex = recordNamePrefixRegex
+            guard let match: NSTextCheckingResult = regex.firstMatch(in: recordName, options: [], range: NSRange(location: 0, length: recordName.count)) else {
+                Logger.warn("no match: \(recordName)")
                 continue
             }
-            guard match.range.location == 0 else {
-                // Match must be at start of string.
+            guard match.numberOfRanges > 0 else {
+                // Match must include first group.
+                Logger.warn("invalid match: \(recordName)")
                 continue
             }
-            let recipientId = (recordName as NSString).substring(with: match.range) as String
+            let firstRange = match.range(at: 1)
+            guard firstRange.location == 0,
+                firstRange.length > 0 else {
+                // Match must be at start of string and non-empty.
+                Logger.warn("invalid match: \(recordName) \(firstRange)")
+                continue
+            }
+            let recipientId = (recordName as NSString).substring(with: firstRange) as String
             recipientIds.append(recipientId)
         }
         return recipientIds
@@ -457,28 +464,6 @@ import CloudKit
                                 success: success,
                                 failure: failure)
     }
-
-//    @objc
-//    public class func fetchAllBackupRecipientIds(success: @escaping ([String]) -> Void,
-//                                                 failure: @escaping (Error) -> Void) {
-//
-//        let processResults = { (recordNames: [String]) in
-//            DispatchQueue.global().async {
-//                let recipientIds = self.recipientIds(forRecordNames: recordNames)
-//                success(recipientIds)
-//            }
-//        }
-//
-//        let query = CKQuery(recordType: signalBackupRecordType, predicate: NSPredicate(value: true))
-//        // Fetch the first page of results for this query.
-//        fetchAllRecordNamesStep(recipientId: nil,
-//                                query: query,
-//                                previousRecordNames: [String](),
-//                                cursor: nil,
-//                                remainingRetries: maxRetries,
-//                                success: processResults,
-//                                failure: failure)
-//    }
 
     private class func fetchAllRecordNamesStep(recipientId: String?,
                                                query: CKQuery,

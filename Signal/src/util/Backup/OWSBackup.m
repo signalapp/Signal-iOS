@@ -170,7 +170,7 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
     }
 
     if (!self.tsAccountManager.isRegisteredAndReady) {
-        OWSLogError(@"Can't backup; not registered and ready.");
+        OWSFailDebug(@"Can't backup; not registered and ready.");
         return;
     }
     NSString *_Nullable recipientId = self.tsAccountManager.localNumber;
