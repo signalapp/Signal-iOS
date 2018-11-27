@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# PROJECT_DIR will be set when run from xcode, else we infer it
+if [ "${PROJECT_DIR}" = "" ]; then
+    PROJECT_DIR=`git rev-parse --show-toplevel`
+    echo "inferred ${PROJECT_DIR}"
+fi
+
 # Capture hash & comment from last WebRTC git commit.
 cd $PROJECT_DIR/ThirdParty/WebRTC/
 _git_commit=`git log --pretty=oneline | head -1`
