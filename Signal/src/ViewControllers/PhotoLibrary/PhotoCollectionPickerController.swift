@@ -81,61 +81,66 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         }
     }
 
+    // MARK: -
+
     private func updateContents() {
         photoCollections = library.allPhotoCollections()
 
-        let section = OWSTableSection()
-        for collection in photoCollections {
-            section.add(OWSTableItem.init(customCellBlock: { () -> UITableViewCell in
-                let cell = OWSTableItem.newCell()
-
-                cell.backgroundColor = .ows_gray95
-                cell.contentView.backgroundColor = .ows_gray95
-                cell.selectedBackgroundView?.backgroundColor = UIColor(white: 0.2, alpha: 1)
-
-                let imageView = UIImageView()
-                let kImageSize = 50
-                imageView.autoSetDimensions(to: CGSize(width: kImageSize, height: kImageSize))
-
-                let contents = collection.contents()
-                if contents.count > 0 {
-                    let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(width: kImageSize, height: kImageSize))
-                    let assetItem = contents.assetItem(at: 0, photoMediaSize: photoMediaSize)
-                    imageView.image = assetItem.asyncThumbnail { [weak imageView] image in
-                        guard let strongImageView = imageView else {
-                            return
-                        }
-                        guard let image = image else {
-                            return
-                        }
-                        strongImageView.image = image
-                    }
-                }
-
-                let titleLabel = UILabel()
-                titleLabel.text = collection.localizedTitle()
-                titleLabel.font = UIFont.ows_dynamicTypeBody
-                titleLabel.textColor = .ows_gray05
-
-                let stackView = UIStackView(arrangedSubviews: [imageView, titleLabel])
-                stackView.axis = .horizontal
-                stackView.alignment = .center
-                stackView.spacing = 10
-
-                cell.contentView.addSubview(stackView)
-                stackView.ows_autoPinToSuperviewMargins()
-
-                return cell
-            },
-                                          customRowHeight: UITableViewAutomaticDimension,
-                                          actionBlock: { [weak self] in
-                                            guard let strongSelf = self else { return }
-                                            strongSelf.didSelectCollection(collection: collection)
-            }))
+        let sectionItems = photoCollections.map { collection in
+            return OWSTableItem(customCellBlock: { self.buildTableCell(collection: collection) },
+                                customRowHeight: UITableViewAutomaticDimension,
+                                actionBlock: { [weak self] in
+                                    guard let strongSelf = self else { return }
+                                    strongSelf.didSelectCollection(collection: collection)
+            })
         }
+
+        let section = OWSTableSection(title: nil, items: sectionItems)
         let contents = OWSTableContents()
         contents.addSection(section)
         self.contents = contents
+    }
+
+    func buildTableCell(collection: PhotoCollection) -> UITableViewCell {
+        let cell = OWSTableItem.newCell()
+
+        cell.backgroundColor = .ows_gray95
+        cell.contentView.backgroundColor = .ows_gray95
+        cell.selectedBackgroundView?.backgroundColor = UIColor(white: 0.2, alpha: 1)
+
+        let imageView = UIImageView()
+        let kImageSize = 50
+        imageView.autoSetDimensions(to: CGSize(width: kImageSize, height: kImageSize))
+
+        let contents = collection.contents()
+        if contents.count > 0 {
+            let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(width: kImageSize, height: kImageSize))
+            let assetItem = contents.assetItem(at: 0, photoMediaSize: photoMediaSize)
+            imageView.image = assetItem.asyncThumbnail { [weak imageView] image in
+                guard let strongImageView = imageView else {
+                    return
+                }
+                guard let image = image else {
+                    return
+                }
+                strongImageView.image = image
+            }
+        }
+
+        let titleLabel = UILabel()
+        titleLabel.text = collection.localizedTitle()
+        titleLabel.font = UIFont.ows_dynamicTypeBody
+        titleLabel.textColor = .ows_gray05
+
+        let stackView = UIStackView(arrangedSubviews: [imageView, titleLabel])
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 10
+
+        cell.contentView.addSubview(stackView)
+        stackView.ows_autoPinToSuperviewMargins()
+
+        return cell
     }
 
     @objc
