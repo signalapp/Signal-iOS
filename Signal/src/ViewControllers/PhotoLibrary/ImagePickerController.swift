@@ -159,7 +159,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         collectionView.reloadData()
         collectionView.layoutIfNeeded()
 
-        let count = photoCollectionContents.count
+        let count = photoCollectionContents.assetCount
         for index in 0..<count {
             let asset = photoCollectionContents.asset(at: index)
             let assetId = asset.localIdentifier
@@ -401,7 +401,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return photoCollectionContents.count
+        return photoCollectionContents.assetCount
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

@@ -112,14 +112,15 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         imageView.autoSetDimensions(to: CGSize(width: kImageSize, height: kImageSize))
 
         let contents = collection.contents()
-        if contents.count > 0 {
-            let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(width: kImageSize, height: kImageSize))
-            let assetItem = contents.assetItem(at: 0, photoMediaSize: photoMediaSize)
+
+        let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(width: kImageSize, height: kImageSize))
+        if let assetItem = contents.lastAssetItem(photoMediaSize: photoMediaSize) {
             imageView.image = assetItem.asyncThumbnail { [weak imageView] image in
                 guard let strongImageView = imageView else {
                     return
                 }
                 guard let image = image else {
+                    owsFailDebug("image was unexpectedly nil")
                     return
                 }
                 strongImageView.image = image
