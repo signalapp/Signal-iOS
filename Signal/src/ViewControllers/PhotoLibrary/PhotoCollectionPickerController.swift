@@ -104,7 +104,6 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     func buildTableCell(collection: PhotoCollection) -> UITableViewCell {
         let cell = OWSTableItem.newCell()
 
-        cell.backgroundColor = .ows_gray95
         cell.contentView.backgroundColor = .ows_gray95
         cell.selectedBackgroundView?.backgroundColor = UIColor(white: 0.2, alpha: 1)
 
@@ -141,12 +140,6 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         stackView.ows_autoPinToSuperviewMargins()
 
         return cell
-    }
-
-    @objc
-    public override func applyTheme() {
-        view.backgroundColor = .ows_gray95
-        tableView.backgroundColor = .ows_gray95
     }
 
     // MARK: Actions
