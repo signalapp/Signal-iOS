@@ -314,7 +314,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         lastObservedKeyboardTop = keyboardEndFrame.size.height
 
         let keyboardScenario: KeyboardScenario = bottomToolView.isEditingMediaMessage ? .editingMessage : .editingCaption
-        currentPageController.updateCaptionViewBottomInset(keyboardScenario: keyboardScenario)
+        currentPageViewController.updateCaptionViewBottomInset(keyboardScenario: keyboardScenario)
     }
 
     @objc
@@ -337,7 +337,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
 
         lastObservedKeyboardTop = UIScreen.main.bounds.height - keyboardEndFrame.size.height
-        currentPageController.updateCaptionViewBottomInset(keyboardScenario: .hidden)
+        currentPageViewController.updateCaptionViewBottomInset(keyboardScenario: .hidden)
     }
 
     // MARK: - View Helpers
@@ -483,13 +483,17 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return nextPage
     }
 
-    public var currentViewController: AttachmentPrepViewController {
-        return viewControllers!.first as! AttachmentPrepViewController
+    public var currentPageViewController: AttachmentPrepViewController {
+        return pageViewControllers.first!
+    }
+
+    public var pageViewControllers: [AttachmentPrepViewController] {
+        return super.viewControllers!.map { $0 as! AttachmentPrepViewController }
     }
 
     var currentItem: SignalAttachmentItem! {
         get {
-            return currentViewController.attachmentItem
+            return currentPageViewController.attachmentItem
         }
         set {
             setCurrentItem(newValue, direction: .forward, animated: false)
@@ -586,23 +590,19 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 }
 
 extension AttachmentApprovalViewController: MediaMessageTextToolbarDelegate {
-    var currentPageController: AttachmentPrepViewController {
-        return viewControllers!.first as! AttachmentPrepViewController
-    }
-
     func mediaMessageTextToolbarDidBeginEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
-        currentPageController.setAttachmentViewScale(.compact, animated: true)
+        currentPageViewController.setAttachmentViewScale(.compact, animated: true)
     }
 
     func mediaMessageTextToolbarDidEndEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
-        currentPageController.setAttachmentViewScale(.fullsize, animated: true)
+        currentPageViewController.setAttachmentViewScale(.fullsize, animated: true)
     }
 
     func mediaMessageTextToolbarDidTapSend(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
         // Toolbar flickers in and out if there are errors
         // and remains visible momentarily after share extension is dismissed.
         // It's easiest to just hide it at this point since we're done with it.
-        currentViewController.shouldAllowAttachmentViewResizing = false
+        currentPageViewController.shouldAllowAttachmentViewResizing = false
         mediaMessageTextToolbar.isUserInteractionEnabled = false
         mediaMessageTextToolbar.isHidden = true
 
