@@ -254,11 +254,6 @@ class ValidationViewController: UITableViewController {
                         alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""),
                                                       style: .cancel,
                                                       handler: nil))
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("REGISTER_FAILED_TRY_AGAIN", comment: ""),
-                                                      style: .default,
-                                                      handler: { action in
-                                                        self.onValidationButtonTap(sender: self)
-                        }))
                         alert.addAction(UIAlertAction(title: NSLocalizedString("REGISTER_FAILED_FORCE_REGISTRATION", comment: ""),
                                                       style: .destructive,
                                                       handler: { action in

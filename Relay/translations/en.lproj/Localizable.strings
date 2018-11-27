@@ -1653,16 +1653,16 @@
 "REGISTER_CONTACTS_WELCOME" = "Welcome!";
 
 /* No comment provided by engineer. */
-"REGISTER_ERROR" = "Auto-Registration Failure";
+"REGISTER_ERROR" = "Device Registration";
 
 /* No comment provided by engineer. */
-"REGISTER_ERROR_MESSAGE" = "None of your existing devices responded to share your Identity Key.";
+"REGISTER_ERROR_MESSAGE" = "You have registered other device(s), but none responded to share your Identity Key.";
 
 /* No comment provided by engineer. */
 "REGISTER_FAILED_TRY_AGAIN" = "Try Again";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_FORCE_REGISTRATION" = "Reset Your Identity Key";
+"REGISTER_FAILED_FORCE_REGISTRATION" = "Create New Identity Key";
 
 /* No comment provided by engineer. */
 "REGISTER_FORCE_VALIDATION_TITLE" = "Please Confirm\nIdentity Key Reset";
