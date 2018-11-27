@@ -174,7 +174,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         self.view.backgroundColor = .black
 
-        disablePagingIfNecessary()
+        // avoid an unpleasant "bounce" which doesn't make sense in the context of a single item.
+        pagerScrollView?.isScrollEnabled = attachmentItems.count > 1
 
         // Bottom Toolbar
         galleryRailView.delegate = self
@@ -395,25 +396,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         button.autoPinEdge(toSuperviewMargin: .trailing)
     }
 
-    var pagerScrollView: UIScrollView?
-    // This is kind of a hack. Since we don't have first class access to the superview's `scrollView`
-    // we traverse the view hierarchy until we find it, then disable scrolling if there's only one
-    // item. This avoids an unpleasant "bounce" which doesn't make sense in the context of a single item.
-    fileprivate func disablePagingIfNecessary() {
-        for view in self.view.subviews {
-            if let pagerScrollView = view as? UIScrollView {
-                self.pagerScrollView = pagerScrollView
-                break
-            }
-        }
+    lazy var pagerScrollView: UIScrollView? = {
+        // This is kind of a hack. Since we don't have first class access to the superview's `scrollView`
+        // we traverse the view hierarchy until we find it.
+        let pagerScrollView = view.subviews.first { $0 is UIScrollView } as? UIScrollView
+        assert(pagerScrollView != nil)
 
-        guard let pagerScrollView = self.pagerScrollView else {
-            owsFailDebug("pagerScrollView was unexpectedly nil")
-            return
-        }
-
-        pagerScrollView.isScrollEnabled = attachmentItems.count > 1
-    }
+        return pagerScrollView
+    }()
 
     // MARK: - UIPageViewControllerDelegate
 
@@ -694,7 +684,7 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     }
 
     func enablePaging() {
-        self.pagerScrollView?.panGestureRecognizer.isEnabled = true
+        pagerScrollView?.panGestureRecognizer.isEnabled = true
     }
 }
 
