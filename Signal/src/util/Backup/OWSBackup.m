@@ -109,6 +109,8 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
 
 - (void)setup
 {
+    [OWSBackupAPI setup];
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:OWSApplicationDidBecomeActiveNotification

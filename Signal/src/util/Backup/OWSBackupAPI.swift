@@ -133,8 +133,8 @@ import CloudKit
                                          success: @escaping (String) -> Void,
                                          failure: @escaping (Error) -> Void) {
 
-        database().save(record) {
-            (_, error) in
+        let saveOperation = CKModifyRecordsOperation(recordsToSave: [record ], recordIDsToDelete: nil)
+        saveOperation.modifyRecordsCompletionBlock = { (records, recordIds, error) in
 
             let outcome = outcomeForCloudKitError(error: error,
                                                     remainingRetries: remainingRetries,
@@ -164,6 +164,15 @@ import CloudKit
                 failure(invalidServiceResponseError())
             }
         }
+        saveOperation.isAtomic = false
+
+        // These APIs are only available in iOS 9.3 and later.
+        if #available(iOS 9.3, *) {
+            saveOperation.isLongLived = true
+            saveOperation.qualityOfService = .background
+        }
+
+        database().add(saveOperation)
     }
 
     // Compare:
@@ -624,6 +633,46 @@ import CloudKit
         } else {
             Logger.info("\(label) succeeded.")
             return .success
+        }
+    }
+
+    // MARK: -
+
+    @objc
+    public class func setup() {
+        cancelAllLongLivedOperations()
+    }
+
+    private class func cancelAllLongLivedOperations() {
+        // These APIs are only available in iOS 9.3 and later.
+        guard #available(iOS 9.3, *) else {
+            return
+        }
+
+        let container = CKContainer.default()
+        container.fetchAllLongLivedOperationIDs { (operationIds, error) in
+            if let error = error {
+                Logger.error("Could not get all long lived operations: \(error)")
+                return
+            }
+            guard let operationIds = operationIds else {
+                Logger.error("No operation ids.")
+                return
+            }
+
+            for operationId in operationIds {
+                container.fetchLongLivedOperation(withID: operationId, completionHandler: { (operation, error) in
+                    if let error = error {
+                        Logger.error("Could not get long lived operation [\(operationId)]: \(error)")
+                        return
+                    }
+                    guard let operation = operation else {
+                        Logger.error("No operation.")
+                        return
+                    }
+                    operation.cancel()
+                })
+            }
         }
     }
 }
