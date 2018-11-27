@@ -5,6 +5,7 @@
 import Foundation
 import SignalServiceKit
 import CloudKit
+import PromiseKit
 
 // We don't worry about atomic writes.  Each backup export
 // will diff against last successful backup.
@@ -660,28 +661,71 @@ import CloudKit
 
     // MARK: - Access
 
+    @objc public enum BackupError: Int, Error {
+        case couldNotDetermineAccountStatus
+        case noAccount
+        case restrictedAccountStatus
+    }
+
     @objc
-    public class func checkCloudKitAccess(completion: @escaping (Bool) -> Void) {
+    public class func checkCloudKitAccessObjc() -> AnyPromise {
+        return AnyPromise(checkCloudKitAccess())
+    }
+
+    public class func checkCloudKitAccess() -> Promise<Void> {
+        let (promise, resolver) = Promise<Void>.pending()
         CKContainer.default().accountStatus(completionHandler: { (accountStatus, error) in
             DispatchQueue.main.async {
+                if let error = error {
+                    Logger.error("Unknown error: \(String(describing: error)).")
+                    resolver.reject(error)
+                    return
+                }
                 switch accountStatus {
                 case .couldNotDetermine:
-                    Logger.error("could not determine CloudKit account status:\(String(describing: error)).")
-                    OWSAlerts.showErrorAlert(message: NSLocalizedString("CLOUDKIT_STATUS_COULD_NOT_DETERMINE", comment: "Error indicating that the app could not determine that user's CloudKit account status"))
-                    completion(false)
+                    Logger.error("could not determine CloudKit account status: \(String(describing: error)).")
+                    resolver.reject(BackupError.couldNotDetermineAccountStatus)
                 case .noAccount:
                     Logger.error("no CloudKit account.")
-                    OWSAlerts.showErrorAlert(message: NSLocalizedString("CLOUDKIT_STATUS_NO_ACCOUNT", comment: "Error indicating that user does not have an iCloud account."))
-                    completion(false)
+                    resolver.reject(BackupError.noAccount)
                 case .restricted:
                     Logger.error("restricted CloudKit account.")
-                    OWSAlerts.showErrorAlert(message: NSLocalizedString("CLOUDKIT_STATUS_RESTRICTED", comment: "Error indicating that the app was prevented from accessing the user's CloudKit account."))
-                    completion(false)
+                    resolver.reject(BackupError.restrictedAccountStatus)
                 case .available:
-                    completion(true)
+                    Logger.verbose("CloudKit access okay.")
+                    resolver.fulfill(())
                 }
             }
         })
+        return promise
+    }
+
+    @objc
+    public class func checkCloudKitAccessAndPresentAnyError() {
+        checkCloudKitAccess()
+            .catch({ (error) in
+                let errorMessage = self.errorMessage(forCloudKitAccessError: error)
+                OWSAlerts.showErrorAlert(message: errorMessage)
+            })
+            .retainUntilComplete()
+    }
+
+    @objc
+    public class func errorMessage(forCloudKitAccessError error: Error) -> String {
+        if let backupError = error as? BackupError {
+            Logger.error("Backup error: \(String(describing: backupError)).")
+            switch backupError {
+            case .couldNotDetermineAccountStatus:
+                return NSLocalizedString("CLOUDKIT_STATUS_COULD_NOT_DETERMINE", comment: "Error indicating that the app could not determine that user's iCloud account status")
+            case .noAccount:
+                return NSLocalizedString("CLOUDKIT_STATUS_NO_ACCOUNT", comment: "Error indicating that user does not have an iCloud account.")
+            case .restrictedAccountStatus:
+                return NSLocalizedString("CLOUDKIT_STATUS_RESTRICTED", comment: "Error indicating that the app was prevented from accessing the user's iCloud account.")
+            }
+        } else {
+            Logger.error("Unknown error: \(String(describing: error)).")
+            return NSLocalizedString("CLOUDKIT_STATUS_COULD_NOT_DETERMINE", comment: "Error indicating that the app could not determine that user's iCloud account status")
+        }
     }
 
     // MARK: - Retry

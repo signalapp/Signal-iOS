@@ -6,6 +6,7 @@
 #import "OWSBackupIO.h"
 #import "OWSDatabaseMigration.h"
 #import "Signal-Swift.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
@@ -340,17 +341,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateProgressWithDescription:nil progress:nil];
 
     __weak OWSBackupExportJob *weakSelf = self;
-    [OWSBackupAPI checkCloudKitAccessWithCompletion:^(BOOL hasAccess) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            if (hasAccess) {
-                [weakSelf start];
-            } else {
-                [weakSelf failWithErrorDescription:
-                              NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                                  @"Error indicating the backup export could not export the user's data.")];
-            }
-        });
-    }];
+    [[OWSBackupAPI checkCloudKitAccessObjc]
+            .then(^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakSelf start];
+                });
+            })
+            .catch(^(NSError *error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakSelf failWithErrorDescription:
+                                  NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                                      @"Error indicating the backup export could not export the user's data.")];
+                });
+            }) retainUntilComplete];
 }
 
 - (void)start

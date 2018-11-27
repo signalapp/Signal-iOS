@@ -6,6 +6,7 @@
 #import "OWSBackup.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
 
 @import CloudKit;
@@ -80,18 +81,22 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(success);
 
     NSString *recipientId = self.tsAccountManager.localNumber;
-    [OWSBackupAPI checkCloudKitAccessWithCompletion:^(BOOL hasAccess) {
-        if (hasAccess) {
-            [OWSBackupAPI saveTestFileToCloudWithRecipientId:recipientId
-                                                     fileUrl:[NSURL fileURLWithPath:filePath]
-                                                     success:^(NSString *recordName) {
-                                                         // Do nothing, the API method will log for us.
-                                                     }
-                                                     failure:^(NSError *error){
-                                                         // Do nothing, the API method will log for us.
-                                                     }];
-        }
-    }];
+    [[OWSBackupAPI checkCloudKitAccessObjc]
+            .then(^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [OWSBackupAPI saveTestFileToCloudWithRecipientId:recipientId
+                                                             fileUrl:[NSURL fileURLWithPath:filePath]
+                                                             success:^(NSString *recordName) {
+                                                                 // Do nothing, the API method will log for us.
+                                                             }
+                                                             failure:^(NSError *error){
+                                                                 // Do nothing, the API method will log for us.
+                                                             }];
+                });
+            })
+            .catch(^(NSError *error){
+                // Do nothing, the API method will log for us.
+            }) retainUntilComplete];
 }
 
 + (void)checkForBackup

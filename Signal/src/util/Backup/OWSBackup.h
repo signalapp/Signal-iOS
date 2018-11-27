@@ -71,6 +71,8 @@ NSArray<NSString *> *MiscCollectionsToBackup(void);
 
 - (void)allRecipientIdsWithManifestsInCloud:(OWSBackupStringListBlock)success failure:(OWSBackupErrorBlock)failure;
 
+- (void)checkCanExportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure;
+
 - (void)checkCanImportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure;
 
 // TODO: After a successful import, we should enable backup and

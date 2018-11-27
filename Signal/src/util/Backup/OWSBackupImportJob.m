@@ -7,6 +7,7 @@
 #import "OWSDatabaseMigration.h"
 #import "OWSDatabaseMigrationRunner.h"
 #import "Signal-Swift.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSFileSystem.h>
@@ -69,17 +70,19 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     [self updateProgressWithDescription:nil progress:nil];
 
     __weak OWSBackupImportJob *weakSelf = self;
-    [OWSBackupAPI checkCloudKitAccessWithCompletion:^(BOOL hasAccess) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            if (hasAccess) {
-                [weakSelf start];
-            } else {
-                [weakSelf failWithErrorDescription:
-                              NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                  @"Error indicating the backup import could not import the user's data.")];
-            }
-        });
-    }];
+    [[OWSBackupAPI checkCloudKitAccessObjc]
+            .then(^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakSelf start];
+                });
+            })
+            .catch(^(NSError *error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakSelf failWithErrorDescription:
+                                  NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+                                      @"Error indicating the backup import could not import the user's data.")];
+                });
+            }) retainUntilComplete];
 }
 
 - (void)start
