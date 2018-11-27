@@ -2687,7 +2687,7 @@
 				45AE48531E073428004D96C2 /* Swift Lint */,
 				D221A085169C9E5E00537ABF /* Sources */,
 				D221A086169C9E5E00537ABF /* Frameworks */,
-				34C239432180B01B00B6108F /* ShellScript */,
+				34C239432180B01B00B6108F /* Run Script: update_list_info */,
 				D221A087169C9E5E00537ABF /* Resources */,
 				59C9DBA462715B5C999FFB02 /* [CP] Embed Pods Frameworks */,
 				451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */,
@@ -3025,18 +3025,19 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		34C239432180B01B00B6108F /* ShellScript */ = {
+		34C239432180B01B00B6108F /* Run Script: update_list_info */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script: update_list_info";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Capture hash & comment from last WebRTC git commit.\ncd $PROJECT_DIR/ThirdParty/WebRTC/\n_git_commit=`git log --pretty=oneline | head -1`\ncd $PROJECT_DIR\n\n# Remove existing .plist entry, if any.\n/usr/libexec/PlistBuddy -c \"Delete BuildDetails\" Signal/Signal-Info.plist || true\n# Add new .plist entry.\n/usr/libexec/PlistBuddy -c \"add BuildDetails dict\" Signal/Signal-Info.plist\n\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:WebRTCCommit string '$_git_commit'\" Signal/Signal-Info.plist\n\n_osx_version=`defaults read loginwindow SystemVersionStampAsString`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:OSXVersion string '$_osx_version'\" Signal/Signal-Info.plist\n\n_cocoapods_version=`pod --version`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:CocoapodsVersion string '$_cocoapods_version'\" Signal/Signal-Info.plist\n\n_carthage_version=`carthage version`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:CarthageVersion string '$_carthage_version'\" Signal/Signal-Info.plist\n\necho \"CONFIGURATION: ${CONFIGURATION}\"\nif [ \"${CONFIGURATION}\" = \"App Store Release\" ]; then\n    /usr/libexec/PlistBuddy -c \"add :BuildDetails:XCodeVersion string '${XCODE_VERSION_MAJOR}.${XCODE_VERSION_MINOR}'\" Signal/Signal-Info.plist\n\n    # Use UTC\n    _build_datetime=`date -u`\n    /usr/libexec/PlistBuddy -c \"add :BuildDetails:DateTime string '$_build_datetime'\" Signal/Signal-Info.plist\nfi\n";
+			shellScript = "$PROJECT_DIR/Scripts/update_plist_info.sh\n";
 		};
 		451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
