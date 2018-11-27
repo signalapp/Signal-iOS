@@ -98,6 +98,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         updateLayout()
     }
 
+    var hasEverAppeared: Bool = false
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -113,7 +114,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         photoMediaSize.thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
 
         reloadDataAndRestoreSelection()
-        scrollToBottom(animated: false)
+        if !hasEverAppeared {
+            hasEverAppeared = true
+            scrollToBottom(animated: false)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
