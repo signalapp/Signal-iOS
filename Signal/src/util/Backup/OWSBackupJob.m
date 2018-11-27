@@ -30,10 +30,10 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 @property (nonatomic, weak) id<OWSBackupJobDelegate> delegate;
 
+@property (nonatomic) NSString *recipientId;
+
 @property (atomic) BOOL isComplete;
 @property (atomic) BOOL hasSucceeded;
-
-@property (nonatomic) OWSPrimaryStorage *primaryStorage;
 
 @property (nonatomic) NSString *jobTempDirPath;
 
@@ -43,7 +43,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 @implementation OWSBackupJob
 
-- (instancetype)initWithDelegate:(id<OWSBackupJobDelegate>)delegate primaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)initWithDelegate:(id<OWSBackupJobDelegate>)delegate recipientId:(NSString *)recipientId
 {
     self = [super init];
 
@@ -51,11 +51,11 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         return self;
     }
 
-    OWSAssertDebug(primaryStorage);
+    OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug([OWSStorage isStorageReady]);
 
     self.delegate = delegate;
-    self.primaryStorage = primaryStorage;
+    self.recipientId = recipientId;
 
     return self;
 }
@@ -162,8 +162,8 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     OWSLogVerbose(@"");
 
     __weak OWSBackupJob *weakSelf = self;
-    [OWSBackupAPI
-        downloadManifestFromCloudWithSuccess:^(NSData *data) {
+    [OWSBackupAPI downloadManifestFromCloudWithRecipientId:self.recipientId
+        success:^(NSData *data) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [weakSelf
                     processManifest:data

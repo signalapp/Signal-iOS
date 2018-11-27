@@ -18,6 +18,7 @@ NSString *const OWSPrimaryStorage_OWSBackupCollection = @"OWSPrimaryStorage_OWSB
 NSString *const OWSBackup_IsBackupEnabledKey = @"OWSBackup_IsBackupEnabledKey";
 NSString *const OWSBackup_LastExportSuccessDateKey = @"OWSBackup_LastExportSuccessDateKey";
 NSString *const OWSBackup_LastExportFailureDateKey = @"OWSBackup_LastExportFailureDateKey";
+NSString *const OWSBackupErrorDomain = @"OWSBackupErrorDomain";
 
 NSString *NSStringForBackupExportState(OWSBackupState state)
 {
@@ -168,6 +169,16 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
         return;
     }
 
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        OWSFailDebug(@"Can't backup; not registered and ready.");
+        return;
+    }
+    NSString *_Nullable recipientId = self.tsAccountManager.localNumber;
+    if (recipientId.length < 1) {
+        OWSFailDebug(@"Can't backup; missing recipientId.");
+        return;
+    }
+
     // In development, make sure there's no export or import in progress.
     [self.backupExportJob cancel];
     self.backupExportJob = nil;
@@ -176,7 +187,7 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
 
     _backupExportState = OWSBackupState_InProgress;
 
-    self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:self.primaryStorage];
+    self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self recipientId:recipientId];
     [self.backupExportJob startAsync];
 
     [self postDidChangeNotification];
@@ -313,12 +324,22 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
         return;
     }
 
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        OWSLogError(@"Can't backup; not registered and ready.");
+        return;
+    }
+    NSString *_Nullable recipientId = self.tsAccountManager.localNumber;
+    if (recipientId.length < 1) {
+        OWSFailDebug(@"Can't backup; missing recipientId.");
+        return;
+    }
+
     // Start or abort a backup export if neccessary.
     if (!self.shouldHaveBackupExport && self.backupExportJob) {
         [self.backupExportJob cancel];
         self.backupExportJob = nil;
     } else if (self.shouldHaveBackupExport && !self.backupExportJob) {
-        self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self primaryStorage:self.primaryStorage];
+        self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self recipientId:recipientId];
         [self.backupExportJob startAsync];
     }
 
@@ -352,14 +373,56 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
 
 #pragma mark - Backup Import
 
-- (void)checkCanImportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure
+- (void)allRecipientIdsWithManifestsInCloud:(OWSBackupStringListBlock)success failure:(OWSBackupErrorBlock)failure
 {
     OWSAssertIsOnMainThread();
 
     OWSLogInfo(@"");
 
     [OWSBackupAPI
-        checkForManifestInCloudWithSuccess:^(BOOL value) {
+        allRecipientIdsWithManifestsInCloudWithSuccess:^(NSArray<NSString *> *recipientIds) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                success(recipientIds);
+            });
+        }
+        failure:^(NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                failure(error);
+            });
+        }];
+}
+
+- (void)checkCanImportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"");
+
+    void (^failWithUnexpectedError)(void) = ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSError *error =
+                [NSError errorWithDomain:OWSBackupErrorDomain
+                                    code:1
+                                userInfo:@{
+                                    NSLocalizedDescriptionKey : NSLocalizedString(@"BACKUP_UNEXPECTED_ERROR",
+                                        @"Error shown when backup fails due to an unexpected error.")
+                                }];
+            failure(error);
+        });
+    };
+
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        OWSLogError(@"Can't backup; not registered and ready.");
+        return failWithUnexpectedError();
+    }
+    NSString *_Nullable recipientId = self.tsAccountManager.localNumber;
+    if (recipientId.length < 1) {
+        OWSFailDebug(@"Can't backup; missing recipientId.");
+        return failWithUnexpectedError();
+    }
+
+    [OWSBackupAPI checkForManifestInCloudWithRecipientId:recipientId
+        success:^(BOOL value) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 success(value);
             });
@@ -376,6 +439,16 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
     OWSAssertIsOnMainThread();
     OWSAssertDebug(!self.backupImportJob);
 
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        OWSLogError(@"Can't restore backup; not registered and ready.");
+        return;
+    }
+    NSString *_Nullable recipientId = self.tsAccountManager.localNumber;
+    if (recipientId.length < 1) {
+        OWSLogError(@"Can't restore backup; missing recipientId.");
+        return;
+    }
+
     // In development, make sure there's no export or import in progress.
     [self.backupExportJob cancel];
     self.backupExportJob = nil;
@@ -384,7 +457,7 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
 
     _backupImportState = OWSBackupState_InProgress;
 
-    self.backupImportJob = [[OWSBackupImportJob alloc] initWithDelegate:self primaryStorage:self.primaryStorage];
+    self.backupImportJob = [[OWSBackupImportJob alloc] initWithDelegate:self recipientId:recipientId];
     [self.backupImportJob startAsync];
 
     [self postDidChangeNotification];
@@ -512,8 +585,18 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
 
     OWSLogInfo(@"");
 
-    [OWSBackupAPI
-        fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        OWSLogError(@"Can't interact with backup; not registered and ready.");
+        return;
+    }
+    NSString *_Nullable recipientId = self.tsAccountManager.localNumber;
+    if (recipientId.length < 1) {
+        OWSLogError(@"Can't interact with backup; missing recipientId.");
+        return;
+    }
+
+    [OWSBackupAPI fetchAllRecordNamesWithRecipientId:recipientId
+        success:^(NSArray<NSString *> *recordNames) {
             for (NSString *recordName in [recordNames sortedArrayUsingSelector:@selector(compare:)]) {
                 OWSLogInfo(@"\t %@", recordName);
             }
@@ -530,8 +613,18 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
 
     OWSLogInfo(@"");
 
-    [OWSBackupAPI
-        fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        OWSLogError(@"Can't interact with backup; not registered and ready.");
+        return;
+    }
+    NSString *_Nullable recipientId = self.tsAccountManager.localNumber;
+    if (recipientId.length < 1) {
+        OWSLogError(@"Can't interact with backup; missing recipientId.");
+        return;
+    }
+
+    [OWSBackupAPI fetchAllRecordNamesWithRecipientId:recipientId
+        success:^(NSArray<NSString *> *recordNames) {
             if (recordNames.count < 1) {
                 OWSLogInfo(@"No CloudKit records found to clear.");
                 return;
