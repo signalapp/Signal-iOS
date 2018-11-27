@@ -59,12 +59,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         view.backgroundColor = .ows_gray95
 
-        if let navBar = self.navigationController?.navigationBar as? OWSNavigationBar {
-            navBar.makeClear()
-        } else {
-            owsFailDebug("Invalid nav bar.")
-        }
-
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop,
                                            target: self,
                                            action: #selector(didPressCancel))
@@ -106,6 +100,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        if let navBar = self.navigationController?.navigationBar as? OWSNavigationBar {
+            navBar.overrideTheme(type: .alwaysDark)
+        } else {
+            owsFailDebug("Invalid nav bar.")
+        }
 
         // Determine the size of the thumbnails to request
         let scale = UIScreen.main.scale

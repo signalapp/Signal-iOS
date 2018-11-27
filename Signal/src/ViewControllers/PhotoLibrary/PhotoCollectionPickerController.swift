@@ -39,12 +39,6 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
 
         view.backgroundColor = .ows_gray95
 
-        if let navBar = self.navigationController?.navigationBar as? OWSNavigationBar {
-            navBar.makeClear()
-        } else {
-            owsFailDebug("Invalid nav bar.")
-        }
-
         if #available(iOS 11, *) {
             let titleLabel = UILabel()
             titleLabel.text = previousPhotoCollection.localizedTitle()
@@ -75,6 +69,16 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         navigationItem.leftBarButtonItem = cancelButton
 
         updateContents()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if let navBar = self.navigationController?.navigationBar as? OWSNavigationBar {
+            navBar.overrideTheme(type: .alwaysDark)
+        } else {
+            owsFailDebug("Invalid nav bar.")
+        }
     }
 
     private func updateContents() {
