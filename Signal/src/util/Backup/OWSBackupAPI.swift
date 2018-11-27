@@ -412,17 +412,23 @@ import PromiseKit
     }
 
     @objc
-    public class func checkForManifestInCloud(recipientId: String,
-                                              success: @escaping (Bool) -> Void,
-                                              failure: @escaping (Error) -> Void) {
+    public class func checkForManifestInCloudObjc(recipientId: String) -> AnyPromise {
+        return AnyPromise(checkForManifestInCloud(recipientId: recipientId))
+    }
 
+    public class func checkForManifestInCloud(recipientId: String) -> Promise<Bool> {
+
+        let (promise, resolver) = Promise<Bool>.pending()
         let recordName = recordNameForManifest(recipientId: recipientId)
         checkForFileInCloud(recordName: recordName,
                             remainingRetries: maxRetries,
                             success: { (record) in
-                                success(record != nil)
+                                resolver.fulfill(record != nil)
         },
-                            failure: failure)
+                            failure: { (error) in
+                                resolver.reject(error)
+        })
+        return promise
     }
 
     @objc
@@ -675,26 +681,24 @@ import PromiseKit
     public class func checkCloudKitAccess() -> Promise<Void> {
         let (promise, resolver) = Promise<Void>.pending()
         CKContainer.default().accountStatus(completionHandler: { (accountStatus, error) in
-            DispatchQueue.main.async {
-                if let error = error {
-                    Logger.error("Unknown error: \(String(describing: error)).")
-                    resolver.reject(error)
-                    return
-                }
-                switch accountStatus {
-                case .couldNotDetermine:
-                    Logger.error("could not determine CloudKit account status: \(String(describing: error)).")
-                    resolver.reject(BackupError.couldNotDetermineAccountStatus)
-                case .noAccount:
-                    Logger.error("no CloudKit account.")
-                    resolver.reject(BackupError.noAccount)
-                case .restricted:
-                    Logger.error("restricted CloudKit account.")
-                    resolver.reject(BackupError.restrictedAccountStatus)
-                case .available:
-                    Logger.verbose("CloudKit access okay.")
-                    resolver.fulfill(())
-                }
+            if let error = error {
+                Logger.error("Unknown error: \(String(describing: error)).")
+                resolver.reject(error)
+                return
+            }
+            switch accountStatus {
+            case .couldNotDetermine:
+                Logger.error("could not determine CloudKit account status: \(String(describing: error)).")
+                resolver.reject(BackupError.couldNotDetermineAccountStatus)
+            case .noAccount:
+                Logger.error("no CloudKit account.")
+                resolver.reject(BackupError.noAccount)
+            case .restricted:
+                Logger.error("restricted CloudKit account.")
+                resolver.reject(BackupError.restrictedAccountStatus)
+            case .available:
+                Logger.verbose("CloudKit access okay.")
+                resolver.fulfill(())
             }
         })
         return promise

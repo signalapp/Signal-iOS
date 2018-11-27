@@ -26,6 +26,8 @@ NSString *NSStringForBackupImportState(OWSBackupState state);
 
 NSArray<NSString *> *MiscCollectionsToBackup(void);
 
+NSError *OWSBackupErrorWithDescription(NSString *description);
+
 @class AnyPromise;
 @class OWSBackupIO;
 @class TSAttachmentPointer;

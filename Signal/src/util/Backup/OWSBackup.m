@@ -65,6 +65,17 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
     ];
 }
 
+typedef NS_ENUM(NSInteger, OWSBackupErrorCode) {
+    OWSBackupErrorCodeAssertionFailure = 0,
+};
+
+NSError *OWSBackupErrorWithDescription(NSString *description)
+{
+    return [NSError errorWithDomain:@"OWSBackupErrorDomain"
+                               code:OWSBackupErrorCodeAssertionFailure
+                           userInfo:@{ NSLocalizedDescriptionKey : description }];
+}
+
 // TODO: Observe Reachability.
 @interface OWSBackup () <OWSBackupJobDelegate>
 
@@ -475,17 +486,10 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
 
     [[OWSBackupAPI checkCloudKitAccessObjc]
             .thenInBackground(^{
-                [OWSBackupAPI checkForManifestInCloudWithRecipientId:recipientId
-                    success:^(BOOL value) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            success(value);
-                        });
-                    }
-                    failure:^(NSError *error) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            failure(error);
-                        });
-                    }];
+                return [OWSBackupAPI checkForManifestInCloudObjcWithRecipientId:recipientId];
+            })
+            .then(^(NSNumber *value) {
+                success(value.boolValue);
             })
             .catch(^(NSError *error) {
                 failure(error);

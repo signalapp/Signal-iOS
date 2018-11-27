@@ -471,6 +471,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     __weak ProfileViewController *weakSelf = self;
     [OWSBackup.sharedManager
         checkCanImportBackup:^(BOOL value) {
+            OWSAssertIsOnMainThread();
+
             OWSLogInfo(@"has backup available for import? %d", value);
 
             if (value) {
