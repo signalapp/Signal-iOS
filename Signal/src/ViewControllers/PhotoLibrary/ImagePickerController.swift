@@ -113,6 +113,37 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         photoMediaSize.thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
 
         reloadDataAndRestoreSelection()
+        scrollToBottom(animated: false)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+    }
+
+    // MARK: 
+
+    func scrollToBottom(animated: Bool) {
+        self.view.layoutIfNeeded()
+
+        guard let collectionView = collectionView else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        // We could try to be more precise by doing something like
+        //
+        //      let botomOffset = collectionView.contentSize + collectionView.contentInset.top - collectionView.bounds.height
+        //
+        // But `collectionView.contentInset` is based on `safeAreaInsets`, which isn't accurate
+        // until `viewDidAppear` at the earliest.
+        //
+        // from https://developer.apple.com/documentation/uikit/uiview/positioning_content_relative_to_the_safe_area
+        // > Make your modifications in [viewDidAppear] because the safe area insets for a view are
+        // > not accurate until the view is added to a view hierarchy.
+        //
+        // Overshooting like this works without visible animation glitch.
+        let bottomOffset = CGFloat.greatestFiniteMagnitude
+        collectionView.setContentOffset(CGPoint(x: 0, y: bottomOffset), animated: animated)
     }
 
     private func reloadDataAndRestoreSelection() {
