@@ -410,23 +410,25 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
         }];
 }
 
-- (void)checkCanExportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure
+- (AnyPromise *)checkCanExportBackup
+{
+    return [self checkCloudKitAccess];
+}
+
+- (AnyPromise *)checkCloudKitAccess
 {
     OWSAssertIsOnMainThread();
 
     OWSLogInfo(@"");
 
-    void (^failWithUnexpectedError)(void) = ^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NSError *error =
-                [NSError errorWithDomain:OWSBackupErrorDomain
-                                    code:1
-                                userInfo:@{
-                                    NSLocalizedDescriptionKey : NSLocalizedString(@"BACKUP_UNEXPECTED_ERROR",
-                                        @"Error shown when backup fails due to an unexpected error.")
-                                }];
-            failure(error);
-        });
+    AnyPromise * (^failWithUnexpectedError)(void) = ^{
+        NSError *error = [NSError errorWithDomain:OWSBackupErrorDomain
+                                             code:1
+                                         userInfo:@{
+                                             NSLocalizedDescriptionKey : NSLocalizedString(@"BACKUP_UNEXPECTED_ERROR",
+                                                 @"Error shown when backup fails due to an unexpected error.")
+                                         }];
+        return [AnyPromise promiseWithValue:error];
     };
 
     if (!self.tsAccountManager.isRegisteredAndReady) {
@@ -439,17 +441,7 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
         return failWithUnexpectedError();
     }
 
-    [[OWSBackupAPI checkCloudKitAccessObjc]
-            .then(^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    success(YES);
-                });
-            })
-            .catch(^(NSError *error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    failure(error);
-                });
-            }) retainUntilComplete];
+    return [[OWSBackupAPI checkCloudKitAccessObjc] retainUntilComplete];
 }
 
 - (void)checkCanImportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure
@@ -481,17 +473,25 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
         return failWithUnexpectedError();
     }
 
-    [OWSBackupAPI checkForManifestInCloudWithRecipientId:recipientId
-        success:^(BOOL value) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                success(value);
-            });
-        }
-        failure:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                failure(error);
-            });
-        }];
+    [[OWSBackupAPI checkCloudKitAccessObjc]
+            .then(^{
+                [OWSBackupAPI checkForManifestInCloudWithRecipientId:recipientId
+                    success:^(BOOL value) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            success(value);
+                        });
+                    }
+                    failure:^(NSError *error) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            failure(error);
+                        });
+                    }];
+            })
+            .catch(^(NSError *error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    failure(error);
+                });
+            }) retainUntilComplete];
 }
 
 - (void)tryToImportBackup

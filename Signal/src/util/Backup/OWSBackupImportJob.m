@@ -57,6 +57,13 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     return SSKEnvironment.shared.tsAccountManager;
 }
 
+- (OWSBackup *)backup
+{
+    OWSAssertDebug(AppEnvironment.shared.backup);
+
+    return AppEnvironment.shared.backup;
+}
+
 #pragma mark -
 
 - (void)startAsync
@@ -70,7 +77,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     [self updateProgressWithDescription:nil progress:nil];
 
     __weak OWSBackupImportJob *weakSelf = self;
-    [[OWSBackupAPI checkCloudKitAccessObjc]
+    [[self.backup checkCloudKitAccess]
             .then(^{
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [weakSelf start];

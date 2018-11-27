@@ -26,6 +26,7 @@ NSString *NSStringForBackupImportState(OWSBackupState state);
 
 NSArray<NSString *> *MiscCollectionsToBackup(void);
 
+@class AnyPromise;
 @class OWSBackupIO;
 @class TSAttachmentPointer;
 @class TSThread;
@@ -71,7 +72,9 @@ NSArray<NSString *> *MiscCollectionsToBackup(void);
 
 - (void)allRecipientIdsWithManifestsInCloud:(OWSBackupStringListBlock)success failure:(OWSBackupErrorBlock)failure;
 
-- (void)checkCanExportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure;
+- (AnyPromise *)checkCloudKitAccess;
+
+- (AnyPromise *)checkCanExportBackup;
 
 - (void)checkCanImportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure;
 

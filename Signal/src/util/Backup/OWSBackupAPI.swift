@@ -701,16 +701,6 @@ import PromiseKit
     }
 
     @objc
-    public class func checkCloudKitAccessAndPresentAnyError() {
-        checkCloudKitAccess()
-            .catch({ (error) in
-                let errorMessage = self.errorMessage(forCloudKitAccessError: error)
-                OWSAlerts.showErrorAlert(message: errorMessage)
-            })
-            .retainUntilComplete()
-    }
-
-    @objc
     public class func errorMessage(forCloudKitAccessError error: Error) -> String {
         if let backupError = error as? BackupError {
             Logger.error("Backup error: \(String(describing: backupError)).")

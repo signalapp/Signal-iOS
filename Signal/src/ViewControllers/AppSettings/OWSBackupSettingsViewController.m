@@ -27,6 +27,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSBackupSettingsViewController
 
+#pragma mark - Dependencies
+
+- (OWSBackup *)backup
+{
+    OWSAssertDebug(AppEnvironment.shared.backup);
+
+    return AppEnvironment.shared.backup;
+}
+
+#pragma mark -
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -61,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateICloudStatus
 {
     __weak OWSBackupSettingsViewController *weakSelf = self;
-    [[OWSBackupAPI checkCloudKitAccessObjc]
+    [[self.backup checkCloudKitAccess]
             .then(^{
                 dispatch_async(dispatch_get_main_queue(), ^{
                     weakSelf.iCloudError = nil;

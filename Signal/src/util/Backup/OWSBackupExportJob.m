@@ -328,6 +328,13 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.primaryStorage;
 }
 
+- (OWSBackup *)backup
+{
+    OWSAssertDebug(AppEnvironment.shared.backup);
+
+    return AppEnvironment.shared.backup;
+}
+
 #pragma mark -
 
 - (void)startAsync
@@ -341,7 +348,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateProgressWithDescription:nil progress:nil];
 
     __weak OWSBackupExportJob *weakSelf = self;
-    [[OWSBackupAPI checkCloudKitAccessObjc]
+    [[self.backup checkCloudKitAccess]
             .then(^{
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [weakSelf start];

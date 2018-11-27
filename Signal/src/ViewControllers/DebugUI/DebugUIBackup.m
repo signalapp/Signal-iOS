@@ -24,6 +24,13 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.tsAccountManager;
 }
 
++ (OWSBackup *)backup
+{
+    OWSAssertDebug(AppEnvironment.shared.backup);
+
+    return AppEnvironment.shared.backup;
+}
+
 #pragma mark - Factory Methods
 
 - (NSString *)name
@@ -81,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(success);
 
     NSString *recipientId = self.tsAccountManager.localNumber;
-    [[OWSBackupAPI checkCloudKitAccessObjc]
+    [[self.backup checkCloudKitAccess]
             .then(^{
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [OWSBackupAPI saveTestFileToCloudWithRecipientId:recipientId
