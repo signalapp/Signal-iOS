@@ -57,8 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!previousVersion) {
         OWSLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
-        OWSDatabaseMigrationRunner *runner =
-            [[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]];
+        OWSDatabaseMigrationRunner *runner = [[OWSDatabaseMigrationRunner alloc] init];
         [runner assumeAllExistingMigrationsRun];
         dispatch_async(dispatch_get_main_queue(), ^{
             completion();
@@ -95,8 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
-            runAllOutstandingWithCompletion:completion];
+        [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:completion];
     });
 }
 
