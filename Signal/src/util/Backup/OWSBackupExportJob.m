@@ -755,20 +755,19 @@ NS_ASSUME_NONNULL_BEGIN
                 if (self.isComplete) {
                     return resolve(OWSBackupErrorWithDescription(@"Backup export no longer active."));
                 }
-
-                [OWSBackupAPI saveEphemeralDatabaseFileToCloudWithRecipientId:self.recipientId
-                    fileUrl:[NSURL fileURLWithPath:item.encryptedItem.filePath]
-                    success:^(NSString *recordName) {
-                        item.recordName = recordName;
-                        [self.savedDatabaseItems addObject:item];
-                        resolve(@(1));
-                    }
-                    failure:^(NSError *error) {
-                        // Database files are critical so any error uploading them is unrecoverable.
-                        OWSLogVerbose(@"error while saving file: %@", item.encryptedItem.filePath);
-                        resolve(error);
-                    }];
-            }];
+                resolve(@(1));
+            }]
+                .thenInBackground(^{
+                    return [OWSBackupAPI
+                        saveEphemeralDatabaseFileToCloudObjcWithRecipientId:self.recipientId
+                                                                    fileUrl:[NSURL fileURLWithPath:item.encryptedItem
+                                                                                                       .filePath]];
+                })
+                .thenInBackground(^(NSString *recordName) {
+                    item.recordName = recordName;
+                    [self.savedDatabaseItems addObject:item];
+                    return [AnyPromise promiseWithValue:@(1)];
+                });
         });
     }
     [self.unsavedDatabaseItems removeAllObjects];
@@ -782,19 +781,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (OWSAttachmentExport *attachmentExport in self.unsavedAttachmentExports) {
         promise = promise.thenInBackground(^{
-            return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-                if (self.isComplete) {
-                    return resolve(OWSBackupErrorWithDescription(@"Backup export no longer active."));
-                }
-                [self saveAttachmentFileToCloud:attachmentExport resolve:resolve];
-            }];
+            if (self.isComplete) {
+                return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+            }
+            return [self saveAttachmentFileToCloud:attachmentExport];
         });
     }
     [self.unsavedAttachmentExports removeAllObjects];
     return promise;
 }
 
-- (void)saveAttachmentFileToCloud:(OWSAttachmentExport *)attachmentExport resolve:(PMKResolver)resolve
+- (AnyPromise *)saveAttachmentFileToCloud:(OWSAttachmentExport *)attachmentExport
 {
     if (self.lastValidRecordNames) {
         // Wherever possible, we do incremental backups and re-use fragments of the last
@@ -831,7 +828,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogVerbose(@"recycled attachment: %@ as %@",
                 attachmentExport.attachmentFilePath,
                 attachmentExport.relativeFilePath);
-            return resolve(@(1));
+            return [AnyPromise promiseWithValue:@(1)];
         }
     }
 
@@ -840,26 +837,27 @@ NS_ASSUME_NONNULL_BEGIN
         // attachment to disk.
         if (![attachmentExport prepareForUpload]) {
             // Attachment files are non-critical so any error uploading them is recoverable.
-            return resolve(@(1));
+            return [AnyPromise promiseWithValue:@(1)];
         }
         OWSAssertDebug(attachmentExport.relativeFilePath.length > 0);
         OWSAssertDebug(attachmentExport.encryptedItem);
     }
 
-    [OWSBackupAPI savePersistentFileOnceToCloudWithRecipientId:self.recipientId
-        fileId:attachmentExport.attachmentId
-        fileUrlBlock:^{
-            if (attachmentExport.encryptedItem.filePath.length < 1) {
-                OWSLogError(@"attachment export missing temp file path");
-                return (NSURL *)nil;
-            }
-            if (attachmentExport.relativeFilePath.length < 1) {
-                OWSLogError(@"attachment export missing relative file path");
-                return (NSURL *)nil;
-            }
-            return [NSURL fileURLWithPath:attachmentExport.encryptedItem.filePath];
-        }
-        success:^(NSString *recordName) {
+    return [OWSBackupAPI
+        savePersistentFileOnceToCloudObjcWithRecipientId:self.recipientId
+                                                  fileId:attachmentExport.attachmentId
+                                            fileUrlBlock:^{
+                                                if (attachmentExport.encryptedItem.filePath.length < 1) {
+                                                    OWSLogError(@"attachment export missing temp file path");
+                                                    return (NSURL *)nil;
+                                                }
+                                                if (attachmentExport.relativeFilePath.length < 1) {
+                                                    OWSLogError(@"attachment export missing relative file path");
+                                                    return (NSURL *)nil;
+                                                }
+                                                return [NSURL fileURLWithPath:attachmentExport.encryptedItem.filePath];
+                                            }]
+        .thenInBackground(^(NSString *recordName) {
             if (![attachmentExport cleanUp]) {
                 OWSLogError(@"couldn't clean up attachment export.");
                 // Attachment files are non-critical so any error uploading them is recoverable.
@@ -882,17 +880,17 @@ NS_ASSUME_NONNULL_BEGIN
 
             OWSLogVerbose(
                 @"saved attachment: %@ as %@", attachmentExport.attachmentFilePath, attachmentExport.relativeFilePath);
-            return resolve(@(1));
-        }
-        failure:^(NSError *error) {
+            return [AnyPromise promiseWithValue:@(1)];
+        })
+        .catchInBackground(^{
             if (![attachmentExport cleanUp]) {
                 OWSLogError(@"couldn't clean up attachment export.");
                 // Attachment files are non-critical so any error uploading them is recoverable.
             }
 
             // Attachment files are non-critical so any error uploading them is recoverable.
-            return resolve(@(1));
-        }];
+            return [AnyPromise promiseWithValue:@(1)];
+        });
 }
 
 - (AnyPromise *)saveManifestFileToCloud
@@ -909,21 +907,15 @@ NS_ASSUME_NONNULL_BEGIN
     OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
     exportItem.encryptedItem = encryptedItem;
 
-    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [OWSBackupAPI upsertManifestFileToCloudWithRecipientId:self.recipientId
-            fileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]
-            success:^(NSString *recordName) {
-                exportItem.recordName = recordName;
-                self.manifestItem = exportItem;
+    return [OWSBackupAPI upsertManifestFileToCloudObjcWithRecipientId:self.recipientId
+                                                              fileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]]
+        .thenInBackground(^(NSString *recordName) {
+            exportItem.recordName = recordName;
+            self.manifestItem = exportItem;
 
-                // All files have been saved to the cloud.
-                resolve(@(1));
-            }
-            failure:^(NSError *error) {
-                // The manifest file is critical so any error uploading them is unrecoverable.
-                resolve(error);
-            }];
-    }];
+            // All files have been saved to the cloud.
+            return [AnyPromise promiseWithValue:@(1)];
+        });
 }
 
 - (nullable OWSBackupEncryptedItem *)writeManifestFile
