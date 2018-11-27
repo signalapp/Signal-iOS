@@ -10,6 +10,8 @@
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 NSString *const NSNotificationNameBackupStateDidChange = @"NSNotificationNameBackupStateDidChange";
 
 NSString *const OWSPrimaryStorage_OWSBackupCollection = @"OWSPrimaryStorage_OWSBackupCollection";
@@ -17,7 +19,36 @@ NSString *const OWSBackup_IsBackupEnabledKey = @"OWSBackup_IsBackupEnabledKey";
 NSString *const OWSBackup_LastExportSuccessDateKey = @"OWSBackup_LastExportSuccessDateKey";
 NSString *const OWSBackup_LastExportFailureDateKey = @"OWSBackup_LastExportFailureDateKey";
 
-NS_ASSUME_NONNULL_BEGIN
+NSString *NSStringForBackupExportState(OWSBackupState state)
+{
+    switch (state) {
+        case OWSBackupState_Idle:
+            return NSLocalizedString(@"SETTINGS_BACKUP_STATUS_IDLE", @"Indicates that app is not backing up.");
+        case OWSBackupState_InProgress:
+            return NSLocalizedString(@"SETTINGS_BACKUP_STATUS_IN_PROGRESS", @"Indicates that app is backing up.");
+        case OWSBackupState_Failed:
+            return NSLocalizedString(@"SETTINGS_BACKUP_STATUS_FAILED", @"Indicates that the last backup failed.");
+        case OWSBackupState_Succeeded:
+            return NSLocalizedString(@"SETTINGS_BACKUP_STATUS_SUCCEEDED", @"Indicates that the last backup succeeded.");
+    }
+}
+
+NSString *NSStringForBackupImportState(OWSBackupState state)
+{
+    switch (state) {
+        case OWSBackupState_Idle:
+            return NSLocalizedString(@"SETTINGS_BACKUP_IMPORT_STATUS_IDLE", @"Indicates that app is not restoring up.");
+        case OWSBackupState_InProgress:
+            return NSLocalizedString(
+                @"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS", @"Indicates that app is restoring up.");
+        case OWSBackupState_Failed:
+            return NSLocalizedString(
+                @"SETTINGS_BACKUP_IMPORT_STATUS_FAILED", @"Indicates that the last backup restore failed.");
+        case OWSBackupState_Succeeded:
+            return NSLocalizedString(
+                @"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED", @"Indicates that the last backup restore succeeded.");
+    }
+}
 
 // TODO: Observe Reachability.
 @interface OWSBackup () <OWSBackupJobDelegate>
@@ -116,6 +147,13 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.primaryStorage;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark - Backup Export
 
 - (void)tryToExportBackup
@@ -206,6 +244,16 @@ NS_ASSUME_NONNULL_BEGIN
     [self ensureBackupExportState];
 }
 
+- (BOOL)hasPendingRestoreDecision
+{
+    return [self.tsAccountManager hasPendingBackupRestoreDecision];
+}
+
+- (void)setHasPendingRestoreDecision:(BOOL)value
+{
+    [self.tsAccountManager setHasPendingBackupRestoreDecision:value];
+}
+
 - (BOOL)canBackupExport
 {
     if (!self.isBackupEnabled) {
@@ -215,7 +263,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Don't start backups when app is in the background.
         return NO;
     }
-    if (![TSAccountManager isRegistered]) {
+    if (![self.tsAccountManager isRegisteredAndReady]) {
         return NO;
     }
     return YES;
@@ -364,6 +412,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     [self ensureBackupExportState];
+
+    [self postDidChangeNotification];
 }
 
 #pragma mark - OWSBackupJobDelegate

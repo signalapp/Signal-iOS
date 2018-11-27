@@ -75,9 +75,10 @@ NS_ASSUME_NONNULL_BEGIN
         // Enabling backup will involve entering and registering a PIN.
         OWSTableSection *progressSection = [OWSTableSection new];
         [progressSection
-            addItem:[OWSTableItem labelItemWithText:NSLocalizedString(@"SETTINGS_BACKUP_STATUS",
-                                                        @"Label for status row in the in the backup settings view.")
-                                      accessoryText:[self backupExportStateLocalizedDescription]]];
+            addItem:[OWSTableItem
+                        labelItemWithText:NSLocalizedString(@"SETTINGS_BACKUP_STATUS",
+                                              @"Label for status row in the in the backup settings view.")
+                            accessoryText:NSStringForBackupExportState(OWSBackup.sharedManager.backupExportState)]];
         if (OWSBackup.sharedManager.backupExportState == OWSBackupState_InProgress) {
             if (OWSBackup.sharedManager.backupExportDescription) {
                 [progressSection
@@ -129,20 +130,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.contents = contents;
-}
-
-- (NSString *)backupExportStateLocalizedDescription
-{
-    switch (OWSBackup.sharedManager.backupExportState) {
-        case OWSBackupState_Idle:
-            return NSLocalizedString(@"SETTINGS_BACKUP_STATUS_IDLE", @"Indicates that app is not backing up.");
-        case OWSBackupState_InProgress:
-            return NSLocalizedString(@"SETTINGS_BACKUP_STATUS_IN_PROGRESS", @"Indicates that app is backing up.");
-        case OWSBackupState_Failed:
-            return NSLocalizedString(@"SETTINGS_BACKUP_STATUS_FAILED", @"Indicates that the last backup failed.");
-        case OWSBackupState_Succeeded:
-            return NSLocalizedString(@"SETTINGS_BACKUP_STATUS_SUCCEEDED", @"Indicates that the last backup succeeded.");
-    }
 }
 
 - (void)isBackupEnabledDidChange:(UISwitch *)sender

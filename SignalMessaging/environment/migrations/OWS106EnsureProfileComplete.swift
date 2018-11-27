@@ -44,6 +44,14 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
      */
     private class CompleteRegistrationFixerJob: NSObject {
 
+        // MARK: - Dependencies
+
+        private var tsAccountManager: TSAccountManager {
+            return TSAccountManager.sharedInstance()
+        }
+
+        // MARK: -
+
         // Duration between retries if update fails.
         let kRetryInterval: TimeInterval = 5
 
@@ -54,7 +62,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         }
 
         func start() {
-            guard TSAccountManager.isRegistered() else {
+            guard tsAccountManager.isRegistered() else {
                 self.completionHandler(true)
                 return
             }

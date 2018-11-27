@@ -28,13 +28,13 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const TSRegistrationErrorDomain = @"TSRegistrationErrorDomain";
 NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 NSString *const RegistrationStateDidChangeNotification = @"RegistrationStateDidChangeNotification";
-NSString *const DeregistrationStateDidChangeNotification = @"DeregistrationStateDidChangeNotification";
 NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
 
 NSString *const TSAccountManager_RegisteredNumberKey = @"TSStorageRegisteredNumberKey";
 NSString *const TSAccountManager_IsDeregisteredKey = @"TSAccountManager_IsDeregisteredKey";
 NSString *const TSAccountManager_ReregisteringPhoneNumberKey = @"TSAccountManager_ReregisteringPhoneNumberKey";
 NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegistrationId";
+NSString *const TSAccountManager_HasPendingRestoreDecisionKey = @"TSAccountManager_HasPendingRestoreDecisionKey";
 
 NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountCollection";
 NSString *const TSAccountManager_ServerAuthToken = @"TSStorageServerAuthToken";
@@ -135,9 +135,21 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                                                            userInfo:nil];
 }
 
-+ (BOOL)isRegistered
+- (OWSRegistrationState)registrationState
 {
-    return [[self sharedInstance] isRegistered];
+    if (!self.isRegistered) {
+        return OWSRegistrationState_Unregistered;
+    } else if (self.isDeregistered) {
+        if (self.isReregistering) {
+            return OWSRegistrationState_Reregistering;
+        } else {
+            return OWSRegistrationState_Deregistered;
+        }
+    } else if (self.isDeregistered) {
+        return OWSRegistrationState_PendingBackupRestore;
+    } else {
+        return OWSRegistrationState_Registered;
+    }
 }
 
 - (BOOL)isRegistered
@@ -153,6 +165,11 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
 }
 
+- (BOOL)isRegisteredAndReady
+{
+    return self.registrationState == OWSRegistrationState_Registered;
+}
+
 - (void)didRegister
 {
     OWSLogInfo(@"didRegister");
@@ -164,14 +181,12 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
     [self storeLocalNumber:phoneNumber];
 
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:RegistrationStateDidChangeNotification
-                                                             object:nil
-                                                           userInfo:nil];
-
     // Warm these cached values.
     [self isRegistered];
     [self localNumber];
     [self isDeregistered];
+
+    [self postRegistrationStateDidChangeNotification];
 }
 
 + (nullable NSString *)localNumber
@@ -294,7 +309,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }];
 }
 
-+ (void)registerWithPhoneNumber:(NSString *)phoneNumber
+- (void)registerWithPhoneNumber:(NSString *)phoneNumber
                         success:(void (^)(void))successBlock
                         failure:(void (^)(NSError *error))failureBlock
                 smsVerification:(BOOL)isSMS
@@ -308,8 +323,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     // The country code of TSAccountManager.phoneNumberAwaitingVerification is used to
     // determine whether or not to use domain fronting, so it needs to be set _before_
     // we make our verification code request.
-    TSAccountManager *manager = [self sharedInstance];
-    manager.phoneNumberAwaitingVerification = phoneNumber;
+    self.phoneNumberAwaitingVerification = phoneNumber;
 
     TSRequest *request =
         [OWSRequestFactory requestVerificationCodeRequestWithPhoneNumber:phoneNumber
@@ -331,21 +345,17 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }];
 }
 
-+ (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
+- (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
 {
-    TSAccountManager *manager = [self sharedInstance];
-    NSString *number          = manager.phoneNumberAwaitingVerification;
-
+    NSString *number          = self.phoneNumberAwaitingVerification;
     OWSAssertDebug(number);
 
     [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:YES];
 }
 
-+ (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
+- (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
 {
-    TSAccountManager *manager = [self sharedInstance];
-    NSString *number          = manager.phoneNumberAwaitingVerification;
-
+    NSString *number          = self.phoneNumberAwaitingVerification;
     OWSAssertDebug(number);
 
     [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:NO];
@@ -501,9 +511,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
             // `RegistrationStateDidChangeNotification` which is only safe to fire after
             // the data store is reset.
 
-            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:RegistrationStateDidChangeNotification
-                                                                     object:nil
-                                                                   userInfo:nil];
+            [self.sharedInstance postRegistrationStateDidChangeNotification];
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
@@ -564,9 +572,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                   inCollection:TSAccountManager_UserAccountCollection];
     }];
 
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:DeregistrationStateDidChangeNotification
-                                                             object:nil
-                                                           userInfo:nil];
+    [self postRegistrationStateDidChangeNotification];
 }
 
 #pragma mark - Re-registration
@@ -593,6 +599,9 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                             forKey:TSAccountManager_ReregisteringPhoneNumberKey
                       inCollection:TSAccountManager_UserAccountCollection];
         }];
+
+        [self postRegistrationStateDidChangeNotification];
+
         return YES;
     }
 }
@@ -612,6 +621,24 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return nil !=
         [self.dbConnection stringForKey:TSAccountManager_ReregisteringPhoneNumberKey
                            inCollection:TSAccountManager_UserAccountCollection];
+}
+
+- (BOOL)hasPendingBackupRestoreDecision
+{
+    return [self.dbConnection boolForKey:TSAccountManager_HasPendingRestoreDecisionKey
+                            inCollection:TSAccountManager_UserAccountCollection
+                            defaultValue:NO];
+}
+
+- (void)setHasPendingBackupRestoreDecision:(BOOL)value
+{
+    OWSLogInfo(@"%d", value);
+
+    [self.dbConnection setBool:value
+                        forKey:TSAccountManager_HasPendingRestoreDecisionKey
+                  inCollection:TSAccountManager_UserAccountCollection];
+
+    [self postRegistrationStateDidChangeNotification];
 }
 
 - (BOOL)isManualMessageFetchEnabled
@@ -696,6 +723,17 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [self updateAccountAttributesIfNecessary];
     }];
+}
+
+#pragma mark - Notifications
+
+- (void)postRegistrationStateDidChangeNotification
+{
+    OWSAssertIsOnMainThread();
+
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:RegistrationStateDidChangeNotification
+                                                             object:nil
+                                                           userInfo:nil];
 }
 
 @end

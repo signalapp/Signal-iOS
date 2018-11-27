@@ -287,7 +287,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         [self profileCompletedOrSkipped];
         return;
     }
-
+ 
+    __weak ProfileViewController *weakSelf = self;
     UIAlertController *controller = [UIAlertController
         alertControllerWithTitle:
             NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
@@ -301,7 +302,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                                      @"The label for the 'discard' button in alerts and action sheets.")
                                            style:UIAlertActionStyleDestructive
                                          handler:^(UIAlertAction *action) {
-                                             [self profileCompletedOrSkipped];
+                                             [weakSelf profileCompletedOrSkipped];
                                          }]];
     [controller addAction:[OWSAlerts cancelAction]];
     [self presentViewController:controller animated:YES completion:nil];
@@ -383,35 +384,30 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     }
 
     // Show an activity indicator to block the UI during the profile upload.
-    UIAlertController *alertController = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"PROFILE_VIEW_SAVING",
-                                     @"Alert title that indicates the user's profile view is being saved.")
-                         message:nil
-                  preferredStyle:UIAlertControllerStyleAlert];
-
-    [self presentViewController:alertController
-                       animated:YES
-                     completion:^{
-                         [OWSProfileManager.sharedManager updateLocalProfileName:normalizedProfileName
-                             avatarImage:self.avatar
-                             success:^{
-                                 [alertController dismissViewControllerAnimated:NO
-                                                                     completion:^{
-                                                                         [weakSelf updateProfileCompleted];
-                                                                     }];
-                             }
-                             failure:^{
-                                 [alertController
-                                     dismissViewControllerAnimated:NO
-                                                        completion:^{
-                                                            [OWSAlerts showErrorAlertWithMessage:
-                                                                           NSLocalizedString(
+    [ModalActivityIndicatorViewController
+        presentFromViewController:self
+                        canCancel:NO
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                      [OWSProfileManager.sharedManager updateLocalProfileName:normalizedProfileName
+                          avatarImage:weakSelf.avatar
+                          success:^{
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  [modalActivityIndicator dismissWithCompletion:^{
+                                      [weakSelf updateProfileCompleted];
+                                  }];
+                              });
+                          }
+                          failure:^{
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  [modalActivityIndicator dismissWithCompletion:^{
+                                      [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(
                                                                                @"PROFILE_VIEW_ERROR_UPDATE_FAILED",
                                                                                @"Error message shown when a "
                                                                                @"profile update fails.")];
-                                                        }];
-                             }];
-                     }];
+                                  }];
+                              });
+                          }];
+                  }];
 }
 
 - (NSString *)normalizedProfileName
@@ -421,17 +417,25 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)updateProfileCompleted
 {
+    OWSLogVerbose(@"");
+
     [self profileCompletedOrSkipped];
 }
 
 - (void)profileCompletedOrSkipped
 {
+    OWSLogVerbose(@"");
+
     // Dismiss this view.
     switch (self.profileViewMode) {
         case ProfileViewMode_AppSettings:
             [self.navigationController popViewControllerAnimated:YES];
             break;
         case ProfileViewMode_Registration:
+            if (![TSAccountManager sharedInstance].isReregistering) {
+                [self checkCanImportBackup];
+                return;
+            }
             [self showHomeView];
             break;
         case ProfileViewMode_UpgradeOrNag:
@@ -442,12 +446,70 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)showHomeView
 {
-    HomeViewController *homeView = [HomeViewController new];
-    SignalsNavigationController *navigationController =
-        [[SignalsNavigationController alloc] initWithRootViewController:homeView];
-    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    appDelegate.window.rootViewController = navigationController;
-    OWSAssertDebug([navigationController.topViewController isKindOfClass:[HomeViewController class]]);
+    OWSAssertIsOnMainThread();
+    OWSLogVerbose(@"");
+
+    [SignalApp.sharedApp showHomeView];
+}
+
+- (void)showBackupRestoreView
+{
+    OWSAssertIsOnMainThread();
+    OWSLogVerbose(@"");
+
+    BackupRestoreViewController *restoreView = [BackupRestoreViewController new];
+    [self.navigationController setViewControllers:@[
+        restoreView,
+    ]
+                                         animated:YES];
+}
+
+- (void)checkCanImportBackup
+{
+    OWSLogVerbose(@"");
+
+    __weak ProfileViewController *weakSelf = self;
+    [OWSBackup.sharedManager
+        checkCanImportBackup:^(BOOL value) {
+            OWSLogInfo(@"has backup available for import? %d", value);
+
+            if (value) {
+                [OWSBackup.sharedManager setHasPendingRestoreDecision:YES];
+
+                [weakSelf showBackupRestoreView];
+            } else {
+                [weakSelf showHomeView];
+            }
+        }
+        failure:^(NSError *error) {
+            [weakSelf showBackupCheckFailedAlert];
+        }];
+}
+
+- (void)showBackupCheckFailedAlert
+{
+    OWSLogVerbose(@"");
+
+    __weak ProfileViewController *weakSelf = self;
+    UIAlertController *controller = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_TITLE",
+                                     @"Title for alert shown when the app failed to check for an existing backup.")
+                         message:NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_MESSAGE",
+                                     @"Message for alert shown when the app failed to check for an existing "
+                                     @"backup.")
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_FAILED_TRY_AGAIN", nil)
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction *action) {
+                                                     [weakSelf checkCanImportBackup];
+                                                 }]];
+    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_DO_NOT_RESTORE",
+                                                             @"The label for the 'do not restore backup' button.")
+                                                   style:UIAlertActionStyleDestructive
+                                                 handler:^(UIAlertAction *action) {
+                                                     [weakSelf showHomeView];
+                                                 }]];
+    [self presentViewController:controller animated:YES completion:nil];
 }
 
 #pragma mark - UITextFieldDelegate

@@ -912,7 +912,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return NO;
     }
 
-    if (![TSAccountManager isRegistered]) {
+    if (![self.tsAccountManager isRegistered]) {
         return NO;
     }
 

@@ -290,6 +290,13 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark -
 
 + (void)submitLogs
@@ -570,7 +577,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
 - (void)sendToSelf:(NSURL *)url
 {
-    if (![TSAccountManager isRegistered]) {
+    if (![self.tsAccountManager isRegistered]) {
         return;
     }
     NSString *recipientId = [TSAccountManager localNumber];
@@ -594,7 +601,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
 - (void)sendToMostRecentThread:(NSURL *)url
 {
-    if (![TSAccountManager isRegistered]) {
+    if (![self.tsAccountManager isRegistered]) {
         return;
     }
 

@@ -208,14 +208,14 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         return;
     }
 
-    if ([TSAccountManager sharedInstance].isRegistered) {
+    if ([TSAccountManager sharedInstance].isRegisteredAndReady) {
         [self sendSyncContactsMessageIfNecessary];
     }
 }
 
 - (void)sendConfigurationSyncMessage {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (!TSAccountManager.isRegistered) {
+        if (!self.tsAccountManager.isRegisteredAndReady) {
             return;
         }
 
@@ -226,7 +226,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 - (void)sendConfigurationSyncMessage_AppReady {
     DDLogInfo(@"");
 
-    if (![TSAccountManager sharedInstance].isRegistered) {
+    if (![TSAccountManager sharedInstance].isRegisteredAndReady) {
         return;
     }
 

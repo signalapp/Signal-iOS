@@ -9,13 +9,20 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const TSRegistrationErrorDomain;
 extern NSString *const TSRegistrationErrorUserInfoHTTPStatus;
 extern NSString *const RegistrationStateDidChangeNotification;
-extern NSString *const DeregistrationStateDidChangeNotification;
 extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 @class AnyPromise;
 @class OWSPrimaryStorage;
 @class TSNetworkManager;
 @class YapDatabaseReadWriteTransaction;
+
+typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
+    OWSRegistrationState_Unregistered,
+    OWSRegistrationState_PendingBackupRestore,
+    OWSRegistrationState_Registered,
+    OWSRegistrationState_Deregistered,
+    OWSRegistrationState_Reregistering,
+};
 
 @interface TSAccountManager : NSObject
 
@@ -32,13 +39,15 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 + (instancetype)sharedInstance;
 
+- (OWSRegistrationState)registrationState;
+
 /**
  *  Returns if a user is registered or not
  *
  *  @return registered or not
  */
-+ (BOOL)isRegistered;
 - (BOOL)isRegistered;
+- (BOOL)isRegisteredAndReady;
 
 /**
  *  Returns current phone number for this device, which may not yet have been registered.
@@ -76,14 +85,14 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 #pragma mark - Register with phone number
 
-+ (void)registerWithPhoneNumber:(NSString *)phoneNumber
+- (void)registerWithPhoneNumber:(NSString *)phoneNumber
                         success:(void (^)(void))successBlock
                         failure:(void (^)(NSError *error))failureBlock
                 smsVerification:(BOOL)isSMS;
 
-+ (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
+- (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
 
-+ (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
+- (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                           pin:(nullable NSString *)pin
@@ -123,6 +132,9 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 //   valid registration.
 - (BOOL)isDeregistered;
 - (void)setIsDeregistered:(BOOL)isDeregistered;
+
+- (BOOL)hasPendingBackupRestoreDecision;
+- (void)setHasPendingBackupRestoreDecision:(BOOL)value;
 
 #pragma mark - Re-registration
 

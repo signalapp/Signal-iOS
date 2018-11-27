@@ -123,7 +123,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc public func setup() {
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            guard TSAccountManager.isRegistered() else {
+            guard self.tsAccountManager.isRegistered() else {
                 return
             }
 

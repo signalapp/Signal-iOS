@@ -7,6 +7,7 @@
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
+#import "SSKEnvironment.h"
 #import "TSNetworkManager.h"
 #import "TSStorageHeaders.h"
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -35,6 +36,15 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 #pragma mark -
 
 @implementation TSPreKeyManager
+
+#pragma mark - Dependencies
+
++ (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
 
 #pragma mark - State Tracking
 
@@ -102,7 +112,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     }
     OWSAssertDebug(CurrentAppContext().isMainAppAndActive);
 
-    if (!TSAccountManager.isRegistered) {
+    if (!self.tsAccountManager.isRegistered) {
         return;
     }
 

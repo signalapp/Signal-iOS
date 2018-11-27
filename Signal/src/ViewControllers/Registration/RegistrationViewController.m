@@ -43,6 +43,17 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 @implementation RegistrationViewController
 
+#pragma mark - Dependencies
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+#pragma mark -
+
 - (void)loadView
 {
     [super loadView];
@@ -287,10 +298,10 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [self.spinnerView stopAnimating];
     [self.phoneNumberTextField becomeFirstResponder];
 
-    if ([TSAccountManager sharedInstance].isReregistering) {
+    if (self.tsAccountManager.isReregistering) {
         // If re-registering, pre-populate the country (country code, calling code, country name)
         // and phone number state.
-        NSString *_Nullable phoneNumberE164 = [TSAccountManager sharedInstance].reregisterationPhoneNumber;
+        NSString *_Nullable phoneNumberE164 = self.tsAccountManager.reregisterationPhoneNumber;
         if (!phoneNumberE164) {
             OWSFailDebug(@"Could not resume re-registration; missing phone number.");
         } else if ([self tryToApplyPhoneNumberE164:phoneNumberE164]) {
@@ -441,7 +452,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [self.phoneNumberTextField resignFirstResponder];
 
     __weak RegistrationViewController *weakSelf = self;
-    [TSAccountManager registerWithPhoneNumber:parsedPhoneNumber
+    [self.tsAccountManager registerWithPhoneNumber:parsedPhoneNumber
         success:^{
             OWSProdInfo([OWSAnalyticsEvents registrationRegisteredPhoneNumber]);
 
@@ -472,7 +483,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 - (void)countryCodeRowWasTapped:(UIGestureRecognizer *)sender
 {
-    if (TSAccountManager.sharedInstance.isReregistering) {
+    if (self.tsAccountManager.isReregistering) {
         // Don't let user edit their phone number while re-registering.
         return;
     }

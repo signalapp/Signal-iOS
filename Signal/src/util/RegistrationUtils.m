@@ -14,6 +14,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation RegistrationUtils
 
+#pragma mark - Dependencies
+
++ (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+#pragma mark -
+
 + (void)showReregistrationUIFromViewController:(UIViewController *)fromViewController
 {
     UIAlertController *actionSheetController =
@@ -37,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"reregisterWithSamePhoneNumber.");
 
-    if (![[TSAccountManager sharedInstance] resetForReregistration]) {
+    if (![self.tsAccountManager resetForReregistration]) {
         OWSFailDebug(@"could not reset for re-registration.");
         return;
     }
@@ -48,8 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
         presentFromViewController:fromViewController
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [TSAccountManager
-                          registerWithPhoneNumber:[TSAccountManager sharedInstance].reregisterationPhoneNumber
+                      [self.tsAccountManager
+                          registerWithPhoneNumber:self.tsAccountManager.reregisterationPhoneNumber
                           success:^{
                               OWSLogInfo(@"re-registering: send verification code succeeded.");
 

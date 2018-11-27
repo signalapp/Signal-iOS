@@ -142,6 +142,11 @@ static NSTimeInterval launchStartedAt;
     return Environment.shared.windowManager;
 }
 
+- (OWSBackup *)backup
+{
+    return AppEnvironment.shared.backup;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -617,7 +622,7 @@ static NSTimeInterval launchStartedAt;
 - (void)enableBackgroundRefreshIfNecessary
 {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (OWS2FAManager.sharedManager.is2FAEnabled && [self.tsAccountManager isRegistered]) {
+        if (OWS2FAManager.sharedManager.is2FAEnabled && [self.tsAccountManager isRegisteredAndReady]) {
             // Ping server once a day to keep-alive 2FA clients.
             const NSTimeInterval kBackgroundRefreshInterval = 24 * 60 * 60;
             [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:kBackgroundRefreshInterval];
@@ -744,11 +749,12 @@ static NSTimeInterval launchStartedAt;
 
     if (self.didAppLaunchFail) {
         OWSFailDebug(@"app launch failed");
+        completionHandler(NO);
         return;
     }
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (![self.tsAccountManager isRegistered]) {
+        if (![self.tsAccountManager isRegisteredAndReady]) {
             UIAlertController *controller =
                 [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
                                                     message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)
@@ -819,6 +825,11 @@ static NSTimeInterval launchStartedAt;
         }
 
         [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+            if (![self.tsAccountManager isRegisteredAndReady]) {
+                OWSLogInfo(@"Ignoring user activity; app not ready.");
+                return;
+            }
+
             NSString *_Nullable phoneNumber = handle;
             if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
                 phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
@@ -876,6 +887,11 @@ static NSTimeInterval launchStartedAt;
         }
 
         [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+            if (![self.tsAccountManager isRegisteredAndReady]) {
+                OWSLogInfo(@"Ignoring user activity; app not ready.");
+                return;
+            }
+
             NSString *_Nullable phoneNumber = handle;
             if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
                 phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
@@ -950,6 +966,10 @@ static NSTimeInterval launchStartedAt;
         OWSFailDebug(@"app launch failed");
         return;
     }
+    if (!(AppReadiness.isAppReady && [self.tsAccountManager isRegisteredAndReady])) {
+        OWSLogInfo(@"Ignoring remote notification; app not ready.");
+        return;
+    }
 
     // It is safe to continue even if the app isn't ready.
     [[PushManager sharedManager] application:application didReceiveRemoteNotification:userInfo];
@@ -962,6 +982,10 @@ static NSTimeInterval launchStartedAt;
 
     if (self.didAppLaunchFail) {
         OWSFailDebug(@"app launch failed");
+        return;
+    }
+    if (!(AppReadiness.isAppReady && [self.tsAccountManager isRegisteredAndReady])) {
+        OWSLogInfo(@"Ignoring remote notification; app not ready.");
         return;
     }
 
@@ -981,6 +1005,11 @@ static NSTimeInterval launchStartedAt;
 
     OWSLogInfo(@"%@", notification);
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (![self.tsAccountManager isRegisteredAndReady]) {
+            OWSLogInfo(@"Ignoring action; app not ready.");
+            return;
+        }
+
         [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
     }];
 }
@@ -994,6 +1023,7 @@ static NSTimeInterval launchStartedAt;
 
     if (self.didAppLaunchFail) {
         OWSFailDebug(@"app launch failed");
+        completionHandler();
         return;
     }
 
@@ -1004,6 +1034,12 @@ static NSTimeInterval launchStartedAt;
     //
     // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (![self.tsAccountManager isRegisteredAndReady]) {
+            OWSLogInfo(@"Ignoring action; app not ready.");
+            completionHandler();
+            return;
+        }
+
         [[PushManager sharedManager] application:application
                       handleActionWithIdentifier:identifier
                             forLocalNotification:notification
@@ -1023,6 +1059,7 @@ static NSTimeInterval launchStartedAt;
 
     if (self.didAppLaunchFail) {
         OWSFailDebug(@"app launch failed");
+        completionHandler();
         return;
     }
 
@@ -1033,6 +1070,12 @@ static NSTimeInterval launchStartedAt;
     //
     // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (![self.tsAccountManager isRegisteredAndReady]) {
+            OWSLogInfo(@"Ignoring action; app not ready.");
+            completionHandler();
+            return;
+        }
+
         [[PushManager sharedManager] application:application
                       handleActionWithIdentifier:identifier
                             forLocalNotification:notification
@@ -1220,18 +1263,23 @@ static NSTimeInterval launchStartedAt;
     NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
     OWSLogInfo(@"Presenting app %.2f seconds after launch started.", startupDuration);
 
+    UIViewController *rootViewController;
+    BOOL navigationBarHidden = NO;
     if ([self.tsAccountManager isRegistered]) {
-        HomeViewController *homeView = [HomeViewController new];
-        SignalsNavigationController *navigationController =
-            [[SignalsNavigationController alloc] initWithRootViewController:homeView];
-        self.window.rootViewController = navigationController;
+        if (self.backup.hasPendingRestoreDecision) {
+            rootViewController = [BackupRestoreViewController new];
+        } else {
+            rootViewController = [HomeViewController new];
+        }
     } else {
-        RegistrationViewController *viewController = [RegistrationViewController new];
-        OWSNavigationController *navigationController =
-            [[OWSNavigationController alloc] initWithRootViewController:viewController];
-        navigationController.navigationBarHidden = YES;
-        self.window.rootViewController = navigationController;
+        rootViewController = [RegistrationViewController new];
+        navigationBarHidden = YES;
     }
+    OWSAssertDebug(rootViewController);
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
+    navigationController.navigationBarHidden = navigationBarHidden;
+    self.window.rootViewController = navigationController;
 
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
 }

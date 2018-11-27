@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return;
     }
-    if (!TSAccountManager.isRegistered) {
+    if (!self.tsAccountManager.isRegistered) {
         OWSFailDebug(@"Not registered.");
         return;
     }

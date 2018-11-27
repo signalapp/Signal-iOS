@@ -4,6 +4,7 @@
 
 #import "OWS103EnableVideoCalling.h"
 #import <SignalServiceKit/OWSRequestFactory.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 
@@ -11,6 +12,17 @@
 static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
 
 @implementation OWS103EnableVideoCalling
+
+#pragma mark - Dependencies
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+#pragma mark -
 
 + (NSString *)migrationId
 {
@@ -23,7 +35,7 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
     OWSAssertDebug(completion);
 
     OWSLogWarn(@"running migration...");
-    if ([TSAccountManager isRegistered]) {
+    if ([self.tsAccountManager isRegistered]) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             TSRequest *request = [OWSRequestFactory updateAttributesRequest];
             [[TSNetworkManager sharedManager] makeRequest:request

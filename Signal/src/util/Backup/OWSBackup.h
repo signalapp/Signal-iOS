@@ -20,6 +20,9 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
     OWSBackupState_Succeeded,
 };
 
+NSString *NSStringForBackupExportState(OWSBackupState state);
+NSString *NSStringForBackupImportState(OWSBackupState state);
+
 @class OWSBackupIO;
 @class TSAttachmentPointer;
 @class TSThread;
@@ -44,6 +47,9 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 
 - (BOOL)isBackupEnabled;
 - (void)setIsBackupEnabled:(BOOL)value;
+
+- (BOOL)hasPendingRestoreDecision;
+- (void)setHasPendingRestoreDecision:(BOOL)value;
 
 - (void)tryToExportBackup;
 - (void)cancelExportBackup;
