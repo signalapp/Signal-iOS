@@ -175,7 +175,7 @@ void AssertIsOnSendingQueue()
 
 - (nullable NSError *)checkForPreconditionError
 {
-    NSError *_Nullable error = [super checkForPreconditionError];
+    __block NSError *_Nullable error = [super checkForPreconditionError];
     if (error) {
         return error;
     }
@@ -185,8 +185,9 @@ void AssertIsOnSendingQueue()
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             for (TSAttachment *attachment in [self.message attachmentsWithTransaction:transaction]) {
                 if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                    return OWSErrorWithCodeDescription(
+                    error = OWSErrorWithCodeDescription(
                         OWSErrorCodeMessageHasInvalidAttachments, @"Message with missing attachments cannot be sent.");
+                    break;
                 }
 
                 TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
@@ -197,7 +198,7 @@ void AssertIsOnSendingQueue()
         }];
     }
 
-    return nil;
+    return error;
 }
 
 - (void)run
