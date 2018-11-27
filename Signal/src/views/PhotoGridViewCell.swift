@@ -57,12 +57,12 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
         self.highlightedView = UIView()
         highlightedView.alpha = 0.2
-        highlightedView.backgroundColor = Theme.primaryColor
+        highlightedView.backgroundColor = Theme.darkThemePrimaryColor
         highlightedView.isHidden = true
 
         self.selectedView = UIView()
         selectedView.alpha = 0.3
-        selectedView.backgroundColor = Theme.backgroundColor
+        selectedView.backgroundColor = Theme.darkThemeBackgroundColor
         selectedView.isHidden = true
 
         super.init(frame: frame)
