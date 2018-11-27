@@ -2,6 +2,9 @@
 
 set -e
 
+# ensure rbenv/bundler is in our path
+PATH=$PATH:~/.rbenv/shims
+
 # PROJECT_DIR will be set when run from xcode, else we infer it
 if [ "${PROJECT_DIR}" = "" ]; then
     PROJECT_DIR=`git rev-parse --show-toplevel`
@@ -23,7 +26,7 @@ cd $PROJECT_DIR
 _osx_version=`defaults read loginwindow SystemVersionStampAsString`
 /usr/libexec/PlistBuddy -c "add :BuildDetails:OSXVersion string '$_osx_version'" Signal/Signal-Info.plist
 
-_cocoapods_version=`pod --version`
+_cocoapods_version=`bundle exec pod --version`
 /usr/libexec/PlistBuddy -c "add :BuildDetails:CocoapodsVersion string '$_cocoapods_version'" Signal/Signal-Info.plist
 
 _carthage_version=`carthage version`
