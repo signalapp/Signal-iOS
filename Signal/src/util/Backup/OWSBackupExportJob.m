@@ -347,15 +347,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updateProgressWithDescription:nil progress:nil];
 
-    __weak OWSBackupExportJob *weakSelf = self;
     [[self.backup checkCloudKitAccess]
             .thenInBackground(^{
-                [weakSelf start];
+                [self start];
             })
             .catch(^(NSError *error) {
-                [weakSelf failWithErrorDescription:
-                              NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                                  @"Error indicating the backup export could not export the user's data.")];
+                [self failWithErrorDescription:
+                          NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                              @"Error indicating the backup export could not export the user's data.")];
             }) retainUntilComplete];
 }
 
@@ -365,7 +364,6 @@ NS_ASSUME_NONNULL_BEGIN
                                             @"Indicates that the backup export is being configured.")
                                progress:nil];
 
-    __weak OWSBackupExportJob *weakSelf = self;
     [[self configureExport]
             .thenInBackground(^{
                 return [self fetchAllRecords];
@@ -389,9 +387,9 @@ NS_ASSUME_NONNULL_BEGIN
             .catch(^(NSError *error) {
                 OWSFailDebug(@"Backup export failed with error: %@.", error);
 
-                [weakSelf failWithErrorDescription:
-                              NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                                  @"Error indicating the backup export could not export the user's data.")];
+                [self failWithErrorDescription:
+                          NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                              @"Error indicating the backup export could not export the user's data.")];
             }) retainUntilComplete];
 }
 
@@ -441,18 +439,13 @@ NS_ASSUME_NONNULL_BEGIN
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
     }
 
-    __weak OWSBackupExportJob *weakSelf = self;
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         [OWSBackupAPI fetchAllRecordNamesWithRecipientId:self.recipientId
             success:^(NSArray<NSString *> *recordNames) {
-                OWSBackupExportJob *strongSelf = weakSelf;
-                if (!strongSelf) {
+                if (self.isComplete) {
                     return resolve(OWSBackupErrorWithDescription(@"Backup export no longer active."));
                 }
-                if (strongSelf.isComplete) {
-                    return resolve(OWSBackupErrorWithDescription(@"Backup export no longer active."));
-                }
-                strongSelf.lastValidRecordNames = [NSSet setWithArray:recordNames];
+                self.lastValidRecordNames = [NSSet setWithArray:recordNames];
                 resolve(@(1));
             }
             failure:^(NSError *error) {
@@ -473,14 +466,8 @@ NS_ASSUME_NONNULL_BEGIN
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
     }
 
-    __weak OWSBackupExportJob *weakSelf = self;
     return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        OWSBackupExportJob *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return resolve(OWSBackupErrorWithDescription(@"Backup export no longer active."));
-        }
-
-        if (![strongSelf performExportDatabase]) {
+        if (![self performExportDatabase]) {
             NSError *error = OWSBackupErrorWithDescription(@"Backup export failed.");
             return resolve(error);
         }
@@ -757,8 +744,6 @@ NS_ASSUME_NONNULL_BEGIN
 // This method returns YES IFF "work was done and there might be more work to do".
 - (AnyPromise *)saveDatabaseFilesToCloud
 {
-    __weak OWSBackupExportJob *weakSelf = self;
-
     AnyPromise *promise = [AnyPromise promiseWithValue:@(1)];
 
     // We need to preserve ordering of database shards.
@@ -774,12 +759,8 @@ NS_ASSUME_NONNULL_BEGIN
                 [OWSBackupAPI saveEphemeralDatabaseFileToCloudWithRecipientId:self.recipientId
                     fileUrl:[NSURL fileURLWithPath:item.encryptedItem.filePath]
                     success:^(NSString *recordName) {
-                        OWSBackupExportJob *strongSelf = weakSelf;
-                        if (!strongSelf) {
-                            return resolve(OWSBackupErrorWithDescription(@"Backup export no longer active."));
-                        }
                         item.recordName = recordName;
-                        [strongSelf.savedDatabaseItems addObject:item];
+                        [self.savedDatabaseItems addObject:item];
                         resolve(@(1));
                     }
                     failure:^(NSError *error) {
@@ -815,8 +796,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)saveAttachmentFileToCloud:(OWSAttachmentExport *)attachmentExport resolve:(PMKResolver)resolve
 {
-    __weak OWSBackupExportJob *weakSelf = self;
-
     if (self.lastValidRecordNames) {
         // Wherever possible, we do incremental backups and re-use fragments of the last
         // backup and/or restore.
@@ -881,11 +860,6 @@ NS_ASSUME_NONNULL_BEGIN
             return [NSURL fileURLWithPath:attachmentExport.encryptedItem.filePath];
         }
         success:^(NSString *recordName) {
-            OWSBackupExportJob *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return resolve(OWSBackupErrorWithDescription(@"Backup export no longer active."));
-            }
-
             if (![attachmentExport cleanUp]) {
                 OWSLogError(@"couldn't clean up attachment export.");
                 // Attachment files are non-critical so any error uploading them is recoverable.
@@ -895,7 +869,7 @@ NS_ASSUME_NONNULL_BEGIN
             exportItem.encryptedItem = attachmentExport.encryptedItem;
             exportItem.recordName = recordName;
             exportItem.attachmentExport = attachmentExport;
-            [strongSelf.savedAttachmentItems addObject:exportItem];
+            [self.savedAttachmentItems addObject:exportItem];
 
             // Immediately save the record metadata to facilitate export resume.
             OWSBackupFragment *backupFragment = [OWSBackupFragment new];
@@ -935,18 +909,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
     exportItem.encryptedItem = encryptedItem;
 
-    __weak OWSBackupExportJob *weakSelf = self;
     return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         [OWSBackupAPI upsertManifestFileToCloudWithRecipientId:self.recipientId
             fileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]
             success:^(NSString *recordName) {
-                OWSBackupExportJob *strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return resolve(OWSBackupErrorWithDescription(@"Backup export no longer active."));
-                }
-
                 exportItem.recordName = recordName;
-                strongSelf.manifestItem = exportItem;
+                self.manifestItem = exportItem;
 
                 // All files have been saved to the cloud.
                 resolve(@(1));
@@ -1082,14 +1050,9 @@ NS_ASSUME_NONNULL_BEGIN
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
     }
 
-    __weak OWSBackupExportJob *weakSelf = self;
     return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         [OWSBackupAPI fetchAllRecordNamesWithRecipientId:self.recipientId
             success:^(NSArray<NSString *> *recordNames) {
-                OWSBackupExportJob *strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return resolve(OWSBackupErrorWithDescription(@"Backup export no longer active."));
-                }
                 NSMutableSet<NSString *> *obsoleteRecordNames = [NSMutableSet new];
                 [obsoleteRecordNames addObjectsFromArray:recordNames];
                 [obsoleteRecordNames minusSet:activeRecordNames];
@@ -1099,12 +1062,12 @@ NS_ASSUME_NONNULL_BEGIN
                     activeRecordNames.count,
                     obsoleteRecordNames.count);
 
-                [weakSelf deleteRecordsFromCloud:[obsoleteRecordNames.allObjects mutableCopy]
-                                    deletedCount:0
-                                      completion:^(NSError *_Nullable error) {
-                                          // Cloud cleanup is non-critical so any error is recoverable.
-                                          resolve(@(1));
-                                      }];
+                [self deleteRecordsFromCloud:[obsoleteRecordNames.allObjects mutableCopy]
+                                deletedCount:0
+                                  completion:^(NSError *_Nullable error) {
+                                      // Cloud cleanup is non-critical so any error is recoverable.
+                                      resolve(@(1));
+                                  }];
             }
             failure:^(NSError *error) {
                 // Cloud cleanup is non-critical so any error is recoverable.
@@ -1145,18 +1108,17 @@ NS_ASSUME_NONNULL_BEGIN
         [batchRecordNames addObject:recordName];
     }
 
-    __weak OWSBackupExportJob *weakSelf = self;
     [OWSBackupAPI deleteRecordsFromCloudWithRecordNames:batchRecordNames
         success:^{
-            [weakSelf deleteRecordsFromCloud:obsoleteRecordNames
-                                deletedCount:deletedCount + batchRecordNames.count
-                                  completion:completion];
+            [self deleteRecordsFromCloud:obsoleteRecordNames
+                            deletedCount:deletedCount + batchRecordNames.count
+                              completion:completion];
         }
         failure:^(NSError *error) {
             // Cloud cleanup is non-critical so any error is recoverable.
-            [weakSelf deleteRecordsFromCloud:obsoleteRecordNames
-                                deletedCount:deletedCount + batchRecordNames.count
-                                  completion:completion];
+            [self deleteRecordsFromCloud:obsoleteRecordNames
+                            deletedCount:deletedCount + batchRecordNames.count
+                              completion:completion];
         }];
 }
 
