@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 # PROJECT_DIR will be set when run from xcode, else we infer it
 if [ "${PROJECT_DIR}" = "" ]; then
     PROJECT_DIR=`git rev-parse --show-toplevel`
