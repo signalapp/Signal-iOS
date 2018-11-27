@@ -254,6 +254,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
         navigationBar.overrideTheme(type: .clear)
+
+        updateCaptionVisibility()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -405,6 +407,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return pagerScrollView
     }()
 
+    func updateCaptionVisibility() {
+        for pageViewController in pageViewControllers {
+            pageViewController.updateCaptionVisibility(attachmentCount: attachments.count)
+        }
+    }
+
     // MARK: - UIPageViewControllerDelegate
 
     public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
@@ -511,6 +519,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("cache miss.")
         let viewController = AttachmentPrepViewController(attachmentItem: item)
         viewController.prepDelegate = self
+        viewController.updateCaptionVisibility(attachmentCount: attachments.count)
         cachedPages[item] = viewController
 
         return viewController
@@ -778,6 +787,22 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func updateCaptionVisibility(attachmentCount: Int) {
+        if attachmentCount > 1 {
+            captionView.isHidden = false
+        }
+
+        // If we previously had multiple attachments, we'd have shown the caption fields.
+        //
+        // Subsequently, if the user had added caption text, then removed the other attachments
+        // we will continue to show this caption field, so as not to hide any already-entered text.
+        if let captionText = captionView.captionText, captionText.count > 0 {
+            captionView.isHidden = false
+        }
+
+        captionView.isHidden = true
     }
 
     // MARK: - Subviews
