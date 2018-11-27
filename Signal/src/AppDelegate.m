@@ -311,7 +311,8 @@ static NSTimeInterval launchStartedAt;
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
         [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
 
-        OWSFail(@"!isDatabasePasswordAccessible.");
+        [DDLog flushLog];
+        exit(0);
     }
 }
 
