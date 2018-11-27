@@ -74,16 +74,16 @@ NS_ASSUME_NONNULL_BEGIN
     __weak OWSBackupSettingsViewController *weakSelf = self;
     [[self.backup checkCloudKitAccess]
             .then(^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    weakSelf.iCloudError = nil;
-                    [weakSelf updateTableContents];
-                });
+                OWSAssertIsOnMainThread();
+
+                weakSelf.iCloudError = nil;
+                [weakSelf updateTableContents];
             })
             .catch(^(NSError *error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    weakSelf.iCloudError = error;
-                    [weakSelf updateTableContents];
-                });
+                OWSAssertIsOnMainThread();
+
+                weakSelf.iCloudError = error;
+                [weakSelf updateTableContents];
             }) retainUntilComplete];
 }
 

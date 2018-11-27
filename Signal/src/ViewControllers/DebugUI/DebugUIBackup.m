@@ -90,16 +90,14 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *recipientId = self.tsAccountManager.localNumber;
     [[self.backup checkCloudKitAccess]
             .then(^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [OWSBackupAPI saveTestFileToCloudWithRecipientId:recipientId
-                                                             fileUrl:[NSURL fileURLWithPath:filePath]
-                                                             success:^(NSString *recordName) {
-                                                                 // Do nothing, the API method will log for us.
-                                                             }
-                                                             failure:^(NSError *error){
-                                                                 // Do nothing, the API method will log for us.
-                                                             }];
-                });
+                [OWSBackupAPI saveTestFileToCloudWithRecipientId:recipientId
+                                                         fileUrl:[NSURL fileURLWithPath:filePath]
+                                                         success:^(NSString *recordName) {
+                                                             // Do nothing, the API method will log for us.
+                                                         }
+                                                         failure:^(NSError *error){
+                                                             // Do nothing, the API method will log for us.
+                                                         }];
             })
             .catch(^(NSError *error){
                 // Do nothing, the API method will log for us.

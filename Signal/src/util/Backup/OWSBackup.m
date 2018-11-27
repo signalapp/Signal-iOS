@@ -474,7 +474,7 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
     }
 
     [[OWSBackupAPI checkCloudKitAccessObjc]
-            .then(^{
+            .thenInBackground(^{
                 [OWSBackupAPI checkForManifestInCloudWithRecipientId:recipientId
                     success:^(BOOL value) {
                         dispatch_async(dispatch_get_main_queue(), ^{
@@ -488,9 +488,7 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
                     }];
             })
             .catch(^(NSError *error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    failure(error);
-                });
+                failure(error);
             }) retainUntilComplete];
 }
 

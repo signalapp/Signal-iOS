@@ -349,17 +349,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak OWSBackupExportJob *weakSelf = self;
     [[self.backup checkCloudKitAccess]
-            .then(^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [weakSelf start];
-                });
+            .thenInBackground(^{
+                [weakSelf start];
             })
             .catch(^(NSError *error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [weakSelf failWithErrorDescription:
-                                  NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                                      @"Error indicating the backup export could not export the user's data.")];
-                });
+                [weakSelf failWithErrorDescription:
+                              NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                                  @"Error indicating the backup export could not export the user's data.")];
             }) retainUntilComplete];
 }
 
