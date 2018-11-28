@@ -1189,24 +1189,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [validationAlert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"YES", nil)
                                                             style:UIAlertActionStyleDestructive
                                                           handler:^(UIAlertAction * _Nonnull action) {
-                                                              OutgoingControlMessage *message = [[OutgoingControlMessage alloc] initWithThread:thread
-                                                                                                                                   controlType:FLControlMessageThreadUpdateKey
-                                                                                                                                     moreData:nil];
-                                                              [self.messageSender sendControlMessage:message
-                                                                                        toRecipients:[NSCountedSet setWithArray:thread.participantIds]
-                                                                                             success:^{
-                                                                                                 [self deleteThread:thread];
-                                                                                             }
-                                                                                             failure:^(NSError * _Nonnull error) {
-                                                                                                 DDLogDebug(@"Failed to delete thread.  Error: %@", error.localizedDescription);
-                                                                                                 [self deleteThread:thread];
-                                                                                             }];
-//                                                              [self.messageSender enqueueMessage:message
-//                                                                                          success:^{
-//                                                                                              [self deleteThread:thread];
-//                                                                                          }
-//                                                                                          failure:^(NSError * _Nonnull error) {
-//                                                                                          }];
+                                                              [self deleteThread:thread];
                                                           }]];
         [validationAlert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"NO", nil)
                                                             style:UIAlertActionStyleCancel
@@ -1219,11 +1202,24 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)deleteThread:(TSThread *)thread
 {
-    [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.editingDbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [thread removeWithTransaction:transaction];
+    } completionBlock:^{
+        [self checkIfEmptyView];
+        
+        OutgoingControlMessage *message = [[OutgoingControlMessage alloc] initWithThread:thread
+                                                                             controlType:FLControlMessageThreadUpdateKey
+                                                                                moreData:nil];
+        [self.messageSender sendControlMessage:message
+                                  toRecipients:[NSCountedSet setWithArray:thread.participantIds]
+                                       success:^{
+                                           DDLogDebug(@"Sent delete thread control message.");
+                                       }
+                                       failure:^(NSError * _Nonnull error) {
+                                           DDLogDebug(@"Failed to send delete thread control message.  Error: %@", error.localizedDescription);
+                                       }];
     }];
-
-    [self checkIfEmptyView];
+    
 }
 
 - (void)archiveIndexPath:(NSIndexPath *)indexPath
