@@ -25,12 +25,12 @@ class PhotoMediaSize {
 class PhotoPickerAssetItem: PhotoGridItem {
 
     let asset: PHAsset
-    let album: PhotoCollectionContents
+    let photoCollectionContents: PhotoCollectionContents
     let photoMediaSize: PhotoMediaSize
 
-    init(asset: PHAsset, album: PhotoCollectionContents, photoMediaSize: PhotoMediaSize) {
+    init(asset: PHAsset, photoCollectionContents: PhotoCollectionContents, photoMediaSize: PhotoMediaSize) {
         self.asset = asset
-        self.album = album
+        self.photoCollectionContents = photoCollectionContents
         self.photoMediaSize = photoMediaSize
     }
 
@@ -47,7 +47,7 @@ class PhotoPickerAssetItem: PhotoGridItem {
     }
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
-        album.requestThumbnail(for: self.asset, thumbnailSize: photoMediaSize.thumbnailSize) { image, _ in
+        photoCollectionContents.requestThumbnail(for: self.asset, thumbnailSize: photoMediaSize.thumbnailSize) { image, _ in
             completion(image)
         }
         return nil
@@ -70,19 +70,51 @@ class PhotoCollectionContents {
         self.localizedTitle = localizedTitle
     }
 
-    var count: Int {
+    private let imageManager = PHCachingImageManager()
+
+    // MARK: - Asset Accessors
+
+    var assetCount: Int {
         return fetchResult.count
     }
 
-    private let imageManager = PHCachingImageManager()
+    var lastAsset: PHAsset? {
+        guard assetCount > 0 else {
+            return nil
+        }
+        return asset(at: assetCount - 1)
+    }
+
+    var firstAsset: PHAsset? {
+        guard assetCount > 0 else {
+            return nil
+        }
+        return asset(at: 0)
+    }
 
     func asset(at index: Int) -> PHAsset {
         return fetchResult.object(at: index)
     }
 
+    // MARK: - AssetItem Accessors
+
     func assetItem(at index: Int, photoMediaSize: PhotoMediaSize) -> PhotoPickerAssetItem {
         let mediaAsset = asset(at: index)
-        return PhotoPickerAssetItem(asset: mediaAsset, album: self, photoMediaSize: photoMediaSize)
+        return PhotoPickerAssetItem(asset: mediaAsset, photoCollectionContents: self, photoMediaSize: photoMediaSize)
+    }
+
+    func firstAssetItem(photoMediaSize: PhotoMediaSize) -> PhotoPickerAssetItem? {
+        guard let mediaAsset = firstAsset else {
+            return nil
+        }
+        return PhotoPickerAssetItem(asset: mediaAsset, photoCollectionContents: self, photoMediaSize: photoMediaSize)
+    }
+
+    func lastAssetItem(photoMediaSize: PhotoMediaSize) -> PhotoPickerAssetItem? {
+        guard let mediaAsset = lastAsset else {
+            return nil
+        }
+        return PhotoPickerAssetItem(asset: mediaAsset, photoCollectionContents: self, photoMediaSize: photoMediaSize)
     }
 
     // MARK: ImageManager
@@ -242,7 +274,7 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
             }
             let photoCollection = PhotoCollection(collection: assetCollection)
             // Hide empty collections.
-            guard photoCollection.contents().count > 0 else {
+            guard photoCollection.contents().assetCount > 0 else {
                 return
             }
             collections.append(photoCollection)
