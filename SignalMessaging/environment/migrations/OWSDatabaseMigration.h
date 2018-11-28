@@ -12,8 +12,6 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 
 @interface OWSDatabaseMigration : TSYapDatabaseObject
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage;
-
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 
 // Prefer nonblocking (async) migrations by overriding `runUpWithTransaction:` in a subclass.

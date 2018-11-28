@@ -488,10 +488,9 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     // restoration of backup contents.  If some of migrations don't
     // complete, they'll be run the next time the app launches.
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:self.primaryStorage]
-            runAllOutstandingWithCompletion:^{
-                completion(YES);
-            }];
+        [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:^{
+            completion(YES);
+        }];
     });
 }
 

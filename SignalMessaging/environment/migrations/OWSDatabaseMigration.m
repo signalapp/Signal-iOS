@@ -10,6 +10,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDatabaseMigration
 
+#pragma mark - Dependencies
+
+- (OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
+
+    return SSKEnvironment.shared.primaryStorage;
+}
+
+#pragma mark -
+
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSLogInfo(@"marking migration as complete.");
@@ -17,14 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
     [super saveWithTransaction:transaction];
 }
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)init
 {
     self = [super initWithUniqueId:[self.class migrationId]];
     if (!self) {
         return self;
     }
-
-    _primaryStorage = primaryStorage;
 
     return self;
 }
