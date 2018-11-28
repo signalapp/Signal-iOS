@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const OWSPrimaryStorageIdentityKeyStoreCollection;
+
 extern NSString *const OWSPrimaryStorageTrustedKeysCollection;
 
 // This notification will be fired whenever identities are created

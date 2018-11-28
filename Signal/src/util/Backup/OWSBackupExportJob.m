@@ -111,9 +111,14 @@ NS_ASSUME_NONNULL_BEGIN
 // It isn't strictly necessary to capture the entity type (the importer doesn't
 // use this state), but I think it'll be helpful to have around to future-proof
 // this work, help with debugging issue, etc.
-- (BOOL)writeObject:(TSYapDatabaseObject *)object entityType:(SignalIOSProtoBackupSnapshotBackupEntityType)entityType
+- (BOOL)writeObject:(NSObject *)object
+         collection:(NSString *)collection
+                key:(NSString *)key
+         entityType:(SignalIOSProtoBackupSnapshotBackupEntityType)entityType
 {
     OWSAssertDebug(object);
+    OWSAssertDebug(collection.length > 0);
+    OWSAssertDebug(key.length > 0);
 
     NSData *_Nullable data = [NSKeyedArchiver archivedDataWithRootObject:object];
     if (!data) {
@@ -126,7 +131,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     SignalIOSProtoBackupSnapshotBackupEntityBuilder *entityBuilder =
-        [SignalIOSProtoBackupSnapshotBackupEntity builderWithType:entityType entityData:data];
+        [SignalIOSProtoBackupSnapshotBackupEntity builderWithType:entityType
+                                                       entityData:data
+                                                       collection:collection
+                                                              key:key];
 
     NSError *error;
     SignalIOSProtoBackupSnapshotBackupEntity *_Nullable entity = [entityBuilder buildAndReturnError:&error];
@@ -496,11 +504,14 @@ NS_ASSUME_NONNULL_BEGIN
         Class,
         EntityFilter _Nullable,
         SignalIOSProtoBackupSnapshotBackupEntityType);
+    NSMutableSet<NSString *> *exportedCollections = [NSMutableSet new];
     ExportBlock exportEntities = ^(YapDatabaseReadTransaction *transaction,
         NSString *collection,
         Class expectedClass,
         EntityFilter _Nullable filter,
         SignalIOSProtoBackupSnapshotBackupEntityType entityType) {
+        [exportedCollections addObject:collection];
+
         __block NSUInteger count = 0;
         [transaction enumerateKeysAndObjectsInCollection:collection
                                               usingBlock:^(NSString *key, id object, BOOL *stop) {
@@ -515,7 +526,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       OWSFailDebug(@"unexpected class: %@", [object class]);
                                                       return;
                                                   }
-                                                  TSYapDatabaseObject *entity = object;
+                                                  NSObject *entity = object;
                                                   count++;
 
                                                   if ([entity isKindOfClass:[TSAttachmentStream class]]) {
@@ -529,7 +540,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                       entity = attachmentPointer;
                                                   }
 
-                                                  if (![exportStream writeObject:entity entityType:entityType]) {
+                                                  if (![exportStream writeObject:entity
+                                                                      collection:collection
+                                                                             key:key
+                                                                      entityType:entityType]) {
                                                       *stop = YES;
                                                       aborted = YES;
                                                       return;
@@ -542,6 +556,7 @@ NS_ASSUME_NONNULL_BEGIN
     __block NSUInteger copiedInteractions = 0;
     __block NSUInteger copiedAttachments = 0;
     __block NSUInteger copiedMigrations = 0;
+    __block NSUInteger copiedMisc = 0;
     self.unsavedAttachmentExports = [NSMutableArray new];
     [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         copiedThreads = exportEntities(transaction,
@@ -615,6 +630,30 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSDatabaseMigration class],
             nil,
             SignalIOSProtoBackupSnapshotBackupEntityTypeMigration);
+        if (aborted) {
+            return;
+        }
+
+        for (NSString *collection in MiscCollectionsToBackup()) {
+            copiedMisc += exportEntities(
+                transaction, collection, [NSObject class], nil, SignalIOSProtoBackupSnapshotBackupEntityTypeMisc);
+            if (aborted) {
+                return;
+            }
+        }
+
+        for (NSString *collection in [exportedCollections.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
+            OWSLogVerbose(@"Exported collection: %@", collection);
+        }
+        OWSLogVerbose(@"Exported collections: %lu", (unsigned long)exportedCollections.count);
+
+        NSSet<NSString *> *allCollections = [NSSet setWithArray:transaction.allCollections];
+        NSMutableSet *unexportedCollections = [allCollections mutableCopy];
+        [unexportedCollections minusSet:exportedCollections];
+        for (NSString *collection in [unexportedCollections.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
+            OWSLogVerbose(@"Unexported collection: %@", collection);
+        }
+        OWSLogVerbose(@"Unexported collections: %lu", (unsigned long)unexportedCollections.count);
     }];
 
     if (aborted || self.isComplete) {
@@ -636,6 +675,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"copiedMessages: %zd", copiedInteractions);
     OWSLogInfo(@"copiedAttachments: %zd", copiedAttachments);
     OWSLogInfo(@"copiedMigrations: %zd", copiedMigrations);
+    OWSLogInfo(@"copiedMisc: %zd", copiedMisc);
     OWSLogInfo(@"copiedEntities: %zd", exportStream.totalItemCount);
 
     return YES;

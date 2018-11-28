@@ -24,6 +24,8 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 NSString *NSStringForBackupExportState(OWSBackupState state);
 NSString *NSStringForBackupImportState(OWSBackupState state);
 
+NSArray<NSString *> *MiscCollectionsToBackup(void);
+
 @class OWSBackupIO;
 @class TSAttachmentPointer;
 @class TSThread;

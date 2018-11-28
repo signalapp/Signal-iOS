@@ -8,6 +8,7 @@
 #import "OWSBackupImportJob.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -49,6 +50,16 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
             return NSLocalizedString(
                 @"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED", @"Indicates that the last backup restore succeeded.");
     }
+}
+
+NSArray<NSString *> *MiscCollectionsToBackup(void)
+{
+    return @[
+             kOWSBlockingManager_BlockListCollection,
+             OWSUserProfile.collection,
+             SSKIncrementingIdFinder.collectionName,
+             OWSPreferencesSignalDatabaseCollection,
+    ];
 }
 
 // TODO: Observe Reachability.
