@@ -141,7 +141,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     NSMutableArray<OWSBackupFragment *> *allItems = [NSMutableArray new];
     [allItems addObjectsFromArray:self.databaseItems];
-    // TODO:
+    // TODO: We probably want to remove this.
     [allItems addObjectsFromArray:self.attachmentsItems];
     if (self.manifest.localProfileAvatarItem) {
         [allItems addObject:self.manifest.localProfileAvatarItem];
