@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kNSNotificationName_BlockListDidChange;
 
+extern NSString *const kOWSBlockingManager_BlockListCollection;
+
 // This class can be safely accessed and used from any thread.
 @interface OWSBlockingManager : NSObject
 

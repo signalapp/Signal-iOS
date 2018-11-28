@@ -8,6 +8,7 @@
 #import "OWSBackupImportJob.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -53,34 +54,13 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
 
 NSArray<NSString *> *MiscCollectionsToBackup(void)
 {
-    //        IncrementingIdCollection
-    //        OWSContactsManagerCollection
-    //        OWSOrphanDataCleaner_Collection
-    //        OWSPrimaryStorage_OWSBackupCollection
-    //        OWSReadReceiptManagerCollection
-    //        OWSRecipientIdentity
-    //        Signal.ExperienceUpgrade
-    //        SignalAccount
-    //        SignalPreferences
-    //        SignalRecipient
-    //        TSStorageInternalSettingsCollection
-    //        TSStorageManagerIdentityKeyStoreCollection
-    //        TSStorageManagerPreKeyStoreCollection
-    //        TSStorageManagerSessionStoreCollection
-    //        TSStorageManagerSignedPreKeyMetadataCollection
-    //        TSStorageManagerSignedPreKeyStoreCollection
-    //        TSStorageManagerTrustedKeysCollection
-    //        TSStorageUserAccountCollection
-    //        UserProfile
-    //        kOWSProfileManager_UserWhitelistCollection
-    //        kProfileView_Collection
-    //        kTSStorageManagerOWSSyncManagerCollection
-    //        kTSStorageManager_OWSDeviceCollection
-    //        kUDCollection
-    //        kUnidentifiedAccessCollection
-
     return @[
-        OWSPreferencesSignalDatabaseCollection,
+             kOWSBlockingManager_BlockListCollection,
+             OWSUserProfile.collection,
+             SSKIncrementingIdFinder.collectionName,
+             OWSPreferencesSignalDatabaseCollection,
+             OWSPrimaryStorageIdentityKeyStoreCollection,
+             OWSPrimaryStorageTrustedKeysCollection,
     ];
 }
 
