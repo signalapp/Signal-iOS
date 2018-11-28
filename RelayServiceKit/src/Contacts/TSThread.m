@@ -47,6 +47,8 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSThread_NotificationKey_U
 
 @implementation TSThread
 
+@synthesize type = _type;
+
 + (NSString *)collection {
     return @"TSThread";
 }
@@ -556,7 +558,7 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSThread_NotificationKey_U
     if (thread == nil) {
         thread = [TSThread getOrCreateThreadWithId:[[NSUUID UUID] UUIDString].lowercaseString transaction:transaction];
         thread.participantIds = [participantIDs copy];
-//        [thread saveWithTransaction:transaction];
+        [thread saveWithTransaction:transaction];
     }
     
     return thread;
@@ -632,6 +634,22 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSThread_NotificationKey_U
 //                                                          object:self];
 //    }
 //}
+
+-(NSString *)type
+{
+    if (_type == nil) {
+        return @"conversation";
+    } else {
+        return _type;
+    }
+}
+
+-(void)setType:(NSString *)value
+{
+    if ([value isEqualToString:_type]) {
+        _type = [value copy];
+    }
+}
 
 -(NSArray<NSString *>*)participantIds
 {
