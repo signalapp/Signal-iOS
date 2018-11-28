@@ -37,17 +37,18 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .ows_gray95
+        view.backgroundColor = Theme.darkThemeBackgroundColor
+        tableView.backgroundColor = Theme.darkThemeBackgroundColor
         tableView.separatorColor = .clear
 
         if #available(iOS 11, *) {
             let titleLabel = UILabel()
             titleLabel.text = previousPhotoCollection.localizedTitle()
-            titleLabel.textColor = .ows_gray05
+            titleLabel.textColor = Theme.darkThemePrimaryColor
             titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
 
             let titleIconView = UIImageView()
-            titleIconView.tintColor = .ows_gray05
+            titleIconView.tintColor = Theme.darkThemePrimaryColor
             titleIconView.image = UIImage(named: "navbar_disclosure_up")?.withRenderingMode(.alwaysTemplate)
 
             let titleView = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
@@ -66,7 +67,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop,
                                            target: self,
                                            action: #selector(didPressCancel))
-        cancelButton.tintColor = .ows_gray05
+        cancelButton.tintColor = Theme.darkThemePrimaryColor
         navigationItem.leftBarButtonItem = cancelButton
 
         updateContents()
@@ -107,6 +108,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     private func buildTableCell(collection: PhotoCollection) -> UITableViewCell {
         let cell = OWSTableItem.newCell()
 
+        cell.backgroundColor = Theme.darkThemeBackgroundColor
         cell.contentView.backgroundColor = Theme.darkThemeBackgroundColor
         cell.selectedBackgroundView?.backgroundColor = UIColor(white: 0.2, alpha: 1)
 
