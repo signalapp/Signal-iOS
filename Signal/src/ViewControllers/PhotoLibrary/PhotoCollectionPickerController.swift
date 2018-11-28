@@ -38,6 +38,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         super.viewDidLoad()
 
         view.backgroundColor = .ows_gray95
+        tableView.separatorColor = .clear
 
         if #available(iOS 11, *) {
             let titleLabel = UILabel()
@@ -101,44 +102,60 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         self.contents = contents
     }
 
-    func buildTableCell(collection: PhotoCollection) -> UITableViewCell {
+    private let numberFormatter: NumberFormatter = NumberFormatter()
+
+    private func buildTableCell(collection: PhotoCollection) -> UITableViewCell {
         let cell = OWSTableItem.newCell()
 
-        cell.contentView.backgroundColor = .ows_gray95
+        cell.contentView.backgroundColor = Theme.darkThemeBackgroundColor
         cell.selectedBackgroundView?.backgroundColor = UIColor(white: 0.2, alpha: 1)
 
-        let imageView = UIImageView()
-        let kImageSize = 50
-        imageView.autoSetDimensions(to: CGSize(width: kImageSize, height: kImageSize))
-
         let contents = collection.contents()
-
-        let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(width: kImageSize, height: kImageSize))
-        if let assetItem = contents.lastAssetItem(photoMediaSize: photoMediaSize) {
-            imageView.image = assetItem.asyncThumbnail { [weak imageView] image in
-                guard let strongImageView = imageView else {
-                    return
-                }
-                guard let image = image else {
-                    owsFailDebug("image was unexpectedly nil")
-                    return
-                }
-                strongImageView.image = image
-            }
-        }
 
         let titleLabel = UILabel()
         titleLabel.text = collection.localizedTitle()
         titleLabel.font = UIFont.ows_dynamicTypeBody
-        titleLabel.textColor = .ows_gray05
+        titleLabel.textColor = Theme.darkThemePrimaryColor
 
-        let stackView = UIStackView(arrangedSubviews: [imageView, titleLabel])
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.spacing = 10
+        let countLabel = UILabel()
+        countLabel.text = numberFormatter.string(for: contents.assetCount)
+        countLabel.font = UIFont.ows_dynamicTypeCaption1
+        countLabel.textColor = Theme.darkThemePrimaryColor
 
-        cell.contentView.addSubview(stackView)
-        stackView.ows_autoPinToSuperviewMargins()
+        let textStack = UIStackView(arrangedSubviews: [titleLabel, countLabel])
+        textStack.axis = .vertical
+        textStack.alignment = .leading
+        textStack.spacing = 2
+
+        let imageView = UIImageView()
+        let kImageSize = 80
+        imageView.autoSetDimensions(to: CGSize(width: kImageSize, height: kImageSize))
+
+        let hStackView = UIStackView(arrangedSubviews: [imageView, textStack])
+        hStackView.axis = .horizontal
+        hStackView.alignment = .center
+        hStackView.spacing = 11
+
+        let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(width: kImageSize, height: kImageSize))
+        if let assetItem = contents.lastAssetItem(photoMediaSize: photoMediaSize) {
+            imageView.image = assetItem.asyncThumbnail { [weak imageView] image in
+                AssertIsOnMainThread()
+
+                guard let imageView = imageView else {
+                    return
+                }
+
+                guard let image = image else {
+                    owsFailDebug("image was unexpectedly nil")
+                    return
+                }
+
+                imageView.image = image
+            }
+        }
+
+        cell.contentView.addSubview(hStackView)
+        hStackView.ows_autoPinToSuperviewMargins()
 
         return cell
     }
