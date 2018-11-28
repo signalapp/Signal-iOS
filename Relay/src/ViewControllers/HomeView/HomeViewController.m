@@ -1202,24 +1202,26 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)deleteThread:(TSThread *)thread
 {
-    [self.editingDbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [thread removeWithTransaction:transaction];
-    } completionBlock:^{
-        [self checkIfEmptyView];
-        
-        OutgoingControlMessage *message = [[OutgoingControlMessage alloc] initWithThread:thread
-                                                                             controlType:FLControlMessageThreadUpdateKey
-                                                                                moreData:nil];
-        [self.messageSender sendControlMessage:message
-                                  toRecipients:[NSCountedSet setWithArray:thread.participantIds]
-                                       success:^{
-                                           DDLogDebug(@"Sent delete thread control message.");
-                                       }
-                                       failure:^(NSError * _Nonnull error) {
-                                           DDLogDebug(@"Failed to send delete thread control message.  Error: %@", error.localizedDescription);
+    OutgoingControlMessage *message = [[OutgoingControlMessage alloc] initWithThread:thread
+                                                                         controlType:FLControlMessageThreadUpdateKey
+                                                                            moreData:nil];
+    [self.messageSender sendControlMessage:message
+                              toRecipients:[NSCountedSet setWithArray:thread.participantIds]
+                                   success:^{
+                                       DDLogDebug(@"Sent delete thread control message.");
+                                       [self.editingDbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                           [thread removeWithTransaction:transaction];
                                        }];
-    }];
-    
+                                       
+                                   }
+                                   failure:^(NSError * _Nonnull error) {
+                                       DDLogDebug(@"Failed to send delete thread control message.  Error: %@", error.localizedDescription);
+                                       [self.editingDbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                           [thread removeWithTransaction:transaction];
+                                       }];
+                                       
+                                   }];
+    [self checkIfEmptyView];
 }
 
 - (void)archiveIndexPath:(NSIndexPath *)indexPath
