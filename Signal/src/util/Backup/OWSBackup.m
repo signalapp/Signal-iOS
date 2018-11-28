@@ -59,8 +59,6 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
              OWSUserProfile.collection,
              SSKIncrementingIdFinder.collectionName,
              OWSPreferencesSignalDatabaseCollection,
-             OWSPrimaryStorageIdentityKeyStoreCollection,
-             OWSPrimaryStorageTrustedKeysCollection,
     ];
 }
 
