@@ -44,6 +44,18 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     return SSKEnvironment.shared.primaryStorage;
 }
 
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark -
 
 - (void)startAsync
@@ -172,6 +184,10 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                 if (weakSelf.isComplete) {
                                     return;
                                 }
+
+                                [weakSelf.profileManager fetchLocalUsersProfile];
+
+                                [weakSelf.tsAccountManager updateAccountAttributes];
 
                                 // Kick off lazy restore.
                                 [OWSBackupLazyRestoreJob runAsync];

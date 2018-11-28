@@ -642,6 +642,11 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
+        for (NSString *collection in [exportedCollections.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
+            OWSLogVerbose(@"Exported collection: %@", collection);
+        }
+        OWSLogVerbose(@"Exported collections: %lu", (unsigned long)exportedCollections.count);
+
         NSSet<NSString *> *allCollections = [NSSet setWithArray:transaction.allCollections];
         NSMutableSet *unexportedCollections = [allCollections mutableCopy];
         [unexportedCollections minusSet:exportedCollections];
