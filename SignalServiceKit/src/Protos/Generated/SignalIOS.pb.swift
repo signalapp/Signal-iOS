@@ -61,6 +61,26 @@ struct IOSProtos_BackupSnapshot {
     /// Clears the value of `entityData`. Subsequent reads from it will return its default value.
     mutating func clearEntityData() {self._entityData = nil}
 
+    /// @required
+    var collection: String {
+      get {return _collection ?? String()}
+      set {_collection = newValue}
+    }
+    /// Returns true if `collection` has been explicitly set.
+    var hasCollection: Bool {return self._collection != nil}
+    /// Clears the value of `collection`. Subsequent reads from it will return its default value.
+    mutating func clearCollection() {self._collection = nil}
+
+    /// @required
+    var key: String {
+      get {return _key ?? String()}
+      set {_key = newValue}
+    }
+    /// Returns true if `key` has been explicitly set.
+    var hasKey: Bool {return self._key != nil}
+    /// Clears the value of `key`. Subsequent reads from it will return its default value.
+    mutating func clearKey() {self._key = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     enum TypeEnum: SwiftProtobuf.Enum {
@@ -70,6 +90,7 @@ struct IOSProtos_BackupSnapshot {
       case thread // = 2
       case interaction // = 3
       case attachment // = 4
+      case misc // = 5
 
       init() {
         self = .unknown
@@ -82,6 +103,7 @@ struct IOSProtos_BackupSnapshot {
         case 2: self = .thread
         case 3: self = .interaction
         case 4: self = .attachment
+        case 5: self = .misc
         default: return nil
         }
       }
@@ -93,6 +115,7 @@ struct IOSProtos_BackupSnapshot {
         case .thread: return 2
         case .interaction: return 3
         case .attachment: return 4
+        case .misc: return 5
         }
       }
 
@@ -102,6 +125,8 @@ struct IOSProtos_BackupSnapshot {
 
     fileprivate var _type: IOSProtos_BackupSnapshot.BackupEntity.TypeEnum? = nil
     fileprivate var _entityData: Data? = nil
+    fileprivate var _collection: String? = nil
+    fileprivate var _key: String? = nil
   }
 
   init() {}
@@ -145,6 +170,8 @@ extension IOSProtos_BackupSnapshot.BackupEntity: SwiftProtobuf.Message, SwiftPro
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "type"),
     2: .same(proto: "entityData"),
+    3: .same(proto: "collection"),
+    4: .same(proto: "key"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -152,6 +179,8 @@ extension IOSProtos_BackupSnapshot.BackupEntity: SwiftProtobuf.Message, SwiftPro
       switch fieldNumber {
       case 1: try decoder.decodeSingularEnumField(value: &self._type)
       case 2: try decoder.decodeSingularBytesField(value: &self._entityData)
+      case 3: try decoder.decodeSingularStringField(value: &self._collection)
+      case 4: try decoder.decodeSingularStringField(value: &self._key)
       default: break
       }
     }
@@ -164,12 +193,20 @@ extension IOSProtos_BackupSnapshot.BackupEntity: SwiftProtobuf.Message, SwiftPro
     if let v = self._entityData {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     }
+    if let v = self._collection {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
+    if let v = self._key {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: IOSProtos_BackupSnapshot.BackupEntity, rhs: IOSProtos_BackupSnapshot.BackupEntity) -> Bool {
     if lhs._type != rhs._type {return false}
     if lhs._entityData != rhs._entityData {return false}
+    if lhs._collection != rhs._collection {return false}
+    if lhs._key != rhs._key {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -182,5 +219,6 @@ extension IOSProtos_BackupSnapshot.BackupEntity.TypeEnum: SwiftProtobuf._ProtoNa
     2: .same(proto: "THREAD"),
     3: .same(proto: "INTERACTION"),
     4: .same(proto: "ATTACHMENT"),
+    5: .same(proto: "MISC"),
   ]
 }

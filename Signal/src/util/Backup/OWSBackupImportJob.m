@@ -432,7 +432,23 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                         return completion(NO);
                     }
 
-                    __block TSYapDatabaseObject *object = nil;
+                    NSString *_Nullable collection = entity.collection;
+                    if (collection.length < 1) {
+                        OWSLogError(@"missing collection.");
+                        // Database-related errors are unrecoverable.
+                        aborted = YES;
+                        return completion(NO);
+                    }
+
+                    NSString *_Nullable key = entity.key;
+                    if (key.length < 1) {
+                        OWSLogError(@"missing key.");
+                        // Database-related errors are unrecoverable.
+                        aborted = YES;
+                        return completion(NO);
+                    }
+
+                    __block NSObject *object = nil;
                     @try {
                         NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:entityData];
                         object = [unarchiver decodeObjectForKey:@"root"];
@@ -449,9 +465,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                         return completion(NO);
                     }
 
-                    [object saveWithTransaction:transaction];
+                    [transaction setObject:object forKey:key inCollection:collection];
                     copiedEntities++;
-                    NSString *collection = [object.class collection];
                     NSUInteger restoredEntityCount = restoredEntityCounts[collection].unsignedIntValue;
                     restoredEntityCounts[collection] = @(restoredEntityCount + 1);
                 }

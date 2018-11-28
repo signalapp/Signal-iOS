@@ -51,6 +51,39 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
     }
 }
 
+NSArray<NSString *> *MiscCollectionsToBackup(void)
+{
+    //        IncrementingIdCollection
+    //        OWSContactsManagerCollection
+    //        OWSOrphanDataCleaner_Collection
+    //        OWSPrimaryStorage_OWSBackupCollection
+    //        OWSReadReceiptManagerCollection
+    //        OWSRecipientIdentity
+    //        Signal.ExperienceUpgrade
+    //        SignalAccount
+    //        SignalPreferences
+    //        SignalRecipient
+    //        TSStorageInternalSettingsCollection
+    //        TSStorageManagerIdentityKeyStoreCollection
+    //        TSStorageManagerPreKeyStoreCollection
+    //        TSStorageManagerSessionStoreCollection
+    //        TSStorageManagerSignedPreKeyMetadataCollection
+    //        TSStorageManagerSignedPreKeyStoreCollection
+    //        TSStorageManagerTrustedKeysCollection
+    //        TSStorageUserAccountCollection
+    //        UserProfile
+    //        kOWSProfileManager_UserWhitelistCollection
+    //        kProfileView_Collection
+    //        kTSStorageManagerOWSSyncManagerCollection
+    //        kTSStorageManager_OWSDeviceCollection
+    //        kUDCollection
+    //        kUnidentifiedAccessCollection
+
+    return @[
+        OWSPreferencesSignalDatabaseCollection,
+    ];
+}
+
 // TODO: Observe Reachability.
 @interface OWSBackup () <OWSBackupJobDelegate>
 
