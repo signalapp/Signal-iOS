@@ -89,15 +89,14 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     [self updateProgressWithDescription:nil progress:nil];
 
-    __weak OWSBackupImportJob *weakSelf = self;
     [[self.backup ensureCloudKitAccess]
             .thenInBackground(^{
-                [weakSelf start];
+                [self start];
             })
             .catch(^(NSError *error) {
-                [weakSelf failWithErrorDescription:
-                              NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                  @"Error indicating the backup import could not import the user's data.")];
+                [self failWithErrorDescription:
+                          NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+                              @"Error indicating the backup import could not import the user's data.")];
             }) retainUntilComplete];
 }
 
@@ -121,35 +120,32 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                             @"Indicates that the backup import data is being imported.")
                                progress:nil];
 
-    __weak OWSBackupImportJob *weakSelf = self;
-    [weakSelf
-        downloadAndProcessManifestWithSuccess:^(OWSBackupManifestContents *manifest) {
-            OWSBackupImportJob *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return;
-            }
-            if (self.isComplete) {
-                return;
-            }
-            OWSCAssertDebug(manifest.databaseItems.count > 0);
-            OWSCAssertDebug(manifest.attachmentsItems);
-            strongSelf.manifest = manifest;
-            [strongSelf downloadAndProcessImport];
-        }
-        failure:^(NSError *manifestError) {
-            [weakSelf failWithError:manifestError];
-        }
-        backupIO:self.backupIO];
+    [[self downloadAndProcessManifestWithBackupIO:self.backupIO]
+            .thenInBackground(^(OWSBackupManifestContents *manifest) {
+                OWSCAssertDebug(manifest.databaseItems.count > 0);
+                OWSCAssertDebug(manifest.attachmentsItems);
+
+                self.manifest = manifest;
+
+                return [self downloadAndProcessImport];
+            })
+            .catchInBackground(^(NSError *error) {
+                [self failWithError:error];
+            }) retainUntilComplete];
 }
 
-- (void)downloadAndProcessImport
+- (AnyPromise *)downloadAndProcessImport
 {
     OWSAssertDebug(self.databaseItems);
     OWSAssertDebug(self.attachmentsItems);
 
     NSMutableArray<OWSBackupFragment *> *allItems = [NSMutableArray new];
     [allItems addObjectsFromArray:self.databaseItems];
+    // TODO:
     [allItems addObjectsFromArray:self.attachmentsItems];
+    if (self.manifest.localProfileAvatarItem) {
+        [allItems addObject:self.manifest.localProfileAvatarItem];
+    }
 
     // Record metadata for all items, so that we can re-use them in incremental backups after the restore.
     [self.primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -158,62 +154,31 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         }
     }];
 
-    __weak OWSBackupImportJob *weakSelf = self;
-    [weakSelf
-        downloadFilesFromCloud:allItems
-                    completion:^(NSError *_Nullable fileDownloadError) {
-                        if (fileDownloadError) {
-                            [weakSelf failWithError:fileDownloadError];
-                            return;
-                        }
+    return [self downloadFilesFromCloud:allItems]
+        .thenInBackground(^{
+            return [self restoreDatabase];
+        })
+        .thenInBackground(^{
+            return [self ensureMigrations];
+        })
+        .thenInBackground(^{
+            return [self restoreLocalProfile];
+        })
+        .thenInBackground(^{
+            return [self restoreAttachmentFiles];
+        })
+        .thenInBackground(^{
+            // Kick off lazy restore.
+            [OWSBackupLazyRestoreJob runAsync];
 
-                        if (weakSelf.isComplete) {
-                            return;
-                        }
+            [self.profileManager fetchLocalUsersProfile];
+            
+            [self.tsAccountManager updateAccountAttributes];
+            
+            [self succeed];
 
-                        [weakSelf restoreDatabaseWithCompletion:^(BOOL restoreDatabaseSuccess) {
-                            if (!restoreDatabaseSuccess) {
-                                [weakSelf
-                                    failWithErrorDescription:NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                                                 @"Error indicating the backup import "
-                                                                 @"could not import the user's data.")];
-                                return;
-                            }
-
-                            if (weakSelf.isComplete) {
-                                return;
-                            }
-
-                            [weakSelf ensureMigrationsWithCompletion:^(BOOL ensureMigrationsSuccess) {
-                                if (!ensureMigrationsSuccess) {
-                                    [weakSelf failWithErrorDescription:NSLocalizedString(
-                                                                           @"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                                                           @"Error indicating the backup import "
-                                                                           @"could not import the user's data.")];
-                                    return;
-                                }
-
-                                if (weakSelf.isComplete) {
-                                    return;
-                                }
-
-                                [weakSelf restoreAttachmentFiles];
-
-                                if (weakSelf.isComplete) {
-                                    return;
-                                }
-
-                                [weakSelf.profileManager fetchLocalUsersProfile];
-
-                                [weakSelf.tsAccountManager updateAccountAttributes];
-
-                                // Kick off lazy restore.
-                                [OWSBackupLazyRestoreJob runAsync];
-
-                                [weakSelf succeed];
-                            }];
-                        }];
-                    }];
+            return [AnyPromise promiseWithValue:@(1)];
+        });
 }
 
 - (BOOL)configureImport
@@ -230,79 +195,133 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     return YES;
 }
 
-- (void)downloadFilesFromCloud:(NSMutableArray<OWSBackupFragment *> *)items
-                    completion:(OWSBackupJobCompletion)completion
+- (AnyPromise *)downloadFilesFromCloud:(NSMutableArray<OWSBackupFragment *> *)items
 {
     OWSAssertDebug(items.count > 0);
-    OWSAssertDebug(completion);
 
     OWSLogVerbose(@"");
 
-    [self downloadNextItemFromCloud:items recordCount:items.count completion:completion];
-}
-
-- (void)downloadNextItemFromCloud:(NSMutableArray<OWSBackupFragment *> *)items
-                      recordCount:(NSUInteger)recordCount
-                       completion:(OWSBackupJobCompletion)completion
-{
-    OWSAssertDebug(items);
-    OWSAssertDebug(completion);
+    NSUInteger recordCount = items.count;
 
     if (self.isComplete) {
         // Job was aborted.
-        return completion(nil);
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
     }
 
     if (items.count < 1) {
         // All downloads are complete; exit.
-        return completion(nil);
-    }
-    OWSBackupFragment *item = items.lastObject;
-    [items removeLastObject];
-
-    CGFloat progress = (recordCount > 0 ? ((recordCount - items.count) / (CGFloat)recordCount) : 0.f);
-    [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_DOWNLOAD",
-                                            @"Indicates that the backup import data is being downloaded.")
-                               progress:@(progress)];
-
-    // TODO: Use a predictable file path so that multiple "import backup" attempts
-    // will leverage successful file downloads from previous attempts.
-    //
-    // TODO: This will also require imports using a predictable jobTempDirPath.
-    NSString *tempFilePath = [self.jobTempDirPath stringByAppendingPathComponent:item.recordName];
-
-    // Skip redundant file download.
-    if ([NSFileManager.defaultManager fileExistsAtPath:tempFilePath]) {
-        [OWSFileSystem protectFileOrFolderAtPath:tempFilePath];
-
-        item.downloadFilePath = tempFilePath;
-
-        [self downloadNextItemFromCloud:items recordCount:recordCount completion:completion];
-        return;
+        return [AnyPromise promiseWithValue:@(1)];
     }
 
-    __weak OWSBackupImportJob *weakSelf = self;
-    [OWSBackupAPI downloadFileFromCloudWithRecordName:item.recordName
-        toFileUrl:[NSURL fileURLWithPath:tempFilePath]
-        success:^{
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [OWSFileSystem protectFileOrFolderAtPath:tempFilePath];
-                item.downloadFilePath = tempFilePath;
+    AnyPromise *promise = [AnyPromise promiseWithValue:@(1)];
+    for (OWSBackupFragment *item in items) {
+        promise = promise.thenInBackground(^{
+            CGFloat progress = (recordCount > 0 ? ((recordCount - items.count) / (CGFloat)recordCount) : 0.f);
+            [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_DOWNLOAD",
+                                                    @"Indicates that the backup import data is being downloaded.")
+                                       progress:@(progress)];
 
-                [weakSelf downloadNextItemFromCloud:items recordCount:recordCount completion:completion];
-            });
+            return [AnyPromise promiseWithValue:@(1)];
+        });
+
+        // TODO: Use a predictable file path so that multiple "import backup" attempts
+        // will leverage successful file downloads from previous attempts.
+        //
+        // TODO: This will also require imports using a predictable jobTempDirPath.
+        NSString *tempFilePath = [self.jobTempDirPath stringByAppendingPathComponent:item.recordName];
+
+        // Skip redundant file download.
+        if ([NSFileManager.defaultManager fileExistsAtPath:tempFilePath]) {
+            [OWSFileSystem protectFileOrFolderAtPath:tempFilePath];
+
+            item.downloadFilePath = tempFilePath;
+
+            continue;
         }
-        failure:^(NSError *error) {
-            // Ensure that we continue to work off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                completion(error);
-            });
-        }];
+
+        promise = promise.thenInBackground(^{
+            return [OWSBackupAPI downloadFileFromCloudObjcWithRecordName:item.recordName
+                                                               toFileUrl:[NSURL fileURLWithPath:tempFilePath]]
+                .thenInBackground(^{
+                    [OWSFileSystem protectFileOrFolderAtPath:tempFilePath];
+                    item.downloadFilePath = tempFilePath;
+                });
+        });
+    }
+
+    return promise;
 }
 
-- (void)restoreAttachmentFiles
+- (AnyPromise *)restoreLocalProfile
 {
     OWSLogVerbose(@": %zd", self.attachmentsItems.count);
+
+    if (self.isComplete) {
+        // Job was aborted.
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
+    }
+
+    NSString *_Nullable localProfileName = self.manifest.localProfileName;
+    UIImage *_Nullable localProfileAvatar = nil;
+
+    if (self.manifest.localProfileAvatarItem) {
+        OWSBackupFragment *item = self.manifest.localProfileAvatarItem;
+        if (item.recordName.length < 1) {
+            OWSLogError(@"local profile avatar was not downloaded.");
+            // Ignore errors related to local profile.
+            return [AnyPromise promiseWithValue:@(1)];
+        }
+        if (!item.uncompressedDataLength || item.uncompressedDataLength.unsignedIntValue < 1) {
+            OWSLogError(@"database snapshot missing size.");
+            // Ignore errors related to local profile.
+            return [AnyPromise promiseWithValue:@(1)];
+        }
+
+        @autoreleasepool {
+            NSData *_Nullable data =
+                [self.backupIO decryptFileAsData:item.downloadFilePath encryptionKey:item.encryptionKey];
+            if (!data) {
+                OWSLogError(@"could not decrypt local profile avatar.");
+                // Ignore errors related to local profile.
+                return [AnyPromise promiseWithValue:@(1)];
+            }
+            // TODO: Verify that we're not compressing the profile avatar data.
+            UIImage *_Nullable image = [UIImage imageWithData:data];
+            if (!image) {
+                OWSLogError(@"could not decrypt local profile avatar.");
+                // Ignore errors related to local profile.
+                return [AnyPromise promiseWithValue:@(1)];
+            }
+            localProfileAvatar = image;
+        }
+    }
+
+    if (localProfileName.length > 0 || localProfileAvatar) {
+        AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+            [self.profileManager updateLocalProfileName:localProfileName
+                avatarImage:localProfileAvatar
+                success:^{
+                    resolve(@(1));
+                }
+                failure:^{
+                    // Ignore errors related to local profile.
+                    resolve(@(1));
+                }];
+        }];
+        return promise;
+    } else {
+        return [AnyPromise promiseWithValue:@(1)];
+    }
+}
+
+- (AnyPromise *)restoreAttachmentFiles
+{
+    OWSLogVerbose(@": %zd", self.attachmentsItems.count);
+
+    if (self.isComplete) {
+        // Job was aborted.
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
+    }
 
     __block NSUInteger count = 0;
     YapDatabaseConnection *dbConnection = self.primaryStorage.newDatabaseConnection;
@@ -347,22 +366,23 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     }];
 
     OWSLogError(@"enqueued lazy restore of %zd files.", count);
+
+    return [AnyPromise promiseWithValue:@(1)];
 }
 
-- (void)restoreDatabaseWithCompletion:(OWSBackupJobBoolCompletion)completion
+- (AnyPromise *)restoreDatabase
 {
-    OWSAssertDebug(completion);
-
     OWSLogVerbose(@"");
 
     if (self.isComplete) {
-        return completion(NO);
+        // Job was aborted.
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
     }
 
     YapDatabaseConnection *_Nullable dbConnection = self.primaryStorage.newDatabaseConnection;
     if (!dbConnection) {
         OWSFailDebug(@"Could not create dbConnection.");
-        return completion(NO);
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Could not create dbConnection.")];
     }
 
     // Order matters here.
@@ -411,14 +431,14 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 // Attachment-related errors are recoverable and can be ignored.
                 // Database-related errors are unrecoverable.
                 aborted = YES;
-                return completion(NO);
+                return;
             }
             if (!item.uncompressedDataLength || item.uncompressedDataLength.unsignedIntValue < 1) {
                 OWSLogError(@"database snapshot missing size.");
                 // Attachment-related errors are recoverable and can be ignored.
                 // Database-related errors are unrecoverable.
                 aborted = YES;
-                return completion(NO);
+                return;
             }
 
             count++;
@@ -432,7 +452,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 if (!compressedData) {
                     // Database-related errors are unrecoverable.
                     aborted = YES;
-                    return completion(NO);
+                    return;
                 }
                 NSData *_Nullable uncompressedData =
                     [self.backupIO decompressData:compressedData
@@ -440,7 +460,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 if (!uncompressedData) {
                     // Database-related errors are unrecoverable.
                     aborted = YES;
-                    return completion(NO);
+                    return;
                 }
                 NSError *error;
                 SignalIOSProtoBackupSnapshot *_Nullable entities =
@@ -449,13 +469,13 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                     OWSLogError(@"could not parse proto: %@.", error);
                     // Database-related errors are unrecoverable.
                     aborted = YES;
-                    return completion(NO);
+                    return;
                 }
                 if (!entities || entities.entity.count < 1) {
                     OWSLogError(@"missing entities.");
                     // Database-related errors are unrecoverable.
                     aborted = YES;
-                    return completion(NO);
+                    return;
                 }
                 for (SignalIOSProtoBackupSnapshotBackupEntity *entity in entities.entity) {
                     NSData *_Nullable entityData = entity.entityData;
@@ -463,7 +483,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                         OWSLogError(@"missing entity data.");
                         // Database-related errors are unrecoverable.
                         aborted = YES;
-                        return completion(NO);
+                        return;
                     }
 
                     NSString *_Nullable collection = entity.collection;
@@ -471,7 +491,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                         OWSLogError(@"missing collection.");
                         // Database-related errors are unrecoverable.
                         aborted = YES;
-                        return completion(NO);
+                        return;
                     }
 
                     NSString *_Nullable key = entity.key;
@@ -479,7 +499,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                         OWSLogError(@"missing key.");
                         // Database-related errors are unrecoverable.
                         aborted = YES;
-                        return completion(NO);
+                        return;
                     }
 
                     __block NSObject *object = nil;
@@ -490,13 +510,13 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                             OWSLogError(@"invalid decoded entity: %@.", [object class]);
                             // Database-related errors are unrecoverable.
                             aborted = YES;
-                            return completion(NO);
+                            return;
                         }
                     } @catch (NSException *exception) {
                         OWSLogError(@"could not decode entity.");
                         // Database-related errors are unrecoverable.
                         aborted = YES;
-                        return completion(NO);
+                        return;
                     }
 
                     [transaction setObject:object forKey:key inCollection:collection];
@@ -508,8 +528,12 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         }
     }];
 
-    if (self.isComplete || aborted) {
-        return;
+    if (aborted) {
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import failed.")];
+    }
+    if (self.isComplete) {
+        // Job was aborted.
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
     }
 
     for (NSString *collection in restoredEntityCounts) {
@@ -519,14 +543,17 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     [self.primaryStorage logFileSizes];
 
-    completion(YES);
+    return [AnyPromise promiseWithValue:@(1)];
 }
 
-- (void)ensureMigrationsWithCompletion:(OWSBackupJobBoolCompletion)completion
+- (AnyPromise *)ensureMigrations
 {
-    OWSAssertDebug(completion);
-
     OWSLogVerbose(@"");
+
+    if (self.isComplete) {
+        // Job was aborted.
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
+    }
 
     [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_FINALIZING",
                                             @"Indicates that the backup import data is being finalized.")
@@ -536,11 +563,14 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     // It's okay that we do this in a separate transaction from the
     // restoration of backup contents.  If some of migrations don't
     // complete, they'll be run the next time the app launches.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:^{
-            completion(YES);
-        }];
-    });
+    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:^{
+                    resolve(@(1));
+                }];
+        });
+    }];
+    return promise;
 }
 
 @end
