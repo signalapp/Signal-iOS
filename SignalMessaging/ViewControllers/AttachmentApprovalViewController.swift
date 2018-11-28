@@ -174,7 +174,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         self.view.backgroundColor = .black
 
-        disablePagingIfNecessary()
+        // avoid an unpleasant "bounce" which doesn't make sense in the context of a single item.
+        pagerScrollView?.isScrollEnabled = attachmentItems.count > 1
 
         // Bottom Toolbar
         galleryRailView.delegate = self
@@ -253,6 +254,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
         navigationBar.overrideTheme(type: .clear)
+
+        updateCaptionVisibility()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -313,7 +316,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         lastObservedKeyboardTop = keyboardEndFrame.size.height
 
         let keyboardScenario: KeyboardScenario = bottomToolView.isEditingMediaMessage ? .editingMessage : .editingCaption
-        currentPageController.updateCaptionViewBottomInset(keyboardScenario: keyboardScenario)
+        currentPageViewController.updateCaptionViewBottomInset(keyboardScenario: keyboardScenario)
     }
 
     @objc
@@ -336,7 +339,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
 
         lastObservedKeyboardTop = UIScreen.main.bounds.height - keyboardEndFrame.size.height
-        currentPageController.updateCaptionViewBottomInset(keyboardScenario: .hidden)
+        currentPageViewController.updateCaptionViewBottomInset(keyboardScenario: .hidden)
     }
 
     // MARK: - View Helpers
@@ -395,24 +398,19 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         button.autoPinEdge(toSuperviewMargin: .trailing)
     }
 
-    var pagerScrollView: UIScrollView?
-    // This is kind of a hack. Since we don't have first class access to the superview's `scrollView`
-    // we traverse the view hierarchy until we find it, then disable scrolling if there's only one
-    // item. This avoids an unpleasant "bounce" which doesn't make sense in the context of a single item.
-    fileprivate func disablePagingIfNecessary() {
-        for view in self.view.subviews {
-            if let pagerScrollView = view as? UIScrollView {
-                self.pagerScrollView = pagerScrollView
-                break
-            }
-        }
+    lazy var pagerScrollView: UIScrollView? = {
+        // This is kind of a hack. Since we don't have first class access to the superview's `scrollView`
+        // we traverse the view hierarchy until we find it.
+        let pagerScrollView = view.subviews.first { $0 is UIScrollView } as? UIScrollView
+        assert(pagerScrollView != nil)
 
-        guard let pagerScrollView = self.pagerScrollView else {
-            owsFailDebug("pagerScrollView was unexpectedly nil")
-            return
-        }
+        return pagerScrollView
+    }()
 
-        pagerScrollView.isScrollEnabled = attachmentItems.count > 1
+    func updateCaptionVisibility() {
+        for pageViewController in pageViewControllers {
+            pageViewController.updateCaptionVisibility(attachmentCount: attachments.count)
+        }
     }
 
     // MARK: - UIPageViewControllerDelegate
@@ -493,13 +491,17 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return nextPage
     }
 
-    public var currentViewController: AttachmentPrepViewController {
-        return viewControllers!.first as! AttachmentPrepViewController
+    public var currentPageViewController: AttachmentPrepViewController {
+        return pageViewControllers.first!
+    }
+
+    public var pageViewControllers: [AttachmentPrepViewController] {
+        return super.viewControllers!.map { $0 as! AttachmentPrepViewController }
     }
 
     var currentItem: SignalAttachmentItem! {
         get {
-            return currentViewController.attachmentItem
+            return currentPageViewController.attachmentItem
         }
         set {
             setCurrentItem(newValue, direction: .forward, animated: false)
@@ -517,6 +519,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("cache miss.")
         let viewController = AttachmentPrepViewController(attachmentItem: item)
         viewController.prepDelegate = self
+        viewController.updateCaptionVisibility(attachmentCount: attachments.count)
         cachedPages[item] = viewController
 
         return viewController
@@ -596,23 +599,19 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 }
 
 extension AttachmentApprovalViewController: MediaMessageTextToolbarDelegate {
-    var currentPageController: AttachmentPrepViewController {
-        return viewControllers!.first as! AttachmentPrepViewController
-    }
-
     func mediaMessageTextToolbarDidBeginEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
-        currentPageController.setAttachmentViewScale(.compact, animated: true)
+        currentPageViewController.setAttachmentViewScale(.compact, animated: true)
     }
 
     func mediaMessageTextToolbarDidEndEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
-        currentPageController.setAttachmentViewScale(.fullsize, animated: true)
+        currentPageViewController.setAttachmentViewScale(.fullsize, animated: true)
     }
 
     func mediaMessageTextToolbarDidTapSend(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
         // Toolbar flickers in and out if there are errors
         // and remains visible momentarily after share extension is dismissed.
         // It's easiest to just hide it at this point since we're done with it.
-        currentViewController.shouldAllowAttachmentViewResizing = false
+        currentPageViewController.shouldAllowAttachmentViewResizing = false
         mediaMessageTextToolbar.isUserInteractionEnabled = false
         mediaMessageTextToolbar.isHidden = true
 
@@ -694,7 +693,7 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     }
 
     func enablePaging() {
-        self.pagerScrollView?.panGestureRecognizer.isEnabled = true
+        pagerScrollView?.panGestureRecognizer.isEnabled = true
     }
 }
 
@@ -788,6 +787,22 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func updateCaptionVisibility(attachmentCount: Int) {
+        if attachmentCount > 1 {
+            captionView.isHidden = false
+        }
+
+        // If we previously had multiple attachments, we'd have shown the caption fields.
+        //
+        // Subsequently, if the user had added caption text, then removed the other attachments
+        // we will continue to show this caption field, so as not to hide any already-entered text.
+        if let captionText = captionView.captionText, captionText.count > 0 {
+            captionView.isHidden = false
+        }
+
+        captionView.isHidden = true
     }
 
     // MARK: - Subviews
