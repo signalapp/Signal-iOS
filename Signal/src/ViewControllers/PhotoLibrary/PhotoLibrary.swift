@@ -47,10 +47,15 @@ class PhotoPickerAssetItem: PhotoGridItem {
     }
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
+        var syncImageResult: UIImage?
+
+        // Surprisingly, iOS will opportunistically run the completion block sync if the image is
+        // already available
         photoCollectionContents.requestThumbnail(for: self.asset, thumbnailSize: photoMediaSize.thumbnailSize) { image, _ in
+            syncImageResult = image
             completion(image)
         }
-        return nil
+        return syncImageResult
     }
 }
 
