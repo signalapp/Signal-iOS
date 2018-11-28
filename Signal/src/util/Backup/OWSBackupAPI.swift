@@ -63,13 +63,13 @@ import PromiseKit
     // complete.
     @objc
     public class func saveEphemeralFileToCloudObjc(recipientId: String,
-                                                           fileUrl: URL) -> AnyPromise {
+                                                   fileUrl: URL) -> AnyPromise {
         return AnyPromise(saveEphemeralFileToCloud(recipientId: recipientId,
-                                                           fileUrl: fileUrl))
+                                                   fileUrl: fileUrl))
     }
 
     public class func saveEphemeralFileToCloud(recipientId: String,
-                                                       fileUrl: URL) -> Promise<String> {
+                                               fileUrl: URL) -> Promise<String> {
         let recordName = "\(recordNamePrefix(forRecipientId: recipientId))ephemeralFile-\(NSUUID().uuidString)"
         return saveFileToCloud(fileUrl: fileUrl,
                                recordName: recordName,
@@ -614,7 +614,7 @@ import PromiseKit
 
     @objc
     public class func downloadFileFromCloudObjc(recordName: String,
-                                            toFileUrl: URL) -> AnyPromise {
+                                                toFileUrl: URL) -> AnyPromise {
         return AnyPromise(downloadFileFromCloud(recordName: recordName,
                                                 toFileUrl: toFileUrl))
     }
@@ -623,7 +623,7 @@ import PromiseKit
                                             toFileUrl: URL) -> Promise<Void> {
 
         return downloadFromCloud(recordName: recordName,
-                          remainingRetries: maxRetries)
+                                 remainingRetries: maxRetries)
             .then { (asset) -> Promise<Void> in
                 do {
                     try FileManager.default.copyItem(at: asset.fileURL, to: toFileUrl)
@@ -676,7 +676,7 @@ import PromiseKit
                             resolver.fulfill(asset)
                         }.catch { (error) in
                             resolver.reject(error)
-                    }.retainUntilComplete()
+                        }.retainUntilComplete()
                 })
             case .failureRetryWithoutDelay:
                 DispatchQueue.global().async {

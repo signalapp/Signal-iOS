@@ -754,7 +754,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
             OWSFailDebug(@"Could not load database view.");
             return;
         }
-
+        
         [ext enumerateKeysInGroup:TSLazyRestoreAttachmentsGroup
                        usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
                            [attachmentIds addObject:key];

@@ -464,7 +464,7 @@ NS_ASSUME_NONNULL_BEGIN
             NSError *error = OWSBackupErrorWithDescription(@"Backup export failed.");
             return resolve(error);
         }
-
+        
         resolve(@(1));
     }];
 }
@@ -1059,7 +1059,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSMutableSet<NSString *> *obsoleteRecordNames = [NSMutableSet new];
         [obsoleteRecordNames addObjectsFromArray:[transaction allKeysInCollection:[OWSBackupFragment collection]]];
         [obsoleteRecordNames minusSet:activeRecordNames];
-
+        
         [transaction removeObjectsForKeys:obsoleteRecordNames.allObjects inCollection:[OWSBackupFragment collection]];
     }];
 }

@@ -111,12 +111,12 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
             return;
         }
         self.isComplete = YES;
-
+        
         // There's a lot of asynchrony in these backup jobs;
         // ensure we only end up finishing these jobs once.
         OWSAssertDebug(!self.hasSucceeded);
         self.hasSucceeded = YES;
-
+        
         [self.delegate backupJobDidSucceed:self];
     });
 }
