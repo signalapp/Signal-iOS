@@ -308,6 +308,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSMutableArray<OWSBackupExportItem *> *savedAttachmentItems;
 
+@property (nonatomic, nullable) OWSBackupExportItem *localProfileAvatarItem;
+
 @property (nonatomic, nullable) OWSBackupExportItem *manifestItem;
 
 // If we are replacing an existing backup, we use some of its contents for continuity.
@@ -333,6 +335,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(AppEnvironment.shared.backup);
 
     return AppEnvironment.shared.backup;
+}
+
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
 }
 
 #pragma mark -
@@ -723,6 +730,9 @@ NS_ASSUME_NONNULL_BEGIN
             return [self saveDatabaseFilesToCloud];
         })
         .thenInBackground(^{
+            return [self saveLocalProfileAvatarToCloud];
+        })
+        .thenInBackground(^{
             return [self saveManifestFileToCloud];
         });
 }
@@ -745,7 +755,7 @@ NS_ASSUME_NONNULL_BEGIN
                       }
 
                       return [OWSBackupAPI
-                          saveEphemeralDatabaseFileToCloudObjcWithRecipientId:self.recipientId
+                          saveEphemeralFileToCloudObjcWithRecipientId:self.recipientId
                                                                       fileUrl:[NSURL fileURLWithPath:item.encryptedItem
                                                                                                          .filePath]];
                   })
@@ -876,6 +886,36 @@ NS_ASSUME_NONNULL_BEGIN
         });
 }
 
+- (AnyPromise *)saveLocalProfileAvatarToCloud
+{
+    if (self.isComplete) {
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+    }
+
+    NSData *_Nullable localProfileAvatarData = self.profileManager.localProfileAvatarData;
+    if (localProfileAvatarData.length < 1) {
+        // No profile avatar to backup.
+        return [AnyPromise promiseWithValue:@(1)];
+    }
+    OWSBackupEncryptedItem *_Nullable encryptedItem =
+        [self.backupIO encryptDataAsTempFile:localProfileAvatarData encryptionKey:self.delegate.backupEncryptionKey];
+    if (!encryptedItem) {
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Could not encrypt local profile avatar.")];
+    }
+
+    OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
+    exportItem.encryptedItem = encryptedItem;
+
+    return [OWSBackupAPI saveEphemeralFileToCloudObjcWithRecipientId:self.recipientId
+                                                             fileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]]
+        .thenInBackground(^(NSString *recordName) {
+            exportItem.recordName = recordName;
+            self.localProfileAvatarItem = exportItem;
+
+            return [AnyPromise promiseWithValue:@(1)];
+        });
+}
+
 - (AnyPromise *)saveManifestFileToCloud
 {
     if (self.isComplete) {
@@ -907,10 +947,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.jobTempDirPath.length > 0);
     OWSAssertDebug(self.backupIO);
 
-    NSDictionary *json = @{
+    NSMutableDictionary *json = [@{
         kOWSBackup_ManifestKey_DatabaseFiles : [self jsonForItems:self.savedDatabaseItems],
         kOWSBackup_ManifestKey_AttachmentFiles : [self jsonForItems:self.savedAttachmentItems],
-    };
+    } mutableCopy];
+
+    NSString *_Nullable localProfileName = self.profileManager.localProfileName;
+    if (localProfileName.length > 0) {
+        json[kOWSBackup_ManifestKey_LocalProfileName] = localProfileName;
+    }
+
+    if (self.localProfileAvatarItem) {
+        json[kOWSBackup_ManifestKey_LocalProfileAvatar] = [self jsonForItems:@[ self.localProfileAvatarItem ]];
+    }
 
     OWSLogVerbose(@"json: %@", json);
 

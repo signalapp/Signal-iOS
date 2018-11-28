@@ -62,13 +62,13 @@ import PromiseKit
     // We wouldn't want to overwrite previous images until the entire backup export is
     // complete.
     @objc
-    public class func saveEphemeralDatabaseFileToCloudObjc(recipientId: String,
+    public class func saveEphemeralFileToCloudObjc(recipientId: String,
                                                            fileUrl: URL) -> AnyPromise {
-        return AnyPromise(saveEphemeralDatabaseFileToCloud(recipientId: recipientId,
+        return AnyPromise(saveEphemeralFileToCloud(recipientId: recipientId,
                                                            fileUrl: fileUrl))
     }
 
-    public class func saveEphemeralDatabaseFileToCloud(recipientId: String,
+    public class func saveEphemeralFileToCloud(recipientId: String,
                                                        fileUrl: URL) -> Promise<String> {
         let recordName = "\(recordNamePrefix(forRecipientId: recipientId))ephemeralFile-\(NSUUID().uuidString)"
         return saveFileToCloud(fileUrl: fileUrl,

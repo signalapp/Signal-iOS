@@ -37,6 +37,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (BOOL)hasLocalProfile;
 - (nullable NSString *)localProfileName;
 - (nullable UIImage *)localProfileAvatarImage;
+- (nullable NSData *)localProfileAvatarData;
 - (void)ensureLocalProfileCached;
 
 // This method is used to update the "local profile" state on the client

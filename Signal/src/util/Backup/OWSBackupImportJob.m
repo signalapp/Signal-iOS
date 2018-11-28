@@ -27,8 +27,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 @property (nonatomic) OWSBackupIO *backupIO;
 
-@property (nonatomic) NSArray<OWSBackupFragment *> *databaseItems;
-@property (nonatomic) NSArray<OWSBackupFragment *> *attachmentsItems;
+@property (nonatomic) OWSBackupManifestContents *manifest;
 
 @end
 
@@ -65,6 +64,20 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 }
 
 #pragma mark -
+
+- (NSArray<OWSBackupFragment *> *)databaseItems
+{
+    OWSAssertDebug(self.manifest);
+
+    return self.manifest.databaseItems;
+}
+
+- (NSArray<OWSBackupFragment *> *)attachmentsItems
+{
+    OWSAssertDebug(self.manifest);
+
+    return self.manifest.attachmentsItems;
+}
 
 - (void)startAsync
 {
@@ -120,8 +133,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             }
             OWSCAssertDebug(manifest.databaseItems.count > 0);
             OWSCAssertDebug(manifest.attachmentsItems);
-            strongSelf.databaseItems = manifest.databaseItems;
-            strongSelf.attachmentsItems = manifest.attachmentsItems;
+            strongSelf.manifest = manifest;
             [strongSelf downloadAndProcessImport];
         }
         failure:^(NSError *manifestError) {
