@@ -78,23 +78,12 @@
     
     // Build recipient blob
     NSArray *userIds = message.thread.participantIds;
-    NSString *presentation = (message.thread.universalExpression ? message.thread.universalExpression : @"");
     
+    NSString *presentation = message.thread.universalExpression;
     //  Missing expresssion for some reason, make one
     if (presentation.length == 0) {
-        DDLogDebug(@"Generating payload for thread named \"%@\" with id: %@", message.thread.displayName, message.thread.uniqueId);
-        if (userIds.count > 0) {
-            for (NSString *userId in userIds) {
-                if (presentation.length == 0) {
-                    presentation = [NSString stringWithFormat:@"(<%@>", userId];
-                } else {
-                    presentation = [presentation stringByAppendingString:[NSString stringWithFormat:@"+<%@>", userId]];
-                }
-            }
-            presentation = [presentation stringByAppendingString:@")"];
-        } else {
-            presentation = @"";
-        }
+        DDLogDebug(@"Generating missing expression for thread named \"%@\" with id: %@", message.thread.displayName, message.thread.uniqueId);
+        presentation = [self expressionForIds:userIds];
     }
     NSDictionary *recipients = @{ @"expression" : presentation };
     
@@ -202,6 +191,12 @@
     
     // Build recipient blob
     NSString *presentation = message.thread.universalExpression;
+    //  Missing expresssion for some reason, make one
+    if (presentation.length == 0) {
+        DDLogDebug(@"Generating missing expression for thread named \"%@\" with id: %@", message.thread.displayName, message.thread.uniqueId);
+        presentation = [self expressionForIds:message.thread.participantIds];
+    }
+
     NSDictionary *recipients = @{ @"expression" : presentation };
     
     [data setObject:controlMessageType forKey:@"control"];
@@ -209,7 +204,7 @@
     if ([controlMessageType isEqualToString:FLControlMessageThreadUpdateKey]) {
         [data setObject:@{  @"threadId" : threadId,
                             @"threadTitle" : threadTitle,
-                            @"expression" : message.thread.universalExpression,
+                            @"expression" : presentation,
                             }
                  forKey:@"threadUpdates"];
     } else if ([controlMessageType isEqualToString:FLControlMessageThreadCloseKey] ||
@@ -217,7 +212,7 @@
                [controlMessageType isEqualToString:FLControlMessageThreadRestoreKey]) {
         [data setObject:@{  @"threadId" : threadId,
                             @"threadTitle" : threadTitle,
-                            @"expression" : message.thread.universalExpression,
+                            @"expression" : presentation,
                             }
                  forKey:@"threadUpdates"];
     }
@@ -331,4 +326,21 @@
     }
 }
 
+// MARK: Helper
++(NSString *)expressionForIds:(NSArray<NSString *>*)uids
+{
+    NSString *presentation = @"";
+    if (uids.count > 0) {
+        for (NSString *userId in uids) {
+            if (presentation.length == 0) {
+                presentation = [NSString stringWithFormat:@"(<%@>", userId];
+            } else {
+                presentation = [presentation stringByAppendingString:[NSString stringWithFormat:@"+<%@>", userId]];
+            }
+        }
+        presentation = [presentation stringByAppendingString:@")"];
+    }
+    
+    return presentation;
+}
 @end
