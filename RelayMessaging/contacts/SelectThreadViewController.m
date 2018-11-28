@@ -450,8 +450,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)recipientIdWasSelected:(NSString *)recipientId
 {
-    SignalAccount *signalAccount = [self.contactsViewHelper fetchOrBuildSignalAccountForRecipientId:recipientId];
-    [self signalAccountWasSelected:signalAccount];
+    if (recipientId.length == 0) {
+        DDLogDebug(@"Selected recipient with empty id.");
+    } else {
+        TSThread *thread = [TSThread getOrCreateThreadWithParticipants:@[recipientId, TSAccountManager.localUID]];
+        [self.selectThreadViewDelegate threadWasSelected:thread];
+    }
 }
 
 @end
