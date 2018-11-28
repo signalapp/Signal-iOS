@@ -337,7 +337,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (void)startAsync
+- (void)start
 {
     OWSAssertIsOnMainThread();
 
@@ -347,24 +347,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updateProgressWithDescription:nil progress:nil];
 
-    [[self.backup checkCloudKitAccess]
+    [[self.backup ensureCloudKitAccess]
             .thenInBackground(^{
-                [self start];
+                [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_CONFIGURATION",
+                                                        @"Indicates that the backup export is being configured.")
+                                           progress:nil];
+
+                return [self configureExport];
             })
-            .catch(^(NSError *error) {
-                [self failWithErrorDescription:
-                          NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                              @"Error indicating the backup export could not export the user's data.")];
-            }) retainUntilComplete];
-}
-
-- (void)start
-{
-    [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_CONFIGURATION",
-                                            @"Indicates that the backup export is being configured.")
-                               progress:nil];
-
-    [[self configureExport]
             .thenInBackground(^{
                 return [self fetchAllRecords];
             })
@@ -415,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // We use an arbitrary request that requires authentication
     // to verify our account state.
-    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         TSRequest *currentSignedPreKey = [OWSRequestFactory currentSignedPreKeyRequest];
         [[TSNetworkManager sharedManager] makeRequest:currentSignedPreKey
             success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
@@ -427,8 +417,6 @@ NS_ASSUME_NONNULL_BEGIN
                 resolve(error);
             }];
     }];
-    [promise retainUntilComplete];
-    return promise;
 }
 
 - (AnyPromise *)fetchAllRecords
@@ -439,7 +427,7 @@ NS_ASSUME_NONNULL_BEGIN
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
     }
 
-    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         [OWSBackupAPI fetchAllRecordNamesWithRecipientId:self.recipientId
             success:^(NSArray<NSString *> *recordNames) {
                 if (self.isComplete) {
@@ -452,8 +440,6 @@ NS_ASSUME_NONNULL_BEGIN
                 resolve(error);
             }];
     }];
-    [promise retainUntilComplete];
-    return promise;
 }
 
 - (AnyPromise *)exportDatabase
@@ -750,25 +736,23 @@ NS_ASSUME_NONNULL_BEGIN
     for (OWSBackupExportItem *item in self.unsavedDatabaseItems) {
         OWSAssertDebug(item.encryptedItem.filePath.length > 0);
 
-        promise = promise.thenInBackground(^{
-            return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-                if (self.isComplete) {
-                    return resolve(OWSBackupErrorWithDescription(@"Backup export no longer active."));
-                }
-                resolve(@(1));
-            }]
-                .thenInBackground(^{
-                    return [OWSBackupAPI
-                        saveEphemeralDatabaseFileToCloudObjcWithRecipientId:self.recipientId
-                                                                    fileUrl:[NSURL fileURLWithPath:item.encryptedItem
-                                                                                                       .filePath]];
-                })
-                .thenInBackground(^(NSString *recordName) {
-                    item.recordName = recordName;
-                    [self.savedDatabaseItems addObject:item];
-                    return [AnyPromise promiseWithValue:@(1)];
-                });
-        });
+        promise
+            = promise
+                  .thenInBackground(^{
+                      if (self.isComplete) {
+                          return [AnyPromise
+                              promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+                      }
+
+                      return [OWSBackupAPI
+                          saveEphemeralDatabaseFileToCloudObjcWithRecipientId:self.recipientId
+                                                                      fileUrl:[NSURL fileURLWithPath:item.encryptedItem
+                                                                                                         .filePath]];
+                  })
+                  .thenInBackground(^(NSString *recordName) {
+                      item.recordName = recordName;
+                      [self.savedDatabaseItems addObject:item];
+                  });
     }
     [self.unsavedDatabaseItems removeAllObjects];
     return promise;
@@ -880,7 +864,6 @@ NS_ASSUME_NONNULL_BEGIN
 
             OWSLogVerbose(
                 @"saved attachment: %@ as %@", attachmentExport.attachmentFilePath, attachmentExport.relativeFilePath);
-            return [AnyPromise promiseWithValue:@(1)];
         })
         .catchInBackground(^{
             if (![attachmentExport cleanUp]) {
@@ -914,7 +897,6 @@ NS_ASSUME_NONNULL_BEGIN
             self.manifestItem = exportItem;
 
             // All files have been saved to the cloud.
-            return [AnyPromise promiseWithValue:@(1)];
         });
 }
 

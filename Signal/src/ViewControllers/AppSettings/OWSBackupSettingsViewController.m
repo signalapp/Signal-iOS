@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateICloudStatus
 {
     __weak OWSBackupSettingsViewController *weakSelf = self;
-    [[self.backup checkCloudKitAccess]
+    [[self.backup ensureCloudKitAccess]
             .then(^{
                 OWSAssertIsOnMainThread();
 

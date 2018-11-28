@@ -77,7 +77,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     [self updateProgressWithDescription:nil progress:nil];
 
     __weak OWSBackupImportJob *weakSelf = self;
-    [[self.backup checkCloudKitAccess]
+    [[self.backup ensureCloudKitAccess]
             .thenInBackground(^{
                 [weakSelf start];
             })

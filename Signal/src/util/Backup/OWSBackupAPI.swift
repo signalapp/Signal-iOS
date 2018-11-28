@@ -202,63 +202,61 @@ import PromiseKit
     }
 
     public class func saveRecordToCloud(record: CKRecord) -> Promise<String> {
-        let (promise, resolver) = Promise<String>.pending()
-        saveRecordToCloud(record: record,
-                          remainingRetries: maxRetries,
-                          success: { (recordName) in
-                            resolver.fulfill(recordName)
-        },
-                          failure: { (error) in
-                            resolver.reject(error)
-        })
-        return promise.retainUntilComplete()
+        return saveRecordToCloud(record: record,
+                                 remainingRetries: maxRetries)
     }
 
     private class func saveRecordToCloud(record: CKRecord,
-                                         remainingRetries: Int,
-                                         success: @escaping (String) -> Void,
-                                         failure: @escaping (Error) -> Void) {
+                                         remainingRetries: Int) -> Promise<String> {
 
-        let saveOperation = CKModifyRecordsOperation(recordsToSave: [record ], recordIDsToDelete: nil)
-        saveOperation.modifyRecordsCompletionBlock = { (records, recordIds, error) in
+        return Promise { resolver in
+            let saveOperation = CKModifyRecordsOperation(recordsToSave: [record ], recordIDsToDelete: nil)
+            saveOperation.modifyRecordsCompletionBlock = { (records, recordIds, error) in
 
-            let outcome = outcomeForCloudKitError(error: error,
-                                                  remainingRetries: remainingRetries,
-                                                  label: "Save Record")
-            switch outcome {
-            case .success:
-                let recordName = record.recordID.recordName
-                success(recordName)
-            case .failureDoNotRetry(let outcomeError):
-                failure(outcomeError)
-            case .failureRetryAfterDelay(let retryDelay):
-                DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
-                    saveRecordToCloud(record: record,
-                                      remainingRetries: remainingRetries - 1,
-                                      success: success,
-                                      failure: failure)
-                })
-            case .failureRetryWithoutDelay:
-                DispatchQueue.global().async {
-                    saveRecordToCloud(record: record,
-                                      remainingRetries: remainingRetries - 1,
-                                      success: success,
-                                      failure: failure)
+                let outcome = outcomeForCloudKitError(error: error,
+                                                      remainingRetries: remainingRetries,
+                                                      label: "Save Record")
+                switch outcome {
+                case .success:
+                    let recordName = record.recordID.recordName
+                    resolver.fulfill(recordName)
+                case .failureDoNotRetry(let outcomeError):
+                    resolver.reject(outcomeError)
+                case .failureRetryAfterDelay(let retryDelay):
+                    DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
+                        saveRecordToCloud(record: record,
+                                          remainingRetries: remainingRetries - 1)
+                            .done { (recordName) in
+                                resolver.fulfill(recordName)
+                            }.catch { (error) in
+                                resolver.reject(error)
+                            }.retainUntilComplete()
+                    })
+                case .failureRetryWithoutDelay:
+                    DispatchQueue.global().async {
+                        saveRecordToCloud(record: record,
+                                          remainingRetries: remainingRetries - 1)
+                            .done { (recordName) in
+                                resolver.fulfill(recordName)
+                            }.catch { (error) in
+                                resolver.reject(error)
+                            }.retainUntilComplete()
+                    }
+                case .unknownItem:
+                    owsFailDebug("unexpected CloudKit response.")
+                    resolver.reject(invalidServiceResponseError())
                 }
-            case .unknownItem:
-                owsFailDebug("unexpected CloudKit response.")
-                failure(invalidServiceResponseError())
             }
-        }
-        saveOperation.isAtomic = false
+            saveOperation.isAtomic = false
 
-        // These APIs are only available in iOS 9.3 and later.
-        if #available(iOS 9.3, *) {
-            saveOperation.isLongLived = true
-            saveOperation.qualityOfService = .background
-        }
+            // These APIs are only available in iOS 9.3 and later.
+            if #available(iOS 9.3, *) {
+                saveOperation.isLongLived = true
+                saveOperation.qualityOfService = .background
+            }
 
-        database().add(saveOperation)
+            database().add(saveOperation)
+        }
     }
 
     // Compare:
@@ -422,7 +420,7 @@ import PromiseKit
                             resolver.fulfill(record)
                         }.catch { (error) in
                             resolver.reject(error)
-                    }
+                        }.retainUntilComplete()
                 })
             case .failureRetryWithoutDelay:
                 DispatchQueue.global().async {
@@ -432,7 +430,7 @@ import PromiseKit
                             resolver.fulfill(record)
                         }.catch { (error) in
                             resolver.reject(error)
-                    }
+                        }.retainUntilComplete()
                 }
             case .unknownItem:
                 // Record not found.
@@ -440,7 +438,7 @@ import PromiseKit
             }
         }
         database().add(fetchOperation)
-        return promise.retainUntilComplete()
+        return promise
     }
 
     @objc
@@ -701,13 +699,13 @@ import PromiseKit
     }
 
     @objc
-    public class func checkCloudKitAccessObjc() -> AnyPromise {
-        return AnyPromise(checkCloudKitAccess())
+    public class func ensureCloudKitAccessObjc() -> AnyPromise {
+        return AnyPromise(ensureCloudKitAccess())
     }
 
-    public class func checkCloudKitAccess() -> Promise<Void> {
+    public class func ensureCloudKitAccess() -> Promise<Void> {
         let (promise, resolver) = Promise<Void>.pending()
-        CKContainer.default().accountStatus(completionHandler: { (accountStatus, error) in
+        CKContainer.default().accountStatus { (accountStatus, error) in
             if let error = error {
                 Logger.error("Unknown error: \(String(describing: error)).")
                 resolver.reject(error)
@@ -727,7 +725,7 @@ import PromiseKit
                 Logger.verbose("CloudKit access okay.")
                 resolver.fulfill(())
             }
-        })
+        }
         return promise
     }
 

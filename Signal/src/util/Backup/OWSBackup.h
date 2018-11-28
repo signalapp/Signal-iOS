@@ -74,7 +74,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 
 - (void)allRecipientIdsWithManifestsInCloud:(OWSBackupStringListBlock)success failure:(OWSBackupErrorBlock)failure;
 
-- (AnyPromise *)checkCloudKitAccess;
+- (AnyPromise *)ensureCloudKitAccess;
 
 - (AnyPromise *)checkCanExportBackup;
 

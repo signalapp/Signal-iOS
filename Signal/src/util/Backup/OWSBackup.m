@@ -217,7 +217,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     _backupExportState = OWSBackupState_InProgress;
 
     self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self recipientId:recipientId];
-    [self.backupExportJob startAsync];
+    [self.backupExportJob start];
 
     [self postDidChangeNotification];
 }
@@ -369,7 +369,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         self.backupExportJob = nil;
     } else if (self.shouldHaveBackupExport && !self.backupExportJob) {
         self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self recipientId:recipientId];
-        [self.backupExportJob startAsync];
+        [self.backupExportJob start];
     }
 
     // Update the state flag.
@@ -423,10 +423,10 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 
 - (AnyPromise *)checkCanExportBackup
 {
-    return [self checkCloudKitAccess];
+    return [self ensureCloudKitAccess];
 }
 
-- (AnyPromise *)checkCloudKitAccess
+- (AnyPromise *)ensureCloudKitAccess
 {
     OWSAssertIsOnMainThread();
 
@@ -452,7 +452,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         return failWithUnexpectedError();
     }
 
-    return [[OWSBackupAPI checkCloudKitAccessObjc] retainUntilComplete];
+    return [OWSBackupAPI ensureCloudKitAccessObjc];
 }
 
 - (void)checkCanImportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure
@@ -484,7 +484,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         return failWithUnexpectedError();
     }
 
-    [[OWSBackupAPI checkCloudKitAccessObjc]
+    [[OWSBackupAPI ensureCloudKitAccessObjc]
             .thenInBackground(^{
                 return [OWSBackupAPI checkForManifestInCloudObjcWithRecipientId:recipientId];
             })
