@@ -1447,7 +1447,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (void)updateProfileAvatarCache:(nullable UIImage *)image filename:(NSString *)filename
 {
     OWSAssertDebug(filename.length > 0);
-    OWSAssertDebug(image);
 
     @synchronized(self.profileAvatarImageCache)
     {
