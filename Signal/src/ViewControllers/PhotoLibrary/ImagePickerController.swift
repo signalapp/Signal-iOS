@@ -122,6 +122,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        // done button may have been disable from the last time we hit "Done"
+        // make sure to re-enable it if appropriate upon returning to the view
+        hasPressedDoneSinceAppeared = false
+        updateDoneButton()
     }
 
     // MARK: 
@@ -255,6 +259,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
+        hasPressedDoneSinceAppeared = true
+        updateDoneButton()
         let assets: [PHAsset] = indexPaths.compactMap { return photoCollectionContents.asset(at: $0.row) }
         complete(withAssets: assets)
     }
@@ -291,16 +297,22 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         navigationController?.pushViewController(vc, animated: true)
     }
 
+    var hasPressedDoneSinceAppeared: Bool = false
     func updateDoneButton() {
         guard let collectionView = self.collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
         }
 
+        guard !hasPressedDoneSinceAppeared else {
+            doneButton.isEnabled = false
+            return
+        }
+
         if let count = collectionView.indexPathsForSelectedItems?.count, count > 0 {
-            self.doneButton.isEnabled = true
+            doneButton.isEnabled = true
         } else {
-            self.doneButton.isEnabled = false
+            doneButton.isEnabled = false
         }
     }
 
