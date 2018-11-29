@@ -176,8 +176,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             [self.tsAccountManager updateAccountAttributes];
             
             [self succeed];
-
-            return [AnyPromise promiseWithValue:@(1)];
         });
 }
 
@@ -220,8 +218,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_DOWNLOAD",
                                                     @"Indicates that the backup import data is being downloaded.")
                                        progress:@(progress)];
-
-            return [AnyPromise promiseWithValue:@(1)];
         });
 
         // TODO: Use a predictable file path so that multiple "import backup" attempts
