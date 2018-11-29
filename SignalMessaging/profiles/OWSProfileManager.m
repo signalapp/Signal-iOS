@@ -217,6 +217,15 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return [self loadProfileAvatarWithFilename:self.localUserProfile.avatarFileName];
 }
 
+- (nullable NSData *)localProfileAvatarData
+{
+    NSString *_Nullable filename = self.localUserProfile.avatarFileName;
+    if (filename.length < 1) {
+        return nil;
+    }
+    return [self loadProfileDataWithFilename:filename];
+}
+
 - (void)updateLocalProfileName:(nullable NSString *)profileName
                    avatarImage:(nullable UIImage *)avatarImage
                        success:(void (^)(void))successBlockParameter

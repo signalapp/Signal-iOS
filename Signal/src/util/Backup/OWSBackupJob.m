@@ -5,6 +5,7 @@
 #import "OWSBackupJob.h"
 #import "OWSBackupIO.h"
 #import "Signal-Swift.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 
@@ -17,6 +18,8 @@ NSString *const kOWSBackup_ManifestKey_EncryptionKey = @"encryption_key";
 NSString *const kOWSBackup_ManifestKey_RelativeFilePath = @"relative_file_path";
 NSString *const kOWSBackup_ManifestKey_AttachmentId = @"attachment_id";
 NSString *const kOWSBackup_ManifestKey_DataSize = @"data_size";
+NSString *const kOWSBackup_ManifestKey_LocalProfileAvatar = @"local_profile_avatar";
+NSString *const kOWSBackup_ManifestKey_LocalProfileName = @"local_profile_name";
 
 NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
@@ -108,12 +111,12 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
             return;
         }
         self.isComplete = YES;
-
+        
         // There's a lot of asynchrony in these backup jobs;
         // ensure we only end up finishing these jobs once.
         OWSAssertDebug(!self.hasSucceeded);
         self.hasSucceeded = YES;
-
+        
         [self.delegate backupJobDidSucceed:self];
     });
 }
@@ -151,52 +154,31 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 #pragma mark - Manifest
 
-- (void)downloadAndProcessManifestWithSuccess:(OWSBackupJobManifestSuccess)success
-                                      failure:(OWSBackupJobManifestFailure)failure
-                                     backupIO:(OWSBackupIO *)backupIO
+- (AnyPromise *)downloadAndProcessManifestWithBackupIO:(OWSBackupIO *)backupIO
 {
-    OWSAssertDebug(success);
-    OWSAssertDebug(failure);
     OWSAssertDebug(backupIO);
 
     OWSLogVerbose(@"");
 
-    __weak OWSBackupJob *weakSelf = self;
-    [OWSBackupAPI downloadManifestFromCloudWithRecipientId:self.recipientId
-        success:^(NSData *data) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [weakSelf
-                    processManifest:data
-                            success:success
-                            failure:^{
-                                failure(OWSErrorWithCodeDescription(OWSErrorCodeImportBackupFailed,
-                                    NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                        @"Error indicating the backup import could not import the user's data.")));
-                            }
-                           backupIO:backupIO];
-            });
-        }
-        failure:^(NSError *error) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                // The manifest file is critical so any error downloading it is unrecoverable.
-                OWSCFailDebug(@"Could not download manifest.");
-                failure(error);
-            });
-        }];
+    if (self.isComplete) {
+        // Job was aborted.
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup job no longer active.")];
+    }
+
+    return
+        [OWSBackupAPI downloadManifestFromCloudObjcWithRecipientId:self.recipientId].thenInBackground(^(NSData *data) {
+            return [self processManifest:data backupIO:backupIO];
+        });
 }
 
-- (void)processManifest:(NSData *)manifestDataEncrypted
-                success:(OWSBackupJobManifestSuccess)success
-                failure:(dispatch_block_t)failure
-               backupIO:(OWSBackupIO *)backupIO
+- (AnyPromise *)processManifest:(NSData *)manifestDataEncrypted backupIO:(OWSBackupIO *)backupIO
 {
     OWSAssertDebug(manifestDataEncrypted.length > 0);
-    OWSAssertDebug(success);
-    OWSAssertDebug(failure);
     OWSAssertDebug(backupIO);
 
     if (self.isComplete) {
-        return;
+        // Job was aborted.
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup job no longer active.")];
     }
 
     OWSLogVerbose(@"");
@@ -205,7 +187,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         [backupIO decryptDataAsData:manifestDataEncrypted encryptionKey:self.delegate.backupEncryptionKey];
     if (!manifestDataDecrypted) {
         OWSFailDebug(@"Could not decrypt manifest.");
-        return failure();
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Could not decrypt manifest.")];
     }
 
     NSError *error;
@@ -213,30 +195,56 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         [NSJSONSerialization JSONObjectWithData:manifestDataDecrypted options:0 error:&error];
     if (![json isKindOfClass:[NSDictionary class]]) {
         OWSFailDebug(@"Could not download manifest.");
-        return failure();
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Could not download manifest.")];
     }
 
     OWSLogVerbose(@"json: %@", json);
 
     NSArray<OWSBackupFragment *> *_Nullable databaseItems =
-        [self parseItems:json key:kOWSBackup_ManifestKey_DatabaseFiles];
+        [self parseManifestItems:json key:kOWSBackup_ManifestKey_DatabaseFiles];
     if (!databaseItems) {
-        return failure();
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"No database items in manifest.")];
     }
     NSArray<OWSBackupFragment *> *_Nullable attachmentsItems =
-        [self parseItems:json key:kOWSBackup_ManifestKey_AttachmentFiles];
+        [self parseManifestItems:json key:kOWSBackup_ManifestKey_AttachmentFiles];
     if (!attachmentsItems) {
-        return failure();
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"No attachment items in manifest.")];
     }
+
+    NSArray<OWSBackupFragment *> *_Nullable localProfileAvatarItems;
+    if ([self parseManifestItem:json key:kOWSBackup_ManifestKey_LocalProfileAvatar]) {
+        localProfileAvatarItems = [self parseManifestItems:json key:kOWSBackup_ManifestKey_LocalProfileAvatar];
+    }
+
+    NSString *_Nullable localProfileName = [self parseManifestItem:json key:kOWSBackup_ManifestKey_LocalProfileName];
 
     OWSBackupManifestContents *contents = [OWSBackupManifestContents new];
     contents.databaseItems = databaseItems;
     contents.attachmentsItems = attachmentsItems;
+    contents.localProfileAvatarItem = localProfileAvatarItems.firstObject;
+    if ([localProfileName isKindOfClass:[NSString class]]) {
+        contents.localProfileName = localProfileName;
+    } else {
+        OWSFailDebug(@"Invalid localProfileName: %@", [localProfileName class]);
+    }
 
-    return success(contents);
+    return [AnyPromise promiseWithValue:contents];
 }
 
-- (nullable NSArray<OWSBackupFragment *> *)parseItems:(id)json key:(NSString *)key
+- (nullable id)parseManifestItem:(id)json key:(NSString *)key
+{
+    OWSAssertDebug(json);
+    OWSAssertDebug(key.length);
+
+    if (![json isKindOfClass:[NSDictionary class]]) {
+        OWSFailDebug(@"manifest has invalid data.");
+        return nil;
+    }
+    id _Nullable value = json[key];
+    return value;
+}
+
+- (nullable NSArray<OWSBackupFragment *> *)parseManifestItems:(id)json key:(NSString *)key
 {
     OWSAssertDebug(json);
     OWSAssertDebug(key.length);

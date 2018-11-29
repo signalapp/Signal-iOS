@@ -754,7 +754,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
             OWSFailDebug(@"Could not load database view.");
             return;
         }
-
+        
         [ext enumerateKeysInGroup:TSLazyRestoreAttachmentsGroup
                        usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
                            [attachmentIds addObject:key];
@@ -763,22 +763,20 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     return attachmentIds;
 }
 
-- (void)lazyRestoreAttachment:(TSAttachmentPointer *)attachment
-                     backupIO:(OWSBackupIO *)backupIO
-                   completion:(OWSBackupBoolBlock)completion
+- (AnyPromise *)lazyRestoreAttachment:(TSAttachmentPointer *)attachment backupIO:(OWSBackupIO *)backupIO
 {
     OWSAssertDebug(attachment);
     OWSAssertDebug(backupIO);
-    OWSAssertDebug(completion);
 
     OWSBackupFragment *_Nullable lazyRestoreFragment = attachment.lazyRestoreFragment;
     if (!lazyRestoreFragment) {
-        OWSLogWarn(@"Attachment missing lazy restore metadata.");
-        return completion(NO);
+        OWSLogError(@"Attachment missing lazy restore metadata.");
+        return
+            [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Attachment missing lazy restore metadata.")];
     }
     if (lazyRestoreFragment.recordName.length < 1 || lazyRestoreFragment.encryptionKey.length < 1) {
         OWSLogError(@"Incomplete lazy restore metadata.");
-        return completion(NO);
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Incomplete lazy restore metadata.")];
     }
 
     // Use a predictable file path so that multiple "import backup" attempts
@@ -787,40 +785,30 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     // TODO: This will also require imports using a predictable jobTempDirPath.
     NSString *tempFilePath = [backupIO generateTempFilePath];
 
-    [OWSBackupAPI downloadFileFromCloudWithRecordName:lazyRestoreFragment.recordName
-        toFileUrl:[NSURL fileURLWithPath:tempFilePath]
-        success:^{
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self lazyRestoreAttachment:attachment
-                                   backupIO:backupIO
-                          encryptedFilePath:tempFilePath
-                              encryptionKey:lazyRestoreFragment.encryptionKey
-                                 completion:completion];
-            });
-        }
-        failure:^(NSError *error) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                completion(NO);
-            });
-        }];
+    return [OWSBackupAPI downloadFileFromCloudObjcWithRecordName:lazyRestoreFragment.recordName
+                                                       toFileUrl:[NSURL fileURLWithPath:tempFilePath]]
+        .thenInBackground(^{
+            return [self lazyRestoreAttachment:attachment
+                                      backupIO:backupIO
+                             encryptedFilePath:tempFilePath
+                                 encryptionKey:lazyRestoreFragment.encryptionKey];
+        });
 }
 
-- (void)lazyRestoreAttachment:(TSAttachmentPointer *)attachmentPointer
-                     backupIO:(OWSBackupIO *)backupIO
-            encryptedFilePath:(NSString *)encryptedFilePath
-                encryptionKey:(NSData *)encryptionKey
-                   completion:(OWSBackupBoolBlock)completion
+- (AnyPromise *)lazyRestoreAttachment:(TSAttachmentPointer *)attachmentPointer
+                             backupIO:(OWSBackupIO *)backupIO
+                    encryptedFilePath:(NSString *)encryptedFilePath
+                        encryptionKey:(NSData *)encryptionKey
 {
     OWSAssertDebug(attachmentPointer);
     OWSAssertDebug(backupIO);
     OWSAssertDebug(encryptedFilePath.length > 0);
     OWSAssertDebug(encryptionKey.length > 0);
-    OWSAssertDebug(completion);
 
     NSData *_Nullable data = [NSData dataWithContentsOfFile:encryptedFilePath];
     if (!data) {
         OWSLogError(@"Could not load encrypted file.");
-        return completion(NO);
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Could not load encrypted file.")];
     }
 
     NSString *decryptedFilePath = [backupIO generateTempFilePath];
@@ -828,7 +816,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     @autoreleasepool {
         if (![backupIO decryptFileAsFile:encryptedFilePath dstFilePath:decryptedFilePath encryptionKey:encryptionKey]) {
             OWSLogError(@"Could not load decrypt file.");
-            return completion(NO);
+            return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Could not load decrypt file.")];
         }
     }
 
@@ -837,18 +825,20 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     NSString *attachmentFilePath = stream.originalFilePath;
     if (attachmentFilePath.length < 1) {
         OWSLogError(@"Attachment has invalid file path.");
-        return completion(NO);
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Attachment has invalid file path.")];
     }
 
     NSString *attachmentDirPath = [attachmentFilePath stringByDeletingLastPathComponent];
     if (![OWSFileSystem ensureDirectoryExists:attachmentDirPath]) {
         OWSLogError(@"Couldn't create directory for attachment file.");
-        return completion(NO);
+        return [AnyPromise
+            promiseWithValue:OWSBackupErrorWithDescription(@"Couldn't create directory for attachment file.")];
     }
 
     if (![OWSFileSystem deleteFileIfExists:attachmentFilePath]) {
         OWSFailDebug(@"Couldn't delete existing file at attachment path.");
-        return completion(NO);
+        return [AnyPromise
+            promiseWithValue:OWSBackupErrorWithDescription(@"Couldn't delete existing file at attachment path.")];
     }
 
     NSError *error;
@@ -856,7 +846,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         [NSFileManager.defaultManager moveItemAtPath:decryptedFilePath toPath:attachmentFilePath error:&error];
     if (!success || error) {
         OWSLogError(@"Attachment file could not be restored: %@.", error);
-        return completion(NO);
+        return [AnyPromise promiseWithValue:error];
     }
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -864,7 +854,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         [stream saveWithTransaction:transaction];
     }];
 
-    completion(YES);
+    return [AnyPromise promiseWithValue:@(1)];
 }
 
 #pragma mark - Notifications

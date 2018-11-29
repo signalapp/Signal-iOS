@@ -14,7 +14,10 @@ extern NSString *const kOWSBackup_ManifestKey_EncryptionKey;
 extern NSString *const kOWSBackup_ManifestKey_RelativeFilePath;
 extern NSString *const kOWSBackup_ManifestKey_AttachmentId;
 extern NSString *const kOWSBackup_ManifestKey_DataSize;
+extern NSString *const kOWSBackup_ManifestKey_LocalProfileAvatar;
+extern NSString *const kOWSBackup_ManifestKey_LocalProfileName;
 
+@class AnyPromise;
 @class OWSBackupIO;
 @class OWSBackupJob;
 @class OWSBackupManifestContents;
@@ -28,6 +31,8 @@ typedef void (^OWSBackupJobManifestFailure)(NSError *error);
 
 @property (nonatomic) NSArray<OWSBackupFragment *> *databaseItems;
 @property (nonatomic) NSArray<OWSBackupFragment *> *attachmentsItems;
+@property (nonatomic, nullable) OWSBackupFragment *localProfileAvatarItem;
+@property (nonatomic, nullable) NSString *localProfileName;
 
 @end
 
@@ -80,9 +85,7 @@ typedef void (^OWSBackupJobManifestFailure)(NSError *error);
 
 #pragma mark - Manifest
 
-- (void)downloadAndProcessManifestWithSuccess:(OWSBackupJobManifestSuccess)success
-                                      failure:(OWSBackupJobManifestFailure)failure
-                                     backupIO:(OWSBackupIO *)backupIO;
+- (AnyPromise *)downloadAndProcessManifestWithBackupIO:(OWSBackupIO *)backupIO;
 
 @end
 

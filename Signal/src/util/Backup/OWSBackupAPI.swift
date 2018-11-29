@@ -62,14 +62,14 @@ import PromiseKit
     // We wouldn't want to overwrite previous images until the entire backup export is
     // complete.
     @objc
-    public class func saveEphemeralDatabaseFileToCloudObjc(recipientId: String,
-                                                           fileUrl: URL) -> AnyPromise {
-        return AnyPromise(saveEphemeralDatabaseFileToCloud(recipientId: recipientId,
-                                                           fileUrl: fileUrl))
+    public class func saveEphemeralFileToCloudObjc(recipientId: String,
+                                                   fileUrl: URL) -> AnyPromise {
+        return AnyPromise(saveEphemeralFileToCloud(recipientId: recipientId,
+                                                   fileUrl: fileUrl))
     }
 
-    public class func saveEphemeralDatabaseFileToCloud(recipientId: String,
-                                                       fileUrl: URL) -> Promise<String> {
+    public class func saveEphemeralFileToCloud(recipientId: String,
+                                               fileUrl: URL) -> Promise<String> {
         let recordName = "\(recordNamePrefix(forRecipientId: recipientId))ephemeralFile-\(NSUUID().uuidString)"
         return saveFileToCloud(fileUrl: fileUrl,
                                recordName: recordName,
@@ -582,57 +582,57 @@ import PromiseKit
     // MARK: - Download
 
     @objc
-    public class func downloadManifestFromCloud(recipientId: String,
-                                                success: @escaping (Data) -> Void,
-                                                failure: @escaping (Error) -> Void) {
+    public class func downloadManifestFromCloudObjc(recipientId: String) -> AnyPromise {
+        return AnyPromise(downloadManifestFromCloud(recipientId: recipientId))
+    }
+
+    public class func downloadManifestFromCloud(recipientId: String) -> Promise<Data> {
 
         let recordName = recordNameForManifest(recipientId: recipientId)
-        downloadDataFromCloud(recordName: recordName,
-                              success: success,
-                              failure: failure)
+        return downloadDataFromCloud(recordName: recordName)
     }
 
     @objc
-    public class func downloadDataFromCloud(recordName: String,
-                                            success: @escaping (Data) -> Void,
-                                            failure: @escaping (Error) -> Void) {
+    public class func downloadDataFromCloudObjc(recordName: String) -> AnyPromise {
+        return AnyPromise(downloadDataFromCloud(recordName: recordName))
+    }
 
-        downloadFromCloud(recordName: recordName,
-                          remainingRetries: maxRetries,
-                          success: { (asset) in
-                            DispatchQueue.global().async {
-                                do {
-                                    let data = try Data(contentsOf: asset.fileURL)
-                                    success(data)
-                                } catch {
-                                    Logger.error("couldn't load asset file: \(error).")
-                                    failure(invalidServiceResponseError())
-                                }
-                            }
-        },
-                          failure: failure)
+    public class func downloadDataFromCloud(recordName: String) -> Promise<Data> {
+
+        return downloadFromCloud(recordName: recordName,
+                                 remainingRetries: maxRetries)
+            .then { (asset) -> Promise<Data> in
+                do {
+                    let data = try Data(contentsOf: asset.fileURL)
+                    return Promise.value(data)
+                } catch {
+                    Logger.error("couldn't load asset file: \(error).")
+                    return Promise(error: invalidServiceResponseError())
+                }
+        }
     }
 
     @objc
+    public class func downloadFileFromCloudObjc(recordName: String,
+                                                toFileUrl: URL) -> AnyPromise {
+        return AnyPromise(downloadFileFromCloud(recordName: recordName,
+                                                toFileUrl: toFileUrl))
+    }
+
     public class func downloadFileFromCloud(recordName: String,
-                                            toFileUrl: URL,
-                                            success: @escaping () -> Void,
-                                            failure: @escaping (Error) -> Void) {
+                                            toFileUrl: URL) -> Promise<Void> {
 
-        downloadFromCloud(recordName: recordName,
-                          remainingRetries: maxRetries,
-                          success: { (asset) in
-                            DispatchQueue.global().async {
-                                do {
-                                    try FileManager.default.copyItem(at: asset.fileURL, to: toFileUrl)
-                                    success()
-                                } catch {
-                                    Logger.error("couldn't copy asset file: \(error).")
-                                    failure(invalidServiceResponseError())
-                                }
-                            }
-        },
-                          failure: failure)
+        return downloadFromCloud(recordName: recordName,
+                                 remainingRetries: maxRetries)
+            .then { (asset) -> Promise<Void> in
+                do {
+                    try FileManager.default.copyItem(at: asset.fileURL, to: toFileUrl)
+                    return Promise.value(())
+                } catch {
+                    Logger.error("couldn't copy asset file: \(error).")
+                    return Promise(error: invalidServiceResponseError())
+                }
+        }
     }
 
     // We return the CKAsset and not its fileUrl because
@@ -641,9 +641,9 @@ import PromiseKit
     // defer cleanup by maintaining a strong reference to
     // the asset.
     private class func downloadFromCloud(recordName: String,
-                                         remainingRetries: Int,
-                                         success: @escaping (CKAsset) -> Void,
-                                         failure: @escaping (Error) -> Void) {
+                                         remainingRetries: Int) -> Promise<CKAsset> {
+
+        let (promise, resolver) = Promise<CKAsset>.pending()
 
         let recordId = CKRecordID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
@@ -657,37 +657,45 @@ import PromiseKit
             case .success:
                 guard let record = record else {
                     Logger.error("missing fetching record.")
-                    failure(invalidServiceResponseError())
+                    resolver.reject(invalidServiceResponseError())
                     return
                 }
                 guard let asset = record[payloadKey] as? CKAsset else {
                     Logger.error("record missing payload.")
-                    failure(invalidServiceResponseError())
+                    resolver.reject(invalidServiceResponseError())
                     return
                 }
-                success(asset)
+                resolver.fulfill(asset)
             case .failureDoNotRetry(let outcomeError):
-                failure(outcomeError)
+                resolver.reject(outcomeError)
             case .failureRetryAfterDelay(let retryDelay):
                 DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
                     downloadFromCloud(recordName: recordName,
-                                      remainingRetries: remainingRetries - 1,
-                                      success: success,
-                                      failure: failure)
+                                      remainingRetries: remainingRetries - 1)
+                        .done { (asset) in
+                            resolver.fulfill(asset)
+                        }.catch { (error) in
+                            resolver.reject(error)
+                        }.retainUntilComplete()
                 })
             case .failureRetryWithoutDelay:
                 DispatchQueue.global().async {
                     downloadFromCloud(recordName: recordName,
-                                      remainingRetries: remainingRetries - 1,
-                                      success: success,
-                                      failure: failure)
+                                      remainingRetries: remainingRetries - 1)
+                        .done { (asset) in
+                            resolver.fulfill(asset)
+                        }.catch { (error) in
+                            resolver.reject(error)
+                        }.retainUntilComplete()
                 }
             case .unknownItem:
                 Logger.error("missing fetching record.")
-                failure(invalidServiceResponseError())
+                resolver.reject(invalidServiceResponseError())
             }
         }
         database().add(fetchOperation)
+
+        return promise
     }
 
     // MARK: - Access
