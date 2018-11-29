@@ -209,6 +209,8 @@ import PromiseKit
     private class func saveRecordToCloud(record: CKRecord,
                                          remainingRetries: Int) -> Promise<String> {
 
+        Logger.verbose("saveRecordToCloud \(record.recordID.recordName)")
+
         return Promise { resolver in
             let saveOperation = CKModifyRecordsOperation(recordsToSave: [record ], recordIDsToDelete: nil)
             saveOperation.modifyRecordsCompletionBlock = { (records, recordIds, error) in
@@ -388,6 +390,8 @@ import PromiseKit
 
     private class func checkForFileInCloud(recordName: String,
                                            remainingRetries: Int) -> Promise<CKRecord?> {
+
+        Logger.verbose("checkForFileInCloud \(recordName)")
 
         let (promise, resolver) = Promise<CKRecord?>.pending()
 
@@ -642,6 +646,8 @@ import PromiseKit
     // the asset.
     private class func downloadFromCloud(recordName: String,
                                          remainingRetries: Int) -> Promise<CKAsset> {
+
+        Logger.verbose("downloadFromCloud \(recordName)")
 
         let (promise, resolver) = Promise<CKAsset>.pending()
 
