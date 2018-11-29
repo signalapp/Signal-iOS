@@ -224,7 +224,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     contents.localProfileAvatarItem = localProfileAvatarItems.firstObject;
     if ([localProfileName isKindOfClass:[NSString class]]) {
         contents.localProfileName = localProfileName;
-    } else {
+    } else if (localProfileName) {
         OWSFailDebug(@"Invalid localProfileName: %@", [localProfileName class]);
     }
 
