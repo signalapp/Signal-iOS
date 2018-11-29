@@ -792,6 +792,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     func updateCaptionVisibility(attachmentCount: Int) {
         if attachmentCount > 1 {
             captionView.isHidden = false
+            return
         }
 
         // If we previously had multiple attachments, we'd have shown the caption fields.
@@ -800,6 +801,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         // we will continue to show this caption field, so as not to hide any already-entered text.
         if let captionText = captionView.captionText, captionText.count > 0 {
             captionView.isHidden = false
+            return
         }
 
         captionView.isHidden = true
