@@ -41,9 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) FLContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
-@property (nonatomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap __deprecated;
-@property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts __deprecated;
-
 @property (nonatomic, readonly) NSArray<RelayRecipient *> *relayRecipients;
 @property (nonatomic, readonly) NSArray<FLTag *> *relayTags;
 @property (nonatomic, readonly) NSDictionary<NSString *, FLTag *> *relayTagMap;
@@ -61,8 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate;
 
-- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId;
-- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId;
+//- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId;
+//- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId;
 
 // This method is faster than OWSBlockingManager but
 // is only safe to be called on the main thread.
@@ -72,9 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)localUID;
 
 - (NSArray<FLTag *> *)relayTagsMatchingSearchString:(NSString *)searchText;
-- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText __deprecated;
-
-//- (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText;
 
 - (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
                                 fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController

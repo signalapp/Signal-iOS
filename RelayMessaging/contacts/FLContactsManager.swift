@@ -33,6 +33,9 @@ import RelayServiceKit
                 return (recipient.flTag?.displaySlug)!
             }
         }
+        NotificationCenter.default.postNotificationNameAsync(NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
+                                                             object: self,
+                                                             userInfo: ["userIds" : [ recipientId ]])
         return NSLocalizedString("UNKNOWN_CONTACT_NAME", comment: "Displayed if for some reason we can't determine a contacts ID *or* name");
     }
     
@@ -139,6 +142,10 @@ import RelayServiceKit
         NotificationCenter.default.removeObserver(self)
     }
     
+    @objc public func allTags() -> [FLTag] {
+        return FLTag.allObjectsInCollection() as! [FLTag]
+    }
+    
     @objc public func allRecipients() -> [RelayRecipient] {
         return RelayRecipient.allObjectsInCollection() as! [RelayRecipient]
     }
@@ -194,8 +201,9 @@ import RelayServiceKit
     }
     
     fileprivate func updateRecipients(userIds: Array<String>) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
-                                        object: self, userInfo: ["userIds" : userIds])
+        NotificationCenter.default.postNotificationNameAsync(NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
+                                                             object: self,
+                                                             userInfo: ["userIds" : userIds])
     }
     
     fileprivate func ccsmFetchRecipients(uids: String) {
@@ -250,7 +258,7 @@ import RelayServiceKit
             return atag
         } else {
             // TODO: Build notification path for tag updates
-//            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
+//            postNotificationNameAsync(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
 //                                            object: self, userInfo: ["userIds" : [userId]])
         }
         return nil
@@ -284,8 +292,9 @@ import RelayServiceKit
             recipientCache.setObject(recipient, forKey: userId as NSString)
             return recipient
         } else {
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
-                                            object: self, userInfo: ["userIds" : [userId]])
+            NotificationCenter.default.postNotificationNameAsync(NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
+                                            object: self,
+                                            userInfo: ["userIds" : [userId]])
         }
         return nil
     }
@@ -376,8 +385,9 @@ import RelayServiceKit
                 return false
             }
         }
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
-                                        object: self, userInfo: ["userIds" : nonOrgRecipients])
+        NotificationCenter.default.postNotificationNameAsync(NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
+                                                             object: self,
+                                                             userInfo: ["userIds" : nonOrgRecipients])
     }
 
     
@@ -495,13 +505,11 @@ import RelayServiceKit
     @objc public func formattedDisplayName(forTagId tagId: String, font: UIFont) -> NSAttributedString? {
         
         if let aTag = self.tag(withId:tagId) {
-            let rawName = aTag.displaySlug
-            
-            let normalFontAttributes = [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: Theme.primaryColor]
-            
-            let attrName = NSAttributedString(string: rawName, attributes: normalFontAttributes as [NSAttributedStringKey : Any])
-            
-            return attrName
+            if let rawName = aTag.tagDescription {
+                let normalFontAttributes = [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: Theme.primaryColor]
+                let attrName = NSAttributedString(string: rawName, attributes: normalFontAttributes as [NSAttributedStringKey : Any])
+                return attrName
+            }
         }
         return nil
     }

@@ -101,53 +101,56 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Contacts
-
-- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId
+-(NSArray<FLTag *> *)relayTags
 {
-    OWSAssertIsOnMainThread();
-    OWSAssert(recipientId.length > 0);
-
-    return self.signalAccountMap[recipientId];
+    return FLContactsManager.shared.allTags;
 }
+//- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId
+//{
+//    OWSAssertIsOnMainThread();
+//    OWSAssert(recipientId.length > 0);
+//
+//    return self.signalAccountMap[recipientId];
+//}
 
-- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId
-{
-    OWSAssert(recipientId.length > 0);
+//- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId
+//{
+//    OWSAssert(recipientId.length > 0);
+//
+//    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
+//    return (signalAccount ?: [[SignalAccount alloc] initWithRecipientId:recipientId]);
+//}
 
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
-    return (signalAccount ?: [[SignalAccount alloc] initWithRecipientId:recipientId]);
-}
+//- (BOOL)isSignalAccountHidden:(SignalAccount *)signalAccount
+//{
+//    OWSAssertIsOnMainThread();
+//
+//    if ([self.delegate respondsToSelector:@selector(shouldHideLocalNumber)] && [self.delegate shouldHideLocalNumber] &&
+//        [self isCurrentUser:signalAccount]) {
+//
+//        return YES;
+//    }
+//
+//    return NO;
+//}
 
-- (BOOL)isSignalAccountHidden:(SignalAccount *)signalAccount
-{
-    OWSAssertIsOnMainThread();
-
-    if ([self.delegate respondsToSelector:@selector(shouldHideLocalNumber)] && [self.delegate shouldHideLocalNumber] &&
-        [self isCurrentUser:signalAccount]) {
-
-        return YES;
-    }
-
-    return NO;
-}
-
-- (BOOL)isCurrentUser:(SignalAccount *)signalAccount
-{
-    OWSAssertIsOnMainThread();
-
-    NSString *localNumber = [TSAccountManager localUID];
-    if ([signalAccount.recipientId isEqualToString:localNumber]) {
-        return YES;
-    }
-
-    for (PhoneNumber *phoneNumber in signalAccount.contact.parsedPhoneNumbers) {
-        if ([[phoneNumber toE164] isEqualToString:localNumber]) {
-            return YES;
-        }
-    }
-
-    return NO;
-}
+//- (BOOL)isCurrentUser:(SignalAccount *)signalAccount
+//{
+//    OWSAssertIsOnMainThread();
+//
+//    NSString *localNumber = [TSAccountManager localUID];
+//    if ([signalAccount.recipientId isEqualToString:localNumber]) {
+//        return YES;
+//    }
+//
+//    for (PhoneNumber *phoneNumber in signalAccount.contact.parsedPhoneNumbers) {
+//        if ([[phoneNumber toE164] isEqualToString:localNumber]) {
+//            return YES;
+//        }
+//    }
+//
+//    return NO;
+//}
 
 - (NSString *)localUID
 {
@@ -200,10 +203,10 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.conversationSearcher filterRelayTags:self.relayTags withSearchText:searchText];
 }
 
-- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText __deprecated
-{
-    return [self.conversationSearcher filterSignalAccounts:self.signalAccounts withSearchText:searchText];
-}
+//- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText __deprecated
+//{
+//    return [self.conversationSearcher filterSignalAccounts:self.signalAccounts withSearchText:searchText];
+//}
 
 - (BOOL)doesContact:(Contact *)contact matchSearchTerm:(NSString *)searchTerm
 {
@@ -326,8 +329,6 @@ NS_ASSUME_NONNULL_BEGIN
                                    editImmediately:(BOOL)shouldEditImmediately
                             addToExistingCnContact:(CNContact *_Nullable)existingContact
 {
-    SignalAccount *signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
-
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
         OWSFail(@"%@ Contact editing not supported.", self.logTag);

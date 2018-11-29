@@ -219,13 +219,13 @@ OWSNavigationView>
 - (void)updateTableContents
 {
 //    OWSAssert(self.thread);
-    
+//    
 //    OWSTableContents *contents = [OWSTableContents new];
-    
+//    
 //    __weak UpdateGroupViewController *weakSelf = self;
 //    ContactsViewHelper *contactsViewHelper = self.contactsViewHelper;
-    
-    // Group Members
+//    
+////     Group Members
 //
 //    OWSTableSection *section = [OWSTableSection new];
 //    section.headerTitle = NSLocalizedString(
@@ -276,17 +276,17 @@ OWSNavigationView>
 //                  }
 //                  customRowHeight:UITableViewAutomaticDimension
 //                  actionBlock:^{
-//                      SignalAccount *_Nullable signalAccount =
-//                      [contactsViewHelper fetchSignalAccountForRecipientId:recipientId];
+////                      SignalAccount *_Nullable signalAccount =
+////                      [contactsViewHelper fetchSignalAccountForRecipientId:recipientId];
 //                      BOOL isPreviousMember = [weakSelf.previousMemberRecipientIds containsObject:recipientId];
 //                      BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
 //                      if (isPreviousMember) {
 //                          if (isBlocked) {
-//                              if (signalAccount) {
-//                                  [weakSelf showUnblockAlertForSignalAccount:signalAccount];
-//                              } else {
+////                              if (signalAccount) {
+////                                  [weakSelf showUnblockAlertForSignalAccount:signalAccount];
+////                              } else {
 //                                  [weakSelf showUnblockAlertForRecipientId:recipientId];
-//                              }
+////                              }
 //                          } else {
 //                              [OWSAlerts
 //                               showAlertWithTitle:
@@ -303,7 +303,7 @@ OWSNavigationView>
 //                  }]];
 //    }
 //    [contents addSection:section];
-    
+//    
 //    self.tableViewController.contents = contents;
 }
 

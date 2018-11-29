@@ -340,37 +340,37 @@ NS_ASSUME_NONNULL_BEGIN
     [self.selectThreadViewDelegate threadWasSelected:thread];
 }
 
-- (void)signalAccountWasSelected:(SignalAccount *)signalAccount __deprecated
-{
-    OWSAssert(signalAccount);
-    OWSAssert(self.selectThreadViewDelegate);
-
-    ContactsViewHelper *helper = self.contactsViewHelper;
-
-    if ([helper isRecipientIdBlocked:signalAccount.recipientId]
-        && ![self.selectThreadViewDelegate canSelectBlockedContact]) {
-
-        __weak SelectThreadViewController *weakSelf = self;
-        [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
-                                           fromViewController:self
-                                              blockingManager:helper.blockingManager
-                                              contactsManager:helper.contactsManager
-                                              completionBlock:^(BOOL isBlocked) {
-                                                  if (!isBlocked) {
-                                                      [weakSelf signalAccountWasSelected:signalAccount];
-                                                  }
-                                              }];
-        return;
-    }
-
-    __block TSThread *thread = nil;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSThread getOrCreateThreadWithId:signalAccount.recipientId transaction:transaction];
-    }];
-    OWSAssert(thread);
-
-    [self.selectThreadViewDelegate threadWasSelected:thread];
-}
+//- (void)signalAccountWasSelected:(SignalAccount *)signalAccount __deprecated
+//{
+//    OWSAssert(signalAccount);
+//    OWSAssert(self.selectThreadViewDelegate);
+//
+//    ContactsViewHelper *helper = self.contactsViewHelper;
+//
+//    if ([helper isRecipientIdBlocked:signalAccount.recipientId]
+//        && ![self.selectThreadViewDelegate canSelectBlockedContact]) {
+//
+//        __weak SelectThreadViewController *weakSelf = self;
+//        [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
+//                                           fromViewController:self
+//                                              blockingManager:helper.blockingManager
+//                                              contactsManager:helper.contactsManager
+//                                              completionBlock:^(BOOL isBlocked) {
+//                                                  if (!isBlocked) {
+//                                                      [weakSelf signalAccountWasSelected:signalAccount];
+//                                                  }
+//                                              }];
+//        return;
+//    }
+//
+//    __block TSThread *thread = nil;
+//    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+//        thread = [TSThread getOrCreateThreadWithId:signalAccount.recipientId transaction:transaction];
+//    }];
+//    OWSAssert(thread);
+//
+//    [self.selectThreadViewDelegate threadWasSelected:thread];
+//}
 
 #pragma mark - Filter
 
@@ -390,27 +390,27 @@ NS_ASSUME_NONNULL_BEGIN
     return matchingTags;
 }
 
-- (NSArray<SignalAccount *> *)filteredSignalAccountsWithSearchText __deprecated
-{
-    // We don't want to show a 1:1 thread with Alice and Alice's contact,
-    // so we de-duplicate by recipientId.
-//    NSArray<TSThread *> *threads = self.threadViewHelper.threads;
-//    NSMutableSet *contactIdsToIgnore = [NSMutableSet new];
-//    for (TSThread *thread in threads) {
-//        [contactIdsToIgnore addObject:contactThread.contactIdentifier];
-//    }
-
-    NSString *searchString = self.searchBar.text;
-    NSArray<SignalAccount *> *matchingAccounts =
-        [self.contactsViewHelper signalAccountsMatchingSearchString:searchString];
-
-    return matchingAccounts;
-//    return [matchingAccounts
-//        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
-//                                        NSDictionary<NSString *, id> *_Nullable bindings) {
-//            return ![contactIdsToIgnore containsObject:signalAccount.recipientId];
-//        }]];
-}
+//- (NSArray<SignalAccount *> *)filteredSignalAccountsWithSearchText __deprecated
+//{
+//    // We don't want to show a 1:1 thread with Alice and Alice's contact,
+//    // so we de-duplicate by recipientId.
+////    NSArray<TSThread *> *threads = self.threadViewHelper.threads;
+////    NSMutableSet *contactIdsToIgnore = [NSMutableSet new];
+////    for (TSThread *thread in threads) {
+////        [contactIdsToIgnore addObject:contactThread.contactIdentifier];
+////    }
+//
+//    NSString *searchString = self.searchBar.text;
+//    NSArray<SignalAccount *> *matchingAccounts =
+//        [self.contactsViewHelper signalAccountsMatchingSearchString:searchString];
+//
+//    return matchingAccounts;
+////    return [matchingAccounts
+////        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
+////                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+////            return ![contactIdsToIgnore containsObject:signalAccount.recipientId];
+////        }]];
+//}
 
 #pragma mark - Events
 
@@ -450,8 +450,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)recipientIdWasSelected:(NSString *)recipientId
 {
-    SignalAccount *signalAccount = [self.contactsViewHelper fetchOrBuildSignalAccountForRecipientId:recipientId];
-    [self signalAccountWasSelected:signalAccount];
+    if (recipientId.length == 0) {
+        DDLogDebug(@"Selected recipient with empty id.");
+    } else {
+        TSThread *thread = [TSThread getOrCreateThreadWithParticipants:@[recipientId, TSAccountManager.localUID]];
+        [self.selectThreadViewDelegate threadWasSelected:thread];
+    }
 }
 
 @end

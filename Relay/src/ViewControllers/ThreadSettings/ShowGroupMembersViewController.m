@@ -264,120 +264,78 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(recipientId.length > 0);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
-    SignalAccount *_Nullable signalAccount = [helper fetchSignalAccountForRecipientId:recipientId];
+//    SignalAccount *_Nullable signalAccount = [helper fetchSignalAccountForRecipientId:recipientId];
+    
+    UIAlertController *actionSheetController = [UIAlertController alertControllerWithTitle:nil
+                                                                                   message:nil
+                                                                            preferredStyle:UIAlertControllerStyleActionSheet];
 
-    UIAlertController *actionSheetController =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    if (self.contactsViewHelper.contactsManager.supportsContactEditing) {
-        NSString *contactInfoTitle = signalAccount
-            ? NSLocalizedString(@"GROUP_MEMBERS_VIEW_CONTACT_INFO", @"Button label for the 'show contact info' button")
-            : NSLocalizedString(
-                  @"GROUP_MEMBERS_ADD_CONTACT_INFO", @"Button label to add information to an unknown contact");
-        [actionSheetController addAction:[UIAlertAction actionWithTitle:contactInfoTitle
-                                                                  style:UIAlertActionStyleDefault
-                                                                handler:^(UIAlertAction *_Nonnull action) {
-                                                                    [self
-                                                                        showContactInfoViewForRecipientId:recipientId];
-                                                                }]];
-    }
-
-    BOOL isBlocked;
-    if (signalAccount) {
-        isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
-        if (isBlocked) {
-            [actionSheetController
-                addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
-                                                             @"Button label for the 'unblock' button")
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [BlockListUIUtils
-                                                         showUnblockSignalAccountActionSheet:signalAccount
-                                                                          fromViewController:self
-                                                                             blockingManager:helper.blockingManager
-                                                                             contactsManager:helper.contactsManager
-                                                                             completionBlock:^(BOOL ignore) {
-                                                                                 [self updateTableContents];
-                                                                             }];
-                                                 }]];
-        } else {
-            [actionSheetController
-                addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
-                                                             @"Button label for the 'block' button")
-                                                   style:UIAlertActionStyleDestructive
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [BlockListUIUtils
-                                                         showBlockSignalAccountActionSheet:signalAccount
-                                                                        fromViewController:self
-                                                                           blockingManager:helper.blockingManager
-                                                                           contactsManager:helper.contactsManager
-                                                                           completionBlock:^(BOOL ignore) {
-                                                                               [self updateTableContents];
-                                                                           }];
-                                                 }]];
-        }
-    } else {
-        isBlocked = [helper isRecipientIdBlocked:recipientId];
-        if (isBlocked) {
-            [actionSheetController
-                addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
-                                                             @"Button label for the 'unblock' button")
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [BlockListUIUtils
-                                                         showUnblockPhoneNumberActionSheet:recipientId
-                                                                        fromViewController:self
-                                                                           blockingManager:helper.blockingManager
-                                                                           contactsManager:helper.contactsManager
-                                                                           completionBlock:^(BOOL ignore) {
-                                                                               [self updateTableContents];
-                                                                           }];
-                                                 }]];
-        } else {
-            [actionSheetController
-                addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
-                                                             @"Button label for the 'block' button")
-                                                   style:UIAlertActionStyleDestructive
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [BlockListUIUtils
-                                                         showBlockPhoneNumberActionSheet:recipientId
-                                                                      fromViewController:self
-                                                                         blockingManager:helper.blockingManager
-                                                                         contactsManager:helper.contactsManager
-                                                                         completionBlock:^(BOOL ignore) {
-                                                                             [self updateTableContents];
-                                                                         }];
-                                                 }]];
-        }
-    }
-
+    BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
+    
+    // TODO: Put back when/if blocking is implemented.
+//    if (isBlocked) {
+//        [actionSheetController
+//         addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
+//                                                                    @"Button label for the 'unblock' button")
+//                                            style:UIAlertActionStyleDefault
+//                                          handler:^(UIAlertAction *_Nonnull action) {
+//                                              [BlockListUIUtils
+//                                               showUnblockPhoneNumberActionSheet:recipientId
+//                                               fromViewController:self
+//                                               blockingManager:helper.blockingManager
+//                                               contactsManager:helper.contactsManager
+//                                               completionBlock:^(BOOL ignore) {
+//                                                   [self updateTableContents];
+//                                               }];
+//                                          }]];
+//    } else {
+//        [actionSheetController
+//         addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
+//                                                                    @"Button label for the 'block' button")
+//                                            style:UIAlertActionStyleDestructive
+//                                          handler:^(UIAlertAction *_Nonnull action) {
+//                                              [BlockListUIUtils
+//                                               showBlockPhoneNumberActionSheet:recipientId
+//                                               fromViewController:self
+//                                               blockingManager:helper.blockingManager
+//                                               contactsManager:helper.contactsManager
+//                                               completionBlock:^(BOOL ignore) {
+//                                                   [self updateTableContents];
+//                                               }];
+//                                          }]];
+//    }
+    //}
+    
     if (!isBlocked) {
         [actionSheetController
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_SEND_MESSAGE",
-                                                         @"Button label for the 'send message to group member' button")
-                                               style:UIAlertActionStyleDefault
-                                             handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self showConversationViewForRecipientId:recipientId];
-                                             }]];
+         addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_SEND_MESSAGE",
+                                                                    @"Button label for the 'send message to group member' button")
+                                            style:UIAlertActionStyleDefault
+                                          handler:^(UIAlertAction *_Nonnull action) {
+                                              [self showConversationViewForRecipientId:recipientId];
+                                          }]];
+        
+        if (![recipientId isEqualToString:TSAccountManager.localUID]) {  // We don't call ourselves...do we?
+            [actionSheetController
+             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_CALL",
+                                                                        @"Button label for the 'call group member' button")
+                                                style:UIAlertActionStyleDefault
+                                              handler:^(UIAlertAction *_Nonnull action) {
+                                                  [self callMember:recipientId];
+                                              }]];
+        }
         [actionSheetController
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_CALL",
-                                                         @"Button label for the 'call group member' button")
-                                               style:UIAlertActionStyleDefault
-                                             handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self callMember:recipientId];
-                                             }]];
-        [actionSheetController
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"VERIFY_PRIVACY",
-                                                         @"Label for button or row which allows users to verify the "
-                                                         @"safety number of another user.")
-                                               style:UIAlertActionStyleDefault
-                                             handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self showSafetyNumberView:recipientId];
-                                             }]];
+         addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"VERIFY_PRIVACY",
+                                                                    @"Label for button or row which allows users to verify the "
+                                                                    @"safety number of another user.")
+                                            style:UIAlertActionStyleDefault
+                                          handler:^(UIAlertAction *_Nonnull action) {
+                                              [self showSafetyNumberView:recipientId];
+                                          }]];
     }
-
+    
     [actionSheetController addAction:[OWSAlerts cancelAction]];
-
+    
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
