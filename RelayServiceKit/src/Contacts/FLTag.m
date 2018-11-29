@@ -123,6 +123,15 @@
     return _avatar;
 }
 
+-(NSString *)tagDescription
+{
+    if (_tagDescription.length > 0) {
+        return _tagDescription;
+    } else {
+        return self.displaySlug;
+    }
+}
+
 + (NSString *)collection
 {
     return NSStringFromClass([self class]);
