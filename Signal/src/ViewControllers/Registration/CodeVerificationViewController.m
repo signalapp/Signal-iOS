@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CodeVerificationViewController () <UITextFieldDelegate>
 
-@property (nonatomic, readonly) AccountManager *accountManager;
+@property (nonatomic, readonly) RegistrationController *registrationController;
 
 // Where the user enters the verification code they wish to document
 @property (nonatomic) UITextField *challengeTextField;
@@ -47,28 +47,21 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.tsAccountManager;
 }
 
-#pragma mark -
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+- (AccountManager *)accountManager
 {
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    _accountManager = AppEnvironment.shared.accountManager;
-
-    return self;
+    return AppEnvironment.shared.accountManager;
 }
 
-- (instancetype)init
+#pragma mark -
+
+- (instancetype)initWithRegistrationController:(RegistrationController *)registrationController
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _accountManager = AppEnvironment.shared.accountManager;
+    _registrationController = registrationController;
 
     return self;
 }
@@ -292,7 +285,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self startActivityIndicator];
     OWSProdInfo([OWSAnalyticsEvents registrationRegisteringCode]);
     __weak CodeVerificationViewController *weakSelf = self;
-    [[self.accountManager registerWithVerificationCode:[self validationCodeFromTextField] pin:nil]
+    [[self.accountManager registerObjcWithVerificationCode:[self validationCodeFromTextField] pin:nil]
             .then(^{
                 OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
 
@@ -316,7 +309,8 @@ NS_ASSUME_NONNULL_BEGIN
                             return;
                         }
                         OWSLogInfo(@"Showing 2FA registration view.");
-                        OWS2FARegistrationViewController *viewController = [OWS2FARegistrationViewController new];
+                        OWS2FARegistrationViewController *viewController = [[OWS2FARegistrationViewController alloc]
+                            initWithRegistrationController:self.registrationController];
                         viewController.verificationCode = strongSelf.validationCodeFromTextField;
                         [strongSelf.navigationController pushViewController:viewController animated:YES];
                     } else {
@@ -329,78 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)verificationWasCompleted
 {
-    if ([TSAccountManager sharedInstance].isReregistering) {
-        [self showProfileView];
-    } else {
-        [self checkCanImportBackup];
-    }
-}
-
-- (void)showProfileView
-{
-    [ProfileViewController presentForRegistration:self.navigationController];
-}
-
-- (void)showBackupRestoreView
-{
-    OWSAssertIsOnMainThread();
-    OWSLogVerbose(@"");
-
-    BackupRestoreViewController *restoreView = [BackupRestoreViewController new];
-    [self.navigationController setViewControllers:@[
-        restoreView,
-    ]
-                                         animated:YES];
-}
-
-- (void)checkCanImportBackup
-{
-    OWSLogVerbose(@"");
-
-    __weak CodeVerificationViewController *weakSelf = self;
-    [OWSBackup.sharedManager
-        checkCanImportBackup:^(BOOL value) {
-            OWSAssertIsOnMainThread();
-
-            OWSLogInfo(@"has backup available for import? %d", value);
-
-            if (value) {
-                [OWSBackup.sharedManager setHasPendingRestoreDecision:YES];
-
-                [weakSelf showBackupRestoreView];
-            } else {
-                [weakSelf showProfileView];
-            }
-        }
-        failure:^(NSError *error) {
-            [weakSelf showBackupCheckFailedAlert];
-        }];
-}
-
-- (void)showBackupCheckFailedAlert
-{
-    OWSLogVerbose(@"");
-
-    __weak CodeVerificationViewController *weakSelf = self;
-    UIAlertController *controller = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_TITLE",
-                                     @"Title for alert shown when the app failed to check for an existing backup.")
-                         message:NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_MESSAGE",
-                                     @"Message for alert shown when the app failed to check for an existing "
-                                     @"backup.")
-                  preferredStyle:UIAlertControllerStyleAlert];
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_FAILED_TRY_AGAIN", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *action) {
-                                                     [weakSelf checkCanImportBackup];
-                                                 }]];
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_DO_NOT_RESTORE",
-                                                             @"The label for the 'do not restore backup' button.")
-                                                   style:UIAlertActionStyleDestructive
-                                                 handler:^(UIAlertAction *action) {
-                                                     [weakSelf showProfileView];
-                                                 }]];
-    [self presentViewController:controller animated:YES completion:nil];
+    [self.registrationController verificationWasCompletedFromView:self];
 }
 
 - (void)presentAlertWithVerificationError:(NSError *)error

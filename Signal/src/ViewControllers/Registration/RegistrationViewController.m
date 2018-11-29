@@ -28,6 +28,8 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 @interface RegistrationViewController () <CountryCodeViewControllerDelegate, UITextFieldDelegate>
 
+@property (nonatomic, readonly) RegistrationController *registrationController;
+
 @property (nonatomic) NSString *countryCode;
 @property (nonatomic) NSString *callingCode;
 
@@ -57,6 +59,8 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 - (void)loadView
 {
     [super loadView];
+
+    _registrationController = [RegistrationController new];
 
     self.shouldUseTheme = NO;
 
@@ -458,7 +462,8 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
             [weakSelf.spinnerView stopAnimating];
 
-            CodeVerificationViewController *vc = [CodeVerificationViewController new];
+            CodeVerificationViewController *vc =
+                [[CodeVerificationViewController alloc] initWithRegistrationController:self.registrationController];
             [weakSelf.navigationController pushViewController:vc animated:YES];
 
 #ifdef DEBUG

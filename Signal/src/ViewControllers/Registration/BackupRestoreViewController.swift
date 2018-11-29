@@ -7,10 +7,23 @@ import UIKit
 @objc
 public class BackupRestoreViewController: OWSTableViewController {
 
+    private let registrationController: RegistrationController
     private var hasBegunImport = false
+
+    // MARK: - Dependencies
 
     private var backup: OWSBackup {
         return AppEnvironment.shared.backup
+    }
+
+    // MARK: -
+
+    @objc
+    public required init(registrationController: RegistrationController) {
+        AssertIsOnMainThread()
+
+        self.registrationController = registrationController
+        super.init()
     }
 
     override public func loadView() {
