@@ -73,12 +73,10 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithServerGuid:(NSString *)serverGuid
-                                               serverTimestamp:(UInt64)serverTimestamp
 {
     OWSAssertDebug(serverGuid.length > 0);
-    OWSAssertDebug(serverTimestamp > 0);
 
-    NSString *path = [NSString stringWithFormat:@"v1/messages/%@/%llu", serverGuid, serverTimestamp];
+    NSString *path = [NSString stringWithFormat:@"v1/messages/uuid/%@", serverGuid];
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
 }
