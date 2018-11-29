@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AppGroupPath</key>
+	<string>group.io.forsta.relay-dev</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -46,8 +48,8 @@
                 SUBQUERY (
                 $extensionItem.attachments,
                 $attachment,
-                ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.data"
-                || ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url"
+                ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO &quot;public.data&quot;
+                || ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO &quot;public.url&quot;
                 ).@count &gt;= 1
                 ).@count == 1
             </string>

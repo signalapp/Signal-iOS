@@ -10,7 +10,7 @@
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)io.forsta.relay.shareextension</string>
+		<string>$(AppIdentifierPrefix)io.forsta.relay</string>
 	</array>
 </dict>
 </plist>
