@@ -1458,7 +1458,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // we open a transaction.
             [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
 
-            __block NSDictionary *messageDict;
+            __block NSDictionary *_Nullable messageDict;
             __block NSException *encryptionException;
             [self.dbConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1626,10 +1626,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }) retainUntilComplete];
 }
 
-- (NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
-                                               deviceId:(NSNumber *)deviceId
-                                              plainText:(NSData *)plainText
-                                            transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (nullable NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
+                                                        deviceId:(NSNumber *)deviceId
+                                                       plainText:(NSData *)plainText
+                                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
@@ -1679,6 +1679,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                       protocolContext:transaction
                                                                                 error:&error];
         SCKRaiseIfExceptionWrapperError(error);
+        if (!serializedMessage || error) {
+            OWSFailDebug(@"error while UD encrypting message: %@", error);
+            return nil;
+        }
         messageType = TSUnidentifiedSenderMessageType;
     } else {
         // This may throw an exception.
