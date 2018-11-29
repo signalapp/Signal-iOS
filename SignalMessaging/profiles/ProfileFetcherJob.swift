@@ -70,6 +70,10 @@ public class ProfileFetcherJob: NSObject {
         return SignalServiceRestClient()
     }
 
+    private var tsAccountManager: TSAccountManager {
+        return SSKEnvironment.shared.tsAccountManager
+    }
+
     // MARK: -
 
     public func run(recipientIds: [String]) {
@@ -143,8 +147,13 @@ public class ProfileFetcherJob: NSObject {
 
         Logger.error("getProfile: \(recipientId)")
 
-        let udAccess = udManager.udAccess(forRecipientId: recipientId,
-            requireSyncAccess: false)
+        // Don't use UD for "self" profile fetches.
+        var udAccess: OWSUDAccess?
+        if recipientId != tsAccountManager.localNumber() {
+            udAccess = udManager.udAccess(forRecipientId: recipientId,
+                                          requireSyncAccess: false)
+        }
+        
         return requestProfile(recipientId: recipientId,
                               udAccess: udAccess,
                               canFailoverUDAuth: true)

@@ -198,8 +198,8 @@ private
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
         let request: TSRequest
-        if let serverGuid = envelope.serverGuid, envelope.hasServerTimestamp, serverGuid.count > 0, envelope.serverTimestamp > 0 {
-            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid, serverTimestamp: envelope.serverTimestamp)
+        if let serverGuid = envelope.serverGuid, serverGuid.count > 0 {
+            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
         } else if let source = envelope.source, source.count > 0, envelope.timestamp > 0 {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: source, timestamp: envelope.timestamp)
         } else {
