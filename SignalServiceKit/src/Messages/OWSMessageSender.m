@@ -185,8 +185,7 @@ void AssertIsOnSendingQueue()
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             for (TSAttachment *attachment in [self.message attachmentsWithTransaction:transaction]) {
                 if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                    error = OWSErrorWithCodeDescription(
-                        OWSErrorCodeMessageHasInvalidAttachments, @"Message with missing attachments cannot be sent.");
+                    error = OWSErrorMakeFailedToSendOutgoingMessageError();
                     break;
                 }
 
