@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWS2FARegistrationViewController () <PinEntryViewDelegate>
 
-@property (nonatomic, readonly) AccountManager *accountManager;
 @property (nonatomic) PinEntryView *entryView;
 
 @end
@@ -24,28 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWS2FARegistrationViewController
 
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+#pragma mark - Dependencies
+
+- (AccountManager *)accountManager
 {
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    _accountManager = AppEnvironment.shared.accountManager;
-
-    return self;
-}
-
-- (instancetype)init
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _accountManager = AppEnvironment.shared.accountManager;
-
-    return self;
+    return AppEnvironment.shared.accountManager;
 }
 
 #pragma mark - View Lifecycle
@@ -125,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       OWSProdInfo([OWSAnalyticsEvents registrationRegisteringCode]);
-                      [self.accountManager registerWithVerificationCode:self.verificationCode pin:pinCode]
+                      [self.accountManager registerObjcWithVerificationCode:self.verificationCode pin:pinCode]
                           .then(^{
                               OWSAssertIsOnMainThread();
                               OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
@@ -163,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)verificationWasCompleted
 {
-    [ProfileViewController presentForRegistration:self.navigationController];
+    [RegistrationController verificationWasCompletedFromView:self];
 }
 
 @end

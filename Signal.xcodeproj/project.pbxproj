@@ -129,6 +129,7 @@
 		346941A3215D2EE400B5BFAD /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469419F215D2EE400B5BFAD /* Theme.m */; };
 		346941A4215D2EE400B5BFAD /* OWSConversationColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 346941A0215D2EE400B5BFAD /* OWSConversationColor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
+		346E9D5421B040B700562252 /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346E9D5321B040B600562252 /* RegistrationController.swift */; };
 		347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
 		347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
@@ -781,6 +782,7 @@
 		3469419F215D2EE400B5BFAD /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Theme.m; sourceTree = "<group>"; };
 		346941A0215D2EE400B5BFAD /* OWSConversationColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationColor.h; sourceTree = "<group>"; };
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
+		346E9D5321B040B600562252 /* RegistrationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
 		347850561FD86544007B8332 /* SAEFailedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEFailedViewController.swift; sourceTree = "<group>"; };
 		3478505A1FD999D5007B8332 /* et */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = et; path = translations/et.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3478505C1FD99A1F007B8332 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = translations/zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1427,6 +1429,7 @@
 				3441FD9E21A3604F00BB9542 /* BackupRestoreViewController.swift */,
 				340FC879204DAC8C007AEB0F /* CodeVerificationViewController.h */,
 				340FC877204DAC8C007AEB0F /* CodeVerificationViewController.m */,
+				346E9D5321B040B600562252 /* RegistrationController.swift */,
 				340FC878204DAC8C007AEB0F /* RegistrationViewController.h */,
 				340FC876204DAC8C007AEB0F /* RegistrationViewController.m */,
 			);
@@ -3425,6 +3428,7 @@
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
 				3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */,
 				4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */,
+				346E9D5421B040B700562252 /* RegistrationController.swift in Sources */,
 				34A55F3720485465002CC6DE /* OWS2FARegistrationViewController.m in Sources */,
 				340FC8AD204DAC8D007AEB0F /* OWSLinkedDevicesTableViewController.m in Sources */,
 				340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */,

@@ -16,8 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CodeVerificationViewController () <UITextFieldDelegate>
 
-@property (nonatomic, readonly) AccountManager *accountManager;
-
 // Where the user enters the verification code they wish to document
 @property (nonatomic) UITextField *challengeTextField;
 
@@ -47,30 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.tsAccountManager;
 }
 
-#pragma mark -
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+- (AccountManager *)accountManager
 {
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    _accountManager = AppEnvironment.shared.accountManager;
-
-    return self;
-}
-
-- (instancetype)init
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _accountManager = AppEnvironment.shared.accountManager;
-
-    return self;
+    return AppEnvironment.shared.accountManager;
 }
 
 #pragma mark - View Lifecycle
@@ -292,7 +269,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self startActivityIndicator];
     OWSProdInfo([OWSAnalyticsEvents registrationRegisteringCode]);
     __weak CodeVerificationViewController *weakSelf = self;
-    [[self.accountManager registerWithVerificationCode:[self validationCodeFromTextField] pin:nil]
+    [[self.accountManager registerObjcWithVerificationCode:[self validationCodeFromTextField] pin:nil]
             .then(^{
                 OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
 
@@ -329,7 +306,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)verificationWasCompleted
 {
-    [ProfileViewController presentForRegistration:self.navigationController];
+    [RegistrationController verificationWasCompletedFromView:self];
 }
 
 - (void)presentAlertWithVerificationError:(NSError *)error

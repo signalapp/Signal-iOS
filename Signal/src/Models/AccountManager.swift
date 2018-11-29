@@ -41,9 +41,9 @@ public class AccountManager: NSObject {
 
     // MARK: registration
 
-    @objc func register(verificationCode: String,
-                        pin: String?) -> AnyPromise {
-        return AnyPromise(register(verificationCode: verificationCode, pin: pin) as Promise<Void>)
+    @objc func registerObjc(verificationCode: String,
+                            pin: String?) -> AnyPromise {
+        return AnyPromise(register(verificationCode: verificationCode, pin: pin))
     }
 
     func register(verificationCode: String,

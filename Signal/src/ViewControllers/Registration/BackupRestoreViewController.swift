@@ -9,9 +9,13 @@ public class BackupRestoreViewController: OWSTableViewController {
 
     private var hasBegunImport = false
 
+    // MARK: - Dependencies
+
     private var backup: OWSBackup {
         return AppEnvironment.shared.backup
     }
+
+    // MARK: -
 
     override public func loadView() {
         super.loadView()
