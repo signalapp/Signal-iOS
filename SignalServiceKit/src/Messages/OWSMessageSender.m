@@ -1053,6 +1053,25 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
+    for (NSDictionary *deviceMessage in deviceMessages) {
+        NSNumber *_Nullable messageType = deviceMessage[@"type"];
+        OWSAssertDebug(messageType);
+        BOOL hasValidMessageType;
+        if (messageSend.isUDSend) {
+            hasValidMessageType = [messageType isEqualToNumber:@(TSUnidentifiedSenderMessageType)];
+        } else {
+            hasValidMessageType = ([messageType isEqualToNumber:@(TSEncryptedWhisperMessageType)] ||
+                [messageType isEqualToNumber:@(TSPreKeyWhisperMessageType)]);
+        }
+
+        if (!hasValidMessageType) {
+            OWSFailDebug(@"Invalid message type: %@", messageType);
+            NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+            [error setIsRetryable:NO];
+            return messageSend.failure(error);
+        }
+    }
+
     if (deviceMessages.count == 0) {
         // This might happen:
         //
