@@ -1056,11 +1056,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     for (NSDictionary *deviceMessage in deviceMessages) {
         NSNumber *_Nullable messageType = deviceMessage[@"type"];
         OWSAssertDebug(messageType);
+        BOOL hasValidMessageType;
         if (messageSend.isUDSend) {
-            OWSAssertDebug([messageType isEqualToNumber:@(TSUnidentifiedSenderMessageType)]);
+            hasValidMessageType = [messageType isEqualToNumber:@(TSUnidentifiedSenderMessageType)];
         } else {
-            OWSAssertDebug([messageType isEqualToNumber:@(TSEncryptedWhisperMessageType)] ||
+            hasValidMessageType = ([messageType isEqualToNumber:@(TSEncryptedWhisperMessageType)] ||
                 [messageType isEqualToNumber:@(TSPreKeyWhisperMessageType)]);
+        }
+
+        if (!hasValidMessageType) {
+            OWSFailDebug(@"Invalid message type: %@", messageType);
+            NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+            [error setIsRetryable:NO];
+            return messageSend.failure(error);
         }
     }
 
