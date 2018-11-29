@@ -225,18 +225,25 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     }
 
     NSString *recipientId = self.recipientId;
-    if (recipientId.length == 0) {
+    NSString *tagId = self.tagId;
+    
+    if (recipientId.length > 0) {
+        UIColor *color = [Theme conversationColorForString:self.recipientId];
+        self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId
+                                                                             color:color
+                                                                          diameter:kContactCellAvatarSize
+                                                                   contactsManager:FLContactsManager.shared] build];
+    } else if (tagId.length > 0) {
+        UIColor *color = [Theme conversationColorForString:self.tagId];
+        self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:tagId
+                                                                             color:color
+                                                                          diameter:kContactCellAvatarSize
+                                                                   contactsManager:FLContactsManager.shared] build];
+    } else {
         OWSFail(@"%@ recipientId should not be nil", self.logTag);
         self.avatarView.image = nil;
         return;
     }
-
-    UIColor *color = [Theme conversationColorForString:self.recipientId];
-    
-    self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId
-                                                                         color:color
-                                                                      diameter:kContactCellAvatarSize
-                                                               contactsManager:FLContactsManager.shared] build];
 }
 
 - (void)updateProfileName
@@ -249,13 +256,17 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     }
 
     NSString *recipientId = self.recipientId;
-    if (recipientId.length == 0) {
-        OWSFail(@"%@ recipientId should not be nil", self.logTag);
+    NSString *tagId = self.tagId;
+
+    if (recipientId.length > 0) {
+        self.profileNameLabel.text = [contactsManager recipientWithId:recipientId].flTag.orgSlug;
+    } else if (tagId.length > 0) {
+        self.profileNameLabel.text = [contactsManager tagWithId:tagId].orgSlug;
+    } else {
+        OWSFail(@"%@ recipientId & tagId should not be nil", self.logTag);
         self.profileNameLabel.text = nil;
         return;
     }
-
-    self.profileNameLabel.text = [contactsManager recipientWithId:recipientId].flTag.orgSlug;
     
     [self.profileNameLabel setNeedsLayout];
 }
