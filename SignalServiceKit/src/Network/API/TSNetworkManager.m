@@ -27,6 +27,7 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
 
 // This property should only be accessed on udSerialQueue.
 @property (atomic, readonly) AFHTTPSessionManager *udSessionManager;
+@property (atomic, readonly) NSDictionary *udSessionManagerDefaultHeaders;
 
 @property (atomic, readonly) dispatch_queue_t udSerialQueue;
 
@@ -139,9 +140,12 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 - (AFHTTPSessionManager *)udSessionManager
 {
     if (!_udSessionManager) {
-        _udSessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
-        _udSessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        AFHTTPSessionManager *udSessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
+        udSessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         // NOTE: We could enable HTTPShouldUsePipelining here.
+        _udSessionManager = udSessionManager;
+        // Make a copy of the default headers for this session manager.
+        _udSessionManagerDefaultHeaders = [udSessionManager.requestSerializer.HTTPRequestHeaders copy];
     }
 
     return _udSessionManager;
@@ -169,10 +173,16 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
     AFHTTPSessionManager *sessionManager = self.udSessionManager;
 
-    // Honor the request's headers.
+    // Clear all headers so that we don't retain headers from previous requests.
     for (NSString *headerField in sessionManager.requestSerializer.HTTPRequestHeaders.allKeys.copy) {
         [sessionManager.requestSerializer setValue:nil forHTTPHeaderField:headerField];
     }
+    // Apply the default headers for this session manager.
+    for (NSString *headerField in self.udSessionManagerDefaultHeaders) {
+        NSString *headerValue = self.udSessionManagerDefaultHeaders[headerField];
+        [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
+    }
+    // Honor the request's headers.
     for (NSString *headerField in request.allHTTPHeaderFields) {
         NSString *headerValue = request.allHTTPHeaderFields[headerField];
         [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
