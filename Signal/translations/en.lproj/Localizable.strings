@@ -1539,7 +1539,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Work Fax";
 
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "PHOTO_PICKER_UNNAMED_COLLECTION";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";

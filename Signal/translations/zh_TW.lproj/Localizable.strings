@@ -99,13 +99,19 @@
 "ATTACHMENT" = "附件";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "已達到訊息限制。";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+
+/* placeholder text for an empty captioning field */
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "檔案類型：%@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "檔案大小：%@";
+
+/* One-line label indicating the user can add no more text to the media message field. */
+"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "已達到訊息限制。";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "傳送";
@@ -223,6 +229,21 @@
 
 /* Indicates that the backup import data is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "回復檔案";
+
+/* Label for the backup restore decision section. */
+"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+
+/* Label for the backup restore description. */
+"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+
+/* Label for the backup restore progress. */
+"BACKUP_RESTORE_PROGRESS" = "過程";
+
+/* Label for the backup restore status. */
+"BACKUP_RESTORE_STATUS" = "狀態";
+
+/* Error shown when backup fails due to an unexpected error. */
+"BACKUP_UNEXPECTED_ERROR" = "Unexpected Error";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "你將無法從此群組收到訊息或更新。";
@@ -376,6 +397,18 @@
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "選擇國家";
+
+/* The label for the 'do not restore backup' button. */
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+
+/* Message for alert shown when the app failed to check for an existing backup. */
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+
+/* Title for alert shown when the app failed to check for an existing backup. */
+"CHECK_FOR_BACKUP_FAILED_TITLE" = "錯誤";
+
+/* The label for the 'restore backup' button. */
+"CHECK_FOR_BACKUP_RESTORE" = "還原";
 
 /* Error indicating that the app could not determine that user's CloudKit account status */
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "與iCloud 連結備份時發生一個錯誤。";
@@ -1505,8 +1538,8 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "工作傳真";
 
-/* navbar title when viewing the default photo album, which includes all photos */
-"PHOTO_PICKER_DEFAULT_ALBUM" = "所有照片";
+/* label for system photo collections which have no name. */
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放媒體";
@@ -1597,9 +1630,6 @@
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "儲存";
-
-/* Alert title that indicates the user's profile view is being saved. */
-"PROFILE_VIEW_SAVING" = "儲存中...";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "個人資訊";
@@ -1934,6 +1964,18 @@
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "備份功能啟動";
 
+/* Indicates that the last backup restore failed. */
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+
+/* Indicates that app is not restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+
+/* Indicates that app is restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+
+/* Indicates that the last backup restore succeeded. */
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "階段";
 
@@ -2097,7 +2139,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "註冊鎖定";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "輸入指示器";
+"SETTINGS_TYPING_INDICATORS" = "打字狀態";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "查看並分享正在輸入的訊息。這個設定是選擇性及適用於所有對話。";
@@ -2109,7 +2151,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "密封發件人";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "顯示指示器";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "顯示指標";
 
 /* table section footer */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "在使用密封發件人傳遞的訊息上選擇“更多訊息”時顯示狀態圖示。";
@@ -2313,13 +2355,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "啟用已讀回執功能";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "在你的隱私權設定中啟動輸入指示器。";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "在你的隱私權設定中啟動打字狀態。";
 
 /* Body text for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "現在你可以選擇性的查看並分享正在輸入的訊息。";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "介紹輸入指示器";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "介紹打字狀態";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal 已支援安全的視訊通話。正常的開始通話，接通後點擊攝影機圖示按鈕，雙方即可看到對方。";
