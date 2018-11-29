@@ -95,9 +95,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 
 - (NSArray<NSString *> *)attachmentIdsForLazyRestore;
 
-- (void)lazyRestoreAttachment:(TSAttachmentPointer *)attachment
-                     backupIO:(OWSBackupIO *)backupIO
-                   completion:(OWSBackupBoolBlock)completion;
+- (AnyPromise *)lazyRestoreAttachment:(TSAttachmentPointer *)attachment backupIO:(OWSBackupIO *)backupIO;
 
 @end
 

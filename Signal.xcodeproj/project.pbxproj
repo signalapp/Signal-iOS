@@ -156,7 +156,7 @@
 		3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496955B219B605E00DCFE74 /* PhotoLibrary.swift */; };
 		3496956021A2FC8100DCFE74 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3496955F21A2FC8100DCFE74 /* CloudKit.framework */; };
 		3496956E21A301A100DCFE74 /* OWSBackupExportJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956221A301A100DCFE74 /* OWSBackupExportJob.m */; };
-		3496956F21A301A100DCFE74 /* OWSBackupLazyRestoreJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496956321A301A100DCFE74 /* OWSBackupLazyRestoreJob.swift */; };
+		3496956F21A301A100DCFE74 /* OWSBackupLazyRestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496956321A301A100DCFE74 /* OWSBackupLazyRestore.swift */; };
 		3496957021A301A100DCFE74 /* OWSBackupIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956521A301A100DCFE74 /* OWSBackupIO.m */; };
 		3496957121A301A100DCFE74 /* OWSBackupImportJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956621A301A100DCFE74 /* OWSBackupImportJob.m */; };
 		3496957221A301A100DCFE74 /* OWSBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956921A301A100DCFE74 /* OWSBackup.m */; };
@@ -812,7 +812,7 @@
 		3496955B219B605E00DCFE74 /* PhotoLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibrary.swift; sourceTree = "<group>"; };
 		3496955F21A2FC8100DCFE74 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		3496956221A301A100DCFE74 /* OWSBackupExportJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupExportJob.m; sourceTree = "<group>"; };
-		3496956321A301A100DCFE74 /* OWSBackupLazyRestoreJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSBackupLazyRestoreJob.swift; sourceTree = "<group>"; };
+		3496956321A301A100DCFE74 /* OWSBackupLazyRestore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSBackupLazyRestore.swift; sourceTree = "<group>"; };
 		3496956421A301A100DCFE74 /* OWSBackup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackup.h; sourceTree = "<group>"; };
 		3496956521A301A100DCFE74 /* OWSBackupIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupIO.m; sourceTree = "<group>"; };
 		3496956621A301A100DCFE74 /* OWSBackupImportJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupImportJob.m; sourceTree = "<group>"; };
@@ -1778,7 +1778,7 @@
 				3496956521A301A100DCFE74 /* OWSBackupIO.m */,
 				3496956721A301A100DCFE74 /* OWSBackupJob.h */,
 				3496956A21A301A100DCFE74 /* OWSBackupJob.m */,
-				3496956321A301A100DCFE74 /* OWSBackupLazyRestoreJob.swift */,
+				3496956321A301A100DCFE74 /* OWSBackupLazyRestore.swift */,
 			);
 			path = Backup;
 			sourceTree = "<group>";
@@ -3568,7 +3568,7 @@
 				3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
 				340FC8BD204DAC8D007AEB0F /* ShowGroupMembersViewController.m in Sources */,
-				3496956F21A301A100DCFE74 /* OWSBackupLazyRestoreJob.swift in Sources */,
+				3496956F21A301A100DCFE74 /* OWSBackupLazyRestore.swift in Sources */,
 				459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

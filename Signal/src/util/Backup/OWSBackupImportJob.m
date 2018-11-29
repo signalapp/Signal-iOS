@@ -63,6 +63,11 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     return AppEnvironment.shared.backup;
 }
 
+- (OWSBackupLazyRestore *)backupLazyRestore
+{
+    return AppEnvironment.shared.backupLazyRestore;
+}
+
 #pragma mark -
 
 - (NSArray<OWSBackupFragment *> *)databaseItems
@@ -157,10 +162,11 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         .thenInBackground(^{
             return [self restoreAttachmentFiles];
         })
+        .then(^{
+            // Kick off lazy restore on main thread.
+            [self.backupLazyRestore runIfNecessary];
+        })
         .thenInBackground(^{
-            // Kick off lazy restore.
-            [OWSBackupLazyRestoreJob runAsync];
-
             [self.profileManager fetchLocalUsersProfile];
             
             [self.tsAccountManager updateAccountAttributes];
