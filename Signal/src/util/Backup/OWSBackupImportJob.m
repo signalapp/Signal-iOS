@@ -136,11 +136,14 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     NSMutableArray<OWSBackupFragment *> *allItems = [NSMutableArray new];
     [allItems addObjectsFromArray:self.databaseItems];
-    // TODO: We probably want to remove this.
-    [allItems addObjectsFromArray:self.attachmentsItems];
     if (self.manifest.localProfileAvatarItem) {
         [allItems addObject:self.manifest.localProfileAvatarItem];
     }
+    // Attachments can be downloaded later;
+    //
+    NSArray<OWSBackupFragment *> *eagerItems = [allItems copy];
+
+    [allItems addObjectsFromArray:self.attachmentsItems];
 
     // Record metadata for all items, so that we can re-use them in incremental backups after the restore.
     [self.primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -149,7 +152,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         }
     }];
 
-    return [self downloadFilesFromCloud:allItems]
+    return [self downloadFilesFromCloud:eagerItems]
         .thenInBackground(^{
             return [self restoreDatabase];
         })
@@ -165,15 +168,15 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         .then(^{
             // Kick off lazy restore on main thread.
             [self.backupLazyRestore runIfNecessary];
-        })
-        .thenInBackground(^{
+
             [self.profileManager fetchLocalUsersProfile];
-            
-            [self.tsAccountManager updateAccountAttributes];
 
             // Make sure backup is enabled once we complete
             // a backup restore.
             [OWSBackup.sharedManager setIsBackupEnabled:YES];
+        })
+        .thenInBackground(^{
+            [self.tsAccountManager updateAccountAttributes];
 
             [self succeed];
         });
@@ -193,7 +196,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     return [AnyPromise promiseWithValue:@(1)];
 }
 
-- (AnyPromise *)downloadFilesFromCloud:(NSMutableArray<OWSBackupFragment *> *)items
+- (AnyPromise *)downloadFilesFromCloud:(NSArray<OWSBackupFragment *> *)items
 {
     OWSAssertDebug(items.count > 0);
 
