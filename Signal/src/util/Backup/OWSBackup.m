@@ -520,7 +520,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     _backupImportState = OWSBackupState_InProgress;
 
     self.backupImportJob = [[OWSBackupImportJob alloc] initWithDelegate:self recipientId:recipientId];
-    [self.backupImportJob startAsync];
+    [self.backupImportJob start];
 
     [self postDidChangeNotification];
 }

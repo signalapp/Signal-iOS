@@ -79,7 +79,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     return self.manifest.attachmentsItems;
 }
 
-- (void)startAsync
+- (void)start
 {
     OWSAssertIsOnMainThread();
 
@@ -91,36 +91,24 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     [[self.backup ensureCloudKitAccess]
             .thenInBackground(^{
-                [self start];
+                [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_CONFIGURATION",
+                                                        @"Indicates that the backup import is being configured.")
+                                           progress:nil];
+
+                return [self configureImport];
             })
-            .catch(^(NSError *error) {
-                [self failWithErrorDescription:
-                          NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                              @"Error indicating the backup import could not import the user's data.")];
-            }) retainUntilComplete];
-}
+            .thenInBackground(^{
+                if (self.isComplete) {
+                    return
+                        [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
+                }
 
-- (void)start
-{
-    [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_CONFIGURATION",
-                                            @"Indicates that the backup import is being configured.")
-                               progress:nil];
+                [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_IMPORT",
+                                                        @"Indicates that the backup import data is being imported.")
+                                           progress:nil];
 
-    if (![self configureImport]) {
-        [self failWithErrorDescription:NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                           @"Error indicating the backup import could not import the user's data.")];
-        return;
-    }
-
-    if (self.isComplete) {
-        return;
-    }
-
-    [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_IMPORT",
-                                            @"Indicates that the backup import data is being imported.")
-                               progress:nil];
-
-    [[self downloadAndProcessManifestWithBackupIO:self.backupIO]
+                return [self downloadAndProcessManifestWithBackupIO:self.backupIO];
+            })
             .thenInBackground(^(OWSBackupManifestContents *manifest) {
                 OWSCAssertDebug(manifest.databaseItems.count > 0);
                 OWSCAssertDebug(manifest.attachmentsItems);
@@ -129,8 +117,10 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
                 return [self downloadAndProcessImport];
             })
-            .catchInBackground(^(NSError *error) {
-                [self failWithError:error];
+            .catch(^(NSError *error) {
+                [self failWithErrorDescription:
+                          NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+                              @"Error indicating the backup import could not import the user's data.")];
             }) retainUntilComplete];
 }
 
@@ -183,18 +173,18 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         });
 }
 
-- (BOOL)configureImport
+- (AnyPromise *)configureImport
 {
     OWSLogVerbose(@"");
 
     if (![self ensureJobTempDir]) {
         OWSFailDebug(@"Could not create jobTempDirPath.");
-        return NO;
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Could not create jobTempDirPath.")];
     }
 
     self.backupIO = [[OWSBackupIO alloc] initWithJobTempDirPath:self.jobTempDirPath];
 
-    return YES;
+    return [AnyPromise promiseWithValue:@(1)];
 }
 
 - (AnyPromise *)downloadFilesFromCloud:(NSMutableArray<OWSBackupFragment *> *)items
