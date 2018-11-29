@@ -163,7 +163,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         AssertIsOnMainThread()
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            guard TSAccountManager.isRegistered() else {
+            guard self.tsAccountManager.isRegistered() else {
                 return
             }
 
