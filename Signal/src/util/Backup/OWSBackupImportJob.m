@@ -174,7 +174,11 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             [self.profileManager fetchLocalUsersProfile];
             
             [self.tsAccountManager updateAccountAttributes];
-            
+
+            // Make sure backup is enabled once we complete
+            // a backup restore.
+            [OWSBackup.sharedManager setIsBackupEnabled:YES];
+
             [self succeed];
         });
 }
@@ -567,15 +571,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         });
     }];
     return promise;
-}
-
-- (void)succeed
-{
-    // Make sure backup is enabled once we complete
-    // a backup restore.
-    [OWSBackup.sharedManager setIsBackupEnabled:YES];
-
-    [super succeed];
 }
 
 @end
