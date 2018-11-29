@@ -3,8 +3,8 @@
 //
 
 #import "SelectRecipientViewController.h"
-#import "CountryCodeViewController.h"
-#import "PhoneNumber.h"
+//#import "CountryCodeViewController.h"
+//#import "PhoneNumber.h"
 #import "ViewControllerUtils.h"
 #import <RelayMessaging/ContactTableViewCell.h>
 #import <RelayMessaging/ContactsViewHelper.h>
@@ -52,8 +52,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 
     [self createViews];
-
-    [self populateDefaultCountryNameAndCode];
 
     if (self.delegate.shouldHideContacts) {
         self.tableViewController.tableView.scrollEnabled = NO;
@@ -151,22 +149,22 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     return _phoneNumberTextField;
 }
 
-- (OWSFlatButton *)phoneNumberButton
-{
-    if (!_phoneNumberButton) {
-        const CGFloat kButtonHeight = 40;
-        OWSFlatButton *button = [OWSFlatButton buttonWithTitle:[self.delegate phoneNumberButtonText]
-                                                          font:[OWSFlatButton fontForHeight:kButtonHeight]
-                                                    titleColor:[UIColor whiteColor]
-                                               backgroundColor:[UIColor FL_mediumBlue2]
-                                                        target:self
-                                                      selector:@selector(phoneNumberButtonPressed)];
-        _phoneNumberButton = button;
-        [button autoSetDimension:ALDimensionWidth toSize:140];
-        [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
-    }
-    return _phoneNumberButton;
-}
+//- (OWSFlatButton *)phoneNumberButton
+//{
+//    if (!_phoneNumberButton) {
+//        const CGFloat kButtonHeight = 40;
+//        OWSFlatButton *button = [OWSFlatButton buttonWithTitle:[self.delegate phoneNumberButtonText]
+//                                                          font:[OWSFlatButton fontForHeight:kButtonHeight]
+//                                                    titleColor:[UIColor whiteColor]
+//                                               backgroundColor:[UIColor FL_mediumBlue2]
+//                                                        target:self
+//                                                      selector:@selector(phoneNumberButtonPressed)];
+//        _phoneNumberButton = button;
+//        [button autoSetDimension:ALDimensionWidth toSize:140];
+//        [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
+//    }
+//    return _phoneNumberButton;
+//}
 
 - (UIView *)createRowWithHeight:(CGFloat)height
                     previousRow:(nullable UIView *)previousRow
@@ -186,34 +184,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 #pragma mark - Country
 
-- (void)populateDefaultCountryNameAndCode
-{
-    // Not meaningful in Forsta environment
-//    PhoneNumber *localNumber = [PhoneNumber phoneNumberFromE164:[TSAccountManager localUID]];
-//    OWSAssert(localNumber);
-//
-//    NSString *countryCode;
-//    NSNumber *callingCode;
-//    if (localNumber) {
-//        callingCode = [localNumber getCountryCode];
-//        OWSAssert(callingCode);
-//        if (callingCode) {
-//            NSString *prefix = [NSString stringWithFormat:@"+%d", callingCode.intValue];
-//            countryCode = [[PhoneNumberUtil sharedThreadLocal] probableCountryCodeForCallingCode:prefix];
-//        }
-//    }
-//
-//    if (!countryCode || !callingCode) {
-//        countryCode = [PhoneNumber defaultCountryCode];
-//        callingCode = [[PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
-//    }
-//
-//    NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
-//
-//    [self updateCountryWithName:countryName
-//                    callingCode:[NSString stringWithFormat:@"%@%@", COUNTRY_CODE_PREFIX, callingCode]
-//                    countryCode:countryCode];
-}
 
 - (void)updateCountryWithName:(NSString *)countryName
                   callingCode:(NSString *)callingCode
@@ -254,91 +224,91 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 //    }
 }
 
-- (void)phoneNumberButtonPressed
-{
-    [self tryToSelectPhoneNumber];
-}
+//- (void)phoneNumberButtonPressed
+//{
+//    [self tryToSelectPhoneNumber];
+//}
 
-- (void)tryToSelectPhoneNumber
-{
-    OWSAssert(self.delegate);
-
-    if (![self hasValidPhoneNumber]) {
-        OWSFail(@"Invalid phone number was selected.");
-        return;
-    }
-
-    NSString *rawPhoneNumber = [self.callingCode stringByAppendingString:self.phoneNumberTextField.text.digitsOnly];
-
-    NSMutableArray<NSString *> *possiblePhoneNumbers = [NSMutableArray new];
-    for (PhoneNumber *phoneNumber in
-        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:rawPhoneNumber
-                                              clientPhoneNumber:[TSAccountManager localUID]]) {
-        [possiblePhoneNumbers addObject:phoneNumber.toE164];
-    }
-    if ([possiblePhoneNumbers count] < 1) {
-        OWSFail(@"Couldn't parse phone number.");
-        return;
-    }
-
-    [self.phoneNumberTextField resignFirstResponder];
-
-    // There should only be one phone number, since we're explicitly specifying
-    // a country code and therefore parsing a number in e164 format.
-    OWSAssert([possiblePhoneNumbers count] == 1);
-
-    if ([self.delegate shouldValidatePhoneNumbers]) {
-        // Show an alert while validating the recipient.
-
-        __weak SelectRecipientViewController *weakSelf = self;
-        [ModalActivityIndicatorViewController
-            presentFromViewController:self
-                            canCancel:YES
-                      backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                          [[ContactsUpdater sharedUpdater] lookupIdentifiers:possiblePhoneNumbers
-                              success:^(NSArray<RelayRecipient *> *recipients) {
-                                  OWSAssertIsOnMainThread();
-                                  if (modalActivityIndicator.wasCancelled) {
-                                      return;
-                                  }
-
-                                  if (recipients.count == 0) {
-                                      [modalActivityIndicator
-                                          dismissViewControllerAnimated:NO
-                                                             completion:^{
-                                                                 NSError *error
-                                                                     = OWSErrorMakeNoSuchSignalRecipientError();
-                                                                 [OWSAlerts showErrorAlertWithMessage:
-                                                                                error.localizedDescription];
-                                                             }];
-                                      return;
-                                  }
-
-                                  NSString *recipientId = recipients[0].uniqueId;
-                                  [modalActivityIndicator
-                                      dismissViewControllerAnimated:NO
-                                                         completion:^{
-                                                             [weakSelf.delegate phoneNumberWasSelected:recipientId];
-                                                         }];
-                              }
-                              failure:^(NSError *error) {
-                                  OWSAssertIsOnMainThread();
-                                  if (modalActivityIndicator.wasCancelled) {
-                                      return;
-                                  }
-                                  [modalActivityIndicator
-                                      dismissViewControllerAnimated:NO
-                                                         completion:^{
-                                                             [OWSAlerts
-                                                                 showErrorAlertWithMessage:error.localizedDescription];
-                                                         }];
-                              }];
-                      }];
-    } else {
-        NSString *recipientId = possiblePhoneNumbers[0];
-        [self.delegate phoneNumberWasSelected:recipientId];
-    }
-}
+//- (void)tryToSelectPhoneNumber
+//{
+//    OWSAssert(self.delegate);
+//
+//    if (![self hasValidPhoneNumber]) {
+//        OWSFail(@"Invalid phone number was selected.");
+//        return;
+//    }
+//
+//    NSString *rawPhoneNumber = [self.callingCode stringByAppendingString:self.phoneNumberTextField.text.digitsOnly];
+//
+//    NSMutableArray<NSString *> *possiblePhoneNumbers = [NSMutableArray new];
+//    for (PhoneNumber *phoneNumber in
+//        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:rawPhoneNumber
+//                                              clientPhoneNumber:[TSAccountManager localUID]]) {
+//        [possiblePhoneNumbers addObject:phoneNumber.toE164];
+//    }
+//    if ([possiblePhoneNumbers count] < 1) {
+//        OWSFail(@"Couldn't parse phone number.");
+//        return;
+//    }
+//
+//    [self.phoneNumberTextField resignFirstResponder];
+//
+//    // There should only be one phone number, since we're explicitly specifying
+//    // a country code and therefore parsing a number in e164 format.
+//    OWSAssert([possiblePhoneNumbers count] == 1);
+//
+//    if ([self.delegate shouldValidatePhoneNumbers]) {
+//        // Show an alert while validating the recipient.
+//
+//        __weak SelectRecipientViewController *weakSelf = self;
+//        [ModalActivityIndicatorViewController
+//            presentFromViewController:self
+//                            canCancel:YES
+//                      backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+//                          [[ContactsUpdater sharedUpdater] lookupIdentifiers:possiblePhoneNumbers
+//                              success:^(NSArray<RelayRecipient *> *recipients) {
+//                                  OWSAssertIsOnMainThread();
+//                                  if (modalActivityIndicator.wasCancelled) {
+//                                      return;
+//                                  }
+//
+//                                  if (recipients.count == 0) {
+//                                      [modalActivityIndicator
+//                                          dismissViewControllerAnimated:NO
+//                                                             completion:^{
+//                                                                 NSError *error
+//                                                                     = OWSErrorMakeNoSuchSignalRecipientError();
+//                                                                 [OWSAlerts showErrorAlertWithMessage:
+//                                                                                error.localizedDescription];
+//                                                             }];
+//                                      return;
+//                                  }
+//
+//                                  NSString *recipientId = recipients[0].uniqueId;
+//                                  [modalActivityIndicator
+//                                      dismissViewControllerAnimated:NO
+//                                                         completion:^{
+//                                                             [weakSelf.delegate phoneNumberWasSelected:recipientId];
+//                                                         }];
+//                              }
+//                              failure:^(NSError *error) {
+//                                  OWSAssertIsOnMainThread();
+//                                  if (modalActivityIndicator.wasCancelled) {
+//                                      return;
+//                                  }
+//                                  [modalActivityIndicator
+//                                      dismissViewControllerAnimated:NO
+//                                                         completion:^{
+//                                                             [OWSAlerts
+//                                                                 showErrorAlertWithMessage:error.localizedDescription];
+//                                                         }];
+//                              }];
+//                      }];
+//    } else {
+//        NSString *recipientId = possiblePhoneNumbers[0];
+//        [self.delegate phoneNumberWasSelected:recipientId];
+//    }
+//}
 
 - (void)textFieldDidChange:(id)sender
 {
@@ -376,20 +346,20 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 #pragma mark - CountryCodeViewControllerDelegate
 
-- (void)countryCodeViewController:(CountryCodeViewController *)vc
-             didSelectCountryCode:(NSString *)countryCode
-                      countryName:(NSString *)countryName
-                      callingCode:(NSString *)callingCode
-{
-    OWSAssert(countryCode.length > 0);
-    OWSAssert(countryName.length > 0);
-    OWSAssert(callingCode.length > 0);
-
-    [self updateCountryWithName:countryName callingCode:callingCode countryCode:countryCode];
-
-    // Trigger the formatting logic with a no-op edit.
-    [self textField:self.phoneNumberTextField shouldChangeCharactersInRange:NSMakeRange(0, 0) replacementString:@""];
-}
+//- (void)countryCodeViewController:(CountryCodeViewController *)vc
+//             didSelectCountryCode:(NSString *)countryCode
+//                      countryName:(NSString *)countryName
+//                      callingCode:(NSString *)callingCode
+//{
+//    OWSAssert(countryCode.length > 0);
+//    OWSAssert(countryName.length > 0);
+//    OWSAssert(callingCode.length > 0);
+//
+//    [self updateCountryWithName:countryName callingCode:callingCode countryCode:countryCode];
+//
+//    // Trigger the formatting logic with a no-op edit.
+//    [self textField:self.phoneNumberTextField shouldChangeCharactersInRange:NSMakeRange(0, 0) replacementString:@""];
+//}
 
 #pragma mark - UITextFieldDelegate
 
@@ -412,9 +382,9 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
-    if ([self hasValidPhoneNumber]) {
-        [self tryToSelectPhoneNumber];
-    }
+//    if ([self hasValidPhoneNumber]) {
+//        [self tryToSelectPhoneNumber];
+//    }
     return NO;
 }
 
@@ -529,8 +499,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 //                                        cell.accessoryMessage =
 //                                            [weakSelf.delegate accessoryMessageForSignalAccount:signalAccount];
 //                                    }
-//                                    [cell configureWithTagId:relayTag.uniqueId
-//                                                   contactsManager:helper.contactsManager];
+                                    [cell configureWithTagId:relayTag.uniqueId
+                                                   contactsManager:helper.contactsManager];
 
                                     // Implement this!
 //                                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
@@ -544,7 +514,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 //                                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
 //                                        return;
 //                                    }
-//                                    [weakSelf.delegate signalAccountWasSelected:signalAccount];
+                                    [weakSelf.delegate relayTagWasSelected:relayTag];
                                 }]];
             }
         }
