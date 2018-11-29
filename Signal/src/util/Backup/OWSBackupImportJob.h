@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSBackupImportJob : OWSBackupJob
 
-- (void)startAsync;
+- (void)start;
 
 @end
 

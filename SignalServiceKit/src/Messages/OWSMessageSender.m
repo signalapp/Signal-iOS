@@ -175,7 +175,7 @@ void AssertIsOnSendingQueue()
 
 - (nullable NSError *)checkForPreconditionError
 {
-    NSError *_Nullable error = [super checkForPreconditionError];
+    __block NSError *_Nullable error = [super checkForPreconditionError];
     if (error) {
         return error;
     }
@@ -184,7 +184,11 @@ void AssertIsOnSendingQueue()
     if (self.message.hasAttachments) {
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             for (TSAttachment *attachment in [self.message attachmentsWithTransaction:transaction]) {
-                OWSAssertDebug([attachment isKindOfClass:[TSAttachmentStream class]]);
+                if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                    error = OWSErrorMakeFailedToSendOutgoingMessageError();
+                    break;
+                }
+
                 TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
                 OWSAssertDebug(attachmentStream);
                 OWSAssertDebug(attachmentStream.serverId);
@@ -193,7 +197,7 @@ void AssertIsOnSendingQueue()
         }];
     }
 
-    return nil;
+    return error;
 }
 
 - (void)run
