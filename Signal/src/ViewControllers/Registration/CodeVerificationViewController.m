@@ -329,7 +329,78 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)verificationWasCompleted
 {
+    if ([TSAccountManager sharedInstance].isReregistering) {
+        [self showProfileView];
+    } else {
+        [self checkCanImportBackup];
+    }
+}
+
+- (void)showProfileView
+{
     [ProfileViewController presentForRegistration:self.navigationController];
+}
+
+- (void)showBackupRestoreView
+{
+    OWSAssertIsOnMainThread();
+    OWSLogVerbose(@"");
+
+    BackupRestoreViewController *restoreView = [BackupRestoreViewController new];
+    [self.navigationController setViewControllers:@[
+        restoreView,
+    ]
+                                         animated:YES];
+}
+
+- (void)checkCanImportBackup
+{
+    OWSLogVerbose(@"");
+
+    __weak CodeVerificationViewController *weakSelf = self;
+    [OWSBackup.sharedManager
+        checkCanImportBackup:^(BOOL value) {
+            OWSAssertIsOnMainThread();
+
+            OWSLogInfo(@"has backup available for import? %d", value);
+
+            if (value) {
+                [OWSBackup.sharedManager setHasPendingRestoreDecision:YES];
+
+                [weakSelf showBackupRestoreView];
+            } else {
+                [weakSelf showProfileView];
+            }
+        }
+        failure:^(NSError *error) {
+            [weakSelf showBackupCheckFailedAlert];
+        }];
+}
+
+- (void)showBackupCheckFailedAlert
+{
+    OWSLogVerbose(@"");
+
+    __weak CodeVerificationViewController *weakSelf = self;
+    UIAlertController *controller = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_TITLE",
+                                     @"Title for alert shown when the app failed to check for an existing backup.")
+                         message:NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_MESSAGE",
+                                     @"Message for alert shown when the app failed to check for an existing "
+                                     @"backup.")
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_FAILED_TRY_AGAIN", nil)
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction *action) {
+                                                     [weakSelf checkCanImportBackup];
+                                                 }]];
+    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_DO_NOT_RESTORE",
+                                                             @"The label for the 'do not restore backup' button.")
+                                                   style:UIAlertActionStyleDestructive
+                                                 handler:^(UIAlertAction *action) {
+                                                     [weakSelf showProfileView];
+                                                 }]];
+    [self presentViewController:controller animated:YES completion:nil];
 }
 
 - (void)presentAlertWithVerificationError:(NSError *)error

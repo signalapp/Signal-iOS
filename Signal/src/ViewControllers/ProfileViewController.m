@@ -432,10 +432,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
             [self.navigationController popViewControllerAnimated:YES];
             break;
         case ProfileViewMode_Registration:
-            if (![TSAccountManager sharedInstance].isReregistering) {
-                [self checkCanImportBackup];
-                return;
-            }
             [self showHomeView];
             break;
         case ProfileViewMode_UpgradeOrNag:
@@ -450,68 +446,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     OWSLogVerbose(@"");
 
     [SignalApp.sharedApp showHomeView];
-}
-
-- (void)showBackupRestoreView
-{
-    OWSAssertIsOnMainThread();
-    OWSLogVerbose(@"");
-
-    BackupRestoreViewController *restoreView = [BackupRestoreViewController new];
-    [self.navigationController setViewControllers:@[
-        restoreView,
-    ]
-                                         animated:YES];
-}
-
-- (void)checkCanImportBackup
-{
-    OWSLogVerbose(@"");
-
-    __weak ProfileViewController *weakSelf = self;
-    [OWSBackup.sharedManager
-        checkCanImportBackup:^(BOOL value) {
-            OWSAssertIsOnMainThread();
-
-            OWSLogInfo(@"has backup available for import? %d", value);
-
-            if (value) {
-                [OWSBackup.sharedManager setHasPendingRestoreDecision:YES];
-
-                [weakSelf showBackupRestoreView];
-            } else {
-                [weakSelf showHomeView];
-            }
-        }
-        failure:^(NSError *error) {
-            [weakSelf showBackupCheckFailedAlert];
-        }];
-}
-
-- (void)showBackupCheckFailedAlert
-{
-    OWSLogVerbose(@"");
-
-    __weak ProfileViewController *weakSelf = self;
-    UIAlertController *controller = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_TITLE",
-                                     @"Title for alert shown when the app failed to check for an existing backup.")
-                         message:NSLocalizedString(@"CHECK_FOR_BACKUP_FAILED_MESSAGE",
-                                     @"Message for alert shown when the app failed to check for an existing "
-                                     @"backup.")
-                  preferredStyle:UIAlertControllerStyleAlert];
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"REGISTER_FAILED_TRY_AGAIN", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *action) {
-                                                     [weakSelf checkCanImportBackup];
-                                                 }]];
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CHECK_FOR_BACKUP_DO_NOT_RESTORE",
-                                                             @"The label for the 'do not restore backup' button.")
-                                                   style:UIAlertActionStyleDestructive
-                                                 handler:^(UIAlertAction *action) {
-                                                     [weakSelf showHomeView];
-                                                 }]];
-    [self presentViewController:controller animated:YES completion:nil];
 }
 
 #pragma mark - UITextFieldDelegate
