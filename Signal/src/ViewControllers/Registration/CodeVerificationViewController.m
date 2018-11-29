@@ -16,8 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CodeVerificationViewController () <UITextFieldDelegate>
 
-@property (nonatomic, readonly) RegistrationController *registrationController;
-
 // Where the user enters the verification code they wish to document
 @property (nonatomic) UITextField *challengeTextField;
 
@@ -50,20 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (AccountManager *)accountManager
 {
     return AppEnvironment.shared.accountManager;
-}
-
-#pragma mark -
-
-- (instancetype)initWithRegistrationController:(RegistrationController *)registrationController
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _registrationController = registrationController;
-
-    return self;
 }
 
 #pragma mark - View Lifecycle
@@ -309,8 +293,7 @@ NS_ASSUME_NONNULL_BEGIN
                             return;
                         }
                         OWSLogInfo(@"Showing 2FA registration view.");
-                        OWS2FARegistrationViewController *viewController = [[OWS2FARegistrationViewController alloc]
-                            initWithRegistrationController:self.registrationController];
+                        OWS2FARegistrationViewController *viewController = [OWS2FARegistrationViewController new];
                         viewController.verificationCode = strongSelf.validationCodeFromTextField;
                         [strongSelf.navigationController pushViewController:viewController animated:YES];
                     } else {
@@ -323,7 +306,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)verificationWasCompleted
 {
-    [self.registrationController verificationWasCompletedFromView:self];
+    [RegistrationController verificationWasCompletedFromView:self];
 }
 
 - (void)presentAlertWithVerificationError:(NSError *)error

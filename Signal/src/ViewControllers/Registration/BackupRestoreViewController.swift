@@ -7,7 +7,6 @@ import UIKit
 @objc
 public class BackupRestoreViewController: OWSTableViewController {
 
-    private let registrationController: RegistrationController
     private var hasBegunImport = false
 
     // MARK: - Dependencies
@@ -17,14 +16,6 @@ public class BackupRestoreViewController: OWSTableViewController {
     }
 
     // MARK: -
-
-    @objc
-    public required init(registrationController: RegistrationController) {
-        AssertIsOnMainThread()
-
-        self.registrationController = registrationController
-        super.init()
-    }
 
     override public func loadView() {
         super.loadView()

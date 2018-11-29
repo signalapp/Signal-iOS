@@ -15,8 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWS2FARegistrationViewController () <PinEntryViewDelegate>
 
-@property (nonatomic, readonly) RegistrationController *registrationController;
-
 @property (nonatomic) PinEntryView *entryView;
 
 @end
@@ -30,20 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (AccountManager *)accountManager
 {
     return AppEnvironment.shared.accountManager;
-}
-
-#pragma mark -
-
-- (instancetype)initWithRegistrationController:(RegistrationController *)registrationController
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _registrationController = registrationController;
-
-    return self;
 }
 
 #pragma mark - View Lifecycle
@@ -161,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)verificationWasCompleted
 {
-    [self.registrationController verificationWasCompletedFromView:self];
+    [RegistrationController verificationWasCompletedFromView:self];
 }
 
 @end
