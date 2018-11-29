@@ -101,6 +101,8 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 
 + (OWSTableItem *)labelItemWithText:(NSString *)text accessoryText:(NSString *)accessoryText;
 
++ (OWSTableItem *)longDisclosureItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
 + (OWSTableItem *)switchItemWithText:(NSString *)text isOn:(BOOL)isOn target:(id)target selector:(SEL)selector;
 
 + (OWSTableItem *)switchItemWithText:(NSString *)text

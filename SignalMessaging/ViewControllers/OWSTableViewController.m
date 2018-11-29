@@ -346,6 +346,26 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return item;
 }
 
++ (OWSTableItem *)longDisclosureItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock
+{
+    OWSAssertDebug(text.length > 0);
+
+    OWSTableItem *item = [OWSTableItem new];
+    item.customCellBlock = ^{
+        UITableViewCell *cell = [OWSTableItem newCell];
+
+        cell.textLabel.text = text;
+        cell.textLabel.numberOfLines = 0;
+        cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+        return cell;
+    };
+    item.customRowHeight = @(UITableViewAutomaticDimension);
+    item.actionBlock = actionBlock;
+    return item;
+}
+
 + (OWSTableItem *)switchItemWithText:(NSString *)text isOn:(BOOL)isOn target:(id)target selector:(SEL)selector
 {
     return [self switchItemWithText:text isOn:isOn isEnabled:YES target:target selector:selector];

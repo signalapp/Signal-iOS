@@ -6,6 +6,7 @@
 #import "OWSBackupIO.h"
 #import "OWSDatabaseMigration.h"
 #import "Signal-Swift.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
@@ -327,9 +328,16 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.primaryStorage;
 }
 
+- (OWSBackup *)backup
+{
+    OWSAssertDebug(AppEnvironment.shared.backup);
+
+    return AppEnvironment.shared.backup;
+}
+
 #pragma mark -
 
-- (void)startAsync
+- (void)start
 {
     OWSAssertIsOnMainThread();
 
@@ -339,87 +347,53 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updateProgressWithDescription:nil progress:nil];
 
-    __weak OWSBackupExportJob *weakSelf = self;
-    [OWSBackupAPI checkCloudKitAccessWithCompletion:^(BOOL hasAccess) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            if (hasAccess) {
-                [weakSelf start];
-            } else {
-                [weakSelf failWithErrorDescription:
-                              NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                                  @"Error indicating the backup export could not export the user's data.")];
-            }
-        });
-    }];
-}
+    [[self.backup ensureCloudKitAccess]
+            .thenInBackground(^{
+                [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_CONFIGURATION",
+                                                        @"Indicates that the backup export is being configured.")
+                                           progress:nil];
 
-- (void)start
-{
-    [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_CONFIGURATION",
-                                            @"Indicates that the backup export is being configured.")
-                               progress:nil];
+                return [self configureExport];
+            })
+            .thenInBackground(^{
+                return [self fetchAllRecords];
+            })
+            .thenInBackground(^{
+                [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_EXPORT",
+                                                        @"Indicates that the backup export data is being exported.")
+                                           progress:nil];
 
-    __weak OWSBackupExportJob *weakSelf = self;
-    [self configureExportWithCompletion:^(BOOL configureExportSuccess) {
-        if (!configureExportSuccess) {
-            [self
-                failWithErrorDescription:NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                                             @"Error indicating the backup export could not export the user's data.")];
-            return;
-        }
+                return [self exportDatabase];
+            })
+            .thenInBackground(^{
+                return [self saveToCloud];
+            })
+            .thenInBackground(^{
+                return [self cleanUp];
+            })
+            .thenInBackground(^{
+                [self succeed];
+            })
+            .catch(^(NSError *error) {
+                OWSFailDebug(@"Backup export failed with error: %@.", error);
 
-        if (self.isComplete) {
-            return;
-        }
-        [self fetchAllRecordsWithCompletion:^(BOOL tryToFetchManifestSuccess) {
-            if (!tryToFetchManifestSuccess) {
                 [self failWithErrorDescription:
                           NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
                               @"Error indicating the backup export could not export the user's data.")];
-                return;
-            }
-
-            if (self.isComplete) {
-                return;
-            }
-            [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_EXPORT",
-                                                    @"Indicates that the backup export data is being exported.")
-                                       progress:nil];
-            if (![self exportDatabase]) {
-                [self failWithErrorDescription:
-                          NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                              @"Error indicating the backup export could not export the user's data.")];
-                return;
-            }
-            if (self.isComplete) {
-                return;
-            }
-            [self saveToCloudWithCompletion:^(NSError *_Nullable saveError) {
-                if (saveError) {
-                    [weakSelf failWithError:saveError];
-                    return;
-                }
-                [self cleanUpWithCompletion:^(NSError *_Nullable cleanUpError) {
-                    if (cleanUpError) {
-                        [weakSelf failWithError:cleanUpError];
-                        return;
-                    }
-                    [weakSelf succeed];
-                }];
-            }];
-        }];
-    }];
+            }) retainUntilComplete];
 }
 
-- (void)configureExportWithCompletion:(OWSBackupJobBoolCompletion)completion
+- (AnyPromise *)configureExport
 {
-    OWSAssertDebug(completion);
-
     OWSLogVerbose(@"");
+
+    if (self.isComplete) {
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+    }
 
     if (![self ensureJobTempDir]) {
         OWSFailDebug(@"Could not create jobTempDirPath.");
-        return completion(NO);
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Could not create jobTempDirPath.")];
     }
 
     self.backupIO = [[OWSBackupIO alloc] initWithJobTempDirPath:self.jobTempDirPath];
@@ -431,55 +405,64 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // We use an arbitrary request that requires authentication
     // to verify our account state.
-    TSRequest *currentSignedPreKey = [OWSRequestFactory currentSignedPreKeyRequest];
-    [[TSNetworkManager sharedManager] makeRequest:currentSignedPreKey
-        success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                completion(YES);
-            });
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            // TODO: We may want to surface this in the UI.
-            OWSLogError(@"could not verify account status: %@.", error);
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                completion(NO);
-            });
-        }];
+    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        TSRequest *currentSignedPreKey = [OWSRequestFactory currentSignedPreKeyRequest];
+        [[TSNetworkManager sharedManager] makeRequest:currentSignedPreKey
+            success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
+                resolve(@(1));
+            }
+            failure:^(NSURLSessionDataTask *task, NSError *error) {
+                // TODO: We may want to surface this in the UI.
+                OWSLogError(@"could not verify account status: %@.", error);
+                resolve(error);
+            }];
+    }];
 }
 
-- (void)fetchAllRecordsWithCompletion:(OWSBackupJobBoolCompletion)completion
+- (AnyPromise *)fetchAllRecords
 {
-    OWSAssertDebug(completion);
+    OWSLogVerbose(@"");
 
     if (self.isComplete) {
-        return;
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
     }
+
+    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        [OWSBackupAPI fetchAllRecordNamesWithRecipientId:self.recipientId
+            success:^(NSArray<NSString *> *recordNames) {
+                if (self.isComplete) {
+                    return resolve(OWSBackupErrorWithDescription(@"Backup export no longer active."));
+                }
+                self.lastValidRecordNames = [NSSet setWithArray:recordNames];
+                resolve(@(1));
+            }
+            failure:^(NSError *error) {
+                resolve(error);
+            }];
+    }];
+}
+
+- (AnyPromise *)exportDatabase
+{
+    OWSAssertDebug(self.backupIO);
 
     OWSLogVerbose(@"");
 
-    __weak OWSBackupExportJob *weakSelf = self;
-    [OWSBackupAPI fetchAllRecordNamesWithRecipientId:self.recipientId
-        success:^(NSArray<NSString *> *recordNames) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                OWSBackupExportJob *strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return;
-                }
-                if (strongSelf.isComplete) {
-                    return;
-                }
-                strongSelf.lastValidRecordNames = [NSSet setWithArray:recordNames];
-                completion(YES);
-            });
+    if (self.isComplete) {
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+    }
+
+    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        if (![self performExportDatabase]) {
+            NSError *error = OWSBackupErrorWithDescription(@"Backup export failed.");
+            return resolve(error);
         }
-        failure:^(NSError *error) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                completion(NO);
-            });
-        }];
+
+        resolve(@(1));
+    }];
 }
 
-- (BOOL)exportDatabase
+- (BOOL)performExportDatabase
 {
     OWSAssertDebug(self.backupIO);
 
@@ -681,11 +664,13 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (void)saveToCloudWithCompletion:(OWSBackupJobCompletion)completion
+- (AnyPromise *)saveToCloud
 {
-    OWSAssertDebug(completion);
-
     OWSLogVerbose(@"");
+
+    if (self.isComplete) {
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+    }
 
     self.savedDatabaseItems = [NSMutableArray new];
     self.savedAttachmentItems = [NSMutableArray new];
@@ -722,20 +707,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSLogInfo(@"exporting %@: count: %zd, bytes: %llu.", @"all items", totalFileCount, totalFileSize);
 
-    [self saveNextFileToCloudWithCompletion:completion];
-}
-
-// This method uploads one file (the "next" file) each time it
-// is called.  Each successful file upload re-invokes this method
-// until the last (the manifest file).
-- (void)saveNextFileToCloudWithCompletion:(OWSBackupJobCompletion)completion
-{
-    OWSAssertDebug(completion);
-
-    if (self.isComplete) {
-        return;
-    }
-
     // Add one for the manifest
     NSUInteger unsavedCount = (self.unsavedDatabaseItems.count + self.unsavedAttachmentExports.count + 1);
     NSUInteger savedCount = (self.savedDatabaseItems.count + self.savedAttachmentItems.count);
@@ -745,66 +716,67 @@ NS_ASSUME_NONNULL_BEGIN
                                             @"Indicates that the backup export data is being uploaded.")
                                progress:@(progress)];
 
-    if ([self saveNextDatabaseFileToCloudWithCompletion:completion]) {
-        return;
-    }
-    if ([self saveNextAttachmentFileToCloudWithCompletion:completion]) {
-        return;
-    }
-    [self saveManifestFileToCloudWithCompletion:completion];
+    // Save attachment files _before_ anything else, since they
+    // are the only reusable backup records.
+    return [self saveAttachmentFilesToCloud]
+        .thenInBackground(^{
+            return [self saveDatabaseFilesToCloud];
+        })
+        .thenInBackground(^{
+            return [self saveManifestFileToCloud];
+        });
 }
 
 // This method returns YES IFF "work was done and there might be more work to do".
-- (BOOL)saveNextDatabaseFileToCloudWithCompletion:(OWSBackupJobCompletion)completion
+- (AnyPromise *)saveDatabaseFilesToCloud
 {
-    OWSAssertDebug(completion);
+    AnyPromise *promise = [AnyPromise promiseWithValue:@(1)];
 
-    __weak OWSBackupExportJob *weakSelf = self;
-    if (self.unsavedDatabaseItems.count < 1) {
-        return NO;
+    // We need to preserve ordering of database shards.
+    for (OWSBackupExportItem *item in self.unsavedDatabaseItems) {
+        OWSAssertDebug(item.encryptedItem.filePath.length > 0);
+
+        promise
+            = promise
+                  .thenInBackground(^{
+                      if (self.isComplete) {
+                          return [AnyPromise
+                              promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+                      }
+
+                      return [OWSBackupAPI
+                          saveEphemeralDatabaseFileToCloudObjcWithRecipientId:self.recipientId
+                                                                      fileUrl:[NSURL fileURLWithPath:item.encryptedItem
+                                                                                                         .filePath]];
+                  })
+                  .thenInBackground(^(NSString *recordName) {
+                      item.recordName = recordName;
+                      [self.savedDatabaseItems addObject:item];
+                  });
     }
-
-    // Pop next item from queue, preserving ordering.
-    OWSBackupExportItem *item = self.unsavedDatabaseItems.firstObject;
-    [self.unsavedDatabaseItems removeObjectAtIndex:0];
-
-    OWSAssertDebug(item.encryptedItem.filePath.length > 0);
-
-    [OWSBackupAPI saveEphemeralDatabaseFileToCloudWithRecipientId:self.recipientId
-        fileUrl:[NSURL fileURLWithPath:item.encryptedItem.filePath]
-        success:^(NSString *recordName) {
-            // Ensure that we continue to work off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                item.recordName = recordName;
-                [weakSelf.savedDatabaseItems addObject:item];
-                [weakSelf saveNextFileToCloudWithCompletion:completion];
-            });
-        }
-        failure:^(NSError *error) {
-            // Ensure that we continue to work off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                // Database files are critical so any error uploading them is unrecoverable.
-                OWSLogVerbose(@"error while saving file: %@", item.encryptedItem.filePath);
-                completion(error);
-            });
-        }];
-    return YES;
+    [self.unsavedDatabaseItems removeAllObjects];
+    return promise;
 }
 
 // This method returns YES IFF "work was done and there might be more work to do".
-- (BOOL)saveNextAttachmentFileToCloudWithCompletion:(OWSBackupJobCompletion)completion
+- (AnyPromise *)saveAttachmentFilesToCloud
 {
-    OWSAssertDebug(completion);
+    AnyPromise *promise = [AnyPromise promiseWithValue:@(1)];
 
-    __weak OWSBackupExportJob *weakSelf = self;
-    if (self.unsavedAttachmentExports.count < 1) {
-        return NO;
+    for (OWSAttachmentExport *attachmentExport in self.unsavedAttachmentExports) {
+        promise = promise.thenInBackground(^{
+            if (self.isComplete) {
+                return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+            }
+            return [self saveAttachmentFileToCloud:attachmentExport];
+        });
     }
+    [self.unsavedAttachmentExports removeAllObjects];
+    return promise;
+}
 
-    // No need to preserve ordering of attachments.
-    OWSAttachmentExport *attachmentExport = self.unsavedAttachmentExports.lastObject;
-    [self.unsavedAttachmentExports removeLastObject];
-
+- (AnyPromise *)saveAttachmentFileToCloud:(OWSAttachmentExport *)attachmentExport
+{
     if (self.lastValidRecordNames) {
         // Wherever possible, we do incremental backups and re-use fragments of the last
         // backup and/or restore.
@@ -840,8 +812,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogVerbose(@"recycled attachment: %@ as %@",
                 attachmentExport.attachmentFilePath,
                 attachmentExport.relativeFilePath);
-            [self saveNextFileToCloudWithCompletion:completion];
-            return YES;
+            return [AnyPromise promiseWithValue:@(1)];
         }
     }
 
@@ -850,117 +821,83 @@ NS_ASSUME_NONNULL_BEGIN
         // attachment to disk.
         if (![attachmentExport prepareForUpload]) {
             // Attachment files are non-critical so any error uploading them is recoverable.
-            [weakSelf saveNextFileToCloudWithCompletion:completion];
-            return YES;
+            return [AnyPromise promiseWithValue:@(1)];
         }
         OWSAssertDebug(attachmentExport.relativeFilePath.length > 0);
         OWSAssertDebug(attachmentExport.encryptedItem);
     }
 
-    [OWSBackupAPI savePersistentFileOnceToCloudWithRecipientId:self.recipientId
-        fileId:attachmentExport.attachmentId
-        fileUrlBlock:^{
-            if (attachmentExport.encryptedItem.filePath.length < 1) {
-                OWSLogError(@"attachment export missing temp file path");
-                return (NSURL *)nil;
-            }
-            if (attachmentExport.relativeFilePath.length < 1) {
-                OWSLogError(@"attachment export missing relative file path");
-                return (NSURL *)nil;
-            }
-            return [NSURL fileURLWithPath:attachmentExport.encryptedItem.filePath];
-        }
-        success:^(NSString *recordName) {
-            // Ensure that we continue to work off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                OWSBackupExportJob *strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return;
-                }
-
-                if (![attachmentExport cleanUp]) {
-                    OWSLogError(@"couldn't clean up attachment export.");
-                    // Attachment files are non-critical so any error uploading them is recoverable.
-                }
-
-                OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
-                exportItem.encryptedItem = attachmentExport.encryptedItem;
-                exportItem.recordName = recordName;
-                exportItem.attachmentExport = attachmentExport;
-                [strongSelf.savedAttachmentItems addObject:exportItem];
-
-                // Immediately save the record metadata to facilitate export resume.
-                OWSBackupFragment *backupFragment = [OWSBackupFragment new];
-                backupFragment.recordName = recordName;
-                backupFragment.encryptionKey = exportItem.encryptedItem.encryptionKey;
-                backupFragment.relativeFilePath = attachmentExport.relativeFilePath;
-                backupFragment.attachmentId = attachmentExport.attachmentId;
-                backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
-                [backupFragment save];
-
-                OWSLogVerbose(@"saved attachment: %@ as %@",
-                    attachmentExport.attachmentFilePath,
-                    attachmentExport.relativeFilePath);
-                [strongSelf saveNextFileToCloudWithCompletion:completion];
-            });
-        }
-        failure:^(NSError *error) {
-            // Ensure that we continue to work off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                if (![attachmentExport cleanUp]) {
-                    OWSLogError(@"couldn't clean up attachment export.");
-                    // Attachment files are non-critical so any error uploading them is recoverable.
-                }
-
+    return [OWSBackupAPI
+        savePersistentFileOnceToCloudObjcWithRecipientId:self.recipientId
+                                                  fileId:attachmentExport.attachmentId
+                                            fileUrlBlock:^{
+                                                if (attachmentExport.encryptedItem.filePath.length < 1) {
+                                                    OWSLogError(@"attachment export missing temp file path");
+                                                    return (NSURL *)nil;
+                                                }
+                                                if (attachmentExport.relativeFilePath.length < 1) {
+                                                    OWSLogError(@"attachment export missing relative file path");
+                                                    return (NSURL *)nil;
+                                                }
+                                                return [NSURL fileURLWithPath:attachmentExport.encryptedItem.filePath];
+                                            }]
+        .thenInBackground(^(NSString *recordName) {
+            if (![attachmentExport cleanUp]) {
+                OWSLogError(@"couldn't clean up attachment export.");
                 // Attachment files are non-critical so any error uploading them is recoverable.
-                [weakSelf saveNextFileToCloudWithCompletion:completion];
-            });
-        }];
+            }
 
-    return YES;
+            OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
+            exportItem.encryptedItem = attachmentExport.encryptedItem;
+            exportItem.recordName = recordName;
+            exportItem.attachmentExport = attachmentExport;
+            [self.savedAttachmentItems addObject:exportItem];
+
+            // Immediately save the record metadata to facilitate export resume.
+            OWSBackupFragment *backupFragment = [OWSBackupFragment new];
+            backupFragment.recordName = recordName;
+            backupFragment.encryptionKey = exportItem.encryptedItem.encryptionKey;
+            backupFragment.relativeFilePath = attachmentExport.relativeFilePath;
+            backupFragment.attachmentId = attachmentExport.attachmentId;
+            backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
+            [backupFragment save];
+
+            OWSLogVerbose(
+                @"saved attachment: %@ as %@", attachmentExport.attachmentFilePath, attachmentExport.relativeFilePath);
+        })
+        .catchInBackground(^{
+            if (![attachmentExport cleanUp]) {
+                OWSLogError(@"couldn't clean up attachment export.");
+                // Attachment files are non-critical so any error uploading them is recoverable.
+            }
+
+            // Attachment files are non-critical so any error uploading them is recoverable.
+            return [AnyPromise promiseWithValue:@(1)];
+        });
 }
 
-- (void)saveManifestFileToCloudWithCompletion:(OWSBackupJobCompletion)completion
+- (AnyPromise *)saveManifestFileToCloud
 {
-    OWSAssertDebug(completion);
+    if (self.isComplete) {
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+    }
 
     OWSBackupEncryptedItem *_Nullable encryptedItem = [self writeManifestFile];
     if (!encryptedItem) {
-        completion(OWSErrorWithCodeDescription(OWSErrorCodeExportBackupFailed,
-            NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                @"Error indicating the backup export could not export the user's data.")));
-        return;
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Could not generate manifest.")];
     }
 
     OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
     exportItem.encryptedItem = encryptedItem;
 
-    __weak OWSBackupExportJob *weakSelf = self;
+    return [OWSBackupAPI upsertManifestFileToCloudObjcWithRecipientId:self.recipientId
+                                                              fileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]]
+        .thenInBackground(^(NSString *recordName) {
+            exportItem.recordName = recordName;
+            self.manifestItem = exportItem;
 
-    [OWSBackupAPI upsertManifestFileToCloudWithRecipientId:self.recipientId
-        fileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]
-        success:^(NSString *recordName) {
-            // Ensure that we continue to work off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                OWSBackupExportJob *strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return;
-                }
-
-                exportItem.recordName = recordName;
-                strongSelf.manifestItem = exportItem;
-
-                // All files have been saved to the cloud.
-                completion(nil);
-            });
-        }
-        failure:^(NSError *error) {
-            // Ensure that we continue to work off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                // The manifest file is critical so any error uploading them is unrecoverable.
-                completion(error);
-            });
-        }];
+            // All files have been saved to the cloud.
+        });
 }
 
 - (nullable OWSBackupEncryptedItem *)writeManifestFile
@@ -1014,13 +951,11 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-- (void)cleanUpWithCompletion:(OWSBackupJobCompletion)completion
+- (AnyPromise *)cleanUp
 {
-    OWSAssertDebug(completion);
-
     if (self.isComplete) {
         // Job was aborted.
-        return completion(nil);
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
     }
 
     OWSLogVerbose(@"");
@@ -1056,7 +991,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self cleanUpMetadataCacheWithActiveRecordNames:activeRecordNames];
 
-    [self cleanUpCloudWithActiveRecordNames:activeRecordNames completion:completion];
+    return [self cleanUpCloudWithActiveRecordNames:activeRecordNames];
 }
 
 - (void)cleanUpMetadataCacheWithActiveRecordNames:(NSSet<NSString *> *)activeRecordNames
@@ -1080,22 +1015,18 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-- (void)cleanUpCloudWithActiveRecordNames:(NSSet<NSString *> *)activeRecordNames
-                               completion:(OWSBackupJobCompletion)completion
+- (AnyPromise *)cleanUpCloudWithActiveRecordNames:(NSSet<NSString *> *)activeRecordNames
 {
     OWSAssertDebug(activeRecordNames.count > 0);
-    OWSAssertDebug(completion);
 
     if (self.isComplete) {
         // Job was aborted.
-        return completion(nil);
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
     }
 
-    __weak OWSBackupExportJob *weakSelf = self;
-    [OWSBackupAPI fetchAllRecordNamesWithRecipientId:self.recipientId
-        success:^(NSArray<NSString *> *recordNames) {
-            // Ensure that we continue to work off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        [OWSBackupAPI fetchAllRecordNamesWithRecipientId:self.recipientId
+            success:^(NSArray<NSString *> *recordNames) {
                 NSMutableSet<NSString *> *obsoleteRecordNames = [NSMutableSet new];
                 [obsoleteRecordNames addObjectsFromArray:recordNames];
                 [obsoleteRecordNames minusSet:activeRecordNames];
@@ -1105,18 +1036,18 @@ NS_ASSUME_NONNULL_BEGIN
                     activeRecordNames.count,
                     obsoleteRecordNames.count);
 
-                [weakSelf deleteRecordsFromCloud:[obsoleteRecordNames.allObjects mutableCopy]
-                                    deletedCount:0
-                                      completion:completion];
-            });
-        }
-        failure:^(NSError *error) {
-            // Ensure that we continue to work off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [self deleteRecordsFromCloud:[obsoleteRecordNames.allObjects mutableCopy]
+                                deletedCount:0
+                                  completion:^(NSError *_Nullable error) {
+                                      // Cloud cleanup is non-critical so any error is recoverable.
+                                      resolve(@(1));
+                                  }];
+            }
+            failure:^(NSError *error) {
                 // Cloud cleanup is non-critical so any error is recoverable.
-                completion(nil);
-            });
-        }];
+                resolve(@(1));
+            }];
+    }];
 }
 
 - (void)deleteRecordsFromCloud:(NSMutableArray<NSString *> *)obsoleteRecordNames
@@ -1151,24 +1082,17 @@ NS_ASSUME_NONNULL_BEGIN
         [batchRecordNames addObject:recordName];
     }
 
-    __weak OWSBackupExportJob *weakSelf = self;
     [OWSBackupAPI deleteRecordsFromCloudWithRecordNames:batchRecordNames
         success:^{
-            // Ensure that we continue to work off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [weakSelf deleteRecordsFromCloud:obsoleteRecordNames
-                                    deletedCount:deletedCount + batchRecordNames.count
-                                      completion:completion];
-            });
+            [self deleteRecordsFromCloud:obsoleteRecordNames
+                            deletedCount:deletedCount + batchRecordNames.count
+                              completion:completion];
         }
         failure:^(NSError *error) {
-            // Ensure that we continue to work off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                // Cloud cleanup is non-critical so any error is recoverable.
-                [weakSelf deleteRecordsFromCloud:obsoleteRecordNames
-                                    deletedCount:deletedCount + batchRecordNames.count
-                                      completion:completion];
-            });
+            // Cloud cleanup is non-critical so any error is recoverable.
+            [self deleteRecordsFromCloud:obsoleteRecordNames
+                            deletedCount:deletedCount + batchRecordNames.count
+                              completion:completion];
         }];
 }
 

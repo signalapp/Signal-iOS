@@ -7,9 +7,12 @@
 #import "OWSBackupIO.h"
 #import "OWSBackupImportJob.h"
 #import "Signal-Swift.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+
+@import CloudKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -60,6 +63,17 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
              SSKIncrementingIdFinder.collectionName,
              OWSPreferencesSignalDatabaseCollection,
     ];
+}
+
+typedef NS_ENUM(NSInteger, OWSBackupErrorCode) {
+    OWSBackupErrorCodeAssertionFailure = 0,
+};
+
+NSError *OWSBackupErrorWithDescription(NSString *description)
+{
+    return [NSError errorWithDomain:@"OWSBackupErrorDomain"
+                               code:OWSBackupErrorCodeAssertionFailure
+                           userInfo:@{ NSLocalizedDescriptionKey : description }];
 }
 
 // TODO: Observe Reachability.
@@ -131,6 +145,10 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
                                              selector:@selector(registrationStateDidChange)
                                                  name:RegistrationStateDidChangeNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(ckAccountChanged)
+                                                 name:CKAccountChangedNotification
+                                               object:nil];
 
     // We want to start a backup if necessary on app launch, but app launch is a
     // busy time and it's important to remain responsive, so wait a few seconds before
@@ -199,7 +217,7 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
     _backupExportState = OWSBackupState_InProgress;
 
     self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self recipientId:recipientId];
-    [self.backupExportJob startAsync];
+    [self.backupExportJob start];
 
     [self postDidChangeNotification];
 }
@@ -351,7 +369,7 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
         self.backupExportJob = nil;
     } else if (self.shouldHaveBackupExport && !self.backupExportJob) {
         self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self recipientId:recipientId];
-        [self.backupExportJob startAsync];
+        [self.backupExportJob start];
     }
 
     // Update the state flag.
@@ -403,6 +421,40 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
         }];
 }
 
+- (AnyPromise *)checkCanExportBackup
+{
+    return [self ensureCloudKitAccess];
+}
+
+- (AnyPromise *)ensureCloudKitAccess
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"");
+
+    AnyPromise * (^failWithUnexpectedError)(void) = ^{
+        NSError *error = [NSError errorWithDomain:OWSBackupErrorDomain
+                                             code:1
+                                         userInfo:@{
+                                             NSLocalizedDescriptionKey : NSLocalizedString(@"BACKUP_UNEXPECTED_ERROR",
+                                                 @"Error shown when backup fails due to an unexpected error.")
+                                         }];
+        return [AnyPromise promiseWithValue:error];
+    };
+
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        OWSLogError(@"Can't backup; not registered and ready.");
+        return failWithUnexpectedError();
+    }
+    NSString *_Nullable recipientId = self.tsAccountManager.localNumber;
+    if (recipientId.length < 1) {
+        OWSFailDebug(@"Can't backup; missing recipientId.");
+        return failWithUnexpectedError();
+    }
+
+    return [OWSBackupAPI ensureCloudKitAccessObjc];
+}
+
 - (void)checkCanImportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure
 {
     OWSAssertIsOnMainThread();
@@ -432,17 +484,16 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
         return failWithUnexpectedError();
     }
 
-    [OWSBackupAPI checkForManifestInCloudWithRecipientId:recipientId
-        success:^(BOOL value) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                success(value);
-            });
-        }
-        failure:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
+    [[OWSBackupAPI ensureCloudKitAccessObjc]
+            .thenInBackground(^{
+                return [OWSBackupAPI checkForManifestInCloudObjcWithRecipientId:recipientId];
+            })
+            .then(^(NSNumber *value) {
+                success(value.boolValue);
+            })
+            .catch(^(NSError *error) {
                 failure(error);
-            });
-        }];
+            }) retainUntilComplete];
 }
 
 - (void)tryToImportBackup
@@ -494,6 +545,15 @@ NSArray<NSString *> *MiscCollectionsToBackup(void)
 }
 
 - (void)registrationStateDidChange
+{
+    OWSAssertIsOnMainThread();
+
+    [self ensureBackupExportState];
+
+    [self postDidChangeNotification];
+}
+
+- (void)ckAccountChanged
 {
     OWSAssertIsOnMainThread();
 
