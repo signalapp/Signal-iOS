@@ -966,14 +966,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     private func buildAttachments() -> Promise<[SignalAttachment]> {
-        let promise = selectItemProviders().then {  [weak self] (itemProviders) -> Promise<[SignalAttachment]> in
+        return selectItemProviders().then {  [weak self] (itemProviders) -> Promise<[SignalAttachment]> in
             guard let strongSelf = self else {
                 let error = ShareViewControllerError.assertionError(description: "expired")
                 return Promise(error: error)
             }
 
             var loadPromises = [Promise<SignalAttachment>]()
-            for itemProvider in itemProviders {
+
+            for itemProvider in itemProviders.prefix(SignalAttachment.maxAttachmentsAllowed) {
                 let loadPromise = strongSelf.loadItemProvider(itemProvider: itemProvider)
                     .then({ (loadedItem) -> Promise<SignalAttachment> in
                         return strongSelf.buildAttachment(forLoadedItem: loadedItem)
@@ -982,15 +983,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 loadPromises.append(loadPromise)
             }
             return when(fulfilled: loadPromises)
-            }.map { (signalAttachments) -> [SignalAttachment] in
-                guard signalAttachments.count > 0 else {
-                    let error = ShareViewControllerError.assertionError(description: "no valid attachments")
-                    throw error
-                }
-                return signalAttachments
+        }.map { (signalAttachments) -> [SignalAttachment] in
+            guard signalAttachments.count > 0 else {
+                let error = ShareViewControllerError.assertionError(description: "no valid attachments")
+                throw error
             }
-        promise.retainUntilComplete()
-        return promise
+            return signalAttachments
+        }
     }
 
     // Some host apps (e.g. iOS Photos.app) sometimes auto-converts some video formats (e.g. com.apple.quicktime-movie)

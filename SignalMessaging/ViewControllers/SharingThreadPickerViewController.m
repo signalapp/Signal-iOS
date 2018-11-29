@@ -260,30 +260,33 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 #pragma mark - AttachmentApprovalViewControllerDelegate
 
-- (void)attachmentApproval:(AttachmentApprovalViewController *)approvalViewController
-     didApproveAttachments:(NSArray<SignalAttachment *> *)attachments
+- (void)attachmentApproval:(AttachmentApprovalViewController *_Nonnull)attachmentApproval
+     didApproveAttachments:(NSArray<SignalAttachment *> *_Nonnull)attachments
+               messageText:(NSString *_Nullable)messageText
 {
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
-        OWSAssertIsOnMainThread();
+    [self
+        tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
+            OWSAssertIsOnMainThread();
 
-        __block TSOutgoingMessage *outgoingMessage = nil;
-        // DURABLE CLEANUP - SAE uses non-durable sending to make sure the app is running long enough to complete
-        // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
-        // SAE runs as long as it needs.
-        // TODO ALBUMS - send album via SAE
-        outgoingMessage = [ThreadUtil sendMessageNonDurablyWithAttachments:attachments
-                                                                  inThread:self.thread
-                                                          quotedReplyModel:nil
-                                                             messageSender:self.messageSender
-                                                                completion:^(NSError *_Nullable error) {
-                                                                    sendCompletion(error, outgoingMessage);
-                                                                }];
+            __block TSOutgoingMessage *outgoingMessage = nil;
+            // DURABLE CLEANUP - SAE uses non-durable sending to make sure the app is running long enough to complete
+            // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
+            // SAE runs as long as it needs.
+            // TODO ALBUMS - send album via SAE
+            outgoingMessage = [ThreadUtil sendMessageNonDurablyWithAttachments:attachments
+                                                                      inThread:self.thread
+                                                                   messageBody:messageText
+                                                              quotedReplyModel:nil
+                                                                 messageSender:self.messageSender
+                                                                    completion:^(NSError *_Nullable error) {
+                                                                        sendCompletion(error, outgoingMessage);
+                                                                    }];
 
-        // This is necessary to show progress.
-        self.outgoingMessage = outgoingMessage;
-    }
-                 fromViewController:approvalViewController];
+            // This is necessary to show progress.
+            self.outgoingMessage = outgoingMessage;
+        }
+               fromViewController:attachmentApproval];
 }
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval

@@ -215,6 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)sendMessageNonDurablyWithAttachments:(NSArray<SignalAttachment *> *)attachments
                                                    inThread:(TSThread *)thread
+                                                messageBody:(nullable NSString *)messageBody
                                            quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                               messageSender:(OWSMessageSender *)messageSender
                                                  completion:(void (^_Nullable)(NSError *_Nullable error))completion
@@ -229,7 +230,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
     BOOL isVoiceMessage = (attachments.count == 1 && attachments.firstObject.isVoiceMessage);
-    NSString *_Nullable messageBody = (attachments.count == 1 ? attachments.firstObject.captionText : nil);
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                            inThread:thread
