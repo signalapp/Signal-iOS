@@ -1053,6 +1053,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
+    for (NSDictionary *deviceMessage in deviceMessages) {
+        NSNumber *_Nullable messageType = deviceMessage[@"type"];
+        OWSAssertDebug(messageType);
+        if (messageSend.isUDSend) {
+            OWSAssertDebug([messageType isEqualToNumber:@(TSUnidentifiedSenderMessageType)]);
+        } else {
+            OWSAssertDebug([messageType isEqualToNumber:@(TSEncryptedWhisperMessageType)] ||
+                [messageType isEqualToNumber:@(TSPreKeyWhisperMessageType)]);
+        }
+    }
+
     if (deviceMessages.count == 0) {
         // This might happen:
         //
