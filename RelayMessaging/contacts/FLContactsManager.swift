@@ -142,6 +142,10 @@ import RelayServiceKit
         NotificationCenter.default.removeObserver(self)
     }
     
+    @objc public func allTags() -> [FLTag] {
+        return FLTag.allObjectsInCollection() as! [FLTag]
+    }
+    
     @objc public func allRecipients() -> [RelayRecipient] {
         return RelayRecipient.allObjectsInCollection() as! [RelayRecipient]
     }
@@ -501,13 +505,11 @@ import RelayServiceKit
     @objc public func formattedDisplayName(forTagId tagId: String, font: UIFont) -> NSAttributedString? {
         
         if let aTag = self.tag(withId:tagId) {
-            let rawName = aTag.displaySlug
-            
-            let normalFontAttributes = [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: Theme.primaryColor]
-            
-            let attrName = NSAttributedString(string: rawName, attributes: normalFontAttributes as [NSAttributedStringKey : Any])
-            
-            return attrName
+            if let rawName = aTag.tagDescription {
+                let normalFontAttributes = [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: Theme.primaryColor]
+                let attrName = NSAttributedString(string: rawName, attributes: normalFontAttributes as [NSAttributedStringKey : Any])
+                return attrName
+            }
         }
         return nil
     }
