@@ -62,6 +62,16 @@ import PromiseKit
     // We wouldn't want to overwrite previous images until the entire backup export is
     // complete.
     @objc
+    public class func recordNameForEphemeralFile(recipientId: String,
+                                                 label: String) -> String {
+        return "\(recordNamePrefix(forRecipientId: recipientId))ephemeral-\(label)-\(NSUUID().uuidString)"
+    }
+
+    // "Ephemeral" files are specific to this backup export and will always need to
+    // be saved.  For example, a complete image of the database is exported each time.
+    // We wouldn't want to overwrite previous images until the entire backup export is
+    // complete.
+    @objc
     public class func saveEphemeralFileToCloudObjc(recipientId: String,
                                                    label: String,
                                                    fileUrl: URL) -> AnyPromise {
@@ -73,7 +83,7 @@ import PromiseKit
     public class func saveEphemeralFileToCloud(recipientId: String,
                                                label: String,
                                                fileUrl: URL) -> Promise<String> {
-        let recordName = "\(recordNamePrefix(forRecipientId: recipientId))ephemeral-\(label)-\(NSUUID().uuidString)"
+        let recordName = recordNameForEphemeralFile(recipientId: recipientId, label: label)
         return saveFileToCloud(fileUrl: fileUrl,
                                recordName: recordName,
                                recordType: signalBackupRecordType)
@@ -181,11 +191,10 @@ import PromiseKit
 
     @objc
     public class func saveFileToCloudObjc(fileUrl: URL,
-                                          recordName: String,
-                                          recordType: String) -> AnyPromise {
+                                          recordName: String) -> AnyPromise {
         return AnyPromise(saveFileToCloud(fileUrl: fileUrl,
                                           recordName: recordName,
-                                          recordType: recordType))
+                                          recordType: signalBackupRecordType))
     }
 
     public class func saveFileToCloud(fileUrl: URL,
@@ -216,7 +225,7 @@ import PromiseKit
 
         return Promise { resolver in
             let saveOperation = CKModifyRecordsOperation(recordsToSave: [record ], recordIDsToDelete: nil)
-            saveOperation.modifyRecordsCompletionBlock = { (records, recordIds, error) in
+            saveOperation.modifyRecordsCompletionBlock = { (_, _, error) in
 
                 let outcome = outcomeForCloudKitError(error: error,
                                                       remainingRetries: remainingRetries,
@@ -253,6 +262,99 @@ import PromiseKit
                 }
             }
             saveOperation.isAtomic = false
+
+            // These APIs are only available in iOS 9.3 and later.
+            if #available(iOS 9.3, *) {
+                saveOperation.isLongLived = true
+                saveOperation.qualityOfService = .background
+            }
+
+            database().add(saveOperation)
+        }
+    }
+
+    @objc
+    public class func record(forFileUrl fileUrl: URL,
+                             recordName: String) -> CKRecord {
+        let recordType = signalBackupRecordType
+        let recordID = CKRecordID(recordName: recordName)
+        let record = CKRecord(recordType: recordType, recordID: recordID)
+        let asset = CKAsset(fileURL: fileUrl)
+        record[payloadKey] = asset
+
+        return record
+    }
+
+    @objc
+    public class func saveRecordsToCloudObjc(records: [CKRecord]) -> AnyPromise {
+        return AnyPromise(saveRecordsToCloud(records: records))
+    }
+
+    public class func saveRecordsToCloud(records: [CKRecord]) -> Promise<Void> {
+        return saveRecordsToCloud(records: records,
+                                  remainingRetries: maxRetries)
+    }
+
+    private class func saveRecordsToCloud(records: [CKRecord],
+                                          remainingRetries: Int) -> Promise<Void> {
+
+        let recordNames = records.map { (record) in
+            return record.recordID.recordName
+        }
+        Logger.verbose("recordNames \(recordNames)")
+
+        return Promise { resolver in
+            let saveOperation = CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: nil)
+            saveOperation.modifyRecordsCompletionBlock = { (savedRecords: [CKRecord]?, _, error) in
+
+                let retry = {
+                    // Only retry records which didn't already succeed.
+                    var savedRecordNames = [String]()
+                    if let savedRecords = savedRecords {
+                        savedRecordNames = savedRecords.map { (record) in
+                            return record.recordID.recordName
+                        }
+                    }
+                    let retryRecords = records.filter({ (record) in
+                        return !savedRecordNames.contains(record.recordID.recordName)
+                    })
+
+                    saveRecordsToCloud(records: retryRecords,
+                                       remainingRetries: remainingRetries - 1)
+                        .done { _ in
+                            resolver.fulfill(())
+                        }.catch { (error) in
+                            resolver.reject(error)
+                        }.retainUntilComplete()
+                }
+
+                let outcome = outcomeForCloudKitError(error: error,
+                                                      remainingRetries: remainingRetries,
+                                                      label: "Save Record")
+                switch outcome {
+                case .success:
+                    resolver.fulfill(())
+                case .failureDoNotRetry(let outcomeError):
+                    resolver.reject(outcomeError)
+                case .failureRetryAfterDelay(let retryDelay):
+                    DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
+                        retry()
+                    })
+                case .failureRetryWithoutDelay:
+                    DispatchQueue.global().async {
+                        retry()
+                    }
+                case .unknownItem:
+                    owsFailDebug("unexpected CloudKit response.")
+                    resolver.reject(invalidServiceResponseError())
+                }
+            }
+            saveOperation.isAtomic = false
+            saveOperation.savePolicy = .allKeys
+
+            // TODO: use perRecordProgressBlock and perRecordCompletionBlock.
+//            open var perRecordProgressBlock: ((CKRecord, Double) -> Void)?
+//            open var perRecordCompletionBlock: ((CKRecord, Error?) -> Void)?
 
             // These APIs are only available in iOS 9.3 and later.
             if #available(iOS 9.3, *) {

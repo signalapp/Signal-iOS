@@ -18,6 +18,8 @@
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSThread.h>
 
+@import CloudKit;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSAttachmentExport;
@@ -738,33 +740,39 @@ NS_ASSUME_NONNULL_BEGIN
 // This method returns YES IFF "work was done and there might be more work to do".
 - (AnyPromise *)saveDatabaseFilesToCloud
 {
-    AnyPromise *promise = [AnyPromise promiseWithValue:@(1)];
+    //    AnyPromise *promise = [AnyPromise promiseWithValue:@(1)];
 
-    // We need to preserve ordering of database shards.
-    for (OWSBackupExportItem *item in self.unsavedDatabaseItems) {
+    if (self.isComplete) {
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+    }
+
+    NSArray<OWSBackupExportItem *> *items = [self.unsavedDatabaseItems copy];
+    NSMutableArray<CKRecord *> *records = [NSMutableArray new];
+    for (OWSBackupExportItem *item in items) {
         OWSAssertDebug(item.encryptedItem.filePath.length > 0);
 
-        promise
-            = promise
-                  .thenInBackground(^{
-                      if (self.isComplete) {
-                          return [AnyPromise
-                              promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
-                      }
-
-                      return [OWSBackupAPI
-                          saveEphemeralFileToCloudObjcWithRecipientId:self.recipientId
-                                                                label:@"database"
-                                                              fileUrl:[NSURL
-                                                                          fileURLWithPath:item.encryptedItem.filePath]];
-                  })
-                  .thenInBackground(^(NSString *recordName) {
-                      item.recordName = recordName;
-                      [self.savedDatabaseItems addObject:item];
-                  });
+        NSString *recordName =
+            [OWSBackupAPI recordNameForEphemeralFileWithRecipientId:self.recipientId label:@"database"];
+        CKRecord *record =
+            [OWSBackupAPI recordForFileUrl:[NSURL fileURLWithPath:item.encryptedItem.filePath] recordName:recordName];
+        [records addObject:record];
     }
-    [self.unsavedDatabaseItems removeAllObjects];
-    return promise;
+
+    // TODO: Expose progress.
+    return [OWSBackupAPI saveRecordsToCloudObjcWithRecords:records].thenInBackground(^(NSString *recordName) {
+        OWSAssertDebug(items.count == records.count);
+        NSUInteger count = MIN(items.count, records.count);
+        for (NSUInteger i = 0; i < count; i++) {
+            OWSBackupExportItem *item = items[i];
+            CKRecord *record = records[i];
+
+            OWSAssertDebug(record.recordID.recordName.length > 0);
+            item.recordName = record.recordID.recordName;
+        }
+
+        [self.savedDatabaseItems addObjectsFromArray:items];
+        [self.unsavedDatabaseItems removeObjectsInArray:items];
+    });
 }
 
 // This method returns YES IFF "work was done and there might be more work to do".
@@ -907,15 +915,16 @@ NS_ASSUME_NONNULL_BEGIN
     OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
     exportItem.encryptedItem = encryptedItem;
 
-    return [OWSBackupAPI saveEphemeralFileToCloudObjcWithRecipientId:self.recipientId
-                                                               label:@"local-profile-avatar"
-                                                             fileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]]
-        .thenInBackground(^(NSString *recordName) {
-            exportItem.recordName = recordName;
-            self.localProfileAvatarItem = exportItem;
+    NSString *recordName =
+        [OWSBackupAPI recordNameForEphemeralFileWithRecipientId:self.recipientId label:@"local-profile-avatar"];
+    CKRecord *record =
+        [OWSBackupAPI recordForFileUrl:[NSURL fileURLWithPath:encryptedItem.filePath] recordName:recordName];
+    return [OWSBackupAPI saveRecordsToCloudObjcWithRecords:@[ record ]].thenInBackground(^{
+        exportItem.recordName = recordName;
+        self.localProfileAvatarItem = exportItem;
 
-            return [AnyPromise promiseWithValue:@(1)];
-        });
+        return [AnyPromise promiseWithValue:@(1)];
+    });
 }
 
 - (AnyPromise *)saveManifestFileToCloud
