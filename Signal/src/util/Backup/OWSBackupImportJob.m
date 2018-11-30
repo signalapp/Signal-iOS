@@ -134,15 +134,19 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     OWSAssertDebug(self.databaseItems);
     OWSAssertDebug(self.attachmentsItems);
 
+    // These items should be downloaded immediately.
     NSMutableArray<OWSBackupFragment *> *allItems = [NSMutableArray new];
     [allItems addObjectsFromArray:self.databaseItems];
     if (self.manifest.localProfileAvatarItem) {
         [allItems addObject:self.manifest.localProfileAvatarItem];
     }
-    // Attachments can be downloaded later;
-    //
-    NSArray<OWSBackupFragment *> *eagerItems = [allItems copy];
 
+    // Make a copy of the blockingItems before we add
+    // the attachment items.
+    NSArray<OWSBackupFragment *> *blockingItems = [allItems copy];
+
+    // Attachment items can be downloaded later;
+    // they will can be lazy-restored.
     [allItems addObjectsFromArray:self.attachmentsItems];
 
     // Record metadata for all items, so that we can re-use them in incremental backups after the restore.
@@ -152,7 +156,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         }
     }];
 
-    return [self downloadFilesFromCloud:eagerItems]
+    return [self downloadFilesFromCloud:blockingItems]
         .thenInBackground(^{
             return [self restoreDatabase];
         })
@@ -253,7 +257,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 - (AnyPromise *)restoreLocalProfile
 {
-    OWSLogVerbose(@": %zd", self.attachmentsItems.count);
+    OWSLogVerbose(@"");
 
     if (self.isComplete) {
         // Job was aborted.
@@ -266,12 +270,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     if (self.manifest.localProfileAvatarItem) {
         OWSBackupFragment *item = self.manifest.localProfileAvatarItem;
         if (item.recordName.length < 1) {
-            OWSLogError(@"local profile avatar was not downloaded.");
-            // Ignore errors related to local profile.
-            return [AnyPromise promiseWithValue:@(1)];
-        }
-        if (!item.uncompressedDataLength || item.uncompressedDataLength.unsignedIntValue < 1) {
-            OWSLogError(@"database snapshot missing size.");
+            OWSLogError(@"item was not downloaded.");
             // Ignore errors related to local profile.
             return [AnyPromise promiseWithValue:@(1)];
         }
@@ -294,6 +293,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             localProfileAvatar = image;
         }
     }
+
+    OWSLogVerbose(@"local profile name: %@, avatar: %d", localProfileName, localProfileAvatar != nil);
 
     if (localProfileName.length > 0 || localProfileAvatar) {
         AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {

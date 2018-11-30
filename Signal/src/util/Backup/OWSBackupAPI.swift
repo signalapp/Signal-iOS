@@ -63,14 +63,17 @@ import PromiseKit
     // complete.
     @objc
     public class func saveEphemeralFileToCloudObjc(recipientId: String,
+                                                   label: String,
                                                    fileUrl: URL) -> AnyPromise {
         return AnyPromise(saveEphemeralFileToCloud(recipientId: recipientId,
+                                                   label: label,
                                                    fileUrl: fileUrl))
     }
 
     public class func saveEphemeralFileToCloud(recipientId: String,
+                                               label: String,
                                                fileUrl: URL) -> Promise<String> {
-        let recordName = "\(recordNamePrefix(forRecipientId: recipientId))ephemeralFile-\(NSUUID().uuidString)"
+        let recordName = "\(recordNamePrefix(forRecipientId: recipientId))ephemeral-\(label)-\(NSUUID().uuidString)"
         return saveFileToCloud(fileUrl: fileUrl,
                                recordName: recordName,
                                recordType: signalBackupRecordType)

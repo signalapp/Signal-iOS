@@ -757,8 +757,9 @@ NS_ASSUME_NONNULL_BEGIN
 
                       return [OWSBackupAPI
                           saveEphemeralFileToCloudObjcWithRecipientId:self.recipientId
-                                                                      fileUrl:[NSURL fileURLWithPath:item.encryptedItem
-                                                                                                         .filePath]];
+                                                                label:@"database"
+                                                              fileUrl:[NSURL
+                                                                          fileURLWithPath:item.encryptedItem.filePath]];
                   })
                   .thenInBackground(^(NSString *recordName) {
                       item.recordName = recordName;
@@ -908,6 +909,7 @@ NS_ASSUME_NONNULL_BEGIN
     exportItem.encryptedItem = encryptedItem;
 
     return [OWSBackupAPI saveEphemeralFileToCloudObjcWithRecipientId:self.recipientId
+                                                               label:@"local-profile-avatar"
                                                              fileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]]
         .thenInBackground(^(NSString *recordName) {
             exportItem.recordName = recordName;
