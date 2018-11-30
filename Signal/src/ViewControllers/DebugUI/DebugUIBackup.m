@@ -77,6 +77,10 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIBackup logBackupMetadataCache];
                                      }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Lazy Restore Attachments"
+                                     actionBlock:^{
+                                         [AppEnvironment.shared.backupLazyRestore runIfNecessary];
+                                     }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }

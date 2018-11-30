@@ -54,6 +54,15 @@ public class BackupLazyRestore: NSObject {
     private let backgroundQueue = DispatchQueue.global(qos: .background)
 
     @objc
+    public func clearCompleteAndRunIfNecessary() {
+        AssertIsOnMainThread()
+
+        isComplete = false
+
+        runIfNecessary()
+    }
+
+    @objc
     public func runIfNecessary() {
         AssertIsOnMainThread()
 
