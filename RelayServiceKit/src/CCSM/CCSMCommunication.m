@@ -21,16 +21,11 @@
 
 #define FLTagMathPath @"/v1/directory/user/"
 
+#define CCSMHomeURL [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CCSM_Home_URL"]
+
 // TODO: Bring these in
 //@import Fabric;
 //@import Crashlytics;
-
-@interface CCSMCommManager ()
-
-@property (nullable, nonatomic, strong) NSString *userAwaitingVerification;
-@property (nonatomic, strong) NSArray *controlTags;
-
-@end
 
 @implementation CCSMCommManager
 
@@ -41,8 +36,8 @@
 {
     NSString *lowerUsername = userName.lowercaseString;
     NSString *lowerOrgname = orgName.lowercaseString;
-    
-    NSString *urlString = [NSString stringWithFormat:@"%@/v1/login/send/%@/%@/?format=json", CCSMEnvironment.sharedInstance.ccsmURLString, lowerOrgname, lowerUsername];
+
+    NSString *urlString = [NSString stringWithFormat:@"%@/v1/login/send/%@/%@/?format=json", CCSMHomeURL, lowerOrgname, lowerUsername];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:10];
     NSURLSession *sharedSession = NSURLSession.sharedSession;
@@ -111,7 +106,7 @@
     NSString *lowerOrgname = orgName.lowercaseString;
 
     // Make URL
-    NSString *urlString = [NSString stringWithFormat:@"%@/v1/password/reset/", CCSMEnvironment.sharedInstance.ccsmURLString];
+    NSString *urlString = [NSString stringWithFormat:@"%@/v1/password/reset/", CCSMHomeURL];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     
     // Make Request
@@ -173,7 +168,7 @@
                     completion:(void (^)(BOOL success, NSError *error))completionBlock
 {
     // Make URL
-    NSString *urlString = [NSString stringWithFormat:@"%@/v1/login/", CCSMEnvironment.sharedInstance.ccsmURLString];
+    NSString *urlString = [NSString stringWithFormat:@"%@/v1/login/", CCSMHomeURL];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
 
     // Make Request
@@ -237,7 +232,7 @@
                                       failure:(void (^_Nullable)(NSError * _Nullable error))failureBlock
 {
     NSString *sessionToken = [CCSMStorage.sharedInstance getSessionToken];
-    NSString *urlString = [NSString stringWithFormat:@"%@/v1/api-token-refresh/", CCSMEnvironment.sharedInstance.ccsmURLString];
+    NSString *urlString = [NSString stringWithFormat:@"%@/v1/api-token-refresh/", CCSMHomeURL];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -419,7 +414,7 @@
     
     NSMutableDictionary *users = [NSMutableDictionary new];
     
-    [self updateAllTheThings:[NSString stringWithFormat:@"%@/v1/user/", CCSMEnvironment.sharedInstance.ccsmURLString]
+    [self updateAllTheThings:[NSString stringWithFormat:@"%@/v1/user/", CCSMHomeURL]
                   collection:users
                      success:^{
                          DDLogDebug(@"Refreshed all users.");
@@ -435,7 +430,7 @@
 {
     NSMutableDictionary *tags = [NSMutableDictionary new];
     
-    [self updateAllTheThings:[NSString stringWithFormat:@"%@/v1/tag/", CCSMEnvironment.sharedInstance.ccsmURLString]
+    [self updateAllTheThings:[NSString stringWithFormat:@"%@/v1/tag/", CCSMHomeURL]
                   collection:tags
                      success:^{
                          NSMutableDictionary *holdingDict = [NSMutableDictionary new];
@@ -547,7 +542,7 @@
 +(void)checkAccountRegistrationWithCompletion:(void (^)(NSDictionary *response, NSError *error))completionBlock
 {
     // Check for other devices...
-    NSString *tmpurlString = [NSString stringWithFormat:@"%@/v1/provision/account", CCSMEnvironment.sharedInstance.ccsmURLString];
+    NSString *tmpurlString = [NSString stringWithFormat:@"%@/v1/provision/account", CCSMHomeURL];
     [self getThing:tmpurlString
            success:^(NSDictionary *payload)
      {
@@ -574,7 +569,7 @@
 +(void)registerAccountWithParameters:(NSDictionary *)parameters
                       completion:(void (^)(NSDictionary *response, NSError *error))completionBlock
 {
-    NSString *urlString = [NSString stringWithFormat:@"%@/v1/provision-proxy/", CCSMEnvironment.sharedInstance.ccsmURLString];
+    NSString *urlString = [NSString stringWithFormat:@"%@/v1/provision-proxy/", CCSMHomeURL];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSMutableURLRequest *request = [self authRequestWithURL:url];
     [request setHTTPMethod:@"PUT"];
@@ -633,7 +628,7 @@
         return;
     }
     
-    NSString *urlString = [NSString stringWithFormat:@"%@/v1/provision/request", CCSMEnvironment.sharedInstance.ccsmURLString];
+    NSString *urlString = [NSString stringWithFormat:@"%@/v1/provision/request", CCSMHomeURL];
     NSMutableURLRequest *request = [self authRequestWithURL:[NSURL URLWithString:urlString]];
     request.HTTPMethod = @"POST";
     NSData *bodyData = [NSJSONSerialization dataWithJSONObject:payload options:0 error:nil];
@@ -738,7 +733,7 @@
     }
 
     // URL...
-    NSString *urlString = [NSString stringWithFormat:@"%@/v1/join/", CCSMEnvironment.sharedInstance.ccsmURLString];
+    NSString *urlString = [NSString stringWithFormat:@"%@/v1/join/", CCSMHomeURL];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
 
     // Build request...
@@ -820,7 +815,7 @@
                                    };
         
         
-        NSString *urlString = [NSString stringWithFormat:@"%@/v1/join/", CCSMEnvironment.sharedInstance.ccsmURLString];
+        NSString *urlString = [NSString stringWithFormat:@"%@/v1/join/", CCSMHomeURL];
         NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -923,10 +918,7 @@
 
 +(NSMutableURLRequest *)tagMathRequestForString:(NSString *)lookupString
 {
-//    NSString *homeURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CCSM_Home_URL"];
-    // FIXME: Pull from appropriate location
-    NSString *homeURLString = CCSMEnvironment.sharedInstance.ccsmURLString;
-    NSString *urlString = [NSString stringWithFormat:@"%@%@?expression=%@", homeURLString, FLTagMathPath, lookupString];
+    NSString *urlString = [NSString stringWithFormat:@"%@%@?expression=%@", CCSMHomeURL, FLTagMathPath, lookupString];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSMutableURLRequest *request = [self authRequestWithURL:url];
     [request setHTTPMethod:@"GET"];

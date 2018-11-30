@@ -73,5 +73,7 @@
 	<false/>
 	<key>AppGroupPath</key>
 	<string>group.io.forsta.relay</string>
+	<key>CCSM_Home_URL</key>
+	<string>https://api.forsta.io</string>
 </dict>
 </plist>

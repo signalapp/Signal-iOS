@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CCSM_Home_URL</key>
-	<string>https://api.forsta.io</string>
+	<string>https://ccsm-dev-api.forsta.io</string>
 	<key>AppGroupPath</key>
 	<string>group.io.forsta.relay-dev</string>
 	<key>CFBundleDevelopmentRegion</key>
