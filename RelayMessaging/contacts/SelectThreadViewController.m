@@ -235,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 return;
                             }
 
-                            // Blocking not yet implemented in Forst world
+                            // Blocking not yet implemented in Forsta world
 //                            if ([thread isKindOfClass:[TSThread class]]) {
 //                                BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
 //                                if (isBlocked && ![strongSelf.selectThreadViewDelegate canSelectBlockedContact]) {
