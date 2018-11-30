@@ -383,8 +383,6 @@ NS_ASSUME_NONNULL_BEGIN
                 return [self cleanUp];
             })
             .thenInBackground(^{
-                [self.backup logBackupMetadataCache:self.dbConnection];
-
                 [self succeed];
             })
             .catch(^(NSError *error) {
