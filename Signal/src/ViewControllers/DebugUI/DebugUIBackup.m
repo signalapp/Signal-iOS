@@ -96,9 +96,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(success);
 
     NSString *recipientId = self.tsAccountManager.localNumber;
-    [[self.backup ensureCloudKitAccess].then(^{
-        return
-            [OWSBackupAPI saveTestFileToCloudObjcWithRecipientId:recipientId fileUrl:[NSURL fileURLWithPath:filePath]];
+    NSString *recordName = [OWSBackupAPI recordNameForTestFileWithRecipientId:recipientId];
+    CKRecord *record = [OWSBackupAPI recordForFileUrl:[NSURL fileURLWithPath:filePath] recordName:recordName];
+
+    [[self.backup ensureCloudKitAccess].thenInBackground(^{
+        return [OWSBackupAPI saveRecordsToCloudObjcWithRecords:@[ record ]];
     }) retainUntilComplete];
 }
 
