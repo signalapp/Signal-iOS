@@ -873,8 +873,6 @@ NS_ASSUME_NONNULL_BEGIN
                 [backupFragment saveWithTransaction:transaction];
             }];
 
-            [self.backup logBackupMetadataCache:self.dbConnection];
-
             OWSLogVerbose(
                 @"saved attachment: %@ as %@", attachmentExport.attachmentFilePath, attachmentExport.relativeFilePath);
         })
