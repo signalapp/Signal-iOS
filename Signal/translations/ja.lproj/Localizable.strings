@@ -522,7 +522,7 @@
 "CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "メールを送る";
 
 /* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "名前のない連絡先";
+"CONTACT_WITHOUT_NAME" = "無名の連絡先";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "会話設定";
@@ -912,6 +912,9 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "未登録ユーザー：%@";
 
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "あとで";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "多数のエラーが起きました。あとで再送信してください。";
 
@@ -1081,7 +1084,7 @@
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "連絡先へのアクセスを許可する";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "友だちをSignalに招待する";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "友だちをSignalに招待";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "検索";
@@ -2259,7 +2262,7 @@
 "UNLINKING_FAILED_ALERT_TITLE" = "端末の追加を解除できませんでした";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "名無しの端末";
+"UNNAMED_DEVICE" = "無名のデバイス";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "登録解除に失敗しました";
@@ -2284,6 +2287,9 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "スワイプで電話に出る";
+
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "通知音を相手ごとに設定できるようになりました。";
@@ -2311,9 +2317,6 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "既読確認を導入";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "入力中アイコンを有効化";
 
 /* Body text for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "メッセージが入力中であることを表示します。";
