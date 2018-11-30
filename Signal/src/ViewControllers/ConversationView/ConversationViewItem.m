@@ -561,6 +561,18 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         return;
     }
 
+    // Check for quoted replies _before_ media album handling,
+    // since that logic may exit early.
+    if (message.quotedMessage) {
+        self.quotedReply =
+            [OWSQuotedReplyModel quotedReplyWithQuotedMessage:message.quotedMessage transaction:transaction];
+
+        if (self.quotedReply.body.length > 0) {
+            self.displayableQuotedText =
+                [self displayableQuotedTextForText:self.quotedReply.body interactionId:message.uniqueId];
+        }
+    }
+
     NSArray<TSAttachment *> *attachments = [message attachmentsWithTransaction:transaction];
     if ([message isMediaAlbumWithTransaction:transaction]) {
         OWSAssertDebug(attachments.count > 0);
@@ -641,16 +653,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         OWSLogWarn(@"Treating unknown message as empty text message: %@ %llu", message.class, message.timestamp);
         self.messageCellType = OWSMessageCellType_TextMessage;
         self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
-    }
-
-    if (message.quotedMessage) {
-        self.quotedReply =
-            [OWSQuotedReplyModel quotedReplyWithQuotedMessage:message.quotedMessage transaction:transaction];
-
-        if (self.quotedReply.body.length > 0) {
-            self.displayableQuotedText =
-                [self displayableQuotedTextForText:self.quotedReply.body interactionId:message.uniqueId];
-        }
     }
 }
 
