@@ -141,13 +141,16 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     // These items should be downloaded immediately.
     NSMutableArray<OWSBackupFragment *> *allItems = [NSMutableArray new];
     [allItems addObjectsFromArray:self.databaseItems];
+
+    // Make a copy of the blockingItems before we add
+    // the optional items.
+    NSArray<OWSBackupFragment *> *blockingItems = [allItems copy];
+
+    // Local profile avatars are optional in the sense that if their
+    // download fails, we want to proceed with the import.
     if (self.manifest.localProfileAvatarItem) {
         [allItems addObject:self.manifest.localProfileAvatarItem];
     }
-
-    // Make a copy of the blockingItems before we add
-    // the attachment items.
-    NSArray<OWSBackupFragment *> *blockingItems = [allItems copy];
 
     // Attachment items can be downloaded later;
     // they will can be lazy-restored.
@@ -224,13 +227,35 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     AnyPromise *promise = [AnyPromise promiseWithValue:@(1)];
     for (OWSBackupFragment *item in items) {
-        promise = promise.thenInBackground(^{
-            CGFloat progress = (recordCount > 0 ? ((recordCount - items.count) / (CGFloat)recordCount) : 0.f);
-            [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_DOWNLOAD",
-                                                    @"Indicates that the backup import data is being downloaded.")
-                                       progress:@(progress)];
-        });
+        promise = promise
+                      .thenInBackground(^{
+                          CGFloat progress
+                              = (recordCount > 0 ? ((recordCount - items.count) / (CGFloat)recordCount) : 0.f);
+                          [self updateProgressWithDescription:
+                                    NSLocalizedString(@"BACKUP_IMPORT_PHASE_DOWNLOAD",
+                                        @"Indicates that the backup import data is being downloaded.")
+                                                     progress:@(progress)];
+                      })
+                      .thenInBackground(^{
+                          return [self downloadFileFromCloud:item ignoreErrors:NO];
+                      });
+    }
 
+    return promise;
+}
+
+- (AnyPromise *)downloadFileFromCloud:(OWSBackupFragment *)item ignoreErrors:(BOOL)ignoreErrors
+{
+    OWSAssertDebug(item);
+
+    OWSLogVerbose(@"");
+
+    if (self.isComplete) {
+        // Job was aborted.
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
+    }
+
+    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         // TODO: Use a predictable file path so that multiple "import backup" attempts
         // will leverage successful file downloads from previous attempts.
         //
@@ -243,20 +268,25 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
             item.downloadFilePath = tempFilePath;
 
-            continue;
+            return resolve(@(1));
         }
 
-        promise = promise.thenInBackground(^{
-            return [OWSBackupAPI downloadFileFromCloudObjcWithRecordName:item.recordName
-                                                               toFileUrl:[NSURL fileURLWithPath:tempFilePath]]
-                .thenInBackground(^{
-                    [OWSFileSystem protectFileOrFolderAtPath:tempFilePath];
-                    item.downloadFilePath = tempFilePath;
-                });
-        });
-    }
+        [OWSBackupAPI downloadFileFromCloudObjcWithRecordName:item.recordName
+                                                    toFileUrl:[NSURL fileURLWithPath:tempFilePath]]
+            .thenInBackground(^{
+                [OWSFileSystem protectFileOrFolderAtPath:tempFilePath];
+                item.downloadFilePath = tempFilePath;
 
-    return promise;
+                resolve(@(1));
+            })
+            .catchInBackground(^(NSError *error) {
+                if (ignoreErrors) {
+                    resolve(@(1));
+                } else {
+                    resolve(error);
+                }
+            });
+    }];
 }
 
 - (AnyPromise *)restoreLocalProfile
@@ -268,53 +298,84 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
     }
 
-    NSString *_Nullable localProfileName = self.manifest.localProfileName;
-    UIImage *_Nullable localProfileAvatar = nil;
+    AnyPromise *promise = [AnyPromise promiseWithValue:@(1)];
 
     if (self.manifest.localProfileAvatarItem) {
-        OWSBackupFragment *item = self.manifest.localProfileAvatarItem;
-        if (item.recordName.length < 1) {
-            OWSLogError(@"item was not downloaded.");
-            // Ignore errors related to local profile.
-            return [AnyPromise promiseWithValue:@(1)];
-        }
-
-        @autoreleasepool {
-            NSData *_Nullable data =
-                [self.backupIO decryptFileAsData:item.downloadFilePath encryptionKey:item.encryptionKey];
-            if (!data) {
-                OWSLogError(@"could not decrypt local profile avatar.");
-                // Ignore errors related to local profile.
-                return [AnyPromise promiseWithValue:@(1)];
-            }
-            // TODO: Verify that we're not compressing the profile avatar data.
-            UIImage *_Nullable image = [UIImage imageWithData:data];
-            if (!image) {
-                OWSLogError(@"could not decrypt local profile avatar.");
-                // Ignore errors related to local profile.
-                return [AnyPromise promiseWithValue:@(1)];
-            }
-            localProfileAvatar = image;
-        }
+        promise = promise.thenInBackground(^{
+            return [self downloadFileFromCloud:self.manifest.localProfileAvatarItem ignoreErrors:YES];
+        });
     }
+
+    promise = promise.thenInBackground(^{
+        return [self applyLocalProfile];
+    });
+    return promise;
+}
+
+- (AnyPromise *)applyLocalProfile
+{
+    OWSLogVerbose(@"");
+
+    if (self.isComplete) {
+        // Job was aborted.
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
+    }
+
+    NSString *_Nullable localProfileName = self.manifest.localProfileName;
+    UIImage *_Nullable localProfileAvatar = [self tryToLoadLocalProfileAvatar];
 
     OWSLogVerbose(@"local profile name: %@, avatar: %d", localProfileName, localProfileAvatar != nil);
 
-    if (localProfileName.length > 0 || localProfileAvatar) {
-        AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-            [self.profileManager updateLocalProfileName:localProfileName
-                avatarImage:localProfileAvatar
-                success:^{
-                    resolve(@(1));
-                }
-                failure:^{
-                    // Ignore errors related to local profile.
-                    resolve(@(1));
-                }];
-        }];
-        return promise;
-    } else {
+    if (localProfileName.length < 1 && !localProfileAvatar) {
         return [AnyPromise promiseWithValue:@(1)];
+    }
+
+    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        [self.profileManager updateLocalProfileName:localProfileName
+            avatarImage:localProfileAvatar
+            success:^{
+                resolve(@(1));
+            }
+            failure:^{
+                // Ignore errors related to local profile.
+                resolve(@(1));
+            }];
+    }];
+}
+
+- (nullable UIImage *)tryToLoadLocalProfileAvatar
+{
+    if (!self.manifest.localProfileAvatarItem) {
+        return nil;
+    }
+    if (!self.manifest.localProfileAvatarItem.downloadFilePath) {
+        // Download of the avatar failed.
+        // We can safely ignore errors related to local profile.
+        OWSLogError(@"local profile avatar was not downloaded.");
+        return nil;
+    }
+    OWSBackupFragment *item = self.manifest.localProfileAvatarItem;
+    if (item.recordName.length < 1) {
+        OWSFailDebug(@"item missing record name.");
+        return nil;
+    }
+
+    @autoreleasepool {
+        NSData *_Nullable data =
+            [self.backupIO decryptFileAsData:item.downloadFilePath encryptionKey:item.encryptionKey];
+        if (!data) {
+            OWSLogError(@"could not decrypt local profile avatar.");
+            // Ignore errors related to local profile.
+            return nil;
+        }
+        // TODO: Verify that we're not compressing the profile avatar data.
+        UIImage *_Nullable image = [UIImage imageWithData:data];
+        if (!image) {
+            OWSLogError(@"could not decrypt local profile avatar.");
+            // Ignore errors related to local profile.
+            return nil;
+        }
+        return image;
     }
 }
 
