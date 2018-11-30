@@ -134,8 +134,23 @@ import PromiseKit
     }
 
     public class func saveRecordsToCloud(records: [CKRecord]) -> Promise<Void> {
-        return saveRecordsToCloud(records: records,
-                                  remainingRetries: maxRetries)
+
+        var remainder = records
+        var promise = Promise.value(())
+        // CloudKit's internal limit is 400, but I haven't found a constant for this.
+        let kMaxBatchSize = 100
+        while remainder.count > 0 {
+            let batch = Array(remainder[0..<kMaxBatchSize])
+            remainder = Array(remainder[kMaxBatchSize..<remainder.count])
+            promise = promise.then(on: DispatchQueue.global()) { _ in
+                return saveRecordsToCloud(records: batch,
+                                          remainingRetries: maxRetries)
+            }.then(on: DispatchQueue.global()) { _ -> Promise<Void> in
+                Logger.verbose("Saved batch: \(batch.count)")
+                return Promise.value(())
+            }
+        }
+        return promise
     }
 
     private class func saveRecordsToCloud(records: [CKRecord],
@@ -144,7 +159,7 @@ import PromiseKit
         let recordNames = records.map { (record) in
             return record.recordID.recordName
         }
-        Logger.verbose("recordNames \(recordNames)")
+        Logger.verbose("recordNames[\(recordNames.count)] \(recordNames[0..<10])...")
 
         return Promise { resolver in
             let saveOperation = CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: nil)
@@ -173,7 +188,7 @@ import PromiseKit
 
                 let outcome = outcomeForCloudKitError(error: error,
                                                       remainingRetries: remainingRetries,
-                                                      label: "Save Record")
+                                                      label: "Save Records[\(recordNames.count)]")
                 switch outcome {
                 case .success:
                     resolver.fulfill(())
