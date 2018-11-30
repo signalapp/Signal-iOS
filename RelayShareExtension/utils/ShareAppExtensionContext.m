@@ -142,7 +142,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)statusBarHeight
 {
-    OWSFail(@"%@ in %s unexpected for share extension", self.logTag, __PRETTY_FUNCTION__);
     return 20;
 }
 

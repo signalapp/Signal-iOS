@@ -13,7 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSUserDefaults *)appUserDefaults
 {
-    return [[NSUserDefaults alloc] initWithSuiteName:CCSMEnvironment.sharedInstance.appGroupIdString];
+    NSString *suiteName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"AppGroupPath"];
+//    NSString *suiteName = CCSMEnvironment.sharedInstance.appGroupIdString;
+    return [[NSUserDefaults alloc] initWithSuiteName:suiteName];
 }
 
 + (void)migrateToSharedUserDefaults

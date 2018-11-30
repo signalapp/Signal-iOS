@@ -194,18 +194,18 @@ NSString *const CCSMStorageKeyTSServerURL = @"TSServerURL";
 
 @end
 
-@implementation CCSMEnvironment
-
-+ (instancetype)sharedInstance
-{
-    static dispatch_once_t onceToken;
-    static id sharedInstance = nil;
-    dispatch_once(&onceToken, ^{
-        sharedInstance = [[self alloc] init];
-    });
-    
-    return sharedInstance;
-}
-
-
-@end
+//@implementation CCSMEnvironment
+//
+//+ (instancetype)sharedInstance
+//{
+//    static dispatch_once_t onceToken;
+//    static id sharedInstance = nil;
+//    dispatch_once(&onceToken, ^{
+//        sharedInstance = [[self alloc] init];
+//    });
+//    
+//    return sharedInstance;
+//}
+//
+//
+//@end

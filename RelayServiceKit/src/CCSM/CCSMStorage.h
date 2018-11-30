@@ -52,14 +52,14 @@ extern NSString *const CCSMStorageKeyTSServerURL;
 
 @end
 
-@interface CCSMEnvironment : NSObject
-
-+ (instancetype)sharedInstance;
-
-@property NSString *appGroupIdString;
-@property NSString *ccsmURLString;
-
-@end
+//@interface CCSMEnvironment : NSObject
+//
+//+ (instancetype)sharedInstance;
+//
+//@property NSString *appGroupIdString;
+//@property NSString *ccsmURLString;
+//
+//@end
 
 #endif /* Storage_h */
 

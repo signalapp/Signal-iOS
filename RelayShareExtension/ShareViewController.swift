@@ -330,10 +330,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         if !TSAccountManager.isRegistered() {
             showNotRegisteredView()
-        } else if !OWSProfileManager.shared().localProfileExists() {
-            // This is a rare edge case, but we want to ensure that the user
-            // is has already saved their local profile key in the main app.
-            showNotReadyView()
+//        } else if !OWSProfileManager.shared().localProfileExists() {
+//            // This is a rare edge case, but we want to ensure that the user
+//            // is has already saved their local profile key in the main app.
+//            showNotReadyView()
         } else {
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return }

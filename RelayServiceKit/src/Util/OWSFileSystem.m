@@ -110,8 +110,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)appSharedDataDirectoryPath
 {
+    NSString *appPathString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"AppGroupPath"];
+    
     NSURL *groupContainerDirectoryURL =
-        [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:CCSMEnvironment.sharedInstance.appGroupIdString];
+    [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:appPathString];
+//    NSURL *groupContainerDirectoryURL =
+//    [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:CCSMEnvironment.sharedInstance.appGroupIdString];
+
     return [groupContainerDirectoryURL path];
 }
 

@@ -111,9 +111,9 @@
 -(NSString *)displaySlug
 {
     NSString *slugDisplayString = [NSString stringWithFormat:@"@%@", self.slug];
-    if (![TSAccountManager.sharedInstance.selfRecipient.flTag.orgSlug isEqualToString:self.orgSlug]) {
+//    if (![TSAccountManager.sharedInstance.selfRecipient.flTag.orgSlug isEqualToString:self.orgSlug]) {
         slugDisplayString = [slugDisplayString stringByAppendingString:[NSString stringWithFormat:@":%@", self.orgSlug]];
-    }
+//    }
     return slugDisplayString;
 }
 

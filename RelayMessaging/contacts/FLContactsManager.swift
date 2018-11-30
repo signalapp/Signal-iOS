@@ -211,7 +211,8 @@ import RelayServiceKit
         // must not execute on main thread
         assert(!Thread.isMainThread)
         
-        let url = "\(CCSMEnvironment.sharedInstance().ccsmURLString!)/v1/directory/user/?id_in=\(uids)"
+        let homeURL = Bundle.main.object(forInfoDictionaryKey: "CCSM_Home_URL") as! String
+        let url = "\(homeURL)/v1/directory/user/?id_in=\(uids)"
         
         CCSMCommManager.getThing(url,
                                  success: { (payload) in
@@ -226,7 +227,7 @@ import RelayServiceKit
                                         })
                                     }
         }, failure: { (error) in
-            Logger.debug("CCSM User lookup failed.")
+            Logger.debug("CCSM User lookup failed with error: \(String(describing: error?.localizedDescription))")
         })
         
     }

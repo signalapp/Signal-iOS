@@ -53,11 +53,9 @@
 #define FLSMSInvitationURL @"https://www.forsta.io"
 
 #if DEVELOPMENT
-#define ApplicationGroup @"group.io.forsta.relay-dev"
 #define FLDomainCreateURL FLDomainCreateDevURL
 #define FLHomeURL FLForstaDevURL
 #else
-#define ApplicationGroup @"group.io.forsta.relay"
 #define FLDomainCreateURL FLDomainCreateProdURL
 #define FLHomeURL FLForstaProdURL
 #endif
