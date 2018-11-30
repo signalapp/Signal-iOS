@@ -7,7 +7,7 @@ import SignalMessaging
 
 private class IntroducingCustomNotificationAudioExperienceUpgradeViewController: ExperienceUpgradeViewController {
 
-    var buttonAction: ((UIButton) -> Void)?
+    var primaryButtonAction: ((UIButton) -> Void)?
 
     override func loadView() {
         self.view = UIView.container()
@@ -41,7 +41,7 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
         imageView.contentMode = .scaleAspectFit
 
         let buttonTitle = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON", comment: "button label shown one time, after upgrade")
-        let button = addButton(title: buttonTitle) { _ in
+        let button = addPrimaryButton(title: buttonTitle) { _ in
             // dismiss the modally presented view controller, then proceed.
             self.experienceUpgradesPageViewController.dismiss(animated: true) {
                 guard let fromViewController = UIApplication.shared.frontmostViewController else {
@@ -89,8 +89,8 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
 
     // MARK: - Actions
 
-    func addButton(title: String, action: @escaping (UIButton) -> Void) -> UIButton {
-        self.buttonAction = action
+    func addPrimaryButton(title: String, action: @escaping (UIButton) -> Void) -> UIButton {
+        self.primaryButtonAction = action
         let button = MultiLineButton()
         view.addSubview(button)
         button.setTitle(title, for: .normal)
@@ -106,18 +106,18 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
     @objc func didTapButton(sender: UIButton) {
         Logger.debug("")
 
-        guard let buttonAction = self.buttonAction else {
+        guard let primaryButtonAction = self.primaryButtonAction else {
             owsFailDebug("button action was nil")
             return
         }
 
-        buttonAction(sender)
+        primaryButtonAction(sender)
     }
 }
 
 private class IntroductingReadReceiptsExperienceUpgradeViewController: ExperienceUpgradeViewController {
 
-    var buttonAction: ((UIButton) -> Void)?
+    var primaryButtonAction: ((UIButton) -> Void)?
 
     override func loadView() {
         self.view = UIView.container()
@@ -151,7 +151,7 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
         imageView.contentMode = .scaleAspectFit
 
         let buttonTitle = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS", comment: "button label shown one time, after upgrade")
-        let button = addButton(title: buttonTitle) { _ in
+        let button = addPrimaryButton(title: buttonTitle) { _ in
             // dismiss the modally presented view controller, then proceed.
             self.experienceUpgradesPageViewController.dismiss(animated: true) {
                 guard let fromViewController = UIApplication.shared.frontmostViewController as? HomeViewController else {
@@ -199,8 +199,8 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
 
     // MARK: - Actions
 
-    func addButton(title: String, action: @escaping (UIButton) -> Void) -> UIButton {
-        self.buttonAction = action
+    func addPrimaryButton(title: String, action: @escaping (UIButton) -> Void) -> UIButton {
+        self.primaryButtonAction = action
         let button = MultiLineButton()
         view.addSubview(button)
         button.setTitle(title, for: .normal)
@@ -216,18 +216,18 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
     @objc func didTapButton(sender: UIButton) {
         Logger.debug("")
 
-        guard let buttonAction = self.buttonAction else {
+        guard let primaryButtonAction = self.primaryButtonAction else {
             owsFailDebug("button action was nil")
             return
         }
 
-        buttonAction(sender)
+        primaryButtonAction(sender)
     }
 }
 
 private class IntroductingTypingIndicatorsExperienceUpgradeViewController: ExperienceUpgradeViewController {
 
-    var buttonAction: ((UIButton) -> Void)?
+    var primaryButtonAction: ((UIButton) -> Void)?
 
     override func loadView() {
         self.view = UIView.container()
@@ -271,7 +271,7 @@ private class IntroductingTypingIndicatorsExperienceUpgradeViewController: Exper
         imageView.contentMode = .scaleAspectFit
 
         let buttonTitle = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS", comment: "button label shown one time, after upgrade")
-        let button = addButton(title: buttonTitle) { _ in
+        let button = addPrimaryButton(title: buttonTitle) { _ in
             // dismiss the modally presented view controller, then proceed.
             self.experienceUpgradesPageViewController.dismiss(animated: true) {
                 guard let fromViewController = UIApplication.shared.frontmostViewController as? HomeViewController else {
@@ -319,8 +319,8 @@ private class IntroductingTypingIndicatorsExperienceUpgradeViewController: Exper
 
     // MARK: - Actions
 
-    func addButton(title: String, action: @escaping (UIButton) -> Void) -> UIButton {
-        self.buttonAction = action
+    func addPrimaryButton(title: String, action: @escaping (UIButton) -> Void) -> UIButton {
+        self.primaryButtonAction = action
         let button = MultiLineButton()
         view.addSubview(button)
         button.setTitle(title, for: .normal)
@@ -336,12 +336,12 @@ private class IntroductingTypingIndicatorsExperienceUpgradeViewController: Exper
     @objc func didTapButton(sender: UIButton) {
         Logger.debug("")
 
-        guard let buttonAction = self.buttonAction else {
+        guard let primaryButtonAction = self.primaryButtonAction else {
             owsFailDebug("button action was nil")
             return
         }
 
-        buttonAction(sender)
+        primaryButtonAction(sender)
     }
 }
 
