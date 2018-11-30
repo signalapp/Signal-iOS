@@ -1076,6 +1076,25 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
+    for (NSDictionary *deviceMessage in deviceMessages) {
+        NSNumber *_Nullable messageType = deviceMessage[@"type"];
+        OWSAssertDebug(messageType);
+        BOOL hasValidMessageType;
+        if (messageSend.isUDSend) {
+            hasValidMessageType = [messageType isEqualToNumber:@(TSUnidentifiedSenderMessageType)];
+        } else {
+            hasValidMessageType = ([messageType isEqualToNumber:@(TSEncryptedWhisperMessageType)] ||
+                [messageType isEqualToNumber:@(TSPreKeyWhisperMessageType)]);
+        }
+
+        if (!hasValidMessageType) {
+            OWSFailDebug(@"Invalid message type: %@", messageType);
+            NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+            [error setIsRetryable:NO];
+            return messageSend.failure(error);
+        }
+    }
+
     if (deviceMessages.count == 0) {
         // This might happen:
         //
@@ -1093,15 +1112,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSLogWarn(@"Sending a message with no device messages.");
     }
 
-    // NOTE: canFailoverUDAuth depends on whether or not we're sending a
-    // sync message because sync messages use different device lists
-    // for UD-auth and Non-UD-auth requests.
-    //
-    // Therefore, for sync messages, we can't use OWSRequestMaker's
-    // retry/failover logic; we need to use the message sender's retry
-    // logic that will build a new set of device messages.
-    BOOL isSyncMessageSend = messageSend.isLocalNumber;
-    BOOL canFailoverUDAuth = !isSyncMessageSend;
     OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Message Send"
         requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
             return [OWSRequestFactory submitMessageRequestWithRecipient:recipient.recipientId
@@ -1121,7 +1131,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         recipientId:recipient.recipientId
         udAccess:messageSend.udAccess
-        canFailoverUDAuth:canFailoverUDAuth];
+        canFailoverUDAuth:NO];
     [[requestMaker makeRequestObjc]
             .then(^(OWSRequestMakerResult *result) {
                 dispatch_async([OWSDispatch sendingQueue], ^{
@@ -1469,7 +1479,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // we open a transaction.
             [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
 
-            __block NSDictionary *messageDict;
+            __block NSDictionary *_Nullable messageDict;
             __block NSException *encryptionException;
             [self.dbConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1637,10 +1647,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }) retainUntilComplete];
 }
 
-- (NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
-                                               deviceId:(NSNumber *)deviceId
-                                              plainText:(NSData *)plainText
-                                            transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (nullable NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
+                                                        deviceId:(NSNumber *)deviceId
+                                                       plainText:(NSData *)plainText
+                                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
@@ -1690,6 +1700,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                       protocolContext:transaction
                                                                                 error:&error];
         SCKRaiseIfExceptionWrapperError(error);
+        if (!serializedMessage || error) {
+            OWSFailDebug(@"error while UD encrypting message: %@", error);
+            return nil;
+        }
         messageType = TSUnidentifiedSenderMessageType;
     } else {
         // This may throw an exception.

@@ -537,10 +537,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Send delivery receipts for "valid data" messages received via UD.
-    BOOL wasReceivedByUD = envelope.type == SSKProtoEnvelopeTypeUnidentifiedSender;
+    BOOL wasReceivedByUD = [self wasReceivedByUD:envelope];
     if (wasReceivedByUD) {
         [self.outgoingReceiptManager enqueueDeliveryReceiptForEnvelope:envelope];
     }
+}
+
+- (BOOL)wasReceivedByUD:(SSKProtoEnvelope *)envelope
+{
+    return (
+        envelope.type == SSKProtoEnvelopeTypeUnidentifiedSender && (!envelope.hasSource || envelope.source.length < 1));
 }
 
 - (void)sendGroupInfoRequest:(NSData *)groupId
@@ -1149,7 +1155,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *groupId = dataMessage.group ? dataMessage.group.id : nil;
     OWSContact *_Nullable contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
     NSNumber *_Nullable serverTimestamp = (envelope.hasServerTimestamp ? @(envelope.serverTimestamp) : nil);
-    BOOL wasReceivedByUD = envelope.type == SSKProtoEnvelopeTypeUnidentifiedSender;
+    BOOL wasReceivedByUD = [self wasReceivedByUD:envelope];
 
     if (dataMessage.group.type == SSKProtoGroupContextTypeRequestInfo) {
         [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
