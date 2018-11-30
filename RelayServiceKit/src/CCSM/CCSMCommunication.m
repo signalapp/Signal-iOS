@@ -38,7 +38,7 @@
     NSString *lowerOrgname = orgName.lowercaseString;
 
     NSString *urlString = [NSString stringWithFormat:@"%@/v1/login/send/%@/%@/?format=json", CCSMHomeURL, lowerOrgname, lowerUsername];
-    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:10];
     NSURLSession *sharedSession = NSURLSession.sharedSession;
     NSURLSessionDataTask *loginTask = [sharedSession dataTaskWithRequest:request
@@ -107,7 +107,7 @@
 
     // Make URL
     NSString *urlString = [NSString stringWithFormat:@"%@/v1/password/reset/", CCSMHomeURL];
-    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
     
     // Make Request
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -169,7 +169,7 @@
 {
     // Make URL
     NSString *urlString = [NSString stringWithFormat:@"%@/v1/login/", CCSMHomeURL];
-    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
 
     // Make Request
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -233,7 +233,7 @@
 {
     NSString *sessionToken = [CCSMStorage.sharedInstance getSessionToken];
     NSString *urlString = [NSString stringWithFormat:@"%@/v1/api-token-refresh/", CCSMHomeURL];
-    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request setHTTPMethod:@"POST"];
@@ -565,7 +565,7 @@
                       completion:(void (^)(NSDictionary *response, NSError *error))completionBlock
 {
     NSString *urlString = [NSString stringWithFormat:@"%@/v1/provision-proxy/", CCSMHomeURL];
-    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
     NSMutableURLRequest *request = [self authRequestWithURL:url];
     [request setHTTPMethod:@"PUT"];
     
@@ -729,7 +729,7 @@
 
     // URL...
     NSString *urlString = [NSString stringWithFormat:@"%@/v1/join/", CCSMHomeURL];
-    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
 
     // Build request...
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -811,7 +811,7 @@
         
         
         NSString *urlString = [NSString stringWithFormat:@"%@/v1/join/", CCSMHomeURL];
-        NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
         
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
         [request setHTTPMethod:@"POST"];
@@ -914,7 +914,7 @@
 +(NSMutableURLRequest *)tagMathRequestForString:(NSString *)lookupString
 {
     NSString *urlString = [NSString stringWithFormat:@"%@%@?expression=%@", CCSMHomeURL, FLTagMathPath, lookupString];
-    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
     NSMutableURLRequest *request = [self authRequestWithURL:url];
     [request setHTTPMethod:@"GET"];
     
