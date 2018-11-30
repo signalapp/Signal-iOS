@@ -186,7 +186,6 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                 failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssertDebug(attachmentStreamsParam);
-    OWSAssertDebug(attachmentPointers.count > 0);
 
     // To avoid deadlocks, synchronize on self outside of the transaction.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

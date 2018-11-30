@@ -866,6 +866,27 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     return [AnyPromise promiseWithValue:@(1)];
 }
 
+- (void)logBackupMetadataCache:(YapDatabaseConnection *)dbConnection
+{
+    OWSLogInfo(@"");
+
+    [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [transaction enumerateKeysAndObjectsInCollection:[OWSBackupFragment collection]
+                                              usingBlock:^(NSString *key, OWSBackupFragment *fragment, BOOL *stop) {
+                                                  OWSLogVerbose(@"fragment: %@, %@, %lu, %@, %@, %@, %@",
+                                                      key,
+                                                      fragment.recordName,
+                                                      (unsigned long)fragment.encryptionKey.length,
+                                                      fragment.relativeFilePath,
+                                                      fragment.attachmentId,
+                                                      fragment.downloadFilePath,
+                                                      fragment.uncompressedDataLength);
+                                              }];
+        OWSLogVerbose(@"Number of fragments: %lu",
+            (unsigned long)[transaction numberOfKeysInCollection:[OWSBackupFragment collection]]);
+    }];
+}
+
 #pragma mark - Notifications
 
 - (void)postDidChangeNotification

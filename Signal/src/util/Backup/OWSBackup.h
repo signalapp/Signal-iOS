@@ -32,6 +32,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 @class OWSBackupIO;
 @class TSAttachmentPointer;
 @class TSThread;
+@class YapDatabaseConnection;
 
 @interface OWSBackup : NSObject
 
@@ -90,6 +91,8 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 
 - (void)logBackupRecords;
 - (void)clearAllCloudKitRecords;
+
+- (void)logBackupMetadataCache:(YapDatabaseConnection *)dbConnection;
 
 #pragma mark - Lazy Restore
 

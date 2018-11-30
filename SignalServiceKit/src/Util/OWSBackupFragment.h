@@ -37,6 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
 // This property is only set if the manifest item is compressed.
 @property (nonatomic, nullable) NSNumber *uncompressedDataLength;
 
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_DESIGNATED_INITIALIZER;
+
 @end
 
 NS_ASSUME_NONNULL_END

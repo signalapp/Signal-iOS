@@ -300,7 +300,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
             return nil;
         }
 
-        OWSBackupFragment *item = [OWSBackupFragment new];
+        OWSBackupFragment *item = [[OWSBackupFragment alloc] initWithUniqueId:recordName];
         item.recordName = recordName;
         item.encryptionKey = encryptionKey;
         item.relativeFilePath = relativeFilePath;

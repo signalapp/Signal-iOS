@@ -8,14 +8,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSBackupFragment
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
 {
-    OWSAssertDebug(self.recordName.length > 0);
-
-    if (!self.uniqueId) {
-        self.uniqueId = self.recordName;
+    self = [super initWithUniqueId:uniqueId];
+    if (!self) {
+        return self;
     }
-    [super saveWithTransaction:transaction];
+
+    return self;
 }
 
 @end
