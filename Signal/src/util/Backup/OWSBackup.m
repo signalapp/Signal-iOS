@@ -93,6 +93,9 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 @property (nonatomic, nullable) NSString *backupImportDescription;
 @property (nonatomic, nullable) NSNumber *backupImportProgress;
 
+@property (atomic) OWSBackupState backupExportState;
+@property (atomic) OWSBackupState backupImportState;
+
 @end
 
 #pragma mark -
@@ -116,8 +119,8 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         return self;
     }
 
-    _backupExportState = OWSBackupState_Idle;
-    _backupImportState = OWSBackupState_Idle;
+    self.backupExportState = OWSBackupState_Idle;
+    self.backupImportState = OWSBackupState_Idle;
 
     OWSSingletonAssert();
 
@@ -219,7 +222,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     [self.backupImportJob cancel];
     self.backupImportJob = nil;
 
-    _backupExportState = OWSBackupState_InProgress;
+    self.backupExportState = OWSBackupState_InProgress;
 
     self.backupExportJob = [[OWSBackupExportJob alloc] initWithDelegate:self recipientId:recipientId];
     [self.backupExportJob start];
@@ -402,8 +405,8 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         }
     }
 
-    BOOL stateDidChange = _backupExportState != backupExportState;
-    _backupExportState = backupExportState;
+    BOOL stateDidChange = self.backupExportState != backupExportState;
+    self.backupExportState = backupExportState;
     if (stateDidChange) {
         [self postDidChangeNotification];
     }
@@ -526,7 +529,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     [self.backupImportJob cancel];
     self.backupImportJob = nil;
 
-    _backupImportState = OWSBackupState_InProgress;
+    self.backupImportState = OWSBackupState_InProgress;
 
     self.backupImportJob = [[OWSBackupImportJob alloc] initWithDelegate:self recipientId:recipientId];
     [self.backupImportJob start];
@@ -539,7 +542,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     [self.backupImportJob cancel];
     self.backupImportJob = nil;
 
-    _backupImportState = OWSBackupState_Idle;
+    self.backupImportState = OWSBackupState_Idle;
 
     [self postDidChangeNotification];
 }
@@ -589,7 +592,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     if (self.backupImportJob == backupJob) {
         self.backupImportJob = nil;
 
-        _backupImportState = OWSBackupState_Succeeded;
+        self.backupImportState = OWSBackupState_Succeeded;
     } else if (self.backupExportJob == backupJob) {
         self.backupExportJob = nil;
 
@@ -613,7 +616,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     if (self.backupImportJob == backupJob) {
         self.backupImportJob = nil;
 
-        _backupImportState = OWSBackupState_Failed;
+        self.backupImportState = OWSBackupState_Failed;
     } else if (self.backupExportJob == backupJob) {
         self.backupExportJob = nil;
 
