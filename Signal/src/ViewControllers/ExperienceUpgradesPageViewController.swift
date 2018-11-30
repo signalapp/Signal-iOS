@@ -229,6 +229,10 @@ private class IntroductingTypingIndicatorsExperienceUpgradeViewController: Exper
 
     var primaryButtonAction: ((UIButton) -> Void)?
 
+    var typingIndicators: TypingIndicators {
+        return SSKEnvironment.shared.typingIndicators
+    }
+
     override func loadView() {
         self.view = UIView.container()
 
@@ -270,21 +274,10 @@ private class IntroductingTypingIndicatorsExperienceUpgradeViewController: Exper
         view.addSubview(imageView)
         imageView.contentMode = .scaleAspectFit
 
-        let buttonTitle = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS", comment: "button label shown one time, after upgrade")
+        let buttonTitle = NSLocalizedString("UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON", comment: "button label shown one time, after upgrade")
         let button = addPrimaryButton(title: buttonTitle) { _ in
-            // dismiss the modally presented view controller, then proceed.
-            self.experienceUpgradesPageViewController.dismiss(animated: true) {
-                guard let fromViewController = UIApplication.shared.frontmostViewController as? HomeViewController else {
-                    owsFailDebug("unexpected frontmostViewController: \(String(describing: UIApplication.shared.frontmostViewController))")
-                    return
-                }
-
-                // Construct the "settings" view & push the "privacy settings" view.
-                let navigationController = AppSettingsViewController.inModalNavigationController()
-                navigationController.pushViewController(PrivacySettingsTableViewController(), animated: false)
-
-                fromViewController.present(navigationController, animated: true)
-            }
+            self.typingIndicators.setTypingIndicatorsEnabled(value: true)
+            self.experienceUpgradesPageViewController.dismiss(animated: true)
         }
 
         let bottomSpacer = UIView()
@@ -665,7 +658,7 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
         // Dismiss button
         let dismissButton = UIButton()
         view.addSubview(dismissButton)
-        dismissButton.setTitle(CommonStrings.dismissButton, for: .normal)
+        dismissButton.setTitle(NSLocalizedString("EXPERIENCE_UPGRADE_DISMISS_BUTTON", comment: "Button to dismiss/ignore the one time splash screen that appears after upgrading"), for: .normal)
         dismissButton.setTitleColor(UIColor.ows_signalBrandBlue, for: .normal)
         dismissButton.isUserInteractionEnabled = true
         dismissButton.addTarget(self, action: #selector(didTapDismissButton), for: .touchUpInside)

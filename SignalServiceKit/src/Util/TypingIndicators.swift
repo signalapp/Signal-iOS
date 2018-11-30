@@ -82,7 +82,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     @objc
     public func setTypingIndicatorsEnabled(value: Bool) {
         AssertIsOnMainThread()
-
+        Logger.info("\(_areTypingIndicatorsEnabled) -> \(value)")
         _areTypingIndicatorsEnabled = value
 
         primaryStorage.dbReadWriteConnection.setBool(value, forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection)
