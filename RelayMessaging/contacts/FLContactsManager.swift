@@ -227,7 +227,7 @@ import RelayServiceKit
                                         })
                                     }
         }, failure: { (error) in
-            Logger.debug("CCSM User lookup failed.")
+            Logger.debug("CCSM User lookup failed with error: \(String(describing: error?.localizedDescription))")
         })
         
     }
