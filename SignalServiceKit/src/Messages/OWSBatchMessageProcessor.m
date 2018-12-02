@@ -33,9 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSDate *createdAt;
 @property (nonatomic, readonly) NSData *envelopeData;
 @property (nonatomic, readonly, nullable) NSData *plaintextData;
+@property (nonatomic, readonly) BOOL wasReceivedByUD;
 
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData
-                       plaintextData:(NSData *_Nullable)plaintextData NS_DESIGNATED_INITIALIZER;
+                       plaintextData:(NSData *_Nullable)plaintextData
+                     wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId NS_UNAVAILABLE;
 
@@ -52,7 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
     return @"OWSBatchMessageProcessingJob";
 }
 
-- (instancetype)initWithEnvelopeData:(NSData *)envelopeData plaintextData:(NSData *_Nullable)plaintextData
+- (instancetype)initWithEnvelopeData:(NSData *)envelopeData
+                       plaintextData:(NSData *_Nullable)plaintextData
+                     wasReceivedByUD:(BOOL)wasReceivedByUD
 {
     OWSAssertDebug(envelopeData);
 
@@ -63,6 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _envelopeData = envelopeData;
     _plaintextData = plaintextData;
+    _wasReceivedByUD = wasReceivedByUD;
     _createdAt = [NSDate new];
 
     return self;
@@ -148,13 +153,15 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 - (void)addJobWithEnvelopeData:(NSData *)envelopeData
                  plaintextData:(NSData *_Nullable)plaintextData
+               wasReceivedByUD:(BOOL)wasReceivedByUD
                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(envelopeData);
     OWSAssertDebug(transaction);
 
-    OWSMessageContentJob *job =
-        [[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData plaintextData:plaintextData];
+    OWSMessageContentJob *job = [[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData
+                                                                     plaintextData:plaintextData
+                                                                   wasReceivedByUD:wasReceivedByUD];
     [job saveWithTransaction:transaction];
 }
 
@@ -316,13 +323,17 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 - (void)enqueueEnvelopeData:(NSData *)envelopeData
               plaintextData:(NSData *_Nullable)plaintextData
+            wasReceivedByUD:(BOOL)wasReceivedByUD
                 transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(envelopeData);
     OWSAssertDebug(transaction);
 
     // We need to persist the decrypted envelope data ASAP to prevent data loss.
-    [self.finder addJobWithEnvelopeData:envelopeData plaintextData:plaintextData transaction:transaction];
+    [self.finder addJobWithEnvelopeData:envelopeData
+                          plaintextData:plaintextData
+                        wasReceivedByUD:wasReceivedByUD
+                            transaction:transaction];
 }
 
 - (void)drainQueue
@@ -405,6 +416,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                 } else {
                     [self.messageManager throws_processEnvelope:envelope
                                                   plaintextData:job.plaintextData
+                                                wasReceivedByUD:job.wasReceivedByUD
                                                     transaction:transaction];
                 }
             } @catch (NSException *exception) {
@@ -482,6 +494,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 - (void)enqueueEnvelopeData:(NSData *)envelopeData
               plaintextData:(NSData *_Nullable)plaintextData
+            wasReceivedByUD:(BOOL)wasReceivedByUD
                 transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (envelopeData.length < 1) {
@@ -491,7 +504,10 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     OWSAssert(transaction);
 
     // We need to persist the decrypted envelope data ASAP to prevent data loss.
-    [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData transaction:transaction];
+    [self.processingQueue enqueueEnvelopeData:envelopeData
+                                plaintextData:plaintextData
+                              wasReceivedByUD:wasReceivedByUD
+                                  transaction:transaction];
 
     // The new envelope won't be visible to the finder until this transaction commits,
     // so drainQueue in the transaction completion.
