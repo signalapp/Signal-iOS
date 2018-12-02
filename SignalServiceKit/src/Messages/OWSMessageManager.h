@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 // processEnvelope: can be called from any thread.
 - (void)throws_processEnvelope:(SSKProtoEnvelope *)envelope
                  plaintextData:(NSData *_Nullable)plaintextData
+               wasReceivedByUD:(BOOL)wasReceivedByUD
                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This should be invoked by the main app when the app is ready.

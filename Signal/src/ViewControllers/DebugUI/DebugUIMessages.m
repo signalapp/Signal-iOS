@@ -3916,6 +3916,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [SSKEnvironment.shared.batchMessageProcessor enqueueEnvelopeData:envelopeData
                                                            plaintextData:plaintextData
+                                                         wasReceivedByUD:NO
                                                              transaction:transaction];
     }];
 }
