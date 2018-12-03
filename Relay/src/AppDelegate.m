@@ -612,8 +612,10 @@ static NSTimeInterval launchStartedAt;
     if ([TSAccountManager isRegistered]) {
         // At this point, potentially lengthy DB locking migrations could be running.
         // Avoid blocking app launch by putting all further possible DB access in async block
-        dispatch_async(dispatch_get_main_queue(), ^{
+        DispatchMainThreadSafe(^{
             [TSSocketManager requestSocketOpen];
+            
+            [self refreshSessionToken];
             
             // This will fetch new messages, if we're using domain fronting.
             [[PushManager sharedManager] applicationDidBecomeActive];
@@ -646,6 +648,60 @@ static NSTimeInterval launchStartedAt;
     }
 
     DDLogInfo(@"%@ handleActivation completed.", self.logTag);
+}
+
+-(void)refreshSessionToken
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [CCSMCommManager refreshSessionTokenAsynchronousSuccess:^{  // Refresh success
+            DDLogDebug(@"Session token refresh successful.");
+            [CCSMCommManager refreshCCSMData];
+        }
+                                                        failure:^(NSError *error){
+                                                            // Unable to refresh, login force login
+                                                            DDLogDebug(@"Token Refresh failed with error: %@", error.description);
+                                                            
+                                                            // Determine if this eror should kick the user out:
+                                                            if (error.code >= 400 && error.code <= 404) {
+                                                                //  Out they go...
+                                                                [TSSocketManager closeWebSocket];
+                                                                DispatchMainThreadSafe(^{
+                                                                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil                                                                                                                               message:NSLocalizedString(@"REFRESH_FAILURE_MESSAGE", nil)
+                                                                                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+                                                                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                                                                                       style:UIAlertActionStyleDefault
+                                                                                                                     handler:^(UIAlertAction *action) {
+                                                                                                                         [TSAccountManager.sharedInstance setIsDeregistered:YES];
+                                                                                                                         [self returnToLogin];
+                                                                                                                     }];
+                                                                    [alert addAction:okAction];
+                                                                    [self.window.rootViewController presentViewController:alert animated:YES completion:nil];
+                                                                });
+                                                            } else {
+                                                                DispatchMainThreadSafe(^{
+                                                                    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Server Connection Failed", @"")
+                                                                                                                                   message:[NSString stringWithFormat:@"Error: %ld\n%@", (long)error.code, error.localizedDescription]
+                                                                                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+                                                                    UIAlertAction *okButton = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                                                                                                                       style:UIAlertActionStyleDefault
+                                                                                                                     handler:^(UIAlertAction * action) {} ];
+                                                                    [alert addAction:okButton];
+                                                                    [self.window.rootViewController presentViewController:alert animated:YES completion:nil];
+                                                                });
+                                                            }
+                                                        }];
+    });
+}
+
+-(void)returnToLogin
+{
+    DispatchMainThreadSafe(^{
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:[NSBundle mainBundle]];
+        UIViewController *viewController = [storyboard instantiateInitialViewController];
+        OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:viewController];
+        navigationController.navigationBarHidden = NO;
+        self.window.rootViewController = navigationController;
+    });
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -1119,6 +1175,8 @@ static NSTimeInterval launchStartedAt;
 
         // For non-legacy users, read receipts are on by default.
         [OWSReadReceiptManager.sharedManager setAreReadReceiptsEnabled:NO];
+    } else {
+        [self returnToLogin];
     }
 }
 
@@ -1153,7 +1211,7 @@ static NSTimeInterval launchStartedAt;
         self.window.rootViewController = navigationController;
     }
 
-    [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
+//    [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
 }
 
 #pragma mark - status bar touches
