@@ -78,20 +78,20 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        self.uiDBConnection.beginLongLivedReadTransaction()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
         DispatchQueue.main.async {
+            self.uiDBConnection.beginLongLivedReadTransaction()
             self.uiDBConnection.asyncRead({ (transaction) in
                 self.tagMappings?.update(with: transaction)
             }, completionBlock: {
                 self.updateFilteredMappings()
             })
         }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
+
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(yapDatabaseModified),
                                                name: NSNotification.Name.YapDatabaseModified,
