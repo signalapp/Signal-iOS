@@ -364,6 +364,12 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
           }];
 }
 
+- (BOOL)wasReceivedByUD:(SSKProtoEnvelope *)envelope
+{
+    return (
+        envelope.type == SSKProtoEnvelopeTypeUnidentifiedSender && (!envelope.hasSource || envelope.source.length < 1));
+}
+
 - (void)processJob:(OWSMessageDecryptJob *)job completion:(void (^)(BOOL))completion
 {
     AssertOnDispatchQueue(self.serialQueue);
@@ -387,6 +393,10 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return;
     }
 
+    // We use the original envelope for this check;
+    // the decryption process might rewrite the envelope.
+    BOOL wasReceivedByUD = [self wasReceivedByUD:envelope];
+
     [self.messageDecrypter decryptEnvelope:envelope
         envelopeData:job.envelopeData
         successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
@@ -400,6 +410,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             // since the envelope may be altered by the decryption process in the UD case.
             [self.batchMessageProcessor enqueueEnvelopeData:result.envelopeData
                                               plaintextData:result.plaintextData
+                                            wasReceivedByUD:wasReceivedByUD
                                                 transaction:transaction];
 
             dispatch_async(self.serialQueue, ^{

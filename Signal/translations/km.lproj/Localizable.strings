@@ -945,6 +945,9 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "អ្នកប្រើប្រាស់មិនបានចុះឈ្មោះ: %@";
 
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "លើកក្រោយ";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again later.";
 
@@ -2327,6 +2330,9 @@
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "គ្រាន់តែអូស ដើម្បីឆ្លើយ";
 
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "អ្នកអាចជ្រើសរើស សំឡេងលំនាំដើម និងការជូនដំណឹងសន្ទនា, និងការហៅ នឹងត្រូវប្រើសំឡេងរោទិ៍ ដែលអ្នកបានកំណត់ក្នុងបញ្ជីទំនាក់ទំនងនីមួយៗ។";
 
@@ -2353,9 +2359,6 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "សូមណែនាំ ការទទួលអាន";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "Enable typing indicators in your privacy settings.";
 
 /* Body text for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";

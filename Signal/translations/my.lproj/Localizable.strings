@@ -945,6 +945,9 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "မှတ်ပုံတင်ထားခြင်းမရှိသော အသုံးပြုသူ %@";
 
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "မအားသေးပါ";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again later.";
 
@@ -2327,6 +2330,9 @@
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "ဖြေဖို့အတွက် ဆွဲပဲဆွဲလိုက်ပါ";
 
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "မူလပုံစံနှင့် စကားဝိုင်းတစ်ခုချင်းစီအတွက် သတိပေးသံများကို ရွေးချယ်နိုင်ပါသည်။ ဖုန်းအဝင်အသံများသည် အဆက်အသွယ်တစ်ခုချင်းစီကို သတ်မှတ်ထားသည့် အသံဖြင့်သာဝင်ပါလိမ့်မည်။";
 
@@ -2353,9 +2359,6 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "ဖတ်ပြီးကြောင်းပြသည့် သင်္ကေတ ကိုမိတ်ဆက်ခြင်း";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "Enable typing indicators in your privacy settings.";
 
 /* Body text for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";

@@ -411,13 +411,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Restaurar";
 
 /* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Fallo al establecer comunicación con el servidor de iCloud para la copia de seguridad.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Fallo al establecer comunicación con el servidor de iCloud para comprobar las copias de seguridad.";
 
 /* Error indicating that user does not have an iCloud account. */
 "CLOUDKIT_STATUS_NO_ACCOUNT" = "No tienes una cuenta en iCloud para almacenar las copias de seguridad.";
 
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal no puede acceder a tu cuenta de iCloud para manejar las copias de seguridad.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal no puede acceder a tu cuenta de iCloud para gestionar las copias de seguridad.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Selecciona el color de tus mensajes en este chat.";
@@ -944,6 +944,9 @@
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Contacto no registrado: %@";
+
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Ahora no";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Demasiados fallos con este contacto. Vuelve a intentarlo más tarde.";
@@ -1962,7 +1965,7 @@
 "SETTINGS_BACKUP_CANCEL_BACKUP" = "Cancelar copia";
 
 /* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Activar copia";
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Activar copia de seguridad";
 
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
@@ -2327,6 +2330,9 @@
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Desliza para responder";
 
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Activar indicador de tecleo";
+
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Ahora puedes asignar diferentes sonidos de notificaciones a cada chat. Además, las llamadas respetan el tono de llamada personalizado de iOS.";
 
@@ -2353,9 +2359,6 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Nuevo: Notificaciones de lectura";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "Activa los indicadores de tecleo en los ajustes de privacidad.";
 
 /* Body text for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Ahora puedes visualizar de manera opcional cuando tus contactos están escribiendo un mensaje y tus contactos pueden saber cuando estás escribiendo en su chat.";

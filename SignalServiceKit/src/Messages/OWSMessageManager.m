@@ -226,6 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)throws_processEnvelope:(SSKProtoEnvelope *)envelope
                  plaintextData:(NSData *_Nullable)plaintextData
+               wasReceivedByUD:(BOOL)wasReceivedByUD
                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -268,7 +269,10 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"missing decrypted data for envelope: %@", [self descriptionForEnvelope:envelope]);
                 return;
             }
-            [self throws_handleEnvelope:envelope plaintextData:plaintextData transaction:transaction];
+            [self throws_handleEnvelope:envelope
+                          plaintextData:plaintextData
+                        wasReceivedByUD:wasReceivedByUD
+                            transaction:transaction];
             break;
         case SSKProtoEnvelopeTypeReceipt:
             OWSAssertDebug(!plaintextData);
@@ -359,6 +363,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)throws_handleEnvelope:(SSKProtoEnvelope *)envelope
                 plaintextData:(NSData *)plaintextData
+              wasReceivedByUD:(BOOL)wasReceivedByUD
                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -413,7 +418,10 @@ NS_ASSUME_NONNULL_BEGIN
 
             [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
         } else if (contentProto.dataMessage) {
-            [self handleIncomingEnvelope:envelope withDataMessage:contentProto.dataMessage transaction:transaction];
+            [self handleIncomingEnvelope:envelope
+                         withDataMessage:contentProto.dataMessage
+                         wasReceivedByUD:wasReceivedByUD
+                             transaction:transaction];
         } else if (contentProto.callMessage) {
             [self handleIncomingEnvelope:envelope withCallMessage:contentProto.callMessage];
         } else if (contentProto.typingMessage) {
@@ -436,7 +444,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSLogInfo(@"handling message: <DataMessage: %@ />", [self descriptionForDataMessage:dataMessageProto]);
 
-        [self handleIncomingEnvelope:envelope withDataMessage:dataMessageProto transaction:transaction];
+        [self handleIncomingEnvelope:envelope
+                     withDataMessage:dataMessageProto
+                     wasReceivedByUD:wasReceivedByUD
+                         transaction:transaction];
     } else {
         OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorEnvelopeNoActionablePayload], envelope);
     }
@@ -444,6 +455,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                withDataMessage:(SSKProtoDataMessage *)dataMessage
+               wasReceivedByUD:(BOOL)wasReceivedByUD
                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -526,9 +538,15 @@ NS_ASSUME_NONNULL_BEGIN
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsProfileKeyUpdate) != 0) {
         [self handleProfileKeyMessageWithEnvelope:envelope dataMessage:dataMessage];
     } else if (dataMessage.attachments.count > 0) {
-        [self handleReceivedMediaWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
+        [self handleReceivedMediaWithEnvelope:envelope
+                                  dataMessage:dataMessage
+                              wasReceivedByUD:wasReceivedByUD
+                                  transaction:transaction];
     } else {
-        [self handleReceivedTextMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
+        [self handleReceivedTextMessageWithEnvelope:envelope
+                                        dataMessage:dataMessage
+                                    wasReceivedByUD:wasReceivedByUD
+                                        transaction:transaction];
 
         if ([self isDataMessageGroupAvatarUpdate:dataMessage]) {
             OWSLogVerbose(@"Data message had group avatar attachment");
@@ -537,16 +555,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Send delivery receipts for "valid data" messages received via UD.
-    BOOL wasReceivedByUD = [self wasReceivedByUD:envelope];
     if (wasReceivedByUD) {
         [self.outgoingReceiptManager enqueueDeliveryReceiptForEnvelope:envelope];
     }
-}
-
-- (BOOL)wasReceivedByUD:(SSKProtoEnvelope *)envelope
-{
-    return (
-        envelope.type == SSKProtoEnvelopeTypeUnidentifiedSender && (!envelope.hasSource || envelope.source.length < 1));
 }
 
 - (void)sendGroupInfoRequest:(NSData *)groupId
@@ -761,6 +772,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleReceivedMediaWithEnvelope:(SSKProtoEnvelope *)envelope
                             dataMessage:(SSKProtoDataMessage *)dataMessage
+                        wasReceivedByUD:(BOOL)wasReceivedByUD
                             transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -782,8 +794,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSIncomingMessage *_Nullable message =
-        [self handleReceivedEnvelope:envelope withDataMessage:dataMessage transaction:transaction];
+    TSIncomingMessage *_Nullable message = [self handleReceivedEnvelope:envelope
+                                                        withDataMessage:dataMessage
+                                                        wasReceivedByUD:wasReceivedByUD
+                                                            transaction:transaction];
 
     if (!message) {
         return;
@@ -1037,6 +1051,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleReceivedTextMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                   dataMessage:(SSKProtoDataMessage *)dataMessage
+                              wasReceivedByUD:(BOOL)wasReceivedByUD
                                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -1052,7 +1067,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self handleReceivedEnvelope:envelope withDataMessage:dataMessage transaction:transaction];
+    [self handleReceivedEnvelope:envelope
+                 withDataMessage:dataMessage
+                 wasReceivedByUD:wasReceivedByUD
+                     transaction:transaction];
 }
 
 - (void)handleGroupInfoRequest:(SSKProtoEnvelope *)envelope
@@ -1135,6 +1153,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSIncomingMessage *_Nullable)handleReceivedEnvelope:(SSKProtoEnvelope *)envelope
                                        withDataMessage:(SSKProtoDataMessage *)dataMessage
+                                       wasReceivedByUD:(BOOL)wasReceivedByUD
                                            transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -1155,7 +1174,6 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *groupId = dataMessage.group ? dataMessage.group.id : nil;
     OWSContact *_Nullable contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
     NSNumber *_Nullable serverTimestamp = (envelope.hasServerTimestamp ? @(envelope.serverTimestamp) : nil);
-    BOOL wasReceivedByUD = [self wasReceivedByUD:envelope];
 
     if (dataMessage.group.type == SSKProtoGroupContextTypeRequestInfo) {
         [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
