@@ -1,3 +1,8 @@
+## [2.0.1]
+### Fixed
+- Share extension funcationality.
+- Session token refresh.
+
 ## [2.0.0]
 - Initial release from updated codebase
 
