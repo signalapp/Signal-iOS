@@ -78,20 +78,20 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        self.uiDBConnection.beginLongLivedReadTransaction()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
         DispatchQueue.main.async {
+            self.uiDBConnection.beginLongLivedReadTransaction()
             self.uiDBConnection.asyncRead({ (transaction) in
                 self.tagMappings?.update(with: transaction)
             }, completionBlock: {
                 self.updateFilteredMappings()
             })
         }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
+
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(yapDatabaseModified),
                                                name: NSNotification.Name.YapDatabaseModified,
@@ -650,18 +650,18 @@ extension String {
     
     func substring(from: Int) -> String {
         let fromIndex = index(from: from)
-        return substring(from: fromIndex)
+        return String(self[fromIndex...])
     }
     
     func substring(to: Int) -> String {
         let toIndex = index(from: to)
-        return substring(to: toIndex)
+        return String(self[..<toIndex])
     }
     
     func substring(with r: Range<Int>) -> String {
         let startIndex = index(from: r.lowerBound)
         let endIndex = index(from: r.upperBound)
-        return substring(with: startIndex..<endIndex)
+        return String(self[startIndex..<endIndex])
     }
 
     // https://stackoverflow.com/questions/30450434/figure-out-size-of-uilabel-based-on-string-in-swift#30450559
