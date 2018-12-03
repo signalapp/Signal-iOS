@@ -193,20 +193,8 @@
                                               actionBlock:^{
                                                   [weakSelf showAdvanced];
                                               }]];
-    // Show backup UI in debug builds OR if backup has already been enabled.
-    //
-    // NOTE: Backup format is not yet finalized and backups are not yet
-    //       properly encrypted, so these debug backups should only be
-    //       done on test devices and will not be usable if/when we ship
-    //       backup to production.
-    //
-    // TODO: Always show backup when we go to production.
     BOOL isBackupEnabled = [OWSBackup.sharedManager isBackupEnabled];
-    BOOL showBackup = isBackupEnabled;
-    SUPPRESS_DEADSTORE_WARNING(showBackup);
-#ifdef DEBUG
-    showBackup = YES;
-#endif
+    BOOL showBackup = (OWSBackup.isFeatureEnabled && isBackupEnabled);
     if (showBackup) {
         [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_BACKUP",
                                                                   @"Label for the backup view in app settings.")
