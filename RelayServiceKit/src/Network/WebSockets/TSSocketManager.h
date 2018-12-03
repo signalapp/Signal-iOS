@@ -41,6 +41,8 @@ typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSData *_Nullable r
 // This method can be called from any thread.
 + (void)requestSocketOpen;
 
++(void)closeWebSocket;
+
 // This can be used to force the socket to close and re-open, if it is open.
 - (void)cycleSocket;
 
