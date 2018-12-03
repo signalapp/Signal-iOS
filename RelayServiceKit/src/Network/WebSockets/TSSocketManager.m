@@ -445,6 +445,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     self.heartbeatTimer = nil;
 }
 
++(void)closeWebSocket
+{
+    DispatchMainThreadSafe(^{
+        [[self sharedManager] closeWebSocket];
+    });
+}
+
 - (void)closeWebSocket
 {
     OWSAssertIsOnMainThread();
