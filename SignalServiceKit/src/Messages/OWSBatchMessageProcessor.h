@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)enqueueEnvelopeData:(NSData *)envelopeData
               plaintextData:(NSData *_Nullable)plaintextData
+            wasReceivedByUD:(BOOL)wasReceivedByUD
                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
