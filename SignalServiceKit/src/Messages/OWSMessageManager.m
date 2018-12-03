@@ -794,7 +794,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSIncomingMessage *_Nullable message = [self handleReceivedEnvelope:envelope withDataMessage:dataMessage
+    TSIncomingMessage *_Nullable message = [self handleReceivedEnvelope:envelope
+                                                        withDataMessage:dataMessage
                                                         wasReceivedByUD:wasReceivedByUD
                                                             transaction:transaction];
 
