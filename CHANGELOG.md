@@ -1,4 +1,5 @@
 ## [2.0.1]
+
 ### Fixed
 - Share extension funcationality.
 - Session token refresh.
