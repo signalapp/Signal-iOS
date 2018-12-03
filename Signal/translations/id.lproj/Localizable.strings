@@ -2319,7 +2319,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Perkenalkan pesan terbaca";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Sekarang Anda dapat secara opsional melihat dan berbagi saat pesan sedang diketik.";
 
 /* Header for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";

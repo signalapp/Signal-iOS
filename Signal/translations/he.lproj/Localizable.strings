@@ -2289,7 +2289,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "פשוט החלק כדי לענות";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "הפעל מחווני הקלדה";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "אתה יכול כעת לבחור צלילי התראה של ברירת מחדל ולפי שיחה, ושיחות יכבדו את הצלצול שבחרת עבור כל איש קשר.";

@@ -2289,7 +2289,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Glisează pentru a răspunde";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Activați indicatorii de tastare";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Acum poți alege sunete prestabilite și notificări per conversație, iar apelurile vor respecta tonul de apel pe care l-ai ales pentru fiecare contact de sistem.";

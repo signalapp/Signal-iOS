@@ -2289,7 +2289,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "スワイプで電話に出る";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "入力インジケーターを表示する";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "通知音を相手ごとに設定できるようになりました。";

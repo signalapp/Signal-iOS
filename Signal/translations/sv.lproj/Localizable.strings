@@ -2289,7 +2289,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Svep för att svara";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Sätt på skriv-indikatorer";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Nu kan du välja standard-notisljud men också sätta per konversation. Samtal kommer respektera ringtoner du valt för varje kontakt i systemet.";

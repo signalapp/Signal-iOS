@@ -913,7 +913,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Nem most";
+"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Ne most";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again later.";
@@ -2319,7 +2319,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introducing Read Receipts";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Mostantól lehetőséged van megtekinteni és megosztani azt, hogy éppen gépelsz.";
 
 /* Header for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";

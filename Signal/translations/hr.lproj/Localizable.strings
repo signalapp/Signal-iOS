@@ -15,10 +15,10 @@
 "ACTION_SEND_MESSAGE" = "Pošalji poruku";
 
 /* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Share Contact";
+"ACTION_SHARE_CONTACT" = "Podijeli kontakt";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Video Call";
+"ACTION_VIDEO_CALL" = "Video poziv";
 
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Dodaj";
@@ -69,7 +69,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ u grupi %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal se ne može pokrenuti. Pošaljite izvješće o uklanjanju pogrešaka na support@signal.org kako bismo riješili taj problem.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Pogreška";
@@ -84,7 +84,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "%@ verzija je sada dostupna na App Storeu.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Dostupna je nova verzija Signala";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Ažuriraj";
@@ -99,7 +99,7 @@
 "ATTACHMENT" = "Privitak";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Message limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Dosegnuto je ograničenje poruke.";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Vrsta datoteke: %@";
@@ -114,7 +114,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Privitak";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Download failed. Tap to retry.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Preuzimanje nije uspjelo. Dodirni za pokušaj.";
 
 /* Status label when an attachment is currently downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Preuzimanje...";
@@ -126,28 +126,28 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Greška kod slanja privitka";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Unable to convert image.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Nije moguće pretvoriti sliku.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Nije moguće obraditi videozapis.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Unable to parse image.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Nije moguće analizirati sliku.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Nije moguće ukloniti metapodatke iz slike.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Unable to resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Nije moguće promijeniti veličinu slike.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Privitak je prevelik.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Prilog uključuje nevažeći sadržaj.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Prilog ima nevažeći format datoteke.";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Privitak je prazan.";
@@ -165,7 +165,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Nije moguće odabrati dokument.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Izradite komprimiranu arhivu ove datoteke ili mape i pokušajte je poslati umjesto toga.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Datoteka nije podržana.";
@@ -225,19 +225,19 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Vraćanje datoteka";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will no longer receive messages or updates from this group.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Više nećete primati poruke ili ažuriranja iz ove grupe.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokiraj";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blokiraj i napusti \"%@\" grupu?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blokiraj %@?";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blocked Groups";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blokirane grupe";
 
 /* Section header for users that have been blocked */
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blokirani korisnici";
@@ -246,10 +246,10 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Deblokiraj";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Existing members will be able to add you to the group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Postojeći članovi moći će vas ponovno dodati u grupu.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Unblock This Group?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Deblokiraj ovu grupu?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Deblokiraj %@?";
@@ -258,13 +258,13 @@
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blokiraj";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@je blokiran/a.";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Korisnik je blokiran";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Group Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Grupa je blokirana";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Ne možete blokirati sebe.";
@@ -276,7 +276,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ je deblokiran.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Sadašnji članovi sada vas mogu dodati u grupu.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Blokiraj";
@@ -297,10 +297,10 @@
 "BUTTON_SELECT" = "Odaberi";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+"CALL_AGAIN_BUTTON_TITLE" = "Nazovi ponovo";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Možete omogućiti pristup mikrofonu u iOS aplikaciji \"Postavke\" za upućivanje poziva i snimanje glasovnih poruka u Signalu.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Zahtijeva pristup mikrofonu";
@@ -309,7 +309,7 @@
 "CALL_LABEL" = "Poziv";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Nema odgovora";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -393,7 +393,7 @@
 "COLOR_PICKER_DEMO_MESSAGE_2" = "Only you will see the color you choose.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Conversation Color";
+"COLOR_PICKER_SHEET_TITLE" = "Boja razgovora";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Uporedi sa međuspremnikom";
@@ -435,7 +435,7 @@
 "CONFIRMATION_TITLE" = "Potvrdi";
 
 /* Label for a contact's postal address. */
-"CONTACT_ADDRESS" = "Address";
+"CONTACT_ADDRESS" = "Adresa";
 
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Blokiran";
@@ -453,34 +453,34 @@
 "CONTACT_EMAIL" = "Pošta";
 
 /* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "City";
+"CONTACT_FIELD_ADDRESS_CITY" = "Grad";
 
 /* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "Country";
+"CONTACT_FIELD_ADDRESS_COUNTRY" = "Država";
 
 /* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Neighborhood";
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Susjedstvo";
 
 /* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
+"CONTACT_FIELD_ADDRESS_POBOX" = "PP kutija";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postal Code";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Poštanski broj";
 
 /* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "Region";
+"CONTACT_FIELD_ADDRESS_REGION" = "Regija";
 
 /* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "Street";
+"CONTACT_FIELD_ADDRESS_STREET" = "Ulice";
 
 /* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "Family Name";
+"CONTACT_FIELD_FAMILY_NAME" = "Prezime";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Given Name";
+"CONTACT_FIELD_GIVEN_NAME" = "Ime";
 
 /* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Middle Name";
+"CONTACT_FIELD_MIDDLE_NAME" = "Srednje ime";
 
 /* Label for the 'name prefix' field of a contact. */
 "CONTACT_FIELD_NAME_PREFIX" = "Predmetak";
@@ -489,10 +489,10 @@
 "CONTACT_FIELD_NAME_SUFFIX" = "Dometak";
 
 /* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "Organization";
+"CONTACT_FIELD_ORGANIZATION" = "Organizacija";
 
 /* Label for a contact's phone number. */
-"CONTACT_PHONE" = "Phone";
+"CONTACT_PHONE" = "Telefon";
 
 /* table cell subtitle when contact card has no email */
 "CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Nema dostupnog emaila.";
@@ -501,13 +501,13 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Nema dostupnog telefonskog broja.";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Select Contact";
+"CONTACT_PICKER_TITLE" = "Odaberi kontakt";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Share Contact";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Podijeli kontakt";
 
 /* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Edit Name";
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Uredi ime";
 
 /* Error indicating that an invalid contact cannot be shared. */
 "CONTACT_SHARE_INVALID_CONTACT" = "Invalid contact.";
@@ -516,13 +516,13 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Open in Maps";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Otvori u Mapama";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send Email";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Pošalji e-poštu";
 
 /* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "Unnamed Contact";
+"CONTACT_WITHOUT_NAME" = "Neimenovan kontakt";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Postavke razgovora";
@@ -531,7 +531,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Dodaj postojećem kontaktu";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Block This Group";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Blokiraj ovu grupu";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blokiraj ovog korisnika";
@@ -540,7 +540,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Detalji kontakta";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Conversation Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Boja razgovora";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Informacije o grupi";
@@ -576,7 +576,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Izradi novi kontakt";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Dodirni za promjenu";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Isključi utišavanje";
@@ -600,16 +600,16 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Dodaj u kontakte";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile with This User";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Podijeli svoj profil sa ovim korisnikom";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Ovaj korisnik nije u vašim kontaktima.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages…";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Učitavanje više poruka...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap for More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Dodirni za više";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blokiraj ovog korisnika";
@@ -630,7 +630,7 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ovo može potrajati nekoliko minuta.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizacija baze podataka";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
 "DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
@@ -1021,7 +1021,7 @@
 "GROUP_YOU_LEFT" = "Napustili ste grupu.";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arhivirani razgovori";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Blokirani";
@@ -1030,7 +1030,7 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Traži";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nisu pronađeni rezultati za '%@'";
 
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Arhiviraj";
@@ -1710,7 +1710,7 @@
 "REGISTRATION_IPAD_CONFIRM_TITLE" = "Već imate Signal račun?";
 
 /* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+"REGISTRATION_LEGAL_TERMS_LINK" = "Uvjeti i pravila o privatnosti";
 
 /* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
 "REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
@@ -2013,7 +2013,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Zvuk poruke";
 
 /* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
+"SETTINGS_LEGAL_TERMS_CELL" = "Uvjeti i pravila o privatnosti";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Postavke";
@@ -2100,7 +2100,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Zaključavanje registracije";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "Pokazatelji tipkanja";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
@@ -2109,16 +2109,16 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Saznaj više";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Sealed Sender";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Zatvoreni pošiljatelj";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Pokazivači zaslona";
 
 /* table section footer */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Dopusti od bilo koga";
 
 /* table section footer */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
@@ -2139,7 +2139,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Vaš sigurnosni broj sa %@ je nedavno promijenjen. Možete ga potvrditi u glavnoj aplikaciji prije ponovnog slanja.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Loading…";
+"SHARE_EXTENSION_LOADING" = "Učitavanje...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Pokrenite aplikaciju Signal kako biste se registrirali.";
@@ -2277,7 +2277,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Ne možete ukloniti članove grupe. Morat će napustiti ili možete stvoriti novu grupu bez ovog člana.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Nije podržano";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Odgovaranje na poziv sa zaključanog zaslona je jednostavno sa iOS integracijom poziva. Po zadanim postavkama vaš pozivatelj je anoniman.";
@@ -2289,7 +2289,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Samo povucite prstom za odgovor";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Uključi pokazitelje tipkanja";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Sada možete izabrati zadani i po razgovoru određen zvuk obavijesti, a pozivi će poštovati ton zvona koji ste izabrali za svaki kontakt u sistemu.";
@@ -2322,7 +2322,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Predstavljanje pokazatelja tipkanja";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal sada podržava sigurne video pozive. Dovoljno je da uspostavite uobičajen poziv i dotaknete ikonu kamere.";
@@ -2337,7 +2337,7 @@
 "UPGRADE_IOS_ALERT_TITLE" = "Ažuriraj iOS";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Upgrading Signal…";
+"Upgrading Signal ..." = "Signal se nadograđuje...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Nazad";
@@ -2373,7 +2373,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Status provjere je promijenjen.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "View Safety Number";
+"VERIFY_PRIVACY" = "Vidi sigurnosni broj";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Pregledajte sigurnosne brojeve";

@@ -2289,7 +2289,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Pyyhkäise vastataksesi";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Ota käyttöön kirjoitustilaindikaattori";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Nyt voit valita oletus ja keskustelukohtaiset ilmoitusäänet. Myös puhelut noudattavat niitä soittoääniä, jotka olet valinnut puhelimesi asetuksissa kullekin yhteystiedollesi.";

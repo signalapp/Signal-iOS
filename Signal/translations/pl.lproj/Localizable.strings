@@ -919,7 +919,7 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Zbyt dużo nieudanych prób dla tego kontaktu. Spróbuj ponownie później.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before sending this message again.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Twój numer bezpieczeństwa z %@ zmienił się. Możesz go zweryfikować przed ponownym wysłaniem wiadomości.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Nie udało się zweryfikować kodu zabezpieczenia.";
@@ -1069,7 +1069,7 @@
 "INCOMING_DECLINED_CALL" = "Odrzuciłeś(aś) połączenie";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Nadchodzące połączenie";
+"INCOMING_INCOMPLETE_CALL" = "Połączenie przychodzące";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Nieodebrane połączenie ponieważ ich kod zabezpieczenia się zmienił.";
@@ -1938,7 +1938,7 @@
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Kopia zapasowa włączona";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "Phase";
+"SETTINGS_BACKUP_PHASE" = "Okres";
 
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "Postęp";
@@ -2112,16 +2112,16 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Zapieczętowany Nadawca";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Wyświetl wskaźniki";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Pokaż ikonę stanu po wybraniu \"Więcej informacji\" w wiadomościach dostarczonych za pomocą zapieczętowanego nadawcy.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Zezwól wszystkim";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Włącz zapieczętowanego nadawcę dla wiadomości przychodzących od osób niebędących w Twoich kontaktach oraz od osób, którym nie udostępniono Twojego profilu.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Wersja";
@@ -2289,7 +2289,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Przesuń by odebrać";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Włącz wskaźniki pisania";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Możesz wybrać pomiędzy dźwiękami domyślnymi, bądź przypisanymi do konkretnych konwersacji, a połączenia wykorzystują dzwonki przypisane do kontaktów.";
@@ -2349,13 +2349,13 @@
 "VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Zadzwoń do mnie";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Pobierz kod ponownie";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Wyślij ponownie kod przez SMS";
 
 /* button text during registration to submit your SMS verification code. */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Wyślij";
 
 /* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Wprowadź kod weryfikacyjny który wysłaliśmy do %@.";
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "Wprowadź kod weryfikacyjny, który wysłaliśmy na %@.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@ oznaczony jako niezweryfikowany.";

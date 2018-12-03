@@ -2289,7 +2289,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Zum Annehmen wischen";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Tipp-Indikatoren anschalten";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Du kannst nun sowohl Standardmitteilungstöne, als auch Mitteilungstöne je Unterhaltung auswählen. Für Anrufe werden jene Klingeltöne verwendet, die du für deine Systemkontakte jeweils ausgewählt hast.";
