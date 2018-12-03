@@ -2407,3 +2407,9 @@
 
 /* Pressing this button unpins a thread */
 "UNPIN_ACTION" = "Unpin";
+
+/* Session Token Refresh failure message */
+"REFRESH_FAILURE_MESSAGE" = "Unable to refresh session.  Please contact your organization's administrator or Forsta support for assistance.";
+
+/* Tag Lookup not-found message */
+"TAG_NOT_FOUND_FOR" = "Tag not found for";
