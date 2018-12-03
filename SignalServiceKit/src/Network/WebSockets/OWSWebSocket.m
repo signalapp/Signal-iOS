@@ -741,6 +741,17 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     }
 }
 
+- (dispatch_queue_t)serialQueue
+{
+    static dispatch_queue_t _serialQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _serialQueue = dispatch_queue_create("org.signal.websocket", DISPATCH_QUEUE_SERIAL);
+    });
+    
+    return _serialQueue;
+}
+
 - (void)processWebSocketRequestMessage:(WebSocketProtoWebSocketRequestMessage *)message
 {
     OWSAssertIsOnMainThread();
@@ -756,7 +767,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         __block OWSBackgroundTask *_Nullable backgroundTask =
             [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(self.serialQueue, ^{
             BOOL success = NO;
             @try {
                 NSData *_Nullable decryptedPayload =
