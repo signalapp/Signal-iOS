@@ -33,8 +33,9 @@ class LoginViewController: UITableViewController {
     private var usernameString: String {
         get {
             if let userOrgString = self.usernameTextField.text {
-                let firstColonIndex = userOrgString.firstIndex(of: ":") ?? userOrgString.endIndex
-                let user = userOrgString.prefix(upTo: firstColonIndex)
+                let strippedString = userOrgString.trimmingCharacters(in: CharacterSet(["@"]))
+                let firstColonIndex = strippedString.firstIndex(of: ":") ?? strippedString.endIndex
+                let user = strippedString.prefix(upTo: firstColonIndex)
                 if user.count > 0 {
                     return String(user)
                 }
@@ -191,8 +192,18 @@ class LoginViewController: UITableViewController {
 
 extension LoginViewController : UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+      
+        if !string.isEmpty {
+            if Array(string)[0] == "@" {
+                if range.location == 0 {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
         
-        if (string.rangeOfCharacter(from: .whitespacesAndNewlines) != nil) {
+        if string.rangeOfCharacter(from: .whitespacesAndNewlines) != nil {
             return false
         }
         
