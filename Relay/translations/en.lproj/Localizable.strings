@@ -2366,7 +2366,7 @@
 /* Forsta additions */
 "SUBMIT" = "Submit";
 "CREATE_ACCOUNT_BUTTON" = "Create Account";
-"ENTER_USERNAME_LABEL" = "Enter Username";
+"ENTER_USERNAME_LABEL" = "Enter @username:organization";
 "ENTER_ORGANIZATION_LABEL" = "Enter Organization (Optional)";
 "REGISTRATION_VERIFY_DEVICE" = "Verify This Device";
 "ENTER_VALIDATION_CODE" = "Enter Authentication Code";
