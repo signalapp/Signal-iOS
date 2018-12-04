@@ -51,9 +51,7 @@ public class BackupLazyRestore: NSObject {
 
     // MARK: -
 
-    private var backgroundQueue = {
-        DispatchQueue.global(qos: .background)
-    }()
+    private let backgroundQueue = DispatchQueue.global(qos: .background)
 
     @objc
     public func runIfNecessary() {
@@ -100,13 +98,12 @@ public class BackupLazyRestore: NSObject {
 
     private func tryToRestoreNextAttachment(attachmentIds: [String], errorCount: UInt, backupIO: OWSBackupIO) {
         var attachmentIdsCopy = attachmentIds
-        guard let attachmentId = attachmentIdsCopy.last else {
+        guard let attachmentId = attachmentIdsCopy.popLast() else {
             // This job is done.
             Logger.verbose("job is done.")
             complete(errorCount: errorCount)
             return
         }
-        attachmentIdsCopy.removeLast()
         guard let attachmentPointer = TSAttachment.fetch(uniqueId: attachmentId) as? TSAttachmentPointer else {
             Logger.warn("could not load attachment.")
             // Not necessarily an error.
@@ -117,21 +114,17 @@ public class BackupLazyRestore: NSObject {
         }
         backup.lazyRestoreAttachment(attachmentPointer,
                                      backupIO: backupIO)
-            .done { _ in
+            .done(on: self.backgroundQueue) { _ in
                 Logger.info("Restored attachment.")
 
-                self.backgroundQueue.async {
-                    // Continue trying to restore the other attachments.
-                    self.tryToRestoreNextAttachment(attachmentIds: attachmentIdsCopy, errorCount: errorCount, backupIO: backupIO)
-                }
-            }.catch { (error) in
+                // Continue trying to restore the other attachments.
+                self.tryToRestoreNextAttachment(attachmentIds: attachmentIdsCopy, errorCount: errorCount, backupIO: backupIO)
+            }.catch(on: self.backgroundQueue) { (error) in
                 Logger.error("Could not restore attachment: \(error)")
 
-                self.backgroundQueue.async {
-                    // Continue trying to restore the other attachments.
-                    self.tryToRestoreNextAttachment(attachmentIds: attachmentIdsCopy, errorCount: errorCount + 1, backupIO: backupIO)
-                }
-        }
+                // Continue trying to restore the other attachments.
+                self.tryToRestoreNextAttachment(attachmentIds: attachmentIdsCopy, errorCount: errorCount + 1, backupIO: backupIO)
+            }.retainUntilComplete()
     }
 
     private func complete(errorCount: UInt) {
