@@ -237,14 +237,14 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                                      progress:@(progress)];
                       })
                       .thenInBackground(^{
-                          return [self downloadFileFromCloud:item ignoreErrors:NO];
+                          return [self downloadFileFromCloud:item];
                       });
     }
 
     return promise;
 }
 
-- (AnyPromise *)downloadFileFromCloud:(OWSBackupFragment *)item ignoreErrors:(BOOL)ignoreErrors
+- (AnyPromise *)downloadFileFromCloud:(OWSBackupFragment *)item
 {
     OWSAssertDebug(item);
 
@@ -280,11 +280,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 resolve(@(1));
             })
             .catchInBackground(^(NSError *error) {
-                if (ignoreErrors) {
-                    resolve(@(1));
-                } else {
-                    resolve(error);
-                }
+                resolve(error);
             });
     }];
 }
@@ -302,7 +298,10 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     if (self.manifest.localProfileAvatarItem) {
         promise = promise.thenInBackground(^{
-            return [self downloadFileFromCloud:self.manifest.localProfileAvatarItem ignoreErrors:YES];
+            return
+                [self downloadFileFromCloud:self.manifest.localProfileAvatarItem].catchInBackground(^(NSError *error) {
+                    OWSLogInfo(@"Ignoring error; profiles are optional: %@", error);
+                });
         });
     }
 
