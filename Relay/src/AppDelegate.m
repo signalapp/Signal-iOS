@@ -671,7 +671,7 @@ static NSTimeInterval launchStartedAt;
                                                                     UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
                                                                                                                        style:UIAlertActionStyleDefault
                                                                                                                      handler:^(UIAlertAction *action) {
-                                                                                                                         [TSAccountManager.sharedInstance setIsDeregistered:YES];
+                                                                                                                         // TODO:  Re-implement RegistrationUtils.h to handle this
                                                                                                                          [self returnToLogin];
                                                                                                                      }];
                                                                     [alert addAction:okAction];
