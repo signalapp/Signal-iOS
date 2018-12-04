@@ -11,11 +11,38 @@ import UIKit
 class LoginViewController: UITableViewController {
 
     @IBOutlet private weak var usernameTextField: UITextField!
-    @IBOutlet private weak var organizationTextField: UITextField!
     @IBOutlet private weak var loginButton: UIButton!
     @IBOutlet private weak var spinner: UIActivityIndicatorView!
     @IBOutlet private weak var createAccountButton: UIButton!
     @IBOutlet private weak var orLabel: UILabel!
+    
+    private var orgString: String {
+        get {
+            if let userOrgString = self.usernameTextField.text {
+                if let firstColonIndex = userOrgString.firstIndex(of: ":") {
+                    let orgIndex = userOrgString.index(firstColonIndex, offsetBy: 1)
+                    let org = userOrgString.suffix(from: orgIndex)
+                    if org.count > 0 {
+                        return String(org)
+                    }
+                }
+            }
+            return "forsta"
+        }
+    }
+    private var usernameString: String {
+        get {
+            if let userOrgString = self.usernameTextField.text {
+                let strippedString = userOrgString.trimmingCharacters(in: CharacterSet(["@"]))
+                let firstColonIndex = strippedString.firstIndex(of: ":") ?? strippedString.endIndex
+                let user = strippedString.prefix(upTo: firstColonIndex)
+                if user.count > 0 {
+                    return String(user)
+                }
+            }
+            return ""
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +56,6 @@ class LoginViewController: UITableViewController {
         
         // Localize the things
         self.usernameTextField.placeholder = NSLocalizedString("ENTER_USERNAME_LABEL", comment: "")
-        self.organizationTextField.placeholder = NSLocalizedString("Enter Organization (Optional)", comment: "")
         self.loginButton.titleLabel?.text = NSLocalizedString("SUBMIT", comment: "")
         self.createAccountButton.titleLabel?.text = NSLocalizedString("CREATE_ACCOUNT_BUTTON", comment: "")
     }
@@ -99,16 +125,11 @@ class LoginViewController: UITableViewController {
     
     // MARK: - Actions
     @IBAction private func onLoginButtonTap(sender: Any) {
-        if self.isValidOrg(org: self.organizationTextField.text!) && self.isValidUsername(username: self.usernameTextField.text!) {
+        if self.isValidOrg(org: orgString) && self.isValidUsername(username: usernameString) {
             self.startSpinner()
             
-            var org = self.organizationTextField.text
-            if org?.count == 0 {
-                org = "forsta"
-            }
-            
-            CCSMCommManager.requestLogin(self.usernameTextField.text!,
-                                         orgName: org!,
+            CCSMCommManager.requestLogin(usernameString,
+                                         orgName: orgString,
                                          success: {
                                             self.stopSpinner()
                                             self.proceedWithSMSAuth()
@@ -122,33 +143,28 @@ class LoginViewController: UITableViewController {
                                                     self.proceedWithPasswordAuth()
                                                 }
                                             } else {
-                                                self.presentInfoAlert(message: (error?.localizedDescription)!)
+                                                self.presentInfoAlert(message: (error?.localizedDescription)!.capitalized(with: NSLocale.current))
                                             }
             })
-        } else {
-            self.presentInfoAlert(message: NSLocalizedString("USERNAME_ORG_ERROR", comment: ""))
         }
     }
     
     // MARK: - Notification handler(s)
     @objc func updateLoginButton() {
-        if self.usernameTextField.text!.count > 0 {
-            self.loginButton.enable()
-        } else {
+        if (usernameString.isEmpty || orgString.isEmpty) {
             self.loginButton.disable()
+        } else {
+            self.loginButton.enable()
         }
     }
 
     
     // MARK: - Helpers
     private func isValidOrg(org: String) -> Bool {
-        // TODO: Someday apply regex here for more thorough validation
-//        return (org.count > 0)
-        return true
+        return (org.count > 0)
     }
     
     private func isValidUsername(username: String) -> Bool {
-        // TODO: Someday apply regex here for more thorough validation
         return (username.count > 0)
     }
     
@@ -166,6 +182,27 @@ class LoginViewController: UITableViewController {
             self.loginButton.enable()
             self.createAccountButton.enable()
         })
+    }
+}
+
+extension LoginViewController : UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+      
+        if !string.isEmpty {
+            if Array(string)[0] == "@" {
+                if range.location == 0 {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+        
+        if string.rangeOfCharacter(from: .whitespacesAndNewlines) != nil {
+            return false
+        }
+        
+        return true
     }
 }
 
