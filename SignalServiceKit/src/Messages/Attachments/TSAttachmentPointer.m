@@ -183,7 +183,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self.lazyRestoreFragmentId) {
         return nil;
     }
-    return [OWSBackupFragment fetchObjectWithUniqueID:self.lazyRestoreFragmentId];
+    OWSBackupFragment *_Nullable backupFragment =
+        [OWSBackupFragment fetchObjectWithUniqueID:self.lazyRestoreFragmentId];
+    OWSAssertDebug(backupFragment);
+    return backupFragment;
 }
 
 #pragma mark - Update With... Methods

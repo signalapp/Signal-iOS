@@ -29,6 +29,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 @property (nonatomic) OWSBackupManifestContents *manifest;
 
+@property (nonatomic, nullable) YapDatabaseConnection *dbConnection;
+
 @end
 
 #pragma mark -
@@ -92,6 +94,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     self.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
+    self.dbConnection = self.primaryStorage.newDatabaseConnection;
+
     [self updateProgressWithDescription:nil progress:nil];
 
     [[self.backup ensureCloudKitAccess]
@@ -150,7 +154,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     [allItems addObjectsFromArray:self.attachmentsItems];
 
     // Record metadata for all items, so that we can re-use them in incremental backups after the restore.
-    [self.primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSBackupFragment *item in allItems) {
             [item saveWithTransaction:transaction];
         }
@@ -171,7 +175,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         })
         .then(^{
             // Kick off lazy restore on main thread.
-            [self.backupLazyRestore runIfNecessary];
+            [self.backupLazyRestore clearCompleteAndRunIfNecessary];
 
             [self.profileManager fetchLocalUsersProfile];
 
@@ -324,8 +328,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     }
 
     __block NSUInteger count = 0;
-    YapDatabaseConnection *dbConnection = self.primaryStorage.newDatabaseConnection;
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSBackupFragment *item in self.attachmentsItems) {
             if (self.isComplete) {
                 return;
@@ -379,12 +382,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
     }
 
-    YapDatabaseConnection *_Nullable dbConnection = self.primaryStorage.newDatabaseConnection;
-    if (!dbConnection) {
-        OWSFailDebug(@"Could not create dbConnection.");
-        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Could not create dbConnection.")];
-    }
-
     // Order matters here.
     NSArray<NSString *> *collectionsToRestore = @[
         [TSThread collection],
@@ -397,7 +394,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     NSMutableDictionary<NSString *, NSNumber *> *restoredEntityCounts = [NSMutableDictionary new];
     __block unsigned long long copiedEntities = 0;
     __block BOOL aborted = NO;
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (NSString *collection in collectionsToRestore) {
             if ([collection isEqualToString:[OWSDatabaseMigration collection]]) {
                 // It's okay if there are existing migrations; we'll clear those

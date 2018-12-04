@@ -73,6 +73,14 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIBackup clearBackupMetadataCache];
                                      }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Log Backup Metadata Cache"
+                                     actionBlock:^{
+                                         [DebugUIBackup logBackupMetadataCache];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Lazy Restore Attachments"
+                                     actionBlock:^{
+                                         [AppEnvironment.shared.backupLazyRestore runIfNecessary];
+                                     }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
@@ -191,19 +199,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearAllCloudKitRecords
 {
-    OWSLogInfo(@"clearAllCloudKitRecords.");
+    OWSLogInfo(@"");
 
     [OWSBackup.sharedManager clearAllCloudKitRecords];
 }
 
 + (void)clearBackupMetadataCache
 {
-    OWSLogInfo(@"ClearBackupMetadataCache.");
+    OWSLogInfo(@"");
 
     [OWSPrimaryStorage.sharedManager.newDatabaseConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [transaction removeAllObjectsInCollection:[OWSBackupFragment collection]];
         }];
+}
+
++ (void)logBackupMetadataCache
+{
+    [self.backup logBackupMetadataCache:OWSPrimaryStorage.sharedManager.newDatabaseConnection];
 }
 
 @end

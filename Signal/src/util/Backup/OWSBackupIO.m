@@ -76,6 +76,10 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
     OWSAssertDebug(encryptionKey.length > 0);
 
     @autoreleasepool {
+        if (![[NSFileManager defaultManager] fileExistsAtPath:srcFilePath]) {
+            OWSFailDebug(@"Missing source file.");
+            return nil;
+        }
 
         // TODO: Encrypt the file without loading it into memory.
         NSData *_Nullable srcData = [NSData dataWithContentsOfFile:srcFilePath];

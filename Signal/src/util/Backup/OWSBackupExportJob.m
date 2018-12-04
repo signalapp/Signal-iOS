@@ -315,6 +315,8 @@ NS_ASSUME_NONNULL_BEGIN
 // If we are replacing an existing backup, we use some of its contents for continuity.
 @property (nonatomic, nullable) NSSet<NSString *> *lastValidRecordNames;
 
+@property (nonatomic, nullable) YapDatabaseConnection *dbConnection;
+
 @end
 
 #pragma mark -
@@ -353,6 +355,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     [self updateProgressWithDescription:nil progress:nil];
+
+    self.dbConnection = self.primaryStorage.newDatabaseConnection;
 
     [[self.backup ensureCloudKitAccess]
             .thenInBackground(^{
@@ -479,12 +483,6 @@ NS_ASSUME_NONNULL_BEGIN
                                             @"Indicates that the database data is being exported.")
                                progress:nil];
 
-    YapDatabaseConnection *_Nullable dbConnection = self.primaryStorage.newDatabaseConnection;
-    if (!dbConnection) {
-        OWSFailDebug(@"Could not create dbConnection.");
-        return NO;
-    }
-
     OWSDBExportStream *exportStream = [[OWSDBExportStream alloc] initWithBackupIO:self.backupIO];
 
     __block BOOL aborted = NO;
@@ -548,7 +546,7 @@ NS_ASSUME_NONNULL_BEGIN
     __block NSUInteger copiedMigrations = 0;
     __block NSUInteger copiedMisc = 0;
     self.unsavedAttachmentExports = [NSMutableArray new];
-    [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         copiedThreads = exportEntities(transaction,
             [TSThread collection],
             [TSThread class],
@@ -570,10 +568,9 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 TSAttachmentStream *attachmentStream = object;
                 NSString *_Nullable filePath = attachmentStream.originalFilePath;
-                if (!filePath) {
-                    OWSLogError(@"attachment is missing file.");
+                if (!filePath || ![NSFileManager.defaultManager fileExistsAtPath:filePath]) {
+                    OWSFailDebug(@"attachment is missing file.");
                     return NO;
-                    OWSAssertDebug(attachmentStream.uniqueId.length > 0);
                 }
 
                 // OWSAttachmentExport is used to lazily write an encrypted copy of the
@@ -866,13 +863,15 @@ NS_ASSUME_NONNULL_BEGIN
             [self.savedAttachmentItems addObject:exportItem];
 
             // Immediately save the record metadata to facilitate export resume.
-            OWSBackupFragment *backupFragment = [OWSBackupFragment new];
+            OWSBackupFragment *backupFragment = [[OWSBackupFragment alloc] initWithUniqueId:recordName];
             backupFragment.recordName = recordName;
             backupFragment.encryptionKey = exportItem.encryptedItem.encryptionKey;
             backupFragment.relativeFilePath = attachmentExport.relativeFilePath;
             backupFragment.attachmentId = attachmentExport.attachmentId;
             backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
-            [backupFragment save];
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [backupFragment saveWithTransaction:transaction];
+            }];
 
             OWSLogVerbose(
                 @"saved attachment: %@ as %@", attachmentExport.attachmentFilePath, attachmentExport.relativeFilePath);
@@ -1064,9 +1063,11 @@ NS_ASSUME_NONNULL_BEGIN
     // After every successful backup export, we can (and should) cull metadata
     // for any backup fragment (i.e. CloudKit record) that wasn't involved in
     // the latest backup export.
-    [self.primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        NSArray<NSString *> *allRecordNames = [transaction allKeysInCollection:[OWSBackupFragment collection]];
+
         NSMutableSet<NSString *> *obsoleteRecordNames = [NSMutableSet new];
-        [obsoleteRecordNames addObjectsFromArray:[transaction allKeysInCollection:[OWSBackupFragment collection]]];
+        [obsoleteRecordNames addObjectsFromArray:allRecordNames];
         [obsoleteRecordNames minusSet:activeRecordNames];
         
         [transaction removeObjectsForKeys:obsoleteRecordNames.allObjects inCollection:[OWSBackupFragment collection]];
