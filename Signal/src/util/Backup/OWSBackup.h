@@ -51,6 +51,8 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 @property (nonatomic, readonly, nullable) NSString *backupExportDescription;
 @property (nonatomic, readonly, nullable) NSNumber *backupExportProgress;
 
++ (BOOL)isFeatureEnabled;
+
 - (BOOL)isBackupEnabled;
 - (void)setIsBackupEnabled:(BOOL)value;
 

@@ -186,6 +186,11 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     return SSKEnvironment.shared.tsAccountManager;
 }
 
++ (BOOL)isFeatureEnabled
+{
+    return NO;
+}
+
 #pragma mark - Backup Export
 
 - (void)tryToExportBackup
@@ -348,6 +353,10 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 - (void)ensureBackupExportState
 {
     OWSAssertIsOnMainThread();
+
+    if (!OWSBackup.isFeatureEnabled) {
+        return;
+    }
 
     if (!CurrentAppContext().isMainApp) {
         return;

@@ -35,6 +35,11 @@ class DebugUIProfile: DebugUIPage {
             OWSTableItem(title: "Log User Profiles") {
                 profileManager.logUserProfiles()
             },
+            OWSTableItem(title: "Log Profile Key") {
+                let localProfileKey = profileManager.localProfileKey()
+                Logger.info("localProfileKey: \(localProfileKey.keyData.hexadecimalString)")
+                profileManager.logUserProfiles()
+            },
             OWSTableItem(title: "Regenerate Profile/ProfileKey") {
                 profileManager.regenerateLocalProfile()
             },
