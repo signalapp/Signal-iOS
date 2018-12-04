@@ -11,11 +11,37 @@ import UIKit
 class LoginViewController: UITableViewController {
 
     @IBOutlet private weak var usernameTextField: UITextField!
-    @IBOutlet private weak var organizationTextField: UITextField!
     @IBOutlet private weak var loginButton: UIButton!
     @IBOutlet private weak var spinner: UIActivityIndicatorView!
     @IBOutlet private weak var createAccountButton: UIButton!
     @IBOutlet private weak var orLabel: UILabel!
+    
+    private var orgString: String {
+        get {
+            if let userOrgString = self.usernameTextField.text {
+                if let firstColonIndex = userOrgString.firstIndex(of: ":") {
+                    let orgIndex = userOrgString.index(firstColonIndex, offsetBy: 1)
+                    let org = userOrgString.suffix(from: orgIndex)
+                    if org.count > 0 {
+                        return String(org)
+                    }
+                }
+            }
+            return "forsta"
+        }
+    }
+    private var usernameString: String {
+        get {
+            if let userOrgString = self.usernameTextField.text {
+                let firstColonIndex = userOrgString.firstIndex(of: ":") ?? userOrgString.endIndex
+                let user = userOrgString.prefix(upTo: firstColonIndex)
+                if user.count > 0 {
+                    return String(user)
+                }
+            }
+            return ""
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +55,6 @@ class LoginViewController: UITableViewController {
         
         // Localize the things
         self.usernameTextField.placeholder = NSLocalizedString("ENTER_USERNAME_LABEL", comment: "")
-        self.organizationTextField.placeholder = NSLocalizedString("Enter Organization (Optional)", comment: "")
         self.loginButton.titleLabel?.text = NSLocalizedString("SUBMIT", comment: "")
         self.createAccountButton.titleLabel?.text = NSLocalizedString("CREATE_ACCOUNT_BUTTON", comment: "")
     }
@@ -99,16 +124,11 @@ class LoginViewController: UITableViewController {
     
     // MARK: - Actions
     @IBAction private func onLoginButtonTap(sender: Any) {
-        if self.isValidOrg(org: self.organizationTextField.text!) && self.isValidUsername(username: self.usernameTextField.text!) {
+        if self.isValidOrg(org: orgString) && self.isValidUsername(username: usernameString) {
             self.startSpinner()
             
-            var org = self.organizationTextField.text
-            if org?.count == 0 {
-                org = "forsta"
-            }
-            
-            CCSMCommManager.requestLogin(self.usernameTextField.text!,
-                                         orgName: org!,
+            CCSMCommManager.requestLogin(usernameString,
+                                         orgName: orgString,
                                          success: {
                                             self.stopSpinner()
                                             self.proceedWithSMSAuth()
@@ -166,6 +186,17 @@ class LoginViewController: UITableViewController {
             self.loginButton.enable()
             self.createAccountButton.enable()
         })
+    }
+}
+
+extension LoginViewController : UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
+        if (string.rangeOfCharacter(from: .whitespacesAndNewlines) != nil) {
+            return false
+        }
+        
+        return true
     }
 }
 
