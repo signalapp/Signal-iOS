@@ -42,7 +42,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 
 #pragma mark - Backup Export
 
-@property (nonatomic, readonly) OWSBackupState backupExportState;
+@property (atomic, readonly) OWSBackupState backupExportState;
 
 // If a "backup export" is in progress (see backupExportState),
 // backupExportDescription _might_ contain a string that describes
@@ -65,7 +65,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 
 #pragma mark - Backup Import
 
-@property (nonatomic, readonly) OWSBackupState backupImportState;
+@property (atomic, readonly) OWSBackupState backupImportState;
 
 // If a "backup import" is in progress (see backupImportState),
 // backupImportDescription _might_ contain a string that describes

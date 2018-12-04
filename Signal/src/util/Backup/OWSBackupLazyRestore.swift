@@ -47,6 +47,12 @@ public class BackupLazyRestore: NSObject {
         NotificationCenter.default.addObserver(forName: .reachabilityChanged, object: nil, queue: nil) { _ in
             self.runIfNecessary()
         }
+        NotificationCenter.default.addObserver(forName: .reachabilityChanged, object: nil, queue: nil) { _ in
+            self.runIfNecessary()
+        }
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(NSNotificationNameBackupStateDidChange), object: nil, queue: nil) { _ in
+            self.runIfNecessary()
+        }
     }
 
     // MARK: -
@@ -63,6 +69,11 @@ public class BackupLazyRestore: NSObject {
     }
 
     @objc
+    public func isBackupImportInProgress() -> Bool {
+        return backup.backupImportState == .inProgress
+    }
+
+    @objc
     public func runIfNecessary() {
         AssertIsOnMainThread()
 
@@ -70,6 +81,9 @@ public class BackupLazyRestore: NSObject {
             return
         }
         guard tsAccountManager.isRegisteredAndReady() else {
+            return
+        }
+        guard !isBackupImportInProgress() else {
             return
         }
         guard !isRunning, !isComplete else {
@@ -106,6 +120,12 @@ public class BackupLazyRestore: NSObject {
     }
 
     private func tryToRestoreNextAttachment(attachmentIds: [String], errorCount: UInt, backupIO: OWSBackupIO) {
+        guard !isBackupImportInProgress() else {
+            Logger.verbose("A backup import is in progress; abort.")
+            complete(errorCount: errorCount + 1)
+            return
+        }
+
         var attachmentIdsCopy = attachmentIds
         guard let attachmentId = attachmentIdsCopy.popLast() else {
             // This job is done.
