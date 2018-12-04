@@ -387,6 +387,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     // MARK: - UICollectionView
 
+    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        guard let indexPathsForSelectedItems = collectionView.indexPathsForSelectedItems else {
+            return true
+        }
+
+        return indexPathsForSelectedItems.count < SignalAttachment.maxAttachmentsAllowed
+    }
+
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
         let asset = photoCollectionContents.asset(at: indexPath.item)
