@@ -38,7 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSNumber *uncompressedDataLength;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_DESIGNATED_INITIALIZER;
 
 @end
 

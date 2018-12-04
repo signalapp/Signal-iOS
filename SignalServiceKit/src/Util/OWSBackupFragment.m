@@ -8,16 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSBackupFragment
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-{
-    self = [super initWithUniqueId:uniqueId];
-    if (!self) {
-        return self;
-    }
-
-    return self;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END
