@@ -74,15 +74,6 @@ public class BackupLazyRestore: NSObject {
     }
 
     @objc
-    public func clearCompleteAndRunIfNecessary() {
-        AssertIsOnMainThread()
-
-        isComplete = false
-
-        runIfNecessary()
-    }
-
-    @objc
     public func runIfNecessary() {
         AssertIsOnMainThread()
 
