@@ -402,7 +402,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     [self.progressView autoPinWidthToSuperviewWithMargin:24];
     [self.progressView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:progressAlert.view withOffset:4];
 #ifdef DEBUG
-    if (@available(iOS 12, *)) {
+    if (@available(iOS 13, *)) {
         // TODO: Congratulations! You survived to see another iOS release.
         OWSFailDebug(@"Make sure the progress view still looks good, and increment the version canary.");
     }
