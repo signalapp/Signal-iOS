@@ -143,33 +143,28 @@ class LoginViewController: UITableViewController {
                                                     self.proceedWithPasswordAuth()
                                                 }
                                             } else {
-                                                self.presentInfoAlert(message: (error?.localizedDescription)!)
+                                                self.presentInfoAlert(message: (error?.localizedDescription)!.capitalized(with: NSLocale.current))
                                             }
             })
-        } else {
-            self.presentInfoAlert(message: NSLocalizedString("USERNAME_ORG_ERROR", comment: ""))
         }
     }
     
     // MARK: - Notification handler(s)
     @objc func updateLoginButton() {
-        if self.usernameTextField.text!.count > 0 {
-            self.loginButton.enable()
-        } else {
+        if (usernameString.isEmpty || orgString.isEmpty) {
             self.loginButton.disable()
+        } else {
+            self.loginButton.enable()
         }
     }
 
     
     // MARK: - Helpers
     private func isValidOrg(org: String) -> Bool {
-        // TODO: Someday apply regex here for more thorough validation
-//        return (org.count > 0)
-        return true
+        return (org.count > 0)
     }
     
     private func isValidUsername(username: String) -> Bool {
-        // TODO: Someday apply regex here for more thorough validation
         return (username.count > 0)
     }
     
