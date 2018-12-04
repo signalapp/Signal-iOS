@@ -107,6 +107,11 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
++ (BOOL)isFeatureEnabled
+{
+    return NO;
+}
+
 #pragma mark - Backup Export
 
 - (void)tryToExportBackup
@@ -250,6 +255,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ensureBackupExportState
 {
     OWSAssertIsOnMainThread();
+
+    if (!OWSBackup.isFeatureEnabled) {
+        return;
+    }
 
     // Start or abort a backup export if neccessary.
     if (!self.shouldHaveBackupExport && self.backupExportJob) {
