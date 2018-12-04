@@ -58,6 +58,9 @@ import SignalMessaging
     @objc
     public var backup: OWSBackup
 
+    @objc
+    public var backupLazyRestore: BackupLazyRestore
+
     private override init() {
         self.callMessageHandler = WebRTCCallMessageHandler()
         self.callService = CallService()
@@ -70,6 +73,7 @@ import SignalMessaging
         self.pushManager = PushManager()
         self.sessionResetJobQueue = SessionResetJobQueue()
         self.backup = OWSBackup()
+        self.backupLazyRestore = BackupLazyRestore()
 
         super.init()
 

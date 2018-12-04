@@ -63,14 +63,17 @@ import PromiseKit
     // complete.
     @objc
     public class func saveEphemeralFileToCloudObjc(recipientId: String,
+                                                   label: String,
                                                    fileUrl: URL) -> AnyPromise {
         return AnyPromise(saveEphemeralFileToCloud(recipientId: recipientId,
+                                                   label: label,
                                                    fileUrl: fileUrl))
     }
 
     public class func saveEphemeralFileToCloud(recipientId: String,
+                                               label: String,
                                                fileUrl: URL) -> Promise<String> {
-        let recordName = "\(recordNamePrefix(forRecipientId: recipientId))ephemeralFile-\(NSUUID().uuidString)"
+        let recordName = "\(recordNamePrefix(forRecipientId: recipientId))ephemeral-\(label)-\(NSUUID().uuidString)"
         return saveFileToCloud(fileUrl: fileUrl,
                                recordName: recordName,
                                recordType: signalBackupRecordType)
@@ -208,6 +211,8 @@ import PromiseKit
 
     private class func saveRecordToCloud(record: CKRecord,
                                          remainingRetries: Int) -> Promise<String> {
+
+        Logger.verbose("saveRecordToCloud \(record.recordID.recordName)")
 
         return Promise { resolver in
             let saveOperation = CKModifyRecordsOperation(recordsToSave: [record ], recordIDsToDelete: nil)
@@ -388,6 +393,8 @@ import PromiseKit
 
     private class func checkForFileInCloud(recordName: String,
                                            remainingRetries: Int) -> Promise<CKRecord?> {
+
+        Logger.verbose("checkForFileInCloud \(recordName)")
 
         let (promise, resolver) = Promise<CKRecord?>.pending()
 
@@ -642,6 +649,8 @@ import PromiseKit
     // the asset.
     private class func downloadFromCloud(recordName: String,
                                          remainingRetries: Int) -> Promise<CKAsset> {
+
+        Logger.verbose("downloadFromCloud \(recordName)")
 
         let (promise, resolver) = Promise<CKAsset>.pending()
 

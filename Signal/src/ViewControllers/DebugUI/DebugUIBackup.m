@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSBackup.sharedManager
         checkCanImportBackup:^(BOOL value) {
-            OWSLogInfo(@"has backup available  for import? %d", value);
+            OWSLogInfo(@"has backup available for import? %d", value);
         }
                      failure:^(NSError *error){
                          // Do nothing.

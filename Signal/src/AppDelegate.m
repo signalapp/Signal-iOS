@@ -1212,11 +1212,6 @@ static NSTimeInterval launchStartedAt;
 
     [self.messageManager startObserving];
 
-#ifdef DEBUG
-    // Resume lazy restore.
-    [OWSBackupLazyRestoreJob runAsync];
-#endif
-
     [self.udManager setup];
 }
 

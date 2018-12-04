@@ -717,6 +717,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Add one for the manifest
     NSUInteger unsavedCount = (self.unsavedDatabaseItems.count + self.unsavedAttachmentExports.count + 1);
     NSUInteger savedCount = (self.savedDatabaseItems.count + self.savedAttachmentItems.count);
+    // Ignore localProfileAvatarItem for now.
 
     CGFloat progress = (savedCount / (CGFloat)(unsavedCount + savedCount));
     [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_UPLOAD",
@@ -756,8 +757,9 @@ NS_ASSUME_NONNULL_BEGIN
 
                       return [OWSBackupAPI
                           saveEphemeralFileToCloudObjcWithRecipientId:self.recipientId
-                                                                      fileUrl:[NSURL fileURLWithPath:item.encryptedItem
-                                                                                                         .filePath]];
+                                                                label:@"database"
+                                                              fileUrl:[NSURL
+                                                                          fileURLWithPath:item.encryptedItem.filePath]];
                   })
                   .thenInBackground(^(NSString *recordName) {
                       item.recordName = recordName;
@@ -907,6 +909,7 @@ NS_ASSUME_NONNULL_BEGIN
     exportItem.encryptedItem = encryptedItem;
 
     return [OWSBackupAPI saveEphemeralFileToCloudObjcWithRecipientId:self.recipientId
+                                                               label:@"local-profile-avatar"
                                                              fileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]]
         .thenInBackground(^(NSString *recordName) {
             exportItem.recordName = recordName;
@@ -1025,6 +1028,12 @@ NS_ASSUME_NONNULL_BEGIN
         [activeRecordNames addObject:item.recordName];
     }
     for (OWSBackupExportItem *item in self.savedAttachmentItems) {
+        OWSAssertDebug(item.recordName.length > 0);
+        OWSAssertDebug(![activeRecordNames containsObject:item.recordName]);
+        [activeRecordNames addObject:item.recordName];
+    }
+    if (self.localProfileAvatarItem) {
+        OWSBackupExportItem *item = self.localProfileAvatarItem;
         OWSAssertDebug(item.recordName.length > 0);
         OWSAssertDebug(![activeRecordNames containsObject:item.recordName]);
         [activeRecordNames addObject:item.recordName];

@@ -123,7 +123,7 @@ public class BackupRestoreViewController: OWSTableViewController {
 
         backup.setHasPendingRestoreDecision(false)
 
-        dismiss(animated: true)
+        showHomeView()
     }
 
     @objc
