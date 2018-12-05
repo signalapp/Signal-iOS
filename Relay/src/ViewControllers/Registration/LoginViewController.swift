@@ -188,6 +188,7 @@ class LoginViewController: UITableViewController {
 extension LoginViewController : UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
       
+        // TODO: switch to using a regex for validation?  Perhaps something like: ([@]*[A-Za-z0-9.])+(:([A-Za-z0-9.])+)*
         if !string.isEmpty {
             if Array(string)[0] == "@" {
                 if range.location == 0 {
