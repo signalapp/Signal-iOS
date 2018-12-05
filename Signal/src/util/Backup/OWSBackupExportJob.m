@@ -18,6 +18,8 @@
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSThread.h>
 
+@import CloudKit;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSAttachmentExport;
@@ -738,153 +740,191 @@ NS_ASSUME_NONNULL_BEGIN
 // This method returns YES IFF "work was done and there might be more work to do".
 - (AnyPromise *)saveDatabaseFilesToCloud
 {
-    AnyPromise *promise = [AnyPromise promiseWithValue:@(1)];
+    if (self.isComplete) {
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+    }
 
-    // We need to preserve ordering of database shards.
-    for (OWSBackupExportItem *item in self.unsavedDatabaseItems) {
+    NSArray<OWSBackupExportItem *> *items = [self.unsavedDatabaseItems copy];
+    NSMutableArray<CKRecord *> *records = [NSMutableArray new];
+    for (OWSBackupExportItem *item in items) {
         OWSAssertDebug(item.encryptedItem.filePath.length > 0);
 
-        promise
-            = promise
-                  .thenInBackground(^{
-                      if (self.isComplete) {
-                          return [AnyPromise
-                              promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
-                      }
-
-                      return [OWSBackupAPI
-                          saveEphemeralFileToCloudObjcWithRecipientId:self.recipientId
-                                                                label:@"database"
-                                                              fileUrl:[NSURL
-                                                                          fileURLWithPath:item.encryptedItem.filePath]];
-                  })
-                  .thenInBackground(^(NSString *recordName) {
-                      item.recordName = recordName;
-                      [self.savedDatabaseItems addObject:item];
-                  });
+        NSString *recordName =
+            [OWSBackupAPI recordNameForEphemeralFileWithRecipientId:self.recipientId label:@"database"];
+        CKRecord *record =
+            [OWSBackupAPI recordForFileUrl:[NSURL fileURLWithPath:item.encryptedItem.filePath] recordName:recordName];
+        [records addObject:record];
     }
-    [self.unsavedDatabaseItems removeAllObjects];
-    return promise;
+
+    // TODO: Expose progress.
+    return [OWSBackupAPI saveRecordsToCloudObjcWithRecords:records].thenInBackground(^{
+        OWSAssertDebug(items.count == records.count);
+        NSUInteger count = MIN(items.count, records.count);
+        for (NSUInteger i = 0; i < count; i++) {
+            OWSBackupExportItem *item = items[i];
+            CKRecord *record = records[i];
+
+            OWSAssertDebug(record.recordID.recordName.length > 0);
+            item.recordName = record.recordID.recordName;
+        }
+
+        [self.savedDatabaseItems addObjectsFromArray:items];
+        [self.unsavedDatabaseItems removeObjectsInArray:items];
+    });
 }
 
 // This method returns YES IFF "work was done and there might be more work to do".
 - (AnyPromise *)saveAttachmentFilesToCloud
 {
+    if (self.isComplete) {
+        return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+    }
+
     AnyPromise *promise = [AnyPromise promiseWithValue:@(1)];
+    NSMutableArray<OWSAttachmentExport *> *items = [NSMutableArray new];
+    NSMutableArray<CKRecord *> *records = [NSMutableArray new];
 
     for (OWSAttachmentExport *attachmentExport in self.unsavedAttachmentExports) {
+        if ([self tryToSkipAttachmentUpload:attachmentExport]) {
+            continue;
+        }
+
         promise = promise.thenInBackground(^{
-            if (self.isComplete) {
-                return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup export no longer active.")];
+            @autoreleasepool {
+                // OWSAttachmentExport is used to lazily write an encrypted copy of the
+                // attachment to disk.
+                if (![attachmentExport prepareForUpload]) {
+                    // Attachment files are non-critical so any error preparing them is recoverable.
+                    return @(1);
+                }
+                OWSAssertDebug(attachmentExport.relativeFilePath.length > 0);
+                OWSAssertDebug(attachmentExport.encryptedItem);
             }
-            return [self saveAttachmentFileToCloud:attachmentExport];
+
+            NSURL *_Nullable fileUrl = ^{
+                if (attachmentExport.encryptedItem.filePath.length < 1) {
+                    OWSLogError(@"attachment export missing temp file path");
+                    return (NSURL *)nil;
+                }
+                if (attachmentExport.relativeFilePath.length < 1) {
+                    OWSLogError(@"attachment export missing relative file path");
+                    return (NSURL *)nil;
+                }
+                return [NSURL fileURLWithPath:attachmentExport.encryptedItem.filePath];
+            }();
+
+            if (!fileUrl) {
+                // Attachment files are non-critical so any error preparing them is recoverable.
+                return @(1);
+            }
+
+            NSString *recordName =
+                [OWSBackupAPI recordNameForPersistentFileWithRecipientId:self.recipientId
+                                                                  fileId:attachmentExport.attachmentId];
+            CKRecord *record = [OWSBackupAPI recordForFileUrl:fileUrl recordName:recordName];
+            [records addObject:record];
+            [items addObject:attachmentExport];
+            return @(1);
         });
     }
-    [self.unsavedAttachmentExports removeAllObjects];
-    return promise;
+
+    void (^cleanup)(void) = ^{
+        for (OWSAttachmentExport *attachmentExport in items) {
+            if (![attachmentExport cleanUp]) {
+                OWSLogError(@"couldn't clean up attachment export.");
+                // Attachment files are non-critical so any error uploading them is recoverable.
+            }
+        }
+    };
+
+    // TODO: Expose progress.
+    return promise
+        .thenInBackground(^{
+            return [OWSBackupAPI saveRecordsToCloudObjcWithRecords:records];
+        })
+        .thenInBackground(^{
+            OWSAssertDebug(items.count == records.count);
+            NSUInteger count = MIN(items.count, records.count);
+            for (NSUInteger i = 0; i < count; i++) {
+                OWSAttachmentExport *attachmentExport = items[i];
+                CKRecord *record = records[i];
+                NSString *recordName = record.recordID.recordName;
+                OWSAssertDebug(recordName.length > 0);
+
+                OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
+                exportItem.encryptedItem = attachmentExport.encryptedItem;
+                exportItem.recordName = recordName;
+                exportItem.attachmentExport = attachmentExport;
+                [self.savedAttachmentItems addObject:exportItem];
+
+                // Immediately save the record metadata to facilitate export resume.
+                OWSBackupFragment *backupFragment = [[OWSBackupFragment alloc] initWithUniqueId:recordName];
+                backupFragment.recordName = recordName;
+                backupFragment.encryptionKey = exportItem.encryptedItem.encryptionKey;
+                backupFragment.relativeFilePath = attachmentExport.relativeFilePath;
+                backupFragment.attachmentId = attachmentExport.attachmentId;
+                backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [backupFragment saveWithTransaction:transaction];
+                }];
+
+                OWSLogVerbose(@"saved attachment: %@ as %@",
+                    attachmentExport.attachmentFilePath,
+                    attachmentExport.relativeFilePath);
+            }
+        })
+        .thenInBackground(^{
+            cleanup();
+        })
+        .catchInBackground(^(NSError *error) {
+            cleanup();
+
+            return error;
+        });
 }
 
-- (AnyPromise *)saveAttachmentFileToCloud:(OWSAttachmentExport *)attachmentExport
+- (BOOL)tryToSkipAttachmentUpload:(OWSAttachmentExport *)attachmentExport
 {
-    if (self.lastValidRecordNames) {
-        // Wherever possible, we do incremental backups and re-use fragments of the last
-        // backup and/or restore.
-        // Recycling fragments doesn't just reduce redundant network activity,
-        // it allows us to skip the local export work, i.e. encryption.
-        // To do so, we must preserve the metadata for these fragments.
-        //
-        // We check two things:
-        //
-        // * That we already know the metadata for this fragment (from a previous backup
-        //   or restore).
-        // * That this record does in fact exist in our CloudKit database.
-        NSString *lastRecordName =
-            [OWSBackupAPI recordNameForPersistentFileWithRecipientId:self.recipientId
-                                                              fileId:attachmentExport.attachmentId];
-        OWSBackupFragment *_Nullable lastBackupFragment = [OWSBackupFragment fetchObjectWithUniqueID:lastRecordName];
-        if (lastBackupFragment && [self.lastValidRecordNames containsObject:lastRecordName]) {
-            OWSAssertDebug(lastBackupFragment.encryptionKey.length > 0);
-            OWSAssertDebug(lastBackupFragment.relativeFilePath.length > 0);
-
-            // Recycle the metadata from the last backup's manifest.
-            OWSBackupEncryptedItem *encryptedItem = [OWSBackupEncryptedItem new];
-            encryptedItem.encryptionKey = lastBackupFragment.encryptionKey;
-            attachmentExport.encryptedItem = encryptedItem;
-            attachmentExport.relativeFilePath = lastBackupFragment.relativeFilePath;
-
-            OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
-            exportItem.encryptedItem = attachmentExport.encryptedItem;
-            exportItem.recordName = lastRecordName;
-            exportItem.attachmentExport = attachmentExport;
-            [self.savedAttachmentItems addObject:exportItem];
-
-            OWSLogVerbose(@"recycled attachment: %@ as %@",
-                attachmentExport.attachmentFilePath,
-                attachmentExport.relativeFilePath);
-            return [AnyPromise promiseWithValue:@(1)];
-        }
+    if (!self.lastValidRecordNames) {
+        return NO;
     }
 
-    @autoreleasepool {
-        // OWSAttachmentExport is used to lazily write an encrypted copy of the
-        // attachment to disk.
-        if (![attachmentExport prepareForUpload]) {
-            // Attachment files are non-critical so any error uploading them is recoverable.
-            return [AnyPromise promiseWithValue:@(1)];
-        }
-        OWSAssertDebug(attachmentExport.relativeFilePath.length > 0);
-        OWSAssertDebug(attachmentExport.encryptedItem);
+    // Wherever possible, we do incremental backups and re-use fragments of the last
+    // backup and/or restore.
+    // Recycling fragments doesn't just reduce redundant network activity,
+    // it allows us to skip the local export work, i.e. encryption.
+    // To do so, we must preserve the metadata for these fragments.
+    //
+    // We check two things:
+    //
+    // * That we already know the metadata for this fragment (from a previous backup
+    //   or restore).
+    // * That this record does in fact exist in our CloudKit database.
+    NSString *recordName =
+        [OWSBackupAPI recordNameForPersistentFileWithRecipientId:self.recipientId fileId:attachmentExport.attachmentId];
+    OWSBackupFragment *_Nullable lastBackupFragment = [OWSBackupFragment fetchObjectWithUniqueID:recordName];
+    if (!lastBackupFragment || ![self.lastValidRecordNames containsObject:recordName]) {
+        return NO;
     }
 
-    return [OWSBackupAPI
-        savePersistentFileOnceToCloudObjcWithRecipientId:self.recipientId
-                                                  fileId:attachmentExport.attachmentId
-                                            fileUrlBlock:^{
-                                                if (attachmentExport.encryptedItem.filePath.length < 1) {
-                                                    OWSLogError(@"attachment export missing temp file path");
-                                                    return (NSURL *)nil;
-                                                }
-                                                if (attachmentExport.relativeFilePath.length < 1) {
-                                                    OWSLogError(@"attachment export missing relative file path");
-                                                    return (NSURL *)nil;
-                                                }
-                                                return [NSURL fileURLWithPath:attachmentExport.encryptedItem.filePath];
-                                            }]
-        .thenInBackground(^(NSString *recordName) {
-            if (![attachmentExport cleanUp]) {
-                OWSLogError(@"couldn't clean up attachment export.");
-                // Attachment files are non-critical so any error uploading them is recoverable.
-            }
+    OWSAssertDebug(lastBackupFragment.encryptionKey.length > 0);
+    OWSAssertDebug(lastBackupFragment.relativeFilePath.length > 0);
 
-            OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
-            exportItem.encryptedItem = attachmentExport.encryptedItem;
-            exportItem.recordName = recordName;
-            exportItem.attachmentExport = attachmentExport;
-            [self.savedAttachmentItems addObject:exportItem];
+    // Recycle the metadata from the last backup's manifest.
+    OWSBackupEncryptedItem *encryptedItem = [OWSBackupEncryptedItem new];
+    encryptedItem.encryptionKey = lastBackupFragment.encryptionKey;
+    attachmentExport.encryptedItem = encryptedItem;
+    attachmentExport.relativeFilePath = lastBackupFragment.relativeFilePath;
 
-            // Immediately save the record metadata to facilitate export resume.
-            OWSBackupFragment *backupFragment = [[OWSBackupFragment alloc] initWithUniqueId:recordName];
-            backupFragment.recordName = recordName;
-            backupFragment.encryptionKey = exportItem.encryptedItem.encryptionKey;
-            backupFragment.relativeFilePath = attachmentExport.relativeFilePath;
-            backupFragment.attachmentId = attachmentExport.attachmentId;
-            backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [backupFragment saveWithTransaction:transaction];
-            }];
+    OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
+    exportItem.encryptedItem = attachmentExport.encryptedItem;
+    exportItem.recordName = recordName;
+    exportItem.attachmentExport = attachmentExport;
+    [self.savedAttachmentItems addObject:exportItem];
 
-            OWSLogVerbose(
-                @"saved attachment: %@ as %@", attachmentExport.attachmentFilePath, attachmentExport.relativeFilePath);
-        })
-        .catchInBackground(^{
-            if (![attachmentExport cleanUp]) {
-                OWSLogError(@"couldn't clean up attachment export.");
-                // Attachment files are non-critical so any error uploading them is recoverable.
-            }
-
-            // Attachment files are non-critical so any error uploading them is recoverable.
-            return [AnyPromise promiseWithValue:@(1)];
-        });
+    OWSLogVerbose(
+        @"recycled attachment: %@ as %@", attachmentExport.attachmentFilePath, attachmentExport.relativeFilePath);
+    return YES;
 }
 
 - (AnyPromise *)saveLocalProfileAvatarToCloud
@@ -907,15 +947,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
     exportItem.encryptedItem = encryptedItem;
 
-    return [OWSBackupAPI saveEphemeralFileToCloudObjcWithRecipientId:self.recipientId
-                                                               label:@"local-profile-avatar"
-                                                             fileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]]
-        .thenInBackground(^(NSString *recordName) {
-            exportItem.recordName = recordName;
-            self.localProfileAvatarItem = exportItem;
-
-            return [AnyPromise promiseWithValue:@(1)];
-        });
+    NSString *recordName =
+        [OWSBackupAPI recordNameForEphemeralFileWithRecipientId:self.recipientId label:@"local-profile-avatar"];
+    CKRecord *record =
+        [OWSBackupAPI recordForFileUrl:[NSURL fileURLWithPath:encryptedItem.filePath] recordName:recordName];
+    return [OWSBackupAPI saveRecordsToCloudObjcWithRecords:@[ record ]].thenInBackground(^{
+        exportItem.recordName = recordName;
+        self.localProfileAvatarItem = exportItem;
+    });
 }
 
 - (AnyPromise *)saveManifestFileToCloud
@@ -932,14 +971,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
     exportItem.encryptedItem = encryptedItem;
 
-    return [OWSBackupAPI upsertManifestFileToCloudObjcWithRecipientId:self.recipientId
-                                                              fileUrl:[NSURL fileURLWithPath:encryptedItem.filePath]]
-        .thenInBackground(^(NSString *recordName) {
-            exportItem.recordName = recordName;
-            self.manifestItem = exportItem;
 
-            // All files have been saved to the cloud.
-        });
+    NSString *recordName = [OWSBackupAPI recordNameForManifestWithRecipientId:self.recipientId];
+    CKRecord *record =
+        [OWSBackupAPI recordForFileUrl:[NSURL fileURLWithPath:encryptedItem.filePath] recordName:recordName];
+    return [OWSBackupAPI saveRecordsToCloudObjcWithRecords:@[ record ]].thenInBackground(^{
+        exportItem.recordName = recordName;
+        self.manifestItem = exportItem;
+    });
 }
 
 - (nullable OWSBackupEncryptedItem *)writeManifestFile

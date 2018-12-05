@@ -81,6 +81,18 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [AppEnvironment.shared.backupLazyRestore runIfNecessary];
                                      }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Upload 100 CK records"
+                                     actionBlock:^{
+                                         [DebugUIBackup uploadCKBatch:100];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Upload 1,000 CK records"
+                                     actionBlock:^{
+                                         [DebugUIBackup uploadCKBatch:1000];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Upload 10,000 CK records"
+                                     actionBlock:^{
+                                         [DebugUIBackup uploadCKBatch:10000];
+                                     }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
@@ -96,9 +108,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(success);
 
     NSString *recipientId = self.tsAccountManager.localNumber;
-    [[self.backup ensureCloudKitAccess].then(^{
-        return
-            [OWSBackupAPI saveTestFileToCloudObjcWithRecipientId:recipientId fileUrl:[NSURL fileURLWithPath:filePath]];
+    NSString *recordName = [OWSBackupAPI recordNameForTestFileWithRecipientId:recipientId];
+    CKRecord *record = [OWSBackupAPI recordForFileUrl:[NSURL fileURLWithPath:filePath] recordName:recordName];
+
+    [[self.backup ensureCloudKitAccess].thenInBackground(^{
+        return [OWSBackupAPI saveRecordsToCloudObjcWithRecords:@[ record ]];
     }) retainUntilComplete];
 }
 
@@ -217,6 +231,26 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)logBackupMetadataCache
 {
     [self.backup logBackupMetadataCache:OWSPrimaryStorage.sharedManager.newDatabaseConnection];
+}
+
++ (void)uploadCKBatch:(NSUInteger)count
+{
+    NSMutableArray<CKRecord *> *records = [NSMutableArray new];
+    for (NSUInteger i = 0; i < count; i++) {
+        NSData *_Nullable data = [Randomness generateRandomBytes:32];
+        OWSAssertDebug(data);
+        NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"pdf"];
+        BOOL success = [data writeToFile:filePath atomically:YES];
+        OWSAssertDebug(success);
+
+        NSString *recipientId = self.tsAccountManager.localNumber;
+        NSString *recordName = [OWSBackupAPI recordNameForTestFileWithRecipientId:recipientId];
+        CKRecord *record = [OWSBackupAPI recordForFileUrl:[NSURL fileURLWithPath:filePath] recordName:recordName];
+        [records addObject:record];
+    }
+    [[OWSBackupAPI saveRecordsToCloudObjcWithRecords:records].thenInBackground(^{
+        OWSLogVerbose(@"success.");
+    }) retainUntilComplete];
 }
 
 @end

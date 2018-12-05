@@ -24,10 +24,6 @@ import PromiseKit
     static let payloadKey = "payload"
     static let maxRetries = 5
 
-    private class func recordIdForTest() -> String {
-        return "test-\(NSUUID().uuidString)"
-    }
-
     private class func database() -> CKDatabase {
         let myContainer = CKContainer.default()
         let privateDatabase = myContainer.privateCloudDatabase
@@ -43,18 +39,8 @@ import PromiseKit
     // MARK: - Upload
 
     @objc
-    public class func saveTestFileToCloudObjc(recipientId: String,
-                                              fileUrl: URL) -> AnyPromise {
-        return AnyPromise(saveTestFileToCloud(recipientId: recipientId,
-                                              fileUrl: fileUrl))
-    }
-
-    public class func saveTestFileToCloud(recipientId: String,
-                                          fileUrl: URL) -> Promise<String> {
-        let recordName = "\(recordNamePrefix(forRecipientId: recipientId))test-\(NSUUID().uuidString)"
-        return saveFileToCloud(fileUrl: fileUrl,
-                               recordName: recordName,
-                               recordType: signalBackupRecordType)
+    public class func recordNameForTestFile(recipientId: String) -> String {
+        return "\(recordNamePrefix(forRecipientId: recipientId))test-\(NSUUID().uuidString)"
     }
 
     // "Ephemeral" files are specific to this backup export and will always need to
@@ -62,21 +48,9 @@ import PromiseKit
     // We wouldn't want to overwrite previous images until the entire backup export is
     // complete.
     @objc
-    public class func saveEphemeralFileToCloudObjc(recipientId: String,
-                                                   label: String,
-                                                   fileUrl: URL) -> AnyPromise {
-        return AnyPromise(saveEphemeralFileToCloud(recipientId: recipientId,
-                                                   label: label,
-                                                   fileUrl: fileUrl))
-    }
-
-    public class func saveEphemeralFileToCloud(recipientId: String,
-                                               label: String,
-                                               fileUrl: URL) -> Promise<String> {
-        let recordName = "\(recordNamePrefix(forRecipientId: recipientId))ephemeral-\(label)-\(NSUUID().uuidString)"
-        return saveFileToCloud(fileUrl: fileUrl,
-                               recordName: recordName,
-                               recordType: signalBackupRecordType)
+    public class func recordNameForEphemeralFile(recipientId: String,
+                                                 label: String) -> String {
+        return "\(recordNamePrefix(forRecipientId: recipientId))ephemeral-\(label)-\(NSUUID().uuidString)"
     }
 
     // "Persistent" files may be shared between backup export; they should only be saved
@@ -142,110 +116,84 @@ import PromiseKit
         return recipientIds
     }
 
-    // "Persistent" files may be shared between backup export; they should only be saved
-    // once.  For example, attachment files should only be uploaded once.  Subsequent
-    // backups can reuse the same record.
     @objc
-    public class func savePersistentFileOnceToCloudObjc(recipientId: String,
-                                                        fileId: String,
-                                                        fileUrlBlock: @escaping () -> URL?) -> AnyPromise {
-        return AnyPromise(savePersistentFileOnceToCloud(recipientId: recipientId,
-                                                        fileId: fileId,
-                                                        fileUrlBlock: fileUrlBlock))
-    }
-
-    public class func savePersistentFileOnceToCloud(recipientId: String,
-                                                    fileId: String,
-                                                    fileUrlBlock: @escaping () -> URL?) -> Promise<String> {
-        let recordName = recordNameForPersistentFile(recipientId: recipientId, fileId: fileId)
-        return saveFileOnceToCloud(recordName: recordName,
-                                   recordType: signalBackupRecordType,
-                                   fileUrlBlock: fileUrlBlock)
-    }
-
-    @objc
-    public class func upsertManifestFileToCloudObjc(recipientId: String,
-                                                    fileUrl: URL) -> AnyPromise {
-        return AnyPromise(upsertManifestFileToCloud(recipientId: recipientId,
-                                                    fileUrl: fileUrl))
-    }
-
-    public class func upsertManifestFileToCloud(recipientId: String,
-                                                fileUrl: URL) -> Promise<String> {
-        // We want to use a well-known record id and type for manifest files.
-        let recordName = recordNameForManifest(recipientId: recipientId)
-        return upsertFileToCloud(fileUrl: fileUrl,
-                                 recordName: recordName,
-                                 recordType: signalBackupRecordType)
-    }
-
-    @objc
-    public class func saveFileToCloudObjc(fileUrl: URL,
-                                          recordName: String,
-                                          recordType: String) -> AnyPromise {
-        return AnyPromise(saveFileToCloud(fileUrl: fileUrl,
-                                          recordName: recordName,
-                                          recordType: recordType))
-    }
-
-    public class func saveFileToCloud(fileUrl: URL,
-                                      recordName: String,
-                                      recordType: String) -> Promise<String> {
+    public class func record(forFileUrl fileUrl: URL,
+                             recordName: String) -> CKRecord {
+        let recordType = signalBackupRecordType
         let recordID = CKRecordID(recordName: recordName)
         let record = CKRecord(recordType: recordType, recordID: recordID)
         let asset = CKAsset(fileURL: fileUrl)
         record[payloadKey] = asset
 
-        return saveRecordToCloud(record: record)
+        return record
     }
 
     @objc
-    public class func saveRecordToCloudObjc(record: CKRecord) -> AnyPromise {
-        return AnyPromise(saveRecordToCloud(record: record))
+    public class func saveRecordsToCloudObjc(records: [CKRecord]) -> AnyPromise {
+        return AnyPromise(saveRecordsToCloud(records: records))
     }
 
-    public class func saveRecordToCloud(record: CKRecord) -> Promise<String> {
-        return saveRecordToCloud(record: record,
-                                 remainingRetries: maxRetries)
+    public class func saveRecordsToCloud(records: [CKRecord]) -> Promise<Void> {
+
+        // CloudKit's internal limit is 400, but I haven't found a constant for this.
+        let kMaxBatchSize = 100
+        return records.chunked(by: kMaxBatchSize).reduce(Promise.value(())) { (promise, batch) -> Promise<Void> in
+            return promise.then(on: .global()) {
+                saveRecordsToCloud(records: batch, remainingRetries: maxRetries)
+                }.done {
+                    Logger.verbose("Saved batch: \(batch.count)")
+            }
+        }
     }
 
-    private class func saveRecordToCloud(record: CKRecord,
-                                         remainingRetries: Int) -> Promise<String> {
+    private class func saveRecordsToCloud(records: [CKRecord],
+                                          remainingRetries: Int) -> Promise<Void> {
 
-        Logger.verbose("saveRecordToCloud \(record.recordID.recordName)")
+        let recordNames = records.map { (record) in
+            return record.recordID.recordName
+        }
+        Logger.verbose("recordNames[\(recordNames.count)] \(recordNames[0..<10])...")
 
         return Promise { resolver in
-            let saveOperation = CKModifyRecordsOperation(recordsToSave: [record ], recordIDsToDelete: nil)
-            saveOperation.modifyRecordsCompletionBlock = { (records, recordIds, error) in
+            let saveOperation = CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: nil)
+            saveOperation.modifyRecordsCompletionBlock = { (savedRecords: [CKRecord]?, _, error) in
+
+                let retry = {
+                    // Only retry records which didn't already succeed.
+                    var savedRecordNames = [String]()
+                    if let savedRecords = savedRecords {
+                        savedRecordNames = savedRecords.map { (record) in
+                            return record.recordID.recordName
+                        }
+                    }
+                    let retryRecords = records.filter({ (record) in
+                        return !savedRecordNames.contains(record.recordID.recordName)
+                    })
+
+                    saveRecordsToCloud(records: retryRecords,
+                                       remainingRetries: remainingRetries - 1)
+                        .done { _ in
+                            resolver.fulfill(())
+                        }.catch { (error) in
+                            resolver.reject(error)
+                        }.retainUntilComplete()
+                }
 
                 let outcome = outcomeForCloudKitError(error: error,
                                                       remainingRetries: remainingRetries,
-                                                      label: "Save Record")
+                                                      label: "Save Records[\(recordNames.count)]")
                 switch outcome {
                 case .success:
-                    let recordName = record.recordID.recordName
-                    resolver.fulfill(recordName)
+                    resolver.fulfill(())
                 case .failureDoNotRetry(let outcomeError):
                     resolver.reject(outcomeError)
                 case .failureRetryAfterDelay(let retryDelay):
                     DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
-                        saveRecordToCloud(record: record,
-                                          remainingRetries: remainingRetries - 1)
-                            .done { (recordName) in
-                                resolver.fulfill(recordName)
-                            }.catch { (error) in
-                                resolver.reject(error)
-                            }.retainUntilComplete()
+                        retry()
                     })
                 case .failureRetryWithoutDelay:
                     DispatchQueue.global().async {
-                        saveRecordToCloud(record: record,
-                                          remainingRetries: remainingRetries - 1)
-                            .done { (recordName) in
-                                resolver.fulfill(recordName)
-                            }.catch { (error) in
-                                resolver.reject(error)
-                            }.retainUntilComplete()
+                        retry()
                     }
                 case .unknownItem:
                     owsFailDebug("unexpected CloudKit response.")
@@ -253,6 +201,11 @@ import PromiseKit
                 }
             }
             saveOperation.isAtomic = false
+            saveOperation.savePolicy = .allKeys
+
+            // TODO: use perRecordProgressBlock and perRecordCompletionBlock.
+//            open var perRecordProgressBlock: ((CKRecord, Double) -> Void)?
+//            open var perRecordCompletionBlock: ((CKRecord, Error?) -> Void)?
 
             // These APIs are only available in iOS 9.3 and later.
             if #available(iOS 9.3, *) {
@@ -261,80 +214,6 @@ import PromiseKit
             }
 
             database().add(saveOperation)
-        }
-    }
-
-    // Compare:
-    // * An "upsert" creates a new record if none exists and
-    //   or updates if there is an existing record.
-    // * A "save once" creates a new record if none exists and
-    //   does nothing if there is an existing record.
-    @objc
-    public class func upsertFileToCloudObjc(fileUrl: URL,
-                                            recordName: String,
-                                            recordType: String) -> AnyPromise {
-        return AnyPromise(upsertFileToCloud(fileUrl: fileUrl,
-                                            recordName: recordName,
-                                            recordType: recordType))
-    }
-
-    public class func upsertFileToCloud(fileUrl: URL,
-                                        recordName: String,
-                                        recordType: String) -> Promise<String> {
-
-        return checkForFileInCloud(recordName: recordName,
-                                   remainingRetries: maxRetries)
-            .then { (record: CKRecord?) -> Promise<String> in
-                if let record = record {
-                    // Record found, updating existing record.
-                    let asset = CKAsset(fileURL: fileUrl)
-                    record[payloadKey] = asset
-                    return saveRecordToCloud(record: record)
-                }
-
-                // No record found, saving new record.
-                return saveFileToCloud(fileUrl: fileUrl,
-                                       recordName: recordName,
-                                       recordType: recordType)
-        }
-    }
-
-    // Compare:
-    // * An "upsert" creates a new record if none exists and
-    //   or updates if there is an existing record.
-    // * A "save once" creates a new record if none exists and
-    //   does nothing if there is an existing record.
-    @objc
-    public class func saveFileOnceToCloudObjc(recordName: String,
-                                              recordType: String,
-                                              fileUrlBlock: @escaping () -> URL?) -> AnyPromise {
-        return AnyPromise(saveFileOnceToCloud(recordName: recordName,
-                                              recordType: recordType,
-                                              fileUrlBlock: fileUrlBlock))
-    }
-
-    public class func saveFileOnceToCloud(recordName: String,
-                                          recordType: String,
-                                          fileUrlBlock: @escaping () -> URL?) -> Promise<String> {
-
-        return checkForFileInCloud(recordName: recordName,
-                                   remainingRetries: maxRetries)
-            .then { (record: CKRecord?) -> Promise<String> in
-                if record != nil {
-                    // Record found, skipping save.
-                    return Promise.value(recordName)
-                }
-                // No record found, saving new record.
-                guard let fileUrl = fileUrlBlock() else {
-                    Logger.error("error preparing file for upload.")
-                    return Promise(error: OWSErrorWithCodeDescription(.exportBackupError,
-                                                                      NSLocalizedString("BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED",
-                                                                                        comment: "Error indicating the backup export failed to save a file to the cloud.")))
-                }
-
-                return saveFileToCloud(fileUrl: fileUrl,
-                                       recordName: recordName,
-                                       recordType: recordType)
         }
     }
 
