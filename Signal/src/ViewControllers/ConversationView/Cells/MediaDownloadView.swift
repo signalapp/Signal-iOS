@@ -92,7 +92,8 @@ public class MediaDownloadView: UIView {
         bezierPath.addArc(withCenter: center, radius: innerRadius, startAngle: endAngle, endAngle: startAngle, clockwise: false)
 
         shapeLayer.path = bezierPath.cgPath
-        shapeLayer.fillColor = UIColor.ows_gray60.cgColor
+        let fillColor: UIColor = (Theme.isDarkThemeEnabled ? .ows_gray45 : .ows_gray60)
+        shapeLayer.fillColor = fillColor.cgColor
 
         CATransaction.commit()
     }

@@ -102,7 +102,7 @@ public class ConversationMediaView: UIView {
             return
         }
 
-        backgroundColor = UIColor.ows_gray05
+        backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
         let progressView = MediaDownloadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
         self.addSubview(progressView)
         progressView.autoPinEdgesToSuperviewEdges()
@@ -288,7 +288,7 @@ public class ConversationMediaView: UIView {
     }
 
     private func configure(forError error: MediaError) {
-        backgroundColor = UIColor.ows_gray05
+        backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
         let icon: UIImage
         switch (error) {
         case .failed:
