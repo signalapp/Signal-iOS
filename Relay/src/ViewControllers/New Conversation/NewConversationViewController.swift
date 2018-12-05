@@ -126,6 +126,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
         let cell: SlugCell = self.slugCollectionView?.dequeueReusableCell(withReuseIdentifier: "SlugCell", for: indexPath) as! SlugCell
         cell.slugLabel.font = UIFont.systemFont(ofSize: 15.0)
         cell.slug = self.selectedSlugs[indexPath.row]
+        cell.backgroundColor = UIColor.FL_lightBlue2()
         cell.delegate = self
         
         return cell
