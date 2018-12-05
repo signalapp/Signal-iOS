@@ -1352,7 +1352,7 @@ static const int kYapDatabaseRangeMinLength = 0;
     OWSAssertDebug([notification.object isKindOfClass:[NSString class]]);
     OWSAssertDebug(self.thread);
 
-    if (![notification.object isEqual:self.thread.uniqueId]) {
+    if (notification.object && ![notification.object isEqual:self.thread.uniqueId]) {
         return;
     }
 
