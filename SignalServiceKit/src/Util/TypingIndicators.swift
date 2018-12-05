@@ -159,6 +159,10 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     public func typingRecipientId(forThread thread: TSThread) -> String? {
         AssertIsOnMainThread()
 
+        guard areTypingIndicatorsEnabled() else {
+            return nil
+        }
+
         var firstRecipientId: String?
         var firstTimestamp: UInt64?
 
