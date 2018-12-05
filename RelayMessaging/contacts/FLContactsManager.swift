@@ -82,6 +82,11 @@ import RelayServiceKit
             } else {
                 image = self.recipient(withId: recipientId)?.avatarImage
             }
+            
+            if image != nil {
+                self.avatarCache.setObject(image!, forKey: cacheKey!)
+            }
+            
             return image
         }
     }
