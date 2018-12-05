@@ -548,7 +548,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug([notification.object isKindOfClass:[NSString class]]);
     OWSAssertDebug(self.thread);
 
-    if (![notification.object isEqual:self.thread.threadRecord.uniqueId]) {
+    if (notification.object && ![notification.object isEqual:self.thread.threadRecord.uniqueId]) {
         return;
     }
 

@@ -88,6 +88,8 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         primaryStorage.dbReadWriteConnection.setBool(value, forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection)
 
         syncManager.sendConfigurationSyncMessage()
+
+        NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
     }
 
     @objc
@@ -132,6 +134,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     @objc
     public func didReceiveTypingStartedMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt) {
         AssertIsOnMainThread()
+        Logger.info("")
         let incomingIndicators = ensureIncomingIndicators(forThread: thread, recipientId: recipientId, deviceId: deviceId)
         incomingIndicators.didReceiveTypingStartedMessage()
     }
@@ -139,6 +142,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     @objc
     public func didReceiveTypingStoppedMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt) {
         AssertIsOnMainThread()
+        Logger.info("")
         let incomingIndicators = ensureIncomingIndicators(forThread: thread, recipientId: recipientId, deviceId: deviceId)
         incomingIndicators.didReceiveTypingStoppedMessage()
     }
@@ -146,6 +150,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     @objc
     public func didReceiveIncomingMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt) {
         AssertIsOnMainThread()
+        Logger.info("")
         let incomingIndicators = ensureIncomingIndicators(forThread: thread, recipientId: recipientId, deviceId: deviceId)
         incomingIndicators.didReceiveIncomingMessage()
     }
