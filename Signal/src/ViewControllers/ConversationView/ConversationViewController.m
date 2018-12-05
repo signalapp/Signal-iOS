@@ -90,8 +90,6 @@
 
 @import Photos;
 
-#define FEATURE_FLAG_ALBUM_SEND_ENABLED
-
 NS_ASSUME_NONNULL_BEGIN
 
 static const CGFloat kLoadMoreHeaderHeight = 60.f;
@@ -2640,17 +2638,20 @@ typedef enum : NSUInteger {
             return;
         }
 
-#ifdef FEATURE_FLAG_ALBUM_SEND_ENABLED
-        OWSImagePickerGridController *picker = [OWSImagePickerGridController new];
-        picker.delegate = self;
+        UIViewController *pickerModal;
+        if (SignalAttachment.isMultiSendEnabled) {
+            OWSImagePickerGridController *picker = [OWSImagePickerGridController new];
+            picker.delegate = self;
 
-        OWSNavigationController *pickerModal = [[OWSNavigationController alloc] initWithRootViewController:picker];
-#else
-        UIImagePickerController *pickerModal = [UIImagePickerController new];
-        pickerModal.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-        pickerModal.delegate = self;
-        pickerModal.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
-#endif
+            pickerModal = [[OWSNavigationController alloc] initWithRootViewController:picker];
+        } else {
+            UIImagePickerController *picker = [UIImagePickerController new];
+            picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            picker.delegate = self;
+            picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+
+            pickerModal = picker;
+        }
 
         [self dismissKeyBoard];
         [self presentViewController:pickerModal animated:YES completion:nil];
@@ -2762,10 +2763,11 @@ typedef enum : NSUInteger {
                                  }];
     } else {
         // Non-Video image picked from library
-#ifdef FEATURE_FLAG_ALBUM_SEND_ENABLED
-        OWSFailDebug(
-            @"Only use UIImagePicker for camera/video capture. Picking media from UIImagePicker is not supported. ");
-#endif
+        if (SignalAttachment.isMultiSendEnabled) {
+            OWSFailDebug(@"Only use UIImagePicker for camera/video capture. Picking media from UIImagePicker is not "
+                         @"supported. ");
+        }
+
 
         // To avoid re-encoding GIF and PNG's as JPEG we have to get the raw data of
         // the selected item vs. using the UIImagePickerControllerOriginalImage

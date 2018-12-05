@@ -74,6 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Used by SAE, otherwise we should use the durable `enqueue` counterpart
 + (TSOutgoingMessage *)sendMessageNonDurablyWithAttachments:(NSArray<SignalAttachment *> *)attachments
                                                    inThread:(TSThread *)thread
+                                                messageBody:(nullable NSString *)messageBody
                                            quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                               messageSender:(OWSMessageSender *)messageSender
                                                  completion:(void (^_Nullable)(NSError *_Nullable error))completion;
