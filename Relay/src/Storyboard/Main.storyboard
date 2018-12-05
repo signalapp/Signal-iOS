@@ -390,7 +390,7 @@
                                 <action selector="didPressExitButtonWithSender:" destination="Kx0-6R-NDb" id="mVM-am-15g"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" image="check" id="TTP-kt-gEd">
+                        <barButtonItem key="rightBarButtonItem" title="✓" id="TTP-kt-gEd">
                             <connections>
                                 <action selector="didPressGoButtonWithSender:" destination="Kx0-6R-NDb" id="uLs-py-rlX"/>
                             </connections>
@@ -574,7 +574,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="check" width="36" height="36"/>
         <image name="contact_default_feed.png" width="242" height="242"/>
         <image name="ic_devices_ios" width="180" height="119.5"/>
     </resources>
