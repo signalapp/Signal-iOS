@@ -794,7 +794,7 @@ NS_ASSUME_NONNULL_BEGIN
                 // OWSAttachmentExport is used to lazily write an encrypted copy of the
                 // attachment to disk.
                 if (![attachmentExport prepareForUpload]) {
-                    // Attachment files are non-critical so any error uploading them is recoverable.
+                    // Attachment files are non-critical so any error preparing them is recoverable.
                     return @(1);
                 }
                 OWSAssertDebug(attachmentExport.relativeFilePath.length > 0);
@@ -814,7 +814,7 @@ NS_ASSUME_NONNULL_BEGIN
             }();
 
             if (!fileUrl) {
-                // Attachment files are non-critical so any error uploading them is recoverable.
+                // Attachment files are non-critical so any error preparing them is recoverable.
                 return @(1);
             }
 
@@ -828,21 +828,20 @@ NS_ASSUME_NONNULL_BEGIN
         });
     }
 
+    void (^cleanup)(void) = ^{
+        for (OWSAttachmentExport *attachmentExport in items) {
+            if (![attachmentExport cleanUp]) {
+                OWSLogError(@"couldn't clean up attachment export.");
+                // Attachment files are non-critical so any error uploading them is recoverable.
+            }
+        }
+    };
+
     // TODO: Expose progress.
-    dispatch_queue_t backgroundQueue = dispatch_get_global_queue(0, 0);
     return promise
         .thenInBackground(^{
             return [OWSBackupAPI saveRecordsToCloudObjcWithRecords:records];
         })
-        .ensureOn(backgroundQueue,
-            ^{
-                for (OWSAttachmentExport *attachmentExport in items) {
-                    if (![attachmentExport cleanUp]) {
-                        OWSLogError(@"couldn't clean up attachment export.");
-                        // Attachment files are non-critical so any error uploading them is recoverable.
-                    }
-                }
-            })
         .thenInBackground(^{
             OWSAssertDebug(items.count == records.count);
             NSUInteger count = MIN(items.count, records.count);
@@ -874,9 +873,13 @@ NS_ASSUME_NONNULL_BEGIN
                     attachmentExport.relativeFilePath);
             }
         })
-        .catchInBackground(^{
-            // Attachment files are non-critical so any error uploading them is recoverable.
-            return [AnyPromise promiseWithValue:@(1)];
+        .thenInBackground(^{
+            cleanup();
+        })
+        .catchInBackground(^(NSError *error) {
+            cleanup();
+
+            return error;
         });
 }
 
