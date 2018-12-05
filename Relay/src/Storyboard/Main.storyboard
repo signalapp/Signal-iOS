@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -212,7 +212,7 @@
         <!--New Conversation View Controller-->
         <scene sceneID="9DL-Mz-08m">
             <objects>
-                <viewController storyboardIdentifier="NewConversationViewController" id="Kx0-6R-NDb" customClass="NewConversationViewController" customModule="Relay" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NewConversationViewController" id="Kx0-6R-NDb" customClass="NewConversationViewController" customModule="Forsta" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="MlY-a5-jER"/>
                         <viewControllerLayoutGuide type="bottom" id="WfU-R4-268"/>
@@ -242,7 +242,7 @@
                                 <rect key="frame" x="0.0" y="204" width="375" height="463"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ContactCell" rowHeight="60" id="qjg-nN-iVB" customClass="DirectoryCell" customModule="Relay" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ContactCell" rowHeight="60" id="qjg-nN-iVB" customClass="DirectoryCell" customModule="Forsta" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="60"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="qjg-nN-iVB" id="Y1x-84-Ht4">
@@ -301,9 +301,9 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="128" id="0WU-vL-jLR"/>
                                 </constraints>
-                                <collectionViewLayout key="collectionViewLayout" id="5ee-T5-7Bp" customClass="SlugViewLayout" customModule="Relay" customModuleProvider="target"/>
+                                <collectionViewLayout key="collectionViewLayout" id="5ee-T5-7Bp" customClass="SlugViewLayout" customModule="Forsta" customModuleProvider="target"/>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="SlugCell" id="4kX-wq-CMr" customClass="SlugCell" customModule="Relay" customModuleProvider="target">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="SlugCell" id="4kX-wq-CMr" customClass="SlugCell" customModule="Forsta" customModuleProvider="target">
                                         <rect key="frame" x="33.5" y="0.0" width="308" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
@@ -390,7 +390,7 @@
                                 <action selector="didPressExitButtonWithSender:" destination="Kx0-6R-NDb" id="mVM-am-15g"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" image="cellBtnMoveToArchive--blue" id="TTP-kt-gEd">
+                        <barButtonItem key="rightBarButtonItem" image="check" id="TTP-kt-gEd">
                             <connections>
                                 <action selector="didPressGoButtonWithSender:" destination="Kx0-6R-NDb" id="uLs-py-rlX"/>
                             </connections>
@@ -516,7 +516,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="aCell" rowHeight="60" id="h3A-Gc-ELx" customClass="DirectoryCell" customModule="Relay" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="aCell" rowHeight="60" id="h3A-Gc-ELx" customClass="DirectoryCell" customModule="Forsta" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="55.5" width="375" height="60"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="h3A-Gc-ELx" id="RIk-yW-cwq">
@@ -574,8 +574,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="cellBtnMoveToArchive--blue" width="30" height="30"/>
+        <image name="check" width="36" height="36"/>
         <image name="contact_default_feed.png" width="242" height="242"/>
-        <image name="ic_devices_ios" width="180" height="119"/>
+        <image name="ic_devices_ios" width="180" height="119.5"/>
     </resources>
 </document>

@@ -54,7 +54,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
         super.viewDidLoad()
         
         self.slugViewHeightConstraint?.constant = kMinInputHeight
-        self.goButton?.tintColor = UIColor.FL_mediumLightGreen()
+        self.goButton?.tintColor = UIColor.FL_mediumDarkGreen()
         
         self.searchBar?.placeholder = NSLocalizedString("SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", comment: "")
         self.searchInfoLabel?.text = NSLocalizedString("SEARCH_HELP_STRING", comment:"Informational string for tag lookups.")
