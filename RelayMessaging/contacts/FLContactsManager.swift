@@ -11,7 +11,10 @@ import YapDatabase
 import RelayServiceKit
 
 @objc public class FLContactsManager: NSObject, ContactsManagerProtocol {
-    
+  
+    // Shared singleton
+    @objc public static let shared = FLContactsManager()
+
     @objc public var isSystemContactsDenied: Bool = false // for future use
     
     public func cachedDisplayName(forRecipientId recipientId: String) -> String? {
@@ -72,29 +75,28 @@ import RelayServiceKit
         } else {
             cacheKey = "avatar:\(recipientId)" as NSString
         }
-
+        
         if let image = self.avatarCache.object(forKey: cacheKey!) {
+            Logger.debug("Avatar cache hit!")
             return image;
         } else {
-            var image: UIImage?
+
             if Environment.preferences().useGravatars() {
-                image = self.recipient(withId: recipientId)?.gravatarImage
-            } else {
-                image = self.recipient(withId: recipientId)?.avatarImage
+                // Post a notification to fetch the gravatar image so it doesn't block and then fall back to default
+                NotificationCenter.default.postNotificationNameAsync(NSNotification.Name(rawValue: FLRecipientNeedsGravatarFetched),
+                                                                     object: self,
+                                                                     userInfo: ["recipientId" : recipientId ])
             }
-            
-            if image != nil {
-                self.avatarCache.setObject(image!, forKey: cacheKey!)
+            guard let image = self.recipient(withId: recipientId)?.avatarImage else {
+                Logger.debug("Unable to generate avatar for recipient: \(recipientId)")
+                return nil
             }
+
+            self.avatarCache.setObject(image, forKey: cacheKey!)
             
             return image
         }
     }
-    
-    
-    @objc public static let shared = FLContactsManager()
-    
-//    @objc public var activeRecipients: [RelayRecipient] = []
     
     private let readConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
     private let readWriteConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
@@ -136,6 +138,7 @@ import RelayServiceKit
         NotificationCenter.default.addObserver(self, selector: #selector(self.processRecipientsBlob), name: NSNotification.Name(rawValue: FLCCSMUsersUpdated), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.processTagsBlob), name: NSNotification.Name(rawValue: FLCCSMTagsUpdated), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleRecipientRefresh(notification:)), name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.fetchGravtarForRecipient(notification:)), name: NSNotification.Name(rawValue: FLRecipientNeedsGravatarFetched), object: nil)
 
 
         avatarCache.delegate = self
@@ -184,7 +187,7 @@ import RelayServiceKit
         
     @objc public func doAfterEnvironmentInitSetup() {
     }
-    
+
     @objc public func handleRecipientRefresh(notification: Notification) {
         if let payloadArray: Array<String> = notification.userInfo!["userIds"] as? Array<String> {
             var lookupString: String = ""
@@ -202,6 +205,43 @@ import RelayServiceKit
                     self.ccsmFetchRecipients(uids: lookupString)
                 }
             }
+        }
+    }
+    
+    // Gravatar URL format
+    fileprivate static let kGravatarURLFormat = "https://www.gravatar.com/avatar/%@?d=404"
+    
+    @objc public func fetchGravtarForRecipient(notification: Notification) {
+        
+        DispatchQueue.global(qos: .background).async {
+            guard let recipientId = notification.userInfo!["recipientId"] as? String else {
+                Logger.debug("Request to fetch gravatar without recipientId")
+                return
+            }
+            guard let recipient = self.recipient(withId: recipientId) else {
+                Logger.debug("Request to fetch gravatar for unknown recipientId: \(recipientId)")
+                return
+            }
+            guard let gravatarHash = recipient.gravatarHash else {
+                Logger.debug("No gravatar hash for recipient: \(recipientId)")
+                return
+            }
+            let gravatarURLString = String(format: FLContactsManager.kGravatarURLFormat, gravatarHash)
+            guard let aURL = URL.init(string: gravatarURLString) else {
+                Logger.debug("Unable to form URL from gravatar string: \(gravatarURLString)")
+                return
+            }
+            guard let gravarData = try? Data(contentsOf: aURL) else {
+                Logger.error("Unable to parse Gravatar image with has: \(String(describing: gravatarHash))")
+                return
+            }
+            guard let gravatarImage = UIImage(data: gravarData) else {
+                Logger.debug("Failed to generate image from fetched gravatar data for recipient: \(recipientId)")
+                return
+            }
+            let cacheKey = "gravatar:\(recipientId)" as NSString
+            self.avatarCache.setObject(gravatarImage, forKey: cacheKey)
+            recipient.touch()
         }
     }
     
@@ -270,8 +310,6 @@ import RelayServiceKit
         return nil
     }
 
-
-    
     @objc public func recipient(withId userId: String) -> RelayRecipient? {
         
         // Check the cache
