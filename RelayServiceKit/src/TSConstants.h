@@ -36,6 +36,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define FLCCSMUsersUpdated @"FLCCSMUsersUpdated"
 #define FLCCSMTagsUpdated @"FLCCSMTagsUpdated"
 #define FLRegistrationStatusUpdateNotification @"FLRegistrationStatusUpdateNotification"
+#define FLRecipientNeedsGravatarFetched @"FLRecipientNeedsGravatarFetched"
 
 // Superman IDs - used for provisioning.
 #define FLSupermanDevID @"1e1116aa-31b3-4fb2-a4db-21e8136d4f3a"
