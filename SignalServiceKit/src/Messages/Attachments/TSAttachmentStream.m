@@ -192,7 +192,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         OWSFailDebug(@"Missing path for attachment.");
         return NO;
     }
-    OWSLogInfo(@"Writing attachment to file: %@", filePath);
+    OWSLogDebug(@"Writing attachment to file: %@", filePath);
     return [data writeToFile:filePath options:0 error:error];
 }
 
@@ -205,7 +205,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         OWSFailDebug(@"Missing path for attachment.");
         return NO;
     }
-    OWSLogInfo(@"Writing attachment to file: %@", filePath);
+    OWSLogDebug(@"Writing attachment to file: %@", filePath);
     return [dataSource writeToPath:filePath];
 }
 
