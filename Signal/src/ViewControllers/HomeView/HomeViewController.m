@@ -947,7 +947,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     });
 }
 
-#pragma mark Table Swipe to Delete
+#pragma mark - Edit Actions
 
 - (void)tableView:(UITableView *)tableView
     commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
@@ -992,7 +992,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                }];
             }
 
-            return @[ deleteAction, archiveAction ];
+            // The first action will be auto-performed for "very long swipes".
+            return @[
+                archiveAction,
+                deleteAction,
+            ];
         }
         case HomeViewControllerSectionArchiveButton: {
             return @[];
@@ -1113,22 +1117,21 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
-    if (![thread isKindOfClass:[TSGroupThread class]]) {
-        [self deleteThread:thread];
-        return;
-    }
+    __weak HomeViewController *weakSelf = self;
+    UIAlertController *alert =
+        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
+                                                        @"Title for the 'conversation delete confirmation' alert.")
+                                            message:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE",
+                                                        @"Message for the 'conversation delete confirmation' alert.")
+                                     preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
+                                              style:UIAlertActionStyleDestructive
+                                            handler:^(UIAlertAction *action) {
+                                                [weakSelf deleteThread:thread];
+                                            }]];
+    [alert addAction:[OWSAlerts cancelAction]];
 
-    TSGroupThread *gThread = (TSGroupThread *)thread;
-    if (![gThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
-        [self deleteThread:thread];
-        return;
-    }
-
-    [ThreadUtil enqueueLeaveGroupMessageInThread:gThread];
-
-    // MJK TODO - DURABLE TESTPLAN is this safe to delete the gThread when the outgoing message hasn't completed
-    // sending?
-    [self deleteThread:thread];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)deleteThread:(TSThread *)thread
