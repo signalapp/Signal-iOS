@@ -383,54 +383,22 @@ public class ConversationMediaView: UIView {
 
         Logger.verbose("media cache miss")
 
-        // * loadCompletion is used to update the view's state to reflect
-        //   the outcome of the load attempt.
-        // * loadQueueCompletion is used to kick off the next load.
-        let asyncLoadBlock: AsyncLoadBlock = { [weak self] (loadQueueCompletion: @escaping AsyncLoadCompletionBlock) in
-            AssertIsOnMainThread()
-
-            guard let strongSelf = self else {
-                loadQueueCompletion()
-                return
-            }
-            guard strongSelf.loadState == .loading else {
-                loadQueueCompletion()
-                return
-            }
-
-            ConversationMediaView.loadQueue.async {
-                guard let media = loadMediaBlock() else {
-                    Logger.error("Failed to load media.")
-
-                    DispatchQueue.main.async {
-                        loadCompletion(nil)
-                        loadQueueCompletion()
-                    }
-                    return
-                }
+        ConversationMediaView.loadQueue.async {
+            guard let media = loadMediaBlock() else {
+                Logger.error("Failed to load media.")
 
                 DispatchQueue.main.async {
-                    mediaCache.setObject(media, forKey: cacheKey as NSString)
-                    loadCompletion(media)
-                    loadQueueCompletion()
+                    loadCompletion(nil)
                 }
+                return
+            }
+
+            DispatchQueue.main.async {
+                mediaCache.setObject(media, forKey: cacheKey as NSString)
+                loadCompletion(media)
             }
         }
-
-        ConversationMediaView.enqueue(asyncLoadBlock: asyncLoadBlock)
     }
-
-    // We maintain a serial "queue" (as in the data structure,
-    // not a dispatch queue) of media loads.  We don't just use
-    // a serial dispatch queue because we want to perform the
-    // loads _in the opposite of the order_ in which they are
-    // enqueued (see below).
-    //
-    // NOTE: These properties should only be accessed on the main thread.
-    private typealias AsyncLoadCompletionBlock = () -> Void
-    private typealias AsyncLoadBlock = (@escaping AsyncLoadCompletionBlock) -> Void
-    private static var asyncLoadBlocks = [AsyncLoadBlock]()
-    private static var currentAsyncLoadBlock: AsyncLoadBlock?
 
     // We use this queue to perform the media loads.
     // These loads are expensive, so we want to:
@@ -442,41 +410,6 @@ public class ConversationMediaView: UIView {
     //   of media already being loaded, don't retry media
     //   that can't be loaded, etc.).
     private static let loadQueue = DispatchQueue(label: "org.signal.asyncMediaLoadQueue")
-
-    private class func enqueue(asyncLoadBlock : @escaping AsyncLoadBlock) {
-        AssertIsOnMainThread()
-
-        asyncLoadBlocks.append(asyncLoadBlock)
-
-        processNextAsyncLoadBlock()
-    }
-
-    // We want to load views _in the opposite order_ in which
-    // their loads were enqueued, to reflect current view state.
-    // I.e. the currently visible views were enqueued _after_
-    // any views which are no longer visible.
-    private class func processNextAsyncLoadBlock() {
-        AssertIsOnMainThread()
-
-        guard currentAsyncLoadBlock == nil else {
-            // Only have one async load in flight at a time.
-            return
-        }
-
-        guard let block = asyncLoadBlocks.popLast() else {
-            // No more load blocks to process.
-            return
-        }
-        currentAsyncLoadBlock = block
-
-        block({
-            DispatchQueue.main.async {
-                currentAsyncLoadBlock = nil
-
-                self.processNextAsyncLoadBlock()
-            }
-        })
-    }
 
     @objc
     public func loadMedia() {
