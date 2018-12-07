@@ -14,6 +14,7 @@
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
+#import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -82,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(transaction);
 
     OWSIncomingSentMessageTranscript *transcript = self.incomingSentMessageTranscript;
-    OWSLogDebug(@"Recording transcript: %@", transcript);
+    OWSLogInfo(@"Recording transcript in thread: %@ timestamp: %llu", transcript.thread.uniqueId, transcript.timestamp);
 
     if (transcript.isEndSessionMessage) {
         OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientId);
