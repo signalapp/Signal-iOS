@@ -4142,6 +4142,7 @@ typedef enum : NSUInteger {
 
     [self updateLastVisibleTimestamp];
     self.conversationStyle.viewWidth = self.collectionView.width;
+    [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
 #pragma mark - View Items
