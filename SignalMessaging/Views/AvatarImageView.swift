@@ -178,3 +178,59 @@ public class ConversationAvatarImageView: AvatarImageView {
         self.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: diameter)
     }
 }
+
+@objc
+public class AvatarImageButton: UIButton {
+    private let shadowLayer = CAShapeLayer()
+
+    // MARK: - Button Overrides
+
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+
+        layer.cornerRadius = frame.size.width / 2
+
+        // Inner shadow.
+        // This should usually not be visible; it is used to distinguish
+        // profile pics from the background if they are similar.
+        shadowLayer.frame = bounds
+        shadowLayer.masksToBounds = true
+        let shadowBounds = bounds
+        let shadowPath = UIBezierPath(ovalIn: shadowBounds)
+        // This can be any value large enough to cast a sufficiently large shadow.
+        let shadowInset: CGFloat = -3
+        shadowPath.append(UIBezierPath(rect: shadowBounds.insetBy(dx: shadowInset, dy: shadowInset)))
+        // This can be any color since the fill should be clipped.
+        shadowLayer.fillColor = UIColor.black.cgColor
+        shadowLayer.path = shadowPath.cgPath
+        shadowLayer.fillRule = kCAFillRuleEvenOdd
+        shadowLayer.shadowColor = (Theme.isDarkThemeEnabled ? UIColor.white : UIColor.black).cgColor
+        shadowLayer.shadowRadius = 0.5
+        shadowLayer.shadowOpacity = 0.15
+        shadowLayer.shadowOffset = .zero
+    }
+
+    override public func setImage(_ image: UIImage?, for state: UIControlState) {
+        ensureViewConfigured()
+        super.setImage(image, for: state)
+    }
+
+    // MARK: Private
+
+    var hasBeenConfigured = false
+    func ensureViewConfigured() {
+        guard !hasBeenConfigured else {
+            return
+        }
+        hasBeenConfigured = true
+
+        autoPinToSquareAspectRatio()
+
+        layer.minificationFilter = kCAFilterTrilinear
+        layer.magnificationFilter = kCAFilterTrilinear
+        layer.masksToBounds = true
+        layer.addSublayer(shadowLayer)
+
+        contentMode = .scaleToFill
+    }
+}

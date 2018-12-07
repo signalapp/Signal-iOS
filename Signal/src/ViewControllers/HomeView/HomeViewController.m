@@ -504,14 +504,16 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         UIImage *avatarImage = (localProfileAvatarImage
                 ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kAvatarSize] buildDefaultImage]);
         OWSAssertDebug(avatarImage);
-        AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
-        [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
-        [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
-        avatarView.userInteractionEnabled = YES;
-        [avatarView
-            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                         action:@selector(settingsButtonPressed:)]];
-        settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarView];
+
+        UIButton *avatarButton = [AvatarImageButton buttonWithType:UIButtonTypeCustom];
+        [avatarButton addTarget:self
+                         action:@selector(settingsButtonPressed:)
+               forControlEvents:UIControlEventTouchUpInside];
+        [avatarButton setImage:avatarImage forState:UIControlStateNormal];
+        [avatarButton autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
+        [avatarButton autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+
+        settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarButton];
     } else {
         // iOS 9 and 10 have a bug around layout of custom views in UIBarButtonItem,
         // so we just use a simple icon.
