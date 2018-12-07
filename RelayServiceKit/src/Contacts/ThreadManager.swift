@@ -5,12 +5,18 @@
 //  Created by Mark Descalzo on 10/5/18.
 //
 
+// TODO: Merge functionality with ThreadUtil?
+
 import Foundation
 
 // Manager to handle thead update notifications in background
 @objc public class ThreadManager : NSObject {
+    
+    // Shared singleton
     @objc public static let sharedManager = ThreadManager()
 
+    fileprivate let imageCache = NSCache<NSString, UIImage>()
+    
     @objc public override init() {
         super.init()
         
@@ -18,10 +24,41 @@ import Foundation
                                                selector: #selector(threadExpressionUpdated(notification:)),
                                                name: NSNotification.Name.TSThreadExpressionChanged,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(yapDatabaseModified),
+                                               name: NSNotification.Name.YapDatabaseModified,
+                                               object: nil)
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc public func image(threadId: String) -> UIImage? {
+        if let image = self.imageCache.object(forKey: threadId as NSString) {
+            return image
+        } else {
+            if let thread = TSThread.fetch(uniqueId: threadId) {
+                if let image = thread.image {
+                    // thread has assigned image
+                    self.imageCache.setObject(image, forKey: threadId as NSString)
+                    return image
+                } else if thread.isOneOnOne {
+                    // one-on-one, use other avatar
+                    if let image = TextSecureKitEnv.shared().contactsManager.avatarImageRecipientId(thread.otherParticipantId!) {
+                        self.imageCache.setObject(image, forKey: threadId as NSString)
+                        return image
+                    }
+                }
+                
+            }
+        }
+        // Return default avatar
+        return UIImage.init(named:"empty-group-avatar-gray");
+    }
+    
+    @objc public func flushImageCache() {
+        imageCache.removeAllObjects()
     }
     
     @objc func threadExpressionUpdated(notification: Notification?) {
@@ -66,5 +103,20 @@ import Foundation
         })
     }
     
+    // MARK: - db modifications
+    private let readConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
+
+    @objc func yapDatabaseModified(notification: Notification?) {
+        
+        DispatchQueue.global(qos: .background).async {
+            let notifications = self.readConnection.beginLongLivedReadTransaction()
+            self.readConnection.enumerateChangedKeys(inCollection: TSThread.collection(),
+                                                     in: notifications) { (threadId, stop) in
+                                                        // Remove cached image
+                                                        self.imageCache.removeObject(forKey: threadId as NSString)
+            }
+        }
+    }
+
 
 }
