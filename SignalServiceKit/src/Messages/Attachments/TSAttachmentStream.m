@@ -200,6 +200,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
             self.cachedImageHeight = nil;
         }
     }
+
+    if (attachmentSchemaVersion < 5) {
+        // Older audio attachments could have incorrect durations due
+        // to weirdness in AVAudioPlayer.
+        self.cachedAudioDurationSeconds = nil;
+    }
 }
 
 - (void)ensureFilePath
