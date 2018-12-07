@@ -77,6 +77,9 @@ public class BackupLazyRestore: NSObject {
     public func runIfNecessary() {
         AssertIsOnMainThread()
 
+        guard AppReadiness.isAppReady() else {
+            return
+        }
         guard CurrentAppContext().isMainAppAndActive else {
             return
         }
