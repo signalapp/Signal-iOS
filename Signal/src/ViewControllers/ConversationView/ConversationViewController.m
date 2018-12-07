@@ -3648,7 +3648,7 @@ typedef enum : NSUInteger {
     // sends a message.  Normally, this is taken care of in yapDatabaseModified:, but
     // we don't listen to db modifications when this view isn't visible, i.e. when the
     // attachment approval view is presented.
-    [self scrollToBottomAnimated:YES];
+    [self scrollToBottomAnimated:NO];
 }
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
@@ -3716,7 +3716,7 @@ typedef enum : NSUInteger {
 
     CGFloat dstY = MAX(firstContentPageTop, lastContentPageTop);
 
-    [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:NO];
+    [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:animated];
     [self didScrollToBottom];
 }
 
@@ -4510,7 +4510,7 @@ typedef enum : NSUInteger {
                          animations:^{
                              [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
                              if (scrollToBottom) {
-                                 [self scrollToBottomAnimated:shouldAnimateUpdates];
+                                 [self scrollToBottomAnimated:NO];
                              }
                          }];
         }
