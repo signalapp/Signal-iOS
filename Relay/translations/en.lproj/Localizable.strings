@@ -1668,7 +1668,7 @@
 "REGISTER_FORCE_VALIDATION_TITLE" = "Please Confirm\nIdentity Key Reset";
 
 /* No comment provided by engineer. */
-"REGISTER_FORCE_VALIDATION_MESSAGE" = "This step cannot be undone and will trigger security alarms with any trusted contacts.";
+"REGISTER_FORCE_VALIDATION_MESSAGE" = "This step cannot be undone and will trigger security alerts with any trusted contacts.";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
