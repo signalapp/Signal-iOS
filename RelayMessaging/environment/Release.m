@@ -6,10 +6,9 @@
 #import "Environment.h"
 #import "NotificationsManager.h"
 //#import "OWSContactsManager.h"
-#import <RelayServiceKit/ContactsUpdater.h>
-#import <RelayServiceKit/OWSMessageSender.h>
-#import <RelayServiceKit/TSNetworkManager.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
+
+@import RelayServiceKit;
 
 @implementation Release
 

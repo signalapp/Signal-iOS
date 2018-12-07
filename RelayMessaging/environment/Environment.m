@@ -21,7 +21,6 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) TSNetworkManager *networkManager;
 @property (nonatomic) OWSMessageSender *messageSender;
 @property (nonatomic) OWSPreferences *preferences;
-
 @property (nonatomic) ThreadManager *threadManager;
 
 @end
@@ -117,6 +116,10 @@ static Environment *sharedEnvironment = nil;
     {
         if (!_preferences) {
             _preferences = [OWSPreferences new];
+//            [_preferences addObserver:self.threadManager
+//                           forKeyPath:@"useGravatars"
+//                              options:NSKeyValueObservingOptionNew
+//                              context:NULL];
         }
     }
 

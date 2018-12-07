@@ -3,12 +3,8 @@
 //
 
 #import "OWSPreferences.h"
-#import <RelayServiceKit/AppContext.h>
-#import <RelayServiceKit/NSNotificationCenter+OWS.h>
-#import <RelayServiceKit/NSUserDefaults+OWS.h>
-#import <RelayServiceKit/TSStorageHeaders.h>
-#import <RelayServiceKit/YapDatabaseConnection+OWS.h>
-#import <RelayServiceKit/YapDatabaseTransaction+OWS.h>
+
+#import <RelayMessaging/RelayMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -215,6 +211,7 @@ NSString *const PropertyListPreferencesKeyUseGravatars = @"UseGravatars";
 
 -(void)setUseGravatars:(BOOL)value
 {
+    [ThreadManager.sharedManager flushImageCache];
     [self setValueForKey:PropertyListPreferencesKeyUseGravatars toValue:@(value)];
 }
 

@@ -38,7 +38,7 @@ extension UIColor {
                  UIColor.FL_darkBlue1(),
                  UIColor.FL_mediumDarkBlue1(),
                  UIColor.FL_mediumBlue1(),
-                 UIColor.FL_mediumLightBlue1(),
+//                 UIColor.FL_mediumLightBlue1(),
 //                 UIColor.FL_lightBlue1(),
                  UIColor.FL_darkBlue2(),
                  UIColor.FL_mediumDarkBlue2(),

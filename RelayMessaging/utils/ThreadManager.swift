@@ -103,6 +103,16 @@ import Foundation
         })
     }
     
+//    // MARK: - KVO
+//    @objc override public func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+//        if keyPath == "useGravatars" {
+//            for obj in TSThread.allObjectsInCollection() {
+//                let thread = obj as! TSThread
+//                thread.touch()
+//            }
+//        }
+//    }
+    
     // MARK: - db modifications
     private let readConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
 

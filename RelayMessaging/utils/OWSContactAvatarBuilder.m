@@ -74,17 +74,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
-    return [self.contactsManager avatarImageRecipientId:self.signalId];
+    return nil;
+//    return [self.contactsManager avatarImageRecipientId:self.signalId];
 }
 
 - (UIImage *)buildDefaultImage
 {
-    UIImage *cachedAvatar =
-        [self.contactsManager avatarImageRecipientId:self.signalId];
-    if (cachedAvatar) {
-        return cachedAvatar;
-    }
-
     NSMutableString *initials = [NSMutableString string];
 
     NSRange rangeOfLetters = [self.contactName rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet]];

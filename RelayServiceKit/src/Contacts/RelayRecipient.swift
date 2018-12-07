@@ -17,7 +17,9 @@ import YapDatabase
     @objc public var email: String?
     @objc public var notes: String?
     @objc public var flTag: FLTag?
+    @objc public var defaultImage: UIImage?
     @objc public var avatarImage: UIImage?
+    @objc public var gravatarImage: UIImage?
     @objc public var orgSlug: String?
     @objc public var orgID: String?
     @objc public var gravatarHash: String?

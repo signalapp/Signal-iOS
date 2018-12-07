@@ -763,6 +763,7 @@
 		7D8517E5211CB08500F9EF53 /* Conversions.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517E3211CB08400F9EF53 /* Conversions.m */; };
 		7D8517EC211CB19C00F9EF53 /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517E7211CB19B00F9EF53 /* EvpMessageDigest.m */; };
 		7D8517ED211CB19C00F9EF53 /* EvpSymetricUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517E8211CB19B00F9EF53 /* EvpSymetricUtil.m */; };
+		7DCA3B3E21BB00F700733FF2 /* ThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DCA3B3D21BB00F600733FF2 /* ThreadManager.swift */; };
 		7DD5A72D211B7B1100965478 /* HttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A72C211B7B1000965478 /* HttpRequest.m */; };
 		7DD5A730211B7C7100965478 /* HttpRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A72F211B7C7100965478 /* HttpRequestOrResponse.m */; };
 		7DD5A733211B7CA500965478 /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A732211B7CA500965478 /* HttpResponse.m */; };
@@ -1546,6 +1547,7 @@
 		7D8517EB211CB19C00F9EF53 /* EvpSymetricUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpSymetricUtil.h; sourceTree = "<group>"; };
 		7D95D84B215C5E99000E783D /* RelayDev-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RelayDev-Info.plist"; sourceTree = "<group>"; };
 		7D9DCFCA21B5D7AE00120954 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
+		7DCA3B3D21BB00F600733FF2 /* ThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadManager.swift; sourceTree = "<group>"; };
 		7DD5A72B211B7B1000965478 /* HttpRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequest.h; sourceTree = "<group>"; };
 		7DD5A72C211B7B1000965478 /* HttpRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequest.m; sourceTree = "<group>"; };
 		7DD5A72E211B7C7000965478 /* HttpRequestOrResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequestOrResponse.h; sourceTree = "<group>"; };
@@ -2005,6 +2007,7 @@
 				34641E1020878FAF00E2EDE5 /* OWSWindowManager.m */,
 				45360B8C1F9521F800FA666C /* Searcher.swift */,
 				347850581FD9972E007B8332 /* SwiftSingletons.swift */,
+				7DCA3B3D21BB00F600733FF2 /* ThreadManager.swift */,
 				346129BD1FD2068600532771 /* ThreadUtil.h */,
 				346129BE1FD2068600532771 /* ThreadUtil.m */,
 				B97940251832BD2400BD66CB /* UIUtil.h */,
@@ -4078,6 +4081,7 @@
 				452C7CA72037628B003D51A5 /* Weak.swift in Sources */,
 				34D5872F208E2C4200D2255A /* OWS109OutgoingMessageState.m in Sources */,
 				7D6565192113CB3E00365A19 /* OWSContactsManager.m in Sources */,
+				7DCA3B3E21BB00F700733FF2 /* ThreadManager.swift in Sources */,
 				451F8A341FD710C3005CB9DA /* ConversationSearcher.swift in Sources */,
 				346129FE1FD5F31400532771 /* OWS106EnsureProfileComplete.swift in Sources */,
 				346129F91FD5F31400532771 /* OWS104CreateRecipientIdentities.m in Sources */,

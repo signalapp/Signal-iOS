@@ -204,7 +204,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 //    }
     
     self.avatarView.image =
-        [OWSAvatarBuilder buildImageForThread:thread diameter:kContactCellAvatarSize contactsManager:contactsManager];
+    [ThreadManager.sharedManager imageWithThreadId:thread.uniqueId];
 
     if (self.accessoryMessage) {
         self.accessoryLabel.text = self.accessoryMessage;

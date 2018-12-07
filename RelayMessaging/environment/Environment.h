@@ -19,9 +19,9 @@ extern NSString *const FLRelayWipeAndReturnToRegistrationNotification;
 @class FLContactsManager;
 @class OWSMessageSender;
 @class OWSNavigationController;
-@class TSGroupThread;
 @class TSNetworkManager;
 @class TSThread;
+@class ThreadManager;
 
 @interface Environment : NSObject
 
@@ -34,6 +34,7 @@ extern NSString *const FLRelayWipeAndReturnToRegistrationNotification;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly) ThreadManager *threadManager;
 @property (nonatomic, readonly) OWSPreferences *preferences;
 
 + (Environment *)current;

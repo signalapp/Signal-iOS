@@ -5,12 +5,9 @@
 #import "HomeViewCell.h"
 #import "OWSAvatarBuilder.h"
 #import "Relay-Swift.h"
-#import <RelayMessaging/OWSFormat.h>
-#import <RelayMessaging/OWSMath.h>
-#import <RelayMessaging/OWSUserProfile.h>
-#import <RelayMessaging/RelayMessaging-Swift.h>
-#import <RelayServiceKit/OWSMessageManager.h>
-#import <RelayServiceKit/TSThread.h>
+
+@import RelayServiceKit;
+@import RelayMessaging;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -75,6 +72,11 @@ NS_ASSUME_NONNULL_BEGIN
     // Ensure that the cell's contents never overflow the cell bounds.
     [self.avatarView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
     [self.avatarView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+    
+    [Environment.preferences addObserver:self
+                              forKeyPath:@"useGravatars"
+                                 options:NSKeyValueObservingOptionNew
+                                 context:NULL];
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -335,9 +337,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread.threadRecord
-                                                         diameter:self.avatarSize
-                                                  contactsManager:contactsManager];
+    self.avatarView.image = [ThreadManager.sharedManager imageWithThreadId:thread.threadRecord.uniqueId];
 }
 
 - (NSAttributedString *)attributedSnippetForThread:(ThreadViewModel *)thread
@@ -506,6 +506,16 @@ NS_ASSUME_NONNULL_BEGIN
             name = [[NSAttributedString alloc] initWithString:thread.title];
 
     self.nameLabel.attributedText = name;
+}
+
+#pragma mark - KVO implementation
+-(void)observeValueForKeyPath:(nullable NSString *)keyPath
+                     ofObject:(nullable id)object
+                       change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change
+                      context:(nullable void *)context {
+    if ([keyPath isEqualToString:@"useGravatars"]) {
+        [self updateAvatarView];
+    }
 }
 
 @end

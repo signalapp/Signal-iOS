@@ -67,35 +67,52 @@ import RelayServiceKit
     }
     
     public func avatarImageRecipientId(_ recipientId: String) -> UIImage? {
-
+        
         var cacheKey: NSString? = nil
         
-        if Environment.preferences().useGravatars() {
+        let useGravatars: Bool = Environment.preferences().useGravatars
+        
+        if useGravatars {
             cacheKey = "gravatar:\(recipientId)" as NSString
         } else {
             cacheKey = "avatar:\(recipientId)" as NSString
         }
         
+        // Check the avatarCache...
         if let image = self.avatarCache.object(forKey: cacheKey!) {
             Logger.debug("Avatar cache hit!")
             return image;
-        } else {
-
-            if Environment.preferences().useGravatars() {
-                // Post a notification to fetch the gravatar image so it doesn't block and then fall back to default
-                NotificationCenter.default.postNotificationNameAsync(NSNotification.Name(rawValue: FLRecipientNeedsGravatarFetched),
-                                                                     object: self,
-                                                                     userInfo: ["recipientId" : recipientId ])
-            }
-            guard let image = self.recipient(withId: recipientId)?.avatarImage else {
-                Logger.debug("Unable to generate avatar for recipient: \(recipientId)")
-                return nil
-            }
-
-            self.avatarCache.setObject(image, forKey: cacheKey!)
-            
-            return image
         }
+        
+        // Check local storage
+        guard let recipient = self.recipient(withId: recipientId) else {
+            Logger.debug("Attempt to get avatar image for unknown recipient: \(recipientId)")
+            return nil
+        }
+
+        var image: UIImage?
+        if useGravatars {
+            // Post a notification to fetch the gravatar image so it doesn't block and then fall back to default
+            NotificationCenter.default.postNotificationNameAsync(NSNotification.Name(rawValue: FLRecipientNeedsGravatarFetched),
+                                                                 object: self,
+                                                                 userInfo: ["recipientId" : recipientId ])
+        }
+        if useGravatars && recipient.gravatarImage != nil {
+            image = recipient.gravatarImage
+        } else if recipient.avatarImage != nil {
+            image = recipient.avatarImage
+        } else if recipient.defaultImage != nil {
+            image = recipient.defaultImage
+        } else {
+            image = OWSContactAvatarBuilder.init(nonSignalName: recipient.fullName(),
+                                                 colorSeed: recipient.uniqueId,
+                                                 diameter: 128,
+                                                 contactsManager: self).build()
+            recipient.defaultImage = image
+            recipient.save()
+        }
+        self.avatarCache.setObject(image!, forKey: cacheKey!)
+        return image
     }
     
     private let readConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
@@ -135,12 +152,26 @@ import RelayServiceKit
 //            })
 //        })
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.processRecipientsBlob), name: NSNotification.Name(rawValue: FLCCSMUsersUpdated), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.processTagsBlob), name: NSNotification.Name(rawValue: FLCCSMTagsUpdated), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleRecipientRefresh(notification:)), name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.fetchGravtarForRecipient(notification:)), name: NSNotification.Name(rawValue: FLRecipientNeedsGravatarFetched), object: nil)
-
-
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.processRecipientsBlob),
+                                               name: NSNotification.Name(rawValue: FLCCSMUsersUpdated),
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.processTagsBlob),
+                                               name: NSNotification.Name(rawValue: FLCCSMTagsUpdated),
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.handleRecipientRefresh(notification:)),
+                                               name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.fetchGravtarForRecipient(notification:)),
+                                               name: NSNotification.Name(rawValue: FLRecipientNeedsGravatarFetched),
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(yapDatabaseModified),
+                                               name: NSNotification.Name.YapDatabaseModified,
+                                               object: nil)
         avatarCache.delegate = self
         recipientCache.delegate = self
         tagCache.delegate = self
@@ -158,7 +189,6 @@ import RelayServiceKit
         return RelayRecipient.allObjectsInCollection() as! [RelayRecipient]
     }
 
-    
     @objc public func selfRecipient() -> RelayRecipient {
         let selfId = TSAccountManager.localUID()! as NSString
         var recipient:RelayRecipient? = recipientCache.object(forKey: selfId)
@@ -205,43 +235,6 @@ import RelayServiceKit
                     self.ccsmFetchRecipients(uids: lookupString)
                 }
             }
-        }
-    }
-    
-    // Gravatar URL format
-    fileprivate static let kGravatarURLFormat = "https://www.gravatar.com/avatar/%@?d=404"
-    
-    @objc public func fetchGravtarForRecipient(notification: Notification) {
-        
-        DispatchQueue.global(qos: .background).async {
-            guard let recipientId = notification.userInfo!["recipientId"] as? String else {
-                Logger.debug("Request to fetch gravatar without recipientId")
-                return
-            }
-            guard let recipient = self.recipient(withId: recipientId) else {
-                Logger.debug("Request to fetch gravatar for unknown recipientId: \(recipientId)")
-                return
-            }
-            guard let gravatarHash = recipient.gravatarHash else {
-                Logger.debug("No gravatar hash for recipient: \(recipientId)")
-                return
-            }
-            let gravatarURLString = String(format: FLContactsManager.kGravatarURLFormat, gravatarHash)
-            guard let aURL = URL.init(string: gravatarURLString) else {
-                Logger.debug("Unable to form URL from gravatar string: \(gravatarURLString)")
-                return
-            }
-            guard let gravarData = try? Data(contentsOf: aURL) else {
-                Logger.error("Unable to parse Gravatar image with has: \(String(describing: gravatarHash))")
-                return
-            }
-            guard let gravatarImage = UIImage(data: gravarData) else {
-                Logger.debug("Failed to generate image from fetched gravatar data for recipient: \(recipientId)")
-                return
-            }
-            let cacheKey = "gravatar:\(recipientId)" as NSString
-            self.avatarCache.setObject(gravatarImage, forKey: cacheKey)
-            recipient.touch()
         }
     }
     
@@ -320,7 +313,7 @@ import RelayServiceKit
             self.readWriteConnection.read { (transaction) in
                 recipient = self.recipient(withId: userId, transaction: transaction)
                 if recipient != nil {
-                    self.recipientCache .setObject(recipient!, forKey: recipient?.uniqueId as! NSString);
+                    self.recipientCache.setObject(recipient!, forKey: recipient?.uniqueId as! NSString);
                 }
             }
         }
@@ -484,7 +477,6 @@ import RelayServiceKit
     }
     
     @objc public func remove(recipient: RelayRecipient, with transaction: YapDatabaseReadWriteTransaction) {
-        self.recipientCache.removeObject(forKey: recipient.uniqueId as NSString)
         if let aTag = recipient.flTag {
             aTag.remove(with: transaction)
         }
@@ -572,8 +564,74 @@ import RelayServiceKit
         }
         return nil
     }
-    // MARK: - Helpers
-
+    
+    // MARK: - Gravatar handling
+    fileprivate static let kGravatarURLFormat = "https://www.gravatar.com/avatar/%@?s=128&d=404"
+    
+    @objc public func fetchGravtarForRecipient(notification: Notification) {
+        
+        DispatchQueue.global(qos: .background).async {
+            guard let recipientId = notification.userInfo!["recipientId"] as? String else {
+                Logger.debug("Request to fetch gravatar without recipientId")
+                return
+            }
+            guard let recipient = self.recipient(withId: recipientId) else {
+                Logger.debug("Request to fetch gravatar for unknown recipientId: \(recipientId)")
+                return
+            }
+            guard let gravatarHash = recipient.gravatarHash else {
+                Logger.debug("No gravatar hash for recipient: \(recipientId)")
+                return
+            }
+            let gravatarURLString = String(format: FLContactsManager.kGravatarURLFormat, gravatarHash)
+            guard let aURL = URL.init(string: gravatarURLString) else {
+                Logger.debug("Unable to form URL from gravatar string: \(gravatarURLString)")
+                return
+            }
+            guard let gravarData = try? Data(contentsOf: aURL) else {
+                Logger.error("Unable to parse Gravatar image with hash: \(String(describing: gravatarHash))")
+                return
+            }
+            guard let gravatarImage = UIImage(data: gravarData) else {
+                Logger.debug("Failed to generate image from fetched gravatar data for recipient: \(recipientId)")
+                return
+            }
+            let cacheKey = "gravatar:\(recipientId)" as NSString
+            self.avatarCache.setObject(gravatarImage, forKey: cacheKey)
+            recipient.gravatarImage = gravatarImage
+            recipient.save()
+        }
+    }
+    
+    // MARK: - db modifications
+    @objc func yapDatabaseModified(notification: Notification?) {
+        
+        DispatchQueue.global(qos: .background).async {
+            let notifications = self.readConnection.beginLongLivedReadTransaction()
+            
+            self.readConnection.enumerateChangedKeys(inCollection: RelayRecipient.collection(),
+                                                     in: notifications) { (recipientId, stop) in
+                                                        // Remove cached recipient
+                                                        self.recipientCache.removeObject(forKey: recipientId as NSString)
+                                                        
+                                                        // Touch any threads which contain the recipient
+                                                        for obj in TSThread.allObjectsInCollection() {
+                                                            if let thread = obj as? TSThread {
+                                                                if thread.participantIds.contains(recipientId) {
+                                                                    thread.touch()
+                                                                }
+                                                            }
+                                                        }
+                                                        
+            }
+            
+            self.readConnection.enumerateChangedKeys(inCollection: FLTag.collection(),
+                                                     in: notifications) { (recipientId, stop) in
+                                                        // Remove cached tag
+                                                        self.tagCache.removeObject(forKey: recipientId as NSString)
+            }
+        }
+    }
 }
 
 

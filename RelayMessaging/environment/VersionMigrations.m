@@ -57,6 +57,17 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    if ([self isVersion:previousVersion lessThan:@"2.0.1"]) {
+        DDLogInfo(@"Wiping thread images due to assignment bug in 2.0.0");
+        for (TSThread *thread in [TSThread allObjectsInCollection]) {
+            if (thread.image != nil) {
+                DDLogInfo(@"Found one!");
+                thread.image = nil;
+                [thread save];
+            }
+        }
+    }
+    
     if ([self isVersion:previousVersion lessThan:@"2.0.0"]) {
         DDLogError(@"Migrating from version 1.x.x.  Wiping database");
         // Not translating these as so few are affected.
@@ -76,6 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
         [CurrentAppContext().frontmostViewController presentViewController:alertController animated:YES completion:nil];
         return;
     }
+    
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
