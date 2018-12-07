@@ -29,12 +29,7 @@ public class ConversationMediaView: UIView {
     private var loadBlock : (() -> Void)?
     private var unloadBlock : (() -> Void)?
 
-    enum LoadState {
-        case unloaded
-        case loading
-        case loaded
-        case failed
-    }
+    // MARK: - LoadState
 
     // The loadState property allows us to:
     //
@@ -44,7 +39,52 @@ public class ConversationMediaView: UIView {
     // * We skip media loads which are no longer
     //   necessary by the time they reach the front
     //   of the queue.
-    private var loadState: LoadState = .unloaded
+
+    enum LoadState {
+        case unloaded
+        case loading
+        case loaded
+        case failed
+    }
+
+    // Thread-safe access to load state.
+    //
+    // We use a "box" class so that we can capture a reference
+    // to this box (rather than self) and a) safely access
+    // if off the main thread b) not prevent deallocation of
+    // self.
+    private class ThreadSafeLoadState {
+        private var value: LoadState
+
+        required init(_ value: LoadState) {
+            self.value = value
+        }
+
+        func get() -> LoadState {
+            objc_sync_enter(self)
+            let valueCopy = value
+            objc_sync_exit(self)
+            return valueCopy
+        }
+
+        func set(_ newValue: LoadState) {
+            objc_sync_enter(self)
+            value = newValue
+            objc_sync_exit(self)
+        }
+    }
+    private let threadSafeLoadState = ThreadSafeLoadState(.unloaded)
+    // Convenience accessors.
+    private var loadState: LoadState {
+        get {
+            return threadSafeLoadState.get()
+        }
+        set {
+            threadSafeLoadState.set(newValue)
+        }
+    }
+
+    // MARK: - Initializers
 
     @objc
     public required init(mediaCache: NSCache<NSString, AnyObject>,
@@ -68,6 +108,14 @@ public class ConversationMediaView: UIView {
     required public init?(coder aDecoder: NSCoder) {
         notImplemented()
     }
+
+    deinit {
+        AssertIsOnMainThread()
+
+        loadState = .unloaded
+    }
+
+    // MARK: -
 
     private func createContents() {
         AssertIsOnMainThread()
@@ -383,7 +431,13 @@ public class ConversationMediaView: UIView {
 
         Logger.verbose("media cache miss")
 
+        let threadSafeLoadState = self.threadSafeLoadState
         ConversationMediaView.loadQueue.async {
+            guard threadSafeLoadState.get() == .loading else {
+                Logger.verbose("Skipping obsolete load.")
+                return
+            }
+
             guard let media = loadMediaBlock() else {
                 Logger.error("Failed to load media.")
 
@@ -395,6 +449,7 @@ public class ConversationMediaView: UIView {
 
             DispatchQueue.main.async {
                 mediaCache.setObject(media, forKey: cacheKey as NSString)
+
                 loadCompletion(media)
             }
         }
