@@ -1398,7 +1398,6 @@ class CaptionView: UIView {
         placeholderTextView.isEditable = false
 
         placeholderTextView.backgroundColor = .clear
-        placeholderTextView.keyboardAppearance = Theme.keyboardAppearance
         placeholderTextView.font = UIFont.ows_dynamicTypeBody
 
         placeholderTextView.textColor = Theme.darkThemePrimaryColor
@@ -1411,7 +1410,7 @@ class CaptionView: UIView {
     private lazy var textView: UITextView = {
         let textView = UITextView()
         textView.backgroundColor = .clear
-        textView.keyboardAppearance = Theme.keyboardAppearance
+        textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
         textView.font = UIFont.ows_dynamicTypeBody
         textView.textColor = Theme.darkThemePrimaryColor
         textView.tintColor = Theme.darkThemePrimaryColor
@@ -1711,7 +1710,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
     private func buildTextView() -> UITextView {
         let textView = MessageTextView()
 
-        textView.keyboardAppearance = Theme.keyboardAppearance
+        textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
         textView.backgroundColor = .clear
         textView.tintColor = Theme.darkThemePrimaryColor
 
