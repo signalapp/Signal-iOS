@@ -204,7 +204,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     if (attachmentSchemaVersion < 5) {
         // Older audio attachments could have incorrect durations due
         // to weirdness in AVAudioPlayer.
-        self.cachedAudioDurationSeconds = nil;
+        // Per comments on cachedAudioDurationSeconds, we should only update
+        // this on the main thread.
+        if ([NSThread isMainThread]) {
+            self.cachedAudioDurationSeconds = nil;
+        }
     }
 }
 
