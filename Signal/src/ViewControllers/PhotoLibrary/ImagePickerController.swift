@@ -357,6 +357,50 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         reloadDataAndRestoreSelection()
     }
 
+    // MARK: - PhotoCollectionPicker Presentation
+
+    var isShowingCollectionPickerController: Bool {
+        return collectionPickerController != nil
+    }
+
+    var collectionPickerController: PhotoCollectionPickerController?
+    func showCollectionPicker() {
+        Logger.debug("")
+
+        let collectionPickerController = PhotoCollectionPickerController(library: library,
+                                                                         previousPhotoCollection: photoCollection,
+                                                                         collectionDelegate: self)
+
+        guard let collectionView = collectionPickerController.view else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        assert(self.collectionPickerController == nil)
+        self.collectionPickerController = collectionPickerController
+
+        addChildViewController(collectionPickerController)
+
+        view.addSubview(collectionView)
+        collectionView.autoPinEdgesToSuperviewEdges()
+    }
+
+    func hideCollectionPicker() {
+        Logger.debug("")
+        guard let collectionPickerController = collectionPickerController else {
+            owsFailDebug("collectionPickerController was unexpectedly nil")
+            return
+        }
+        self.collectionPickerController = nil
+        // TODO animate/hide
+
+        // MJK really? This documentation is surprising...
+        // If you are implementing your own container view controller, it must call the willMove(toParent:) method of the child view controller before calling the removeFromParent() method, passing in a parent value of nil.
+
+        collectionPickerController.view.removeFromSuperview()
+        collectionPickerController.removeFromParentViewController()
+    }
+
     // MARK: - PhotoCollectionPickerDelegate
 
     func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoCollection) {
@@ -378,11 +422,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         guard sender.state == .recognized else {
             return
         }
-        let view = PhotoCollectionPickerController(library: library,
-                                                   previousPhotoCollection: photoCollection,
-                                                   collectionDelegate: self)
-        let nav = OWSNavigationController(rootViewController: view)
-        self.present(nav, animated: true, completion: nil)
+        if isShowingCollectionPickerController {
+            hideCollectionPicker()
+        } else {
+            showCollectionPicker()
+        }
     }
 
     // MARK: - UICollectionView
