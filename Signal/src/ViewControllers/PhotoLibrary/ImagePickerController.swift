@@ -126,6 +126,23 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         // make sure to re-enable it if appropriate upon returning to the view
         hasPressedDoneSinceAppeared = false
         updateDoneButton()
+
+        // Since we're presenting *over* the ConversationVC, we need to `becomeFirstResponder`.
+        //
+        // Otherwise, the `ConversationVC.inputAccessoryView` will appear over top of us whenever
+        // OWSWindowManager window juggling executes `[rootWindow makeKeyAndVisible]`.
+        //
+        // We don't need to do this when pushing VCs onto the SignalsNavigationController - only when
+        // presenting directly from ConversationVC.
+        _ = self.becomeFirstResponder()
+    }
+
+    // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
+    // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
+    // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
+    override public var canBecomeFirstResponder: Bool {
+        Logger.debug("")
+        return true
     }
 
     // MARK: 
