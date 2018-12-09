@@ -355,10 +355,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - PhotoLibraryDelegate
 
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
-        // We only want to let users select assets
-        // from a single collection.
-        selectedIds.removeAll()
-
+        photoCollectionContents = photoCollection.contents()
         reloadDataAndRestoreSelection()
     }
 
