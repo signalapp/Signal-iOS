@@ -476,6 +476,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         if isInBatchSelectMode {
             updateDoneButton()
         } else {
+            // Don't show "selected" badge unless we're in batch mode
+            collectionView.deselectItem(at: indexPath, animated: false)
             complete(withAssets: [asset])
         }
     }
