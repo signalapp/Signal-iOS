@@ -371,7 +371,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                                                                          previousPhotoCollection: photoCollection,
                                                                          collectionDelegate: self)
 
-        guard let collectionView = collectionPickerController.view else {
+        guard let collectionPickerView = collectionPickerController.view else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
         }
@@ -381,8 +381,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         addChildViewController(collectionPickerController)
 
-        view.addSubview(collectionView)
-        collectionView.autoPinEdgesToSuperviewEdges()
+        view.addSubview(collectionPickerView)
+        collectionPickerView.autoPinEdgesToSuperviewEdges()
+        collectionPickerView.layoutIfNeeded()
+        collectionPickerView.frame = view.frame.offsetBy(dx: 0, dy: view.frame.height)
+
+        UIView.animate(.promise, duration: 0.3, delay: 0, options: .curveEaseInOut) {
+            collectionPickerView.superview?.layoutIfNeeded()
+        }.retainUntilComplete()
     }
 
     func hideCollectionPicker() {
@@ -392,13 +398,13 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
         self.collectionPickerController = nil
-        // TODO animate/hide
 
-        // MJK really? This documentation is surprising...
-        // If you are implementing your own container view controller, it must call the willMove(toParent:) method of the child view controller before calling the removeFromParent() method, passing in a parent value of nil.
-
-        collectionPickerController.view.removeFromSuperview()
-        collectionPickerController.removeFromParentViewController()
+        UIView.animate(.promise, duration: 0.3, delay: 0, options: .curveEaseInOut) {
+            collectionPickerController.view.frame = self.view.frame.offsetBy(dx: 0, dy: self.view.frame.height)
+        }.done { _ in
+            collectionPickerController.view.removeFromSuperview()
+            collectionPickerController.removeFromParentViewController()
+        }.retainUntilComplete()
     }
 
     // MARK: - PhotoCollectionPickerDelegate
