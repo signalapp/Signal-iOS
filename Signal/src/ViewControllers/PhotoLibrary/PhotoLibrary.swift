@@ -227,6 +227,12 @@ class PhotoCollection {
     }
 }
 
+extension PhotoCollection: Equatable {
+    static func == (lhs: PhotoCollection, rhs: PhotoCollection) -> Bool {
+        return lhs.collection == rhs.collection
+    }
+}
+
 class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
     typealias WeakDelegate = Weak<PhotoLibraryDelegate>
     var delegates = [WeakDelegate]()

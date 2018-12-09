@@ -425,6 +425,15 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - PhotoCollectionPickerDelegate
 
     func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoCollection) {
+        guard photoCollection != collection else {
+            hideCollectionPicker()
+            return
+        }
+
+        // Iff we switched albums, discard any selection and make sure the "Select" button shows,
+        // not the "Done" button
+        endSelectMode()
+
         photoCollection = collection
         photoCollectionContents = photoCollection.contents()
 
@@ -434,7 +443,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             navigationItem.title = photoCollection.localizedTitle()
         }
 
-        reloadDataAndRestoreSelection()
+        collectionView?.reloadData()
         hideCollectionPicker()
     }
 
