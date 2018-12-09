@@ -414,6 +414,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         reloadDataAndRestoreSelection()
+        hideCollectionPicker()
     }
 
     // MARK: - Event Handlers
