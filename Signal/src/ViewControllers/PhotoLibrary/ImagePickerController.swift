@@ -401,9 +401,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         addChildViewController(collectionPickerController)
 
         view.addSubview(collectionPickerView)
-        collectionPickerView.autoPinEdgesToSuperviewEdges()
+        collectionPickerView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        collectionPickerView.autoPinEdge(toSuperviewSafeArea: .top)
         collectionPickerView.layoutIfNeeded()
-        collectionPickerView.frame = view.frame.offsetBy(dx: 0, dy: view.frame.height)
+
+        // Initially position offscreen, we'll animate it in.
+        collectionPickerView.frame = collectionPickerView.frame.offsetBy(dx: 0, dy: collectionPickerView.frame.height)
 
         UIView.animate(.promise, duration: 0.3, delay: 0, options: .curveEaseInOut) {
             collectionPickerView.superview?.layoutIfNeeded()
