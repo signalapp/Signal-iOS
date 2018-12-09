@@ -25,6 +25,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     var collectionViewFlowLayout: UICollectionViewFlowLayout
 
     private let titleLabel = UILabel()
+    private let titleIconView = UIImageView()
 
     private var selectedIds = Set<String>()
 
@@ -70,7 +71,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             titleLabel.textColor = .ows_gray05
             titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
 
-            let titleIconView = UIImageView()
             titleIconView.tintColor = .ows_gray05
             titleIconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
 
@@ -388,6 +388,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         UIView.animate(.promise, duration: 0.3, delay: 0, options: .curveEaseInOut) {
             collectionPickerView.superview?.layoutIfNeeded()
+
+            // *slightly* more than `pi` to ensure the chevron animates anti-clockwise
+            let chevronRotationAngle = CGFloat.pi.nextUp
+            self.titleIconView.transform = CGAffineTransform(rotationAngle: chevronRotationAngle)
         }.retainUntilComplete()
     }
 
@@ -401,6 +405,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         UIView.animate(.promise, duration: 0.3, delay: 0, options: .curveEaseInOut) {
             collectionPickerController.view.frame = self.view.frame.offsetBy(dx: 0, dy: self.view.frame.height)
+            self.titleIconView.transform = .identity
         }.done { _ in
             collectionPickerController.view.removeFromSuperview()
             collectionPickerController.removeFromParentViewController()
