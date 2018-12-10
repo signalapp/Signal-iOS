@@ -360,12 +360,15 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     func endSelectMode() {
         isInBatchSelectMode = false
 
+        deselectAnySelected()
+    }
+
+    func deselectAnySelected() {
         guard let collectionView = self.collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
         }
 
-        // deselect any selected
         collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
     }
 
@@ -447,9 +450,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        // Iff we switched albums, discard any selection and make sure the "Select" button shows,
-        // not the "Done" button
-        endSelectMode()
+        // Any selections are invalid as they refer to indices in a different collection
+        deselectAnySelected()
 
         photoCollection = collection
         photoCollectionContents = photoCollection.contents()
