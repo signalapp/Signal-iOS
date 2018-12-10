@@ -70,7 +70,7 @@ class SignalAttachmentItem: Hashable {
 
     func getThumbnailImage() -> Promise<UIImage> {
         return DispatchQueue.global().async(.promise) { () -> UIImage in
-            guard let image =  self.attachment.image() else {
+            guard let image = self.attachment.staticThumbnail() else {
                 throw SignalAttachmentItemError.noThumbnail
             }
             return image
@@ -78,9 +78,9 @@ class SignalAttachmentItem: Hashable {
             switch result {
             case .fulfilled(let image):
                 self.imageSize = image.size
-            default: break
+            case .rejected(let error):
+                owsFailDebug("failed with error: \(error)")
             }
-
         }
     }
 

@@ -264,6 +264,21 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
+    public func staticThumbnail() -> UIImage? {
+        if isAnimatedImage {
+            return image()
+        } else if isImage {
+            return image()
+        } else if isVideo {
+            return videoPreview()
+        } else if isAudio {
+            return nil
+        } else {
+            return nil
+        }
+    }
+
+    @objc
     public func image() -> UIImage? {
         if let cachedImage = cachedImage {
             return cachedImage
