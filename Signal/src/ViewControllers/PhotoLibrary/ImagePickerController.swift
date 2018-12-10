@@ -369,7 +369,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
+        selectedIds = Set()
         collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
+
+        if isInBatchSelectMode {
+            updateDoneButton()
+        }
     }
 
     // MARK: - PhotoLibraryDelegate
