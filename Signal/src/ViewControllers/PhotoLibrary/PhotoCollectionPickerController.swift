@@ -93,6 +93,8 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         textStack.spacing = 2
 
         let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         let kImageSize = 80
         imageView.autoSetDimensions(to: CGSize(width: kImageSize, height: kImageSize))
 
