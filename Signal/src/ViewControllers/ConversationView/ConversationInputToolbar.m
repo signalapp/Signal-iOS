@@ -606,7 +606,14 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     // compute new height assuming width is unchanged
     CGSize currentSize = textView.frame.size;
-    CGFloat newHeight = [self clampedHeightWithTextView:textView fixedWidth:currentSize.width];
+
+    CGFloat fixedWidth = currentSize.width;
+    CGSize contentSize = [textView sizeThatFits:CGSizeMake(fixedWidth, CGFLOAT_MAX)];
+
+    // `textView.contentSize` isn't accurate when restoring a multiline draft, so we compute it here.
+    textView.contentSize = contentSize;
+
+    CGFloat newHeight = CGFloatClamp(contentSize.height, kMinTextViewHeight, kMaxTextViewHeight);
 
     if (newHeight != self.textViewHeight) {
         self.textViewHeight = newHeight;
@@ -614,14 +621,6 @@ const CGFloat kMaxTextViewHeight = 98;
         self.textViewHeightConstraint.constant = newHeight;
         [self invalidateIntrinsicContentSize];
     }
-}
-
-- (CGFloat)clampedHeightWithTextView:(UITextView *)textView fixedWidth:(CGFloat)fixedWidth
-{
-    CGSize fixedWidthSize = CGSizeMake(fixedWidth, CGFLOAT_MAX);
-    CGSize contentSize = [textView sizeThatFits:fixedWidthSize];
-
-    return CGFloatClamp(contentSize.height, kMinTextViewHeight, kMaxTextViewHeight);
 }
 
 #pragma mark QuotedReplyPreviewViewDelegate
