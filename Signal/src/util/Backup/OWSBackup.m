@@ -567,11 +567,11 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 
 - (void)ckAccountChanged
 {
-    OWSAssertIsOnMainThread();
-
-    [self ensureBackupExportState];
-
-    [self postDidChangeNotification];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self ensureBackupExportState];
+        
+        [self postDidChangeNotification];
+    });
 }
 
 #pragma mark - OWSBackupJobDelegate
