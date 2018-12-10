@@ -416,7 +416,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         // Initially position offscreen, we'll animate it in.
         collectionPickerView.frame = collectionPickerView.frame.offsetBy(dx: 0, dy: collectionPickerView.frame.height)
 
-        UIView.animate(.promise, duration: 0.3, delay: 0, options: .curveEaseInOut) {
+        UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
             collectionPickerView.superview?.layoutIfNeeded()
 
             self.updateSelectButton()
@@ -435,7 +435,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
         self.collectionPickerController = nil
 
-        UIView.animate(.promise, duration: 0.3, delay: 0, options: .curveEaseInOut) {
+        UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
             collectionPickerController.view.frame = self.view.frame.offsetBy(dx: 0, dy: self.view.frame.height)
 
             self.updateSelectButton()
