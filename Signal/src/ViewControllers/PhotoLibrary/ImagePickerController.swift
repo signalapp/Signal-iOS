@@ -416,13 +416,13 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         // Initially position offscreen, we'll animate it in.
         collectionPickerView.frame = collectionPickerView.frame.offsetBy(dx: 0, dy: collectionPickerView.frame.height)
 
-        UIView.animate(.promise, duration: 0.3, delay: 0, options: .curveEaseInOut) {
+        UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
             collectionPickerView.superview?.layoutIfNeeded()
 
             self.updateSelectButton()
 
             // *slightly* more than `pi` to ensure the chevron animates counter-clockwise
-            let chevronRotationAngle = CGFloat.pi.nextUp
+            let chevronRotationAngle = CGFloat.pi + 0.001
             self.titleIconView.transform = CGAffineTransform(rotationAngle: chevronRotationAngle)
         }.retainUntilComplete()
     }
@@ -435,7 +435,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
         self.collectionPickerController = nil
 
-        UIView.animate(.promise, duration: 0.3, delay: 0, options: .curveEaseInOut) {
+        UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
             collectionPickerController.view.frame = self.view.frame.offsetBy(dx: 0, dy: self.view.frame.height)
 
             self.updateSelectButton()
