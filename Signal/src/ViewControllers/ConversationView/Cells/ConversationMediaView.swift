@@ -435,9 +435,7 @@ public class ConversationMediaView: UIView {
         let mediaCache = self.mediaCache
         if let media = mediaCache.object(forKey: cacheKey as NSString) {
             Logger.verbose("media cache hit")
-            DispatchQueue.main.async {
-                loadCompletion(media)
-            }
+            loadCompletion(media)
             return
         }
 
