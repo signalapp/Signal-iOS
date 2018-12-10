@@ -91,6 +91,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 - (void)clearCachedLayoutState;
 
+@property (nonatomic, readonly) BOOL hasCachedLayoutState;
+
 #pragma mark - Audio Playback
 
 @property (nonatomic, weak) OWSAudioMessageView *lastAudioMessageView;

@@ -569,7 +569,6 @@ static const int kYapDatabaseRangeMinLength = 0;
     // reloadViewItems.
     BOOL hasMalformedRowChange = NO;
     NSMutableSet<NSString *> *updatedItemSet = [NSMutableSet new];
-    NSMutableSet<NSString *> *updatedNeighborItemSet = [NSMutableSet new];
     for (YapDatabaseViewRowChange *rowChange in rowChanges) {
         switch (rowChange.type) {
             case YapDatabaseViewChangeUpdate: {
@@ -579,17 +578,10 @@ static const int kYapDatabaseRangeMinLength = 0;
                     if (viewItem) {
                         [self reloadInteractionForViewItem:viewItem];
                         [updatedItemSet addObject:viewItem.itemId];
-                        if (rowChange.changes == YapDatabaseViewChangedDependency) {
-                            [updatedNeighborItemSet addObject:viewItem.itemId];
-                        }
                     } else {
                         OWSLogError(@"Update is missing view item");
                         hasMalformedRowChange = YES;
                     }
-                } else if (rowChange.indexPath && rowChange.originalIndex < self.viewItems.count) {
-                    // Do nothing, this is a pseudo-update generated due to
-                    // setCellDrawingDependencyOffsets.
-                    OWSAssertDebug(rowChange.changes == YapDatabaseViewChangedDependency);
                 } else {
                     OWSFailDebug(@"Update is missing collection key");
                     hasMalformedRowChange = YES;
@@ -634,9 +626,7 @@ static const int kYapDatabaseRangeMinLength = 0;
 
     OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewItems.count);
 
-    [self updateViewWithOldItemIdList:oldItemIdList
-                       updatedItemSet:updatedItemSet
-               updatedNeighborItemSet:updatedNeighborItemSet];
+    [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:updatedItemSet];
 }
 
 // A simpler version of the update logic we use when
@@ -662,15 +652,13 @@ static const int kYapDatabaseRangeMinLength = 0;
 
     OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewItems.count);
 
-    [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:[NSSet set] updatedNeighborItemSet:nil];
+    [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:[NSSet set]];
 }
 
 - (void)updateViewWithOldItemIdList:(NSArray<NSString *> *)oldItemIdList
-                     updatedItemSet:(NSSet<NSString *> *)updatedItemSet
-             updatedNeighborItemSet:(nullable NSMutableSet<NSString *> *)updatedNeighborItemSet
-{
+                     updatedItemSet:(NSSet<NSString *> *)updatedItemSetParam {
     OWSAssertDebug(oldItemIdList);
-    OWSAssertDebug(updatedItemSet);
+    OWSAssertDebug(updatedItemSetParam);
 
     if (!self.delegate.isObservingVMUpdates) {
         OWSLogVerbose(@"Skipping VM update.");
@@ -771,6 +759,33 @@ static const int kYapDatabaseRangeMinLength = 0;
         return [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
     }
 
+    NSMutableSet<NSString *> *updatedItemSet = [updatedItemSetParam mutableCopy];
+    NSMutableSet<NSString *> *updatedNeighborItemSet = [NSMutableSet new];
+    for (NSString *itemId in newItemIdSet) {
+        if (![oldItemIdSet containsObject:itemId]) {
+            continue;
+        }
+        if ([insertedItemIdSet containsObject:itemId] || [updatedItemSet containsObject:itemId]) {
+            continue;
+        }
+        OWSAssertDebug(![deletedItemIdSet containsObject:itemId]);
+
+        NSUInteger newIndex = [newItemIdList indexOfObject:itemId];
+        if (newIndex == NSNotFound) {
+            OWSFailDebug(@"Can't find index of holdover view item.");
+            return [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
+        }
+        id<ConversationViewItem> _Nullable viewItem = newViewItemMap[itemId];
+        if (!viewItem) {
+            OWSFailDebug(@"Can't find holdover view item.");
+            return [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
+        }
+        if (!viewItem.hasCachedLayoutState) {
+            [updatedItemSet addObject:itemId];
+            [updatedNeighborItemSet addObject:itemId];
+        }
+    }
+
     // 3. Updates.
     //
     // NOTE: Order doesn't matter.
@@ -866,16 +881,6 @@ static const int kYapDatabaseRangeMinLength = 0;
         self.messageMappings =
             [[YapDatabaseViewMappings alloc] initWithGroups:@[] view:TSMessageDatabaseViewExtensionName];
     }
-
-    // Cells' appearance can depend on adjacent cells in both directions.
-    //
-    // TODO: We could do the same thing in our logic to generate "update items"
-    //       in updateViewWithOldItemIdList.
-    [self.messageMappings setCellDrawingDependencyOffsets:[NSSet setWithArray:@[
-        @(-1),
-        @(+1),
-    ]]
-                                                 forGroup:self.thread.uniqueId];
 
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];

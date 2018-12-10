@@ -577,12 +577,26 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
-            return NO;
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
         case OWSMessageCellType_DownloadingAttachment:
         case OWSMessageCellType_ContactShare:
             return NO;
+        case OWSMessageCellType_MediaAlbum:
+            return YES;
+    }
+}
+
+- (BOOL)hasBodyMediaView {
+    switch (self.cellType) {
+        case OWSMessageCellType_Unknown:
+        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_OversizeTextMessage:
+            return NO;
+        case OWSMessageCellType_Audio:
+        case OWSMessageCellType_GenericAttachment:
+        case OWSMessageCellType_DownloadingAttachment:
+        case OWSMessageCellType_ContactShare:
         case OWSMessageCellType_MediaAlbum:
             return YES;
     }
@@ -601,8 +615,14 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (BOOL)hasBottomFooter
 {
-    BOOL shouldFooterOverlayMedia = (self.canFooterOverlayMedia && !self.hasBodyText);
-    return !self.viewItem.shouldHideFooter && !shouldFooterOverlayMedia;
+    BOOL shouldFooterOverlayMedia = (self.canFooterOverlayMedia && self.hasBodyMediaView && !self.hasBodyText);
+    if (self.viewItem.shouldHideFooter) {
+        return NO;
+    } else if (shouldFooterOverlayMedia) {
+        return NO;
+    } else {
+        return YES;
+    }
 }
 
 - (BOOL)insertAnyTextViewsIntoStackView:(NSArray<UIView *> *)textViews
