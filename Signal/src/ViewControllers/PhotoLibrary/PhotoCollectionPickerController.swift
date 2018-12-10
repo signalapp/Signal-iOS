@@ -41,46 +41,9 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         tableView.backgroundColor = Theme.darkThemeBackgroundColor
         tableView.separatorColor = .clear
 
-        if #available(iOS 11, *) {
-            let titleLabel = UILabel()
-            titleLabel.text = previousPhotoCollection.localizedTitle()
-            titleLabel.textColor = Theme.darkThemePrimaryColor
-            titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
-
-            let titleIconView = UIImageView()
-            titleIconView.tintColor = Theme.darkThemePrimaryColor
-            titleIconView.image = UIImage(named: "navbar_disclosure_up")?.withRenderingMode(.alwaysTemplate)
-
-            let titleView = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
-            titleView.axis = .horizontal
-            titleView.alignment = .center
-            titleView.spacing = 5
-            titleView.isUserInteractionEnabled = true
-            titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
-            navigationItem.titleView = titleView
-        } else {
-            navigationItem.title = previousPhotoCollection.localizedTitle()
-        }
-
         library.add(delegate: self)
 
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop,
-                                           target: self,
-                                           action: #selector(didPressCancel))
-        cancelButton.tintColor = Theme.darkThemePrimaryColor
-        navigationItem.leftBarButtonItem = cancelButton
-
         updateContents()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if let navBar = self.navigationController?.navigationBar as? OWSNavigationBar {
-            navBar.overrideTheme(type: .alwaysDark)
-        } else {
-            owsFailDebug("Invalid nav bar.")
-        }
     }
 
     // MARK: -
@@ -164,22 +127,8 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
 
     // MARK: Actions
 
-    @objc
-    func didPressCancel(sender: UIBarButtonItem) {
-        self.dismiss(animated: true)
-    }
-
     func didSelectCollection(collection: PhotoCollection) {
         collectionDelegate?.photoCollectionPicker(self, didPickCollection: collection)
-
-        self.dismiss(animated: true)
-    }
-
-    @objc func titleTapped(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else {
-            return
-        }
-        self.dismiss(animated: true)
     }
 
     // MARK: PhotoLibraryDelegate

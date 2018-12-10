@@ -25,6 +25,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     var collectionViewFlowLayout: UICollectionViewFlowLayout
 
     private let titleLabel = UILabel()
+    private let titleIconView = UIImageView()
 
     private var selectedIds = Set<String>()
 
@@ -70,7 +71,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             titleLabel.textColor = .ows_gray05
             titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
 
-            let titleIconView = UIImageView()
             titleIconView.tintColor = .ows_gray05
             titleIconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
 
@@ -126,6 +126,23 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         // make sure to re-enable it if appropriate upon returning to the view
         hasPressedDoneSinceAppeared = false
         updateDoneButton()
+
+        // Since we're presenting *over* the ConversationVC, we need to `becomeFirstResponder`.
+        //
+        // Otherwise, the `ConversationVC.inputAccessoryView` will appear over top of us whenever
+        // OWSWindowManager window juggling executes `[rootWindow makeKeyAndVisible]`.
+        //
+        // We don't need to do this when pushing VCs onto the SignalsNavigationController - only when
+        // presenting directly from ConversationVC.
+        _ = self.becomeFirstResponder()
+    }
+
+    // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
+    // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
+    // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
+    override public var canBecomeFirstResponder: Bool {
+        Logger.debug("")
+        return true
     }
 
     // MARK: 
@@ -317,6 +334,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     func updateSelectButton() {
+        guard !isShowingCollectionPickerController else {
+            navigationItem.rightBarButtonItem = nil
+            return
+        }
+
         let button = isInBatchSelectMode ? doneButton : selectButton
         button.tintColor = .ows_gray05
         navigationItem.rightBarButtonItem = button
@@ -338,28 +360,104 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     func endSelectMode() {
         isInBatchSelectMode = false
 
+        deselectAnySelected()
+    }
+
+    func deselectAnySelected() {
         guard let collectionView = self.collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
         }
 
-        // deselect any selected
+        selectedIds = Set()
         collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
+
+        if isInBatchSelectMode {
+            updateDoneButton()
+        }
     }
 
     // MARK: - PhotoLibraryDelegate
 
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
-        // We only want to let users select assets
-        // from a single collection.
-        selectedIds.removeAll()
-
+        photoCollectionContents = photoCollection.contents()
         reloadDataAndRestoreSelection()
+    }
+
+    // MARK: - PhotoCollectionPicker Presentation
+
+    var isShowingCollectionPickerController: Bool {
+        return collectionPickerController != nil
+    }
+
+    var collectionPickerController: PhotoCollectionPickerController?
+    func showCollectionPicker() {
+        Logger.debug("")
+
+        let collectionPickerController = PhotoCollectionPickerController(library: library,
+                                                                         previousPhotoCollection: photoCollection,
+                                                                         collectionDelegate: self)
+
+        guard let collectionPickerView = collectionPickerController.view else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        assert(self.collectionPickerController == nil)
+        self.collectionPickerController = collectionPickerController
+
+        addChildViewController(collectionPickerController)
+
+        view.addSubview(collectionPickerView)
+        collectionPickerView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        collectionPickerView.autoPinEdge(toSuperviewSafeArea: .top)
+        collectionPickerView.layoutIfNeeded()
+
+        // Initially position offscreen, we'll animate it in.
+        collectionPickerView.frame = collectionPickerView.frame.offsetBy(dx: 0, dy: collectionPickerView.frame.height)
+
+        UIView.animate(.promise, duration: 0.3, delay: 0, options: .curveEaseInOut) {
+            collectionPickerView.superview?.layoutIfNeeded()
+
+            self.updateSelectButton()
+
+            // *slightly* more than `pi` to ensure the chevron animates counter-clockwise
+            let chevronRotationAngle = CGFloat.pi.nextUp
+            self.titleIconView.transform = CGAffineTransform(rotationAngle: chevronRotationAngle)
+        }.retainUntilComplete()
+    }
+
+    func hideCollectionPicker() {
+        Logger.debug("")
+        guard let collectionPickerController = collectionPickerController else {
+            owsFailDebug("collectionPickerController was unexpectedly nil")
+            return
+        }
+        self.collectionPickerController = nil
+
+        UIView.animate(.promise, duration: 0.3, delay: 0, options: .curveEaseInOut) {
+            collectionPickerController.view.frame = self.view.frame.offsetBy(dx: 0, dy: self.view.frame.height)
+
+            self.updateSelectButton()
+
+            self.titleIconView.transform = .identity
+        }.done { _ in
+            collectionPickerController.view.removeFromSuperview()
+            collectionPickerController.removeFromParentViewController()
+        }.retainUntilComplete()
     }
 
     // MARK: - PhotoCollectionPickerDelegate
 
     func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoCollection) {
+        guard photoCollection != collection else {
+            hideCollectionPicker()
+            return
+        }
+
+        // Any selections are invalid as they refer to indices in a different collection
+        deselectAnySelected()
+
         photoCollection = collection
         photoCollectionContents = photoCollection.contents()
 
@@ -369,7 +467,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             navigationItem.title = photoCollection.localizedTitle()
         }
 
-        reloadDataAndRestoreSelection()
+        collectionView?.reloadData()
+        hideCollectionPicker()
     }
 
     // MARK: - Event Handlers
@@ -378,11 +477,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         guard sender.state == .recognized else {
             return
         }
-        let view = PhotoCollectionPickerController(library: library,
-                                                   previousPhotoCollection: photoCollection,
-                                                   collectionDelegate: self)
-        let nav = OWSNavigationController(rootViewController: view)
-        self.present(nav, animated: true, completion: nil)
+        if isShowingCollectionPickerController {
+            hideCollectionPicker()
+        } else {
+            showCollectionPicker()
+        }
     }
 
     // MARK: - UICollectionView
@@ -404,6 +503,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         if isInBatchSelectMode {
             updateDoneButton()
         } else {
+            // Don't show "selected" badge unless we're in batch mode
+            collectionView.deselectItem(at: indexPath, animated: false)
             complete(withAssets: [asset])
         }
     }
