@@ -288,11 +288,24 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
             guard photoCollection.contents().assetCount > 0 else {
                 return
             }
+
             collections.append(photoCollection)
         }
         let processPHAssetCollections: (PHFetchResult<PHAssetCollection>) -> Void = { (fetchResult) in
-            for index in 0..<fetchResult.count {
-                processPHCollection(fetchResult.object(at: index))
+            // undocumented constant
+
+            fetchResult.enumerateObjects { (assetCollection, index, stop) in
+                // We're already sorting albums by last-updated. "Recently Added" is mostly redundant
+                guard assetCollection.assetCollectionSubtype != .smartAlbumRecentlyAdded else {
+                    return
+                }
+
+                let kRecentlyDeletedAlbumSubtype = PHAssetCollectionSubtype(rawValue: 1000000201)
+                guard assetCollection.assetCollectionSubtype != kRecentlyDeletedAlbumSubtype else {
+                    return
+                }
+
+                processPHCollection(assetCollection)
             }
         }
         let processPHCollections: (PHFetchResult<PHCollection>) -> Void = { (fetchResult) in
@@ -302,12 +315,18 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
         }
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "endDate", ascending: true)]
+
         // Try to add "Camera Roll" first.
         processPHAssetCollections(PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: fetchOptions))
-        // User-created albums.
-        processPHCollections(PHAssetCollection.fetchTopLevelUserCollections(with: fetchOptions))
+
+        // Favorites
+        processPHAssetCollections(PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: fetchOptions))
+
         // Smart albums.
         processPHAssetCollections(PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: fetchOptions))
+
+        // User-created albums.
+        processPHCollections(PHAssetCollection.fetchTopLevelUserCollections(with: fetchOptions))
 
         return collections
     }
