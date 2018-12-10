@@ -212,6 +212,8 @@ public class ConversationMediaView: UIView {
         _ = addUploadProgressIfNecessary(animatedImageView)
 
         loadBlock = { [weak self] in
+            AssertIsOnMainThread()
+
             if animatedImageView.image != nil {
                 owsFailDebug("Unexpectedly already loaded.")
                 return
@@ -240,6 +242,8 @@ public class ConversationMediaView: UIView {
                                                         cacheKey: cacheKey)
         }
         unloadBlock = {
+            AssertIsOnMainThread()
+
             animatedImageView.image = nil
         }
     }
@@ -262,6 +266,8 @@ public class ConversationMediaView: UIView {
         stillImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(stillImageView)
         loadBlock = { [weak self] in
+            AssertIsOnMainThread()
+
             if stillImageView.image != nil {
                 owsFailDebug("Unexpectedly already loaded.")
                 return
@@ -291,6 +297,8 @@ public class ConversationMediaView: UIView {
                                                         cacheKey: cacheKey)
         }
         unloadBlock = {
+            AssertIsOnMainThread()
+
             stillImageView.image = nil
         }
     }
@@ -321,6 +329,8 @@ public class ConversationMediaView: UIView {
         }
 
         loadBlock = { [weak self] in
+            AssertIsOnMainThread()
+
             if stillImageView.image != nil {
                 owsFailDebug("Unexpectedly already loaded.")
                 return
@@ -350,6 +360,8 @@ public class ConversationMediaView: UIView {
                                                         cacheKey: cacheKey)
         }
         unloadBlock = {
+            AssertIsOnMainThread()
+
             stillImageView.image = nil
         }
     }
@@ -464,7 +476,7 @@ public class ConversationMediaView: UIView {
     //   views that are no longer visible, redundant loads
     //   of media already being loaded, don't retry media
     //   that can't be loaded, etc.).
-    private static let loadQueue = DispatchQueue(label: "org.signal.asyncMediaLoadQueue")
+    private static let loadQueue: DispatchQueue(label: "org.signal.asyncMediaLoadQueue", qos:.userInteractive)
 
     @objc
     public func loadMedia() {
