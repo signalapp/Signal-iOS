@@ -759,6 +759,17 @@ static const int kYapDatabaseRangeMinLength = 0;
         return [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
     }
 
+    // In addition to "update" items from the database change notification,
+    // we may need to update other items.  One example is neighbors of modified
+    // cells. Another is cells whose appearance has changed due to the passage
+    // of time.  We detect "dirty" items by whether or not they have cached layout
+    // state, since that is cleared whenever we change the properties of the
+    // item that affect its appearance.
+    //
+    // This replaces the setCellDrawingDependencyOffsets/
+    // YapDatabaseViewChangedDependency logic offered by YDB mappings,
+    // which only reflects changes in the data store, not at the view
+    // level.
     NSMutableSet<NSString *> *updatedItemSet = [updatedItemSetParam mutableCopy];
     NSMutableSet<NSString *> *updatedNeighborItemSet = [NSMutableSet new];
     for (NSString *itemId in newItemIdSet) {
