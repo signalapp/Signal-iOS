@@ -99,10 +99,10 @@
 "ATTACHMENT" = "צרופה";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "מגבלת כיתוב הושגה.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "הוסף כיתוב...";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "סוג קובץ: %@";
@@ -191,9 +191,6 @@
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "תגובת שירות בלתי תקפה";
 
-/* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "נתוני גיבוי לא היו ניתנים להעלאה.";
-
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "מנקה גיבוי";
 
@@ -231,10 +228,10 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "משחזר קבצים";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+"BACKUP_RESTORE_DECISION_TITLE" = "גיבוי זמין";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+"BACKUP_RESTORE_DESCRIPTION" = "משחזר גיבוי";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "התקדמות";
@@ -243,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "מיצב";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Error";
+"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "לא תקבל יותר הודעות או עדכונים מקבוצה זו.";
@@ -399,25 +396,25 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "בחר מדינה";
 
 /* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "אל תשחזר";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "לא היה ניתן לקבוע אם יש גיבוי היכול להשתחזר.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "שגיאה";
 
 /* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "שחזור";
+"CHECK_FOR_BACKUP_RESTORE" = "שחזר";
 
-/* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "הייתה שגיאה בהתקשרות עם iCloud עבור גיבויים.";
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "אין לך חשבון iCloud עבור גיבויים.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
-/* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal לא הותר לקבל גישה אל חשבון iCloud שלך עבור גיבויים.";
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "בחר את הצבע של הודעות יוצאות בשיחה זו.";
@@ -556,6 +553,12 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "איש קשר ללא שם";
+
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "הגדרות שיחה";
@@ -1311,6 +1314,9 @@
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "מעלה...";
 
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "הודעה חדשה";
+
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ אינו מסומן יותר כמוודא. הקשי לאפשרויות.";
 
@@ -1542,7 +1548,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "פקס עבודה";
 
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "אלבום ללא שם";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "נגן מדיה";
@@ -1967,17 +1973,20 @@
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "גיבוי מאופשר";
 
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "שחזור גיבוי נכשל";
 
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "שחזור גיבוי בטל";
 
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "שחזור גיבוי בתהליך";
 
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "שחזור גיבוי הצליח";
 
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "שלב";
@@ -1985,7 +1994,7 @@
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "התקדמות";
 
-/* Label for status row in the in the backup settings view. */
+/* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "מיצב";
 
 /* Indicates that the last backup failed. */

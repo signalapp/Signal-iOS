@@ -69,7 +69,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ в группе %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal не может запуститься. Пожалуйста, отправьте журналы отладки на support@signal.org, чтобы мы смогли исправить эту проблему.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Ошибка";
@@ -84,7 +84,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Версия %@ уже доступна в App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Доступна новая версия Signal";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Обновить";
@@ -120,7 +120,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Вложение";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Download failed. Tap to retry.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Не удалось скачать. Нажмите, чтобы попробовать ещё раз.";
 
 /* Status label when an attachment is currently downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Загрузка...";
@@ -132,28 +132,28 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Ошибка отправки вложения";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Unable to convert image.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Невозможно конвертировать изображение.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Невозможно обработать видео.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Unable to parse image.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Невозможно распознать изображение.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Не удается удалить метаданные из изображения.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Unable to resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Невозможно изменить размер изображения.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Вложение слишком большое.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Вложение содержит неподдерживаемое содержимое.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Формат файла вложения не поддерживается.";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Вложение пустое.";
@@ -171,7 +171,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Не удалось выбрать документ.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Пожалуйста, создайте сжатый архив этого файла или папки и попробуйте отправить его.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Неподдерживаемый файл";
@@ -190,9 +190,6 @@
 
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Неверный ответ сервиса";
-
-/* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Не удалось выгрузить резервную копию.";
 
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "Очистка резервной копии";
@@ -243,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "Статус";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Error";
+"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Вы больше не будете получать сообщения и обновления из этой группы.";
@@ -252,16 +249,16 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Заблокировать";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Заблокировать и покинуть группу \"%@\"?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Заблокировать %@?";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blocked Groups";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Заблокированные группы";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blocked Users";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Заблокированные пользователи";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Разблокировать";
@@ -270,7 +267,7 @@
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Существующие участники смогут снова добавить вас в группу.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Unblock This Group?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Разблокировать эту группу?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Разблокировать %@?";
@@ -279,13 +276,13 @@
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Заблокировать";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ был(-а) заблокирован(-а).";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Пользователь заблокирован";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Group Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Группа заблокирована";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Вы не можете заблокировать самого себя.";
@@ -297,7 +294,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ был разблокирован.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Теперь участники группы могут снова добавить вас в группу.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Блокировка";
@@ -321,7 +318,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Вызвать снова";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Вы можете разрешить Signal использовать микрофон в приложении \"Настройки\", чтобы совершать звонки и записывать голосовые сообщения в Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Требуется доступ к микрофону";
@@ -330,7 +327,7 @@
 "CALL_LABEL" = "Позвонить";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Нет ответа";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -410,20 +407,20 @@
 /* The label for the 'restore backup' button. */
 "CHECK_FOR_BACKUP_RESTORE" = "Восстановить";
 
-/* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Произошла ошибка резервного копирования при обращении к iCloud.";
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "У вас нет учетной записи iCloud для резервного копирования.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
-/* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal не разрешен доступ к вашей учетной записи iCloud для резервного копирования.";
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Only you will see the color you choose.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Только вы увидите цвет, который выберете.";
 
 /* Modal Sheet title when picking a conversation color. */
 "COLOR_PICKER_SHEET_TITLE" = "Conversation Color";
@@ -556,6 +553,12 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Безымянный контакт";
+
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Настройки разговоров";
@@ -1311,6 +1314,9 @@
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Загрузка...";
 
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Новое сообщение";
+
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как проверенный. Нажмите для опций.";
 
@@ -1967,6 +1973,9 @@
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Резервное копирование включено";
 
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
 
@@ -1985,7 +1994,7 @@
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "Прогресс";
 
-/* Label for status row in the in the backup settings view. */
+/* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "Статус";
 
 /* Indicates that the last backup failed. */
@@ -2373,13 +2382,13 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Добро пожаловать в Видео Звонки!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please use the Software Update feature in the iOS Settings app.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Для Signal требуется iOS 9 или новее. Пожалуйста, используйте функцию Обновление ПО в программе Настройки.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Обновите IOS";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Upgrading Signal…";
+"Upgrading Signal ..." = "Обновляем Signal...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Назад";

@@ -42,7 +42,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "你是否願意將個人資訊讓此使用者看見？";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "取消";
+"ALERT_DISCARD_BUTTON" = "放棄";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "不要儲存";
@@ -99,10 +99,10 @@
 "ATTACHMENT" = "附件";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "標題字數已達限制。";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "新增標題...";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "檔案類型：%@";
@@ -191,9 +191,6 @@
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "無效的服務回應";
 
-/* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "備份資料無法被上傳。";
-
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "清除備份";
 
@@ -231,10 +228,10 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "回復檔案";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+"BACKUP_RESTORE_DECISION_TITLE" = "提供備份";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+"BACKUP_RESTORE_DESCRIPTION" = "回復備份";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "過程";
@@ -243,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "狀態";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Error";
+"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "你將無法從此群組收到訊息或更新。";
@@ -399,25 +396,25 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "選擇國家";
 
 /* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "不復原？";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "無法判定是否有備份可供復原。";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "錯誤";
 
 /* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "還原";
+"CHECK_FOR_BACKUP_RESTORE" = "復原";
 
-/* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "與iCloud 連結備份時發生一個錯誤。";
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "你沒有iCloud 帳號來備份。";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
-/* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal 並不被允許連結你的 iCloud 帳號來備份。";
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "選擇在此對話中要發出訊息的顏色。";
@@ -556,6 +553,12 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "取消命名聯絡人";
+
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "對話設定";
@@ -945,6 +948,9 @@
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "未註冊的使用者: %@";
 
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "稍後";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "此聯繫人失敗太多次，請稍後再試。";
 
@@ -1308,6 +1314,9 @@
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "上傳中...";
 
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "新訊息";
+
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@已不再標記為已驗證。點擊開啟選項。";
 
@@ -1485,7 +1494,7 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@設定訊息銷毀時間為%@。";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signal 正面臨技術上的問題。我們正在盡力的盡快地回復服務。";
+"OUTAGE_WARNING" = "Signal 正面臨技術上的問題。我們正在盡力的盡快地恢復服務。";
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "撥出電話";
@@ -1539,7 +1548,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "工作傳真";
 
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "未命名的相簿";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放媒體";
@@ -1964,17 +1973,20 @@
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "備份功能啟動";
 
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "復原備份失敗";
 
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "備份復原閒置中";
 
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "正在進行復原備份";
 
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "復原備份成功";
 
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "階段";
@@ -1982,7 +1994,7 @@
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "過程";
 
-/* Label for status row in the in the backup settings view. */
+/* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "狀態";
 
 /* Indicates that the last backup failed. */
@@ -2327,6 +2339,9 @@
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "滑動來回覆";
 
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "開啟打字狀態";
+
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "您現在可以選擇預設和每個會話通知音效，並且通話將使用您為每個系統聯繫人選擇的鈴聲。";
 
@@ -2353,9 +2368,6 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "啟用已讀回執功能";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "在你的隱私權設定中啟動打字狀態。";
 
 /* Body text for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "現在你可以選擇性的查看並分享正在輸入的訊息。";

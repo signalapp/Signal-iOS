@@ -191,9 +191,6 @@
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "服务端返回无效响应";
 
-/* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "无法上传要备份的数据。";
-
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "正在清除备份";
 
@@ -243,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "状态";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Error";
+"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "您将不会收到此群组的消息或更新。";
@@ -410,14 +407,14 @@
 /* The label for the 'restore backup' button. */
 "CHECK_FOR_BACKUP_RESTORE" = "还原";
 
-/* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "连接 iCloud 备份时有错误发生。";
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "您没有可用于备份的 iCloud 账户。";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
-/* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal 没有访问您 iCloud 账户的权限。";
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "选择此对话中发出消息的颜色。";
@@ -556,6 +553,12 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "未命名的联系人";
+
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "会话设置";
@@ -1311,6 +1314,9 @@
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "上传中...";
 
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "新消息";
+
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@不再标记为已验证。点击打开选项。";
 
@@ -1967,6 +1973,9 @@
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "备份已启用";
 
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
 
@@ -1985,7 +1994,7 @@
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "进度";
 
-/* Label for status row in the in the backup settings view. */
+/* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "状态";
 
 /* Indicates that the last backup failed. */
@@ -2022,7 +2031,7 @@
 "SETTINGS_CLEAR_HISTORY" = "清除聊天记录";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "版权所有 Signal Messenger \n根据 GPLv3 授权";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "删除账号";
@@ -2031,7 +2040,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "删除所有数据";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "您确定要清除所有历史记录吗（包括信息，附件，通话记录等）？ 此操作是不可恢复的。";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "全部删除";
@@ -2142,28 +2151,28 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "注册锁";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "“正在输入”提示";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "查看并分享输入消息的状态。此设置为可选设置，且对所有对话生效。";
 
 /* Label for a link to more info about unidentified delivery. */
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "了解更多";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "密封的发送者";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "私密发件人";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "显示“正在输入”提示";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "在使用私密发件人发送的信息上查看“更多信息”时，显示一个状态图标。";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "允许来自任何人";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "为非联系人和没有与你分享个人资料的人发来的邮件启用密封发件人。";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "为非联系人和你没有分享个人资料的人发来的信息启用私密发件人功能。";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "版本";
@@ -2181,7 +2190,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "近期您与%@的安全码已改变。在您重新发送前，建议您在主应用中验证新的安全码。";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Loading…";
+"SHARE_EXTENSION_LOADING" = "加载中...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "启动 Signal 来注册。";
@@ -2295,7 +2304,7 @@
 "UNLINK_ACTION" = "解绑";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "This device will no longer be able to send or receive messages if it is unlinked.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "如果取消关联此设备，它将不能再接收或发送信息。";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "确定解绑 \"%@\"?";
@@ -2319,7 +2328,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "您无法删除群组成员。只能其自行退出，或者您可以新建一个不包含该成员的群组。";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "不支持";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "iOS 通话整合可以帮您简单地从锁定屏幕来接听电话。默认设置显示匿名呼叫人，所以您不必担心隐私泄露。";
@@ -2331,7 +2340,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "滑动即可应答";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "打开“正在输入”提示";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "现在，您既可以为所有对话设置一个默认提示音，也可以为每一个对话选择单独的提示音。您的来电铃声将与 iOS 联系人中所设置的铃声一致。";
@@ -2364,7 +2373,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "现在，你可以选择分享你在撰写消息时的打字状态提示了。";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "隆重推出“正在输入”提示功能。";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal 已开始支持安全的视频通话。正常的开始Signal通话，点击相机按钮，对方即可看到您。";
@@ -2373,13 +2382,13 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "现推出安全的视频通话！";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please use the Software Update feature in the iOS Settings app.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal 仅支持 iOS 9 或更新的系统版本。请到 设置 >> 通用 >> 软件更新 升级 iOS。";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "升级 iOS";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Upgrading Signal…";
+"Upgrading Signal ..." = "正在升级 Signal…";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "退后";

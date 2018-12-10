@@ -191,9 +191,6 @@
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Risposta invalida del servizio.";
 
-/* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "I dati del backup non possono essere inviati.";
-
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "Pulizia backup";
 
@@ -243,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "Stato";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Error";
+"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Non riceverai più messaggi o aggiornamenti da questo gruppo.";
@@ -410,14 +407,14 @@
 /* The label for the 'restore backup' button. */
 "CHECK_FOR_BACKUP_RESTORE" = "Ripristina";
 
-/* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Si è verificato un errore di comunicazione con iCloud per i backup.";
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Non hai un account iCloud per i backup.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
-/* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal non ha l'accesso al tuo account iCloud per i backup.";
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Scegli il colore dei messaggi in uscita per questa conversazione.";
@@ -556,6 +553,12 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Contatto senza nome";
+
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Impostazioni conversazione";
@@ -1311,6 +1314,9 @@
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Aggiornamento...";
 
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Nuovo messaggio";
+
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ non è più segnato come verificato. Tocca per le opzioni.";
 
@@ -1967,6 +1973,9 @@
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup attivo";
 
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
 
@@ -1985,7 +1994,7 @@
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "Avanzamento";
 
-/* Label for status row in the in the backup settings view. */
+/* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "Stato";
 
 /* Indicates that the last backup failed. */

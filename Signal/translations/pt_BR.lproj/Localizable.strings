@@ -191,9 +191,6 @@
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Resposta inválida do serviço";
 
-/* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "A cópia de segurança não pôde ser carregada.";
-
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "Limpando cópia de segurança";
 
@@ -243,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "Status";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Error";
+"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Você deixará de receber mensagens e atualizações do grupo.";
@@ -410,14 +407,14 @@
 /* The label for the 'restore backup' button. */
 "CHECK_FOR_BACKUP_RESTORE" = "Restaurar";
 
-/* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Houve um erro na comunicação com o iCloud.";
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Você não tem uma conta iCloud para guardar cópias de segurança.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
-/* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "O Signal não tem permissão para acessar sua conta iCloud e guardar cópias de segurança.";
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Escolha a cor das mensagens enviadas nesta conversa.";
@@ -556,6 +553,12 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Contato sem nome";
+
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Configurações de Conversa";
@@ -1075,7 +1078,7 @@
 "IN_CALL_CONNECTING" = "conectando...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting…";
+"IN_CALL_RECONNECTING" = "Reconectando...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Chamando...";
@@ -1198,7 +1201,7 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Excluir mensagem";
 
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ on %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ em %@";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -1303,13 +1306,16 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Falha no envio";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending…";
+"MESSAGE_STATUS_SENDING" = "Enviando...";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Enviado";
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Enviando...";
+
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Nova mensagem";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ não está mais marcado como verificado. Toque para ver as opções.";
@@ -1967,6 +1973,9 @@
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Cópia de segurança ativada";
 
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
 
@@ -1985,7 +1994,7 @@
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "Progresso";
 
-/* Label for status row in the in the backup settings view. */
+/* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "Status";
 
 /* Indicates that the last backup failed. */
@@ -2151,7 +2160,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Saiba Mais";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Sealed Sender";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Remetente Oculto";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
@@ -2163,7 +2172,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Habilitar remetente oculto para mensagens recebidas de não contatos e pessoas com quem você não compartilhou seu perfil.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versão";
@@ -2181,7 +2190,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Seu número de segurança com %@ mudou recentemente. Verifique-o no aplicativo principal antes de reenviar.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Loading…";
+"SHARE_EXTENSION_LOADING" = "Carregando...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Lançar a app Signal para registrar.";
@@ -2361,7 +2370,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introdução às Notificações de Leitura";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Agora você tem a opção de ver e mostrar quando as mensagens estiverem sendo digitadas.";
 
 /* Header for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
@@ -2373,13 +2382,13 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Olá, chamadas seguras em vídeo!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please use the Software Update feature in the iOS Settings app.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "O Signal requer iOS 9 ou superior. Por favor, use o recurso de Atualização de Software disponível nos Ajustes do iOS.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Atualize o iOS";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Upgrading Signal…";
+"Upgrading Signal ..." = "Atualizando Signal para versão mais recente...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Voltar";

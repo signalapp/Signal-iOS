@@ -99,10 +99,10 @@
 "ATTACHMENT" = "Eklenti";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Başlık sınırına ulaşıldı.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Bir başlık ekleyin...";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Dosya türü: %@";
@@ -191,9 +191,6 @@
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Geçersiz Hizmet Yanıtı";
 
-/* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Yedek verisi yüklenemedi.";
-
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "Yedek Temizleniyor";
 
@@ -231,10 +228,10 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Dosyalar Eski Haline Getiriliyor";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+"BACKUP_RESTORE_DECISION_TITLE" = "Yedek Mevcut";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+"BACKUP_RESTORE_DESCRIPTION" = "Yedek Geri Yükleniyor";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "İlerleme";
@@ -243,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "Durum";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Error";
+"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Bu grubun mesajlarını veya güncellemelerini almayacaksınız.";
@@ -399,10 +396,10 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Ülke Seçin";
 
 /* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Geri Yükleme";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Geri yüklenebilecek bir yedeğin olup olmadığı belirlenemedi.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Hata";
@@ -410,14 +407,14 @@
 /* The label for the 'restore backup' button. */
 "CHECK_FOR_BACKUP_RESTORE" = "Geri yükle";
 
-/* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Yedekler için iCloud ile iletişim kurulurken hata oluştu.";
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Yedekleriniz için bir iCloud Hesabınız bulunmamaktadır.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
-/* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Yedekler için Signal'in iCloud hesabınıza erişmesine izin verilmedi.";
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Bu sohbete gönderilen mesajarın rengini seçin.";
@@ -556,6 +553,12 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "İsimsiz Kişi";
+
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Sohbet Seçenekleri";
@@ -1311,6 +1314,9 @@
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Yükleniyor…";
 
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Yeni Mesaj";
+
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ artık doğrulanmış olarak işaretlenmiyor. Seçenekler için dokunun. ";
 
@@ -1542,7 +1548,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "İş Faksı";
 
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "İsimsiz Albüm";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Medyayı Oynat";
@@ -1967,17 +1973,20 @@
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Yedekleme Etkinleştirildi";
 
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Yedekten Geri Yükleme Başarısız Oldu";
 
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Yedekten Geri Yükleme Beklemede";
 
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Yedekten Geri Yükleme Sürdürülüyor";
 
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Yedekten Geri Yükleme Başarıyla Tamamlandı";
 
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "Aşama";
@@ -1985,7 +1994,7 @@
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "İlerleme";
 
-/* Label for status row in the in the backup settings view. */
+/* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "Durum";
 
 /* Indicates that the last backup failed. */
@@ -2331,7 +2340,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Cevaplamak için Sadece Kaydırın";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Yazıyor Göstergelerini Aç";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "'Yazıyor' Göstergelerini Aç";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Artık varsayılan ve sohbet başına bildirim seslerini seçebilirsiniz ve aramalar her sistem kişisi için seçtiğiniz zil sesine uygun olacaktır.";

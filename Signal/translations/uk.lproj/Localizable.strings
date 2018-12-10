@@ -99,13 +99,19 @@
 "ATTACHMENT" = "Долучення";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Досягнуто ліміту повідомлення.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+
+/* placeholder text for an empty captioning field */
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Тип файлу:  %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Розмiр: %@";
+
+/* One-line label indicating the user can add no more text to the media message field. */
+"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Досягнуто ліміту повідомлення.";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Надіслати";
@@ -135,7 +141,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Неможливо обробити зображення.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Неможливо прибрати метадані з зображення.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Неможливо вилучити метадані зображення.";
 
 /* Attachment error message for image attachments which could not be resized */
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Неможливо змінити розмір зображення.";
@@ -185,9 +191,6 @@
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Хибна відповідь сервісу";
 
-/* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Дані резервної копії неможливо завантажити.";
-
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "Очищення резервної копії";
 
@@ -201,7 +204,7 @@
 "BACKUP_EXPORT_PHASE_EXPORT" = "Експорт резервної копії";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Завантаження резервної копії";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Вивантаження резервної копії";
 
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Резервну копію неможливо імпортувати.";
@@ -224,6 +227,21 @@
 /* Indicates that the backup import data is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Відновлення файлів";
 
+/* Label for the backup restore decision section. */
+"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+
+/* Label for the backup restore description. */
+"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+
+/* Label for the backup restore progress. */
+"BACKUP_RESTORE_PROGRESS" = "Progress";
+
+/* Label for the backup restore status. */
+"BACKUP_RESTORE_STATUS" = "Status";
+
+/* Error shown when backup fails due to an unexpected error. */
+"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Ви більше не отримуватимете повідомлень чи оновлень з цієї групи.";
 
@@ -237,7 +255,7 @@
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Заблокувати %@?";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Заблоковані груп";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Заблоковані групи";
 
 /* Section header for users that have been blocked */
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Заблоковані користувачі";
@@ -300,16 +318,16 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Перетелефонувати";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Щоб телефонувати та записувати голосові повідомлення в Signal, надайте програмі доступ до мікрофону в налаштуваннях iOS.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Щоб телефонувати та записувати голосові повідомлення в Signal, надайте програмі доступ до мікрофона в налаштуваннях iOS.";
 
 /* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "Потрібен доступ до мікрофону";
+"CALL_AUDIO_PERMISSION_TITLE" = "Потрібен доступ до мікрофона";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Виклик";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "Не відповідє";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Без відповіді";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -339,7 +357,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Вимкнути мікрофон";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Щоб відповідати на вхідні виклики з екрану блокування, надайте Signal доступ до інтеграції з викликами в налаштуваннях приватності iOS.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Щоб відповідати на вхідні виклики з екрана блокування, надайте Signal доступ до інтеграції з викликами в налаштуваннях приватності iOS.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Щоб побачити ім’я та номер телефону людини, що вам телефонує, надайте Signal доступ до інтеграції з викликами в налаштуваннях приватності iOS.";
@@ -369,7 +387,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Користувач Signal";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Цього користувача неможливо підтвердити, поки ви не обміняєтесь повідомленнями.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Цього користувача неможливо завірити, допоки ви не обміняєтесь повідомленнями.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Помилка";
@@ -377,14 +395,26 @@
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Вибрати країну";
 
-/* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Виникла помилка з’єднання з iCloud для резервних копій.";
+/* The label for the 'do not restore backup' button. */
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+
+/* Message for alert shown when the app failed to check for an existing backup. */
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+
+/* Title for alert shown when the app failed to check for an existing backup. */
+"CHECK_FOR_BACKUP_FAILED_TITLE" = "Помилка";
+
+/* The label for the 'restore backup' button. */
+"CHECK_FOR_BACKUP_RESTORE" = "Відновити";
+
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "У вас немає акаунта iCloud для створення резервних копій.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
 
-/* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal не має доступу до вашого акаунта iCloud для резервних копій.";
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Виберіть колір вихідних повідомлень для цієї розмови.";
@@ -408,7 +438,7 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Запросити";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Щоб побачити, хто з ваших контактів користується Signal, надайте програмі доступ до контактів в налаштуваннях iOS.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Щоб побачити, хто з ваших контактів користується Signal, надайте програмі доступ до контактів у налаштуваннях iOS.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Це обнулить програму і ваші повідомлення та акаунт буде видалено з сервера. Після завершення процесу програма закриється.";
@@ -423,13 +453,13 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "Ви дійсно хочете покинути?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Під’єднати новий пристрій";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Привязати новий пристрій";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@, можливо, перевстановив програму чи змінив пристрій. Переконайтеся, що все захищено, підтвердивши ваші номери безпеки.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@, можливо, перевстановив програму чи змінив пристрій. Переконайтеся, що все захищено, завіривши ваші коди безпеки.";
 
 /* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Номер безпеки із %@ змінився";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Код безпеки із %@ змінився";
 
 /* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "Підтвердити";
@@ -441,7 +471,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "Заблоковано";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Не підтверджено";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Не завірено";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Незареєстрований номер";
@@ -459,7 +489,7 @@
 "CONTACT_FIELD_ADDRESS_COUNTRY" = "Країна";
 
 /* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Сусідство";
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Район";
 
 /* Label for the 'pobox' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_POBOX" = "Абонентська скринька";
@@ -480,7 +510,7 @@
 "CONTACT_FIELD_GIVEN_NAME" = "Ім’я";
 
 /* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Середнє ім’я";
+"CONTACT_FIELD_MIDDLE_NAME" = "Друге ім’я";
 
 /* Label for the 'name prefix' field of a contact. */
 "CONTACT_FIELD_NAME_PREFIX" = "Префікс";
@@ -524,6 +554,12 @@
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Безіменний контакт";
 
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Налаштування розмов";
 
@@ -531,10 +567,10 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Додати до наявного контакту";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Заблокувати цю групу";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Заблокувати групу";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Заблокувати цього користувача";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Заблокувати користувача";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Інформація контакту";
@@ -582,10 +618,10 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Сповіщати";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Ця група може бачити ваш профіль.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Група може бачити ваш профіль.";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Цей користувач може бачити ваш профіль.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Користувач може бачити ваш профіль.";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Поділитися профілем";
@@ -600,34 +636,34 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Додати до контактів";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Поділитися своїм профілем із цим користувачем";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Поділитися своїм профілем із користувачем";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Цього користувача немає у ваших контактах";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Користувача немає у ваших контактах";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Завантажуємо більше повідомлень...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Довантажуємо повідомлення...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Натисніть, щоб показати більше";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Заблокувати цього користувача";
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Заблокувати користувача";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Скидання вашого сеансу дозволить вам отримувати подальші повідомлення від %@, але це не відновить жодних вже пошкоджених повідомлень.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Скидання сеансу дасть вам змогу отримувати повідомлення від %@, але не відновить жодних раніше пошкоджених повідомлень.";
 
 /* No comment provided by engineer. */
-"COUNTRYCODE_SELECT_TITLE" = "Оберіть код країни";
+"COUNTRYCODE_SELECT_TITLE" = "Виберіть код країни";
 
 /* Accessibility label for the create group new group button */
 "CREATE_NEW_GROUP" = "Створити нову групу";
 
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Перемістити і збільшити";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Переміщуйте та масштабуйте";
 
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Це може зайняти пару хвилин";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Це може зайняти кілька хвилин.";
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Оптимізація бази даних";
@@ -648,13 +684,13 @@
 "DATE_YESTERDAY" = "Учора";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Неможливо скопіювати логи.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Не вдалося скопіювати логи.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Не вдалося зібрати логи.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Неможливо завантажити логи.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Не вдалося вивантажити логи.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Що зробити із посиланням на ваші логи помилок?";
@@ -672,7 +708,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Написати е-листа до підтримки";
 
 /* Label for the 'send to last thread' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Надіслати до останньої гілки";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Надіслати собі";
@@ -685,25 +721,25 @@
 "DEBUG_LOG_ALERT_TITLE" = "Ще один крок";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Неможливо відкрити програму Е-пошта.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "Неможливо відкрити програму Пошта.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Посилання на gist було скопійовано. Зараз вас перенаправлять на список помилок на GitHub.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Перенаправлення на GitHub";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Спрямування на GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Перереєструвати цей номер телефону";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Зареєструвати цей номер телефону знову";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Пристрій не зареєстровано. Можливо, ви зареєстрували цей номер телефону в Signal на іншому пристрої. Натисніть, щоб перереєструватися.";
+"DEREGISTRATION_WARNING" = "Пристрій не зареєстровано. Можливо, ви зареєстрували цей номер телефону в Signal на іншому пристрої. Натисніть, щоб зареєструватися знову.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Остання активність: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Під’єднано: %@";
+"DEVICE_LINKED_AT_LABEL" = "Прив’язано %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Не вдалося оновити список пристроїв.";
@@ -724,10 +760,10 @@
 "DISAPPEARING_MESSAGES_LABEL" = "Налаштування зникних повідомлень";
 
 /* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "Відмінити";
+"DISMISS_BUTTON_TEXT" = "Відхилити";
 
 /* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Розташування для обходу цензури";
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Країна для обходу цензури";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Ви можете надати доступ у налаштуваннях iOS.";
@@ -769,7 +805,7 @@
 "EDIT_TXT" = "Редагувати";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Привіт,\n\nЯ почав користуватися Signal, щоб мої розмови на iPhone залишалися приватними. Я б хотів, щоб ви теж встановили його, щоб ми не хвилювалися щодо того, що хтось інший, окрім нас, може читати наші повідомлення чи підслуховувати наші розмови.\n\nSignal доступний для iPhone та Android. Завантажити: %@\n\nSignal працює, як месенджери, якими ви вже користуєтеся. Ми можемо обмінюватися фото та відео, телефонувати та створювати групові чати. Найважливіше те, що ніхто зайвий не може побачити наших повідомлень, навіть самі розробники Signal!\n\nДізнатися більше про Open Whisper Systems, розробників Signal, можна тут: %@";
+"EMAIL_INVITE_BODY" = "Привіт,\n\nЯ почав користуватися Signal, щоб мої розмови на iPhone залишалися приватними. Я хотів би, щоб ви теж встановили його, аби ми не хвилювалися про те, що хтось інший, окрім нас, може читати наші повідомлення чи підслуховувати наші розмови.\n\nSignal доступний для iPhone та Android. Завантажити: %@\n\nSignal працює як месенджери, якими ви вже користуєтеся. Ми можемо обмінюватися фото та відео, телефонувати та створювати групові чати. Найважливіше те, що ніхто зайвий не може побачити наших повідомлень, навіть самі розробники Signal!\n\nДізнатися більше про Open Whisper Systems, розробників Signal, можна тут: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Перейдімо на Signal";
@@ -784,7 +820,7 @@
 "EMPTY_CONTACTS_LABEL_LINE1" = "Жоден з ваших контактів не користується Signal";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Чому б вам не запросити когось?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Чому би вам не запросити когось?";
 
 /* Body text a new user sees when viewing an empty inbox */
 "EMPTY_INBOX_NEW_USER_TEXT" = "Натисніть на кнопку \"Написати\"";
@@ -793,7 +829,7 @@
 "EMPTY_INBOX_NEW_USER_TITLE" = "Розпочніть свою першу розмову в Signal!";
 
 /* Body text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TEXT" = "Пусто. Порожньо. Повний нуль.";
+"EMPTY_INBOX_TEXT" = "Нічого. Нічогісінько. Дірка від бублика.";
 
 /* Header text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TITLE" = "Все чисто";
@@ -802,10 +838,10 @@
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Підтвердьте ваш ПІН.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Неможливо вимкнути блокування реєстрації.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Неможливо вимкнути блокування входу.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Неможливо увімкнути блокування реєстрації.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Неможливо увімкнути блокування входу.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
 "ENABLE_2FA_VIEW_DISABLE_2FA" = "Вимкнути";
@@ -820,16 +856,16 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "ПІНи не збігаються.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Уведіть ПІН блокування реєстрації. Вам доведеться увести цей ПІН при наступній реєстрації цього номера телефону в Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Уведіть ПІН блокування входу. Вам доведеться увести цей ПІН при наступному вході в Signal з цього номера телефону.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Задля покращеної безпеки, увімкніть ПІН блокування реєстрації, який буде потрібен при повторній реєстрації цього номера в Signal.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Задля покращеної безпеки, увімкніть ПІН блокування входу, який буде потрібен при повторному вході в Signal з цього номера.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Блокування реєстрації увімкнено. Вам доведеться ввести ПІН при наступній реєстрації цього номера телефону в Signal.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Блокування входу увімкнено. Вам доведеться ввести ПІН при наступному вході в Signal з цього номера телефону.";
 
 /* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Блокування реєстрації";
+"ENABLE_2FA_VIEW_TITLE" = "Блокування входу";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Зайнято";
@@ -850,10 +886,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Не вдалося написати користувачеві, оскільки ви його заблокували.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Не вдалося написати й надіслати прикріплення.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Не вдалося написати й надіслати долучення.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal не зміг під’єднатися до інтернету. Спробуйте знову.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal не зміг з’єднатися з інтернетом. Спробуйте знову.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Повідомлення не вдалося надіслати через відсутність дійсних одержувачів.";
@@ -868,7 +904,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Хибна відповідь сервісу.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Цей пристрій не зареєстрований із вашим номером телефону. Перевстановіть Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Цей пристрій більше не пов’язаний із вашим номером телефону. Перевстановіть Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Виникла помилка. Спробуйте пізніше.";
@@ -880,7 +916,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Контакт не користується Signal.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Помилка прикріплення: Попросіть цей контакт оновитися до останньої версії Signal. а потім надіслати повідомлення знову.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Помилка долучення: Попросіть цей контакт оновити Signal до останньої версії. а потім надіслати повідомлення знову.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Одержано дублікат повідомлення.";
@@ -898,16 +934,16 @@
 "ERROR_MESSAGE_NO_SESSION" = "Немає доступного сеансу для контакту.";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Номер безпеки змінено.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Код безпеки змінено.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Ваш номер безпеки із %@ змінився.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Ваш код безпеки із %@ змінився.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "Сталася невідома помилка.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Виникла невідома помилка.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Безпечний номер змінено.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Код безпеки змінено.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Незареєстрований користувач: %@";
@@ -919,13 +955,13 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Забагато помилок із цим контактом. Спробуйте пізніше.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ваш номер безпеки із %@ недавно змінився. Можливо, його слід підтвердити перед тим, як надіслати це повідомлення знову.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ваш код безпеки із %@ недавно змінився. Можливо, його варто завірити перед тим, як надіслати це повідомлення знову.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Не вдалося підтвердити номер безпеки!";
+"FAILED_VERIFICATION_TITLE" = "Не вдалося завірити код безпеки!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Позначити як підтверджений";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Завірити";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Скинути сеанс";
@@ -934,16 +970,16 @@
 "FINISH_GROUP_CREATION_LABEL" = "Завершити створення групи";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "У цій розмові у вас немає жодних медіа.";
+"GALLERY_TILES_EMPTY_GALLERY" = "У цій розмові немає жодних медіа.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Завантаження новіших медіа...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Довантаження медіа...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Завантаження давніших медіа...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Довантаження медіа...";
 
 /* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "Вкладення";
+"GENERIC_ATTACHMENT_LABEL" = "Долучення";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Не вдалося одержати запитану GIF. Переконайтеся, що ви в мережі.";
@@ -964,13 +1000,13 @@
 "GIF_VIEW_SEARCH_ERROR" = "Помилка. Натисніть, щоб повторити.";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "Без результату.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Немає результатів.";
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Уведіть пошуковий запит";
 
 /* No comment provided by engineer. */
-"GROUP_AVATAR_CHANGED" = "Аватар змінено.";
+"GROUP_AVATAR_CHANGED" = "Фото змінено.";
 
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Групу створено.";
@@ -994,16 +1030,16 @@
 "GROUP_MEMBERS_CALL" = "Виклик";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Очистити підтвердження для всіх";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Очистити завірення для всіх";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Це очистить підтвердження усіх учасників групи, чиї номери безпеки змінилися з часу останнього підтвердження.";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Це очистить завірення усіх учасників групи, чиї коди безпеки змінилися з часу останнього завірення.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Учасники";
 
 /* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Більше не позначені як підтверджені";
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Більше не завірені";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Надіслати повідомлення";
@@ -1030,7 +1066,7 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Пошук";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Не знайдено нічого за запитом '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Нічого не знайдено за запитом '%@'";
 
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Архів";
@@ -1042,7 +1078,7 @@
 "IN_CALL_CONNECTING" = "З’єднання...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Під’єднання...";
+"IN_CALL_RECONNECTING" = "Повторне з’єднання...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Дзвонимо...";
@@ -1054,7 +1090,7 @@
 "IN_CALL_TERMINATED" = "Виклик завершено.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ці розмови архівовані і з’являтимуться у вхідних лише якщо приходитимуть нові повідомлення.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ці розмови — архівовані. Вони з’являтимуться у вхідних лише тоді, коли приходитимуть нові повідомлення.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Щоб побачити імена контактів у списку розмов у Signal, надайте програмі доступ до контактів у налаштуваннях iOS.";
@@ -1063,7 +1099,7 @@
 "INCOMING_CALL" = "Вхідний виклик";
 
 /* notification body */
-"INCOMING_CALL_FROM" = "Вхідний викликвід %@";
+"INCOMING_CALL_FROM" = "Вхідний виклик від %@";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "Ви відхилили виклик";
@@ -1072,7 +1108,7 @@
 "INCOMING_INCOMPLETE_CALL" = "Вхідний виклик";
 
 /* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Виклик пропущено, оскільки його номер безпеки змінився.";
+"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Виклик пропущено, оскільки код безпеки змінився.";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Хибний аудіофайл.";
@@ -1093,7 +1129,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Запросити друзів";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Якщо запросити кілька користувачів одночасно, то створиться група і одержувачі зможуть побачити одне одного.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Якщо запросити кілька користувачів одночасно, то створиться група й одержувачі зможуть побачити одне одного.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Повідомлення зникнуть за %@.";
@@ -1102,40 +1138,40 @@
 "KEEP_MESSAGES_FOREVER" = "Повідомлення не зникнуть.";
 
 /* Confirmation button within contextual alert */
-"LEAVE_BUTTON_TITLE" = "Покинут";
+"LEAVE_BUTTON_TITLE" = "Покинути";
 
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Покинути групу";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Це хибний QR-код. Переконайтеся, що ви скануєте QR-код на пристрої, який ви хочете під’єднати.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Це хибний QR-код. Переконайтеся, що ви скануєте QR-код на пристрої, який ви хочете прив’язати.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Помилка під’єднання пристрою";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Не вдалося прив’язати пристрій";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Цей пристрій зможе побачити ваші групи та контакти, матиме доступ до розмов та зможе надсилати повідомлення від вашого імені.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Під’єднати пристрій?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Прив’язати пристрій?";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Повторити";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Відскануйте OR-код на пристрої, який ви хочете під’єднати.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Відскануйте OR-код на пристрої, який ви хочете прив’язати.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Сканувати QR-код";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Під’єднати новий пристрій";
+"LINK_NEW_DEVICE_TITLE" = "Прив’язати новий пристрій";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Під’єднані пристрої";
+"LINKED_DEVICES_TITLE" = "Прив’язані пристрої";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Не вдалося під’єднати пристрій";
+"LINKING_DEVICE_FAILED_TITLE" = "Не вдалося прив’язати пристрій";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Учасники групи";
@@ -1165,7 +1201,7 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Видалити повідомлення";
 
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@  %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ — %@";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %@";
@@ -1174,13 +1210,13 @@
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "Ви";
 
 /* Section header in media gallery collection view */
-"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Цей місяць";
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Цього місяця";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Скопіювати медіа";
+"MESSAGE_ACTION_COPY_MEDIA" = "Копіювати медіа";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Скопіювати текст повідомлення";
+"MESSAGE_ACTION_COPY_TEXT" = "Копіювати текст повідомлення";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Видалити це повідомлення";
@@ -1231,10 +1267,10 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Пропущено";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Завантаження";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Вивантаження";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Повідомлення не має змісту чи прикріплення.";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Повідомлення не має змісту чи долучення.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Одержано";
@@ -1246,7 +1282,7 @@
 "MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Надіслано";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Імя файлу";
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Назва файлу";
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Повідомлення";
@@ -1276,16 +1312,19 @@
 "MESSAGE_STATUS_SENT" = "Надіслано";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Завантаження...";
+"MESSAGE_STATUS_UPLOADING" = "Вивантаження...";
+
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Нове повідомлення";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ більше не позначений як підтверджений. Натисніть для опцій.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ більше не завірений. Натисніть для опцій.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Ви заблокували цього користувача";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ більше не позначений як підтверджений. Натисніть для опцій.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ більше не завірений. Натисніть для опцій.";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Ви заблокували 1 учасника цієї групи";
@@ -1309,19 +1348,19 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Нові повідомлення";
 
 /* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Є більше непрочитаних повідомлень.";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Є непрочитані повідомлення.";
 
 /* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Є більше непрочитаних повідомлень (включно зі змінами номерів безпеки).";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Є непрочитані повідомлення (включно зі змінами номерів безпеки).";
 
 /* notification title */
 "MISSED_CALL" = "Пропущений виклик";
 
 /* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Виклик від %@ пропущено, оскільки його номер безпеки змінився.";
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Виклик від %@ пропущено, оскільки його код безпеки змінився.";
 
 /* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Виклик пропущено, оскільки номер безпеки особи, що телефонує, змінився.";
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Виклик пропущено, оскільки код безпеки особи, що телефонує, змінився.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -1344,7 +1383,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Ви не можете під’єднати більше пристроїв.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device and try again.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Ви досягли максимальної кількості пристроїв, які можна прив’язати до свого акаунта. Вилучте один із них та спробуйте знову.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Ви не одержуватимете сповіщень у розмовах з вимкненими сповіщеннями.";
@@ -1365,7 +1404,7 @@
 "NETWORK_STATUS_CONNECTING" = "З’єднання";
 
 /* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "Не зареєстрований";
+"NETWORK_STATUS_DEREGISTERED" = "Не прив’язаний";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_HEADER" = "Стан мережі";
@@ -1398,7 +1437,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Інші користувачі";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Ви бажаєте відхилити ці зміни?";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Ви хочете відхилити ці зміни?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Незбережені зміни";
@@ -1508,8 +1547,8 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Робочий факс";
 
-/* navbar title when viewing the default photo album, which includes all photos */
-"PHOTO_PICKER_DEFAULT_ALBUM" = "Усі фото";
+/* label for system photo collections which have no name. */
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Альбом без назви";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Відтворити медіа";
@@ -1572,10 +1611,10 @@
 "PROFILE_NAME_LABEL_FORMAT" = "~%@";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Встановити аватар профілю";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Встановити фото профілю";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Очистити аватар";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Видалити фото";
 
 /* Error message shown when user tries to update profile with a profile name that is too long. */
 "PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Ваше ім’я профілю задовге.";
@@ -1587,7 +1626,7 @@
 "PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Уведіть своє ім’я";
 
 /* Label for the profile avatar field of the profile view. */
-"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Аватар";
+"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Фото";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профіль Signal будуть бачити ваші контакти при початку нових розмов і коли ви ділитеся ним з іншими користувачами та групами.";
@@ -1600,9 +1639,6 @@
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Зберегти";
-
-/* Alert title that indicates the user's profile view is being saved. */
-"PROFILE_VIEW_SAVING" = "Збереження...";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Профіль";
@@ -1937,13 +1973,28 @@
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Резервне копіювання увімкнено";
 
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+
+/* Indicates that the last backup restore failed. */
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+
+/* Indicates that app is not restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+
+/* Indicates that app is restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+
+/* Indicates that the last backup restore succeeded. */
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "Phase";
 
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "Progress";
 
-/* Label for status row in the in the backup settings view. */
+/* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "Status";
 
 /* Indicates that the last backup failed. */
