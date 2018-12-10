@@ -1314,6 +1314,9 @@
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Uploading…";
 
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "New Message";
+
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
 

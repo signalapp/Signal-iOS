@@ -1398,7 +1398,6 @@ class CaptionView: UIView {
         placeholderTextView.isEditable = false
 
         placeholderTextView.backgroundColor = .clear
-        placeholderTextView.keyboardAppearance = Theme.keyboardAppearance
         placeholderTextView.font = UIFont.ows_dynamicTypeBody
 
         placeholderTextView.textColor = Theme.darkThemePrimaryColor
@@ -1411,7 +1410,7 @@ class CaptionView: UIView {
     private lazy var textView: UITextView = {
         let textView = UITextView()
         textView.backgroundColor = .clear
-        textView.keyboardAppearance = Theme.keyboardAppearance
+        textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
         textView.font = UIFont.ows_dynamicTypeBody
         textView.textColor = Theme.darkThemePrimaryColor
         textView.tintColor = Theme.darkThemePrimaryColor
@@ -1529,31 +1528,15 @@ protocol MediaMessageTextToolbarDelegate: class {
 class MediaMessageTextToolbar: UIView, UITextViewDelegate {
 
     weak var mediaMessageTextToolbarDelegate: MediaMessageTextToolbarDelegate?
-    private let addMoreButton: UIButton
-    private let sendButton: UIButton
-    let textView: UITextView
 
     var messageText: String? {
-        get { return self.textView.text }
-        set { self.textView.text = newValue }
+        get { return textView.text }
+
+        set {
+            textView.text = newValue
+            updatePlaceholderTextViewVisibility()
+        }
     }
-
-    private lazy var lengthLimitLabel: UILabel = {
-        let lengthLimitLabel = UILabel()
-
-        // Length Limit Label shown when the user inputs too long of a message
-        lengthLimitLabel.textColor = .white
-        lengthLimitLabel.text = NSLocalizedString("ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED", comment: "One-line label indicating the user can add no more text to the media message field.")
-        lengthLimitLabel.textAlignment = .center
-
-        // Add shadow in case overlayed on white content
-        lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
-        lengthLimitLabel.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
-        lengthLimitLabel.layer.shadowOpacity = 0.8
-        lengthLimitLabel.isHidden = true
-
-        return lengthLimitLabel
-    }()
 
     // Layout Constants
 
@@ -1566,30 +1549,11 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
     var textViewHeightConstraint: NSLayoutConstraint!
     var textViewHeight: CGFloat
 
-    class MessageTextView: UITextView {
-        // When creating new lines, contentOffset is animated, but because because
-        // we are simultaneously resizing the text view, this can cause the
-        // text in the textview to be "too high" in the text view.
-        // Solution is to disable animation for setting content offset.
-        override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
-            super.setContentOffset(contentOffset, animated: false)
-        }
-    }
-
-    override var intrinsicContentSize: CGSize {
-        get {
-            // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
-            // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
-            return CGSize.zero
-        }
-    }
-
     // MARK: - Initializers
 
     init(isAddMoreVisible: Bool) {
         self.addMoreButton = UIButton(type: .custom)
         self.sendButton = UIButton(type: .system)
-        self.textView = MessageTextView()
         self.textViewHeight = kMinTextViewHeight
 
         super.init(frame: CGRect.zero)
@@ -1601,18 +1565,6 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
         self.backgroundColor = UIColor.clear
 
         textView.delegate = self
-        textView.keyboardAppearance = Theme.keyboardAppearance
-        textView.backgroundColor = Theme.darkThemeBackgroundColor
-        textView.tintColor = Theme.darkThemePrimaryColor
-        textView.layer.borderColor = Theme.darkThemePrimaryColor.cgColor
-        textView.layer.borderWidth = 0.5
-        textView.layer.cornerRadius = kMinTextViewHeight / 2
-
-        textView.font = UIFont.ows_dynamicTypeBody
-        textView.textColor = Theme.darkThemePrimaryColor
-        textView.returnKeyType = .done
-        textView.textContainerInset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
-        textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
 
         let addMoreIcon = #imageLiteral(resourceName: "album_add_more").withRenderingMode(.alwaysTemplate)
         addMoreButton.setImage(addMoreIcon, for: .normal)
@@ -1632,7 +1584,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
 
         let contentView = UIView()
         contentView.addSubview(sendButton)
-        contentView.addSubview(textView)
+        contentView.addSubview(textContainer)
         contentView.addSubview(lengthLimitLabel)
         if isAddMoreVisible {
             contentView.addSubview(addMoreButton)
@@ -1658,20 +1610,20 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
         // So it doesn't work as expected with RTL layouts when we explicitly want something
         // to be on the right side for both RTL and LTR layouts, like with the send button.
         // I believe this is a bug in PureLayout. Filed here: https://github.com/PureLayout/PureLayout/issues/209
-        textView.autoPinEdge(toSuperviewMargin: .top)
-        textView.autoPinEdge(toSuperviewMargin: .bottom)
+        textContainer.autoPinEdge(toSuperviewMargin: .top)
+        textContainer.autoPinEdge(toSuperviewMargin: .bottom)
         if isAddMoreVisible {
             addMoreButton.autoPinEdge(toSuperviewMargin: .left)
-            textView.autoPinEdge(.left, to: .right, of: addMoreButton, withOffset: kToolbarMargin)
+            textContainer.autoPinEdge(.left, to: .right, of: addMoreButton, withOffset: kToolbarMargin)
             addMoreButton.autoAlignAxis(.horizontal, toSameAxisOf: sendButton)
             addMoreButton.setContentHuggingHigh()
             addMoreButton.setCompressionResistanceHigh()
         } else {
-            textView.autoPinEdge(toSuperviewMargin: .left)
+            textContainer.autoPinEdge(toSuperviewMargin: .left)
         }
 
-        sendButton.autoPinEdge(.left, to: .right, of: textView, withOffset: kToolbarMargin)
-        sendButton.autoPinEdge(.bottom, to: .bottom, of: textView, withOffset: -3)
+        sendButton.autoPinEdge(.left, to: .right, of: textContainer, withOffset: kToolbarMargin)
+        sendButton.autoPinEdge(.bottom, to: .bottom, of: textContainer, withOffset: -3)
 
         sendButton.autoPinEdge(toSuperviewMargin: .right)
         sendButton.setContentHuggingHigh()
@@ -1679,7 +1631,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
 
         lengthLimitLabel.autoPinEdge(toSuperviewMargin: .left)
         lengthLimitLabel.autoPinEdge(toSuperviewMargin: .right)
-        lengthLimitLabel.autoPinEdge(.bottom, to: .top, of: textView, withOffset: -6)
+        lengthLimitLabel.autoPinEdge(.bottom, to: .top, of: textContainer, withOffset: -6)
         lengthLimitLabel.setContentHuggingHigh()
         lengthLimitLabel.setCompressionResistanceHigh()
     }
@@ -1688,7 +1640,98 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
         notImplemented()
     }
 
-    // MARK: -
+    // MARK: - UIView Overrides
+
+    override var intrinsicContentSize: CGSize {
+        get {
+            // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
+            // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
+            return CGSize.zero
+        }
+    }
+
+    // MARK: - Subviews
+
+    private let addMoreButton: UIButton
+    private let sendButton: UIButton
+
+    private lazy var lengthLimitLabel: UILabel = {
+        let lengthLimitLabel = UILabel()
+
+        // Length Limit Label shown when the user inputs too long of a message
+        lengthLimitLabel.textColor = .white
+        lengthLimitLabel.text = NSLocalizedString("ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED", comment: "One-line label indicating the user can add no more text to the media message field.")
+        lengthLimitLabel.textAlignment = .center
+
+        // Add shadow in case overlayed on white content
+        lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
+        lengthLimitLabel.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        lengthLimitLabel.layer.shadowOpacity = 0.8
+        lengthLimitLabel.isHidden = true
+
+        return lengthLimitLabel
+    }()
+
+    lazy var textView: UITextView = {
+        let textView = buildTextView()
+
+        textView.returnKeyType = .done
+        textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
+
+        return textView
+    }()
+
+    private lazy var placeholderTextView: UITextView = {
+        let placeholderTextView = buildTextView()
+
+        placeholderTextView.text = NSLocalizedString("MESSAGE_TEXT_FIELD_PLACEHOLDER", comment: "placeholder text for the editable message field")
+        placeholderTextView.isEditable = false
+
+        return placeholderTextView
+    }()
+
+    private lazy var textContainer: UIView = {
+        let textContainer = UIView()
+
+        textContainer.layer.borderColor = Theme.darkThemePrimaryColor.cgColor
+        textContainer.layer.borderWidth = 0.5
+        textContainer.layer.cornerRadius = kMinTextViewHeight / 2
+        textContainer.clipsToBounds = true
+
+        textContainer.addSubview(placeholderTextView)
+        placeholderTextView.autoPinEdgesToSuperviewEdges()
+
+        textContainer.addSubview(textView)
+        textView.autoPinEdgesToSuperviewEdges()
+
+        return textContainer
+    }()
+
+    private func buildTextView() -> UITextView {
+        let textView = MessageTextView()
+
+        textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
+        textView.backgroundColor = .clear
+        textView.tintColor = Theme.darkThemePrimaryColor
+
+        textView.font = UIFont.ows_dynamicTypeBody
+        textView.textColor = Theme.darkThemePrimaryColor
+        textView.textContainerInset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
+
+        return textView
+    }
+
+    class MessageTextView: UITextView {
+        // When creating new lines, contentOffset is animated, but because
+        // we are simultaneously resizing the text view, this can cause the
+        // text in the textview to be "too high" in the text view.
+        // Solution is to disable animation for setting content offset.
+        override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
+            super.setContentOffset(contentOffset, animated: false)
+        }
+    }
+
+    // MARK: - Actions
 
     @objc func didTapSend() {
         mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidTapSend(self)
@@ -1741,13 +1784,35 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
 
     public func textViewDidBeginEditing(_ textView: UITextView) {
         mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidBeginEditing(self)
+        updatePlaceholderTextViewVisibility()
     }
 
     public func textViewDidEndEditing(_ textView: UITextView) {
         mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidEndEditing(self)
+        updatePlaceholderTextViewVisibility()
     }
 
     // MARK: - Helpers
+
+    func updatePlaceholderTextViewVisibility() {
+        let isHidden: Bool = {
+            guard !self.textView.isFirstResponder else {
+                return true
+            }
+
+            guard let captionText = self.textView.text else {
+                return false
+            }
+
+            guard captionText.count > 0 else {
+                return false
+            }
+
+            return true
+        }()
+
+        placeholderTextView.isHidden = isHidden
+    }
 
     private func updateHeight(textView: UITextView) {
         // compute new height assuming width is unchanged
