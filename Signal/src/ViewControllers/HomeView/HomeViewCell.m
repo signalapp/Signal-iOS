@@ -545,7 +545,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)typingIndicatorStateDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug([notification.object isKindOfClass:[NSString class]]);
     OWSAssertDebug(self.thread);
 
     if (notification.object && ![notification.object isEqual:self.thread.threadRecord.uniqueId]) {
