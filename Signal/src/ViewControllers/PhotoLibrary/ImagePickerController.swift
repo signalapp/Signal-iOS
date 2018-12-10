@@ -413,7 +413,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
             self.updateSelectButton()
 
-            // *slightly* more than `pi` to ensure the chevron animates anti-clockwise
+            // *slightly* more than `pi` to ensure the chevron animates counter-clockwise
             let chevronRotationAngle = CGFloat.pi.nextUp
             self.titleIconView.transform = CGAffineTransform(rotationAngle: chevronRotationAngle)
         }.retainUntilComplete()
