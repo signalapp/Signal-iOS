@@ -485,6 +485,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         dbConnection.setBool(value, forKey: kUDUnrestrictedAccessKey, inCollection: kUDCollection)
 
         // Try to update the account attributes to reflect this change.
-        tsAccountManager.updateAccountAttributes()
+        tsAccountManager.updateAccountAttributes().retainUntilComplete()
     }
 }

@@ -107,39 +107,40 @@ NS_ASSUME_NONNULL_BEGIN
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       OWSProdInfo([OWSAnalyticsEvents registrationRegisteringCode]);
-                      [self.accountManager registerObjcWithVerificationCode:self.verificationCode pin:pinCode]
-                          .then(^{
-                              OWSAssertIsOnMainThread();
-                              OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
-                              [[OWS2FAManager sharedManager] mark2FAAsEnabledWithPin:pinCode];
+                      [[self.accountManager registerObjcWithVerificationCode:self.verificationCode pin:pinCode]
+                              .then(^{
+                                  OWSAssertIsOnMainThread();
+                                  OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
+                                  [[OWS2FAManager sharedManager] mark2FAAsEnabledWithPin:pinCode];
 
-                              OWSLogInfo(@"Successfully registered Signal account.");
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      OWSAssertIsOnMainThread();
+                                  OWSLogInfo(@"Successfully registered Signal account.");
+                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                      [modalActivityIndicator dismissWithCompletion:^{
+                                          OWSAssertIsOnMainThread();
 
-                                      [weakSelf verificationWasCompleted];
-                                  }];
-                              });
-                          })
-                          .catch(^(NSError *error) {
-                              OWSAssertIsOnMainThread();
-                              OWSProdInfo([OWSAnalyticsEvents registrationRegistrationFailed]);
-                              OWSLogError(@"error verifying challenge: %@", error);
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      OWSAssertIsOnMainThread();
+                                          [weakSelf verificationWasCompleted];
+                                      }];
+                                  });
+                              })
+                              .catch(^(NSError *error) {
+                                  OWSAssertIsOnMainThread();
+                                  OWSProdInfo([OWSAnalyticsEvents registrationRegistrationFailed]);
+                                  OWSLogError(@"error verifying challenge: %@", error);
+                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                      [modalActivityIndicator dismissWithCompletion:^{
+                                          OWSAssertIsOnMainThread();
 
-                                      [OWSAlerts showAlertWithTitle:NSLocalizedString(
-                                                                        @"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE",
-                                                                        @"Title for alert indicating that attempt to "
-                                                                        @"register with 'two-factor auth' failed.")
-                                                            message:error.localizedDescription];
+                                          [OWSAlerts
+                                              showAlertWithTitle:NSLocalizedString(
+                                                                     @"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE",
+                                                                     @"Title for alert indicating that attempt to "
+                                                                     @"register with 'two-factor auth' failed.")
+                                                         message:error.localizedDescription];
 
-                                      [weakSelf.entryView makePinTextFieldFirstResponder];
-                                  }];
-                              });
-                          });
+                                          [weakSelf.entryView makePinTextFieldFirstResponder];
+                                      }];
+                                  });
+                              }) retainUntilComplete];
                   }];
 }
 

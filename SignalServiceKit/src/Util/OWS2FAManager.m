@@ -10,6 +10,7 @@
 #import "TSAccountManager.h"
 #import "TSNetworkManager.h"
 #import "YapDatabaseConnection+OWS.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -89,7 +90,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
                                                              object:nil
                                                            userInfo:nil];
 
-    [self.tsAccountManager updateAccountAttributes];
+    [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
 }
 
 - (void)mark2FAAsEnabledWithPin:(NSString *)pin
@@ -105,7 +106,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
                                                              object:nil
                                                            userInfo:nil];
 
-    [self.tsAccountManager updateAccountAttributes];
+    [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
 }
 
 - (void)requestEnable2FAWithPin:(NSString *)pin

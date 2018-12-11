@@ -860,7 +860,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     OWSUserProfile *userProfile = self.localUserProfile;
     [userProfile clearWithProfileKey:[OWSAES256Key generateRandomKey] dbConnection:self.dbConnection completion:nil];
-    [self.tsAccountManager updateAccountAttributes];
+    [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
 }
 
 - (void)addUserToProfileWhitelist:(NSString *)recipientId
