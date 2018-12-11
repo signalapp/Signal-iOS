@@ -497,8 +497,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSAssertIsOnMainThread();
     OWSAssertDebug(databaseConnection);
 
-    OWSLogVerbose(@"");
-
     if (!AppReadiness.isAppReady) {
         OWSFailDebug(@"can't audit orphan data until app is ready.");
         return;
@@ -588,8 +586,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSAssertDebug(databaseConnection);
     OWSAssertDebug(orphanData);
 
-    OWSLogVerbose(@"");
-
     if (remainingRetries < 1) {
         OWSLogInfo(@"Aborting orphan data audit.");
         dispatch_async(self.workQueue, ^{
@@ -628,8 +624,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 {
     OWSAssertDebug(databaseConnection);
     OWSAssertDebug(orphanData);
-
-    OWSLogVerbose(@"");
 
     __block BOOL shouldAbort = NO;
 
