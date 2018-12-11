@@ -204,7 +204,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
         if (thread.isGroupThread) {
             // Do nothing; we never hide group threads.
-        } else if (thread.hasEverHadMessage) {
+        } else if (thread.shouldThreadBeVisible) {
             // Do nothing; we never hide threads that have ever had a message.
         } else {
             YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];

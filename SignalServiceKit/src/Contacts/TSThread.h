@@ -33,7 +33,7 @@ extern ConversationColorName const kConversationColorName_Default;
 @interface TSThread : TSYapDatabaseObject
 
 // YES IFF this thread has ever had a message.
-@property (nonatomic) BOOL hasEverHadMessage;
+@property (nonatomic) BOOL shouldThreadBeVisible;
 
 /**
  *  Whether the object is a group thread or not.
