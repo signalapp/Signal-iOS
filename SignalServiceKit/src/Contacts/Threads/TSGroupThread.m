@@ -173,6 +173,11 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return true;
 }
 
+- (BOOL)isLocalUserInGroup
+{
+    return [self.groupModel.groupMemberIds containsObject:TSAccountManager.localNumber];
+}
+
 - (NSString *)name
 {
     // TODO sometimes groupName is set to the empty string. I'm hesitent to change
@@ -200,6 +205,13 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     [newGroupMemberIds removeObject:[TSAccountManager localNumber]];
 
     self.groupModel.groupMemberIds = newGroupMemberIds;
+    [self saveWithTransaction:transaction];
+}
+
+- (void)softDeleteGroupThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self removeAllThreadInteractionsWithTransaction:transaction];
+    self.shouldThreadBeVisible = NO;
     [self saveWithTransaction:transaction];
 }
 
