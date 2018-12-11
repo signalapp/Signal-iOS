@@ -148,16 +148,16 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 #pragma mark - Manual Message Fetch
 
 - (BOOL)isManualMessageFetchEnabled;
-- (AnyPromise *)setIsManualMessageFetchEnabled:(BOOL)value;
+- (AnyPromise *)setIsManualMessageFetchEnabled:(BOOL)value __attribute__((warn_unused_result));
 
 #ifdef DEBUG
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber;
 #endif
 
-- (AnyPromise *)updateAccountAttributes;
+- (AnyPromise *)updateAccountAttributes __attribute__((warn_unused_result));
 
 // This should only be used during the registration process.
-- (AnyPromise *)performUpdateAccountAttributes;
+- (AnyPromise *)performUpdateAccountAttributes __attribute__((warn_unused_result));
 
 @end
 

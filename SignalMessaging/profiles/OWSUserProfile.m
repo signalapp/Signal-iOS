@@ -3,6 +3,7 @@
 //
 
 #import "OWSUserProfile.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSString+SSK.h>
@@ -11,6 +12,7 @@
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -227,7 +229,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             // we have a registered account, syncing will fail (and there could not be any
             // linked device to sync to at this point anyway).
             if ([self.tsAccountManager isRegistered] && CurrentAppContext().isMainApp) {
-                [self.syncManager syncLocalContact];
+                [[self.syncManager syncLocalContact] retainUntilComplete];
             }
 
             [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange

@@ -11,11 +11,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sendConfigurationSyncMessage;
 
-- (AnyPromise *)syncLocalContact;
+- (AnyPromise *)syncLocalContact __attribute__((warn_unused_result));
 
-- (AnyPromise *)syncAllContacts;
+- (AnyPromise *)syncAllContacts __attribute__((warn_unused_result));
 
-- (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts;
+- (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts __attribute__((warn_unused_result));
 
 @end
 

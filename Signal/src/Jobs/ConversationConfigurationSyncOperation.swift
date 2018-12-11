@@ -56,7 +56,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
             return
         }
 
-        syncManager.syncContacts(for: [signalAccount])
+        syncManager.syncContacts(for: [signalAccount]).retainUntilComplete()
     }
 
     private func sync(groupThread: TSGroupThread) {
