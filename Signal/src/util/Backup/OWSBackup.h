@@ -79,8 +79,6 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 
 - (AnyPromise *)ensureCloudKitAccess;
 
-- (AnyPromise *)checkCanExportBackup;
-
 - (void)checkCanImportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure;
 
 // TODO: After a successful import, we should enable backup and

@@ -433,11 +433,6 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         }];
 }
 
-- (AnyPromise *)checkCanExportBackup
-{
-    return [self ensureCloudKitAccess];
-}
-
 - (AnyPromise *)ensureCloudKitAccess
 {
     OWSAssertIsOnMainThread();
@@ -472,6 +467,13 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     OWSAssertIsOnMainThread();
 
     OWSLogInfo(@"");
+
+    if (!OWSBackup.isFeatureEnabled) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            success(NO);
+        });
+        return;
+    }
 
     void (^failWithUnexpectedError)(void) = ^{
         dispatch_async(dispatch_get_main_queue(), ^{
