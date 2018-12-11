@@ -86,7 +86,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self updateAccountAttributesIfNecessary];
+        [[self updateAccountAttributesIfNecessary] retainUntilComplete];
     }];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -721,7 +721,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     OWSAssertIsOnMainThread();
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self updateAccountAttributesIfNecessary];
+        [[self updateAccountAttributesIfNecessary] retainUntilComplete];
     }];
 }
 
