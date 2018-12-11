@@ -901,7 +901,7 @@ NS_ASSUME_NONNULL_BEGIN
             // In rare cases this means we won't respond to the sync request, but that's
             // acceptable.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self.syncManager syncAllContacts];
+                [[self.syncManager syncAllContacts] retainUntilComplete];
             });
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];

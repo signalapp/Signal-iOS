@@ -244,7 +244,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         //
         // NOTE: We also inform the desktop in the failure case,
         //       since that _may have_ affected service state.
-        [self.syncManager syncLocalContact];
+        [[self.syncManager syncLocalContact] retainUntilComplete];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             failureBlockParameter();
@@ -256,7 +256,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // We use a "self-only" contact sync to indicate to desktop
         // that we've changed our profile and that it should do a
         // profile fetch for "self".
-        [self.syncManager syncLocalContact];
+        [[self.syncManager syncLocalContact] retainUntilComplete];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             successBlockParameter();

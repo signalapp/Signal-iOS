@@ -8,6 +8,7 @@
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AxolotlKit/PreKeyBundle.h>
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
@@ -102,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendContactsSyncMessage
 {
-    [self.syncManager syncAllContacts];
+    [[self.syncManager syncAllContacts] retainUntilComplete];
 }
 
 + (void)sendGroupSyncMessage

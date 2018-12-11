@@ -85,7 +85,7 @@ typedef void (^OWSBackupJobManifestFailure)(NSError *error);
 
 #pragma mark - Manifest
 
-- (AnyPromise *)downloadAndProcessManifestWithBackupIO:(OWSBackupIO *)backupIO;
+- (AnyPromise *)downloadAndProcessManifestWithBackupIO:(OWSBackupIO *)backupIO __attribute__((warn_unused_result));
 
 @end
 

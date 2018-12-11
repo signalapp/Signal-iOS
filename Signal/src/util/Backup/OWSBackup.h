@@ -77,7 +77,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 
 - (void)allRecipientIdsWithManifestsInCloud:(OWSBackupStringListBlock)success failure:(OWSBackupErrorBlock)failure;
 
-- (AnyPromise *)ensureCloudKitAccess;
+- (AnyPromise *)ensureCloudKitAccess __attribute__((warn_unused_result));
 
 - (void)checkCanImportBackup:(OWSBackupBoolBlock)success failure:(OWSBackupErrorBlock)failure;
 
@@ -98,7 +98,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 
 - (NSArray<NSString *> *)attachmentIdsForLazyRestore;
 
-- (AnyPromise *)lazyRestoreAttachment:(TSAttachmentPointer *)attachment backupIO:(OWSBackupIO *)backupIO;
+- (AnyPromise *)lazyRestoreAttachment:(TSAttachmentPointer *)attachment backupIO:(OWSBackupIO *)backupIO __attribute__((warn_unused_result));
 
 @end
 
