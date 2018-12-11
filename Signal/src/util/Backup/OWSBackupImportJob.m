@@ -187,8 +187,9 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             [OWSBackup.sharedManager setIsBackupEnabled:YES];
         })
         .thenInBackground(^{
-            [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
-
+            return [self.tsAccountManager updateAccountAttributes];
+        })
+        .thenInBackground(^{
             [self succeed];
         });
 }
