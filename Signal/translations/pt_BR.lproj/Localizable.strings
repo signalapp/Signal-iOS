@@ -1093,7 +1093,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Estas conversas estão arquivadas. Elas aparecerão na caixa de entrada somente se novas mensagens forem recebidas.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Signal conversation list.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Você pode permitir o acesso aos contatos nos Ajustes do iOS para vê-los na sua lista de conversas no Signal.";
 
 /* notification body */
 "INCOMING_CALL" = "Chamada recebida";
@@ -1114,7 +1114,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Arquivo de áudio inválido.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "You can enable contacts access in the iOS Settings app to invite your friends to join Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Você pode permitir o acesso aos contatos nos Ajustes do iOS para convidar seus amigos para o Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Habilitar acesso aos contatos";
@@ -1126,7 +1126,7 @@
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Buscar";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Convide Amigos.";
+"INVITE_FRIENDS_PICKER_TITLE" = "Convide amigos";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will start a group message and the recipients will be able to see each other.";
@@ -1364,14 +1364,14 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Você pode permitir o acesso à câmera nos Ajustes do iOS para fazer chamadas de vídeo no Signal.";
 
 /* Alert title
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "O Signal precisa acessar sua câmera.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Você pode conceder essa permissão nos Ajustes do iOS.";
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal requires access to your photos for this feature.";
@@ -1407,7 +1407,7 @@
 "NETWORK_STATUS_DEREGISTERED" = "Descadastrado";
 
 /* No comment provided by engineer. */
-"NETWORK_STATUS_HEADER" = "Status da rede";
+"NETWORK_STATUS_HEADER" = "Status de rede";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_OFFLINE" = "Offline";
@@ -1905,7 +1905,7 @@
 "SEND_INVITE_FAILURE" = "Falha no envie de convite. Tente novamente mais tarde.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "Você convidou uma pessoa para usar o Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Convide via SMS: %@";

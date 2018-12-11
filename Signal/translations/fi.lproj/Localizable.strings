@@ -240,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "Tila";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "Odottamaton varmuuskopiointivirhe";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Et voi enää vastaanottaa viestejä tai päivityksiä tältä ryhmältä.";
@@ -408,13 +408,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Palauta";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal ei voinut määrittää iCloud-tilisi tilaa. Kirjaudu iCloud-tiliisi iOS:n asetussovelluksessa, jotta voit varmuuskopioida Signal-tietosi.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Ei iCloud-tiliä. Kirjaudu iCloud-tiliisi iOS-asetussovelluksessa, jotta voit varmuuskopioida Signal-tietosi.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signalille ei sallittu pääsyä iCloud-tiliisi varmuuskopiointia varten. Anna Signalille pääsy iCloud-tilillesi iOS-asetussovelluksessa, jotta voit varmuuskopioida Signal-tietosi.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Valitse tämän keskustelun lähtevien viestien väri.";
@@ -555,10 +555,10 @@
 "CONTACT_WITHOUT_NAME" = "Nimeämätön yhteystieto";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tätä ei voi peruuttaa.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Poistetaanko keskustelu?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Keskustelun asetukset";
@@ -1974,7 +1974,7 @@
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Varmuuskopiot päällä";
 
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud tila";
 
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Varmuuskopion palautus epäonnistui";

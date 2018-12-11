@@ -240,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "Estado";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "Fallo desconocido en la copia de seguridad";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "No podrás enviar o recibir más mensajes en este grupo.";

@@ -240,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "狀態";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "未預期的備份錯誤";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "你將無法從此群組收到訊息或更新。";
@@ -408,13 +408,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "復原";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal 無法確定你 iCloud 帳號狀況。請在iOS 設定中登入你的 iCloud 帳號並備份你的 Signal 資料。";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "沒有 iCloud 帳號。請從 iOS 設定中登入 iCloud 帳號並備份你 Signal 的資料。";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal 被 iCloud 帳號拒絕連結備份。請在 iOS設定中授權Signal 連結你的 iCloud 帳號以備份 Signal 資料。";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "選擇在此對話中要發出訊息的顏色。";
@@ -555,10 +555,10 @@
 "CONTACT_WITHOUT_NAME" = "取消命名聯絡人";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "此無法被撤銷。";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "刪除對話？";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "對話設定";
@@ -1974,7 +1974,7 @@
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "備份功能啟動";
 
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud 狀態。";
 
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "復原備份失敗";

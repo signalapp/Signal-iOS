@@ -99,7 +99,7 @@
 "ATTACHMENT" = "Fichier joint";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Limite de la légende atteinte.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "La limite de la légende est atteinte.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Ajouter une légende…";
@@ -111,7 +111,7 @@
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Taille : %@";
 
 /* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "La limite de messages a été atteinte.";
+"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "La limite du message a été atteinte.";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Envoyer";
@@ -240,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "État";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "Erreur de sauvegarde inattendue.";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Vous ne recevrez plus ni messages ni mises à jour de ce groupe";
@@ -399,7 +399,7 @@
 "CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Ne pas restaurer";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Impossible de déterminer si une sauvegarde peut être restaurée.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Erreur";
@@ -408,13 +408,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Restaurer";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal n’a pas pu déterminer l’état de votre compte iCloud. Connectez-vous à votre compte iCloud dans l’application Réglages d’iOS pour sauvegarder vos données Signal.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Pas de compte iCloud. Connectez-vous à votre compte iCloud dans l’application Réglages d’iOS pour sauvegarder vos données Signal.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal s’est vu refuser l’accès à votre compte iCloud pour les sauvegardes. Accordez l’accès à Signal sur votre compte iCloud depuis l’application Réglages d’iOS pour sauvegarder vos données Signal.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Choisissez la couleur des messages sortants de cette conversation.";
@@ -555,10 +555,10 @@
 "CONTACT_WITHOUT_NAME" = "Contact sans nom";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Ceci ne peut être annulé.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Supprimer la conversation ?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Paramètres de la conversation";
@@ -1974,19 +1974,19 @@
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "La sauvegarde est activée";
 
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "État iCloud";
 
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Échec de la restauration de la sauvegarde";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Échec de restauration de la sauvegarde";
 
 /* Indicates that app is not restoring up. */
 "SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
 
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Restauration de sauvegarde en cours";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "La restauration de la sauvegarde est en cours";
 
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Restauration de sauvegarde réussie";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "La restauration de la sauvegarde a réussi";
 
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "Phase";
