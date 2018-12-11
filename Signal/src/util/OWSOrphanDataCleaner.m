@@ -412,16 +412,12 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     return result;
 }
 
-+ (void)auditOnLaunchIfNecessary
-{
++ (BOOL)shouldAuditOnLaunch:(YapDatabaseConnection *)databaseConnection {
     OWSAssertIsOnMainThread();
 
 #ifndef ENABLE_ORPHAN_DATA_CLEANER
-    return;
+    return NO;
 #endif
-
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    YapDatabaseConnection *databaseConnection = primaryStorage.dbReadWriteConnection;
 
     __block NSString *_Nullable lastCleaningVersion;
     __block NSDate *_Nullable lastCleaningDate;
@@ -432,31 +428,52 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                       inCollection:OWSOrphanDataCleaner_Collection];
     }];
 
-    // Only clean up once per app version.
+    // Clean up once per app version.
     NSString *currentAppVersion = AppVersion.sharedInstance.currentAppVersion;
-    if (lastCleaningVersion && [lastCleaningVersion isEqualToString:currentAppVersion]) {
-        OWSLogVerbose(@"skipping orphan data cleanup; already done on %@.", currentAppVersion);
-        return;
+    if (!lastCleaningVersion || ![lastCleaningVersion isEqualToString:currentAppVersion]) {
+        OWSLogVerbose(@"Performing orphan data cleanup; new version: %@.", currentAppVersion);
+        return YES;
     }
 
-    // Only clean up once per day.
-    if (lastCleaningDate && [DateUtil dateIsToday:lastCleaningDate]) {
-        OWSLogVerbose(@"skipping orphan data cleanup; already done today.");
+    // Clean up once per N days.
+    if (lastCleaningDate) {
+#ifdef DEBUG
+        BOOL shouldAudit = [DateUtil dateIsOlderThanToday:lastCleaningDate];
+#else
+        BOOL shouldAudit = [DateUtil dateIsOlderThanOneWeek:lastCleaningDate];
+#endif
+
+        if (shouldAudit) {
+            OWSLogVerbose(@"Performing orphan data cleanup; time has passed.");
+        }
+        return shouldAudit;
+    }
+
+    // Has never audited before.
+    return NO;
+}
+
++ (void)auditOnLaunchIfNecessary {
+    OWSAssertIsOnMainThread();
+
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+    YapDatabaseConnection *databaseConnection = primaryStorage.dbReadWriteConnection;
+
+    if (![self shouldAuditOnLaunch:databaseConnection]) {
         return;
     }
 
     // If we want to be cautious, we can disable orphan deletion using
     // flag - the cleanup will just be a dry run with logging.
-    BOOL shouldRemoveOrphans = NO;
+    BOOL shouldRemoveOrphans = YES;
     [self auditAndCleanup:shouldRemoveOrphans databaseConnection:databaseConnection completion:nil];
 }
 
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans
 {
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    YapDatabaseConnection *databaseConnection = primaryStorage.dbReadWriteConnection;
-
-    [self auditAndCleanup:shouldRemoveOrphans databaseConnection:databaseConnection completion:nil];
+    [self auditAndCleanup:shouldRemoveOrphans
+               completion:^ {
+               }];
 }
 
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans completion:(dispatch_block_t)completion
@@ -610,7 +627,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
     __block BOOL shouldAbort = NO;
 
-    // We need to avoid cleaning up new attachments and files that are still in the process of
+    // We need to avoid cleaning up new files that are still in the process of
     // being created/written, so we don't clean up anything recent.
     const NSTimeInterval kMinimumOrphanAgeSeconds = CurrentAppContext().isRunningTests ? 0.f : 15 * kMinuteInterval;
     NSDate *appLaunchTime = CurrentAppContext().appLaunchTime;
@@ -700,10 +717,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         // Don't delete files which were created in the last N minutes.
         NSDate *creationDate = attributes.fileModificationDate;
         if ([creationDate isAfterDate:thresholdDate]) {
-            OWSLogInfo(@"Skipping orphan attachment file due to age: %f", fabs([creationDate timeIntervalSinceNow]));
+            OWSLogInfo(@"Skipping file due to age: %f", fabs([creationDate timeIntervalSinceNow]));
             continue;
         }
-        OWSLogInfo(@"Deleting orphan attachment file: %@", filePath);
+        OWSLogInfo(@"Deleting file: %@", filePath);
         filesRemoved++;
         if (!shouldRemoveOrphans) {
             continue;
@@ -714,7 +731,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             OWSFailDebug(@"Could not remove orphan file");
         }
     }
-    OWSLogInfo(@"Deleted orphan attachment files: %zu", filesRemoved);
+    OWSLogInfo(@"Deleted orphan files: %zu", filesRemoved);
 
     return YES;
 }
