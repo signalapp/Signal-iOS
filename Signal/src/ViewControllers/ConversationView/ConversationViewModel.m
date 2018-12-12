@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // PERF: we could do less messages on shorter (older, slower) devices
 // PERF: we could cache the cell height, since some messages will be much taller.
-static const int kYapDatabasePageSize = 25;
+static const int kYapDatabasePageSize = 18;
 
 // Never show more than n messages in conversation view when user arrives.
 static const int kConversationInitialMaxRangeSize = 300;
