@@ -538,6 +538,7 @@ static const int kYapDatabaseRangeMinLength = 0;
                             [updatedNeighborItemSet addObject:viewItem.itemId];
                         }
                     } else {
+                        OWSLogError(@"Update is missing view item");
                         hasMalformedRowChange = YES;
                     }
                 } else if (rowChange.indexPath && rowChange.originalIndex < self.viewItems.count) {
@@ -545,6 +546,7 @@ static const int kYapDatabaseRangeMinLength = 0;
                     // setCellDrawingDependencyOffsets.
                     OWSAssertDebug(rowChange.changes == YapDatabaseViewChangedDependency);
                 } else {
+                    OWSFailDebug(@"Update is missing collection key");
                     hasMalformedRowChange = YES;
                 }
                 break;
@@ -555,6 +557,7 @@ static const int kYapDatabaseRangeMinLength = 0;
                 if (collectionKey.key) {
                     [self.viewItemCache removeObjectForKey:collectionKey.key];
                 } else {
+                    OWSFailDebug(@"Delete is missing collection key");
                     hasMalformedRowChange = YES;
                 }
                 break;
@@ -932,6 +935,12 @@ static const int kYapDatabaseRangeMinLength = 0;
             OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
             viewItemCache[interaction.uniqueId] = viewItem;
         }
+    }];
+
+    // This will usually be redundant, but this will resolve one of the symptoms
+    // of the "corrupt YDB view" issue caused by multi-process writes.
+    [viewItems sortUsingComparator:^NSComparisonResult(id<ConversationViewItem> left, id<ConversationViewItem> right) {
+        return [left.interaction compareForSorting:right.interaction];
     }];
 
     // Flag to ensure that we only increment once per launch.
