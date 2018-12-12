@@ -478,7 +478,7 @@ public class ConversationMediaView: UIView {
     //   views that are no longer visible, redundant loads
     //   of media already being loaded, don't retry media
     //   that can't be loaded, etc.).
-    private static let loadQueue = DispatchQueue(label: "org.signal.asyncMediaLoadQueue", qos: .userInteractive)
+    private static let loadQueue = DispatchQueue(label: "org.signal.asyncMediaLoadQueue")
 
     @objc
     public func loadMedia() {
