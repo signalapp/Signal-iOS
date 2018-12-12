@@ -381,7 +381,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (BOOL)isValidVideo
 {
-    OWSAssertDebug(self.isImage || self.isAnimated);
+    OWSAssertDebug(self.isVideo);
 
     BOOL result;
     BOOL didUpdateCache = NO;
