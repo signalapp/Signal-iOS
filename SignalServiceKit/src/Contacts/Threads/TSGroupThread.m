@@ -175,7 +175,12 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (BOOL)isLocalUserInGroup
 {
-    return [self.groupModel.groupMemberIds containsObject:TSAccountManager.localNumber];
+    NSString *_Nullable localNumber = TSAccountManager.localNumber;
+    if (localNumber == nil) {
+        return NO;
+    }
+
+    return [self.groupModel.groupMemberIds containsObject:localNumber];
 }
 
 - (NSString *)name
