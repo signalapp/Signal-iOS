@@ -457,7 +457,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSAssertIsOnMainThread();
 
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    YapDatabaseConnection *databaseConnection = primaryStorage.dbReadWriteConnection;
+    YapDatabaseConnection *databaseConnection = [primaryStorage newDatabaseConnection];
 
     if (![self shouldAuditOnLaunch:databaseConnection]) {
         return;
@@ -479,7 +479,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans completion:(dispatch_block_t)completion
 {
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    YapDatabaseConnection *databaseConnection = primaryStorage.dbReadWriteConnection;
+    YapDatabaseConnection *databaseConnection = [primaryStorage newDatabaseConnection];
 
     [self auditAndCleanup:shouldRemoveOrphans databaseConnection:databaseConnection completion:completion];
 }
