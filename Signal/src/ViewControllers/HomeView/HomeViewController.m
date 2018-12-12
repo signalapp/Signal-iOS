@@ -1137,6 +1137,14 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)deleteThread:(TSThread *)thread
 {
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        if ([thread isKindOfClass:[TSGroupThread class]]) {
+            TSGroupThread *groupThread = (TSGroupThread *)thread;
+            if (groupThread.isLocalUserInGroup) {
+                [groupThread softDeleteGroupThreadWithTransaction:transaction];
+                return;
+            }
+        }
+
         [thread removeWithTransaction:transaction];
     }];
 

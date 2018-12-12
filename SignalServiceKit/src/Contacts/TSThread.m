@@ -82,7 +82,16 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     if (!self) {
         return self;
     }
-    
+
+    // renamed `hasEverHadMessage` -> `shouldThreadBeVisible`
+    if (!_shouldThreadBeVisible) {
+        NSNumber *_Nullable legacy_hasEverHadMessage = [coder decodeObjectForKey:@"hasEverHadMessage"];
+
+        if (legacy_hasEverHadMessage != nil) {
+            _shouldThreadBeVisible = legacy_hasEverHadMessage.boolValue;
+        }
+    }
+
     if (_conversationColorName.length == 0) {
         NSString *_Nullable colorSeed = self.contactIdentifier;
         if (colorSeed.length > 0) {
@@ -390,7 +399,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         return;
     }
 
-    self.hasEverHadMessage = YES;
+    self.shouldThreadBeVisible = YES;
 
     NSDate *lastMessageDate = [lastMessage dateForSorting];
     if (!_lastMessageDate || [lastMessageDate timeIntervalSinceDate:self.lastMessageDate] > 0) {

@@ -202,9 +202,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         }
         TSThread *thread = (TSThread *)object;
 
-        if (thread.isGroupThread) {
-            // Do nothing; we never hide group threads.
-        } else if (thread.hasEverHadMessage) {
+        if (thread.shouldThreadBeVisible) {
             // Do nothing; we never hide threads that have ever had a message.
         } else {
             YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
@@ -232,7 +230,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSThread collection]]];
 
     YapDatabaseView *databaseView =
-        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
+        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"4" options:options];
 
     [storage asyncRegisterExtension:databaseView withName:TSThreadDatabaseViewExtensionName];
 }

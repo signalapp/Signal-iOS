@@ -806,7 +806,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread]) {
         return NO;
     }
-    if (!thread.hasEverHadMessage) {
+    if (!thread.shouldThreadBeVisible) {
         [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
         return YES;
     } else {
