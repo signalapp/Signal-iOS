@@ -355,25 +355,55 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     OWSAssertDebug(self.isImage || self.isAnimated);
 
+    BOOL result;
+    BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isValidImageCached) {
-            self.isValidImageCached =
-                @([NSData ows_isValidImageAtPath:self.originalFilePath mimeType:self.contentType]);
+            OWSLogVerbose(@"Updating isValidImageCached.");
+            self.isValidImageCached = @([NSData ows_isValidImageAtPath:self.originalFilePath
+                                                              mimeType:self.contentType]);
+            didUpdateCache = YES;
         }
-        return self.isValidImageCached.boolValue;
+        result = self.isValidImageCached.boolValue;
     }
+
+    if (didUpdateCache) {
+        [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [self applyChangeToSelfAndLatestCopy:transaction
+                                     changeBlock:^(TSAttachmentStream *attachmentStream) {
+                                         attachmentStream.isValidImageCached = @(result);
+                                     }];
+        }];
+    }
+
+    return result;
 }
 
 - (BOOL)isValidVideo
 {
-    OWSAssertDebug(self.isVideo);
+    OWSAssertDebug(self.isImage || self.isAnimated);
 
+    BOOL result;
+    BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isValidVideoCached) {
+            OWSLogVerbose(@"Updating isValidVideoCached.");
             self.isValidVideoCached = @([OWSMediaUtils isValidVideoWithPath:self.originalFilePath]);
+            didUpdateCache = YES;
         }
-        return self.isValidVideoCached.boolValue;
+        result = self.isValidVideoCached.boolValue;
     }
+
+    if (didUpdateCache) {
+        [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [self applyChangeToSelfAndLatestCopy:transaction
+                                     changeBlock:^(TSAttachmentStream *attachmentStream) {
+                                         attachmentStream.isValidVideoCached = @(result);
+                                     }];
+        }];
+    }
+
+    return result;
 }
 
 #pragma mark -
