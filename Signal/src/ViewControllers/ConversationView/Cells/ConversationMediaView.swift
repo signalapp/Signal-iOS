@@ -214,11 +214,15 @@ public class ConversationMediaView: UIView {
         loadBlock = { [weak self] in
             AssertIsOnMainThread()
 
+            guard let strongSelf = self else {
+                return
+            }
+
             if animatedImageView.image != nil {
                 owsFailDebug("Unexpectedly already loaded.")
                 return
             }
-            self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
+            strongSelf.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
                 guard attachmentStream.isValidImage else {
                     owsFailDebug("Ignoring invalid attachment.")
                     return nil
