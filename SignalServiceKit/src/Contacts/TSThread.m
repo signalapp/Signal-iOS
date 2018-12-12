@@ -85,7 +85,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
     // renamed `hasEverHadMessage` -> `shouldThreadBeVisible`
     if (!_shouldThreadBeVisible) {
-        NSNumber *legacy_hasEverHadMessage = [coder decodeObjectForKey:@"hasEverHadMessage"];
+        NSNumber *_Nullable legacy_hasEverHadMessage = [coder decodeObjectForKey:@"hasEverHadMessage"];
 
         if (legacy_hasEverHadMessage != nil) {
             _shouldThreadBeVisible = legacy_hasEverHadMessage.boolValue;
