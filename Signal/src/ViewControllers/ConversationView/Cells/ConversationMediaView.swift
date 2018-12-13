@@ -478,7 +478,11 @@ public class ConversationMediaView: UIView {
     //   views that are no longer visible, redundant loads
     //   of media already being loaded, don't retry media
     //   that can't be loaded, etc.).
-    private static let loadQueue = DispatchQueue(label: "org.signal.asyncMediaLoadQueue")
+    // * Do them in _reverse_ order. More recently enqueued
+    //   loads more closely reflect the current view state.
+    //   By processing in reverse order, we improve our
+    //   "skip rate" of obsolete loads.
+    private static let loadQueue = ReverseDispatchQueue(label: "org.signal.asyncMediaLoadQueue")
 
     @objc
     public func loadMedia() {
