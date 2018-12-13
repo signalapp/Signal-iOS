@@ -12,17 +12,20 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL hasAddToContactsOffer;
 @property (nonatomic, readonly) BOOL hasAddToProfileWhitelistOffer;
 @property (nonatomic, readonly) NSString *recipientId;
+@property (nonatomic, readonly) NSString *beforeInteractionId;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initContactOffersWithTimestamp:(uint64_t)timestamp
-                                        thread:(TSThread *)thread
-                                 hasBlockOffer:(BOOL)hasBlockOffer
-                         hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
-                 hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
-                                   recipientId:(NSString *)recipientId NS_DESIGNATED_INITIALIZER;
+- (instancetype)initInteractionWithUniqueId:(NSString *)uniqueId
+                                  timestamp:(uint64_t)timestamp
+                                     thread:(TSThread *)thread
+                              hasBlockOffer:(BOOL)hasBlockOffer
+                      hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
+              hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
+                                recipientId:(NSString *)recipientId
+                        beforeInteractionId:(NSString *)beforeInteractionId NS_DESIGNATED_INITIALIZER;
 
 @end
 

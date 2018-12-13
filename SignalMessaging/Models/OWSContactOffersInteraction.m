@@ -13,14 +13,16 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initContactOffersWithTimestamp:(uint64_t)timestamp
-                                        thread:(TSThread *)thread
-                                 hasBlockOffer:(BOOL)hasBlockOffer
-                         hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
-                 hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
-                                   recipientId:(NSString *)recipientId
+- (instancetype)initInteractionWithUniqueId:(NSString *)uniqueId
+                                  timestamp:(uint64_t)timestamp
+                                     thread:(TSThread *)thread
+                              hasBlockOffer:(BOOL)hasBlockOffer
+                      hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
+              hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
+                                recipientId:(NSString *)recipientId
+                        beforeInteractionId:(NSString *)beforeInteractionId
 {
-    self = [super initInteractionWithTimestamp:timestamp inThread:thread];
+    self = [super initInteractionWithUniqueId:uniqueId timestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;
@@ -31,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     _hasAddToProfileWhitelistOffer = hasAddToProfileWhitelistOffer;
     OWSAssertDebug(recipientId.length > 0);
     _recipientId = recipientId;
+    _beforeInteractionId = beforeInteractionId;
 
     return self;
 }
@@ -50,6 +53,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_Offer;
+}
+
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSFailDebug(@"This interaction should never be saved to the database.");
 }
 
 @end
