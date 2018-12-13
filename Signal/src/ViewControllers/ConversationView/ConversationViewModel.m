@@ -26,6 +26,22 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface ConversationProfileState : NSObject
+
+@property (nonatomic) BOOL hasLocalProfile;
+@property (nonatomic) BOOL isThreadInProfileWhitelist;
+@property (nonatomic) BOOL hasUnwhitelistedMember;
+
+@end
+
+#pragma mark -
+
+@implementation ConversationProfileState
+
+@end
+
+#pragma mark -
+
 @implementation ConversationUpdateItem
 
 - (instancetype)initWithUpdateItemType:(ConversationUpdateItemType)updateItemType
@@ -146,6 +162,9 @@ static const int kYapDatabaseRangeMinLength = 0;
 @property (nonatomic, nullable) NSDate *collapseCutoffDate;
 @property (nonatomic, nullable) NSString *typingIndicatorsSender;
 
+@property (nonatomic, nullable) ConversationProfileState *conversationProfileState;
+@property (nonatomic) BOOL hasTooManyOutgoingMessagesToBlockCached;
+
 @end
 
 #pragma mark -
@@ -243,6 +262,10 @@ static const int kYapDatabaseRangeMinLength = 0;
                                              selector:@selector(blockListDidChange:)
                                                  name:kNSNotificationName_BlockListDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(localProfileDidChange:)
+                                                 name:kNSNotificationName_LocalProfileDidChange
+                                               object:nil];
 }
 
 - (void)signalAccountsDidChange:(NSNotification *)notification
@@ -256,17 +279,16 @@ static const int kYapDatabaseRangeMinLength = 0;
 {
     OWSAssertIsOnMainThread();
 
-    // If profile whitelist just changed, we may want to hide a profile whitelist offer.
-    NSString *_Nullable recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
-    if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
-        [self updateForTransientItems];
-    } else if (groupId.length > 0 && self.thread.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        if ([groupThread.groupModel.groupId isEqualToData:groupId]) {
-            [self updateForTransientItems];
-        }
-    }
+    self.conversationProfileState = nil;
+    [self updateForTransientItems];
+}
+
+- (void)localProfileDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    self.conversationProfileState = nil;
+    [self updateForTransientItems];
 }
 
 - (void)blockListDidChange:(id)notification
@@ -319,16 +341,24 @@ static const int kYapDatabaseRangeMinLength = 0;
 
 - (BOOL)canLoadMoreItems
 {
+    __block BOOL result;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        YapDatabaseViewTransaction *messageDatabaseView = [transaction ext:TSMessageDatabaseViewExtensionName];
+        result = [self canLoadMoreItems:messageDatabaseView];
+    }];
+    return result;
+}
+
+- (BOOL)canLoadMoreItems:(YapDatabaseViewTransaction *)messageDatabaseView
+{
+    OWSAssertDebug(messageDatabaseView);
+
     if (self.lastRangeLength >= kYapDatabaseRangeMaxLength) {
         return NO;
     }
 
     NSUInteger loadWindowSize = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-    __block NSUInteger totalMessageCount;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        totalMessageCount =
-            [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
-    }];
+    NSUInteger totalMessageCount = [messageDatabaseView numberOfItemsInGroup:self.thread.uniqueId];
     return loadWindowSize < totalMessageCount;
 }
 
@@ -534,8 +564,10 @@ static const int kYapDatabaseRangeMinLength = 0;
     NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
     OWSAssertDebug([notifications isKindOfClass:[NSArray class]]);
 
-    if (![[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] hasChangesForGroup:self.thread.uniqueId
-                                                                                inNotifications:notifications]) {
+    YapDatabaseAutoViewConnection *messageDatabaseView =
+        [self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName];
+    OWSAssertDebug([messageDatabaseView isKindOfClass:[YapDatabaseAutoViewConnection class]]);
+    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.messageMappings updateWithTransaction:transaction];
         }];
@@ -546,10 +578,10 @@ static const int kYapDatabaseRangeMinLength = 0;
 
     NSArray<YapDatabaseViewSectionChange *> *sectionChanges = nil;
     NSArray<YapDatabaseViewRowChange *> *rowChanges = nil;
-    [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] getSectionChanges:&sectionChanges
-                                                                               rowChanges:&rowChanges
-                                                                         forNotifications:notifications
-                                                                             withMappings:self.messageMappings];
+    [messageDatabaseView getSectionChanges:&sectionChanges
+                                rowChanges:&rowChanges
+                          forNotifications:notifications
+                              withMappings:self.messageMappings];
 
     if ([sectionChanges count] == 0 && [rowChanges count] == 0) {
         // YapDatabase will ignore insertions within the message mapping's
@@ -929,8 +961,11 @@ static const int kYapDatabaseRangeMinLength = 0;
 
 #pragma mark - View Items
 
-- (nullable OWSContactOffersInteraction *)tryToBuildContactOffersInteraction
+- (void)ensureConversationProfileState
 {
+    if (self.conversationProfileState) {
+        return;
+    }
 
     // Many OWSProfileManager methods aren't safe to call from inside a database
     // transaction, so do this work now.
@@ -946,23 +981,52 @@ static const int kYapDatabaseRangeMinLength = 0;
         }
     }
 
-    __block OWSContactOffersInteraction *_Nullable offers = nil;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        offers = [self tryToBuildContactOffersInteractionWithTransaction:transaction
-                                                         hasLocalProfile:hasLocalProfile
-                                              isThreadInProfileWhitelist:isThreadInProfileWhitelist
-                                                  hasUnwhitelistedMember:hasUnwhitelistedMember];
-    }];
-    return offers;
+    ConversationProfileState *conversationProfileState = [ConversationProfileState new];
+    conversationProfileState.hasLocalProfile = hasLocalProfile;
+    conversationProfileState.isThreadInProfileWhitelist = isThreadInProfileWhitelist;
+    conversationProfileState.hasUnwhitelistedMember = hasUnwhitelistedMember;
+    self.conversationProfileState = conversationProfileState;
+}
+
+- (nullable TSInteraction *)firstCallOrMessageForLoadedInteractions:(NSArray<TSInteraction *> *)loadedInteractions
+
+{
+    for (TSInteraction *interaction in loadedInteractions) {
+        switch (interaction.interactionType) {
+            case OWSInteractionType_Unknown:
+                OWSFailDebug(@"Unknown interaction type.");
+                return nil;
+            case OWSInteractionType_IncomingMessage:
+            case OWSInteractionType_OutgoingMessage:
+                return interaction;
+            case OWSInteractionType_Error:
+            case OWSInteractionType_Info:
+                break;
+            case OWSInteractionType_Call:
+            case OWSInteractionType_Offer:
+            case OWSInteractionType_TypingIndicator:
+                break;
+        }
+    }
+    return nil;
 }
 
 - (nullable OWSContactOffersInteraction *)
     tryToBuildContactOffersInteractionWithTransaction:(YapDatabaseReadTransaction *)transaction
-                                      hasLocalProfile:(BOOL)hasLocalProfile
-                           isThreadInProfileWhitelist:(BOOL)isThreadInProfileWhitelist
-                               hasUnwhitelistedMember:(BOOL)hasUnwhitelistedMember
+                                   loadedInteractions:(NSArray<TSInteraction *> *)loadedInteractions
+                                     canLoadMoreItems:(BOOL)canLoadMoreItems
 {
     OWSAssertDebug(transaction);
+    OWSAssertDebug(self.conversationProfileState);
+
+    if (canLoadMoreItems) {
+        // Only show contact offers at the start of the conversation.
+        return nil;
+    }
+
+    BOOL hasLocalProfile = self.conversationProfileState.hasLocalProfile;
+    BOOL isThreadInProfileWhitelist = self.conversationProfileState.isThreadInProfileWhitelist;
+    BOOL hasUnwhitelistedMember = self.conversationProfileState.hasUnwhitelistedMember;
 
     TSThread *thread = self.thread;
     BOOL isContactThread = [thread isKindOfClass:[TSContactThread class]];
@@ -977,27 +1041,22 @@ static const int kYapDatabaseRangeMinLength = 0;
     NSString *localNumber = [self.tsAccountManager localNumber];
     OWSAssertDebug(localNumber.length > 0);
 
-    const int kMaxBlockOfferOutgoingMessageCount = 10;
-
-    __block TSInteraction *firstCallOrMessage = nil;
-    [[transaction ext:TSMessageDatabaseViewExtensionName]
-        enumerateRowsInGroup:thread.uniqueId
-                  usingBlock:^(
-                      NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-                      OWSAssertDebug([object isKindOfClass:[TSInteraction class]]);
-
-                      if ([object isKindOfClass:[TSIncomingMessage class]] ||
-                          [object isKindOfClass:[TSOutgoingMessage class]] || [object isKindOfClass:[TSCall class]]) {
-                          firstCallOrMessage = object;
-                          *stop = YES;
-                      }
-                  }];
+    TSInteraction *firstCallOrMessage = [self firstCallOrMessageForLoadedInteractions:loadedInteractions];
     if (!firstCallOrMessage) {
         return nil;
     }
 
-    NSUInteger outgoingMessageCount =
-        [[TSDatabaseView threadOutgoingMessageDatabaseView:transaction] numberOfItemsInGroup:thread.uniqueId];
+    BOOL hasTooManyOutgoingMessagesToBlock;
+    if (self.hasTooManyOutgoingMessagesToBlockCached) {
+        hasTooManyOutgoingMessagesToBlock = YES;
+    } else {
+        NSUInteger outgoingMessageCount =
+            [[TSDatabaseView threadOutgoingMessageDatabaseView:transaction] numberOfItemsInGroup:thread.uniqueId];
+
+        const int kMaxBlockOfferOutgoingMessageCount = 10;
+        hasTooManyOutgoingMessagesToBlock = (outgoingMessageCount > kMaxBlockOfferOutgoingMessageCount);
+        self.hasTooManyOutgoingMessagesToBlockCached = hasTooManyOutgoingMessagesToBlock;
+    }
 
     BOOL shouldHaveBlockOffer = YES;
     BOOL shouldHaveAddToContactsOffer = YES;
@@ -1032,7 +1091,7 @@ static const int kYapDatabaseRangeMinLength = 0;
         }
     }
 
-    if (outgoingMessageCount > kMaxBlockOfferOutgoingMessageCount) {
+    if (hasTooManyOutgoingMessagesToBlock) {
         // If the user has sent more than N messages, don't show a block offer.
         shouldHaveBlockOffer = NO;
     }
@@ -1101,7 +1160,7 @@ static const int kYapDatabaseRangeMinLength = 0;
     BOOL isGroupThread = self.thread.isGroupThread;
     ConversationStyle *conversationStyle = self.delegate.conversationStyle;
 
-    OWSContactOffersInteraction *_Nullable offers = [self tryToBuildContactOffersInteraction];
+    [self ensureConversationProfileState];
 
     __block BOOL hasError = NO;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1124,11 +1183,11 @@ static const int kYapDatabaseRangeMinLength = 0;
         NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
         NSMutableSet<NSString *> *interactionIds = [NSMutableSet new];
 
-        YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
-        OWSAssertDebug(viewTransaction);
+        YapDatabaseViewTransaction *messageDatabaseView = [transaction ext:TSMessageDatabaseViewExtensionName];
+        OWSAssertDebug(messageDatabaseView);
         for (NSUInteger row = 0; row < count; row++) {
             TSInteraction *interaction =
-                [viewTransaction objectAtRow:row inSection:0 withMappings:self.messageMappings];
+                [messageDatabaseView objectAtRow:row inSection:0 withMappings:self.messageMappings];
             if (!interaction) {
                 OWSFailDebug(
                     @"missing interaction in message mappings: %lu / %lu.", (unsigned long)row, (unsigned long)count);
@@ -1149,6 +1208,11 @@ static const int kYapDatabaseRangeMinLength = 0;
             [interactionIds addObject:interaction.uniqueId];
         }
 
+        BOOL canLoadMoreItems = [self canLoadMoreItems:messageDatabaseView];
+        OWSContactOffersInteraction *_Nullable offers =
+            [self tryToBuildContactOffersInteractionWithTransaction:transaction
+                                                 loadedInteractions:interactions
+                                                   canLoadMoreItems:canLoadMoreItems];
         if (offers && [interactionIds containsObject:offers.beforeInteractionId]) {
             id<ConversationViewItem> offersItem = tryToAddViewItem(offers);
             if ([offersItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
@@ -1554,9 +1618,10 @@ static const int kYapDatabaseRangeMinLength = 0;
     // The mapping indices and view item indices don't always align for corrupt mappings.
     __block TSInteraction *_Nullable interaction;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
-        OWSAssertDebug(viewTransaction);
-        interaction = [viewTransaction objectAtRow:indexRow inSection:indexSection withMappings:self.messageMappings];
+        YapDatabaseViewTransaction *messageDatabaseView = [transaction ext:TSMessageDatabaseViewExtensionName];
+        OWSAssertDebug(messageDatabaseView);
+        interaction =
+            [messageDatabaseView objectAtRow:indexRow inSection:indexSection withMappings:self.messageMappings];
     }];
     if (!interaction) {
         OWSFailDebug(@"Could not locate interaction for quoted reply.");

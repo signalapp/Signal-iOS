@@ -212,14 +212,13 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
                                   usingBlock:(void (^)(TSInteraction *interaction,
                                                  YapDatabaseReadTransaction *transaction))block
 {
-    void (^interactionBlock)(NSString *, NSString *, id, id, NSUInteger, BOOL *) = ^void(
-        NSString *collection, NSString *key, id _Nonnull object, id _Nonnull metadata, NSUInteger index, BOOL *stop) {
-        TSInteraction *interaction = object;
-        block(interaction, transaction);
-    };
-
     YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
-    [interactionsByThread enumerateRowsInGroup:self.uniqueId usingBlock:interactionBlock];
+    [interactionsByThread
+        enumerateKeysAndObjectsInGroup:self.uniqueId
+                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+                                TSInteraction *interaction = object;
+                                block(interaction, transaction);
+                            }];
 }
 
 /**
@@ -284,16 +283,14 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 {
     NSMutableArray<id<OWSReadTracking>> *messages = [NSMutableArray new];
     [[TSDatabaseView unseenDatabaseViewExtension:transaction]
-        enumerateRowsInGroup:self.uniqueId
-                  usingBlock:^(
-                      NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
-                      if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                          OWSFailDebug(@"Unexpected object in unseen messages: %@", [object class]);
-                          return;
-                      }
-                      [messages addObject:(id<OWSReadTracking>)object];
-                  }];
+        enumerateKeysAndObjectsInGroup:self.uniqueId
+                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+                                if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
+                                    OWSFailDebug(@"Unexpected object in unseen messages: %@", [object class]);
+                                    return;
+                                }
+                                [messages addObject:(id<OWSReadTracking>)object];
+                            }];
 
     return [messages copy];
 }
@@ -320,29 +317,29 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     __block NSUInteger missedCount = 0;
     __block TSInteraction *last = nil;
     [[transaction ext:TSMessageDatabaseViewExtensionName]
-     enumerateRowsInGroup:self.uniqueId
-     withOptions:NSEnumerationReverse
-     usingBlock:^(
-                  NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-         
-         OWSAssertDebug([object isKindOfClass:[TSInteraction class]]);
+        enumerateKeysAndObjectsInGroup:self.uniqueId
+                           withOptions:NSEnumerationReverse
+                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+                                OWSAssertDebug([object isKindOfClass:[TSInteraction class]]);
 
-         missedCount++;
-         TSInteraction *interaction = (TSInteraction *)object;
-         
-         if ([TSThread shouldInteractionAppearInInbox:interaction]) {
-             last = interaction;
+                                missedCount++;
+                                TSInteraction *interaction = (TSInteraction *)object;
 
-             // For long ignored threads, with lots of SN changes this can get really slow.
-             // I see this in development because I have a lot of long forgotten threads with members
-             // who's test devices are constantly reinstalled. We could add a purpose-built DB view,
-             // but I think in the real world this is rare to be a hotspot.
-             if (missedCount > 50) {
-                 OWSLogWarn(@"found last interaction for inbox after skipping %lu items", (unsigned long)missedCount);
-             }
-             *stop = YES;
-         }
-     }];
+                                if ([TSThread shouldInteractionAppearInInbox:interaction]) {
+                                    last = interaction;
+
+                                    // For long ignored threads, with lots of SN changes this can get really slow.
+                                    // I see this in development because I have a lot of long forgotten threads with
+                                    // members who's test devices are constantly reinstalled. We could add a
+                                    // purpose-built DB view, but I think in the real world this is rare to be a
+                                    // hotspot.
+                                    if (missedCount > 50) {
+                                        OWSLogWarn(@"found last interaction for inbox after skipping %lu items",
+                                            (unsigned long)missedCount);
+                                    }
+                                    *stop = YES;
+                                }
+                            }];
     return last;
 }
 
