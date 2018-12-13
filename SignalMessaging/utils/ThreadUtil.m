@@ -347,38 +347,38 @@ NS_ASSUME_NONNULL_BEGIN
         // We want to delete legacy and duplicate interactions.
         NSMutableArray<TSInteraction *> *interactionsToDelete = [NSMutableArray new];
         [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction]
-            enumerateRowsInGroup:thread.uniqueId
-                      usingBlock:^(
-                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
-                          if ([object isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]) {
-                              // Delete this legacy interactions, which has been superseded by
-                              // the OWSContactOffersInteraction.
-                              [interactionsToDelete addObject:object];
-                          } else if ([object isKindOfClass:[OWSAddToContactsOfferMessage class]]) {
-                              // Delete this legacy interactions, which has been superseded by
-                              // the OWSContactOffersInteraction.
-                              [interactionsToDelete addObject:object];
-                          } else if ([object isKindOfClass:[OWSAddToProfileWhitelistOfferMessage class]]) {
-                              // Delete this legacy interactions, which has been superseded by
-                              // the OWSContactOffersInteraction.
-                              [interactionsToDelete addObject:object];
-                          } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
-                              // Remove obsolete unread indicator interactions.
-                              [interactionsToDelete addObject:object];
-                          } else if ([object isKindOfClass:[OWSContactOffersInteraction class]]) {
-                              // Remove obsolete contact offers.
-                              [interactionsToDelete addObject:object];
-                          } else if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-                              [blockingSafetyNumberChanges addObject:object];
-                          } else if ([object isKindOfClass:[TSErrorMessage class]]) {
-                              TSErrorMessage *errorMessage = (TSErrorMessage *)object;
-                              OWSAssertDebug(errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
-                              [nonBlockingSafetyNumberChanges addObject:errorMessage];
-                          } else {
-                              OWSFailDebug(@"Unexpected dynamic interaction type: %@", [object class]);
-                          }
-                      }];
+            enumerateKeysAndObjectsInGroup:thread.uniqueId
+                                usingBlock:^(
+                                    NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+                                    if ([object isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]) {
+                                        // Delete this legacy interactions, which has been superseded by
+                                        // the OWSContactOffersInteraction.
+                                        [interactionsToDelete addObject:object];
+                                    } else if ([object isKindOfClass:[OWSAddToContactsOfferMessage class]]) {
+                                        // Delete this legacy interactions, which has been superseded by
+                                        // the OWSContactOffersInteraction.
+                                        [interactionsToDelete addObject:object];
+                                    } else if ([object isKindOfClass:[OWSAddToProfileWhitelistOfferMessage class]]) {
+                                        // Delete this legacy interactions, which has been superseded by
+                                        // the OWSContactOffersInteraction.
+                                        [interactionsToDelete addObject:object];
+                                    } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
+                                        // Remove obsolete unread indicator interactions.
+                                        [interactionsToDelete addObject:object];
+                                    } else if ([object isKindOfClass:[OWSContactOffersInteraction class]]) {
+                                        // Remove obsolete contact offers.
+                                        [interactionsToDelete addObject:object];
+                                    } else if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
+                                        [blockingSafetyNumberChanges addObject:object];
+                                    } else if ([object isKindOfClass:[TSErrorMessage class]]) {
+                                        TSErrorMessage *errorMessage = (TSErrorMessage *)object;
+                                        OWSAssertDebug(
+                                            errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
+                                        [nonBlockingSafetyNumberChanges addObject:errorMessage];
+                                    } else {
+                                        OWSFailDebug(@"Unexpected dynamic interaction type: %@", [object class]);
+                                    }
+                                }];
 
         for (TSInteraction *interaction in interactionsToDelete) {
             OWSLogDebug(@"Cleaning up interaction: %@", [interaction class]);
@@ -461,41 +461,41 @@ NS_ASSUME_NONNULL_BEGIN
     __block TSInteraction *interactionAfterUnreadIndicator = nil;
     __block BOOL hasMoreUnseenMessages = NO;
     [threadMessagesTransaction
-        enumerateRowsInGroup:thread.uniqueId
-                 withOptions:NSEnumerationReverse
-                  usingBlock:^(
-                      NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-                      if (![object isKindOfClass:[TSInteraction class]]) {
-                          OWSFailDebug(@"Expected a TSInteraction: %@", [object class]);
-                          return;
-                      }
+        enumerateKeysAndObjectsInGroup:thread.uniqueId
+                           withOptions:NSEnumerationReverse
+                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+                                if (![object isKindOfClass:[TSInteraction class]]) {
+                                    OWSFailDebug(@"Expected a TSInteraction: %@", [object class]);
+                                    return;
+                                }
 
-                      TSInteraction *interaction = (TSInteraction *)object;
+                                TSInteraction *interaction = (TSInteraction *)object;
 
-                      if (interaction.isDynamicInteraction) {
-                          // Ignore dynamic interactions, if any.
-                          return;
-                      }
+                                if (interaction.isDynamicInteraction) {
+                                    // Ignore dynamic interactions, if any.
+                                    return;
+                                }
 
-                      if (interaction.timestampForSorting < firstUnseenInteractionTimestamp.unsignedLongLongValue) {
-                          // By default we want the unread indicator to appear just before
-                          // the first unread message.
-                          *stop = YES;
-                          return;
-                      }
+                                if (interaction.timestampForSorting
+                                    < firstUnseenInteractionTimestamp.unsignedLongLongValue) {
+                                    // By default we want the unread indicator to appear just before
+                                    // the first unread message.
+                                    *stop = YES;
+                                    return;
+                                }
 
-                      visibleUnseenMessageCount++;
+                                visibleUnseenMessageCount++;
 
-                      interactionAfterUnreadIndicator = interaction;
+                                interactionAfterUnreadIndicator = interaction;
 
-                      if (visibleUnseenMessageCount + 1 >= maxRangeSize) {
-                          // If there are more unseen messages than can be displayed in the
-                          // messages view, show the unread indicator at the top of the
-                          // displayed messages.
-                          *stop = YES;
-                          hasMoreUnseenMessages = YES;
-                      }
-                  }];
+                                if (visibleUnseenMessageCount + 1 >= maxRangeSize) {
+                                    // If there are more unseen messages than can be displayed in the
+                                    // messages view, show the unread indicator at the top of the
+                                    // displayed messages.
+                                    *stop = YES;
+                                    hasMoreUnseenMessages = YES;
+                                }
+                            }];
 
     if (!interactionAfterUnreadIndicator) {
         // If we can't find an interaction after the unread indicator,
