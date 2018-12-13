@@ -14,6 +14,7 @@ extern NSString *const TSThreadDatabaseViewExtensionName;
 
 extern NSString *const TSMessageDatabaseViewExtensionName;
 extern NSString *const TSUnreadDatabaseViewExtensionName;
+extern NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName;
 
 extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 
