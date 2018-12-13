@@ -286,6 +286,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.cachedCellSize = nil;
 }
 
+- (BOOL)hasCachedLayoutState {
+    return self.cachedCellSize != nil;
+}
+
 - (CGSize)cellSize
 {
     OWSAssertIsOnMainThread();
