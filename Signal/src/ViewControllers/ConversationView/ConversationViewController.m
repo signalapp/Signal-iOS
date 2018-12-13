@@ -3834,6 +3834,7 @@ typedef enum : NSUInteger {
 
 - (void)sendButtonPressed
 {
+    [BenchManager startEventWithTitle:@"Send message" eventId:@"message-send"];
     [self tryToSendTextMessage:self.inputToolbar.messageText updateKeyboardState:YES];
 }
 
@@ -4539,6 +4540,7 @@ typedef enum : NSUInteger {
                              if (scrollToBottom) {
                                  [self scrollToBottomAnimated:NO];
                              }
+                             [BenchManager completeEventWithEventId:@"message-send"];
                          }];
         }
     } @catch (NSException *exception) {
