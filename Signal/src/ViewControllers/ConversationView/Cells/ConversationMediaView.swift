@@ -28,7 +28,63 @@ public class ConversationMediaView: UIView {
     private let maxMessageWidth: CGFloat
     private var loadBlock : (() -> Void)?
     private var unloadBlock : (() -> Void)?
-    private var didFailToLoad = false
+
+    // MARK: - LoadState
+
+    // The loadState property allows us to:
+    //
+    // * Make sure we only have one load attempt
+    //   enqueued at a time for a given piece of media.
+    // * We never retry media that can't be loaded.
+    // * We skip media loads which are no longer
+    //   necessary by the time they reach the front
+    //   of the queue.
+
+    enum LoadState {
+        case unloaded
+        case loading
+        case loaded
+        case failed
+    }
+
+    // Thread-safe access to load state.
+    //
+    // We use a "box" class so that we can capture a reference
+    // to this box (rather than self) and a) safely access
+    // if off the main thread b) not prevent deallocation of
+    // self.
+    private class ThreadSafeLoadState {
+        private var value: LoadState
+
+        required init(_ value: LoadState) {
+            self.value = value
+        }
+
+        func get() -> LoadState {
+            objc_sync_enter(self)
+            let valueCopy = value
+            objc_sync_exit(self)
+            return valueCopy
+        }
+
+        func set(_ newValue: LoadState) {
+            objc_sync_enter(self)
+            value = newValue
+            objc_sync_exit(self)
+        }
+    }
+    private let threadSafeLoadState = ThreadSafeLoadState(.unloaded)
+    // Convenience accessors.
+    private var loadState: LoadState {
+        get {
+            return threadSafeLoadState.get()
+        }
+        set {
+            threadSafeLoadState.set(newValue)
+        }
+    }
+
+    // MARK: - Initializers
 
     @objc
     public required init(mediaCache: NSCache<NSString, AnyObject>,
@@ -52,6 +108,14 @@ public class ConversationMediaView: UIView {
     required public init?(coder aDecoder: NSCoder) {
         notImplemented()
     }
+
+    deinit {
+        AssertIsOnMainThread()
+
+        loadState = .unloaded
+    }
+
+    // MARK: -
 
     private func createContents() {
         AssertIsOnMainThread()
@@ -148,13 +212,17 @@ public class ConversationMediaView: UIView {
         _ = addUploadProgressIfNecessary(animatedImageView)
 
         loadBlock = { [weak self] in
+            AssertIsOnMainThread()
+
             guard let strongSelf = self else {
                 return
             }
+
             if animatedImageView.image != nil {
+                owsFailDebug("Unexpectedly already loaded.")
                 return
             }
-            let cachedValue = strongSelf.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
+            strongSelf.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
                 guard attachmentStream.isValidImage else {
                     owsFailDebug("Ignoring invalid attachment.")
                     return nil
@@ -166,14 +234,20 @@ public class ConversationMediaView: UIView {
                 let animatedImage = YYImage(contentsOfFile: filePath)
                 return animatedImage
             },
-                                                        cacheKey: cacheKey,
-                                                        canLoadAsync: true)
-            guard let image = cachedValue as? YYImage else {
-                return
-            }
-            animatedImageView.image = image
+                                                        applyMediaBlock: { (media) in
+                                                            AssertIsOnMainThread()
+
+                                                            guard let image = media as? YYImage else {
+                                                                owsFailDebug("Media has unexpected type: \(type(of: media))")
+                                                                return
+                                                            }
+                                                            animatedImageView.image = image
+            },
+                                                        cacheKey: cacheKey)
         }
         unloadBlock = {
+            AssertIsOnMainThread()
+
             animatedImageView.image = nil
         }
     }
@@ -196,31 +270,39 @@ public class ConversationMediaView: UIView {
         stillImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(stillImageView)
         loadBlock = { [weak self] in
-            guard let strongSelf = self else {
-                return
-            }
+            AssertIsOnMainThread()
+
             if stillImageView.image != nil {
+                owsFailDebug("Unexpectedly already loaded.")
                 return
             }
-            let cachedValue = strongSelf.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
+            self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
                 guard attachmentStream.isValidImage else {
                     owsFailDebug("Ignoring invalid attachment.")
                     return nil
                 }
                 return attachmentStream.thumbnailImageMedium(success: { (image) in
+                    AssertIsOnMainThread()
+
                     stillImageView.image = image
                 }, failure: {
                     Logger.error("Could not load thumbnail")
                 })
             },
-                                                        cacheKey: cacheKey,
-                                                        canLoadAsync: true)
-            guard let image = cachedValue as? UIImage else {
-                return
-            }
-            stillImageView.image = image
+                                 applyMediaBlock: { (media) in
+                                    AssertIsOnMainThread()
+
+                                    guard let image = media as? UIImage else {
+                                        owsFailDebug("Media has unexpected type: \(type(of: media))")
+                                        return
+                                    }
+                                    stillImageView.image = image
+            },
+                                                        cacheKey: cacheKey)
         }
         unloadBlock = {
+            AssertIsOnMainThread()
+
             stillImageView.image = nil
         }
     }
@@ -251,31 +333,39 @@ public class ConversationMediaView: UIView {
         }
 
         loadBlock = { [weak self] in
-            guard let strongSelf = self else {
-                return
-            }
+            AssertIsOnMainThread()
+
             if stillImageView.image != nil {
+                owsFailDebug("Unexpectedly already loaded.")
                 return
             }
-            let cachedValue = strongSelf.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
+            self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
                 guard attachmentStream.isValidVideo else {
                     owsFailDebug("Ignoring invalid attachment.")
                     return nil
                 }
                 return attachmentStream.thumbnailImageMedium(success: { (image) in
+                    AssertIsOnMainThread()
+
                     stillImageView.image = image
                 }, failure: {
                     Logger.error("Could not load thumbnail")
                 })
             },
-                                                        cacheKey: cacheKey,
-                                                        canLoadAsync: true)
-            guard let image = cachedValue as? UIImage else {
-                return
-            }
-            stillImageView.image = image
+                                 applyMediaBlock: { (media) in
+                                    AssertIsOnMainThread()
+
+                                    guard let image = media as? UIImage else {
+                                        owsFailDebug("Media has unexpected type: \(type(of: media))")
+                                        return
+                                    }
+                                    stillImageView.image = image
+            },
+                                                        cacheKey: cacheKey)
         }
         unloadBlock = {
+            AssertIsOnMainThread()
+
             stillImageView.image = nil
         }
     }
@@ -313,47 +403,105 @@ public class ConversationMediaView: UIView {
     }
 
     private func tryToLoadMedia(loadMediaBlock: @escaping () -> AnyObject?,
-                                cacheKey: String,
-                                canLoadAsync: Bool) -> AnyObject? {
+                                applyMediaBlock: @escaping (AnyObject) -> Void,
+                                cacheKey: String) {
         AssertIsOnMainThread()
 
-        guard !didFailToLoad else {
-            return nil
+        // It's critical that we update loadState once
+        // our load attempt is complete.
+        let loadCompletion: (AnyObject?) -> Void = { [weak self] (possibleMedia) in
+            AssertIsOnMainThread()
+
+            guard let strongSelf = self else {
+                return
+            }
+            guard strongSelf.loadState == .loading else {
+                Logger.verbose("Skipping obsolete load.")
+                return
+            }
+            guard let media = possibleMedia else {
+                strongSelf.loadState = .failed
+                // TODO:
+                //            [self showAttachmentErrorViewWithMediaView:mediaView];
+                return
+            }
+
+            applyMediaBlock(media)
+
+            strongSelf.loadState = .loaded
         }
 
+        guard loadState == .loading else {
+            owsFailDebug("Unexpected load state: \(loadState)")
+            return
+        }
+
+        let mediaCache = self.mediaCache
         if let media = mediaCache.object(forKey: cacheKey as NSString) {
             Logger.verbose("media cache hit")
-            return media
+            loadCompletion(media)
+            return
         }
 
-        if let media = loadMediaBlock() {
-            Logger.verbose("media cache miss")
-            mediaCache.setObject(media, forKey: cacheKey as NSString)
-            return media
+        Logger.verbose("media cache miss")
+
+        let threadSafeLoadState = self.threadSafeLoadState
+        ConversationMediaView.loadQueue.async {
+            guard threadSafeLoadState.get() == .loading else {
+                Logger.verbose("Skipping obsolete load.")
+                return
+            }
+
+            guard let media = loadMediaBlock() else {
+                Logger.error("Failed to load media.")
+
+                DispatchQueue.main.async {
+                    loadCompletion(nil)
+                }
+                return
+            }
+
+            DispatchQueue.main.async {
+                mediaCache.setObject(media, forKey: cacheKey as NSString)
+
+                loadCompletion(media)
+            }
         }
-        guard canLoadAsync else {
-            Logger.error("Failed to load media.")
-            didFailToLoad = true
-            // TODO:
-            //            [self showAttachmentErrorViewWithMediaView:mediaView];
-            return nil
-        }
-        return nil
     }
+
+    // We use this queue to perform the media loads.
+    // These loads are expensive, so we want to:
+    //
+    // * Do them off the main thread.
+    // * Only do one at a time.
+    // * Avoid this work if possible (obsolete loads for
+    //   views that are no longer visible, redundant loads
+    //   of media already being loaded, don't retry media
+    //   that can't be loaded, etc.).
+    private static let loadQueue = DispatchQueue(label: "org.signal.asyncMediaLoadQueue")
 
     @objc
     public func loadMedia() {
         AssertIsOnMainThread()
 
-        guard let loadBlock = loadBlock else {
-            return
+        switch loadState {
+        case .unloaded:
+            loadState = .loading
+
+            guard let loadBlock = loadBlock else {
+                return
+            }
+            loadBlock()
+        case .loading, .loaded, .failed:
+            break
         }
-        loadBlock()
     }
 
     @objc
     public func unloadMedia() {
         AssertIsOnMainThread()
+
+        loadState = .unloaded
 
         guard let unloadBlock = unloadBlock else {
             return
