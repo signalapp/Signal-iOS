@@ -1124,6 +1124,9 @@ typedef enum : NSUInteger {
     [self autoLoadMoreIfNecessary];
 
     if (!self.viewHasEverAppeared) {
+        // Re-enable prefetching.
+        self.collectionView.prefetchingEnabled = YES;
+
         // Now that we're using a "minimal" initial load window,
         // try to increase the load window a moment after we've
         // settled into the view.
@@ -1133,9 +1136,6 @@ typedef enum : NSUInteger {
             if (!strongSelf) {
                 return;
             }
-
-            // Re-enable prefetching.
-            strongSelf.collectionView.prefetchingEnabled = YES;
 
             // Try to auto-extend the load window.
             BOOL isMainAppAndActive = CurrentAppContext().isMainAppAndActive;
