@@ -1123,6 +1123,28 @@ typedef enum : NSUInteger {
     [self updateBackButtonUnreadCount];
     [self autoLoadMoreIfNecessary];
 
+    if (!self.viewHasEverAppeared) {
+        // Now that we're using a "minimal" initial load window,
+        // try to increase the load window a moment after we've
+        // settled into the view.
+        __weak ConversationViewController *weakSelf = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(NSEC_PER_SEC / 2)), dispatch_get_main_queue(), ^{
+            ConversationViewController *strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
+
+            BOOL isMainAppAndActive = CurrentAppContext().isMainAppAndActive;
+            if (strongSelf.isUserScrolling || !strongSelf.isViewVisible || !isMainAppAndActive) {
+                return;
+            }
+            if (!strongSelf.conversationViewModel.canLoadMoreItems) {
+                return;
+            }
+            [strongSelf.conversationViewModel loadAnotherPageOfMessages];
+        });
+    }
+
     self.conversationViewModel.focusMessageIdOnOpen = nil;
 
     self.isViewCompletelyAppeared = YES;
