@@ -1166,23 +1166,23 @@ static const int kYapDatabaseRangeMinLength = 0;
     [self ensureConversationProfileState];
 
     __block BOOL hasError = NO;
+    id<ConversationViewItem> (^tryToAddViewItem)(TSInteraction *, YapDatabaseReadTransaction *) = ^(TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
+        OWSAssertDebug(interaction.uniqueId.length > 0);
+
+        id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
+        if (!viewItem) {
+            viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
+                                                                      isGroupThread:isGroupThread
+                                                                        transaction:transaction
+                                                                  conversationStyle:conversationStyle];
+        }
+        [viewItems addObject:viewItem];
+        OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
+        viewItemCache[interaction.uniqueId] = viewItem;
+        return viewItem;
+    };
+
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        id<ConversationViewItem> (^tryToAddViewItem)(TSInteraction *) = ^(TSInteraction *interaction) {
-            OWSAssertDebug(interaction.uniqueId.length > 0);
-
-            id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
-            if (!viewItem) {
-                viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
-                                                                          isGroupThread:isGroupThread
-                                                                            transaction:transaction
-                                                                      conversationStyle:conversationStyle];
-            }
-            [viewItems addObject:viewItem];
-            OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
-            viewItemCache[interaction.uniqueId] = viewItem;
-            return viewItem;
-        };
-
         NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
         NSMutableSet<NSString *> *interactionIds = [NSMutableSet new];
 
@@ -1217,7 +1217,7 @@ static const int kYapDatabaseRangeMinLength = 0;
                                                  loadedInteractions:interactions
                                                    canLoadMoreItems:canLoadMoreItems];
         if (offers && [interactionIds containsObject:offers.beforeInteractionId]) {
-            id<ConversationViewItem> offersItem = tryToAddViewItem(offers);
+            id<ConversationViewItem> offersItem = tryToAddViewItem(offers, transaction);
             if ([offersItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
                 OWSContactOffersInteraction *oldOffers = (OWSContactOffersInteraction *)offersItem.interaction;
                 BOOL didChange = (oldOffers.hasBlockOffer != offers.hasBlockOffer
@@ -1232,17 +1232,7 @@ static const int kYapDatabaseRangeMinLength = 0;
         }
 
         for (TSInteraction *interaction in interactions) {
-            tryToAddViewItem(interaction);
-        }
-
-        if (self.typingIndicatorsSender) {
-            id<ConversationViewItem> _Nullable lastViewItem = viewItems.lastObject;
-            uint64_t typingIndicatorTimestamp = (lastViewItem ? lastViewItem.interaction.timestamp + 1 : 1);
-            TSInteraction *interaction =
-                [[OWSTypingIndicatorInteraction alloc] initWithThread:self.thread
-                                                            timestamp:typingIndicatorTimestamp
-                                                          recipientId:self.typingIndicatorsSender];
-            tryToAddViewItem(interaction);
+            tryToAddViewItem(interaction, transaction);
         }
     }];
 
@@ -1251,6 +1241,18 @@ static const int kYapDatabaseRangeMinLength = 0;
     [viewItems sortUsingComparator:^NSComparisonResult(id<ConversationViewItem> left, id<ConversationViewItem> right) {
         return [left.interaction compareForSorting:right.interaction];
     }];
+
+    if (self.typingIndicatorsSender) {
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            id<ConversationViewItem> _Nullable lastViewItem = viewItems.lastObject;
+            uint64_t typingIndicatorTimestamp = (lastViewItem ? lastViewItem.interaction.timestamp + 1 : 1);
+            TSInteraction *interaction =
+            [[OWSTypingIndicatorInteraction alloc] initWithThread:self.thread
+                                                        timestamp:typingIndicatorTimestamp
+                                                      recipientId:self.typingIndicatorsSender];
+            tryToAddViewItem(interaction, transaction);
+        }];
+    }
 
     // Flag to ensure that we only increment once per launch.
     if (hasError) {
