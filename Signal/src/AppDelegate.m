@@ -1213,6 +1213,22 @@ static NSTimeInterval launchStartedAt;
     [self.messageManager startObserving];
 
     [self.udManager setup];
+
+    [self preheatDatabaseViews];
+}
+
+- (void)preheatDatabaseViews
+{
+    [self.primaryStorage.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        for (NSString *viewName in @[
+                 TSThreadDatabaseViewExtensionName,
+                 TSMessageDatabaseViewExtensionName,
+                 TSThreadOutgoingMessageDatabaseViewExtensionName,
+             ]) {
+            YapDatabaseViewTransaction *databaseView = [transaction ext:viewName];
+            OWSAssertDebug([databaseView isKindOfClass:[YapDatabaseViewTransaction class]]);
+        }
+    }];
 }
 
 - (void)registrationStateDidChange
