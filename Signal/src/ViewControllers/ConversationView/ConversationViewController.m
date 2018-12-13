@@ -702,7 +702,7 @@ typedef enum : NSUInteger {
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
 {
-    return self.conversationViewModel.viewItems;
+    return self.conversationViewModel.allViewItems;
 }
 
 - (ThreadDynamicInteractions *)dynamicInteractions
