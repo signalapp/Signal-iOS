@@ -1253,13 +1253,20 @@ static const int kYapDatabaseRangeMinLength = 0;
             tryToAddViewItem(interaction, transaction);
         }];
     }
-
     // Flag to ensure that we only increment once per launch.
     if (hasError) {
         OWSLogWarn(@"incrementing version of: %@", TSMessageDatabaseViewExtensionName);
         [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
     }
 
+    self.viewItemCache = viewItemCache;
+    self.viewItems = [self prepareViewItemsForDisplay:viewItems];
+
+    return !hasError;
+}
+
+- (NSArray<id<ConversationViewItem>> *)prepareViewItemsForDisplay:(NSArray<id<ConversationViewItem>> *)viewItems
+{
     // Update the "break" properties (shouldShowDate and unreadIndicator) of the view items.
     BOOL shouldShowDateOnNextViewItem = YES;
     uint64_t previousViewItemTimestamp = 0;
@@ -1488,16 +1495,11 @@ static const int kYapDatabaseRangeMinLength = 0;
         viewItem.senderName = senderName;
     }
 
-    self.viewItems = viewItems;
-    self.viewItemCache = viewItemCache;
-
-    return !hasError;
+    return viewItems;
 }
 
-- (void)appendUnsavedOutgoingMessage:(TSOutgoingMessage *)outgoingMessage
+- (void)appendUnsavedOutgoingTextMessage:(TSOutgoingMessage *)outgoingMessage
 {
-//    id<ConversationViewItem> viewItem = [[OutgoingUnsavedConversationViewItem alloc] initWithOutgoingMessage:outgoingMessage];
-
     __block ConversationInteractionViewItem *viewItem;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
         viewItem =
@@ -1514,7 +1516,7 @@ static const int kYapDatabaseRangeMinLength = 0;
 
     NSMutableArray<id <ConversationViewItem>> *viewItems = [self.viewItems mutableCopy];
     [viewItems addObject:viewItem];
-    self.viewItems = viewItems;
+    self.viewItems = [self prepareViewItemsForDisplay:viewItems];
     ConversationUpdate *conversationUpdate = [[ConversationUpdate alloc] initWithConversationUpdateType:ConversationUpdateType_Diff
                                                                                             updateItems:@[updateItem]
                                                                                    shouldAnimateUpdates:NO];

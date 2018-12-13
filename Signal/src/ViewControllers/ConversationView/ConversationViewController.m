@@ -3894,7 +3894,7 @@ typedef enum : NSUInteger {
                                              transaction:transaction];
         }];
     }
-    [self.conversationViewModel appendUnsavedOutgoingMessage:message];
+    [self.conversationViewModel appendUnsavedOutgoingTextMessage:message];
 
     [self messageWasSent:message];
 

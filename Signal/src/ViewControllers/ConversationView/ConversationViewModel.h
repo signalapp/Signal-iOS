@@ -102,7 +102,7 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 - (BOOL)canLoadMoreItems;
 
 - (nullable NSIndexPath *)ensureLoadWindowContainsQuotedReply:(OWSQuotedReplyModel *)quotedReply;
-- (void)appendUnsavedOutgoingMessage:(TSOutgoingMessage *)outgoingMessage;
+- (void)appendUnsavedOutgoingTextMessage:(TSOutgoingMessage *)outgoingMessage;
 
 @end
 
