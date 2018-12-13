@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIButton *blockButton;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
 @property (nonatomic) UIStackView *stackView;
+@property (nonatomic) UIStackView *buttonStackView;
 
 @end
 
@@ -65,13 +66,10 @@ NS_ASSUME_NONNULL_BEGIN
                                         @"Message shown in conversation view that offers to block an unknown user.")
                            selector:@selector(block)];
 
-    UIStackView *buttonStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.addToContactsButton,
-        self.addToProfileWhitelistButton,
-        self.blockButton,
-    ]];
+    UIStackView *buttonStackView = [[UIStackView alloc] initWithArrangedSubviews:self.buttons];
     buttonStackView.axis = UILayoutConstraintAxisVertical;
     buttonStackView.spacing = self.vSpacing;
+    self.buttonStackView = buttonStackView;
 
     self.stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.titleLabel,
@@ -121,11 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self configureFonts];
 
     self.titleLabel.textColor = Theme.secondaryColor;
-    for (UIButton *button in @[
-             self.addToContactsButton,
-             self.addToProfileWhitelistButton,
-             self.blockButton,
-         ]) {
+    for (UIButton *button in self.buttons) {
         [button setTitleColor:[UIColor ows_signalBlueColor] forState:UIControlStateNormal];
         [button setBackgroundColor:Theme.conversationButtonBackgroundColor];
     }
@@ -151,6 +145,35 @@ NS_ASSUME_NONNULL_BEGIN
                                          withInset:self.conversationStyle.fullWidthGutterLeading],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
                                          withInset:self.conversationStyle.fullWidthGutterTrailing],
+    ];
+
+    // This hack fixes a bug that I don't understand.
+    //
+    // On an iPhone 5C running iOS 10.3.3,
+    //
+    // * Alice is a contact for which we should show some but not all contact offer buttons.
+    // * Delete thread with Alice.
+    // * Send yourself a message from Alice.
+    // * Open conversation with Alice.
+    //
+    // Expected: Some (but not all) offer buttons are displayed.
+    // Observed: All offer buttons are displayed, in a cramped layout.
+    for (UIButton *button in self.buttons) {
+        [button removeFromSuperview];
+    }
+    for (UIButton *button in self.buttons) {
+        if (!button.hidden) {
+            [self.buttonStackView addArrangedSubview:button];
+        }
+    }
+}
+
+- (NSArray<UIButton *> *)buttons
+{
+    return @[
+        self.addToContactsButton,
+        self.addToProfileWhitelistButton,
+        self.blockButton,
     ];
 }
 

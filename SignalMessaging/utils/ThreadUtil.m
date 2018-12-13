@@ -336,31 +336,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(blockingManager);
     OWSAssertDebug(maxRangeSize > 0);
 
-    NSString *localNumber = [TSAccountManager localNumber];
-    OWSAssertDebug(localNumber.length > 0);
-
-    // Many OWSProfileManager methods aren't safe to call from inside a database
-    // transaction, so do this work now.
-    OWSProfileManager *profileManager = OWSProfileManager.sharedManager;
-    BOOL hasLocalProfile = [profileManager hasLocalProfile];
-    BOOL isThreadInProfileWhitelist = [profileManager isThreadInProfileWhitelist:thread];
-    BOOL hasUnwhitelistedMember = NO;
-    for (NSString *recipientId in thread.recipientIdentifiers) {
-        if (![profileManager isUserInProfileWhitelist:recipientId]) {
-            hasUnwhitelistedMember = YES;
-            break;
-        }
-    }
-
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
 
     [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        const int kMaxBlockOfferOutgoingMessageCount = 10;
-
         // Find any "dynamic" interactions and safety number changes.
         //
         // We use different views for performance reasons.
-        __block OWSContactOffersInteraction *existingContactOffers = nil;
         NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
         NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
         // We want to delete legacy and duplicate interactions.
@@ -383,16 +364,11 @@ NS_ASSUME_NONNULL_BEGIN
                               // the OWSContactOffersInteraction.
                               [interactionsToDelete addObject:object];
                           } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
-                              // Remove obsolete unread indicator interactions;
+                              // Remove obsolete unread indicator interactions.
                               [interactionsToDelete addObject:object];
                           } else if ([object isKindOfClass:[OWSContactOffersInteraction class]]) {
-                              OWSAssertDebug(!existingContactOffers);
-                              if (existingContactOffers) {
-                                  // There should never be more than one "contact offers" in
-                                  // a given thread, but if there is, discard all but one.
-                                  [interactionsToDelete addObject:existingContactOffers];
-                              }
-                              existingContactOffers = (OWSContactOffersInteraction *)object;
+                              // Remove obsolete contact offers.
+                              [interactionsToDelete addObject:object];
                           } else if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
                               [blockingSafetyNumberChanges addObject:object];
                           } else if ([object isKindOfClass:[TSErrorMessage class]]) {
@@ -427,161 +403,9 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        __block TSInteraction *firstCallOrMessage = nil;
-        [[transaction ext:TSMessageDatabaseViewExtensionName]
-            enumerateRowsInGroup:thread.uniqueId
-                      usingBlock:^(
-                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
-                          OWSAssertDebug([object isKindOfClass:[TSInteraction class]]);
-
-                          if ([object isKindOfClass:[TSIncomingMessage class]] ||
-                              [object isKindOfClass:[TSOutgoingMessage class]] ||
-                              [object isKindOfClass:[TSCall class]]) {
-                              firstCallOrMessage = object;
-                              *stop = YES;
-                          }
-                      }];
-
-        NSUInteger outgoingMessageCount =
-            [[TSDatabaseView threadOutgoingMessageDatabaseView:transaction] numberOfItemsInGroup:thread.uniqueId];
-
-        BOOL shouldHaveBlockOffer = YES;
-        BOOL shouldHaveAddToContactsOffer = YES;
-        BOOL shouldHaveAddToProfileWhitelistOffer = YES;
-
-        BOOL isContactThread = [thread isKindOfClass:[TSContactThread class]];
-        if (!isContactThread) {
-            // Only create "add to contacts" offers in 1:1 conversations.
-            shouldHaveAddToContactsOffer = NO;
-            // Only create block offers in 1:1 conversations.
-            shouldHaveBlockOffer = NO;
-
-            // MJK TODO - any conditions under which we'd make a block offer for groups?
-
-            // Only create profile whitelist offers in 1:1 conversations.
-            shouldHaveAddToProfileWhitelistOffer = NO;
-        } else {
-            NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
-
-            if ([recipientId isEqualToString:localNumber]) {
-                // Don't add self to contacts.
-                shouldHaveAddToContactsOffer = NO;
-                // Don't bother to block self.
-                shouldHaveBlockOffer = NO;
-                // Don't bother adding self to profile whitelist.
-                shouldHaveAddToProfileWhitelistOffer = NO;
-            } else {
-                if ([[blockingManager blockedPhoneNumbers] containsObject:recipientId]) {
-                    // Only create "add to contacts" offers for users which are not already blocked.
-                    shouldHaveAddToContactsOffer = NO;
-                    // Only create block offers for users which are not already blocked.
-                    shouldHaveBlockOffer = NO;
-                    // Don't create profile whitelist offers for users which are not already blocked.
-                    shouldHaveAddToProfileWhitelistOffer = NO;
-                }
-
-                if ([contactsManager hasSignalAccountForRecipientId:recipientId]) {
-                    // Only create "add to contacts" offers for non-contacts.
-                    shouldHaveAddToContactsOffer = NO;
-                    // Only create block offers for non-contacts.
-                    shouldHaveBlockOffer = NO;
-                    // Don't create profile whitelist offers for non-contacts.
-                    shouldHaveAddToProfileWhitelistOffer = NO;
-                }
-            }
-        }
-
-        if (!firstCallOrMessage) {
-            shouldHaveAddToContactsOffer = NO;
-            shouldHaveBlockOffer = NO;
-            shouldHaveAddToProfileWhitelistOffer = NO;
-        }
-
-        if (outgoingMessageCount > kMaxBlockOfferOutgoingMessageCount) {
-            // If the user has sent more than N messages, don't show a block offer.
-            shouldHaveBlockOffer = NO;
-        }
-
-        BOOL hasOutgoingBeforeIncomingInteraction = [firstCallOrMessage isKindOfClass:[TSOutgoingMessage class]];
-        if ([firstCallOrMessage isKindOfClass:[TSCall class]]) {
-            TSCall *call = (TSCall *)firstCallOrMessage;
-            hasOutgoingBeforeIncomingInteraction
-                = (call.callType == RPRecentCallTypeOutgoing || call.callType == RPRecentCallTypeOutgoingIncomplete);
-        }
-        if (hasOutgoingBeforeIncomingInteraction) {
-            // If there is an outgoing message before an incoming message
-            // the local user initiated this conversation, don't show a block offer.
-            shouldHaveBlockOffer = NO;
-        }
-
-        if (!hasLocalProfile || isThreadInProfileWhitelist) {
-            // Don't show offer if thread is local user hasn't configured their profile.
-            // Don't show offer if thread is already in profile whitelist.
-            shouldHaveAddToProfileWhitelistOffer = NO;
-        } else if (thread.isGroupThread && !hasUnwhitelistedMember) {
-            // Don't show offer in group thread if all members are already individually
-            // whitelisted.
-            shouldHaveAddToProfileWhitelistOffer = NO;
-        }
-
-        BOOL shouldHaveContactOffers
-            = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
-        if (isContactThread) {
-            TSContactThread *contactThread = (TSContactThread *)thread;
-            if (contactThread.hasDismissedOffers) {
-                shouldHaveContactOffers = NO;
-            }
-        }
-
-        // We want the offers to be the first interactions in their
-        // conversation's timeline, so we back-date them to slightly before
-        // the first message - or at an aribtrary old timestamp if the
-        // conversation has no messages.
-        uint64_t contactOffersTimestamp = [NSDate ows_millisecondTimeStamp];
-
-        // If the contact offers' properties have changed, discard the current
-        // one and create a new one.
-        if (existingContactOffers) {
-            if (existingContactOffers.hasBlockOffer != shouldHaveBlockOffer
-                || existingContactOffers.hasAddToContactsOffer != shouldHaveAddToContactsOffer
-                || existingContactOffers.hasAddToProfileWhitelistOffer != shouldHaveAddToProfileWhitelistOffer) {
-                OWSLogInfo(@"Removing stale contact offers: %@ (%llu)",
-                    existingContactOffers.uniqueId,
-                    existingContactOffers.timestampForSorting);
-                // Preserve the timestamp of the existing "contact offers" so that
-                // we replace it in the same position in the timeline.
-                contactOffersTimestamp = existingContactOffers.timestamp;
-                [existingContactOffers removeWithTransaction:transaction];
-                existingContactOffers = nil;
-            }
-        }
-
-        if (existingContactOffers && !shouldHaveContactOffers) {
-            OWSLogInfo(@"Removing contact offers: %@ (%llu)",
-                existingContactOffers.uniqueId,
-                existingContactOffers.timestampForSorting);
-            [existingContactOffers removeWithTransaction:transaction];
-        } else if (!existingContactOffers && shouldHaveContactOffers) {
-            NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
-
-            TSInteraction *offersMessage =
-                [[OWSContactOffersInteraction alloc] initContactOffersWithTimestamp:contactOffersTimestamp
-                                                                             thread:thread
-                                                                      hasBlockOffer:shouldHaveBlockOffer
-                                                              hasAddToContactsOffer:shouldHaveAddToContactsOffer
-                                                      hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
-                                                                        recipientId:recipientId];
-            [offersMessage saveWithTransaction:transaction];
-
-            OWSLogInfo(
-                @"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.timestampForSorting);
-        }
-
         [self ensureUnreadIndicator:result
                                      thread:thread
                                 transaction:transaction
-                    shouldHaveContactOffers:shouldHaveContactOffers
                                maxRangeSize:maxRangeSize
                 blockingSafetyNumberChanges:blockingSafetyNumberChanges
              nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
@@ -602,7 +426,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)ensureUnreadIndicator:(ThreadDynamicInteractions *)dynamicInteractions
                              thread:(TSThread *)thread
                         transaction:(YapDatabaseReadWriteTransaction *)transaction
-            shouldHaveContactOffers:(BOOL)shouldHaveContactOffers
                        maxRangeSize:(int)maxRangeSize
         blockingSafetyNumberChanges:(NSArray<TSInvalidIdentityKeyErrorMessage *> *)blockingSafetyNumberChanges
      nonBlockingSafetyNumberChanges:(NSArray<TSInteraction *> *)nonBlockingSafetyNumberChanges
@@ -717,9 +540,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSInteger unreadIndicatorPosition = visibleUnseenMessageCount;
-    if (shouldHaveContactOffers) {
-        unreadIndicatorPosition++;
-    }
 
     dynamicInteractions.unreadIndicator = [[OWSUnreadIndicator alloc]
             initUnreadIndicatorWithTimestamp:interactionAfterUnreadIndicator.timestampForSorting

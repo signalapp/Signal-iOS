@@ -9,6 +9,7 @@
 #import "OWSQuotedReplyModel.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalMessaging/ThreadUtil.h>
@@ -206,7 +207,19 @@ static const int kYapDatabaseRangeMinLength = 0;
     return SSKEnvironment.shared.typingIndicators;
 }
 
-#pragma mark
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
+}
+
+#pragma mark -
 
 - (void)addNotificationListeners
 {
@@ -222,6 +235,14 @@ static const int kYapDatabaseRangeMinLength = 0;
                                              selector:@selector(typingIndicatorStateDidChange:)
                                                  name:[OWSTypingIndicatorsImpl typingIndicatorStateDidChange]
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(profileWhitelistDidChange:)
+                                                 name:kNSNotificationName_ProfileWhitelistDidChange
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(blockListDidChange:)
+                                                 name:kNSNotificationName_BlockListDidChange
+                                               object:nil];
 }
 
 - (void)signalAccountsDidChange:(NSNotification *)notification
@@ -229,6 +250,30 @@ static const int kYapDatabaseRangeMinLength = 0;
     OWSAssertIsOnMainThread();
 
     [self ensureDynamicInteractions];
+}
+
+- (void)profileWhitelistDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    // If profile whitelist just changed, we may want to hide a profile whitelist offer.
+    NSString *_Nullable recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
+    if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
+        [self updateForTransientItems];
+    } else if (groupId.length > 0 && self.thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        if ([groupThread.groupModel.groupId isEqualToData:groupId]) {
+            [self updateForTransientItems];
+        }
+    }
+}
+
+- (void)blockListDidChange:(id)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self updateForTransientItems];
 }
 
 - (void)configure
@@ -868,6 +913,165 @@ static const int kYapDatabaseRangeMinLength = 0;
 
 #pragma mark - View Items
 
+- (nullable OWSContactOffersInteraction *)tryToBuildContactOffersInteraction
+{
+
+    // Many OWSProfileManager methods aren't safe to call from inside a database
+    // transaction, so do this work now.
+    //
+    // TODO: It'd be nice if these methods took a transaction.
+    BOOL hasLocalProfile = [self.profileManager hasLocalProfile];
+    BOOL isThreadInProfileWhitelist = [self.profileManager isThreadInProfileWhitelist:self.thread];
+    BOOL hasUnwhitelistedMember = NO;
+    for (NSString *recipientId in self.thread.recipientIdentifiers) {
+        if (![self.profileManager isUserInProfileWhitelist:recipientId]) {
+            hasUnwhitelistedMember = YES;
+            break;
+        }
+    }
+
+    __block OWSContactOffersInteraction *_Nullable offers = nil;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        offers = [self tryToBuildContactOffersInteractionWithTransaction:transaction
+                                                         hasLocalProfile:hasLocalProfile
+                                              isThreadInProfileWhitelist:isThreadInProfileWhitelist
+                                                  hasUnwhitelistedMember:hasUnwhitelistedMember];
+    }];
+    return offers;
+}
+
+- (nullable OWSContactOffersInteraction *)
+    tryToBuildContactOffersInteractionWithTransaction:(YapDatabaseReadTransaction *)transaction
+                                      hasLocalProfile:(BOOL)hasLocalProfile
+                           isThreadInProfileWhitelist:(BOOL)isThreadInProfileWhitelist
+                               hasUnwhitelistedMember:(BOOL)hasUnwhitelistedMember
+{
+    OWSAssertDebug(transaction);
+
+    TSThread *thread = self.thread;
+    BOOL isContactThread = [thread isKindOfClass:[TSContactThread class]];
+    if (!isContactThread) {
+        return nil;
+    }
+    TSContactThread *contactThread = (TSContactThread *)thread;
+    if (contactThread.hasDismissedOffers) {
+        return nil;
+    }
+
+    NSString *localNumber = [self.tsAccountManager localNumber];
+    OWSAssertDebug(localNumber.length > 0);
+
+    const int kMaxBlockOfferOutgoingMessageCount = 10;
+
+    __block TSInteraction *firstCallOrMessage = nil;
+    [[transaction ext:TSMessageDatabaseViewExtensionName]
+        enumerateRowsInGroup:thread.uniqueId
+                  usingBlock:^(
+                      NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+                      OWSAssertDebug([object isKindOfClass:[TSInteraction class]]);
+
+                      if ([object isKindOfClass:[TSIncomingMessage class]] ||
+                          [object isKindOfClass:[TSOutgoingMessage class]] || [object isKindOfClass:[TSCall class]]) {
+                          firstCallOrMessage = object;
+                          *stop = YES;
+                      }
+                  }];
+    if (!firstCallOrMessage) {
+        return nil;
+    }
+
+    NSUInteger outgoingMessageCount =
+        [[TSDatabaseView threadOutgoingMessageDatabaseView:transaction] numberOfItemsInGroup:thread.uniqueId];
+
+    BOOL shouldHaveBlockOffer = YES;
+    BOOL shouldHaveAddToContactsOffer = YES;
+    BOOL shouldHaveAddToProfileWhitelistOffer = YES;
+
+    NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
+
+    if ([recipientId isEqualToString:localNumber]) {
+        // Don't add self to contacts.
+        shouldHaveAddToContactsOffer = NO;
+        // Don't bother to block self.
+        shouldHaveBlockOffer = NO;
+        // Don't bother adding self to profile whitelist.
+        shouldHaveAddToProfileWhitelistOffer = NO;
+    } else {
+        if ([[self.blockingManager blockedPhoneNumbers] containsObject:recipientId]) {
+            // Only create "add to contacts" offers for users which are not already blocked.
+            shouldHaveAddToContactsOffer = NO;
+            // Only create block offers for users which are not already blocked.
+            shouldHaveBlockOffer = NO;
+            // Don't create profile whitelist offers for users which are not already blocked.
+            shouldHaveAddToProfileWhitelistOffer = NO;
+        }
+
+        if ([self.contactsManager hasSignalAccountForRecipientId:recipientId]) {
+            // Only create "add to contacts" offers for non-contacts.
+            shouldHaveAddToContactsOffer = NO;
+            // Only create block offers for non-contacts.
+            shouldHaveBlockOffer = NO;
+            // Don't create profile whitelist offers for non-contacts.
+            shouldHaveAddToProfileWhitelistOffer = NO;
+        }
+    }
+
+    if (outgoingMessageCount > kMaxBlockOfferOutgoingMessageCount) {
+        // If the user has sent more than N messages, don't show a block offer.
+        shouldHaveBlockOffer = NO;
+    }
+
+    BOOL hasOutgoingBeforeIncomingInteraction = [firstCallOrMessage isKindOfClass:[TSOutgoingMessage class]];
+    if ([firstCallOrMessage isKindOfClass:[TSCall class]]) {
+        TSCall *call = (TSCall *)firstCallOrMessage;
+        hasOutgoingBeforeIncomingInteraction
+            = (call.callType == RPRecentCallTypeOutgoing || call.callType == RPRecentCallTypeOutgoingIncomplete);
+    }
+    if (hasOutgoingBeforeIncomingInteraction) {
+        // If there is an outgoing message before an incoming message
+        // the local user initiated this conversation, don't show a block offer.
+        shouldHaveBlockOffer = NO;
+    }
+
+    if (!hasLocalProfile || isThreadInProfileWhitelist) {
+        // Don't show offer if thread is local user hasn't configured their profile.
+        // Don't show offer if thread is already in profile whitelist.
+        shouldHaveAddToProfileWhitelistOffer = NO;
+    } else if (thread.isGroupThread && !hasUnwhitelistedMember) {
+        // Don't show offer in group thread if all members are already individually
+        // whitelisted.
+        shouldHaveAddToProfileWhitelistOffer = NO;
+    }
+
+    BOOL shouldHaveContactOffers
+        = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
+    if (!shouldHaveContactOffers) {
+        return nil;
+    }
+
+    // We want the offers to be the first interactions in their
+    // conversation's timeline, so we back-date them to slightly before
+    // the first message - or at an arbitrary old timestamp if the
+    // conversation has no messages.
+    uint64_t contactOffersTimestamp = firstCallOrMessage.timestamp - 1;
+    // This view model uses the "unique id" to identify this interaction,
+    // but the interaction is never saved in the database so the specific
+    // value doesn't matter.
+    NSString *uniqueId = @"contact-offers";
+    OWSContactOffersInteraction *offersMessage =
+        [[OWSContactOffersInteraction alloc] initInteractionWithUniqueId:uniqueId
+                                                               timestamp:contactOffersTimestamp
+                                                                  thread:thread
+                                                           hasBlockOffer:shouldHaveBlockOffer
+                                                   hasAddToContactsOffer:shouldHaveAddToContactsOffer
+                                           hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
+                                                             recipientId:recipientId
+                                                     beforeInteractionId:firstCallOrMessage.uniqueId];
+
+    OWSLogInfo(@"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.timestampForSorting);
+    return offersMessage;
+}
+
 // This is a key method.  It builds or rebuilds the list of
 // cell view models.
 //
@@ -881,8 +1085,29 @@ static const int kYapDatabaseRangeMinLength = 0;
     BOOL isGroupThread = self.thread.isGroupThread;
     ConversationStyle *conversationStyle = self.delegate.conversationStyle;
 
+    OWSContactOffersInteraction *_Nullable offers = [self tryToBuildContactOffersInteraction];
+
     __block BOOL hasError = NO;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        id<ConversationViewItem> (^tryToAddViewItem)(TSInteraction *) = ^(TSInteraction *interaction) {
+            OWSAssertDebug(interaction.uniqueId.length > 0);
+
+            id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
+            if (!viewItem) {
+                viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
+                                                                          isGroupThread:isGroupThread
+                                                                            transaction:transaction
+                                                                      conversationStyle:conversationStyle];
+            }
+            [viewItems addObject:viewItem];
+            OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
+            viewItemCache[interaction.uniqueId] = viewItem;
+            return viewItem;
+        };
+
+        NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
+        NSMutableSet<NSString *> *interactionIds = [NSMutableSet new];
+
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
         OWSAssertDebug(viewTransaction);
         for (NSUInteger row = 0; row < count; row++) {
@@ -904,17 +1129,27 @@ static const int kYapDatabaseRangeMinLength = 0;
                 hasError = YES;
                 continue;
             }
+            [interactions addObject:interaction];
+            [interactionIds addObject:interaction.uniqueId];
+        }
 
-            id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
-            if (!viewItem) {
-                viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
-                                                                          isGroupThread:isGroupThread
-                                                                            transaction:transaction
-                                                                      conversationStyle:conversationStyle];
+        if (offers && [interactionIds containsObject:offers.beforeInteractionId]) {
+            id<ConversationViewItem> offersItem = tryToAddViewItem(offers);
+            if ([offersItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
+                OWSContactOffersInteraction *oldOffers = (OWSContactOffersInteraction *)offersItem.interaction;
+                BOOL didChange = (oldOffers.hasBlockOffer != offers.hasBlockOffer
+                    || oldOffers.hasAddToContactsOffer != offers.hasAddToContactsOffer
+                    || oldOffers.hasAddToProfileWhitelistOffer != offers.hasAddToProfileWhitelistOffer);
+                if (didChange) {
+                    [offersItem clearCachedLayoutState];
+                }
+            } else {
+                OWSFailDebug(@"Unexpected offers item: %@", offersItem.interaction.class);
             }
-            [viewItems addObject:viewItem];
-            OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
-            viewItemCache[interaction.uniqueId] = viewItem;
+        }
+
+        for (TSInteraction *interaction in interactions) {
+            tryToAddViewItem(interaction);
         }
 
         if (self.typingIndicatorsSender) {
@@ -924,16 +1159,7 @@ static const int kYapDatabaseRangeMinLength = 0;
                 [[OWSTypingIndicatorInteraction alloc] initWithThread:self.thread
                                                             timestamp:typingIndicatorTimestamp
                                                           recipientId:self.typingIndicatorsSender];
-            id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
-            if (!viewItem) {
-                viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
-                                                                          isGroupThread:isGroupThread
-                                                                            transaction:transaction
-                                                                      conversationStyle:conversationStyle];
-            }
-            [viewItems addObject:viewItem];
-            OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
-            viewItemCache[interaction.uniqueId] = viewItem;
+            tryToAddViewItem(interaction);
         }
     }];
 
