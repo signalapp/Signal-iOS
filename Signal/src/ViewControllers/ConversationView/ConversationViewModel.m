@@ -382,7 +382,9 @@ static const int kYapDatabaseRangeMinLength = 0;
 {
     BOOL hasEarlierUnseenMessages = self.dynamicInteractions.unreadIndicator.hasMoreUnseenMessages;
 
-    [self loadNMoreMessages:kYapDatabasePageSize];
+    // Now that we're using a "minimal" page size, we should
+    // increase the load window by 2 pages at a time.
+    [self loadNMoreMessages:kYapDatabasePageSize * 2];
 
     // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
     //

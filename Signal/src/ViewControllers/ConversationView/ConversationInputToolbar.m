@@ -164,7 +164,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self addSubview:self.contentRows];
     [self.contentRows autoPinEdgesToSuperviewEdges];
 
-    [self ensureShouldShowVoiceMemoButtonAnimated:NO];
+    [self ensureShouldShowVoiceMemoButtonAnimated:NO doLayout:NO];
 }
 
 - (void)updateFontSizes
@@ -193,7 +193,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     self.inputTextView.text = value;
 
-    [self ensureShouldShowVoiceMemoButtonAnimated:isAnimated];
+    [self ensureShouldShowVoiceMemoButtonAnimated:isAnimated doLayout:YES];
     [self ensureTextViewHeight];
 }
 
@@ -289,7 +289,7 @@ const CGFloat kMaxTextViewHeight = 98;
     return self.inputTextView.isFirstResponder;
 }
 
-- (void)ensureShouldShowVoiceMemoButtonAnimated:(BOOL)isAnimated
+- (void)ensureShouldShowVoiceMemoButtonAnimated:(BOOL)isAnimated doLayout:(BOOL)doLayout
 {
     void (^updateBlock)(void) = ^{
         if (self.inputTextView.trimmedText.length > 0) {
@@ -309,7 +309,9 @@ const CGFloat kMaxTextViewHeight = 98;
                 self.sendButton.hidden = YES;
             }
         }
-        [self layoutIfNeeded];
+        if (doLayout) {
+            [self layoutIfNeeded];
+        }
     };
 
     if (isAnimated) {
@@ -598,7 +600,7 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)textViewDidChange:(UITextView *)textView
 {
     OWSAssertDebug(self.inputToolbarDelegate);
-    [self ensureShouldShowVoiceMemoButtonAnimated:YES];
+    [self ensureShouldShowVoiceMemoButtonAnimated:YES doLayout:YES];
     [self updateHeightWithTextView:textView];
 }
 
