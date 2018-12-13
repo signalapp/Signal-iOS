@@ -1134,6 +1134,10 @@ typedef enum : NSUInteger {
                 return;
             }
 
+            // Re-enable prefetching.
+            strongSelf.collectionView.prefetchingEnabled = YES;
+
+            // Try to auto-extend the load window.
             BOOL isMainAppAndActive = CurrentAppContext().isMainAppAndActive;
             if (strongSelf.isUserScrolling || !strongSelf.isViewVisible || !isMainAppAndActive) {
                 return;
