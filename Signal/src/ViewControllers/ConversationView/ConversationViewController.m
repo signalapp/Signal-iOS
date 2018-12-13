@@ -553,6 +553,7 @@ typedef enum : NSUInteger {
     self.collectionView.showsVerticalScrollIndicator = YES;
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
+    self.collectionView.prefetchingEnabled = NO;
     [self.view addSubview:self.collectionView];
     [self.collectionView autoPinEdgesToSuperviewEdges];
 
