@@ -343,37 +343,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
 
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         // Find any "dynamic" interactions and safety number changes.
         //
         // We use different views for performance reasons.
         NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
         NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
-        // We want to delete legacy and duplicate interactions.
-        NSMutableArray<TSInteraction *> *interactionsToDelete = [NSMutableArray new];
         [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction]
             enumerateKeysAndObjectsInGroup:thread.uniqueId
                                 usingBlock:^(
                                     NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                    if ([object isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]) {
-                                        // Delete this legacy interactions, which has been superseded by
-                                        // the OWSContactOffersInteraction.
-                                        [interactionsToDelete addObject:object];
-                                    } else if ([object isKindOfClass:[OWSAddToContactsOfferMessage class]]) {
-                                        // Delete this legacy interactions, which has been superseded by
-                                        // the OWSContactOffersInteraction.
-                                        [interactionsToDelete addObject:object];
-                                    } else if ([object isKindOfClass:[OWSAddToProfileWhitelistOfferMessage class]]) {
-                                        // Delete this legacy interactions, which has been superseded by
-                                        // the OWSContactOffersInteraction.
-                                        [interactionsToDelete addObject:object];
-                                    } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
-                                        // Remove obsolete unread indicator interactions.
-                                        [interactionsToDelete addObject:object];
-                                    } else if ([object isKindOfClass:[OWSContactOffersInteraction class]]) {
-                                        // Remove obsolete contact offers.
-                                        [interactionsToDelete addObject:object];
-                                    } else if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
+                                    if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
                                         [blockingSafetyNumberChanges addObject:object];
                                     } else if ([object isKindOfClass:[TSErrorMessage class]]) {
                                         TSErrorMessage *errorMessage = (TSErrorMessage *)object;
@@ -384,11 +364,6 @@ NS_ASSUME_NONNULL_BEGIN
                                         OWSFailDebug(@"Unexpected dynamic interaction type: %@", [object class]);
                                     }
                                 }];
-
-        for (TSInteraction *interaction in interactionsToDelete) {
-            OWSLogDebug(@"Cleaning up interaction: %@", [interaction class]);
-            [interaction removeWithTransaction:transaction];
-        }
 
         // Determine if there are "unread" messages in this conversation.
         // If we've been passed a firstUnseenInteractionTimestampParameter,
@@ -430,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)ensureUnreadIndicator:(ThreadDynamicInteractions *)dynamicInteractions
                              thread:(TSThread *)thread
-                        transaction:(YapDatabaseReadWriteTransaction *)transaction
+                        transaction:(YapDatabaseReadTransaction *)transaction
                        maxRangeSize:(int)maxRangeSize
         blockingSafetyNumberChanges:(NSArray<TSInvalidIdentityKeyErrorMessage *> *)blockingSafetyNumberChanges
      nonBlockingSafetyNumberChanges:(NSArray<TSInteraction *> *)nonBlockingSafetyNumberChanges
@@ -556,7 +531,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (nullable NSNumber *)focusMessagePositionForThread:(TSThread *)thread
-                                         transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                         transaction:(YapDatabaseReadTransaction *)transaction
                                       focusMessageId:(NSString *)focusMessageId
 {
     OWSAssertDebug(thread);
