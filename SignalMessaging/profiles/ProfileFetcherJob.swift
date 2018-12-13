@@ -100,7 +100,7 @@ public class ProfileFetcherJob: NSObject {
 
         DispatchQueue.main.async {
             for recipientId in recipientIds {
-                self.updateProfile(recipientId: recipientId)
+                self.getAndUpdateProfile(recipientId: recipientId)
             }
         }
     }
@@ -109,8 +109,8 @@ public class ProfileFetcherJob: NSObject {
         case throttled(lastTimeInterval: TimeInterval)
     }
 
-    public func updateProfile(recipientId: String, remainingRetries: Int = 3) {
-        self.getProfile(recipientId: recipientId).map { profile in
+    public func getAndUpdateProfile(recipientId: String, remainingRetries: Int = 3) {
+        self.getProfile(recipientId: recipientId).map(on: DispatchQueue.global()) { profile in
             self.updateProfile(signalServiceProfile: profile)
         }.catch { error in
             switch error {
@@ -120,7 +120,7 @@ public class ProfileFetcherJob: NSObject {
                 Logger.warn("skipping updateProfile retry. Invalid profile for: \(recipientId) error: \(error)")
             default:
                 if remainingRetries > 0 {
-                    self.updateProfile(recipientId: recipientId, remainingRetries: remainingRetries - 1)
+                    self.getAndUpdateProfile(recipientId: recipientId, remainingRetries: remainingRetries - 1)
                 } else {
                     Logger.error("failed to get profile with error: \(error)")
                 }
@@ -153,7 +153,7 @@ public class ProfileFetcherJob: NSObject {
             udAccess = udManager.udAccess(forRecipientId: recipientId,
                                           requireSyncAccess: false)
         }
-        
+
         return requestProfile(recipientId: recipientId,
                               udAccess: udAccess,
                               canFailoverUDAuth: true)
@@ -175,7 +175,7 @@ public class ProfileFetcherJob: NSObject {
            udAccess: udAccess,
            canFailoverUDAuth: canFailoverUDAuth)
         return requestMaker.makeRequest()
-            .map { (result: RequestMakerResult) -> SignalServiceProfile in
+            .map(on: DispatchQueue.global()) { (result: RequestMakerResult) -> SignalServiceProfile in
                 try SignalServiceProfile(recipientId: recipientId, responseObject: result.responseObject)
         }
     }
