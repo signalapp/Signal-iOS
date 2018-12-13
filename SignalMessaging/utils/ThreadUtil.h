@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)text
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                  transaction:(YapDatabaseReadTransaction *)transaction;
 
 + (TSOutgoingMessage *)enqueueMessageWithAttachment:(SignalAttachment *)attachment
                                            inThread:(TSThread *)thread

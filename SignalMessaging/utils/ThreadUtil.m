@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)text
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                  transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId transaction:transaction];
@@ -82,9 +82,13 @@ NS_ASSUME_NONNULL_BEGIN
                                   expiresInSeconds:expiresInSeconds
                                      quotedMessage:[quotedReplyModel buildQuotedMessageForSending]];
 
-    [message saveWithTransaction:transaction];
-
-    [self.messageSenderJobQueue addMessage:message transaction:transaction];
+    [BenchManager benchWithTitle:@"Saving outgoing message" block:^{
+        // To avoid blocking the send flow, we disapatch an async write from within this read transaction
+        [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull writeTransaction) {
+            [message saveWithTransaction:writeTransaction];
+            [self.messageSenderJobQueue addMessage:message transaction:writeTransaction];
+        }];
+    }];
 
     return message;
 }

@@ -12,6 +12,7 @@
 #import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSUnreadIndicator.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
@@ -1489,6 +1490,33 @@ static const int kYapDatabaseRangeMinLength = 0;
     self.viewItemCache = viewItemCache;
 
     return !hasError;
+}
+
+- (void)appendUnsavedOutgoingMessage:(TSOutgoingMessage *)outgoingMessage
+{
+//    id<ConversationViewItem> viewItem = [[OutgoingUnsavedConversationViewItem alloc] initWithOutgoingMessage:outgoingMessage];
+
+    __block ConversationInteractionViewItem *viewItem;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        viewItem =
+            [[ConversationInteractionViewItem alloc] initWithInteraction:outgoingMessage
+                                                       isGroupThread:self.thread.isGroupThread
+                                                         transaction:transaction
+                                                   conversationStyle:self.delegate.conversationStyle];
+    }];
+
+    ConversationUpdateItem *updateItem = [[ConversationUpdateItem alloc] initWithUpdateItemType:ConversationUpdateItemType_Insert
+                                                                                       oldIndex:0
+                                                                                       newIndex:self.viewItems.count
+                                                                                       viewItem:viewItem];
+
+    NSMutableArray<id <ConversationViewItem>> *viewItems = [self.viewItems mutableCopy];
+    [viewItems addObject:viewItem];
+    self.viewItems = viewItems;
+    ConversationUpdate *conversationUpdate = [[ConversationUpdate alloc] initWithConversationUpdateType:ConversationUpdateType_Diff
+                                                                                            updateItems:@[updateItem]
+                                                                                   shouldAnimateUpdates:NO];
+    [self.delegate conversationViewModelDidUpdate:conversationUpdate];
 }
 
 // Whenever an interaction is modified, we need to reload it from the DB
