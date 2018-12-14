@@ -38,7 +38,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     @objc(addMessage:transaction:)
     public func add(message: TSOutgoingMessage, transaction: YapDatabaseReadWriteTransaction) {
-        message.save(with: transaction)
         self.add(message: message, removeMessageAfterSending: false, transaction: transaction)
     }
 

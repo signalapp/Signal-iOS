@@ -24,6 +24,7 @@
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
+#import <YapDatabase/YapDatabaseViewChangePrivate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -154,7 +155,7 @@ static const int kYapDatabaseRangeMinLength = 0;
 // * If we do the third step, we must call resetContentAndLayout afterward.
 @property (nonatomic) YapDatabaseViewMappings *messageMappings;
 
-@property (nonatomic) NSArray<id<ConversationViewItem>> *allViewItems;
+@property (nonatomic) NSArray<id<ConversationViewItem>> *viewItems;
 @property (nonatomic) NSMutableDictionary<NSString *, id<ConversationViewItem>> *viewItemCache;
 
 @property (nonatomic) NSUInteger lastRangeLength;
@@ -165,7 +166,9 @@ static const int kYapDatabaseRangeMinLength = 0;
 
 @property (nonatomic, nullable) ConversationProfileState *conversationProfileState;
 @property (nonatomic) BOOL hasTooManyOutgoingMessagesToBlockCached;
+
 @property (nonatomic) NSArray<id<ConversationViewItem>> *persistedViewItems;
+@property (nonatomic) NSArray<TSOutgoingMessage *> *unsavedOutgoingMessages;
 
 @end
 
@@ -187,6 +190,8 @@ static const int kYapDatabaseRangeMinLength = 0;
 
     _thread = thread;
     _delegate = delegate;
+    _persistedViewItems = @[];
+    _unsavedOutgoingMessages = @[];
     self.focusMessageIdOnOpen = focusMessageIdOnOpen;
 
     [self configure];
@@ -490,7 +495,7 @@ static const int kYapDatabaseRangeMinLength = 0;
 
 - (nullable id<ConversationViewItem>)viewItemForUnreadMessagesIndicator
 {
-    for (id<ConversationViewItem> viewItem in self.allViewItems) {
+    for (id<ConversationViewItem> viewItem in self.viewItems) {
         if (viewItem.unreadIndicator) {
             return viewItem;
         }
@@ -596,8 +601,38 @@ static const int kYapDatabaseRangeMinLength = 0;
         return [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate];
     }
 
+    for (TSOutgoingMessage *unsavedOutgoingMessage in self.unsavedOutgoingMessages) {
+        NSUInteger index = [rowChanges indexOfObjectPassingTest:^BOOL(
+            YapDatabaseViewRowChange *_Nonnull rowChange, NSUInteger idx, BOOL *_Nonnull stop) {
+            return [rowChange.collectionKey.key isEqualToString:unsavedOutgoingMessage.uniqueId];
+        }];
+
+        if (index != NSNotFound) {
+            // Replace the "Insert" RowChange to be an "Update" RowChange.
+            YapDatabaseViewRowChange *rowChange = rowChanges[index];
+            OWSAssertDebug(rowChange);
+
+            OWSLogVerbose(@"unsaved item has since been saved. collection key: %@", rowChange.collectionKey.key);
+
+            YapDatabaseViewRowChange *update =
+                [YapDatabaseViewRowChange updateCollectionKey:rowChange.collectionKey
+                                                      inGroup:rowChange.originalGroup
+                                                      atIndex:rowChange.finalIndex
+                                                  withChanges:YapDatabaseViewChangedObject];
+
+            NSMutableArray<YapDatabaseViewRowChange *> *mutableRowChanges = [rowChanges mutableCopy];
+            mutableRowChanges[index] = update;
+            rowChanges = [mutableRowChanges copy];
+
+            // Remove the unsavedOutgoingViewItem since it now exists as a persistedViewItem
+            NSMutableArray<TSOutgoingMessage *> *unsavedOutgoingMessages = [self.unsavedOutgoingMessages mutableCopy];
+            [unsavedOutgoingMessages removeObject:unsavedOutgoingMessage];
+            self.unsavedOutgoingMessages = [unsavedOutgoingMessages copy];
+        }
+    }
+
     NSMutableArray<NSString *> *oldItemIdList = [NSMutableArray new];
-    for (id<ConversationViewItem> viewItem in self.allViewItems) {
+    for (id<ConversationViewItem> viewItem in self.viewItems) {
         [oldItemIdList addObject:viewItem.itemId];
     }
 
@@ -615,7 +650,7 @@ static const int kYapDatabaseRangeMinLength = 0;
                         [self reloadInteractionForViewItem:viewItem];
                         [updatedItemSet addObject:viewItem.itemId];
                     } else {
-                        OWSLogError(@"Update is missing view item");
+                        OWSFailDebug(@"Update is missing view item");
                         hasMalformedRowChange = YES;
                     }
                 } else {
@@ -660,7 +695,7 @@ static const int kYapDatabaseRangeMinLength = 0;
         return;
     }
 
-    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.allViewItems.count);
+    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewItems.count);
 
     [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:updatedItemSet];
 }
@@ -674,7 +709,7 @@ static const int kYapDatabaseRangeMinLength = 0;
     OWSLogVerbose(@"");
 
     NSMutableArray<NSString *> *oldItemIdList = [NSMutableArray new];
-    for (id<ConversationViewItem> viewItem in self.allViewItems) {
+    for (id<ConversationViewItem> viewItem in self.viewItems) {
         [oldItemIdList addObject:viewItem.itemId];
     }
 
@@ -686,7 +721,7 @@ static const int kYapDatabaseRangeMinLength = 0;
         return;
     }
 
-    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.allViewItems.count);
+    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewItems.count);
 
     [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:[NSSet set]];
 }
@@ -711,7 +746,7 @@ static const int kYapDatabaseRangeMinLength = 0;
 
     NSMutableArray<NSString *> *newItemIdList = [NSMutableArray new];
     NSMutableDictionary<NSString *, id<ConversationViewItem>> *newViewItemMap = [NSMutableDictionary new];
-    for (id<ConversationViewItem> viewItem in self.allViewItems) {
+    for (id<ConversationViewItem> viewItem in self.viewItems) {
         [newItemIdList addObject:viewItem.itemId];
         newViewItemMap[viewItem.itemId] = viewItem;
     }
@@ -1151,32 +1186,6 @@ static const int kYapDatabaseRangeMinLength = 0;
     return offersMessage;
 }
 
-
-- (id<ConversationViewItem>)addViewItemWithInteraction:(TSInteraction *)interaction
-                                     conversationStyle:(ConversationStyle *)conversationStyle
-                                         isGroupThread:(BOOL)isGroupThread
-                                           transaction:(YapDatabaseReadTransaction *)transaction
-                                         viewItemCache:
-                                             (NSMutableDictionary<NSString *, id<ConversationViewItem>> *)viewItemCache
-                                           toViewItems:(NSMutableArray<id<ConversationViewItem>> *)viewItems
-{
-    OWSAssertDebug(interaction.uniqueId.length > 0);
-
-    id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
-    if (!viewItem) {
-        viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
-                                                                  isGroupThread:isGroupThread
-                                                                    transaction:transaction
-                                                              conversationStyle:conversationStyle];
-    }
-    [viewItems addObject:viewItem];
-    OWSAssertDebug(
-        !viewItemCache[interaction.uniqueId] || [interaction isKindOfClass:[OWSTypingIndicatorInteraction class]]);
-    viewItemCache[interaction.uniqueId] = viewItem;
-
-    return viewItem;
-}
-
 // This is a key method.  It builds or rebuilds the list of
 // cell view models.
 //
@@ -1195,12 +1204,20 @@ static const int kYapDatabaseRangeMinLength = 0;
     __block BOOL hasError = NO;
     id<ConversationViewItem> (^tryToAddViewItem)(TSInteraction *, YapDatabaseReadTransaction *)
         = ^(TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
-              return [self addViewItemWithInteraction:interaction
-                                    conversationStyle:conversationStyle
-                                        isGroupThread:isGroupThread
-                                          transaction:transaction
-                                        viewItemCache:viewItemCache
-                                          toViewItems:viewItems];
+              OWSAssertDebug(interaction.uniqueId.length > 0);
+
+              id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
+              if (!viewItem) {
+                  viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
+                                                                            isGroupThread:isGroupThread
+                                                                              transaction:transaction
+                                                                        conversationStyle:conversationStyle];
+              }
+              [viewItems addObject:viewItem];
+              OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
+              viewItemCache[interaction.uniqueId] = viewItem;
+
+              return viewItem;
           };
 
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1263,41 +1280,29 @@ static const int kYapDatabaseRangeMinLength = 0;
         return [left.interaction compareForSorting:right.interaction];
     }];
 
+    if (self.unsavedOutgoingMessages.count > 0) {
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+            for (TSOutgoingMessage *outgoingMessage in self.unsavedOutgoingMessages) {
+                tryToAddViewItem(outgoingMessage, transaction);
+            }
+        }];
+    }
+
+    if (self.typingIndicatorsSender) {
+        OWSTypingIndicatorInteraction *typingIndicatorInteraction =
+            [[OWSTypingIndicatorInteraction alloc] initWithThread:self.thread
+                                                        timestamp:[NSDate ows_millisecondTimeStamp]
+                                                      recipientId:self.typingIndicatorsSender];
+
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+            tryToAddViewItem(typingIndicatorInteraction, transaction);
+        }];
+    }
+
     // Flag to ensure that we only increment once per launch.
     if (hasError) {
         OWSLogWarn(@"incrementing version of: %@", TSMessageDatabaseViewExtensionName);
         [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
-    }
-
-    self.viewItemCache = viewItemCache;
-    self.persistedViewItems = [viewItems copy];
-    self.allViewItems = [self prepareViewItemsForDisplay:viewItems];
-
-    return !hasError;
-}
-
-- (NSArray<id<ConversationViewItem>> *)prepareViewItemsForDisplay:(NSArray<id<ConversationViewItem>> *)viewItemsArg
-{
-    NSArray<id<ConversationViewItem>> *viewItems = viewItemsArg;
-    if (self.typingIndicatorsSender) {
-        NSMutableArray<id<ConversationViewItem>> *mutableViewItems = [viewItems mutableCopy];
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            id<ConversationViewItem> _Nullable lastViewItem = viewItems.lastObject;
-            uint64_t typingIndicatorTimestamp = (lastViewItem ? lastViewItem.interaction.timestamp + 1 : 1);
-            TSInteraction *interaction =
-                [[OWSTypingIndicatorInteraction alloc] initWithThread:self.thread
-                                                            timestamp:typingIndicatorTimestamp
-                                                          recipientId:self.typingIndicatorsSender];
-
-            [self addViewItemWithInteraction:interaction
-                           conversationStyle:self.delegate.conversationStyle
-                               isGroupThread:self.thread.isGroupThread
-                                 transaction:transaction
-                               viewItemCache:self.viewItemCache
-                                 toViewItems:mutableViewItems];
-
-        }];
-        viewItems = [mutableViewItems copy];
     }
 
     // Update the "break" properties (shouldShowDate and unreadIndicator) of the view items.
@@ -1528,7 +1533,10 @@ static const int kYapDatabaseRangeMinLength = 0;
         viewItem.senderName = senderName;
     }
 
-    return viewItems;
+    self.viewItems = viewItems;
+    self.viewItemCache = viewItemCache;
+
+    return !hasError;
 }
 
 - (void)appendUnsavedOutgoingTextMessage:(TSOutgoingMessage *)outgoingMessage
@@ -1538,28 +1546,11 @@ static const int kYapDatabaseRangeMinLength = 0;
     OWSAssertDebug(outgoingMessage.attachmentIds.count == 0);
     OWSAssertDebug(outgoingMessage.contactShare == nil);
 
-    __block ConversationInteractionViewItem *viewItem;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-        viewItem =
-            [[ConversationInteractionViewItem alloc] initWithInteraction:outgoingMessage
-                                                       isGroupThread:self.thread.isGroupThread
-                                                         transaction:transaction
-                                                   conversationStyle:self.delegate.conversationStyle];
-    }];
+    NSMutableArray<TSOutgoingMessage *> *unsavedOutgoingMessages = [self.unsavedOutgoingMessages mutableCopy];
+    [unsavedOutgoingMessages addObject:outgoingMessage];
+    self.unsavedOutgoingMessages = unsavedOutgoingMessages;
 
-    ConversationUpdateItem *updateItem =
-        [[ConversationUpdateItem alloc] initWithUpdateItemType:ConversationUpdateItemType_Insert
-                                                      oldIndex:0
-                                                      newIndex:self.persistedViewItems.count
-                                                      viewItem:viewItem];
-
-    NSMutableArray<id<ConversationViewItem>> *viewItems = [self.persistedViewItems mutableCopy];
-    [viewItems addObject:viewItem];
-    self.allViewItems = [self prepareViewItemsForDisplay:viewItems];
-    ConversationUpdate *conversationUpdate = [[ConversationUpdate alloc] initWithConversationUpdateType:ConversationUpdateType_Diff
-                                                                                            updateItems:@[updateItem]
-                                                                                   shouldAnimateUpdates:NO];
-    [self.delegate conversationViewModelDidUpdate:conversationUpdate];
+    [self updateForTransientItems];
 }
 
 // Whenever an interaction is modified, we need to reload it from the DB
@@ -1705,7 +1696,7 @@ static const int kYapDatabaseRangeMinLength = 0;
         OWSFailDebug(@"Could not locate view item for quoted reply.");
         return nil;
     }
-    NSUInteger viewItemIndex = [self.allViewItems indexOfObject:viewItem];
+    NSUInteger viewItemIndex = [self.viewItems indexOfObject:viewItem];
     if (viewItemIndex == NSNotFound) {
         OWSFailDebug(@"Could not locate view item index for quoted reply.");
         return nil;
@@ -1757,7 +1748,7 @@ static const int kYapDatabaseRangeMinLength = 0;
 
     // Update the view items if necessary.
     // We don't have to do this if they haven't been configured yet.
-    if (didChange && self.allViewItems != nil) {
+    if (didChange && self.viewItems != nil) {
         [self updateForTransientItems];
     }
 }

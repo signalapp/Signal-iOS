@@ -82,12 +82,13 @@ NS_ASSUME_NONNULL_BEGIN
                                   expiresInSeconds:expiresInSeconds
                                      quotedMessage:[quotedReplyModel buildQuotedMessageForSending]];
 
-    [BenchManager benchWithTitle:@"Saving outgoing message" block:^{
+    [BenchManager benchAsyncWithTitle:@"Saving outgoing message" block:^(void (^benchmarkCompletion)(void)) {
         // To avoid blocking the send flow, we disapatch an async write from within this read transaction
         [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull writeTransaction) {
             [message saveWithTransaction:writeTransaction];
             [self.messageSenderJobQueue addMessage:message transaction:writeTransaction];
-        }];
+        }
+                                   completionBlock:benchmarkCompletion];
     }];
 
     return message;

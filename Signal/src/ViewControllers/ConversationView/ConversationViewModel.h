@@ -80,7 +80,7 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 
 @interface ConversationViewModel : NSObject
 
-@property (nonatomic, readonly) NSArray<id<ConversationViewItem>> *allViewItems;
+@property (nonatomic, readonly) NSArray<id<ConversationViewItem>> *viewItems;
 @property (nonatomic, nullable) NSString *focusMessageIdOnOpen;
 @property (nonatomic, readonly, nullable) ThreadDynamicInteractions *dynamicInteractions;
 
