@@ -894,6 +894,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             let imageMediaView = self.mediaMessageView.contentView {
             let imageEditorView = ImageEditorView(model: imageEditorModel)
             imageEditorView.addRedBorder()
+            imageMediaView.isUserInteractionEnabled = true
             imageMediaView.addSubview(imageEditorView)
             imageEditorView.autoPinEdgesToSuperviewEdges()
             self.imageEditorView = imageEditorView

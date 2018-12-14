@@ -73,7 +73,7 @@ public class ImageEditorStrokeItem: ImageEditorItem {
     public let unitSamples: [StrokeSample]
 
     // Expressed as a "Unit" value as a fraction of
-    // max(width, height) of the source image.
+    // min(width, height) of the destination viewport.
     @objc
     public let unitStrokeWidth: CGFloat
 
@@ -86,6 +86,17 @@ public class ImageEditorStrokeItem: ImageEditorItem {
         self.unitStrokeWidth = unitStrokeWidth
 
         super.init(itemType: .stroke)
+    }
+
+    @objc
+    public class func defaultUnitStrokeWidth() -> CGFloat {
+        return 0.05
+    }
+
+    @objc
+    public class func strokeWidth(forUnitStrokeWidth unitStrokeWidth: CGFloat,
+                                  dstSize: CGSize) -> CGFloat {
+        return CGFloatClamp01(unitStrokeWidth) * min(dstSize.width, dstSize.height)
     }
 }
 
@@ -220,7 +231,17 @@ private class ImageEditorOperation: NSObject {
 // MARK: -
 
 @objc
+public protocol ImageEditorModelDelegate: class {
+    func imageEditorModelDidChange()
+}
+
+// MARK: -
+
+@objc
 public class ImageEditorModel: NSObject {
+    @objc
+    public weak var delegate: ImageEditorModelDelegate?
+
     @objc
     public let srcImagePath: String
 
@@ -293,6 +314,8 @@ public class ImageEditorModel: NSObject {
         redoStack.append(redoOperation)
 
         self.contents = undoOperation.contents
+
+        delegate?.imageEditorModelDidChange()
     }
 
     @objc
@@ -306,6 +329,8 @@ public class ImageEditorModel: NSObject {
         undoStack.append(undoOperation)
 
         self.contents = redoOperation.contents
+
+        delegate?.imageEditorModelDidChange()
     }
 
     @objc
@@ -337,5 +362,7 @@ public class ImageEditorModel: NSObject {
         let newContents = contents.clone()
         action(newContents)
         contents = newContents
+
+        delegate?.imageEditorModelDidChange()
     }
 }
