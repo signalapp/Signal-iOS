@@ -222,17 +222,11 @@ const CGFloat kMaxTextViewHeight = 98;
     // Momentarily switch to a non-default keyboard, else reloadInputViews
     // will not affect the displayed keyboard. In practice this isn't perceptable to the user.
     // The alternative would be to dismiss-and-pop the keyboard, but that can cause a more pronounced animation.
-    //
-    // This is surprisingly expensive (~5ms), so we do it async, *after* the message is rendered.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [BenchManager benchWithTitle:@"toggleDefaultKeyboard" block:^{
-            self.inputTextView.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
-            [self.inputTextView reloadInputViews];
+    self.inputTextView.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+    [self.inputTextView reloadInputViews];
 
-            self.inputTextView.keyboardType = UIKeyboardTypeDefault;
-            [self.inputTextView reloadInputViews];
-        }];
-    });
+    self.inputTextView.keyboardType = UIKeyboardTypeDefault;
+    [self.inputTextView reloadInputViews];
 }
 
 - (void)setQuotedReply:(nullable OWSQuotedReplyModel *)quotedReply

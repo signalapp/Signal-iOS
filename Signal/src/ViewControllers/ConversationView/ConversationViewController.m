@@ -3898,10 +3898,21 @@ typedef enum : NSUInteger {
 
     [self messageWasSent:message];
 
-    if (updateKeyboardState) {
-        [self.inputToolbar toggleDefaultKeyboard];
-    }
-    [self.inputToolbar clearTextMessageAnimated:YES];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [BenchManager benchWithTitle:@"toggleDefaultKeyboard"
+                               block:^{
+                                   if (updateKeyboardState) {
+                                       [self.inputToolbar toggleDefaultKeyboard];
+                                   }
+                               }];
+
+        [BenchManager benchWithTitle:@"clearTextMessageAnimated"
+                               block:^{
+                                   [self.inputToolbar clearTextMessageAnimated:YES];
+                               }];
+    });
+
     [self clearDraft];
     if (didAddToProfileWhitelist) {
         [self.conversationViewModel ensureDynamicInteractions];
