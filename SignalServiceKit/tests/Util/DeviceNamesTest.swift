@@ -31,8 +31,8 @@ class DeviceNamesTest: SSKBaseTestSwift {
         }
 
         do {
-            _ = try DeviceNames.decryptDeviceName(input: plaintextData,
-                                                      identityKeyPair: identityKeyPair)
+            _ = try DeviceNames.decryptDeviceName(inputData: plaintextData,
+                                                  identityKeyPair: identityKeyPair)
             XCTFail("Unexpectedly did not throw error.")
         } catch {
             // Failure is expected.
@@ -47,7 +47,7 @@ class DeviceNamesTest: SSKBaseTestSwift {
         let encrypted: Data
         do {
             encrypted = try DeviceNames.encryptDeviceName(plaintext: plaintext,
-                                                      identityKeyPair: identityKeyPair)
+                                                          identityKeyPair: identityKeyPair)
         } catch {
             XCTFail("Failed with error: \(error)")
             return
@@ -55,8 +55,8 @@ class DeviceNamesTest: SSKBaseTestSwift {
 
         let decrypted: String
         do {
-            decrypted = try DeviceNames.decryptDeviceName(input: encrypted,
-                                                      identityKeyPair: identityKeyPair)
+            decrypted = try DeviceNames.decryptDeviceName(inputData: encrypted,
+                                                          identityKeyPair: identityKeyPair)
         } catch {
             XCTFail("Failed with error: \(error)")
             return

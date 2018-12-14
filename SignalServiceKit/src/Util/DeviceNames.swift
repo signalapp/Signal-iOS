@@ -32,7 +32,7 @@ public class DeviceNames: NSObject {
         let masterSecret: Data
         do {
             masterSecret = try Curve25519.generateSharedSecret(fromPublicKey: identityKeyPair.publicKey,
-                                                                     privateKey: ephemeralKeyPair.privateKey)
+                                                               privateKey: ephemeralKeyPair.privateKey)
         } catch {
             Logger.error("Could not generate shared secret: \(error)")
             throw error
@@ -104,10 +104,22 @@ public class DeviceNames: NSObject {
     }
 
     @objc
-    public class func decryptDeviceName(input: Data,
+    public class func decryptDeviceName(inputString: String,
+                                        identityKeyPair: ECKeyPair) throws -> String {
+        guard let inputData = Data(base64Encoded: inputString) else {
+            // Not necessarily an error; might be a legacy device name.
+            throw DeviceNameError.invalidInput
+        }
+
+        return try decryptDeviceName(inputData: inputData,
+                                     identityKeyPair: identityKeyPair)
+    }
+
+    @objc
+    public class func decryptDeviceName(inputData: Data,
                                         identityKeyPair: ECKeyPair) throws -> String {
 
-        guard let protoData = Data(base64Encoded: input) else {
+        guard let protoData = Data(base64Encoded: inputData) else {
             // Not necessarily an error; might be a legacy device name.
             throw DeviceNameError.invalidInput
         }
