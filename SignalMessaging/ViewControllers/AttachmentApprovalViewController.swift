@@ -8,7 +8,7 @@ import MediaPlayer
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: class {
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment])
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?)
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didCancelAttachments attachments: [SignalAttachment])
 }
 
@@ -326,11 +326,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         captioningToolbar.isUserInteractionEnabled = false
         captioningToolbar.isHidden = true
 
-        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments)
+        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: captioningToolbar.captionText)
     }
 
     func captioningToolbar(_ captioningToolbar: CaptioningToolbar, textViewDidChange textView: UITextView) {
-        currentItem.attachment.captionText = textView.text
+        // For 2.32.0 we only have one input bar - and it's for mesageBody text, not for caption text.
+        // For 2.33.0 there are potentially two input bars - one for message body and one for caption text.
+        // Commenting this out for now, but we'll have to resolve this merge conflict when RI'ing to 2.33
+        // currentItem.attachment.captionText = textView.text
     }
 }
 

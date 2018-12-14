@@ -2815,7 +2815,7 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)sendMessageAttachments:(NSArray<SignalAttachment *> *)attachments
+- (void)sendMessageAttachments:(NSArray<SignalAttachment *> *)attachments messageText:(nullable NSString *)messageText
 {
     OWSAssertIsOnMainThread();
     for (SignalAttachment *attachment in attachments) {
@@ -2824,8 +2824,9 @@ typedef enum : NSUInteger {
     }
 
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+
     TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithAttachments:attachments
-                                                               messageBody:nil
+                                                               messageBody:messageText
                                                                   inThread:self.thread
                                                           quotedReplyModel:self.inputToolbar.quotedReply];
 
@@ -3546,7 +3547,7 @@ typedef enum : NSUInteger {
         }
 
         if (skipApprovalDialog) {
-            [self sendMessageAttachments:attachments];
+            [self sendMessageAttachments:attachments messageText:nil];
         } else {
             OWSNavigationController *modal =
                 [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:attachments
@@ -3662,8 +3663,9 @@ typedef enum : NSUInteger {
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
      didApproveAttachments:(NSArray<SignalAttachment *> *)attachments
+               messageText:(nullable NSString *)messageText
 {
-    [self sendMessageAttachments:attachments];
+    [self sendMessageAttachments:attachments messageText:messageText];
     [self dismissViewControllerAnimated:YES completion:nil];
     // We always want to scroll to the bottom of the conversation after the local user
     // sends a message.  Normally, this is taken care of in yapDatabaseModified:, but
