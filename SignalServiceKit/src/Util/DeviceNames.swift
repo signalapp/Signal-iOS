@@ -23,7 +23,8 @@ public class DeviceNames: NSObject {
                                         identityKeyPair: ECKeyPair) throws -> Data {
 
         guard let plaintextData = plaintext.data(using: .utf8) else {
-            owsFail("Could not convert text to UTF-8.")
+            owsFailDebug("Could not convert text to UTF-8.")
+            throw DeviceNameError.invalidInput
         }
 
         let ephemeralKeyPair = Curve25519.generateKeyPair()
@@ -73,7 +74,8 @@ public class DeviceNames: NSObject {
                                           plaintextData: Data) throws -> Data {
         // synthetic_iv = HmacSHA256(key=HmacSHA256(key=master_secret, input=“auth”), input=plaintext)[0:16]
         guard let syntheticIVInput = "auth".data(using: .utf8) else {
-            owsFail("Could not convert text to UTF-8.")
+            owsFailDebug("Could not convert text to UTF-8.")
+            throw DeviceNameError.assertionFailure
         }
         guard let syntheticIVKey = Cryptography.computeSHA256HMAC(syntheticIVInput, withHMACKey: masterSecret) else {
             owsFailDebug("Could not compute synthetic IV key.")
@@ -90,7 +92,8 @@ public class DeviceNames: NSObject {
                                         syntheticIV: Data) throws -> Data {
         // cipher_key = HmacSHA256(key=HmacSHA256(key=master_secret, “cipher”), input=synthetic_iv)
         guard let cipherKeyInput = "cipher".data(using: .utf8) else {
-            owsFail("Could not convert text to UTF-8.")
+            owsFailDebug("Could not convert text to UTF-8.")
+            throw DeviceNameError.assertionFailure
         }
         guard let cipherKeyKey = Cryptography.computeSHA256HMAC(cipherKeyInput, withHMACKey: masterSecret) else {
             owsFailDebug("Could not compute cipher key key.")
