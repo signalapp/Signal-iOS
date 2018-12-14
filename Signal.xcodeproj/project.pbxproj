@@ -236,6 +236,7 @@
 		34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */; };
 		34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */; };
 		34BEDB0E21C405B0007B0EAE /* ImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB0D21C405B0007B0EAE /* ImageEditor.swift */; };
+		34BEDB1121C41E71007B0EAE /* ImageEditorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1021C41E71007B0EAE /* ImageEditorTest.swift */; };
 		34C3C78D20409F320000134C /* Opening.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78C20409F320000134C /* Opening.m4r */; };
 		34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78E2040A4F70000134C /* sonarping.mp3 */; };
 		34C3C7922040B0DD0000134C /* OWSAudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -908,6 +909,7 @@
 		34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerViewController.swift; sourceTree = "<group>"; };
 		34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerLayout.swift; sourceTree = "<group>"; };
 		34BEDB0D21C405B0007B0EAE /* ImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditor.swift; sourceTree = "<group>"; };
+		34BEDB1021C41E71007B0EAE /* ImageEditorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTest.swift; sourceTree = "<group>"; };
 		34C3C78C20409F320000134C /* Opening.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Opening.m4r; sourceTree = "<group>"; };
 		34C3C78E2040A4F70000134C /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sonarping.mp3; path = Signal/AudioFiles/sonarping.mp3; sourceTree = SOURCE_ROOT; };
 		34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioPlayer.h; sourceTree = "<group>"; };
@@ -1869,6 +1871,14 @@
 			path = ImageEditor;
 			sourceTree = "<group>";
 		};
+		34BEDB0F21C41E71007B0EAE /* views */ = {
+			isa = PBXGroup;
+			children = (
+				34BEDB1021C41E71007B0EAE /* ImageEditorTest.swift */,
+			);
+			path = views;
+			sourceTree = "<group>";
+		};
 		34C3C78B20409F320000134C /* ringtoneSounds */ = {
 			isa = PBXGroup;
 			children = (
@@ -2401,6 +2411,7 @@
 				B660F6A01C29868000687D6E /* TestUtil.h */,
 				B660F6A21C29868000687D6E /* util */,
 				34B3F8951E8DF1B90035BE1A /* ViewControllers */,
+				34BEDB0F21C41E71007B0EAE /* views */,
 			);
 			path = test;
 			sourceTree = "<group>";
@@ -3591,6 +3602,7 @@
 			files = (
 				456F6E2F1E261D1000FD2210 /* PeerConnectionClientTest.swift in Sources */,
 				458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */,
+				34BEDB1121C41E71007B0EAE /* ImageEditorTest.swift in Sources */,
 				3491D9A121022DB7001EF5A1 /* CDSSigningCertificateTest.m in Sources */,
 				340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */,
 				458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */,
