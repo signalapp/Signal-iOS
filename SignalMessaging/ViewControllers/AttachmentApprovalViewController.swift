@@ -15,6 +15,8 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
     @objc optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, changedCaptionOfAttachment attachment: SignalAttachment)
 }
 
+// MARK: -
+
 class AttachmentItemCollection {
     private (set) var attachmentItems: [SignalAttachmentItem]
     init(attachmentItems: [SignalAttachmentItem]) {
@@ -48,6 +50,8 @@ class AttachmentItemCollection {
     }
 }
 
+// MARK: -
+
 class SignalAttachmentItem: Hashable {
 
     enum SignalAttachmentItemError: Error {
@@ -56,8 +60,23 @@ class SignalAttachmentItem: Hashable {
 
     let attachment: SignalAttachment
 
+    var imageEditorModel: ImageEditorModel?
+
     init(attachment: SignalAttachment) {
         self.attachment = attachment
+
+        // Try and make a ImageEditorModel.
+        // This will only apply for valid images.
+        if let dataUrl: URL = attachment.dataUrl,
+            dataUrl.isFileURL {
+            let path = dataUrl.path
+            do {
+                imageEditorModel = try ImageEditorModel(srcImagePath: path)
+            } catch {
+                // Usually not an error.
+                Logger.warn("Could not create image editor: \(error)")
+            }
+        }
     }
 
     // MARK: 
@@ -97,11 +116,15 @@ class SignalAttachmentItem: Hashable {
     }
 }
 
+// MARK: -
+
 @objc
 public enum AttachmentApprovalViewControllerMode: UInt {
     case modal
     case sharedNavigation
 }
+
+// MARK: -
 
 @objc
 public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
@@ -777,6 +800,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     private(set) var contentContainer: UIView!
     private(set) var playVideoButton: UIView?
 
+    private var imageEditorView: ImageEditorView?
+
     // MARK: - Initializers
 
     init(attachmentItem: SignalAttachmentItem) {
@@ -864,6 +889,14 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
         containerView.addSubview(mediaMessageView)
         mediaMessageView.autoPinEdgesToSuperviewEdges()
+
+        if let imageEditorModel = attachmentItem.imageEditorModel,
+            let imageMediaView = self.mediaMessageView.contentView {
+            let imageEditorView = ImageEditorView(model: imageEditorModel)
+            imageMediaView.addSubview(imageEditorView)
+            imageEditorView.autoPinEdgesToSuperviewEdges()
+            self.imageEditorView = imageEditorView
+        }
 
         if isZoomable {
             // Add top and bottom gradients to ensure toolbar controls are legible
