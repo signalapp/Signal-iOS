@@ -6,6 +6,14 @@ import XCTest
 @testable import Signal
 @testable import SignalMessaging
 
+extension ImageEditorModel {
+    func itemIds() -> [String] {
+        return items().map { (item) in
+            item.itemId
+        }
+    }
+}
+
 class ImageEditorTest: SignalBaseTest {
 
     override func setUp() {
@@ -19,7 +27,10 @@ class ImageEditorTest: SignalBaseTest {
 
     func testImageEditorContents() {
         let contents = ImageEditorContents()
-        let item = ImageEditorItem()
+        XCTAssertEqual(0, contents.itemMap.count)
+        XCTAssertEqual(0, contents.itemIds.count)
+
+        let item = ImageEditorItem(itemType: .test)
         contents.append(item: item)
         XCTAssertEqual(1, contents.itemMap.count)
         XCTAssertEqual(1, contents.itemIds.count)
@@ -36,7 +47,7 @@ class ImageEditorTest: SignalBaseTest {
         XCTAssertEqual(0, contentsCopy.itemMap.count)
         XCTAssertEqual(0, contentsCopy.itemIds.count)
 
-        let modifiedItem = ImageEditorItem(itemId: item.itemId)
+        let modifiedItem = ImageEditorItem(itemId: item.itemId, itemType: item.itemType)
         contents.replace(item: modifiedItem)
         XCTAssertEqual(1, contents.itemMap.count)
         XCTAssertEqual(1, contents.itemIds.count)
@@ -71,11 +82,12 @@ class ImageEditorTest: SignalBaseTest {
         XCTAssertFalse(imageEditor.canRedo())
         XCTAssertEqual(0, imageEditor.itemCount())
 
-        let itemA = ImageEditorItem()
+        let itemA = ImageEditorItem(itemType: .test)
         imageEditor.append(item: itemA)
         XCTAssertTrue(imageEditor.canUndo())
         XCTAssertFalse(imageEditor.canRedo())
         XCTAssertEqual(1, imageEditor.itemCount())
+        XCTAssertEqual([itemA.itemId], imageEditor.itemIds())
 
         imageEditor.undo()
         XCTAssertFalse(imageEditor.canUndo())
@@ -86,27 +98,31 @@ class ImageEditorTest: SignalBaseTest {
         XCTAssertTrue(imageEditor.canUndo())
         XCTAssertFalse(imageEditor.canRedo())
         XCTAssertEqual(1, imageEditor.itemCount())
+        XCTAssertEqual([itemA.itemId], imageEditor.itemIds())
 
         imageEditor.undo()
         XCTAssertFalse(imageEditor.canUndo())
         XCTAssertTrue(imageEditor.canRedo())
         XCTAssertEqual(0, imageEditor.itemCount())
 
-        let itemB = ImageEditorItem()
+        let itemB = ImageEditorItem(itemType: .test)
         imageEditor.append(item: itemB)
         XCTAssertTrue(imageEditor.canUndo())
         XCTAssertFalse(imageEditor.canRedo())
         XCTAssertEqual(1, imageEditor.itemCount())
+        XCTAssertEqual([itemB.itemId], imageEditor.itemIds())
 
-        let itemC = ImageEditorItem()
+        let itemC = ImageEditorItem(itemType: .test)
         imageEditor.append(item: itemC)
         XCTAssertTrue(imageEditor.canUndo())
         XCTAssertFalse(imageEditor.canRedo())
         XCTAssertEqual(2, imageEditor.itemCount())
+        XCTAssertEqual([itemB.itemId, itemC.itemId], imageEditor.itemIds())
 
         imageEditor.undo()
         XCTAssertTrue(imageEditor.canUndo())
         XCTAssertTrue(imageEditor.canRedo())
         XCTAssertEqual(1, imageEditor.itemCount())
+        XCTAssertEqual([itemB.itemId], imageEditor.itemIds())
     }
 }

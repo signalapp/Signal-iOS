@@ -9,23 +9,36 @@ import UIKit
     case invalidInput
 }
 
+@objc
+public enum ImageEditorItemType: Int {
+    case test
+}
+
 // MARK: -
 
+// Instances of ImageEditorItem should be treated
+// as immutable, once configured.
 @objc
 public class ImageEditorItem: NSObject {
     @objc
     public let itemId: String
 
     @objc
-    public override required init() {
+    public let itemType: ImageEditorItemType
+
+    @objc
+    public required init(itemType: ImageEditorItemType) {
         self.itemId = UUID().uuidString
+        self.itemType = itemType
 
         super.init()
     }
 
     @objc
-    public init(itemId: String) {
+    public required init(itemId: String,
+                         itemType: ImageEditorItemType) {
         self.itemId = itemId
+        self.itemType = itemType
 
         super.init()
     }
@@ -33,9 +46,14 @@ public class ImageEditorItem: NSObject {
 
 // MARK: -
 
+// Instances of ImageEditorContents should be treated
+// as immutable, once configured.
 public class ImageEditorContents: NSObject {
 
+    // This represents the current state of each item.
     var itemMap = [String: ImageEditorItem]()
+
+    // This represents the back-to-front ordering of the items.
     var itemIds = [String]()
 
     @objc
@@ -50,6 +68,8 @@ public class ImageEditorContents: NSObject {
         self.itemIds = itemIds
     }
 
+    // Since the contents are immutable, we only modify copies
+    // made with this method.
     @objc
     public func clone() -> ImageEditorContents {
         return ImageEditorContents(itemMap: itemMap, itemIds: itemIds)
@@ -120,11 +140,29 @@ public class ImageEditorContents: NSObject {
         }
         return itemIds.count
     }
+
+    @objc
+    public func items() -> [ImageEditorItem] {
+        var items = [ImageEditorItem]()
+        for itemId in itemIds {
+            guard let item = self.itemMap[itemId] else {
+                owsFailDebug("Missing item")
+                continue
+            }
+            items.append(item)
+        }
+        return items
+    }
 }
 
 // MARK: -
 
 // Used to represent undo/redo operations.
+//
+// Because the image editor's "contents" and "items"
+// are immutable, these operations simply take a
+// snapshot of the current contents which can be used
+// (multiple times) to preserve/restore editor state.
 private class ImageEditorOperation: NSObject {
 
     let contents: ImageEditorContents
@@ -149,6 +187,10 @@ public class ImageEditorModel: NSObject {
     private var undoStack = [ImageEditorOperation]()
     private var redoStack = [ImageEditorOperation]()
 
+    // We don't want to allow editing of images if:
+    //
+    // * They are invalid.
+    // * We can't determine their size / aspect-ratio.
     @objc
     public required init(srcImagePath: String) throws {
         self.srcImagePath = srcImagePath
@@ -177,6 +219,11 @@ public class ImageEditorModel: NSObject {
     @objc
     public func itemCount() -> Int {
         return contents.itemCount()
+    }
+
+    @objc
+    public func items() -> [ImageEditorItem] {
+        return contents.items()
     }
 
     @objc
