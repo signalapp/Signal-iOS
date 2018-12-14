@@ -280,3 +280,130 @@ extension SignalIOSProtoBackupSnapshot.SignalIOSProtoBackupSnapshotBuilder {
 }
 
 #endif
+
+// MARK: - SignalIOSProtoDeviceName
+
+@objc public class SignalIOSProtoDeviceName: NSObject {
+
+    // MARK: - SignalIOSProtoDeviceNameBuilder
+
+    @objc public class func builder(ephemeralPublic: Data, syntheticIv: Data, ciphertext: Data) -> SignalIOSProtoDeviceNameBuilder {
+        return SignalIOSProtoDeviceNameBuilder(ephemeralPublic: ephemeralPublic, syntheticIv: syntheticIv, ciphertext: ciphertext)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SignalIOSProtoDeviceNameBuilder {
+        let builder = SignalIOSProtoDeviceNameBuilder(ephemeralPublic: ephemeralPublic, syntheticIv: syntheticIv, ciphertext: ciphertext)
+        return builder
+    }
+
+    @objc public class SignalIOSProtoDeviceNameBuilder: NSObject {
+
+        private var proto = IOSProtos_DeviceName()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(ephemeralPublic: Data, syntheticIv: Data, ciphertext: Data) {
+            super.init()
+
+            setEphemeralPublic(ephemeralPublic)
+            setSyntheticIv(syntheticIv)
+            setCiphertext(ciphertext)
+        }
+
+        @objc public func setEphemeralPublic(_ valueParam: Data) {
+            proto.ephemeralPublic = valueParam
+        }
+
+        @objc public func setSyntheticIv(_ valueParam: Data) {
+            proto.syntheticIv = valueParam
+        }
+
+        @objc public func setCiphertext(_ valueParam: Data) {
+            proto.ciphertext = valueParam
+        }
+
+        @objc public func build() throws -> SignalIOSProtoDeviceName {
+            return try SignalIOSProtoDeviceName.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SignalIOSProtoDeviceName.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: IOSProtos_DeviceName
+
+    @objc public let ephemeralPublic: Data
+
+    @objc public let syntheticIv: Data
+
+    @objc public let ciphertext: Data
+
+    private init(proto: IOSProtos_DeviceName,
+                 ephemeralPublic: Data,
+                 syntheticIv: Data,
+                 ciphertext: Data) {
+        self.proto = proto
+        self.ephemeralPublic = ephemeralPublic
+        self.syntheticIv = syntheticIv
+        self.ciphertext = ciphertext
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SignalIOSProtoDeviceName {
+        let proto = try IOSProtos_DeviceName(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: IOSProtos_DeviceName) throws -> SignalIOSProtoDeviceName {
+        guard proto.hasEphemeralPublic else {
+            throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: ephemeralPublic")
+        }
+        let ephemeralPublic = proto.ephemeralPublic
+
+        guard proto.hasSyntheticIv else {
+            throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: syntheticIv")
+        }
+        let syntheticIv = proto.syntheticIv
+
+        guard proto.hasCiphertext else {
+            throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: ciphertext")
+        }
+        let ciphertext = proto.ciphertext
+
+        // MARK: - Begin Validation Logic for SignalIOSProtoDeviceName -
+
+        // MARK: - End Validation Logic for SignalIOSProtoDeviceName -
+
+        let result = SignalIOSProtoDeviceName(proto: proto,
+                                              ephemeralPublic: ephemeralPublic,
+                                              syntheticIv: syntheticIv,
+                                              ciphertext: ciphertext)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SignalIOSProtoDeviceName {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SignalIOSProtoDeviceName.SignalIOSProtoDeviceNameBuilder {
+    @objc public func buildIgnoringErrors() -> SignalIOSProtoDeviceName? {
+        return try! self.build()
+    }
+}
+
+#endif

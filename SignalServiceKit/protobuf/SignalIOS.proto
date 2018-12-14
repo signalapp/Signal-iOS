@@ -33,3 +33,13 @@ message BackupSnapshot {
 
     repeated BackupEntity entity = 1;
 }
+
+message DeviceName {
+  // @required
+  optional bytes ephemeralPublic = 1;
+  // @required
+  optional bytes syntheticIv     = 2;
+  // @required
+  optional bytes ciphertext      = 3;
+}
+
