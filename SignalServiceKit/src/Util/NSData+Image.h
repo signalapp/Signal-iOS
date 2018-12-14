@@ -11,4 +11,7 @@
 - (BOOL)ows_isValidImage;
 - (BOOL)ows_isValidImageWithMimeType:(nullable NSString *)mimeType;
 
+// Returns CGSizeZero on error.
++ (CGSize)imageSizeForFilePath:(NSString *)filePath mimeType:(NSString *)mimeType;
+
 @end
