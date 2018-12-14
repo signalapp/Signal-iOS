@@ -12,6 +12,7 @@ import UIKit
 @objc
 public enum ImageEditorItemType: Int {
     case test
+    case stroke
 }
 
 // MARK: -
@@ -27,7 +28,7 @@ public class ImageEditorItem: NSObject {
     public let itemType: ImageEditorItemType
 
     @objc
-    public required init(itemType: ImageEditorItemType) {
+    public init(itemType: ImageEditorItemType) {
         self.itemId = UUID().uuidString
         self.itemType = itemType
 
@@ -35,12 +36,56 @@ public class ImageEditorItem: NSObject {
     }
 
     @objc
-    public required init(itemId: String,
-                         itemType: ImageEditorItemType) {
+    public init(itemId: String,
+                itemType: ImageEditorItemType) {
         self.itemId = itemId
         self.itemType = itemType
 
         super.init()
+    }
+}
+
+// MARK: -
+
+@objc
+public class ImageEditorStrokeItem: ImageEditorItem {
+    // Until we need to serialize these items,
+    // just use UIColor.
+    @objc
+    public let color: UIColor
+
+    // Represented in a "ULO unit" coordinate system
+    // for source image.
+    //
+    // "ULO" coordinate system is "upper-left-origin".
+    //
+    // "Unit" coordinate system means values are expressed
+    // in terms of some other values, in this case the
+    // width and height of the source image.
+    //
+    // * 0.0 = left edge
+    // * 1.0 = right edge
+    // * 0.0 = top edge
+    // * 1.0 = bottom edge
+    public typealias StrokeSample = CGPoint
+
+    @objc
+    public let unitSamples: [StrokeSample]
+
+    // Expressed as a "Unit" value as a fraction of
+    // max(width, height) of the source image.
+    @objc
+    public let unitStrokeWidth: CGFloat
+
+    @objc
+    public init(color: UIColor,
+                unitSamples: [StrokeSample],
+                unitStrokeWidth: CGFloat) {
+        self.color = color
+        self.unitSamples = unitSamples
+        self.unitStrokeWidth = unitStrokeWidth
+
+        super.init(itemType: .stroke)
     }
 }
 
