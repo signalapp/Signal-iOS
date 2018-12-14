@@ -9,6 +9,8 @@ import UIKit
     case invalidInput
 }
 
+// MARK: -
+
 @objc
 public class ImageEditorItem: NSObject {
     @objc
@@ -20,9 +22,17 @@ public class ImageEditorItem: NSObject {
 
         super.init()
     }
+
+    @objc
+    public init(itemId: String) {
+        self.itemId = itemId
+
+        super.init()
+    }
 }
 
-@objc
+// MARK: -
+
 public class ImageEditorContents: NSObject {
 
     var itemMap = [String: ImageEditorItem]()
@@ -30,7 +40,6 @@ public class ImageEditorContents: NSObject {
 
     @objc
     public override init() {
-
     }
 
     @objc
@@ -58,6 +67,26 @@ public class ImageEditorContents: NSObject {
         } else {
             itemIds.append(item.itemId)
         }
+
+        if itemIds.count != itemMap.count {
+            owsFailDebug("Invalid contents.")
+        }
+    }
+
+    @objc
+    public func replace(item: ImageEditorItem) {
+        if itemMap[item.itemId] == nil {
+            owsFail("Missing item in item map: \(item.itemId)")
+        }
+        itemMap[item.itemId] = item
+
+        if !itemIds.contains(item.itemId) {
+            owsFail("Missing item in item list: \(item.itemId)")
+        }
+
+        if itemIds.count != itemMap.count {
+            owsFailDebug("Invalid contents.")
+        }
     }
 
     @objc
@@ -78,8 +107,34 @@ public class ImageEditorContents: NSObject {
         } else {
             itemIds = itemIds.filter { $0 != itemId }
         }
+
+        if itemIds.count != itemMap.count {
+            owsFailDebug("Invalid contents.")
+        }
+    }
+
+    @objc
+    public func itemCount() -> Int {
+        if itemIds.count != itemMap.count {
+            owsFailDebug("Invalid contents.")
+        }
+        return itemIds.count
     }
 }
+
+// MARK: -
+
+// Used to represent undo/redo operations.
+private class ImageEditorOperation: NSObject {
+
+    let contents: ImageEditorContents
+
+    required init(contents: ImageEditorContents) {
+        self.contents = contents
+    }
+}
+
+// MARK: -
 
 @objc
 public class ImageEditorModel: NSObject {
@@ -90,6 +145,9 @@ public class ImageEditorModel: NSObject {
     public let srcImageSize: CGSize
 
     private var contents = ImageEditorContents()
+
+    private var undoStack = [ImageEditorOperation]()
+    private var redoStack = [ImageEditorOperation]()
 
     @objc
     public required init(srcImagePath: String) throws {
@@ -114,5 +172,77 @@ public class ImageEditorModel: NSObject {
         self.srcImageSize = srcImageSize
 
         super.init()
+    }
+
+    @objc
+    public func itemCount() -> Int {
+        return contents.itemCount()
+    }
+
+    @objc
+    public func canUndo() -> Bool {
+        return !undoStack.isEmpty
+    }
+
+    @objc
+    public func canRedo() -> Bool {
+        return !redoStack.isEmpty
+    }
+
+    @objc
+    public func undo() {
+        guard let undoOperation = undoStack.popLast() else {
+            owsFailDebug("Cannot undo.")
+            return
+        }
+
+        let redoOperation = ImageEditorOperation(contents: contents)
+        redoStack.append(redoOperation)
+
+        self.contents = undoOperation.contents
+    }
+
+    @objc
+    public func redo() {
+        guard let redoOperation = redoStack.popLast() else {
+            owsFailDebug("Cannot redo.")
+            return
+        }
+
+        let undoOperation = ImageEditorOperation(contents: contents)
+        undoStack.append(undoOperation)
+
+        self.contents = redoOperation.contents
+    }
+
+    @objc
+    public func append(item: ImageEditorItem) {
+        performAction { (newContents) in
+            newContents.append(item: item)
+        }
+    }
+
+    @objc
+    public func replace(item: ImageEditorItem) {
+        performAction { (newContents) in
+            newContents.replace(item: item)
+        }
+    }
+
+    @objc
+    public func remove(item: ImageEditorItem) {
+        performAction { (newContents) in
+            newContents.remove(item: item)
+        }
+    }
+
+    private func performAction(action: (ImageEditorContents) -> Void) {
+        let undoOperation = ImageEditorOperation(contents: contents)
+        undoStack.append(undoOperation)
+        redoStack.removeAll()
+
+        let newContents = contents.clone()
+        action(newContents)
+        contents = newContents
     }
 }

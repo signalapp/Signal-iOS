@@ -35,5 +35,78 @@ class ImageEditorTest: SignalBaseTest {
         XCTAssertEqual(1, contents.itemIds.count)
         XCTAssertEqual(0, contentsCopy.itemMap.count)
         XCTAssertEqual(0, contentsCopy.itemIds.count)
+
+        let modifiedItem = ImageEditorItem(itemId: item.itemId)
+        contents.replace(item: modifiedItem)
+        XCTAssertEqual(1, contents.itemMap.count)
+        XCTAssertEqual(1, contents.itemIds.count)
+        XCTAssertEqual(0, contentsCopy.itemMap.count)
+        XCTAssertEqual(0, contentsCopy.itemIds.count)
+    }
+
+    private func writeDummyImage() -> String {
+        let image = UIImage.init(color: .red, size: CGSize(width: 1, height: 1))
+        guard let data = UIImagePNGRepresentation(image) else {
+            owsFail("Couldn't export dummy image.")
+        }
+        let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: "png")
+        do {
+            try data.write(to: URL(fileURLWithPath: filePath))
+        } catch {
+            owsFail("Couldn't write dummy image.")
+        }
+        return filePath
+    }
+
+    func testImageEditor() {
+        let imagePath = writeDummyImage()
+
+        let imageEditor: ImageEditorModel
+        do {
+            imageEditor = try ImageEditorModel(srcImagePath: imagePath)
+        } catch {
+            owsFail("Couldn't create ImageEditorModel.")
+        }
+        XCTAssertFalse(imageEditor.canUndo())
+        XCTAssertFalse(imageEditor.canRedo())
+        XCTAssertEqual(0, imageEditor.itemCount())
+
+        let itemA = ImageEditorItem()
+        imageEditor.append(item: itemA)
+        XCTAssertTrue(imageEditor.canUndo())
+        XCTAssertFalse(imageEditor.canRedo())
+        XCTAssertEqual(1, imageEditor.itemCount())
+
+        imageEditor.undo()
+        XCTAssertFalse(imageEditor.canUndo())
+        XCTAssertTrue(imageEditor.canRedo())
+        XCTAssertEqual(0, imageEditor.itemCount())
+
+        imageEditor.redo()
+        XCTAssertTrue(imageEditor.canUndo())
+        XCTAssertFalse(imageEditor.canRedo())
+        XCTAssertEqual(1, imageEditor.itemCount())
+
+        imageEditor.undo()
+        XCTAssertFalse(imageEditor.canUndo())
+        XCTAssertTrue(imageEditor.canRedo())
+        XCTAssertEqual(0, imageEditor.itemCount())
+
+        let itemB = ImageEditorItem()
+        imageEditor.append(item: itemB)
+        XCTAssertTrue(imageEditor.canUndo())
+        XCTAssertFalse(imageEditor.canRedo())
+        XCTAssertEqual(1, imageEditor.itemCount())
+
+        let itemC = ImageEditorItem()
+        imageEditor.append(item: itemC)
+        XCTAssertTrue(imageEditor.canUndo())
+        XCTAssertFalse(imageEditor.canRedo())
+        XCTAssertEqual(2, imageEditor.itemCount())
+
+        imageEditor.undo()
+        XCTAssertTrue(imageEditor.canUndo())
+        XCTAssertTrue(imageEditor.canRedo())
+        XCTAssertEqual(1, imageEditor.itemCount())
     }
 }
