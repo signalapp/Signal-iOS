@@ -1533,6 +1533,11 @@ static const int kYapDatabaseRangeMinLength = 0;
 
 - (void)appendUnsavedOutgoingTextMessage:(TSOutgoingMessage *)outgoingMessage
 {
+    // Because the message isn't yet saved, we don't have sufficient information to build
+    // in-memory placeholder for message types more complex than plain text.
+    OWSAssertDebug(outgoingMessage.attachmentIds.count == 0);
+    OWSAssertDebug(outgoingMessage.contactShare == nil);
+
     __block ConversationInteractionViewItem *viewItem;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
         viewItem =
