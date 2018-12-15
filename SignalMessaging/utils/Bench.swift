@@ -18,7 +18,8 @@ public func BenchAsync(title: String, block: (@escaping () -> Void) -> Void) {
 
     block {
         let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
-        Logger.debug("[Bench] title: \(title), duration: \(timeElapsed)")
+        let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
+        Logger.debug("[Bench] title: \(title), duration: \(formattedTime)")
     }
 }
 
