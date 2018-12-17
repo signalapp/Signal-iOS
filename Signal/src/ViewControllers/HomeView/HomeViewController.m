@@ -481,12 +481,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.searchResultsController viewDidAppear:animated];
 
     self.hasEverAppeared = YES;
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:HomeViewControllerSectionConversations];
-        TSThread *thread = [self threadForIndexPath:indexPath];
-        [self presentThread:thread action:ConversationViewActionNone animated:YES];
-    });
 }
 
 - (void)viewDidDisappear:(BOOL)animated
