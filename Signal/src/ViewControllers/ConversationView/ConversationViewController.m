@@ -1190,6 +1190,19 @@ typedef enum : NSUInteger {
 
     // Clear the "on open" state after the view has been presented.
     self.actionOnOpen = ConversationViewActionNone;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSURL *_Nullable url = [[NSBundle mainBundle] URLForResource:@"qr@2x" withExtension:@"png"];
+        OWSAssertDebug(url);
+
+        DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url shouldDeleteOnDeallocation:NO];
+        OWSAssertDebug(dataSource);
+        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
+                                                                          dataUTI:(NSString *)kUTTypePNG
+                                                                     imageQuality:TSImageQualityOriginal];
+
+        [self showApprovalDialogForAttachments:@[ attachment ]];
+    });
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
