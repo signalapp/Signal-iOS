@@ -42,7 +42,7 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
 
     @objc
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
-        super.touchesBegan(touches, with: event)
+        super.touchesMoved(touches, with: event)
 
         switch state {
         case .began, .changed:
@@ -61,13 +61,13 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
 
     @objc
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
-        super.touchesBegan(touches, with: event)
+        super.touchesEnded(touches, with: event)
 
         switch state {
         case .began, .changed:
             switch touchType(for: touches, with: event) {
             case .valid, .outside:
-                state = .changed
+                state = .ended
             case .invalid:
                 state = .failed
             }
@@ -78,7 +78,7 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
 
     @objc
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
-        super.touchesBegan(touches, with: event)
+        super.touchesCancelled(touches, with: event)
 
         state = .failed
     }

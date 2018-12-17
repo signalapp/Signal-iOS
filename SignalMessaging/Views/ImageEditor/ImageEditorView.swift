@@ -37,6 +37,8 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     public func handleTouchGesture(_ gestureRecognizer: UIGestureRecognizer) {
         AssertIsOnMainThread()
 
+        Logger.verbose("\(NSStringForUIGestureRecognizerState(gestureRecognizer.state))")
+
         let removeCurrentStroke = {
             if let stroke = self.currentStroke {
                 self.model.remove(item: stroke)
@@ -173,6 +175,8 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     private class func strokeLayerForItem(item: ImageEditorStrokeItem,
                                           viewSize: CGSize) -> CALayer? {
         AssertIsOnMainThread()
+
+        Logger.verbose("\(item.itemId)")
 
         let strokeWidth = ImageEditorStrokeItem.strokeWidth(forUnitStrokeWidth: item.unitStrokeWidth,
                                                             dstSize: viewSize)

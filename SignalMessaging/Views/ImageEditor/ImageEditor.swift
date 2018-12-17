@@ -145,6 +145,8 @@ public class ImageEditorContents: NSObject {
 
     @objc
     public func append(item: ImageEditorItem) {
+        Logger.verbose("\(item.itemId)")
+
         if itemMap[item.itemId] != nil {
             owsFail("Unexpected duplicate item in item map: \(item.itemId)")
         }
@@ -163,6 +165,8 @@ public class ImageEditorContents: NSObject {
 
     @objc
     public func replace(item: ImageEditorItem) {
+        Logger.verbose("\(item.itemId)")
+
         if itemMap[item.itemId] == nil {
             owsFail("Missing item in item map: \(item.itemId)")
         }
@@ -179,6 +183,8 @@ public class ImageEditorContents: NSObject {
 
     @objc
     public func remove(item: ImageEditorItem) {
+        Logger.verbose("\(item.itemId)")
+
         remove(itemId: item.itemId)
     }
 
