@@ -37,7 +37,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     public func handleTouchGesture(_ gestureRecognizer: UIGestureRecognizer) {
         AssertIsOnMainThread()
 
-
         let removeCurrentStroke = {
             if let stroke = self.currentStroke {
                 self.model.remove(item: stroke)
@@ -48,14 +47,16 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
         let referenceView = self
         let unitSampleForGestureLocation = { () -> CGPoint in
+            // TODO: Smooth touch samples before converting into stroke samples.
             let location = gestureRecognizer.location(in: referenceView)
             let x = CGFloatClamp01(CGFloatInverseLerp(location.x, 0, referenceView.bounds.width))
             let y = CGFloatClamp01(CGFloatInverseLerp(location.y, 0, referenceView.bounds.height))
             return CGPoint(x: x, y: y)
         }
 
-        // TODO:
+        // TODO: Color picker.
         let strokeColor = UIColor.blue
+        // TODO: Tune stroke width.
         let unitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth()
 
         switch gestureRecognizer.state {
@@ -236,16 +237,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                 bezierPath.addCurve(to: point, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
             }
             lastForwardVector = forwardVector
-        }
-        var hasSample = false
-        for unitSample in unitSamples {
-            let point = transformSampleToPoint(unitSample)
-            if hasSample {
-                bezierPath.addLine(to: point)
-            } else {
-                bezierPath.move(to: point)
-                hasSample = true
-            }
         }
 
         shapeLayer.path = bezierPath.cgPath
