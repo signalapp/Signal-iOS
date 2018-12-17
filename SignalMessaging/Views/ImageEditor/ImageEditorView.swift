@@ -142,7 +142,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         for item in model.items() {
             guard let layer = ImageEditorView.layerForItem(item: item,
                                                            viewSize: bounds.size) else {
-                Logger.error("Couldn't create layer for item.")
                 continue
             }
 
@@ -178,6 +177,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                                                             dstSize: viewSize)
         let unitSamples = item.unitSamples
         guard unitSamples.count > 1 else {
+            // Not an error; the stroke doesn't have enough samples to render yet.
             return nil
         }
 
