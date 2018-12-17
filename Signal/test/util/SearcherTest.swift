@@ -294,7 +294,6 @@ class ConversationSearcherTest: SignalBaseTest {
         XCTAssertEqual(["My fax is: 222-333-4444"], bodies(forMessageResults: resultSet.messages))
     }
 
-
     // MARK: Helpers
 
     func bodies<T>(forMessageResults messageResults: [ConversationSearchResult<T>]) -> [String] {
