@@ -90,7 +90,7 @@ public class ImageEditorStrokeItem: ImageEditorItem {
 
     @objc
     public class func defaultUnitStrokeWidth() -> CGFloat {
-        return 0.05
+        return 0.02
     }
 
     @objc

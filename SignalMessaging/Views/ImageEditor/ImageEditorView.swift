@@ -148,6 +148,50 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
         // TODO: Use bezier curves to smooth stroke.
         let bezierPath = UIBezierPath()
+
+        let points = unitSamples.map { (unitSample) in
+            transformSampleToPoint(unitSample)
+        }
+        var lastForwardVector = CGPoint.zero
+        for index in 0..<points.count {
+            let point = points[index]
+
+            let forwardVector: CGPoint
+            if index == 0 {
+                // First sample.
+                let nextPoint = points[index + 1]
+                forwardVector = CGPointSubtract(nextPoint, point)
+            } else if index == unitSamples.count - 1 {
+                // Last sample.
+                let lastPoint = points[index - 1]
+                forwardVector = CGPointSubtract(point, lastPoint)
+            } else {
+                // Middle samples.
+                let lastPoint = points[index - 1]
+                let lastForwardVector = CGPointSubtract(point, lastPoint)
+                let nextPoint = points[index + 1]
+                let nextForwardVector = CGPointSubtract(nextPoint, point)
+                forwardVector = CGPointScale(CGPointAdd(lastForwardVector, nextForwardVector), 0.5)
+            }
+
+            if index == 0 {
+                // First sample.
+                bezierPath.move(to: point)
+            } else {
+                let lastPoint = points[index - 1]
+                // This factor controls how much we're smoothing.
+                //
+                // * 0.0 = No smoothing.
+                //
+                // TODO: Tune this variable once we have stroke input.
+                let controlPointFactor: CGFloat = 0.25
+                let controlPoint1 = CGPointAdd(lastPoint, CGPointScale(lastForwardVector, +controlPointFactor))
+                let controlPoint2 = CGPointAdd(point, CGPointScale(forwardVector, -controlPointFactor))
+                // We're using Cubic curves.  
+                bezierPath.addCurve(to: point, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
+            }
+            lastForwardVector = forwardVector
+        }
         var hasSample = false
         for unitSample in unitSamples {
             let point = transformSampleToPoint(unitSample)
@@ -161,6 +205,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
         shapeLayer.path = bezierPath.cgPath
         shapeLayer.fillColor = nil
+        shapeLayer.lineCap = kCALineCapRound
 
         return shapeLayer
     }
