@@ -1276,8 +1276,6 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
 
-                // MJK FIXME - this `becomeConsistent...` call seems to have been remove in master.
-                // to where?
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                           thread:oldGroupThread
                                                                       createdByRemoteRecipientId:envelope.source

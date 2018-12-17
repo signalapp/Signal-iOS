@@ -399,12 +399,8 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         return;
     }
 
-    self.shouldThreadBeVisible = YES;
-
-    // MJK FIXME - reconcile this
-    NSDate *lastMessageDate = [lastMessage dateForSorting];
-    if (!_lastMessageDate || [lastMessageDate timeIntervalSinceDate:self.lastMessageDate] > 0) {
-        _lastMessageDate = lastMessageDate;
+    if (!self.shouldThreadBeVisible) {
+        self.shouldThreadBeVisible = YES;
         [self saveWithTransaction:transaction];
     }
 }

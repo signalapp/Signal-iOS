@@ -161,7 +161,7 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
                 }
                 return [@(index1) compare:@(index2)];
             } else {
-                return [@(message1.timestampForSorting) compare:@(message2.timestampForSorting)];
+                return [message1 compareForSorting:message2];
             }
         }];
 

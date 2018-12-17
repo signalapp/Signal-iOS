@@ -61,7 +61,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
                                                  filter:(BOOL (^_Nonnull)(TSInteraction *))filter
                                         withTransaction:(YapDatabaseReadTransaction *)transaction;
 
-- (NSDate *)dateForLegacySorting;
 - (uint64_t)timestampForLegacySorting;
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other;
 

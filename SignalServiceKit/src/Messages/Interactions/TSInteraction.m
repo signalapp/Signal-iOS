@@ -166,11 +166,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark Date operations
 
-- (NSDate *)dateForLegacySorting
-{
-    return [NSDate ows_dateWithMillisecondsSince1970:self.timestampForLegacySorting];
-}
-
 - (uint64_t)timestampForLegacySorting
 {
     return self.timestamp;
@@ -214,8 +209,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    // MJK can we remove this? We can't trust the legacy order of this id field. Any reason not to use UUID like for
-    // other objects?
     if (!self.uniqueId) {
         OWSFailDebug(@"Missing uniqueId.");
         self.uniqueId = [NSUUID new].UUIDString;

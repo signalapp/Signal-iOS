@@ -386,13 +386,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         [self ensureUnreadIndicator:result
-                                     thread:thread
-                                transaction:transaction
-                               maxRangeSize:maxRangeSize
-                blockingSafetyNumberChanges:blockingSafetyNumberChanges
-             nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
-                hideUnreadMessagesIndicator:hideUnreadMessagesIndicator
-            firstUnseenInteractionTimestamp:firstUnseenInteractionTimestamp];
+                                    thread:thread
+                               transaction:transaction
+                              maxRangeSize:maxRangeSize
+               blockingSafetyNumberChanges:blockingSafetyNumberChanges
+            nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
+               hideUnreadMessagesIndicator:hideUnreadMessagesIndicator
+                         firstUnseenSortId:firstUnseenSortId];
 
         // Determine the position of the focus message _after_ performing any mutations
         // around dynamic interactions.
@@ -412,7 +412,7 @@ NS_ASSUME_NONNULL_BEGIN
         blockingSafetyNumberChanges:(NSArray<TSInvalidIdentityKeyErrorMessage *> *)blockingSafetyNumberChanges
      nonBlockingSafetyNumberChanges:(NSArray<TSInteraction *> *)nonBlockingSafetyNumberChanges
         hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
-    firstUnseenInteractionTimestamp:(nullable NSNumber *)firstUnseenInteractionTimestamp
+    firstUnseenSortId:(nullable NSNumber *)firstUnseenSortId
 {
     OWSAssertDebug(dynamicInteractions);
     OWSAssertDebug(thread);
@@ -458,8 +458,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     return;
                                 }
 
-                                if (interaction.timestampForSorting
-                                    < firstUnseenInteractionTimestamp.unsignedLongLongValue) {
+                                if (interaction.sortId < firstUnseenSortId.unsignedLongLongValue) {
                                     // By default we want the unread indicator to appear just before
                                     // the first unread message.
                                     *stop = YES;

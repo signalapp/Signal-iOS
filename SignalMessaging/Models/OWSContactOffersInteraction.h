@@ -33,11 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
                                 recipientId:(NSString *)recipientId
                         beforeInteractionId:(NSString *)beforeInteractionId NS_DESIGNATED_INITIALIZER;
 
-- (void)updateHasBlockOffer:(BOOL)hasBlockOffer
-            hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
-    hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
-                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END

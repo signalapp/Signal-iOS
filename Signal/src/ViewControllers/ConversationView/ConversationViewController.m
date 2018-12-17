@@ -4454,7 +4454,7 @@ typedef enum : NSUInteger {
         return;
     } else if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Reload) {
         [self resetContentAndLayout];
-        [self updateLastVisibleTimestamp];
+        [self updateLastVisibleSortId];
         [self scrollToBottomAnimated:NO];
         return;
     }
@@ -4527,7 +4527,7 @@ typedef enum : NSUInteger {
             OWSLogInfo(@"performBatchUpdates did not finish");
         }
 
-        [self updateLastVisibleTimestamp];
+        [self updateLastVisibleSortId];
 
         if (scrollToBottom && shouldAnimateUpdates) {
             [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
