@@ -29,7 +29,69 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         notImplemented()
     }
 
+    // MARK: - Buttons
+
+    private let undoButton = UIButton(type: .custom)
+    private let redoButton = UIButton(type: .custom)
+
+    @objc
+    public func addControls(to containerView: UIView) {
+        configure(button: undoButton,
+                  label: NSLocalizedString("BUTTON_UNDO", comment: "Label for undo button."),
+                  selector: #selector(didTapUndo(sender:)))
+
+        configure(button: redoButton,
+                  label: NSLocalizedString("BUTTON_REDO", comment: "Label for redo button."),
+                  selector: #selector(didTapRedo(sender:)))
+
+        let stackView = UIStackView(arrangedSubviews: [undoButton, redoButton])
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 10
+
+        containerView.addSubview(stackView)
+        stackView.autoAlignAxis(toSuperviewAxis: .horizontal)
+        stackView.autoPinTrailingToSuperviewMargin(withInset: 10)
+
+        updateButtons()
+    }
+
+    private func configure(button: UIButton,
+                           label: String,
+                           selector: Selector) {
+        button.setTitle(label, for: .normal)
+        button.setTitleColor(.white,
+                                 for: .normal)
+        button.setTitleColor(.gray,
+                                 for: .disabled)
+        button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        button.addTarget(self, action: selector, for: .touchUpInside)
+    }
+
+    private func updateButtons() {
+        undoButton.isEnabled = model.canUndo()
+        redoButton.isEnabled = model.canRedo()
+    }
+
     // MARK: - Actions
+
+    @objc func didTapUndo(sender: UIButton) {
+        Logger.verbose("")
+        guard model.canUndo() else {
+            owsFailDebug("Can't undo.")
+            return
+        }
+        model.undo()
+    }
+
+    @objc func didTapRedo(sender: UIButton) {
+        Logger.verbose("")
+        guard model.canRedo() else {
+            owsFailDebug("Can't redo.")
+            return
+        }
+        model.redo()
+    }
 
     // These properties are non-empty while drawing a stroke.
     private var currentStroke: ImageEditorStrokeItem?
@@ -103,6 +165,8 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         // TODO: We eventually want to narrow our change events
         // to reflect the specific item(s) which changed.
         updateAllContent()
+
+        updateButtons()
     }
 
     // MARK: - Accessor Overrides
