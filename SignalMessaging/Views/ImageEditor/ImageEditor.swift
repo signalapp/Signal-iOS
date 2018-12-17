@@ -89,6 +89,18 @@ public class ImageEditorStrokeItem: ImageEditorItem {
     }
 
     @objc
+    public init(itemId: String,
+                color: UIColor,
+                unitSamples: [StrokeSample],
+                unitStrokeWidth: CGFloat) {
+        self.color = color
+        self.unitSamples = unitSamples
+        self.unitStrokeWidth = unitStrokeWidth
+
+        super.init(itemId: itemId, itemType: .stroke)
+    }
+
+    @objc
     public class func defaultUnitStrokeWidth() -> CGFloat {
         return 0.02
     }
@@ -133,6 +145,8 @@ public class ImageEditorContents: NSObject {
 
     @objc
     public func append(item: ImageEditorItem) {
+        Logger.verbose("\(item.itemId)")
+
         if itemMap[item.itemId] != nil {
             owsFail("Unexpected duplicate item in item map: \(item.itemId)")
         }
@@ -151,6 +165,8 @@ public class ImageEditorContents: NSObject {
 
     @objc
     public func replace(item: ImageEditorItem) {
+        Logger.verbose("\(item.itemId)")
+
         if itemMap[item.itemId] == nil {
             owsFail("Missing item in item map: \(item.itemId)")
         }
@@ -167,6 +183,8 @@ public class ImageEditorContents: NSObject {
 
     @objc
     public func remove(item: ImageEditorItem) {
+        Logger.verbose("\(item.itemId)")
+
         remove(itemId: item.itemId)
     }
 

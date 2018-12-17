@@ -17,8 +17,9 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         model.delegate = self
 
         self.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
-        self.addGestureRecognizer(tapGesture)
+
+        let anyTouchGesture = ImageEditorGestureRecognizer(target: self, action: #selector(handleTouchGesture(_:)))
+        self.addGestureRecognizer(anyTouchGesture)
     }
 
     @available(*, unavailable, message: "use other init() instead.")
@@ -28,26 +29,67 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
     // MARK: - Actions
 
+    // These properties are non-empty while drawing a stroke.
+    private var currentStroke: ImageEditorStrokeItem?
+    private var currentStrokeSamples = [ImageEditorStrokeItem.StrokeSample]()
+
     @objc
-    func didTap() {
-        Logger.verbose("")
+    public func handleTouchGesture(_ gestureRecognizer: UIGestureRecognizer) {
+        AssertIsOnMainThread()
 
-        addRandomStroke()
-    }
 
-    private func addRandomStroke() {
-        let randomUnitValue = { () -> CGFloat in
-            let scale: UInt32 = 32
-            let value = CGFloat(arc4random_uniform(scale)) / CGFloat(scale)
-            return value
+        let removeCurrentStroke = {
+            if let stroke = self.currentStroke {
+                self.model.remove(item: stroke)
+            }
+            self.currentStroke = nil
+            self.currentStrokeSamples.removeAll()
         }
-        let randomSample = {
-            return CGPoint(x: randomUnitValue(), y: randomUnitValue())
+
+        let referenceView = self
+        let unitSampleForGestureLocation = { () -> CGPoint in
+            let location = gestureRecognizer.location(in: referenceView)
+            let x = CGFloatClamp01(CGFloatInverseLerp(location.x, 0, referenceView.bounds.width))
+            let y = CGFloatClamp01(CGFloatInverseLerp(location.y, 0, referenceView.bounds.height))
+            return CGPoint(x: x, y: y)
         }
-        let item = ImageEditorStrokeItem(color: UIColor.red,
-                                         unitSamples: [randomSample(), randomSample(), randomSample() ],
-                                         unitStrokeWidth: ImageEditorStrokeItem.defaultUnitStrokeWidth())
-        model.append(item: item)
+
+        // TODO:
+        let strokeColor = UIColor.blue
+        let unitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth()
+
+        switch gestureRecognizer.state {
+        case .began:
+            removeCurrentStroke()
+
+            currentStrokeSamples.append(unitSampleForGestureLocation())
+
+            let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: self.currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
+            self.model.append(item: stroke)
+            self.currentStroke = stroke
+
+        case .changed, .ended:
+            currentStrokeSamples.append(unitSampleForGestureLocation())
+
+            guard let lastStroke = self.currentStroke else {
+                owsFailDebug("Missing last stroke.")
+                removeCurrentStroke()
+                return
+            }
+
+            // Model items are immutable; we _replace_ the
+            // stroke item rather than modify it.
+            let stroke = ImageEditorStrokeItem(itemId: lastStroke.itemId, color: strokeColor, unitSamples: self.currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
+            self.model.replace(item: stroke)
+            self.currentStroke = stroke
+
+            if gestureRecognizer.state == .ended {
+                self.currentStroke = nil
+                self.currentStrokeSamples.removeAll()
+            }
+        default:
+            removeCurrentStroke()
+        }
     }
 
     // MARK: - ImageEditorModelDelegate
@@ -105,6 +147,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             }
 
             self.layer.addSublayer(layer)
+            contentLayers.append(layer)
         }
 
         CATransaction.commit()

@@ -1,9 +1,29 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAnyTouchGestureRecognizer.h"
 #import <UIKit/UIGestureRecognizerSubclass.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+NSString *NSStringForUIGestureRecognizerState(UIGestureRecognizerState state)
+{
+    switch (state) {
+        case UIGestureRecognizerStatePossible:
+            return @"UIGestureRecognizerStatePossible";
+        case UIGestureRecognizerStateBegan:
+            return @"UIGestureRecognizerStateBegan";
+        case UIGestureRecognizerStateChanged:
+            return @"UIGestureRecognizerStateChanged";
+        case UIGestureRecognizerStateEnded:
+            return @"UIGestureRecognizerStateEnded";
+        case UIGestureRecognizerStateCancelled:
+            return @"UIGestureRecognizerStateCancelled";
+        case UIGestureRecognizerStateFailed:
+            return @"UIGestureRecognizerStateFailed";
+    }
+}
 
 @implementation OWSAnyTouchGestureRecognizer
 
@@ -108,3 +128,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

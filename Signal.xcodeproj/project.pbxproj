@@ -238,6 +238,9 @@
 		34BEDB0E21C405B0007B0EAE /* ImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB0D21C405B0007B0EAE /* ImageEditor.swift */; };
 		34BEDB1121C41E71007B0EAE /* ImageEditorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1021C41E71007B0EAE /* ImageEditorTest.swift */; };
 		34BEDB1321C43F6A007B0EAE /* ImageEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */; };
+		34BEDB1621C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		34BEDB1721C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */; };
+		34BEDB1921C82AC5007B0EAE /* ImageEditorGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1821C82AC5007B0EAE /* ImageEditorGestureRecognizer.swift */; };
 		34C3C78D20409F320000134C /* Opening.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78C20409F320000134C /* Opening.m4r */; };
 		34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78E2040A4F70000134C /* sonarping.mp3 */; };
 		34C3C7922040B0DD0000134C /* OWSAudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -295,7 +298,6 @@
 		34EA69402194933900702471 /* MediaDownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA693F2194933900702471 /* MediaDownloadView.swift */; };
 		34EA69422194DE8000702471 /* MediaUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA69412194DE7F00702471 /* MediaUploadView.swift */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
-		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
 		4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
 		4503F1C3204711D300CEE724 /* OWS107LegacySounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 4503F1C1204711D200CEE724 /* OWS107LegacySounds.m */; };
@@ -912,6 +914,9 @@
 		34BEDB0D21C405B0007B0EAE /* ImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditor.swift; sourceTree = "<group>"; };
 		34BEDB1021C41E71007B0EAE /* ImageEditorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTest.swift; sourceTree = "<group>"; };
 		34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorView.swift; sourceTree = "<group>"; };
+		34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
+		34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
+		34BEDB1821C82AC5007B0EAE /* ImageEditorGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorGestureRecognizer.swift; sourceTree = "<group>"; };
 		34C3C78C20409F320000134C /* Opening.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Opening.m4r; sourceTree = "<group>"; };
 		34C3C78E2040A4F70000134C /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sonarping.mp3; path = Signal/AudioFiles/sonarping.mp3; sourceTree = SOURCE_ROOT; };
 		34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioPlayer.h; sourceTree = "<group>"; };
@@ -1007,8 +1012,6 @@
 		34EA69412194DE7F00702471 /* MediaUploadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaUploadView.swift; sourceTree = "<group>"; };
 		34F308A01ECB469700BB7697 /* OWSBezierPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBezierPathView.h; sourceTree = "<group>"; };
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
-		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
-		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
 		435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "classic-quiet.aifc"; sourceTree = "<group>"; };
 		4503F1BC20470A5B00CEE724 /* classic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = classic.aifc; sourceTree = "<group>"; };
@@ -1535,6 +1538,7 @@
 			isa = PBXGroup;
 			children = (
 				452EC6E0205FF5DC000E787C /* Bench.swift */,
+				4C948FF62146EB4800349F0D /* BlockListCache.swift */,
 				343D3D991E9283F100165CA4 /* BlockListUIUtils.h */,
 				343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */,
 				451777C71FD61554001225FF /* ConversationSearcher.swift */,
@@ -1545,6 +1549,8 @@
 				344F248C2007CCD600CFB4F4 /* DisplayableText.swift */,
 				346129AC1FD1F34E00532771 /* ImageCache.swift */,
 				4523D015206EDC2B00A2AB51 /* LRUCache.swift */,
+				34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */,
+				34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */,
 				34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */,
 				34C3C7912040B0DC0000134C /* OWSAudioPlayer.m */,
 				45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */,
@@ -1565,15 +1571,14 @@
 				34B6D27320F664C800765BE2 /* OWSUnreadIndicator.m */,
 				34641E1120878FB000E2EDE5 /* OWSWindowManager.h */,
 				34641E1020878FAF00E2EDE5 /* OWSWindowManager.m */,
+				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				45360B8C1F9521F800FA666C /* Searcher.swift */,
 				346129BD1FD2068600532771 /* ThreadUtil.h */,
 				346129BE1FD2068600532771 /* ThreadUtil.m */,
+				4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */,
 				B97940251832BD2400BD66CB /* UIUtil.h */,
 				B97940261832BD2400BD66CB /* UIUtil.m */,
 				45F170D51E315310003FC1F2 /* Weak.swift */,
-				4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */,
-				4C948FF62146EB4800349F0D /* BlockListCache.swift */,
-				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1869,6 +1874,7 @@
 			isa = PBXGroup;
 			children = (
 				34BEDB0D21C405B0007B0EAE /* ImageEditor.swift */,
+				34BEDB1821C82AC5007B0EAE /* ImageEditorGestureRecognizer.swift */,
 				34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */,
 			);
 			path = ImageEditor;
@@ -2019,8 +2025,6 @@
 			children = (
 				450DF2071E0DD29E003D14BE /* Notifications */,
 				4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */,
-				34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */,
-				34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */,
 				34B3F8331E8DF1700035BE1A /* ViewControllers */,
 				76EB052B18170B33006006FC /* Views */,
 			);
@@ -2611,6 +2615,7 @@
 				34AC09DE211B39B100997B47 /* OWSNavigationController.h in Headers */,
 				34612A011FD5F31400532771 /* OWS104CreateRecipientIdentities.h in Headers */,
 				450998691FD8C10200D89EB3 /* AttachmentSharing.h in Headers */,
+				34BEDB1621C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.h in Headers */,
 				346129C71FD2072E00532771 /* NSString+OWS.h in Headers */,
 				34AC09EC211B39B100997B47 /* OWSTableViewController.h in Headers */,
 				451F8A3C1FD71392005CB9DA /* UIUtil.h in Headers */,
@@ -3296,9 +3301,11 @@
 				4523D016206EDC2B00A2AB51 /* LRUCache.swift in Sources */,
 				450998681FD8C0FF00D89EB3 /* AttachmentSharing.m in Sources */,
 				347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */,
+				34BEDB1921C82AC5007B0EAE /* ImageEditorGestureRecognizer.swift in Sources */,
 				346129F81FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.m in Sources */,
 				34AC09DF211B39B100997B47 /* OWSNavigationController.m in Sources */,
 				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
+				34BEDB1721C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m in Sources */,
 				34B6A909218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				342950832124C9750000B063 /* OWSTextView.m in Sources */,
@@ -3461,7 +3468,6 @@
 				340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */,
 				4C090A1B210FD9C7001FD7F9 /* HapticFeedback.swift in Sources */,
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
-				34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */,
 				34B3F8931E8DF1710035BE1A /* SignalsNavigationController.m in Sources */,
 				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
 				45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */,
