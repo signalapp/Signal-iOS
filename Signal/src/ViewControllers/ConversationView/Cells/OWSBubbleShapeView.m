@@ -50,7 +50,7 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
 
 - (instancetype)initDraw
 {
-    self = [super init];
+    self = [super initWithFrame:CGRectZero];
     if (!self) {
         return self;
     }
@@ -64,7 +64,7 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
 
 - (instancetype)initShadow
 {
-    self = [super init];
+    self = [super initWithFrame:CGRectZero];
     if (!self) {
         return self;
     }
@@ -78,7 +78,7 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
 
 - (instancetype)initClip
 {
-    self = [super init];
+    self = [super initWithFrame:CGRectZero];
     if (!self) {
         return self;
     }
@@ -92,7 +92,7 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
 
 - (instancetype)initInnerShadowWithColor:(UIColor *)color radius:(CGFloat)radius opacity:(float)opacity
 {
-    self = [super init];
+    self = [super initWithFrame:CGRectZero];
     if (!self) {
         return self;
     }
