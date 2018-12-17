@@ -93,7 +93,7 @@ public class BlockListCache: NSObject {
                 blockedGroupIds.contains(groupThread.groupModel.groupId)
             }
         default:
-            owsFail("\(self.logTag) in \(#function) unexepected thread type: \(type(of: thread))")
+            owsFailDebug("\(self.logTag) in \(#function) unexpected thread type: \(type(of: thread))")
             return false
         }
     }
