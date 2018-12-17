@@ -60,6 +60,7 @@ class SignalAttachmentItem: Hashable {
 
     let attachment: SignalAttachment
 
+    // This might be nil if the attachment is not a valid image.
     var imageEditorModel: ImageEditorModel?
 
     init(attachment: SignalAttachment) {

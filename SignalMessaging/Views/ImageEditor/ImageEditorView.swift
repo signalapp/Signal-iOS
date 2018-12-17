@@ -4,6 +4,8 @@
 
 import UIKit
 
+// A view for editing outgoing image attachments.
+// It can also be used to render the final output.
 @objc
 public class ImageEditorView: UIView, ImageEditorModelDelegate {
     private let model: ImageEditorModel

@@ -34,6 +34,7 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
 
         if state == .possible,
             touchType(for: touches, with: event) == .valid {
+            // If a gesture starts with a valid touch, begin stroke.
             state = .began
         } else {
             state = .failed
@@ -48,10 +49,13 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
         case .began, .changed:
             switch touchType(for: touches, with: event) {
             case .valid:
+                // If a gesture continues with a valid touch, continue stroke.
                 state = .changed
             case .invalid:
                 state = .failed
             case .outside:
+                // If a gesture continues with a valid touch _outside the canvas_,
+                // end stroke.
                 state = .ended
             }
         default:
@@ -67,6 +71,7 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
         case .began, .changed:
             switch touchType(for: touches, with: event) {
             case .valid, .outside:
+                // If a gesture ends with a valid touch, end stroke.
                 state = .ended
             case .invalid:
                 state = .failed

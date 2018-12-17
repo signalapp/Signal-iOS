@@ -114,6 +114,9 @@ public class ImageEditorStrokeItem: ImageEditorItem {
 
 // MARK: -
 
+// ImageEditorContents represents a snapshot of canvas
+// state.
+//
 // Instances of ImageEditorContents should be treated
 // as immutable, once configured.
 public class ImageEditorContents: NSObject {
