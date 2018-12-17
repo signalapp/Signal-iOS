@@ -201,9 +201,9 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         // TODO: Use bezier curves to smooth stroke.
         let bezierPath = UIBezierPath()
 
-        let points = unitSamples.map { (unitSample) in
+        let points = applySmoothing(to: unitSamples.map { (unitSample) in
             transformSampleToPoint(unitSample)
-        }
+        })
         var lastForwardVector = CGPoint.zero
         for index in 0..<points.count {
             let point = points[index]
@@ -213,7 +213,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                 // First sample.
                 let nextPoint = points[index + 1]
                 forwardVector = CGPointSubtract(nextPoint, point)
-            } else if index == unitSamples.count - 1 {
+            } else if index == points.count - 1 {
                 // Last sample.
                 let lastPoint = points[index - 1]
                 forwardVector = CGPointSubtract(point, lastPoint)
@@ -231,6 +231,12 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                 bezierPath.move(to: point)
             } else {
                 let lastPoint = points[index - 1]
+                // We apply more than one kind of smoothing.
+                // This smoothing avoids rendering "angled segments"
+                // by drawing the stroke as a series of curves.
+                // We use bezier curves and infer the control points
+                // from the "next" and "prev" points.
+                //
                 // This factor controls how much we're smoothing.
                 //
                 // * 0.0 = No smoothing.
@@ -239,7 +245,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                 let controlPointFactor: CGFloat = 0.25
                 let controlPoint1 = CGPointAdd(lastPoint, CGPointScale(lastForwardVector, +controlPointFactor))
                 let controlPoint2 = CGPointAdd(point, CGPointScale(forwardVector, -controlPointFactor))
-                // We're using Cubic curves.  
+                // We're using Cubic curves.
                 bezierPath.addCurve(to: point, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
             }
             lastForwardVector = forwardVector
@@ -250,6 +256,38 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         shapeLayer.lineCap = kCALineCapRound
 
         return shapeLayer
+    }
+
+    // We apply more than one kind of smoothing.
+    //
+    // This (simple) smoothing reduces jitter from the touch sensor.
+    private class func applySmoothing(to points: [CGPoint]) -> [CGPoint] {
+        AssertIsOnMainThread()
+
+        var result = [CGPoint]()
+
+        for index in 0..<points.count {
+            let point = points[index]
+
+            if index == 0 {
+                // First sample.
+                result.append(point)
+            } else if index == points.count - 1 {
+                // Last sample.
+                result.append(point)
+            } else {
+                // Middle samples.
+                let lastPoint = points[index - 1]
+                let nextPoint = points[index + 1]
+                let alpha: CGFloat = 0.1
+                let smoothedPoint = CGPointAdd(CGPointScale(point, 1.0 - 2.0 * alpha),
+                                               CGPointAdd(CGPointScale(lastPoint, alpha),
+                                                          CGPointScale(nextPoint, alpha)))
+                result.append(smoothedPoint)
+            }
+        }
+
+        return result
     }
 
     // MARK: - Actions
