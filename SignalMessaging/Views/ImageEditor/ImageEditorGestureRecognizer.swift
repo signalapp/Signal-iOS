@@ -127,16 +127,18 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
             return isNewTouch ? .invalid : .outside
         }
 
-        // Ignore touches that start near the top or bottom edge of the screen;
-        // they may be a system edge swipe gesture.
-        let rootView = self.rootView(of: view)
-        let rootLocation = firstTouch.location(in: rootView)
-        let distanceToTopEdge = max(0, rootLocation.y)
-        let distanceToBottomEdge = max(0, rootView.bounds.size.height - rootLocation.y)
-        let distanceToNearestEdge = min(distanceToTopEdge, distanceToBottomEdge)
-        let kSystemEdgeSwipeTolerance: CGFloat = 50
-        if (distanceToNearestEdge < kSystemEdgeSwipeTolerance) {
-            return .invalid
+        if isNewTouch {
+            // Ignore touches that start near the top or bottom edge of the screen;
+            // they may be a system edge swipe gesture.
+            let rootView = self.rootView(of: view)
+            let rootLocation = firstTouch.location(in: rootView)
+            let distanceToTopEdge = max(0, rootLocation.y)
+            let distanceToBottomEdge = max(0, rootView.bounds.size.height - rootLocation.y)
+            let distanceToNearestEdge = min(distanceToTopEdge, distanceToBottomEdge)
+            let kSystemEdgeSwipeTolerance: CGFloat = 50
+            if (distanceToNearestEdge < kSystemEdgeSwipeTolerance) {
+                return .invalid
+            }
         }
 
         return .valid

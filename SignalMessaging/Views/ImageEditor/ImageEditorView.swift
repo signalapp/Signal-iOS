@@ -293,9 +293,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             // at "point=pixel" scale.
             layer.contentsScale = 1.0
 
-            // TODO:
-            Logger.verbose("layer.contentsScale: \(layer.contentsScale)")
-
             layer.render(in: context)
         }
 
