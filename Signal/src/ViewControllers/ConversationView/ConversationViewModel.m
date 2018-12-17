@@ -602,6 +602,10 @@ static const int kYapDatabaseRangeMinLength = 0;
     }
 
     for (TSOutgoingMessage *unsavedOutgoingMessage in self.unsavedOutgoingMessages) {
+        // unsavedOutgoingMessages should only exist for a short period (usually 30-50ms) before
+        // they are saved and moved into the `persistedViewItems`
+        OWSAssertDebug(
+            unsavedOutgoingMessage.timestampForSorting >= ([NSDate ows_millisecondTimeStamp] - 1 * kSecondInMs));
         NSUInteger index = [rowChanges indexOfObjectPassingTest:^BOOL(
             YapDatabaseViewRowChange *_Nonnull rowChange, NSUInteger idx, BOOL *_Nonnull stop) {
             return [rowChange.collectionKey.key isEqualToString:unsavedOutgoingMessage.uniqueId];
