@@ -155,20 +155,32 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        // We could try to be more precise by doing something like
-        //
-        //      let botomOffset = collectionView.contentSize + collectionView.contentInset.top - collectionView.bounds.height
-        //
-        // But `collectionView.contentInset` is based on `safeAreaInsets`, which isn't accurate
-        // until `viewDidAppear` at the earliest.
-        //
-        // from https://developer.apple.com/documentation/uikit/uiview/positioning_content_relative_to_the_safe_area
-        // > Make your modifications in [viewDidAppear] because the safe area insets for a view are
-        // > not accurate until the view is added to a view hierarchy.
-        //
-        // Overshooting like this works without visible animation glitch.
-        let bottomOffset = CGFloat.greatestFiniteMagnitude
-        collectionView.setContentOffset(CGPoint(x: 0, y: bottomOffset), animated: animated)
+        let verticalOffset: CGFloat
+        if #available(iOS 11, *) {
+            // On iOS10 and earlier, we can be precise, but as of iOS11 `collectionView.contentInset`
+            // is based on `safeAreaInsets`, which isn't accurate until `viewDidAppear` at the earliest.
+            //
+            // from https://developer.apple.com/documentation/uikit/uiview/positioning_content_relative_to_the_safe_area
+            // > Make your modifications in [viewDidAppear] because the safe area insets for a view are
+            // > not accurate until the view is added to a view hierarchy.
+            //
+            // Overshooting like this works without visible animation glitch. on iOS11+
+            // However, before iOS11, "overshooting" the contentOffset like this produces a broken
+            // layout or hanging. Luckily for those versions, before the safeAreaInset feature
+            // existed, we can accurately accesse colletionView.contentInset before `viewDidAppear`
+            // and calculate a precise content offset.
+            verticalOffset = CGFloat.greatestFiniteMagnitude
+        } else {
+            let visibleHeight = collectionView.bounds.height - collectionView.contentInset.top
+            let contentHeight = collectionView.contentSize.height
+            if contentHeight <= visibleHeight {
+                verticalOffset = -collectionView.contentInset.top
+            } else {
+                let topOfLastPage = contentHeight - collectionView.bounds.height
+                verticalOffset = topOfLastPage
+            }
+        }
+        collectionView.setContentOffset(CGPoint(x: 0, y: verticalOffset), animated: animated)
     }
 
     private func reloadDataAndRestoreSelection() {
