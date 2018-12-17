@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ConversationStyle;
 @class ConversationViewModel;
 @class OWSQuotedReplyModel;
+@class TSOutgoingMessage;
 @class TSThread;
 @class ThreadDynamicInteractions;
 
@@ -101,6 +102,7 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 - (BOOL)canLoadMoreItems;
 
 - (nullable NSIndexPath *)ensureLoadWindowContainsQuotedReply:(OWSQuotedReplyModel *)quotedReply;
+- (void)appendUnsavedOutgoingTextMessage:(TSOutgoingMessage *)outgoingMessage;
 
 @end
 

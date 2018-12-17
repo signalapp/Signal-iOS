@@ -3887,13 +3887,14 @@ typedef enum : NSUInteger {
                                                   inThread:self.thread
                                           quotedReplyModel:self.inputToolbar.quotedReply];
     } else {
-        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
             message = [ThreadUtil enqueueMessageWithText:text
                                                 inThread:self.thread
                                         quotedReplyModel:self.inputToolbar.quotedReply
                                              transaction:transaction];
         }];
     }
+    [self.conversationViewModel appendUnsavedOutgoingTextMessage:message];
 
     [self messageWasSent:message];
 
