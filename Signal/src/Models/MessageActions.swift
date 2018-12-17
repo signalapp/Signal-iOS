@@ -71,19 +71,23 @@ struct MessageActionBuilder {
 class ConversationViewItemActions: NSObject {
 
     @objc
-    class func textActions(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> [MenuAction] {
+    class func textActions(conversationViewItem: ConversationViewItem, isFailedOrSending: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
         var actions: [MenuAction] = []
 
-        let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(replyAction)
+        if !isFailedOrSending {
+            let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(replyAction)
+        }
 
         if conversationViewItem.hasBodyTextActionContent {
             let copyTextAction = MessageActionBuilder.copyText(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(copyTextAction)
         }
 
-        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(deleteAction)
+        if !isFailedOrSending {
+            let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(deleteAction)
+        }
 
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(showDetailsAction)
@@ -92,11 +96,13 @@ class ConversationViewItemActions: NSObject {
     }
 
     @objc
-    class func mediaActions(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> [MenuAction] {
+    class func mediaActions(conversationViewItem: ConversationViewItem, isFailedOrSending: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
         var actions: [MenuAction] = []
 
-        let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(replyAction)
+        if !isFailedOrSending {
+            let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(replyAction)
+        }
 
         if conversationViewItem.hasMediaActionContent {
             if conversationViewItem.canCopyMedia() {
@@ -109,8 +115,10 @@ class ConversationViewItemActions: NSObject {
             }
         }
 
-        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(deleteAction)
+        if !isFailedOrSending {
+            let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(deleteAction)
+        }
 
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(showDetailsAction)
@@ -119,18 +127,26 @@ class ConversationViewItemActions: NSObject {
     }
 
     @objc
-    class func quotedMessageActions(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> [MenuAction] {
-        let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
-        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-        let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
+    class func quotedMessageActions(conversationViewItem: ConversationViewItem, isFailedOrSending: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
+        var actions: [MenuAction] = []
 
-        return [replyAction, deleteAction, showDetailsAction]
+        if !isFailedOrSending {
+            let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(replyAction)
+
+            let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(deleteAction)
+        }
+
+        let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
+        actions.append(showDetailsAction)
+
+        return actions
     }
 
     @objc
     class func infoMessageActions(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> [MenuAction] {
         let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-
-        return [deleteAction]
+        return [deleteAction ]
     }
 }

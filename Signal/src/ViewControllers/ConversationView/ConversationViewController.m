@@ -1923,24 +1923,36 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationViewCellDelegate
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem
+- (void)conversationCell:(ConversationViewCell *)cell
+            isFailedOrSending:(BOOL)isFailedOrSending
+    didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem
 {
     NSArray<MenuAction *> *messageActions =
-        [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem delegate:self];
+        [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem
+                                                        isFailedOrSending:isFailedOrSending
+                                                                 delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(id<ConversationViewItem>)viewItem
+- (void)conversationCell:(ConversationViewCell *)cell
+           isFailedOrSending:(BOOL)isFailedOrSending
+    didLongpressTextViewItem:(id<ConversationViewItem>)viewItem
 {
     NSArray<MenuAction *> *messageActions =
-        [ConversationViewItemActions textActionsWithConversationViewItem:viewItem delegate:self];
+        [ConversationViewItemActions textActionsWithConversationViewItem:viewItem
+                                                       isFailedOrSending:isFailedOrSending
+                                                                delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressQuoteViewItem:(id<ConversationViewItem>)viewItem
+- (void)conversationCell:(ConversationViewCell *)cell
+            isFailedOrSending:(BOOL)isFailedOrSending
+    didLongpressQuoteViewItem:(id<ConversationViewItem>)viewItem
 {
     NSArray<MenuAction *> *messageActions =
-        [ConversationViewItemActions quotedMessageActionsWithConversationViewItem:viewItem delegate:self];
+        [ConversationViewItemActions quotedMessageActionsWithConversationViewItem:viewItem
+                                                                isFailedOrSending:isFailedOrSending
+                                                                         delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
