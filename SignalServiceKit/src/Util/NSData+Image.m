@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "MIMETypeUtil.h"
 #import "OWSFileSystem.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -368,6 +368,35 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         default:
             return imageSize;
     }
+}
+
++ (BOOL)hasAlphaForValidImageFilePath:(NSString *)filePath
+{
+    NSURL *url = [NSURL fileURLWithPath:filePath];
+
+    // With CGImageSource we avoid loading the whole image into memory.
+    CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)url, NULL);
+    if (!source) {
+        OWSFailDebug(@"Could not load image: %@", url);
+        return NO;
+    }
+
+    NSDictionary *options = @{
+        (NSString *)kCGImageSourceShouldCache : @(NO),
+    };
+    NSDictionary *properties
+        = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, 0, (CFDictionaryRef)options);
+    BOOL result = NO;
+    if (properties) {
+        NSNumber *hasAlpha = properties[(NSString *)kCGImagePropertyHasAlpha];
+        if (hasAlpha) {
+            result = hasAlpha.boolValue;
+        } else {
+            OWSFailDebug(@"Could not determine transparency of image: %@", url);
+        }
+    }
+    CFRelease(source);
+    return result;
 }
 
 @end

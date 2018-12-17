@@ -246,7 +246,7 @@ public class ImageEditorModel: NSObject {
     public let srcImagePath: String
 
     @objc
-    public let srcImageSize: CGSize
+    public let srcImageSizePixels: CGSize
 
     private var contents = ImageEditorContents()
 
@@ -273,12 +273,12 @@ public class ImageEditorModel: NSObject {
             throw ImageEditorError.invalidInput
         }
 
-        let srcImageSize = NSData.imageSize(forFilePath: srcImagePath, mimeType: mimeType)
-        guard srcImageSize.width > 0, srcImageSize.height > 0 else {
+        let srcImageSizePixels = NSData.imageSize(forFilePath: srcImagePath, mimeType: mimeType)
+        guard srcImageSizePixels.width > 0, srcImageSizePixels.height > 0 else {
             Logger.error("Couldn't determine image size.")
             throw ImageEditorError.invalidInput
         }
-        self.srcImageSize = srcImageSize
+        self.srcImageSizePixels = srcImageSizePixels
 
         super.init()
     }

@@ -581,7 +581,63 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     var attachments: [SignalAttachment] {
-        return attachmentItems.map { $0.attachment }
+        return attachmentItems.map { self.attachment(forAttachmentItem: $0) }
+    }
+
+    // For any attachments edited with the image editor, returns a
+    // new SignalAttachment that reflects those changes.  Otherwise,
+    // returns the original attachment.
+    //
+    // If any errors occurs in the export process, we fail over to
+    // sending the original attachment.  This seems better than trying
+    // to involve the user in resolving the issue.
+    func attachment(forAttachmentItem attachmentItem: SignalAttachmentItem) -> SignalAttachment {
+        guard let imageEditorModel = attachmentItem.imageEditorModel else {
+            // Image was not edited.
+            return attachmentItem.attachment
+        }
+        guard imageEditorModel.itemCount() > 0 else {
+            // Image editor has no changes.
+            return attachmentItem.attachment
+        }
+        guard let dstImage = ImageEditorView.renderForOutput(model: imageEditorModel) else {
+            owsFailDebug("Could not render for output.")
+            return attachmentItem.attachment
+        }
+        var dataUTI = kUTTypeImage as String
+        guard let dstData: Data = {
+            let isLossy: Bool = attachmentItem.attachment.mimeType.caseInsensitiveCompare(OWSMimeTypeImageJpeg) == .orderedSame
+            if isLossy {
+                dataUTI = kUTTypeJPEG as String
+                return UIImageJPEGRepresentation(dstImage, 0.9)
+            } else {
+                dataUTI = kUTTypePNG as String
+                return UIImagePNGRepresentation(dstImage)
+            }
+            }() else {
+                owsFailDebug("Could not export for output.")
+                return attachmentItem.attachment
+        }
+        guard let dataSource = DataSourceValue.dataSource(with: dstData, utiType: dataUTI) else {
+            owsFailDebug("Could not prepare data source for output.")
+            return attachmentItem.attachment
+        }
+
+        // Rewrite the filename's extension to reflect the output file format.
+        var filename: String? = attachmentItem.attachment.sourceFilename
+        if let sourceFilename = attachmentItem.attachment.sourceFilename {
+            if let fileExtension: String = MIMETypeUtil.fileExtension(forUTIType: dataUTI) {
+                filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
+            }
+        }
+        dataSource.sourceFilename = filename
+
+        let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
+        if let attachmentError = dstAttachment.error {
+            owsFailDebug("Could not prepare attachment for output: \(attachmentError).")
+            return attachmentItem.attachment
+        }
+        return dstAttachment
     }
 
     func attachmentItem(before currentItem: SignalAttachmentItem) -> SignalAttachmentItem? {
