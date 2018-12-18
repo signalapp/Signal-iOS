@@ -101,8 +101,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     public func handleTouchGesture(_ gestureRecognizer: UIGestureRecognizer) {
         AssertIsOnMainThread()
 
-        Logger.verbose("\(NSStringForUIGestureRecognizerState(gestureRecognizer.state))")
-
         let removeCurrentStroke = {
             if let stroke = self.currentStroke {
                 self.model.remove(item: stroke)
@@ -163,9 +161,13 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     // MARK: - ImageEditorModelDelegate
 
     public func imageEditorModelDidChange() {
-        // TODO: We eventually want to narrow our change events
-        // to reflect the specific item(s) which changed.
         updateAllContent()
+
+        updateButtons()
+    }
+
+    public func imageEditorModelDidChange(changedItemIds: [String]) {
+        updateContent(changedItemIds: changedItemIds)
 
         updateButtons()
     }
@@ -190,33 +192,71 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
     // MARK: - Content
 
-    var contentLayers = [CALayer]()
+    var contentLayerMap = [String: CALayer]()
 
     internal func updateAllContent() {
         AssertIsOnMainThread()
-
-        for layer in contentLayers {
-            layer.removeFromSuperlayer()
-        }
-        contentLayers.removeAll()
-
-        guard bounds.width > 0,
-            bounds.height > 0 else {
-                return
-        }
 
         // Don't animate changes.
         CATransaction.begin()
         CATransaction.setDisableActions(true)
 
-        for item in model.items() {
-            guard let layer = ImageEditorView.layerForItem(item: item,
-                                                           viewSize: bounds.size) else {
-                continue
-            }
+        for layer in contentLayerMap.values {
+            layer.removeFromSuperlayer()
+        }
+        contentLayerMap.removeAll()
 
-            self.layer.addSublayer(layer)
-            contentLayers.append(layer)
+        if bounds.width > 0,
+            bounds.height > 0 {
+
+            for item in model.items() {
+                guard let layer = ImageEditorView.layerForItem(item: item,
+                                                               viewSize: bounds.size) else {
+                                                                continue
+                }
+
+                self.layer.addSublayer(layer)
+                contentLayerMap[item.itemId] = layer
+            }
+        }
+
+        CATransaction.commit()
+    }
+
+    internal func updateContent(changedItemIds: [String]) {
+        AssertIsOnMainThread()
+
+        // Don't animate changes.
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        // Remove all changed items.
+        for itemId in changedItemIds {
+            if let layer = contentLayerMap[itemId] {
+                layer.removeFromSuperlayer()
+            }
+            contentLayerMap.removeValue(forKey: itemId)
+        }
+
+        if bounds.width > 0,
+            bounds.height > 0 {
+
+            // Create layers for inserted and updated items.
+            for itemId in changedItemIds {
+                guard let item = model.item(forId: itemId) else {
+                    // Item was deleted.
+                    continue
+                }
+
+                // Item was inserted or updated.
+                guard let layer = ImageEditorView.layerForItem(item: item,
+                                                               viewSize: bounds.size) else {
+                                                                continue
+                }
+
+                self.layer.addSublayer(layer)
+                contentLayerMap[item.itemId] = layer
+            }
         }
 
         CATransaction.commit()
