@@ -423,14 +423,15 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    BOOL shouldAllowReply = YES;
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
-            // Ignore long press on unsent messages.
-            return;
+            // Don't allow "delete" or "reply" on "failed" outgoing messages.
+            shouldAllowReply = NO;
         } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
-            // Ignore long press on outgoing messages being sent.
-            return;
+            // Don't allow "delete" or "reply" on "sending" outgoing messages.
+            shouldAllowReply = NO;
         }
     }
 
@@ -438,15 +439,21 @@ NS_ASSUME_NONNULL_BEGIN
     switch ([self.messageBubbleView gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
         case OWSMessageGestureLocation_OversizeText: {
-            [self.delegate conversationCell:self didLongpressTextViewItem:self.viewItem];
+            [self.delegate conversationCell:self
+                           shouldAllowReply:shouldAllowReply
+                   didLongpressTextViewItem:self.viewItem];
             break;
         }
         case OWSMessageGestureLocation_Media: {
-            [self.delegate conversationCell:self didLongpressMediaViewItem:self.viewItem];
+            [self.delegate conversationCell:self
+                           shouldAllowReply:shouldAllowReply
+                  didLongpressMediaViewItem:self.viewItem];
             break;
         }
         case OWSMessageGestureLocation_QuotedReply: {
-            [self.delegate conversationCell:self didLongpressQuoteViewItem:self.viewItem];
+            [self.delegate conversationCell:self
+                           shouldAllowReply:shouldAllowReply
+                  didLongpressQuoteViewItem:self.viewItem];
             break;
         }
     }
