@@ -48,7 +48,7 @@ public class DeviceNames: NSObject {
 
         // cipher_text = AES-CTR(key=cipher_key, input=plaintext, counter=0)
         //
-        // TODO: Is this IV right?
+        // An all-zeros IV corresponds to an AES CTR counter of zero.
         let ciphertextIV = Data(count: Int(kAES256CTR_IVLength))
         guard let ciphertextKey = OWSAES256Key(data: cipherKey) else {
             owsFailDebug("Invalid cipher key.")
@@ -64,7 +64,7 @@ public class DeviceNames: NSObject {
                                                             ciphertext: ciphertext.ciphertext)
         let protoData = try protoBuilder.buildSerializedData()
 
-        // TODO: This uses Data's foundation method rather than the NSData's SSK method.
+        // NOTE: This uses Data's foundation method rather than the NSData's SSK method.
         let protoDataBase64 = protoData.base64EncodedData()
 
         return protoDataBase64
@@ -168,7 +168,7 @@ public class DeviceNames: NSObject {
 
         // plaintext = AES-CTR(key=cipher_key, input=ciphertext, counter=0)
         //
-        // TODO: Is this IV right?
+        // An all-zeros IV corresponds to an AES CTR counter of zero.
         let ciphertextIV = Data(count: Int(kAES256CTR_IVLength))
         guard let ciphertextKey = OWSAES256Key(data: cipherKey) else {
             owsFailDebug("Invalid cipher key.")
