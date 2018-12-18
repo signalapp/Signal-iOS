@@ -412,7 +412,8 @@ public class ImageEditorModel: NSObject {
                         suppressUndo: Bool = false) {
         performAction({ (newContents) in
             newContents.replace(item: item)
-        }, suppressUndo: suppressUndo)
+        }, changedItemIds: [item.itemId],
+           suppressUndo: suppressUndo)
     }
 
     @objc
