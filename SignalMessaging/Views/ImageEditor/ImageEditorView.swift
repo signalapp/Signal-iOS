@@ -107,6 +107,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             if let stroke = self.currentStroke {
                 self.model.remove(item: stroke)
             }
+            self.model.setIsUndoSuppressed(isUndoSuppressed: false)
             self.currentStroke = nil
             self.currentStrokeSamples.removeAll()
         }
@@ -131,9 +132,11 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
             currentStrokeSamples.append(unitSampleForGestureLocation())
 
-            let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: self.currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
-            self.model.append(item: stroke)
-            self.currentStroke = stroke
+            model.setIsUndoSuppressed(isUndoSuppressed: true)
+
+            let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
+            model.append(item: stroke)
+            currentStroke = stroke
 
         case .changed, .ended:
             currentStrokeSamples.append(unitSampleForGestureLocation())
@@ -146,13 +149,15 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
             // Model items are immutable; we _replace_ the
             // stroke item rather than modify it.
-            let stroke = ImageEditorStrokeItem(itemId: lastStroke.itemId, color: strokeColor, unitSamples: self.currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
-            self.model.replace(item: stroke)
-            self.currentStroke = stroke
+            let stroke = ImageEditorStrokeItem(itemId: lastStroke.itemId, color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
 
             if gestureRecognizer.state == .ended {
-                self.currentStroke = nil
-                self.currentStrokeSamples.removeAll()
+                model.replace(item: stroke, shouldRemoveUndoSuppression: true)
+                currentStroke = nil
+                currentStrokeSamples.removeAll()
+            } else {
+                model.replace(item: stroke)
+                currentStroke = stroke
             }
         default:
             removeCurrentStroke()
