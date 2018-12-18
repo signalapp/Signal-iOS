@@ -114,6 +114,103 @@ public class ImageEditorStrokeItem: ImageEditorItem {
 
 // MARK: -
 
+public class OrderedDictionary<ValueType>: NSObject {
+
+    public typealias KeyType = String
+
+    var keyValueMap = [KeyType: ValueType]()
+
+    var orderedKeys = [KeyType]()
+
+    public override init() {
+    }
+
+    // Used to clone copies of instances of this class.
+    public init(keyValueMap: [KeyType: ValueType],
+                orderedKeys: [KeyType]) {
+
+        self.keyValueMap = keyValueMap
+        self.orderedKeys = orderedKeys
+    }
+
+    // Since the contents are immutable, we only modify copies
+    // made with this method.
+    public func clone() -> OrderedDictionary<ValueType> {
+        return OrderedDictionary(keyValueMap: keyValueMap, orderedKeys: orderedKeys)
+    }
+
+    public func append(key: KeyType, value: ValueType) {
+        if keyValueMap[key] != nil {
+            owsFailDebug("Unexpected duplicate key in key map: \(key)")
+        }
+        keyValueMap[key] = value
+
+        if orderedKeys.contains(key) {
+            owsFailDebug("Unexpected duplicate key in key list: \(key)")
+        } else {
+            orderedKeys.append(key)
+        }
+
+        if orderedKeys.count != keyValueMap.count {
+            owsFailDebug("Invalid contents.")
+        }
+    }
+
+    public func replace(key: KeyType, value: ValueType) {
+        if keyValueMap[key] == nil {
+            owsFailDebug("Missing key in key map: \(key)")
+        }
+        keyValueMap[key] = value
+
+        if !orderedKeys.contains(key) {
+            owsFailDebug("Missing key in key list: \(key)")
+        }
+
+        if orderedKeys.count != keyValueMap.count {
+            owsFailDebug("Invalid contents.")
+        }
+    }
+
+    public func remove(key: KeyType) {
+        if keyValueMap[key] == nil {
+            owsFailDebug("Missing key in key map: \(key)")
+        } else {
+            keyValueMap.removeValue(forKey: key)
+        }
+
+        if !orderedKeys.contains(key) {
+            owsFailDebug("Missing key in key list: \(key)")
+        } else {
+            orderedKeys = orderedKeys.filter { $0 != key }
+        }
+
+        if orderedKeys.count != keyValueMap.count {
+            owsFailDebug("Invalid contents.")
+        }
+    }
+
+    public var count: Int {
+        if orderedKeys.count != keyValueMap.count {
+            owsFailDebug("Invalid contents.")
+        }
+        return orderedKeys.count
+    }
+
+    public func orderedValues() -> [ValueType] {
+        var values = [ValueType]()
+        for key in orderedKeys {
+            guard let value = self.keyValueMap[key] else {
+                owsFailDebug("Missing value")
+                continue
+            }
+            values.append(value)
+        }
+        return values
+    }
+}
+
+// MARK: -
+
 // ImageEditorContents represents a snapshot of canvas
 // state.
 //
@@ -121,114 +218,63 @@ public class ImageEditorStrokeItem: ImageEditorItem {
 // as immutable, once configured.
 public class ImageEditorContents: NSObject {
 
-    // This represents the current state of each item.
-    var itemMap = [String: ImageEditorItem]()
+    public typealias ItemMapType = OrderedDictionary<ImageEditorItem>
 
-    // This represents the back-to-front ordering of the items.
-    var itemIds = [String]()
+    // This represents the current state of each item,
+    // a mapping of [itemId : item].
+    var itemMap = ItemMapType()
 
-    @objc
+    // Used to create an initial, empty instances of this class.
     public override init() {
     }
 
-    @objc
-    public init(itemMap: [String: ImageEditorItem],
-                itemIds: [String]) {
-
+    // Used to clone copies of instances of this class.
+    public init(itemMap: ItemMapType) {
         self.itemMap = itemMap
-        self.itemIds = itemIds
     }
 
     // Since the contents are immutable, we only modify copies
     // made with this method.
-    @objc
     public func clone() -> ImageEditorContents {
-        return ImageEditorContents(itemMap: itemMap, itemIds: itemIds)
+        return ImageEditorContents(itemMap: itemMap.clone())
     }
 
     @objc
     public func append(item: ImageEditorItem) {
         Logger.verbose("\(item.itemId)")
 
-        if itemMap[item.itemId] != nil {
-            owsFail("Unexpected duplicate item in item map: \(item.itemId)")
-        }
-        itemMap[item.itemId] = item
-
-        if itemIds.contains(item.itemId) {
-            owsFail("Unexpected duplicate item in item list: \(item.itemId)")
-        } else {
-            itemIds.append(item.itemId)
-        }
-
-        if itemIds.count != itemMap.count {
-            owsFailDebug("Invalid contents.")
-        }
+        itemMap.append(key: item.itemId, value: item)
     }
 
     @objc
     public func replace(item: ImageEditorItem) {
         Logger.verbose("\(item.itemId)")
 
-        if itemMap[item.itemId] == nil {
-            owsFail("Missing item in item map: \(item.itemId)")
-        }
-        itemMap[item.itemId] = item
-
-        if !itemIds.contains(item.itemId) {
-            owsFail("Missing item in item list: \(item.itemId)")
-        }
-
-        if itemIds.count != itemMap.count {
-            owsFailDebug("Invalid contents.")
-        }
+        itemMap.replace(key: item.itemId, value: item)
     }
 
     @objc
     public func remove(item: ImageEditorItem) {
         Logger.verbose("\(item.itemId)")
 
-        remove(itemId: item.itemId)
+        itemMap.remove(key: item.itemId)
     }
 
     @objc
     public func remove(itemId: String) {
-        if itemMap[itemId] == nil {
-            owsFail("Missing item in item map: \(itemId)")
-        } else {
-            itemMap.removeValue(forKey: itemId)
-        }
+        Logger.verbose("\(itemId)")
 
-        if !itemIds.contains(itemId) {
-            owsFail("Missing item in item list: \(itemId)")
-        } else {
-            itemIds = itemIds.filter { $0 != itemId }
-        }
-
-        if itemIds.count != itemMap.count {
-            owsFailDebug("Invalid contents.")
-        }
+        itemMap.remove(key: itemId)
     }
 
     @objc
     public func itemCount() -> Int {
-        if itemIds.count != itemMap.count {
-            owsFailDebug("Invalid contents.")
-        }
-        return itemIds.count
+        return itemMap.count
     }
 
     @objc
     public func items() -> [ImageEditorItem] {
-        var items = [ImageEditorItem]()
-        for itemId in itemIds {
-            guard let item = self.itemMap[itemId] else {
-                owsFailDebug("Missing item")
-                continue
-            }
-            items.append(item)
-        }
-        return items
+        return itemMap.orderedValues()
     }
 }
 

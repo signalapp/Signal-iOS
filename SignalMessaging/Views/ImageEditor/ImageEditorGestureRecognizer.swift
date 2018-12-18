@@ -85,7 +85,7 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesCancelled(touches, with: event)
 
-        state = .failed
+        state = .cancelled
     }
 
     public enum TouchType {

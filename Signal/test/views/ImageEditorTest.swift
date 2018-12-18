@@ -28,31 +28,23 @@ class ImageEditorTest: SignalBaseTest {
     func testImageEditorContents() {
         let contents = ImageEditorContents()
         XCTAssertEqual(0, contents.itemMap.count)
-        XCTAssertEqual(0, contents.itemIds.count)
 
         let item = ImageEditorItem(itemType: .test)
         contents.append(item: item)
         XCTAssertEqual(1, contents.itemMap.count)
-        XCTAssertEqual(1, contents.itemIds.count)
 
         let contentsCopy = contents.clone()
         XCTAssertEqual(1, contents.itemMap.count)
-        XCTAssertEqual(1, contents.itemIds.count)
         XCTAssertEqual(1, contentsCopy.itemMap.count)
-        XCTAssertEqual(1, contentsCopy.itemIds.count)
 
         contentsCopy.remove(item: item)
         XCTAssertEqual(1, contents.itemMap.count)
-        XCTAssertEqual(1, contents.itemIds.count)
         XCTAssertEqual(0, contentsCopy.itemMap.count)
-        XCTAssertEqual(0, contentsCopy.itemIds.count)
 
         let modifiedItem = ImageEditorItem(itemId: item.itemId, itemType: item.itemType)
         contents.replace(item: modifiedItem)
         XCTAssertEqual(1, contents.itemMap.count)
-        XCTAssertEqual(1, contents.itemIds.count)
         XCTAssertEqual(0, contentsCopy.itemMap.count)
-        XCTAssertEqual(0, contentsCopy.itemIds.count)
     }
 
     private func writeDummyImage() -> String {
@@ -61,23 +53,14 @@ class ImageEditorTest: SignalBaseTest {
             owsFail("Couldn't export dummy image.")
         }
         let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: "png")
-        do {
-            try data.write(to: URL(fileURLWithPath: filePath))
-        } catch {
-            owsFail("Couldn't write dummy image.")
-        }
+        try! data.write(to: URL(fileURLWithPath: filePath))
         return filePath
     }
 
     func testImageEditor() {
         let imagePath = writeDummyImage()
 
-        let imageEditor: ImageEditorModel
-        do {
-            imageEditor = try ImageEditorModel(srcImagePath: imagePath)
-        } catch {
-            owsFail("Couldn't create ImageEditorModel.")
-        }
+        let imageEditor = try! ImageEditorModel(srcImagePath: imagePath)
         XCTAssertFalse(imageEditor.canUndo())
         XCTAssertFalse(imageEditor.canRedo())
         XCTAssertEqual(0, imageEditor.itemCount())

@@ -74,7 +74,7 @@ class SignalAttachmentItem: Hashable {
             do {
                 imageEditorModel = try ImageEditorModel(srcImagePath: path)
             } catch {
-                // Usually not an error.
+                // Usually not an error; this usually indicates invalid input.
                 Logger.warn("Could not create image editor: \(error)")
             }
         }
@@ -582,7 +582,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     var attachments: [SignalAttachment] {
-        return attachmentItems.map { self.attachment(forAttachmentItem: $0) }
+        return attachmentItems.map { self.processedAttachment(forAttachmentItem: $0) }
     }
 
     // For any attachments edited with the image editor, returns a
@@ -592,7 +592,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // If any errors occurs in the export process, we fail over to
     // sending the original attachment.  This seems better than trying
     // to involve the user in resolving the issue.
-    func attachment(forAttachmentItem attachmentItem: SignalAttachmentItem) -> SignalAttachment {
+    func processedAttachment(forAttachmentItem attachmentItem: SignalAttachmentItem) -> SignalAttachment {
         guard let imageEditorModel = attachmentItem.imageEditorModel else {
             // Image was not edited.
             return attachmentItem.attachment

@@ -204,7 +204,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         let points = applySmoothing(to: unitSamples.map { (unitSample) in
             transformSampleToPoint(unitSample)
         })
-        var lastForwardVector = CGPoint.zero
+        var previousForwardVector = CGPoint.zero
         for index in 0..<points.count {
             let point = points[index]
 
@@ -215,22 +215,22 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                 forwardVector = CGPointSubtract(nextPoint, point)
             } else if index == points.count - 1 {
                 // Last sample.
-                let lastPoint = points[index - 1]
-                forwardVector = CGPointSubtract(point, lastPoint)
+                let previousPoint = points[index - 1]
+                forwardVector = CGPointSubtract(point, previousPoint)
             } else {
                 // Middle samples.
-                let lastPoint = points[index - 1]
-                let lastForwardVector = CGPointSubtract(point, lastPoint)
+                let previousPoint = points[index - 1]
+                let previousPointForwardVector = CGPointSubtract(point, previousPoint)
                 let nextPoint = points[index + 1]
-                let nextForwardVector = CGPointSubtract(nextPoint, point)
-                forwardVector = CGPointScale(CGPointAdd(lastForwardVector, nextForwardVector), 0.5)
+                let nextPointForwardVector = CGPointSubtract(nextPoint, point)
+                forwardVector = CGPointScale(CGPointAdd(previousPointForwardVector, nextPointForwardVector), 0.5)
             }
 
             if index == 0 {
                 // First sample.
                 bezierPath.move(to: point)
             } else {
-                let lastPoint = points[index - 1]
+                let previousPoint = points[index - 1]
                 // We apply more than one kind of smoothing.
                 // This smoothing avoids rendering "angled segments"
                 // by drawing the stroke as a series of curves.
@@ -243,12 +243,12 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                 //
                 // TODO: Tune this variable once we have stroke input.
                 let controlPointFactor: CGFloat = 0.25
-                let controlPoint1 = CGPointAdd(lastPoint, CGPointScale(lastForwardVector, +controlPointFactor))
+                let controlPoint1 = CGPointAdd(previousPoint, CGPointScale(previousForwardVector, +controlPointFactor))
                 let controlPoint2 = CGPointAdd(point, CGPointScale(forwardVector, -controlPointFactor))
                 // We're using Cubic curves.
                 bezierPath.addCurve(to: point, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
             }
-            lastForwardVector = forwardVector
+            previousForwardVector = forwardVector
         }
 
         shapeLayer.path = bezierPath.cgPath
@@ -310,6 +310,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
         let dstScale: CGFloat = 1.0 // The size is specified in pixels, not in points.
         UIGraphicsBeginImageContextWithOptions(dstSizePixels, !hasAlpha, dstScale)
+        defer { UIGraphicsEndImageContext() }
 
         guard let context = UIGraphicsGetCurrentContext() else {
             owsFailDebug("Could not create output context.")
@@ -338,7 +339,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         if scaledImage == nil {
             owsFailDebug("could not generate dst image.")
         }
-        UIGraphicsEndImageContext()
         return scaledImage
     }
 }
