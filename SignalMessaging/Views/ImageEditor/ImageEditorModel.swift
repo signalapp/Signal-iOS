@@ -320,13 +320,6 @@ public class ImageEditorModel: NSObject {
     private var undoStack = [ImageEditorOperation]()
     private var redoStack = [ImageEditorOperation]()
 
-    // In some cases, we want to suppress changes to undo state.
-    // e.g. drawing a stroke will modify the model many times (once
-    // for each touch event/stroke sample), but we only want that
-    // to add a single undo operation.
-    private var isUndoSuppressed = false
-    private var suppressedUndoContents: ImageEditorContents?
-
     // We don't want to allow editing of images if:
     //
     // * They are invalid.
@@ -373,28 +366,6 @@ public class ImageEditorModel: NSObject {
     }
 
     @objc
-    public func setIsUndoSuppressed(isUndoSuppressed: Bool) {
-        if isUndoSuppressed {
-            if self.isUndoSuppressed {
-                owsFailDebug("Undo already suppressed.")
-            }
-            if suppressedUndoContents != nil {
-                owsFailDebug("Unexpected suppressed undo contents.")
-            }
-            suppressedUndoContents = contents.clone()
-        } else {
-            if self.isUndoSuppressed {
-                if suppressedUndoContents == nil {
-                    owsFailDebug("Missing suppressed undo contents.")
-                }
-            }
-            suppressedUndoContents = nil
-        }
-
-        self.isUndoSuppressed = isUndoSuppressed
-    }
-
-    @objc
     public func canRedo() -> Bool {
         return !redoStack.isEmpty
     }
@@ -438,10 +409,10 @@ public class ImageEditorModel: NSObject {
 
     @objc
     public func replace(item: ImageEditorItem,
-                        shouldRemoveUndoSuppression: Bool = false) {
+                        suppressUndo: Bool = false) {
         performAction({ (newContents) in
             newContents.replace(item: item)
-        }, shouldRemoveUndoSuppression: shouldRemoveUndoSuppression)
+        }, suppressUndo: suppressUndo)
     }
 
     @objc
@@ -452,22 +423,8 @@ public class ImageEditorModel: NSObject {
     }
 
     private func performAction(_ action: (ImageEditorContents) -> Void,
-                               shouldRemoveUndoSuppression: Bool = false) {
-        if shouldRemoveUndoSuppression {
-            if !isUndoSuppressed {
-                owsFailDebug("Can't remove undo suppression, not suppressed.")
-            }
-            if let suppressedUndoContents = self.suppressedUndoContents {
-                let undoOperation = ImageEditorOperation(contents: suppressedUndoContents)
-                undoStack.append(undoOperation)
-                redoStack.removeAll()
-            } else {
-                owsFailDebug("Missing suppressed undo contents.")
-            }
-            self.isUndoSuppressed = false
-
-            setIsUndoSuppressed(isUndoSuppressed: false)
-        } else if !isUndoSuppressed {
+                               suppressUndo: Bool = false) {
+        if !suppressUndo {
             let undoOperation = ImageEditorOperation(contents: contents)
             undoStack.append(undoOperation)
             redoStack.removeAll()

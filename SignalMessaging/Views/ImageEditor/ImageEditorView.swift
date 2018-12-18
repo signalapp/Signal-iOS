@@ -107,7 +107,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             if let stroke = self.currentStroke {
                 self.model.remove(item: stroke)
             }
-            self.model.setIsUndoSuppressed(isUndoSuppressed: false)
             self.currentStroke = nil
             self.currentStrokeSamples.removeAll()
         }
@@ -132,8 +131,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
             currentStrokeSamples.append(unitSampleForGestureLocation())
 
-            model.setIsUndoSuppressed(isUndoSuppressed: true)
-
             let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
             model.append(item: stroke)
             currentStroke = stroke
@@ -150,13 +147,12 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             // Model items are immutable; we _replace_ the
             // stroke item rather than modify it.
             let stroke = ImageEditorStrokeItem(itemId: lastStroke.itemId, color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
+            model.replace(item: stroke, suppressUndo: true)
 
             if gestureRecognizer.state == .ended {
-                model.replace(item: stroke, shouldRemoveUndoSuppression: true)
                 currentStroke = nil
                 currentStrokeSamples.removeAll()
             } else {
-                model.replace(item: stroke)
                 currentStroke = stroke
             }
         default:
