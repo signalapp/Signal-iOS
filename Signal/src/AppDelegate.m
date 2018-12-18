@@ -1215,6 +1215,9 @@ static NSTimeInterval launchStartedAt;
     [self.udManager setup];
 
     [self preheatDatabaseViews];
+
+    [OWSRequestFactory requestVerificationCodeRequestWithPhoneNumber:@"+13213214321"
+                                                           transport:TSVerificationTransportVoice];
 }
 
 - (void)preheatDatabaseViews
