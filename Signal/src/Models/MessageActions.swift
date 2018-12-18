@@ -84,10 +84,8 @@ class ConversationViewItemActions: NSObject {
             actions.append(copyTextAction)
         }
 
-        if !isFailedOrSending {
-            let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-            actions.append(deleteAction)
-        }
+        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+        actions.append(deleteAction)
 
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(showDetailsAction)
@@ -115,10 +113,8 @@ class ConversationViewItemActions: NSObject {
             }
         }
 
-        if !isFailedOrSending {
-            let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-            actions.append(deleteAction)
-        }
+        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+        actions.append(deleteAction)
 
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(showDetailsAction)
@@ -133,10 +129,10 @@ class ConversationViewItemActions: NSObject {
         if !isFailedOrSending {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
-
-            let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-            actions.append(deleteAction)
         }
+
+        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+        actions.append(deleteAction)
 
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(showDetailsAction)
