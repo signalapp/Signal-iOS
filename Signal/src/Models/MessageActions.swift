@@ -71,10 +71,10 @@ struct MessageActionBuilder {
 class ConversationViewItemActions: NSObject {
 
     @objc
-    class func textActions(conversationViewItem: ConversationViewItem, isFailedOrSending: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
+    class func textActions(conversationViewItem: ConversationViewItem, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
         var actions: [MenuAction] = []
 
-        if !isFailedOrSending {
+        if shouldAllowReply {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
         }
@@ -94,10 +94,10 @@ class ConversationViewItemActions: NSObject {
     }
 
     @objc
-    class func mediaActions(conversationViewItem: ConversationViewItem, isFailedOrSending: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
+    class func mediaActions(conversationViewItem: ConversationViewItem, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
         var actions: [MenuAction] = []
 
-        if !isFailedOrSending {
+        if shouldAllowReply {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
         }
@@ -123,10 +123,10 @@ class ConversationViewItemActions: NSObject {
     }
 
     @objc
-    class func quotedMessageActions(conversationViewItem: ConversationViewItem, isFailedOrSending: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
+    class func quotedMessageActions(conversationViewItem: ConversationViewItem, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
         var actions: [MenuAction] = []
 
-        if !isFailedOrSending {
+        if shouldAllowReply {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
         }

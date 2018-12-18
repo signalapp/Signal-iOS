@@ -22,13 +22,13 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ConversationViewCellDelegate <NSObject>
 
 - (void)conversationCell:(ConversationViewCell *)cell
-           isFailedOrSending:(BOOL)isFailedOrSending
+            shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressTextViewItem:(id<ConversationViewItem>)viewItem;
 - (void)conversationCell:(ConversationViewCell *)cell
-            isFailedOrSending:(BOOL)isFailedOrSending
+             shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem;
 - (void)conversationCell:(ConversationViewCell *)cell
-            isFailedOrSending:(BOOL)isFailedOrSending
+             shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressQuoteViewItem:(id<ConversationViewItem>)viewItem;
 - (void)conversationCell:(ConversationViewCell *)cell
     didLongpressSystemMessageViewItem:(id<ConversationViewItem>)viewItem;

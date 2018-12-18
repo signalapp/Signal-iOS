@@ -1924,34 +1924,34 @@ typedef enum : NSUInteger {
 #pragma mark - ConversationViewCellDelegate
 
 - (void)conversationCell:(ConversationViewCell *)cell
-            isFailedOrSending:(BOOL)isFailedOrSending
+             shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem
 {
     NSArray<MenuAction *> *messageActions =
         [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem
-                                                        isFailedOrSending:isFailedOrSending
+                                                         shouldAllowReply:shouldAllowReply
                                                                  delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell
-           isFailedOrSending:(BOOL)isFailedOrSending
+            shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressTextViewItem:(id<ConversationViewItem>)viewItem
 {
     NSArray<MenuAction *> *messageActions =
         [ConversationViewItemActions textActionsWithConversationViewItem:viewItem
-                                                       isFailedOrSending:isFailedOrSending
+                                                        shouldAllowReply:shouldAllowReply
                                                                 delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell
-            isFailedOrSending:(BOOL)isFailedOrSending
+             shouldAllowReply:(BOOL)shouldAllowReply
     didLongpressQuoteViewItem:(id<ConversationViewItem>)viewItem
 {
     NSArray<MenuAction *> *messageActions =
         [ConversationViewItemActions quotedMessageActionsWithConversationViewItem:viewItem
-                                                                isFailedOrSending:isFailedOrSending
+                                                                 shouldAllowReply:shouldAllowReply
                                                                          delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }

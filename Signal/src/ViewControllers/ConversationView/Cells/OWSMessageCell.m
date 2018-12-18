@@ -423,15 +423,15 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    BOOL isFailedOrSending = NO;
+    BOOL shouldAllowReply = YES;
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
             // Don't allow "delete" or "reply" on "failed" outgoing messages.
-            isFailedOrSending = YES;
+            shouldAllowReply = NO;
         } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
             // Don't allow "delete" or "reply" on "sending" outgoing messages.
-            isFailedOrSending = YES;
+            shouldAllowReply = NO;
         }
     }
 
@@ -440,19 +440,19 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageGestureLocation_Default:
         case OWSMessageGestureLocation_OversizeText: {
             [self.delegate conversationCell:self
-                          isFailedOrSending:isFailedOrSending
+                           shouldAllowReply:shouldAllowReply
                    didLongpressTextViewItem:self.viewItem];
             break;
         }
         case OWSMessageGestureLocation_Media: {
             [self.delegate conversationCell:self
-                          isFailedOrSending:isFailedOrSending
+                           shouldAllowReply:shouldAllowReply
                   didLongpressMediaViewItem:self.viewItem];
             break;
         }
         case OWSMessageGestureLocation_QuotedReply: {
             [self.delegate conversationCell:self
-                          isFailedOrSending:isFailedOrSending
+                           shouldAllowReply:shouldAllowReply
                   didLongpressQuoteViewItem:self.viewItem];
             break;
         }
