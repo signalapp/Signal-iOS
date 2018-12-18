@@ -1080,6 +1080,12 @@
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
+/* Label for brush button in image editor. */
+"IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
+
+/* Label for crop button in image editor. */
+"IMAGE_EDITOR_CROP_BUTTON" = "Crop";
+
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Connecting…";
 

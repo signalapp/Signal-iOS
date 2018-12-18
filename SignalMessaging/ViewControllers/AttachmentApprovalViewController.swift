@@ -947,13 +947,19 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
         #if DEBUG
         if let imageEditorModel = attachmentItem.imageEditorModel,
-            let imageMediaView = self.mediaMessageView.contentView {
-            let imageEditorView = ImageEditorView(model: imageEditorModel)
-            imageMediaView.isUserInteractionEnabled = true
-            imageMediaView.addSubview(imageEditorView)
-            imageEditorView.autoPinEdgesToSuperviewEdges()
+            let imageMediaView = mediaMessageView.contentView {
 
-            imageEditorView.addControls(to: self.mediaMessageView)
+            let imageEditorView = ImageEditorView(model: imageEditorModel)
+            if imageEditorView.createImageView() {
+                mediaMessageView.isHidden = true
+
+                imageMediaView.isUserInteractionEnabled = true
+                mediaMessageView.superview?.addSubview(imageEditorView)
+                imageEditorView.autoPin(toEdgesOf: mediaMessageView)
+                imageEditorView.addRedBorder()
+
+                imageEditorView.addControls(to: imageEditorView)
+            }
         }
         #endif
 

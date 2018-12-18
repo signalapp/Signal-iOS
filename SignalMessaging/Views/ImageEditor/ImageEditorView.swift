@@ -10,6 +10,13 @@ import UIKit
 public class ImageEditorView: UIView, ImageEditorModelDelegate {
     private let model: ImageEditorModel
 
+    enum EditorMode: String {
+        case brush
+        case crop
+    }
+
+    private var editorMode = EditorMode.brush
+
     @objc
     public required init(model: ImageEditorModel) {
         self.model = model
@@ -17,11 +24,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         super.init(frame: .zero)
 
         model.delegate = self
-
-        self.isUserInteractionEnabled = true
-
-        let anyTouchGesture = ImageEditorGestureRecognizer(target: self, action: #selector(handleTouchGesture(_:)))
-        self.addGestureRecognizer(anyTouchGesture)
     }
 
     @available(*, unavailable, message: "use other init() instead.")
@@ -29,10 +31,61 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         notImplemented()
     }
 
-    // MARK: - Buttons
+    // MARK: - Views
+
+    private var imageView: UIImageView?
+    private let layersView = UIView()
+
+    @objc
+    public func createImageView() -> Bool {
+        guard let image = UIImage(contentsOfFile: model.srcImagePath) else {
+            // TODO:
+            owsFailDebug("Could not load image")
+            return false
+        }
+        guard image.size.width > 0 && image.size.height > 0 else {
+            // TODO:
+            owsFailDebug("Could not load image")
+            return false
+        }
+
+        let imageView = UIImageView(image: image)
+        imageView.layer.minificationFilter = kCAFilterTrilinear
+        imageView.layer.magnificationFilter = kCAFilterTrilinear
+        let aspectRatio = image.size.width / image.size.height
+        addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
+
+        self.addSubview(layersView)
+        layersView.autoPin(toEdgesOf: imageView)
+
+        self.isUserInteractionEnabled = true
+        layersView.isUserInteractionEnabled = true
+        let anyTouchGesture = ImageEditorGestureRecognizer(target: self, action: #selector(handleTouchGesture(_:)))
+        layersView.addGestureRecognizer(anyTouchGesture)
+
+        self.imageView = imageView
+
+        return true
+    }
+
+    private func addSubviewWithScaleAspectFitLayout(view: UIView, aspectRatio: CGFloat) {
+        self.addSubview(view)
+
+        // This emulates the behavior of contentMode = .scaleAspectFit using
+        // iOS auto layout constraints.
+        //
+        // This allows ConversationInputToolbar to place the "cancel" button
+        // in the upper-right hand corner of the preview content.
+        view.autoCenterInSuperview()
+        view.autoPin(toAspectRatio: aspectRatio)
+        view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
+        view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
+    }
 
     private let undoButton = UIButton(type: .custom)
     private let redoButton = UIButton(type: .custom)
+    private let brushButton = UIButton(type: .custom)
+    private let cropButton = UIButton(type: .custom)
 
     @objc
     public func addControls(to containerView: UIView) {
@@ -44,7 +97,15 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                   label: NSLocalizedString("BUTTON_REDO", comment: "Label for redo button."),
                   selector: #selector(didTapRedo(sender:)))
 
-        let stackView = UIStackView(arrangedSubviews: [undoButton, redoButton])
+        configure(button: brushButton,
+                  label: NSLocalizedString("IMAGE_EDITOR_BRUSH_BUTTON", comment: "Label for brush button in image editor."),
+                  selector: #selector(didTapBrush(sender:)))
+
+        configure(button: cropButton,
+                  label: NSLocalizedString("IMAGE_EDITOR_CROP_BUTTON", comment: "Label for crop button in image editor."),
+                  selector: #selector(didTapCrop(sender:)))
+
+        let stackView = UIStackView(arrangedSubviews: [brushButton, cropButton, undoButton, redoButton])
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.spacing = 10
@@ -60,10 +121,9 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                            label: String,
                            selector: Selector) {
         button.setTitle(label, for: .normal)
-        button.setTitleColor(.white,
-                                 for: .normal)
-        button.setTitleColor(.gray,
-                                 for: .disabled)
+        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.gray, for: .disabled)
+        button.setTitleColor(UIColor.ows_materialBlue, for: .selected)
         button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         button.addTarget(self, action: selector, for: .touchUpInside)
     }
@@ -71,6 +131,10 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     private func updateButtons() {
         undoButton.isEnabled = model.canUndo()
         redoButton.isEnabled = model.canRedo()
+//        brushButton.isSelected = editorMode == .brush
+        brushButton.isEnabled = editorMode != .brush
+//        cropButton.isSelected = editorMode == .crop
+        cropButton.isEnabled = editorMode != .crop
     }
 
     // MARK: - Actions
@@ -93,12 +157,40 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         model.redo()
     }
 
+    @objc func didTapBrush(sender: UIButton) {
+        Logger.verbose("")
+
+        editorMode = .brush
+        updateButtons()
+    }
+
+    @objc func didTapCrop(sender: UIButton) {
+        Logger.verbose("")
+
+        editorMode = .crop
+        updateButtons()
+    }
+
+    @objc
+    public func handleTouchGesture(_ gestureRecognizer: UIGestureRecognizer) {
+        AssertIsOnMainThread()
+
+        switch editorMode {
+        case .brush:
+            handleBrushGesture(gestureRecognizer)
+        case .crop:
+                handleCropGesture(gestureRecognizer)
+        }
+    }
+
+    // MARK: - Brush
+
     // These properties are non-empty while drawing a stroke.
     private var currentStroke: ImageEditorStrokeItem?
     private var currentStrokeSamples = [ImageEditorStrokeItem.StrokeSample]()
 
     @objc
-    public func handleTouchGesture(_ gestureRecognizer: UIGestureRecognizer) {
+    public func handleBrushGesture(_ gestureRecognizer: UIGestureRecognizer) {
         AssertIsOnMainThread()
 
         let removeCurrentStroke = {
@@ -109,7 +201,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             self.currentStrokeSamples.removeAll()
         }
 
-        let referenceView = self
+        let referenceView = layersView
         let unitSampleForGestureLocation = { () -> CGPoint in
             // TODO: Smooth touch samples before converting into stroke samples.
             let location = gestureRecognizer.location(in: referenceView)
@@ -156,6 +248,69 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         default:
             removeCurrentStroke()
         }
+    }
+
+    // MARK: - Crop
+
+    @objc
+    public func handleCropGesture(_ gestureRecognizer: UIGestureRecognizer) {
+        AssertIsOnMainThread()
+
+//        let removeCurrentStroke = {
+//            if let stroke = self.currentStroke {
+//                self.model.remove(item: stroke)
+//            }
+//            self.currentStroke = nil
+//            self.currentStrokeSamples.removeAll()
+//        }
+//        
+//        let referenceView = self
+//        let unitSampleForGestureLocation = { () -> CGPoint in
+//            // TODO: Smooth touch samples before converting into stroke samples.
+//            let location = gestureRecognizer.location(in: referenceView)
+//            let x = CGFloatClamp01(CGFloatInverseLerp(location.x, 0, referenceView.bounds.width))
+//            let y = CGFloatClamp01(CGFloatInverseLerp(location.y, 0, referenceView.bounds.height))
+//            return CGPoint(x: x, y: y)
+//        }
+//        
+//        // TODO: Color picker.
+//        let strokeColor = UIColor.blue
+//        // TODO: Tune stroke width.
+//        let unitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth()
+//        
+//        switch gestureRecognizer.state {
+//        case .began:
+//            removeCurrentStroke()
+//            
+//            currentStrokeSamples.append(unitSampleForGestureLocation())
+//            
+//            let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
+//            model.append(item: stroke)
+//            currentStroke = stroke
+//            
+//        case .changed, .ended:
+//            currentStrokeSamples.append(unitSampleForGestureLocation())
+//            
+//            guard let lastStroke = self.currentStroke else {
+//                owsFailDebug("Missing last stroke.")
+//                removeCurrentStroke()
+//                return
+//            }
+//            
+//            // Model items are immutable; we _replace_ the
+//            // stroke item rather than modify it.
+//            let stroke = ImageEditorStrokeItem(itemId: lastStroke.itemId, color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
+//            model.replace(item: stroke, suppressUndo: true)
+//            
+//            if gestureRecognizer.state == .ended {
+//                currentStroke = nil
+//                currentStrokeSamples.removeAll()
+//            } else {
+//                currentStroke = stroke
+//            }
+//        default:
+//            removeCurrentStroke()
+//        }
     }
 
     // MARK: - ImageEditorModelDelegate
@@ -215,7 +370,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                                                                 continue
                 }
 
-                self.layer.addSublayer(layer)
+                layersView.layer.addSublayer(layer)
                 contentLayerMap[item.itemId] = layer
             }
         }
@@ -249,12 +404,13 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                 }
 
                 // Item was inserted or updated.
+                let viewSize = layersView.bounds.size
                 guard let layer = ImageEditorView.layerForItem(item: item,
-                                                               viewSize: bounds.size) else {
+                                                               viewSize: viewSize) else {
                                                                 continue
                 }
 
-                self.layer.addSublayer(layer)
+                layersView.layer.addSublayer(layer)
                 contentLayerMap[item.itemId] = layer
             }
         }
