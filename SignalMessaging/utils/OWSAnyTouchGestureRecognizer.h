@@ -1,8 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+NSString *NSStringForUIGestureRecognizerState(UIGestureRecognizerState state);
 
 // This custom GR can be used to detect touches when they
 // begin in a view.  In order to honor touch dispatch, this
@@ -14,3 +18,5 @@
 @interface OWSAnyTouchGestureRecognizer : UIGestureRecognizer
 
 @end
+
+NS_ASSUME_NONNULL_END

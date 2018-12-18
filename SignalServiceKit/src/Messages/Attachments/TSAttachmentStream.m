@@ -494,65 +494,10 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         }
         return [self videoStillImage].size;
     } else if ([self isImage] || [self isAnimated]) {
-        NSURL *_Nullable mediaUrl = self.originalMediaURL;
-        if (!mediaUrl) {
-            return CGSizeZero;
-        }
-        if (![self isValidImage]) {
-            return CGSizeZero;
-        }
-
-        // With CGImageSource we avoid loading the whole image into memory.
-        CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)mediaUrl, NULL);
-        if (!source) {
-            OWSFailDebug(@"Could not load image: %@", mediaUrl);
-            return CGSizeZero;
-        }
-
-        NSDictionary *options = @{
-            (NSString *)kCGImageSourceShouldCache : @(NO),
-        };
-        NSDictionary *properties
-            = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, 0, (CFDictionaryRef)options);
-        CGSize imageSize = CGSizeZero;
-        if (properties) {
-            NSNumber *orientation = properties[(NSString *)kCGImagePropertyOrientation];
-            NSNumber *width = properties[(NSString *)kCGImagePropertyPixelWidth];
-            NSNumber *height = properties[(NSString *)kCGImagePropertyPixelHeight];
-
-            if (width && height) {
-                imageSize = CGSizeMake(width.floatValue, height.floatValue);
-
-                if (orientation) {
-                    imageSize =
-                        [self applyImageOrientation:(UIImageOrientation)orientation.intValue toImageSize:imageSize];
-                }
-            } else {
-                OWSFailDebug(@"Could not determine size of image: %@", mediaUrl);
-            }
-        }
-        CFRelease(source);
-        return imageSize;
+        // imageSizeForFilePath checks validity.
+        return [NSData imageSizeForFilePath:self.originalFilePath mimeType:self.contentType];
     } else {
         return CGSizeZero;
-    }
-}
-
-- (CGSize)applyImageOrientation:(UIImageOrientation)orientation toImageSize:(CGSize)imageSize
-{
-    switch (orientation) {
-        case UIImageOrientationUp: // EXIF = 1
-        case UIImageOrientationUpMirrored: // EXIF = 2
-        case UIImageOrientationDown: // EXIF = 3
-        case UIImageOrientationDownMirrored: // EXIF = 4
-            return imageSize;
-        case UIImageOrientationLeftMirrored: // EXIF = 5
-        case UIImageOrientationLeft: // EXIF = 6
-        case UIImageOrientationRightMirrored: // EXIF = 7
-        case UIImageOrientationRight: // EXIF = 8
-            return CGSizeMake(imageSize.height, imageSize.width);
-        default:
-            return imageSize;
     }
 }
 
