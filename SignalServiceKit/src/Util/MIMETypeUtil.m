@@ -43,7 +43,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"video/3gpp2" : @"3g2",
             @"video/mp4" : @"mp4",
             @"video/quicktime" : @"mov",
-            @"video/x-m4v" : @"m4v"
+            @"video/x-m4v" : @"m4v",
+            @"video/mpeg" : @"mpg",
         };
     });
     return result;
@@ -70,7 +71,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"audio/aiff" : @"aiff",
             @"audio/x-aiff" : @"aiff",
             @"audio/3gpp2" : @"3g2",
-            @"audio/3gpp" : @"3gp"
+            @"audio/3gpp" : @"3gp",
         };
     });
     return result;
@@ -87,7 +88,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"image/tiff" : @"tif",
             @"image/x-tiff" : @"tif",
             @"image/bmp" : @"bmp",
-            @"image/x-windows-bmp" : @"bmp"
+            @"image/x-windows-bmp" : @"bmp",
         };
     });
     return result;
@@ -128,7 +129,9 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"mp4" : @"video/mp4",
             @"mov" : @"video/quicktime",
             @"mqv" : @"video/quicktime",
-            @"m4v" : @"video/x-m4v"
+            @"m4v" : @"video/x-m4v",
+            @"mpg" : @"video/mpeg",
+            @"mpeg" : @"video/mpeg",
         };
     });
     return result;
@@ -150,8 +153,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"mp3" : @"audio/mp3",
             @"swa" : @"audio/mp3",
             @"mp4" : @"audio/mp4",
-            @"mpeg" : @"audio/mpeg",
-            @"mpg" : @"audio/mpeg",
             @"wav" : @"audio/wav",
             @"bwf" : @"audio/wav",
             @"m4a" : @"audio/x-m4a",
