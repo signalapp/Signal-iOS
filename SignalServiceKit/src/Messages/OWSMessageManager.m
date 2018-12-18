@@ -691,7 +691,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([localNumber isEqualToString:envelope.source]) {
         OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
         return;
-    } else if ([self.blockingManager isRecipientIdBlocked:localNumber]
+    } else if ([self.blockingManager isRecipientIdBlocked:envelope.source]
         || (typingMessage.hasGroupID && [self.blockingManager isGroupIdBlocked:typingMessage.groupID])) {
         NSString *logMessage = [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.source];
         if (typingMessage.hasGroupID) {
