@@ -474,8 +474,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
         NSString *logMessage = [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.source];
         if (dataMessage.group) {
-            logMessage =
-                [logMessage stringByAppendingString:[NSString stringWithFormat:@" in group: %@", dataMessage.group.id]];
+            logMessage = [logMessage stringByAppendingFormat:@" in group: %@", dataMessage.group.id];
         }
         OWSLogError(@"%@", logMessage);
         return;
@@ -692,14 +691,30 @@ NS_ASSUME_NONNULL_BEGIN
     if ([localNumber isEqualToString:envelope.source]) {
         OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
         return;
+    } else if ([self.blockingManager isRecipientIdBlocked:envelope.source]
+        || (typingMessage.hasGroupID && [self.blockingManager isGroupIdBlocked:typingMessage.groupID])) {
+        NSString *logMessage = [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.source];
+        if (typingMessage.hasGroupID) {
+            logMessage = [logMessage stringByAppendingFormat:@" in group: %@", typingMessage.groupID];
+        }
+        OWSLogError(@"%@", logMessage);
+        return;
     }
 
     TSThread *_Nullable thread;
     if (typingMessage.hasGroupID) {
-        thread = [TSGroupThread threadWithGroupId:typingMessage.groupID transaction:transaction];
+        TSGroupThread *groupThread = [TSGroupThread threadWithGroupId:typingMessage.groupID transaction:transaction];
+
+        if (![groupThread.groupModel.groupMemberIds containsObject:self.tsAccountManager.localNumber]) {
+            OWSLogInfo(@"Ignoring messages for left group.");
+            return;
+        }
+
+        thread = groupThread;
     } else {
         thread = [TSContactThread getThreadWithContactId:envelope.source transaction:transaction];
     }
+
     if (!thread) {
         // This isn't neccesarily an error.  We might not yet know about the thread,
         // in which case we don't need to display the typing indicators.
