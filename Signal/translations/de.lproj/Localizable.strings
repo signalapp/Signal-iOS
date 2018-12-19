@@ -2430,7 +2430,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Sicherheitsnummern überprüfen";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Zum Abbrechen wegwischen";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Zum Abbrechen wischen";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Sprachnachricht";

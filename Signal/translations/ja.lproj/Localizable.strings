@@ -2340,7 +2340,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "スワイプで電話に出る";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "入力インジケーターを表示する";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "入力中アイコンを表示する";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "通知音を相手ごとに設定できるようになりました。";
@@ -2373,7 +2373,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "メッセージが入力中であることを表示します。";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "入力中アイコンを導入";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "入力中アイコンのご紹介";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "安全なビデオ電話が可能になりました。普通に通話を始めてから，カメラのマークを押してください。";

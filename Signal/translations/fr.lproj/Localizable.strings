@@ -228,7 +228,7 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restauration des fichiers";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Sauvegarde disponible";
+"BACKUP_RESTORE_DECISION_TITLE" = "Une sauvegarde existe";
 
 /* Label for the backup restore description. */
 "BACKUP_RESTORE_DESCRIPTION" = "Restauration de la sauvegarde";
@@ -240,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "État";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Erreur de sauvegarde inattendue.";
+"BACKUP_UNEXPECTED_ERROR" = "Erreur inattendue de sauvegarde";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Vous ne recevrez plus ni messages ni mises à jour de ce groupe";
@@ -399,7 +399,7 @@
 "CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Ne pas restaurer";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Impossible de déterminer si une sauvegarde peut être restaurée.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Impossible de déterminer s’il existe une sauvegarde à restaurer.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Erreur";
@@ -408,13 +408,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Restaurer";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal n’a pas pu déterminer l’état de votre compte iCloud. Connectez-vous à votre compte iCloud dans l’application Réglages d’iOS pour sauvegarder vos données Signal.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal n’a pas pu déterminer l’état de votre compte iCloud. Connectez-vous à votre compte iCloud dans l’appli Réglages d’iOS pour sauvegarder vos données relatives à Signal.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Pas de compte iCloud. Connectez-vous à votre compte iCloud dans l’application Réglages d’iOS pour sauvegarder vos données Signal.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Il n’y a pas de compte iCloud. Connectez-vous à votre compte iCloud dans l’appli Réglages d’iOS pour sauvegarder vos données relatives à Signal.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal s’est vu refuser l’accès à votre compte iCloud pour les sauvegardes. Accordez l’accès à Signal sur votre compte iCloud depuis l’application Réglages d’iOS pour sauvegarder vos données Signal.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal s’est vu refuser l’accès à votre compte iCloud pour effectuer des sauvegardes. Accordez l’accès à votre compte iCloud à Signal dans l’appli Réglages d’iOS pour sauvegarder vos données relatives à Signal.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Choisissez la couleur des messages sortants de cette conversation.";
@@ -555,10 +555,10 @@
 "CONTACT_WITHOUT_NAME" = "Contact sans nom";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Ceci ne peut être annulé.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Cette suppression ne peut pas être annulée.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Supprimer la conversation ?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Supprimer la conversation ?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Paramètres de la conversation";
@@ -1980,7 +1980,7 @@
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Échec de restauration de la sauvegarde";
 
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "La restauration de sauvegardes est inactive";
 
 /* Indicates that app is restoring up. */
 "SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "La restauration de la sauvegarde est en cours";

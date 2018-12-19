@@ -2172,7 +2172,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "បើក ត្រាអ្នកផ្ញើសម្រាប់សារទទួលបានពីអ្នកក្រៅបញ្ជីទំនាក់ទំនង និងមនុស្សដែលអ្នកមិនបានចែករំលែកទម្រង់របស់អ្នក។";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "ជំនាន់";
@@ -2370,7 +2370,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "សូមណែនាំ ការទទួលអាន";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "ឥឡូវអ្នកអាចមើល និងចែករំលែក នៅពេលសារត្រូវបានវាយបញ្ចូល។";
 
 /* Header for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
