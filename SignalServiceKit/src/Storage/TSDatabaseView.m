@@ -31,8 +31,8 @@ NSString *const TSThreadDatabaseViewExtensionName = @"TSThreadDatabaseViewExtens
 // We need to maintain the legacy extension for purposes of migration.
 //
 // The "Legacy" sorting extension name constant has the same value as always, so that it won't need to be rebuilt, while
-// the "Modern" sorting extension name constant has the same symbol name as we've always used for sorting interactions,
-// so that the callsites won't need to change.
+// the "Modern" sorting extension name constant has the same symbol name that we've always used for sorting
+// interactions, so that the callsites won't need to change.
 NSString *const TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName_Monotonic";
 NSString *const TSMessageDatabaseViewExtensionName_Legacy = @"TSMessageDatabaseViewExtensionName";
 
