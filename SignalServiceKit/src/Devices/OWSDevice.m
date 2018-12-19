@@ -288,7 +288,7 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
         if (identityKeyPair) {
             NSError *error;
             NSString *_Nullable decryptedName =
-                [DeviceNames decryptDeviceNameWithInputString:self.name identityKeyPair:identityKeyPair error:&error];
+                [DeviceNames decryptDeviceNameWithBase64String:self.name identityKeyPair:identityKeyPair error:&error];
             if (error) {
                 // Not necessarily an error; might be a legacy device name.
                 OWSLogError(@"Could not decrypt device name: %@", error);

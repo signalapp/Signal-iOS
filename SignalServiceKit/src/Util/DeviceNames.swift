@@ -4,6 +4,7 @@
 
 import Foundation
 import Curve25519Kit
+import AxolotlKit
 
 @objc
 public enum DeviceNameError: Int, Error {
@@ -59,7 +60,11 @@ public class DeviceNames: NSObject {
             throw DeviceNameError.assertionFailure
         }
 
-        let protoBuilder = SignalIOSProtoDeviceName.builder(ephemeralPublic: ephemeralKeyPair.publicKey,
+        guard let keyData = (ephemeralKeyPair.publicKey as NSData).prependKeyType() else {
+            owsFailDebug("Could not prepend key type.")
+            throw DeviceNameError.assertionFailure
+        }
+        let protoBuilder = SignalIOSProtoDeviceName.builder(ephemeralPublic: keyData as Data,
                                                             syntheticIv: syntheticIV,
                                                             ciphertext: ciphertext.ciphertext)
         let protoData = try protoBuilder.buildSerializedData()
@@ -107,25 +112,34 @@ public class DeviceNames: NSObject {
     }
 
     @objc
-    public class func decryptDeviceName(inputString: String,
+    public class func decryptDeviceName(base64String: String,
                                         identityKeyPair: ECKeyPair) throws -> String {
-        guard let inputData = Data(base64Encoded: inputString) else {
+
+        guard let protoData = Data(base64Encoded: base64String) else {
             // Not necessarily an error; might be a legacy device name.
             throw DeviceNameError.invalidInput
         }
 
-        return try decryptDeviceName(inputData: inputData,
+        return try decryptDeviceName(protoData: protoData,
                                      identityKeyPair: identityKeyPair)
     }
 
     @objc
-    public class func decryptDeviceName(inputData: Data,
+    public class func decryptDeviceName(base64Data: Data,
                                         identityKeyPair: ECKeyPair) throws -> String {
 
-        guard let protoData = Data(base64Encoded: inputData) else {
+        guard let protoData = Data(base64Encoded: base64Data) else {
             // Not necessarily an error; might be a legacy device name.
             throw DeviceNameError.invalidInput
         }
+
+        return try decryptDeviceName(protoData: protoData,
+                                     identityKeyPair: identityKeyPair)
+    }
+
+    @objc
+    public class func decryptDeviceName(protoData: Data,
+                                        identityKeyPair: ECKeyPair) throws -> String {
 
         let proto: SignalIOSProtoDeviceName
         do {
@@ -136,9 +150,17 @@ public class DeviceNames: NSObject {
             throw DeviceNameError.invalidInput
         }
 
-        let ephemeralPublic = proto.ephemeralPublic
+        let ephemeralPublicData = proto.ephemeralPublic
         let receivedSyntheticIV = proto.syntheticIv
         let ciphertext = proto.ciphertext
+
+        let ephemeralPublic: Data
+        do {
+            ephemeralPublic = try (ephemeralPublicData as NSData).removeKeyType() as Data
+        } catch {
+            owsFailDebug("failed to remove key type")
+            throw DeviceNameError.invalidInput
+        }
 
         guard ephemeralPublic.count > 0 else {
             owsFailDebug("Invalid ephemeral public.")

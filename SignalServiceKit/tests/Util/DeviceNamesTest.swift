@@ -31,7 +31,7 @@ class DeviceNamesTest: SSKBaseTestSwift {
         }
 
         do {
-            _ = try DeviceNames.decryptDeviceName(inputData: plaintextData,
+            _ = try DeviceNames.decryptDeviceName(base64Data: plaintextData,
                                                   identityKeyPair: identityKeyPair)
             XCTFail("Unexpectedly did not throw error.")
         } catch DeviceNameError.invalidInput {
@@ -53,7 +53,7 @@ class DeviceNamesTest: SSKBaseTestSwift {
         let base64Data = plaintextData.base64EncodedData()
 
         do {
-            _ = try DeviceNames.decryptDeviceName(inputData: base64Data,
+            _ = try DeviceNames.decryptDeviceName(base64Data: base64Data,
                                                   identityKeyPair: identityKeyPair)
             XCTFail("Unexpectedly did not throw error.")
         } catch DeviceNameError.invalidInput {
@@ -79,7 +79,7 @@ class DeviceNamesTest: SSKBaseTestSwift {
 
         let decrypted: String
         do {
-            decrypted = try DeviceNames.decryptDeviceName(inputData: encrypted,
+            decrypted = try DeviceNames.decryptDeviceName(base64Data: encrypted,
                                                           identityKeyPair: identityKeyPair)
         } catch {
             XCTFail("Failed with error: \(error)")
