@@ -770,9 +770,16 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         dispatch_async(self.serialQueue, ^{
             BOOL success = NO;
             @try {
-                NSData *_Nullable decryptedPayload =
-                    [Cryptography decryptAppleMessagePayload:message.body
-                                            withSignalingKey:TSAccountManager.signalingKey];
+                BOOL useSignalingKey = [message.headers containsObject:@"X-Signal-Key: true"];
+                NSData *_Nullable decryptedPayload;
+                if (useSignalingKey) {
+                    decryptedPayload = [Cryptography decryptAppleMessagePayload:message.body
+                                                               withSignalingKey:TSAccountManager.signalingKey];
+                } else {
+                    OWSAssertDebug([message.headers containsObject:@"X-Signal-Key: false"]);
+
+                    decryptedPayload = message.body;
+                }
 
                 if (!decryptedPayload) {
                     OWSLogWarn(@"Failed to decrypt incoming payload or bad HMAC");

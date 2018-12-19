@@ -389,7 +389,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     TSRequest *request = [OWSRequestFactory verifyCodeRequestWithVerificationCode:verificationCode
                                                                         forNumber:phoneNumber
                                                                               pin:pin
-                                                                     signalingKey:signalingKey
                                                                           authKey:authToken];
 
     [self.networkManager makeRequest:request
