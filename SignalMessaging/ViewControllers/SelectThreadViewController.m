@@ -15,8 +15,8 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalCoreKit/NSString+SSK.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSAccountManager.h>

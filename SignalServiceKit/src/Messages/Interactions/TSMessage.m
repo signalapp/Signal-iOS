@@ -5,6 +5,7 @@
 #import "TSMessage.h"
 #import "AppContext.h"
 #import "MIMETypeUtil.h"
+#import "NSString+SSK.h"
 #import "OWSContact.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "TSAttachment.h"
@@ -12,7 +13,6 @@
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/NSString+SSK.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 

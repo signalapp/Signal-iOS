@@ -2,13 +2,12 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSString+OWS.h"
-#import "UIView+OWS.h"
-#import <SignalServiceKit/AppContext.h>
+#import "NSString+SSK.h"
+#import "AppContext.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation NSString (OWS)
+@implementation NSString (SSK)
 
 - (NSString *)ows_stripped
 {

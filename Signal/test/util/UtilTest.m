@@ -7,8 +7,7 @@
 #import "TestUtil.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSObject+OWS.h>
-#import <SignalCoreKit/NSString+SSK.h>
-#import <SignalMessaging/NSString+OWS.h>
+#import <SignalServiceKit/NSString+SSK.h>
 
 @interface DateUtil (Test)
 

@@ -12,8 +12,8 @@
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/Environment.h>
-#import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSNavigationController.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

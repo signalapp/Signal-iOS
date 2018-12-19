@@ -5,12 +5,12 @@
 #import "OWSContact.h"
 #import "Contact.h"
 #import "MimeTypeUtil.h"
+#import "NSString+SSK.h"
 #import "OWSContact+Private.h"
 #import "PhoneNumber.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
-#import <SignalCoreKit/NSString+SSK.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 

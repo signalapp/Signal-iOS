@@ -10,9 +10,9 @@
 #import "OWSSystemMessageCell.h"
 #import "Signal-Swift.h"
 #import <AssetsLibrary/AssetsLibrary.h>
-#import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalServiceKit/NSData+Image.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/TSInteraction.h>
 

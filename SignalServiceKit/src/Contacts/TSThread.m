@@ -3,6 +3,7 @@
 //
 
 #import "TSThread.h"
+#import "NSString+SSK.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadTracking.h"
@@ -14,7 +15,6 @@
 #import "TSOutgoingMessage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/NSString+SSK.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 

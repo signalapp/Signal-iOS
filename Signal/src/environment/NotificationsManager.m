@@ -6,13 +6,12 @@
 #import "PushManager.h"
 #import "Signal-Swift.h"
 #import <AudioToolbox/AudioServices.h>
-#import <SignalCoreKit/NSString+SSK.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSSounds.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>

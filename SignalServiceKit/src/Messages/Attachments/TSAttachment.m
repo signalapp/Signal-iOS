@@ -4,9 +4,9 @@
 
 #import "TSAttachment.h"
 #import "MIMETypeUtil.h"
+#import "NSString+SSK.h"
 #import "TSAttachmentPointer.h"
 #import "TSMessage.h"
-#import <SignalCoreKit/NSString+SSK.h>
 #import <SignalCoreKit/iOSVersions.h>
 
 NS_ASSUME_NONNULL_BEGIN
