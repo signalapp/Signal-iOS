@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)rtlSafeAppend:(NSString *)string;
 
-- (NSString *)digitsOnly;
-
 @end
 
 NS_ASSUME_NONNULL_END
