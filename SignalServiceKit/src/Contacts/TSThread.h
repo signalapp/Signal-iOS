@@ -32,8 +32,9 @@ extern ConversationColorName const kConversationColorName_Default;
  */
 @interface TSThread : TSYapDatabaseObject
 
-// YES IFF this thread has ever had a message.
 @property (nonatomic) BOOL shouldThreadBeVisible;
+@property (nonatomic, readonly) NSDate *creationDate;
+@property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
 
 /**
  *  Whether the object is a group thread or not.
@@ -77,7 +78,10 @@ extern ConversationColorName const kConversationColorName_Default;
 /**
  * Get all messages in the thread we weren't able to decrypt
  */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key;
+#pragma clang diagnostic pop
 
 - (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(unreadMessageCount(transaction:));
@@ -85,14 +89,6 @@ extern ConversationColorName const kConversationColorName_Default;
 - (BOOL)hasSafetyNumbers;
 
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-/**
- *  Returns the latest date of a message in the thread or the thread creation date if there are no messages in that
- *thread.
- *
- *  @return The date of the last message or thread creation date.
- */
-- (NSDate *)lastMessageDate;
 
 /**
  *  Returns the string that will be displayed typically in a conversations view as a preview of the last message
@@ -117,31 +113,19 @@ extern ConversationColorName const kConversationColorName_Default;
 #pragma mark Archival
 
 /**
- *  Returns the last date at which a string was archived or nil if the thread was never archived or brought back to the
- *inbox.
- *
- *  @return Last archival date.
+ * @return YES if no new messages have been sent or received since the thread was last archived.
  */
-- (nullable NSDate *)archivalDate;
+- (BOOL)isArchivedWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 /**
- *  Archives a thread with the current date.
+ *  Archives a thread
  *
  *  @param transaction Database transaction.
  */
 - (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
- *  Archives a thread with the reference date. This is currently only used for migrating older data that has already
- * been archived.
- *
- *  @param transaction Database transaction.
- *  @param date        Date at which the thread was archived.
- */
-- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction referenceDate:(NSDate *)date;
-
-/**
- *  Unarchives a thread that was archived previously.
+ *  Unarchives a thread
  *
  *  @param transaction Database transaction.
  */

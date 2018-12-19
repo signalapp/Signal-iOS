@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAddToContactsOfferMessage.h"
@@ -14,9 +14,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+// This is a deprecated class, we're keeping it around to avoid YapDB serialization errors
+// TODO - remove this class, clean up existing instances, ensure any missed ones don't explode (UnknownDBObject)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 @implementation OWSAddToContactsOfferMessage
+#pragma clang diagnostic pop
 
-+ (instancetype)addToContactsOfferMessage:(uint64_t)timestamp thread:(TSThread *)thread contactId:(NSString *)contactId
++ (instancetype)addToContactsOfferMessageWithTimestamp:(uint64_t)timestamp
+                                                thread:(TSThread *)thread
+                                             contactId:(NSString *)contactId
 {
     return [[OWSAddToContactsOfferMessage alloc] initWithTimestamp:timestamp thread:thread contactId:contactId];
 }

@@ -218,6 +218,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+#pragma mark Reload
+
 - (void)reload
 {
     [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {

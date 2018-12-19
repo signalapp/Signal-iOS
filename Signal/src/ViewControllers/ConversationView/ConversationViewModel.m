@@ -604,8 +604,7 @@ static const int kYapDatabaseRangeMinLength = 0;
     for (TSOutgoingMessage *unsavedOutgoingMessage in self.unsavedOutgoingMessages) {
         // unsavedOutgoingMessages should only exist for a short period (usually 30-50ms) before
         // they are saved and moved into the `persistedViewItems`
-        OWSAssertDebug(
-            unsavedOutgoingMessage.timestampForSorting >= ([NSDate ows_millisecondTimeStamp] - 1 * kSecondInMs));
+        OWSAssertDebug(unsavedOutgoingMessage.timestamp >= ([NSDate ows_millisecondTimeStamp] - 1 * kSecondInMs));
         NSUInteger index = [rowChanges indexOfObjectPassingTest:^BOOL(
             YapDatabaseViewRowChange *_Nonnull rowChange, NSUInteger idx, BOOL *_Nonnull stop) {
             return [rowChange.collectionKey.key isEqualToString:unsavedOutgoingMessage.uniqueId];
@@ -1186,7 +1185,7 @@ static const int kYapDatabaseRangeMinLength = 0;
                                                              recipientId:recipientId
                                                      beforeInteractionId:firstCallOrMessage.uniqueId];
 
-    OWSLogInfo(@"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.timestampForSorting);
+    OWSLogInfo(@"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.sortId);
     return offersMessage;
 }
 
@@ -1333,7 +1332,7 @@ static const int kYapDatabaseRangeMinLength = 0;
                 break;
         }
 
-        uint64_t viewItemTimestamp = viewItem.interaction.timestampForSorting;
+        uint64_t viewItemTimestamp = viewItem.interaction.timestamp;
         OWSAssertDebug(viewItemTimestamp > 0);
 
         BOOL shouldShowDate = NO;
@@ -1364,18 +1363,15 @@ static const int kYapDatabaseRangeMinLength = 0;
         BOOL isItemUnread = ([viewItem.interaction conformsToProtocol:@protocol(OWSReadTracking)]
             && !((id<OWSReadTracking>)viewItem.interaction).wasRead);
         if (isItemUnread && !unreadIndicator && !hasPlacedUnreadIndicator && !self.hasClearedUnreadMessagesIndicator) {
-
-            unreadIndicator =
-                [[OWSUnreadIndicator alloc] initUnreadIndicatorWithTimestamp:viewItem.interaction.timestamp
-                                                       hasMoreUnseenMessages:NO
-                                        missingUnseenSafetyNumberChangeCount:0
-                                                     unreadIndicatorPosition:0
-                                             firstUnseenInteractionTimestamp:viewItem.interaction.timestamp];
+            unreadIndicator = [[OWSUnreadIndicator alloc] initWithFirstUnseenSortId:viewItem.interaction.sortId
+                                                              hasMoreUnseenMessages:NO
+                                               missingUnseenSafetyNumberChangeCount:0
+                                                            unreadIndicatorPosition:0];
         }
 
         // Place the unread indicator onto the first appropriate view item,
         // if any.
-        if (unreadIndicator && viewItem.interaction.timestampForSorting >= unreadIndicator.timestamp) {
+        if (unreadIndicator && viewItem.interaction.sortId >= unreadIndicator.firstUnseenSortId) {
             viewItem.unreadIndicator = unreadIndicator;
             unreadIndicator = nil;
             hasPlacedUnreadIndicator = YES;
@@ -1526,7 +1522,7 @@ static const int kYapDatabaseRangeMinLength = 0;
             }
         }
 
-        if (viewItem.interaction.timestampForSorting > collapseCutoffTimestamp) {
+        if (viewItem.interaction.receivedAtTimestamp > collapseCutoffTimestamp) {
             shouldHideFooter = NO;
         }
 

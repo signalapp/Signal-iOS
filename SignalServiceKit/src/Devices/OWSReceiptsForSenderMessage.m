@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
              messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
                    receiptType:(SSKProtoReceiptMessageType)receiptType
 {
+    // MJK TODO - remove senderTimestamp
     self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                           inThread:thread
                                        messageBody:nil

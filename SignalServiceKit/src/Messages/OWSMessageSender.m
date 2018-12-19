@@ -711,9 +711,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSAssertDebug(message.recipientIds.count == 1);
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (NSString *recipientId in message.sendingRecipientIds) {
-                [message updateWithReadRecipientId:recipientId
-                                     readTimestamp:message.timestampForSorting
-                                       transaction:transaction];
+                [message updateWithReadRecipientId:recipientId readTimestamp:message.timestamp transaction:transaction];
             }
         }];
         successHandler();
@@ -1756,11 +1754,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // TODO: Why is this necessary?
         [message save];
     } else if (message.groupMetaMessage == TSGroupMetaMessageQuit) {
+        // MJK TODO - remove senderTimestamp
         [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                          inThread:thread
                                       messageType:TSInfoMessageTypeGroupQuit
                                     customMessage:message.customMessage] save];
     } else {
+        // MJK TODO - remove senderTimestamp
         [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                          inThread:thread
                                       messageType:TSInfoMessageTypeGroupUpdate

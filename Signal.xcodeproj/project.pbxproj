@@ -469,6 +469,7 @@
 		4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */; };
 		4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5F26820F7D060004D1B42 /* MessageActions.swift */; };
 		4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */; };
+		4CBBCA6321714B4500EEB37D /* OWS110SortIdMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBBCA6221714B4500EEB37D /* OWS110SortIdMigration.swift */; };
 		4CC0B59C20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC0B59B20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift */; };
 		4CC1ECF9211A47CE00CC13BE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */; };
@@ -1190,6 +1191,7 @@
 		4CA5F792211E1F06008C2708 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		4CB5F26820F7D060004D1B42 /* MessageActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActions.swift; sourceTree = "<group>"; };
 		4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProximityMonitoringManager.swift; sourceTree = "<group>"; };
+		4CBBCA6221714B4500EEB37D /* OWS110SortIdMigration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS110SortIdMigration.swift; sourceTree = "<group>"; };
 		4CC0B59B20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationConfigurationSyncOperation.swift; sourceTree = "<group>"; };
 		4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateNag.swift; sourceTree = "<group>"; };
@@ -1676,6 +1678,7 @@
 				4598198D204E2F28009414F2 /* OWS108CallLoggingPreference.m */,
 				34D5872E208E2C4100D2255A /* OWS109OutgoingMessageState.h */,
 				34D5872D208E2C4100D2255A /* OWS109OutgoingMessageState.m */,
+				4CBBCA6221714B4500EEB37D /* OWS110SortIdMigration.swift */,
 				349EA07B2162AEA700F7B17F /* OWS111UDAttributesMigration.swift */,
 				34B6A908218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift */,
 				4C7537882193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift */,
@@ -3311,6 +3314,7 @@
 				34BEDB1721C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m in Sources */,
 				34B6A909218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
+				4CBBCA6321714B4500EEB37D /* OWS110SortIdMigration.swift in Sources */,
 				342950832124C9750000B063 /* OWSTextView.m in Sources */,
 				452EC6E1205FF5DC000E787C /* Bench.swift in Sources */,
 				342950882124CB0A0000B063 /* OWSSearchBar.m in Sources */,

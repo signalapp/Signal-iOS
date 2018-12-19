@@ -55,7 +55,7 @@ public class MediaGalleryItem: Equatable, Hashable {
         self.captionForDisplay = attachmentStream.caption?.filterForDisplay
         self.galleryDate = GalleryDate(message: message)
         self.albumIndex = message.attachmentIds.index(of: attachmentStream.uniqueId!)
-        self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.timestampForSorting(), attachmentSortKey: albumIndex)
+        self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.sortId, attachmentSortKey: albumIndex)
     }
 
     var isVideo: Bool {
@@ -120,7 +120,7 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
     let month: Int
 
     init(message: TSMessage) {
-        let date = message.dateForSorting()
+        let date = message.receivedAtDate()
 
         self.year = Calendar.current.component(.year, from: date)
         self.month = Calendar.current.component(.month, from: date)

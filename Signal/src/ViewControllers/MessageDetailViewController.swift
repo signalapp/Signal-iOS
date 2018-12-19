@@ -324,7 +324,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         if message is TSIncomingMessage {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                                          comment: "Label for the 'received date & time' field of the 'message metadata' view."),
-                                 value: DateUtil.formatPastTimestampRelativeToNow(message.timestampForSorting())))
+                                 value: DateUtil.formatPastTimestampRelativeToNow(message.receivedAtTimestamp)))
         }
 
         rows += addAttachmentMetadataRows()

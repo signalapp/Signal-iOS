@@ -241,6 +241,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSArray *attachments = self.attachmentStream ? @[ self.attachmentStream ] : @[];
 
+    // Legit usage of senderTimestamp to reference existing message
     return [[TSQuotedMessage alloc] initWithTimestamp:self.timestamp
                                              authorId:self.authorId
                                                  body:self.body

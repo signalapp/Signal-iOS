@@ -48,6 +48,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
                          inThread:(TSThread *)thread
                       messageType:(TSInfoMessageType)infoMessage
 {
+    // MJK TODO - remove senderTimestamp
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
                                messageBody:nil
@@ -100,6 +101,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     OWSAssertDebug(thread);
     OWSAssertDebug(recipientId);
 
+    // MJK TODO - remove senderTimestamp
     return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                   inThread:thread
                                messageType:TSInfoMessageUserNotRegistered
