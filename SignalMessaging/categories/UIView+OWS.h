@@ -194,6 +194,16 @@ CG_INLINE CGFloat CGPointDistance(CGPoint left, CGPoint right)
     return sqrt(delta.x * delta.x + delta.y * delta.y);
 }
 
+CG_INLINE CGPoint CGPointMin(CGPoint left, CGPoint right)
+{
+    return CGPointMake(MIN(left.x, right.x), MIN(left.y, right.y));
+}
+
+CG_INLINE CGPoint CGPointMax(CGPoint left, CGPoint right)
+{
+    return CGPointMake(MAX(left.x, right.x), MAX(left.y, right.y));
+}
+
 CG_INLINE CGSize CGSizeScale(CGSize size, CGFloat factor)
 {
     return CGSizeMake(size.width * factor, size.height * factor);
@@ -202,6 +212,14 @@ CG_INLINE CGSize CGSizeScale(CGSize size, CGFloat factor)
 CG_INLINE CGSize CGSizeAdd(CGSize left, CGSize right)
 {
     return CGSizeMake(left.width + right.width, left.height + right.height);
+}
+
+CG_INLINE CGRect CGRectScale(CGRect rect, CGFloat factor)
+{
+    CGRect result;
+    result.origin = CGPointScale(rect.origin, factor);
+    result.size = CGSizeScale(rect.size, factor);
+    return result;
 }
 
 CGFloat CGHairlineWidth(void);

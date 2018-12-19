@@ -201,15 +201,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             self.currentStrokeSamples.removeAll()
         }
 
-        let referenceView = layersView
-        let unitSampleForGestureLocation = { () -> CGPoint in
-            // TODO: Smooth touch samples before converting into stroke samples.
-            let location = gestureRecognizer.location(in: referenceView)
-            let x = CGFloatClamp01(CGFloatInverseLerp(location.x, 0, referenceView.bounds.width))
-            let y = CGFloatClamp01(CGFloatInverseLerp(location.y, 0, referenceView.bounds.height))
-            return CGPoint(x: x, y: y)
-        }
-
         // TODO: Color picker.
         let strokeColor = UIColor.blue
         // TODO: Tune stroke width.
@@ -219,14 +210,14 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         case .began:
             removeCurrentStroke()
 
-            currentStrokeSamples.append(unitSampleForGestureLocation())
+            currentStrokeSamples.append(unitSampleForGestureLocation(gestureRecognizer))
 
             let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
             model.append(item: stroke)
             currentStroke = stroke
 
         case .changed, .ended:
-            currentStrokeSamples.append(unitSampleForGestureLocation())
+            currentStrokeSamples.append(unitSampleForGestureLocation(gestureRecognizer))
 
             guard let lastStroke = self.currentStroke else {
                 owsFailDebug("Missing last stroke.")
@@ -250,67 +241,104 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         }
     }
 
+    private func unitSampleForGestureLocation(_ gestureRecognizer: UIGestureRecognizer) -> CGPoint {
+        let referenceView = layersView
+        // TODO: Smooth touch samples before converting into stroke samples.
+        let location = gestureRecognizer.location(in: referenceView)
+        let x = CGFloatClamp01(CGFloatInverseLerp(location.x, 0, referenceView.bounds.width))
+        let y = CGFloatClamp01(CGFloatInverseLerp(location.y, 0, referenceView.bounds.height))
+        return CGPoint(x: x, y: y)
+    }
+
     // MARK: - Crop
+
+    private var cropStartUnit = CGPoint.zero
+    private var cropEndUnit = CGPoint.zero
+    private var cropLayer1 = CAShapeLayer()
+    private var cropLayer2 = CAShapeLayer()
+    private var cropLayers: [CAShapeLayer] {
+        return [cropLayer1, cropLayer2]
+    }
 
     @objc
     public func handleCropGesture(_ gestureRecognizer: UIGestureRecognizer) {
         AssertIsOnMainThread()
 
-//        let removeCurrentStroke = {
-//            if let stroke = self.currentStroke {
-//                self.model.remove(item: stroke)
-//            }
-//            self.currentStroke = nil
-//            self.currentStrokeSamples.removeAll()
-//        }
-//        
-//        let referenceView = self
-//        let unitSampleForGestureLocation = { () -> CGPoint in
-//            // TODO: Smooth touch samples before converting into stroke samples.
-//            let location = gestureRecognizer.location(in: referenceView)
-//            let x = CGFloatClamp01(CGFloatInverseLerp(location.x, 0, referenceView.bounds.width))
-//            let y = CGFloatClamp01(CGFloatInverseLerp(location.y, 0, referenceView.bounds.height))
-//            return CGPoint(x: x, y: y)
-//        }
-//        
-//        // TODO: Color picker.
-//        let strokeColor = UIColor.blue
-//        // TODO: Tune stroke width.
-//        let unitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth()
-//        
-//        switch gestureRecognizer.state {
-//        case .began:
-//            removeCurrentStroke()
-//            
-//            currentStrokeSamples.append(unitSampleForGestureLocation())
-//            
-//            let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
-//            model.append(item: stroke)
-//            currentStroke = stroke
-//            
-//        case .changed, .ended:
-//            currentStrokeSamples.append(unitSampleForGestureLocation())
-//            
-//            guard let lastStroke = self.currentStroke else {
-//                owsFailDebug("Missing last stroke.")
-//                removeCurrentStroke()
-//                return
-//            }
-//            
-//            // Model items are immutable; we _replace_ the
-//            // stroke item rather than modify it.
-//            let stroke = ImageEditorStrokeItem(itemId: lastStroke.itemId, color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
-//            model.replace(item: stroke, suppressUndo: true)
-//            
-//            if gestureRecognizer.state == .ended {
-//                currentStroke = nil
-//                currentStrokeSamples.removeAll()
-//            } else {
-//                currentStroke = stroke
-//            }
-//        default:
-//            removeCurrentStroke()
-//        }
+        let kCropDashLength: CGFloat = 3
+        let cancelCrop = {
+            for cropLayer in self.cropLayers {
+                cropLayer.removeFromSuperlayer()
+                cropLayer.removeAllAnimations()
+            }
+        }
+        let updateCropLayer = { (cropLayer: CAShapeLayer) in
+            cropLayer.fillColor = nil
+            cropLayer.lineWidth = 1.0
+            cropLayer.lineDashPattern = [NSNumber(value: Double(kCropDashLength)), NSNumber(value: Double(kCropDashLength))]
+
+            let viewSize = self.layersView.bounds.size
+            cropLayer.frame = CGRect(origin: .zero, size: viewSize)
+
+            // Find the upper-left and bottom-right corners of the
+            // crop rectangle, in unit coordinates.
+            let unitMin = CGPointMin(self.cropStartUnit, self.cropEndUnit)
+            let unitMax = CGPointMax(self.cropStartUnit, self.cropEndUnit)
+
+            let transformSampleToPoint = { (unitSample: CGPoint) -> CGPoint in
+                return CGPoint(x: viewSize.width * unitSample.x,
+                               y: viewSize.height * unitSample.y)
+            }
+
+            // Convert from unit coordinates to view coordinates.
+            let pointMin = transformSampleToPoint(unitMin)
+            let pointMax = transformSampleToPoint(unitMax)
+            let cropRect = CGRect(x: pointMin.x,
+                                  y: pointMin.y,
+                                  width: pointMax.x - pointMin.x,
+                                  height: pointMax.y - pointMin.y)
+            let bezierPath = UIBezierPath(rect: cropRect)
+            cropLayer.path = bezierPath.cgPath
+        }
+        let updateCrop = {
+            updateCropLayer(self.cropLayer1)
+            updateCropLayer(self.cropLayer2)
+            self.cropLayer1.strokeColor = UIColor.white.cgColor
+            self.cropLayer2.strokeColor = UIColor.black.cgColor
+            self.cropLayer1.lineDashPhase = 0
+            self.cropLayer2.lineDashPhase = self.cropLayer1.lineDashPhase + kCropDashLength
+        }
+        let startCrop = {
+            for cropLayer in self.cropLayers {
+                self.layersView.layer.addSublayer(cropLayer)
+            }
+
+            updateCrop()
+        }
+        let endCrop = {
+            updateCrop()
+
+            for cropLayer in self.cropLayers {
+                cropLayer.removeFromSuperlayer()
+                cropLayer.removeAllAnimations()
+            }
+        }
+
+        switch gestureRecognizer.state {
+        case .began:
+            let unitSample = unitSampleForGestureLocation(gestureRecognizer)
+            cropStartUnit = unitSample
+            cropEndUnit = unitSample
+            startCrop()
+
+        case .changed:
+            cropEndUnit = unitSampleForGestureLocation(gestureRecognizer)
+            updateCrop()
+        case .ended:
+            cropEndUnit = unitSampleForGestureLocation(gestureRecognizer)
+            endCrop()
+        default:
+            cancelCrop()
+        }
     }
 
     // MARK: - ImageEditorModelDelegate
@@ -515,6 +543,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         shapeLayer.path = bezierPath.cgPath
         shapeLayer.fillColor = nil
         shapeLayer.lineCap = kCALineCapRound
+        shapeLayer.lineJoin = kCALineJoinRound
 
         return shapeLayer
     }
