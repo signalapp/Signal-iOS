@@ -43,6 +43,12 @@ public class ImageEditorItem: NSObject {
 
         super.init()
     }
+
+    public typealias PointConversionFunction = (CGPoint) -> CGPoint
+
+    public func clone(withPointConversionFunction conversion: PointConversionFunction) -> ImageEditorItem {
+        return ImageEditorItem(itemId: itemId, itemType: itemType)
+    }
 }
 
 // MARK: -
@@ -109,6 +115,17 @@ public class ImageEditorStrokeItem: ImageEditorItem {
     public class func strokeWidth(forUnitStrokeWidth unitStrokeWidth: CGFloat,
                                   dstSize: CGSize) -> CGFloat {
         return CGFloatClamp01(unitStrokeWidth) * min(dstSize.width, dstSize.height)
+    }
+
+    public override func clone(withPointConversionFunction conversion: PointConversionFunction) -> ImageEditorItem {
+        // TODO: We might want to convert the unitStrokeWidth too.
+        let convertedUnitSamples = unitSamples.map { (sample) in
+            conversion(sample)
+        }
+        return ImageEditorStrokeItem(itemId: itemId,
+                                     color: color,
+                                     unitSamples: convertedUnitSamples,
+                                     unitStrokeWidth: unitStrokeWidth)
     }
 }
 
@@ -222,6 +239,12 @@ public class OrderedDictionary<ValueType>: NSObject {
 // as immutable, once configured.
 public class ImageEditorContents: NSObject {
 
+    @objc
+    public let imagePath: String
+
+    @objc
+    public let imageSizePixels: CGSize
+
     public typealias ItemMapType = OrderedDictionary<ImageEditorItem>
 
     // This represents the current state of each item,
@@ -229,18 +252,27 @@ public class ImageEditorContents: NSObject {
     var itemMap = ItemMapType()
 
     // Used to create an initial, empty instances of this class.
-    public override init() {
+    public init(imagePath: String,
+                imageSizePixels: CGSize) {
+        self.imagePath = imagePath
+        self.imageSizePixels = imageSizePixels
     }
 
     // Used to clone copies of instances of this class.
-    public init(itemMap: ItemMapType) {
+    public init(imagePath: String,
+                imageSizePixels: CGSize,
+                itemMap: ItemMapType) {
+        self.imagePath = imagePath
+        self.imageSizePixels = imageSizePixels
         self.itemMap = itemMap
     }
 
     // Since the contents are immutable, we only modify copies
     // made with this method.
     public func clone() -> ImageEditorContents {
-        return ImageEditorContents(itemMap: itemMap.clone())
+        return ImageEditorContents(imagePath: imagePath,
+                                   imageSizePixels: imageSizePixels,
+                                   itemMap: itemMap.clone())
     }
 
     @objc
@@ -308,7 +340,13 @@ private class ImageEditorOperation: NSObject {
 
 @objc
 public protocol ImageEditorModelDelegate: class {
-    func imageEditorModelDidChange()
+    // Used for large changes to the model, when the entire
+    // model should be reloaded.
+    func imageEditorModelDidChange(before: ImageEditorContents,
+                                   after: ImageEditorContents)
+
+    // Used for small narrow changes to the model, usually
+    // to a single item.
     func imageEditorModelDidChange(changedItemIds: [String])
 }
 
@@ -325,7 +363,7 @@ public class ImageEditorModel: NSObject {
     @objc
     public let srcImageSizePixels: CGSize
 
-    private var contents = ImageEditorContents()
+    private var contents: ImageEditorContents
 
     private var undoStack = [ImageEditorOperation]()
     private var redoStack = [ImageEditorOperation]()
@@ -357,7 +395,15 @@ public class ImageEditorModel: NSObject {
         }
         self.srcImageSizePixels = srcImageSizePixels
 
+        self.contents = ImageEditorContents(imagePath: srcImagePath,
+                                            imageSizePixels: srcImageSizePixels)
+
         super.init()
+    }
+
+    @objc
+    public var currentImagePath: String {
+        return contents.imagePath
     }
 
     @objc
@@ -395,10 +441,12 @@ public class ImageEditorModel: NSObject {
         let redoOperation = ImageEditorOperation(contents: contents)
         redoStack.append(redoOperation)
 
+        let oldContents = self.contents
         self.contents = undoOperation.contents
 
         // We could diff here and yield a more narrow change event.
-        delegate?.imageEditorModelDidChange()
+        delegate?.imageEditorModelDidChange(before: oldContents,
+                                            after: self.contents)
     }
 
     @objc
@@ -411,37 +459,98 @@ public class ImageEditorModel: NSObject {
         let undoOperation = ImageEditorOperation(contents: contents)
         undoStack.append(undoOperation)
 
+        let oldContents = self.contents
         self.contents = redoOperation.contents
 
         // We could diff here and yield a more narrow change event.
-        delegate?.imageEditorModelDidChange()
+        delegate?.imageEditorModelDidChange(before: oldContents,
+                                            after: self.contents)
     }
 
     @objc
     public func append(item: ImageEditorItem) {
-        performAction({ (newContents) in
+        performAction({ (oldContents) in
+            let newContents = oldContents.clone()
             newContents.append(item: item)
+            return newContents
         }, changedItemIds: [item.itemId])
     }
 
     @objc
     public func replace(item: ImageEditorItem,
                         suppressUndo: Bool = false) {
-        performAction({ (newContents) in
+        performAction({ (oldContents) in
+            let newContents = oldContents.clone()
             newContents.replace(item: item)
+            return newContents
         }, changedItemIds: [item.itemId],
            suppressUndo: suppressUndo)
     }
 
     @objc
     public func remove(item: ImageEditorItem) {
-        performAction({ (newContents) in
+        performAction({ (oldContents) in
+            let newContents = oldContents.clone()
             newContents.remove(item: item)
+            return newContents
         }, changedItemIds: [item.itemId])
     }
 
-    private func performAction(_ action: (ImageEditorContents) -> Void,
-                               changedItemIds: [String],
+    @objc
+    public func crop(unitCropRect: CGRect) {
+        guard let croppedImage = ImageEditorModel.crop(imagePath: contents.imagePath,
+                                                 unitCropRect: unitCropRect) else {
+            owsFailDebug("Could not crop image.")
+            return
+        }
+        // Use PNG for temp files; PNG is lossless.
+        guard let croppedImageData = UIImagePNGRepresentation(croppedImage) else {
+            owsFailDebug("Could not convert cropped image to PNG.")
+            return
+        }
+        let croppedImagePath = OWSFileSystem.temporaryFilePath(withFileExtension: "png")
+        do {
+            try croppedImageData.write(to: NSURL.fileURL(withPath: croppedImagePath), options: .atomicWrite)
+        } catch let error as NSError {
+            owsFailDebug("File write failed: \(error)")
+            return
+        }
+        let croppedImageSizePixels = CGSizeScale(croppedImage.size, croppedImage.scale)
+
+        let left = unitCropRect.origin.x
+        let right = unitCropRect.origin.x + unitCropRect.size.width
+        let top = unitCropRect.origin.y
+        let bottom = unitCropRect.origin.y + unitCropRect.size.height
+        let conversion: ImageEditorItem.PointConversionFunction = { (point) in
+            // Convert from the pre-crop unit coordinate system
+            // to post-crop unit coordinate system using inverse
+            // lerp.
+            //
+            // NOTE: Some post-conversion unit values will _NOT_
+            //       be clamped. e.g. strokes outside the crop
+            //       are that < 0 or > 1.  This is fine.
+            //       We could hypothethically discard any items
+            //       whose bounding box is entirely outside the
+            //       new unit rectangle (e.g. have been completely
+            //       cropped) but it doesn't seem worthwhile.
+            let converted = CGPoint(x: CGFloatInverseLerp(point.x, left, right),
+                                    y: CGFloatInverseLerp(point.y, top, bottom))
+            return converted
+        }
+
+        performAction({ (oldContents) in
+            let newContents = ImageEditorContents(imagePath: croppedImagePath,
+                                                  imageSizePixels: croppedImageSizePixels)
+            for oldItem in oldContents.items() {
+                let newItem = oldItem.clone(withPointConversionFunction: conversion)
+                newContents.append(item: newItem)
+            }
+            return newContents
+        }, changedItemIds: nil)
+    }
+
+    private func performAction(_ action: (ImageEditorContents) -> ImageEditorContents,
+                               changedItemIds: [String]?,
                                suppressUndo: Bool = false) {
         if !suppressUndo {
             let undoOperation = ImageEditorOperation(contents: contents)
@@ -449,10 +558,69 @@ public class ImageEditorModel: NSObject {
             redoStack.removeAll()
         }
 
-        let newContents = contents.clone()
-        action(newContents)
+        let oldContents = self.contents
+        let newContents = action(oldContents)
         contents = newContents
 
-        delegate?.imageEditorModelDidChange(changedItemIds: changedItemIds)
+        if let changedItemIds = changedItemIds {
+            delegate?.imageEditorModelDidChange(changedItemIds: changedItemIds)
+        } else {
+            delegate?.imageEditorModelDidChange(before: oldContents,
+                                                after: self.contents)
+        }
+    }
+
+    // MARK: - Utilities
+
+    // Returns nil on error.
+    private class func crop(imagePath: String,
+                            unitCropRect: CGRect) -> UIImage? {
+        // TODO: Do we want to render off the main thread?
+        AssertIsOnMainThread()
+
+        guard let srcImage = UIImage(contentsOfFile: imagePath) else {
+            owsFailDebug("Could not load image")
+            return nil
+        }
+        let srcImageSize = srcImage.size
+        // Convert from unit coordinates to src image coordinates.
+        let cropRect = CGRect(x: unitCropRect.origin.x * srcImageSize.width,
+                              y: unitCropRect.origin.y * srcImageSize.height,
+                              width: unitCropRect.size.width * srcImageSize.width,
+                              height: unitCropRect.size.height * srcImageSize.height)
+
+        guard cropRect.origin.x >= 0,
+            cropRect.origin.y >= 0,
+            cropRect.origin.x + cropRect.size.width <= srcImageSize.width,
+            cropRect.origin.y + cropRect.size.height <= srcImageSize.height else {
+                owsFailDebug("Invalid crop rectangle.")
+                return nil
+        }
+        guard cropRect.size.width > 0,
+            cropRect.size.height > 0 else {
+                owsFailDebug("Empty crop rectangle.")
+                return nil
+        }
+
+        let hasAlpha = NSData.hasAlpha(forValidImageFilePath: imagePath)
+
+        UIGraphicsBeginImageContextWithOptions(cropRect.size, !hasAlpha, srcImage.scale)
+        defer { UIGraphicsEndImageContext() }
+
+        guard let context = UIGraphicsGetCurrentContext() else {
+            owsFailDebug("Could not create output context.")
+            return nil
+        }
+        context.interpolationQuality = .high
+
+        // Draw source image.
+        let dstFrame = CGRect(origin: CGPointInvert(cropRect.origin), size: srcImageSize)
+        srcImage.draw(in: dstFrame)
+
+        let dstImage = UIGraphicsGetImageFromCurrentImageContext()
+        if dstImage == nil {
+            owsFailDebug("could not generate dst image.")
+        }
+        return dstImage
     }
 }

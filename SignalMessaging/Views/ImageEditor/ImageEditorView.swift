@@ -10,6 +10,13 @@ import UIKit
 public class ImageEditorView: UIView, ImageEditorModelDelegate {
     private let model: ImageEditorModel
 
+    enum EditorMode: String {
+        case brush
+        case crop
+    }
+
+    private var editorMode = EditorMode.brush
+
     @objc
     public required init(model: ImageEditorModel) {
         self.model = model
@@ -17,11 +24,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         super.init(frame: .zero)
 
         model.delegate = self
-
-        self.isUserInteractionEnabled = true
-
-        let anyTouchGesture = ImageEditorGestureRecognizer(target: self, action: #selector(handleTouchGesture(_:)))
-        self.addGestureRecognizer(anyTouchGesture)
     }
 
     @available(*, unavailable, message: "use other init() instead.")
@@ -29,10 +31,78 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         notImplemented()
     }
 
-    // MARK: - Buttons
+    // MARK: - Views
+
+    private let imageView = UIImageView()
+    private var imageViewConstraints = [NSLayoutConstraint]()
+    private let layersView = OWSLayerView()
+
+    @objc
+    public func createImageView() -> Bool {
+        self.addSubview(imageView)
+
+        guard updateImageView() else {
+            return false
+        }
+
+        layersView.clipsToBounds = true
+        layersView.layoutCallback = { [weak self] (_) in
+            self?.updateAllContent()
+        }
+        self.addSubview(layersView)
+        layersView.autoPin(toEdgesOf: imageView)
+
+        self.isUserInteractionEnabled = true
+        layersView.isUserInteractionEnabled = true
+        let anyTouchGesture = ImageEditorGestureRecognizer(target: self, action: #selector(handleTouchGesture(_:)))
+        layersView.addGestureRecognizer(anyTouchGesture)
+
+        return true
+    }
+
+    @objc
+    public func updateImageView() -> Bool {
+        Logger.verbose("")
+
+        guard let image = UIImage(contentsOfFile: model.currentImagePath) else {
+            owsFailDebug("Could not load image")
+            return false
+        }
+        guard image.size.width > 0 && image.size.height > 0 else {
+            owsFailDebug("Could not load image")
+            return false
+        }
+
+        imageView.image = image
+        imageView.layer.minificationFilter = kCAFilterTrilinear
+        imageView.layer.magnificationFilter = kCAFilterTrilinear
+        let aspectRatio = image.size.width / image.size.height
+        for constraint in imageViewConstraints {
+            constraint.autoRemove()
+        }
+        imageViewConstraints = applyScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
+
+        return true
+    }
+
+    private func applyScaleAspectFitLayout(view: UIView, aspectRatio: CGFloat) -> [NSLayoutConstraint] {
+        // This emulates the behavior of contentMode = .scaleAspectFit using
+        // iOS auto layout constraints.
+        //
+        // This allows ConversationInputToolbar to place the "cancel" button
+        // in the upper-right hand corner of the preview content.
+        var constraints = [NSLayoutConstraint]()
+        constraints.append(contentsOf: view.autoCenterInSuperview())
+        constraints.append(view.autoPin(toAspectRatio: aspectRatio))
+        constraints.append(view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
+        constraints.append(view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
+        return constraints
+    }
 
     private let undoButton = UIButton(type: .custom)
     private let redoButton = UIButton(type: .custom)
+    private let brushButton = UIButton(type: .custom)
+    private let cropButton = UIButton(type: .custom)
 
     @objc
     public func addControls(to containerView: UIView) {
@@ -44,7 +114,15 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                   label: NSLocalizedString("BUTTON_REDO", comment: "Label for redo button."),
                   selector: #selector(didTapRedo(sender:)))
 
-        let stackView = UIStackView(arrangedSubviews: [undoButton, redoButton])
+        configure(button: brushButton,
+                  label: NSLocalizedString("IMAGE_EDITOR_BRUSH_BUTTON", comment: "Label for brush button in image editor."),
+                  selector: #selector(didTapBrush(sender:)))
+
+        configure(button: cropButton,
+                  label: NSLocalizedString("IMAGE_EDITOR_CROP_BUTTON", comment: "Label for crop button in image editor."),
+                  selector: #selector(didTapCrop(sender:)))
+
+        let stackView = UIStackView(arrangedSubviews: [brushButton, cropButton, undoButton, redoButton])
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.spacing = 10
@@ -60,10 +138,9 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                            label: String,
                            selector: Selector) {
         button.setTitle(label, for: .normal)
-        button.setTitleColor(.white,
-                                 for: .normal)
-        button.setTitleColor(.gray,
-                                 for: .disabled)
+        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.gray, for: .disabled)
+        button.setTitleColor(UIColor.ows_materialBlue, for: .selected)
         button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         button.addTarget(self, action: selector, for: .touchUpInside)
     }
@@ -71,6 +148,10 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     private func updateButtons() {
         undoButton.isEnabled = model.canUndo()
         redoButton.isEnabled = model.canRedo()
+//        brushButton.isSelected = editorMode == .brush
+        brushButton.isEnabled = editorMode != .brush
+//        cropButton.isSelected = editorMode == .crop
+        cropButton.isEnabled = editorMode != .crop
     }
 
     // MARK: - Actions
@@ -93,12 +174,40 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         model.redo()
     }
 
+    @objc func didTapBrush(sender: UIButton) {
+        Logger.verbose("")
+
+        editorMode = .brush
+        updateButtons()
+    }
+
+    @objc func didTapCrop(sender: UIButton) {
+        Logger.verbose("")
+
+        editorMode = .crop
+        updateButtons()
+    }
+
+    @objc
+    public func handleTouchGesture(_ gestureRecognizer: UIGestureRecognizer) {
+        AssertIsOnMainThread()
+
+        switch editorMode {
+        case .brush:
+            handleBrushGesture(gestureRecognizer)
+        case .crop:
+            handleCropGesture(gestureRecognizer)
+        }
+    }
+
+    // MARK: - Brush
+
     // These properties are non-empty while drawing a stroke.
     private var currentStroke: ImageEditorStrokeItem?
     private var currentStrokeSamples = [ImageEditorStrokeItem.StrokeSample]()
 
     @objc
-    public func handleTouchGesture(_ gestureRecognizer: UIGestureRecognizer) {
+    public func handleBrushGesture(_ gestureRecognizer: UIGestureRecognizer) {
         AssertIsOnMainThread()
 
         let removeCurrentStroke = {
@@ -107,15 +216,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             }
             self.currentStroke = nil
             self.currentStrokeSamples.removeAll()
-        }
-
-        let referenceView = self
-        let unitSampleForGestureLocation = { () -> CGPoint in
-            // TODO: Smooth touch samples before converting into stroke samples.
-            let location = gestureRecognizer.location(in: referenceView)
-            let x = CGFloatClamp01(CGFloatInverseLerp(location.x, 0, referenceView.bounds.width))
-            let y = CGFloatClamp01(CGFloatInverseLerp(location.y, 0, referenceView.bounds.height))
-            return CGPoint(x: x, y: y)
         }
 
         // TODO: Color picker.
@@ -127,14 +227,14 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         case .began:
             removeCurrentStroke()
 
-            currentStrokeSamples.append(unitSampleForGestureLocation())
+            currentStrokeSamples.append(unitSampleForGestureLocation(gestureRecognizer))
 
             let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
             model.append(item: stroke)
             currentStroke = stroke
 
         case .changed, .ended:
-            currentStrokeSamples.append(unitSampleForGestureLocation())
+            currentStrokeSamples.append(unitSampleForGestureLocation(gestureRecognizer))
 
             guard let lastStroke = self.currentStroke else {
                 owsFailDebug("Missing last stroke.")
@@ -158,9 +258,125 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         }
     }
 
+    private func unitSampleForGestureLocation(_ gestureRecognizer: UIGestureRecognizer) -> CGPoint {
+        let referenceView = layersView
+        // TODO: Smooth touch samples before converting into stroke samples.
+        let location = gestureRecognizer.location(in: referenceView)
+        let x = CGFloatClamp01(CGFloatInverseLerp(location.x, 0, referenceView.bounds.width))
+        let y = CGFloatClamp01(CGFloatInverseLerp(location.y, 0, referenceView.bounds.height))
+        return CGPoint(x: x, y: y)
+    }
+
+    // MARK: - Crop
+
+    private var cropStartUnit = CGPoint.zero
+    private var cropEndUnit = CGPoint.zero
+    private var cropLayer1 = CAShapeLayer()
+    private var cropLayer2 = CAShapeLayer()
+    private var cropLayers: [CAShapeLayer] {
+        return [cropLayer1, cropLayer2]
+    }
+
+    @objc
+    public func handleCropGesture(_ gestureRecognizer: UIGestureRecognizer) {
+        AssertIsOnMainThread()
+
+        let kCropDashLength: CGFloat = 3
+        let cancelCrop = {
+            for cropLayer in self.cropLayers {
+                cropLayer.removeFromSuperlayer()
+                cropLayer.removeAllAnimations()
+            }
+        }
+        let updateCropLayer = { (cropLayer: CAShapeLayer) in
+            cropLayer.fillColor = nil
+            cropLayer.lineWidth = 1.0
+            cropLayer.lineDashPattern = [NSNumber(value: Double(kCropDashLength)), NSNumber(value: Double(kCropDashLength))]
+
+            let viewSize = self.layersView.bounds.size
+            cropLayer.frame = CGRect(origin: .zero, size: viewSize)
+
+            // Find the upper-left and bottom-right corners of the
+            // crop rectangle, in unit coordinates.
+            let unitMin = CGPointMin(self.cropStartUnit, self.cropEndUnit)
+            let unitMax = CGPointMax(self.cropStartUnit, self.cropEndUnit)
+
+            let transformSampleToPoint = { (unitSample: CGPoint) -> CGPoint in
+                return CGPoint(x: viewSize.width * unitSample.x,
+                               y: viewSize.height * unitSample.y)
+            }
+
+            // Convert from unit coordinates to view coordinates.
+            let pointMin = transformSampleToPoint(unitMin)
+            let pointMax = transformSampleToPoint(unitMax)
+            let cropRect = CGRect(x: pointMin.x,
+                                  y: pointMin.y,
+                                  width: pointMax.x - pointMin.x,
+                                  height: pointMax.y - pointMin.y)
+            let bezierPath = UIBezierPath(rect: cropRect)
+            cropLayer.path = bezierPath.cgPath
+        }
+        let updateCrop = {
+            updateCropLayer(self.cropLayer1)
+            updateCropLayer(self.cropLayer2)
+            self.cropLayer1.strokeColor = UIColor.white.cgColor
+            self.cropLayer2.strokeColor = UIColor.black.cgColor
+            self.cropLayer1.lineDashPhase = 0
+            self.cropLayer2.lineDashPhase = self.cropLayer1.lineDashPhase + kCropDashLength
+        }
+        let startCrop = {
+            for cropLayer in self.cropLayers {
+                self.layersView.layer.addSublayer(cropLayer)
+            }
+
+            updateCrop()
+        }
+        let endCrop = {
+            updateCrop()
+
+            for cropLayer in self.cropLayers {
+                cropLayer.removeFromSuperlayer()
+                cropLayer.removeAllAnimations()
+            }
+
+            // Find the upper-left and bottom-right corners of the
+            // crop rectangle, in unit coordinates.
+            let unitMin = CGPointClamp01(CGPointMin(self.cropStartUnit, self.cropEndUnit))
+            let unitMax = CGPointClamp01(CGPointMax(self.cropStartUnit, self.cropEndUnit))
+            let unitCropRect = CGRect(x: unitMin.x,
+                                      y: unitMin.y,
+                                      width: unitMax.x - unitMin.x,
+                                      height: unitMax.y - unitMin.y)
+            self.model.crop(unitCropRect: unitCropRect)
+        }
+
+        switch gestureRecognizer.state {
+        case .began:
+            let unitSample = unitSampleForGestureLocation(gestureRecognizer)
+            cropStartUnit = unitSample
+            cropEndUnit = unitSample
+            startCrop()
+
+        case .changed:
+            cropEndUnit = unitSampleForGestureLocation(gestureRecognizer)
+            updateCrop()
+        case .ended:
+            cropEndUnit = unitSampleForGestureLocation(gestureRecognizer)
+            endCrop()
+        default:
+            cancelCrop()
+        }
+    }
+
     // MARK: - ImageEditorModelDelegate
 
-    public func imageEditorModelDidChange() {
+    public func imageEditorModelDidChange(before: ImageEditorContents,
+                                          after: ImageEditorContents) {
+
+        if before.imagePath != after.imagePath {
+            _ = updateImageView()
+        }
+
         updateAllContent()
 
         updateButtons()
@@ -210,12 +426,13 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             bounds.height > 0 {
 
             for item in model.items() {
+                let viewSize = layersView.bounds.size
                 guard let layer = ImageEditorView.layerForItem(item: item,
-                                                               viewSize: bounds.size) else {
+                                                               viewSize: viewSize) else {
                                                                 continue
                 }
 
-                self.layer.addSublayer(layer)
+                layersView.layer.addSublayer(layer)
                 contentLayerMap[item.itemId] = layer
             }
         }
@@ -249,12 +466,13 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                 }
 
                 // Item was inserted or updated.
+                let viewSize = layersView.bounds.size
                 guard let layer = ImageEditorView.layerForItem(item: item,
-                                                               viewSize: bounds.size) else {
+                                                               viewSize: viewSize) else {
                                                                 continue
                 }
 
-                self.layer.addSublayer(layer)
+                layersView.layer.addSublayer(layer)
                 contentLayerMap[item.itemId] = layer
             }
         }
@@ -283,7 +501,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                                           viewSize: CGSize) -> CALayer? {
         AssertIsOnMainThread()
 
-        Logger.verbose("\(item.itemId)")
+        Logger.verbose("\(item.itemId), viewSize: \(viewSize)")
 
         let strokeWidth = ImageEditorStrokeItem.strokeWidth(forUnitStrokeWidth: item.unitStrokeWidth,
                                                             dstSize: viewSize)
@@ -359,6 +577,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         shapeLayer.path = bezierPath.cgPath
         shapeLayer.fillColor = nil
         shapeLayer.lineCap = kCALineCapRound
+        shapeLayer.lineJoin = kCALineJoinRound
 
         return shapeLayer
     }
@@ -406,9 +625,9 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         // Render output at same size as source image.
         let dstSizePixels = model.srcImageSizePixels
 
-        let hasAlpha = NSData.hasAlpha(forValidImageFilePath: model.srcImagePath)
+        let hasAlpha = NSData.hasAlpha(forValidImageFilePath: model.currentImagePath)
 
-        guard let srcImage = UIImage(contentsOfFile: model.srcImagePath) else {
+        guard let srcImage = UIImage(contentsOfFile: model.currentImagePath) else {
             owsFailDebug("Could not load src image.")
             return nil
         }

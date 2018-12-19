@@ -6,10 +6,17 @@ import Foundation
 
 @objc
 public class OWSLayerView: UIView {
-    let layoutCallback: ((UIView) -> Void)
+    public var layoutCallback: ((UIView) -> Void)
 
     @objc
-    public required init(frame: CGRect, layoutCallback : @escaping (UIView) -> Void) {
+    public init() {
+        self.layoutCallback = { (_) in
+        }
+        super.init(frame: .zero)
+    }
+
+    @objc
+    public init(frame: CGRect, layoutCallback : @escaping (UIView) -> Void) {
         self.layoutCallback = layoutCallback
         super.init(frame: frame)
     }
