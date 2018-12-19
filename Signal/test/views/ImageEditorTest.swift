@@ -26,7 +26,10 @@ class ImageEditorTest: SignalBaseTest {
     }
 
     func testImageEditorContents() {
-        let contents = ImageEditorContents()
+        let imagePath = writeDummyImage()
+
+        let contents = ImageEditorContents(imagePath: imagePath,
+                                           imageSizePixels: CGSize(width: 1, height: 1))
         XCTAssertEqual(0, contents.itemMap.count)
 
         let item = ImageEditorItem(itemType: .test)
