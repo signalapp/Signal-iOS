@@ -388,11 +388,14 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, 0, (CFDictionaryRef)options);
     BOOL result = NO;
     if (properties) {
-        NSNumber *hasAlpha = properties[(NSString *)kCGImagePropertyHasAlpha];
+        NSNumber *_Nullable hasAlpha = properties[(NSString *)kCGImagePropertyHasAlpha];
         if (hasAlpha) {
             result = hasAlpha.boolValue;
         } else {
-            OWSFailDebug(@"Could not determine transparency of image: %@", url);
+            // This is not an error; kCGImagePropertyHasAlpha is an optional
+            // property.
+            OWSLogWarn(@"Could not determine transparency of image: %@", url);
+            result = NO;
         }
     }
     CFRelease(source);

@@ -500,7 +500,7 @@ public class ImageEditorModel: NSObject {
     public func crop(unitCropRect: CGRect) {
         guard let croppedImage = ImageEditorModel.crop(imagePath: contents.imagePath,
                                                  unitCropRect: unitCropRect) else {
-            owsFailDebug("Could not crop image.")
+            Logger.warn("Could not crop image.")
             return
         }
         // Use PNG for temp files; PNG is lossless.
@@ -584,10 +584,10 @@ public class ImageEditorModel: NSObject {
         }
         let srcImageSize = srcImage.size
         // Convert from unit coordinates to src image coordinates.
-        let cropRect = CGRect(x: unitCropRect.origin.x * srcImageSize.width,
-                              y: unitCropRect.origin.y * srcImageSize.height,
-                              width: unitCropRect.size.width * srcImageSize.width,
-                              height: unitCropRect.size.height * srcImageSize.height)
+        let cropRect = CGRect(x: round(unitCropRect.origin.x * srcImageSize.width),
+                              y: round(unitCropRect.origin.y * srcImageSize.height),
+                              width: round(unitCropRect.size.width * srcImageSize.width),
+                              height: round(unitCropRect.size.height * srcImageSize.height))
 
         guard cropRect.origin.x >= 0,
             cropRect.origin.y >= 0,
@@ -598,7 +598,9 @@ public class ImageEditorModel: NSObject {
         }
         guard cropRect.size.width > 0,
             cropRect.size.height > 0 else {
-                owsFailDebug("Empty crop rectangle.")
+                // Not an error; indicates that the user tapped rather
+                // than dragged.
+                Logger.warn("Empty crop rectangle.")
                 return nil
         }
 

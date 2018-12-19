@@ -950,7 +950,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             let imageMediaView = mediaMessageView.contentView {
 
             let imageEditorView = ImageEditorView(model: imageEditorModel)
-            if imageEditorView.createImageView() {
+            if imageEditorView.configureSubviews() {
                 mediaMessageView.isHidden = true
 
                 imageMediaView.isUserInteractionEnabled = true
