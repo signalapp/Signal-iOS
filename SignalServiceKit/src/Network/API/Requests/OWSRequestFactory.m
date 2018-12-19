@@ -247,7 +247,37 @@ NS_ASSUME_NONNULL_BEGIN
                                phoneNumber];
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     request.shouldHaveAuthorizationHeaders = NO;
+
+    if (transport == TSVerificationTransportVoice) {
+        NSString *_Nullable localizationHeader = [self voiceCodeLocalizationHeader];
+        if (localizationHeader.length > 0) {
+            [request setValue:localizationHeader forHTTPHeaderField:@"Accept-Language"];
+        }
+    }
+
     return request;
+}
+
++ (nullable NSString *)voiceCodeLocalizationHeader
+{
+    NSLocale *locale = [NSLocale currentLocale];
+    NSString *_Nullable languageCode = [locale objectForKey:NSLocaleLanguageCode];
+    NSString *_Nullable countryCode = [locale objectForKey:NSLocaleCountryCode];
+
+    if (!languageCode) {
+        return nil;
+    }
+
+    OWSAssertDebug([languageCode rangeOfString:@"-"].location == NSNotFound);
+
+    if (!countryCode) {
+        // In the absence of a country code, just send a language code.
+        return languageCode;
+    }
+
+    OWSAssertDebug(languageCode.length == 2);
+    OWSAssertDebug(countryCode.length == 2);
+    return [NSString stringWithFormat:@"%@-%@", languageCode, countryCode];
 }
 
 + (NSString *)stringForTransport:(TSVerificationTransport)transport
