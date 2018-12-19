@@ -10,7 +10,7 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
     public var shouldAllowOutsideView = true
 
     @objc
-    public weak var referenceView: UIView?
+    public weak var canvasView: UIView?
 
     @objc
     override func canPrevent(_ preventedGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -105,8 +105,8 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
             owsFailDebug("Missing gestureView")
             return .invalid
         }
-        guard let referenceView = referenceView else {
-            owsFailDebug("Missing referenceView")
+        guard let canvasView = canvasView else {
+            owsFailDebug("Missing canvasView")
             return .invalid
         }
         guard let allTouches = event.allTouches else {
@@ -132,8 +132,8 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
         }
 
         // Reject new touches outside this GR's view's bounds.
-        let location = firstTouch.location(in: referenceView)
-        if !referenceView.bounds.contains(location) {
+        let location = firstTouch.location(in: canvasView)
+        if !canvasView.bounds.contains(location) {
             if shouldAllowOutsideView {
                 // Do nothing
             } else if isNewTouch {

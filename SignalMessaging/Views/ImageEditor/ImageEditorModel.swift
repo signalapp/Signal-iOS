@@ -500,6 +500,8 @@ public class ImageEditorModel: NSObject {
     public func crop(unitCropRect: CGRect) {
         guard let croppedImage = ImageEditorModel.crop(imagePath: contents.imagePath,
                                                  unitCropRect: unitCropRect) else {
+                                                    // Not an error; user might have tapped or
+                                                    // otherwise drawn an invalid crop region.
             Logger.warn("Could not crop image.")
             return
         }

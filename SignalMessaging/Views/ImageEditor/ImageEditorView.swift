@@ -69,7 +69,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         self.isUserInteractionEnabled = true
         layersView.isUserInteractionEnabled = true
         let editorGestureRecognizer = ImageEditorGestureRecognizer(target: self, action: #selector(handleTouchGesture(_:)))
-        editorGestureRecognizer.referenceView = layersView
+        editorGestureRecognizer.canvasView = layersView
         self.addGestureRecognizer(editorGestureRecognizer)
         self.editorGestureRecognizer = editorGestureRecognizer
 
