@@ -254,15 +254,3 @@ public class FullTextSearchFinder: NSObject {
                                          versionTag: "1")
     }
 }
-
-extension String {
-    func replaceCharacters(characterSet: CharacterSet, replacement: String) -> String {
-        let components = self.components(separatedBy: characterSet)
-        return components.joined(separator: replacement)
-    }
-
-    func removeCharacters(characterSet: CharacterSet) -> String {
-        let components = self.components(separatedBy: characterSet)
-        return components.joined()
-    }
-}
