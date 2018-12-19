@@ -129,26 +129,20 @@ public class FullTextSearchFinder: NSObject {
         return charactersToFilter
     }()
 
+    // This is a hot method, especially while running large migrations.
+    // Changes to it should go through a profiler to make sure large migrations
+    // aren't adversely affected.
     public class func normalize(text: String) -> String {
         // 1. Filter out invalid characters.
-        let filtered = text.unicodeScalars.lazy.filter({
-            !charactersToRemove.contains($0)
-        })
+        let filtered = text.removeCharacters(characterSet: charactersToRemove)
 
         // 2. Simplify whitespace.
-        let simplifyingFunction: (UnicodeScalar) -> UnicodeScalar = {
-            if CharacterSet.whitespacesAndNewlines.contains($0) {
-                return UnicodeScalar(" ")
-            } else {
-                return $0
-            }
-        }
-        let simplified = filtered.map(simplifyingFunction)
+        let simplified = filtered.replaceCharacters(characterSet: .whitespacesAndNewlines,
+                                                    replacement: " ")
 
         // 3. Strip leading & trailing whitespace last, since we may replace
         // filtered characters with whitespace.
-        let result = String(String.UnicodeScalarView(simplified))
-        return result.trimmingCharacters(in: .whitespacesAndNewlines)
+        return simplified.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     // MARK: - Index Building
@@ -248,9 +242,7 @@ public class FullTextSearchFinder: NSObject {
         let contentColumnName = "content"
 
         let handler = YapDatabaseFullTextSearchHandler.withObjectBlock { (transaction: YapDatabaseReadTransaction, dict: NSMutableDictionary, _: String, _: String, object: Any) in
-            if let content: String = indexContent(object: object, transaction: transaction) {
-                dict[contentColumnName] = content
-            }
+            dict[contentColumnName] = indexContent(object: object, transaction: transaction)
         }
 
         // update search index on contact name changes?
@@ -260,5 +252,17 @@ public class FullTextSearchFinder: NSObject {
                                          handler: handler,
                                          ftsVersion: YapDatabaseFullTextSearchFTS5Version,
                                          versionTag: "1")
+    }
+}
+
+extension String {
+    func replaceCharacters(characterSet: CharacterSet, replacement: String) -> String {
+        let components = self.components(separatedBy: characterSet)
+        return components.joined(separator: replacement)
+    }
+
+    func removeCharacters(characterSet: CharacterSet) -> String {
+        let components = self.components(separatedBy: characterSet)
+        return components.joined()
     }
 }

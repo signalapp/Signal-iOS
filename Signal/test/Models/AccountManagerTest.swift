@@ -47,6 +47,10 @@ class VerifyingTSAccountManager: FailingTSAccountManager {
                                 success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
         success()
     }
+
+    override func performUpdateAccountAttributes() -> AnyPromise {
+        return AnyPromise(Promise.value(()))
+    }
 }
 
 class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
