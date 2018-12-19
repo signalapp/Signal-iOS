@@ -342,7 +342,6 @@
 		452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
 		452C7CA72037628B003D51A5 /* Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170D51E315310003FC1F2 /* Weak.swift */; };
 		452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */; };
-		452D1AF320810B6F00A67F7F /* String+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1AF220810B6F00A67F7F /* String+OWS.swift */; };
 		452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EA09D1EA7ABE00078744B /* AttachmentPointerView.swift */; };
 		452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */; };
 		452EC6E1205FF5DC000E787C /* Bench.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6E0205FF5DC000E787C /* Bench.swift */; };
@@ -1036,7 +1035,6 @@
 		452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddContactShareToExistingContactViewController.swift; sourceTree = "<group>"; };
 		452C468E1E427E200087B011 /* OutboundCallInitiator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutboundCallInitiator.swift; sourceTree = "<group>"; };
 		452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringAdditionsTest.swift; sourceTree = "<group>"; };
-		452D1AF220810B6F00A67F7F /* String+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+OWS.swift"; sourceTree = "<group>"; };
 		452EA09D1EA7ABE00078744B /* AttachmentPointerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentPointerView.swift; sourceTree = "<group>"; };
 		452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryViewController.swift; sourceTree = "<group>"; };
 		452EC6E0205FF5DC000E787C /* Bench.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bench.swift; sourceTree = "<group>"; };
@@ -1591,7 +1589,6 @@
 				4551DB59205C562300C8AE75 /* Collection+OWS.swift */,
 				346129C51FD2072D00532771 /* NSAttributedString+OWS.h */,
 				346129C11FD2072D00532771 /* NSAttributedString+OWS.m */,
-				452D1AF220810B6F00A67F7F /* String+OWS.swift */,
 				34480B5D1FD0A98800BC14EF /* UIColor+OWS.h */,
 				34480B5E1FD0A98800BC14EF /* UIColor+OWS.m */,
 				45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */,
@@ -3346,7 +3343,6 @@
 				3466087220E550F400AFFE73 /* ConversationStyle.swift in Sources */,
 				3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */,
 				34AC09F6211B39B100997B47 /* LockInteractionController.m in Sources */,
-				452D1AF320810B6F00A67F7F /* String+OWS.swift in Sources */,
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
 				452C7CA72037628B003D51A5 /* Weak.swift in Sources */,
 				34D5872F208E2C4200D2255A /* OWS109OutgoingMessageState.m in Sources */,
