@@ -4,33 +4,62 @@ source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
 def shared_pods
+
+  ###
   # OWS Pods
+  ###
+
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
   # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
-  # pod 'SQLCipher', path: '../sqlcipher'
-  pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
-  # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
-  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
+
   pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
   # pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
+
   pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tests"]
   # pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
+
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
   # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
+
   pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
   # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
+
   pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
+
+  ###
+  # forked third party pods
+  ###
+
+  # Includes some soon to be released "unencrypted header" changes required for the Share Extension
+  pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
+  # pod 'SQLCipher', path: '../sqlcipher'
+
+  # Forked for performance optimizations that are not likely to be upstreamed as they are specific
+  # to our limited use of Mantle 
+  pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master'
+  # pod 'Mantle', path: '../Mantle'
+
+  # SocketRocket has some critical crash fixes on Github, but have published an official release to cocoapods in ages, so
+  # we were following master
+  # Forked and have an open PR with our changes, but they have not been merged.
+  # pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', inhibit_warnings: true
+  pod 'SocketRocket', :git => 'https://github.com/signalapp/SocketRocket.git', branch: 'mkirk/handle-sec-err', inhibit_warnings: true
+
+  # Forked for compatibily with the ShareExtension, changes have an open PR, but have not been merged.
+  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
+  # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
+
+  # Forked to incorporate our self-built binary artifact.
   pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework'
   #pod 'GRKOpenSSLFramework', path: '../GRKOpenSSLFramework'
 
+  ###
   # third party pods
+  ####
+
   pod 'AFNetworking', inhibit_warnings: true
-  pod 'Mantle', :inhibit_warnings => true
-  # pod 'YapDatabase/SQLCipher', :inhibit_warnings => true
   pod 'PureLayout', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
-  # pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', inhibit_warnings: true
-  pod 'SocketRocket', :git => 'https://github.com/signalapp/SocketRocket.git', branch: 'mkirk/handle-sec-err', inhibit_warnings: true
   pod 'YYImage', :inhibit_warnings => true
 end
 
