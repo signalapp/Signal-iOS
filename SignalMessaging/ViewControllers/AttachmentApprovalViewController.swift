@@ -857,8 +857,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     private(set) var contentContainer: UIView!
     private(set) var playVideoButton: UIView?
 
-    private var imageEditorView: ImageEditorView?
-
     // MARK: - Initializers
 
     init(attachmentItem: SignalAttachmentItem) {
@@ -954,7 +952,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             imageMediaView.isUserInteractionEnabled = true
             imageMediaView.addSubview(imageEditorView)
             imageEditorView.autoPinEdgesToSuperviewEdges()
-            self.imageEditorView = imageEditorView
+
+            imageEditorView.addControls(to: self.mediaMessageView)
         }
         #endif
 

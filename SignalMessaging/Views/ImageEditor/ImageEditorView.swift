@@ -29,7 +29,69 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         notImplemented()
     }
 
+    // MARK: - Buttons
+
+    private let undoButton = UIButton(type: .custom)
+    private let redoButton = UIButton(type: .custom)
+
+    @objc
+    public func addControls(to containerView: UIView) {
+        configure(button: undoButton,
+                  label: NSLocalizedString("BUTTON_UNDO", comment: "Label for undo button."),
+                  selector: #selector(didTapUndo(sender:)))
+
+        configure(button: redoButton,
+                  label: NSLocalizedString("BUTTON_REDO", comment: "Label for redo button."),
+                  selector: #selector(didTapRedo(sender:)))
+
+        let stackView = UIStackView(arrangedSubviews: [undoButton, redoButton])
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 10
+
+        containerView.addSubview(stackView)
+        stackView.autoAlignAxis(toSuperviewAxis: .horizontal)
+        stackView.autoPinTrailingToSuperviewMargin(withInset: 10)
+
+        updateButtons()
+    }
+
+    private func configure(button: UIButton,
+                           label: String,
+                           selector: Selector) {
+        button.setTitle(label, for: .normal)
+        button.setTitleColor(.white,
+                                 for: .normal)
+        button.setTitleColor(.gray,
+                                 for: .disabled)
+        button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        button.addTarget(self, action: selector, for: .touchUpInside)
+    }
+
+    private func updateButtons() {
+        undoButton.isEnabled = model.canUndo()
+        redoButton.isEnabled = model.canRedo()
+    }
+
     // MARK: - Actions
+
+    @objc func didTapUndo(sender: UIButton) {
+        Logger.verbose("")
+        guard model.canUndo() else {
+            owsFailDebug("Can't undo.")
+            return
+        }
+        model.undo()
+    }
+
+    @objc func didTapRedo(sender: UIButton) {
+        Logger.verbose("")
+        guard model.canRedo() else {
+            owsFailDebug("Can't redo.")
+            return
+        }
+        model.redo()
+    }
 
     // These properties are non-empty while drawing a stroke.
     private var currentStroke: ImageEditorStrokeItem?
@@ -38,8 +100,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     @objc
     public func handleTouchGesture(_ gestureRecognizer: UIGestureRecognizer) {
         AssertIsOnMainThread()
-
-        Logger.verbose("\(NSStringForUIGestureRecognizerState(gestureRecognizer.state))")
 
         let removeCurrentStroke = {
             if let stroke = self.currentStroke {
@@ -69,9 +129,9 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
             currentStrokeSamples.append(unitSampleForGestureLocation())
 
-            let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: self.currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
-            self.model.append(item: stroke)
-            self.currentStroke = stroke
+            let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
+            model.append(item: stroke)
+            currentStroke = stroke
 
         case .changed, .ended:
             currentStrokeSamples.append(unitSampleForGestureLocation())
@@ -84,13 +144,14 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
             // Model items are immutable; we _replace_ the
             // stroke item rather than modify it.
-            let stroke = ImageEditorStrokeItem(itemId: lastStroke.itemId, color: strokeColor, unitSamples: self.currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
-            self.model.replace(item: stroke)
-            self.currentStroke = stroke
+            let stroke = ImageEditorStrokeItem(itemId: lastStroke.itemId, color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
+            model.replace(item: stroke, suppressUndo: true)
 
             if gestureRecognizer.state == .ended {
-                self.currentStroke = nil
-                self.currentStrokeSamples.removeAll()
+                currentStroke = nil
+                currentStrokeSamples.removeAll()
+            } else {
+                currentStroke = stroke
             }
         default:
             removeCurrentStroke()
@@ -100,9 +161,15 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     // MARK: - ImageEditorModelDelegate
 
     public func imageEditorModelDidChange() {
-        // TODO: We eventually want to narrow our change events
-        // to reflect the specific item(s) which changed.
         updateAllContent()
+
+        updateButtons()
+    }
+
+    public func imageEditorModelDidChange(changedItemIds: [String]) {
+        updateContent(changedItemIds: changedItemIds)
+
+        updateButtons()
     }
 
     // MARK: - Accessor Overrides
@@ -125,33 +192,71 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
     // MARK: - Content
 
-    var contentLayers = [CALayer]()
+    var contentLayerMap = [String: CALayer]()
 
     internal func updateAllContent() {
         AssertIsOnMainThread()
-
-        for layer in contentLayers {
-            layer.removeFromSuperlayer()
-        }
-        contentLayers.removeAll()
-
-        guard bounds.width > 0,
-            bounds.height > 0 else {
-                return
-        }
 
         // Don't animate changes.
         CATransaction.begin()
         CATransaction.setDisableActions(true)
 
-        for item in model.items() {
-            guard let layer = ImageEditorView.layerForItem(item: item,
-                                                           viewSize: bounds.size) else {
-                continue
-            }
+        for layer in contentLayerMap.values {
+            layer.removeFromSuperlayer()
+        }
+        contentLayerMap.removeAll()
 
-            self.layer.addSublayer(layer)
-            contentLayers.append(layer)
+        if bounds.width > 0,
+            bounds.height > 0 {
+
+            for item in model.items() {
+                guard let layer = ImageEditorView.layerForItem(item: item,
+                                                               viewSize: bounds.size) else {
+                                                                continue
+                }
+
+                self.layer.addSublayer(layer)
+                contentLayerMap[item.itemId] = layer
+            }
+        }
+
+        CATransaction.commit()
+    }
+
+    internal func updateContent(changedItemIds: [String]) {
+        AssertIsOnMainThread()
+
+        // Don't animate changes.
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        // Remove all changed items.
+        for itemId in changedItemIds {
+            if let layer = contentLayerMap[itemId] {
+                layer.removeFromSuperlayer()
+            }
+            contentLayerMap.removeValue(forKey: itemId)
+        }
+
+        if bounds.width > 0,
+            bounds.height > 0 {
+
+            // Create layers for inserted and updated items.
+            for itemId in changedItemIds {
+                guard let item = model.item(forId: itemId) else {
+                    // Item was deleted.
+                    continue
+                }
+
+                // Item was inserted or updated.
+                guard let layer = ImageEditorView.layerForItem(item: item,
+                                                               viewSize: bounds.size) else {
+                                                                continue
+                }
+
+                self.layer.addSublayer(layer)
+                contentLayerMap[item.itemId] = layer
+            }
         }
 
         CATransaction.commit()

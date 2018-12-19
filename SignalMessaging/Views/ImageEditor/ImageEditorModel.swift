@@ -139,6 +139,10 @@ public class OrderedDictionary<ValueType>: NSObject {
         return OrderedDictionary(keyValueMap: keyValueMap, orderedKeys: orderedKeys)
     }
 
+    public func value(forKey key: KeyType) -> ValueType? {
+        return keyValueMap[key]
+    }
+
     public func append(key: KeyType, value: ValueType) {
         if keyValueMap[key] != nil {
             owsFailDebug("Unexpected duplicate key in key map: \(key)")
@@ -240,6 +244,11 @@ public class ImageEditorContents: NSObject {
     }
 
     @objc
+    public func item(forId itemId: String) -> ImageEditorItem? {
+        return itemMap.value(forKey: itemId)
+    }
+
+    @objc
     public func append(item: ImageEditorItem) {
         Logger.verbose("\(item.itemId)")
 
@@ -300,6 +309,7 @@ private class ImageEditorOperation: NSObject {
 @objc
 public protocol ImageEditorModelDelegate: class {
     func imageEditorModelDidChange()
+    func imageEditorModelDidChange(changedItemIds: [String])
 }
 
 // MARK: -
@@ -361,6 +371,11 @@ public class ImageEditorModel: NSObject {
     }
 
     @objc
+    public func item(forId itemId: String) -> ImageEditorItem? {
+        return contents.item(forId: itemId)
+    }
+
+    @objc
     public func canUndo() -> Bool {
         return !undoStack.isEmpty
     }
@@ -382,6 +397,7 @@ public class ImageEditorModel: NSObject {
 
         self.contents = undoOperation.contents
 
+        // We could diff here and yield a more narrow change event.
         delegate?.imageEditorModelDidChange()
     }
 
@@ -397,39 +413,46 @@ public class ImageEditorModel: NSObject {
 
         self.contents = redoOperation.contents
 
+        // We could diff here and yield a more narrow change event.
         delegate?.imageEditorModelDidChange()
     }
 
     @objc
     public func append(item: ImageEditorItem) {
-        performAction { (newContents) in
+        performAction({ (newContents) in
             newContents.append(item: item)
-        }
+        }, changedItemIds: [item.itemId])
     }
 
     @objc
-    public func replace(item: ImageEditorItem) {
-        performAction { (newContents) in
+    public func replace(item: ImageEditorItem,
+                        suppressUndo: Bool = false) {
+        performAction({ (newContents) in
             newContents.replace(item: item)
-        }
+        }, changedItemIds: [item.itemId],
+           suppressUndo: suppressUndo)
     }
 
     @objc
     public func remove(item: ImageEditorItem) {
-        performAction { (newContents) in
+        performAction({ (newContents) in
             newContents.remove(item: item)
-        }
+        }, changedItemIds: [item.itemId])
     }
 
-    private func performAction(action: (ImageEditorContents) -> Void) {
-        let undoOperation = ImageEditorOperation(contents: contents)
-        undoStack.append(undoOperation)
-        redoStack.removeAll()
+    private func performAction(_ action: (ImageEditorContents) -> Void,
+                               changedItemIds: [String],
+                               suppressUndo: Bool = false) {
+        if !suppressUndo {
+            let undoOperation = ImageEditorOperation(contents: contents)
+            undoStack.append(undoOperation)
+            redoStack.removeAll()
+        }
 
         let newContents = contents.clone()
         action(newContents)
         contents = newContents
 
-        delegate?.imageEditorModelDidChange()
+        delegate?.imageEditorModelDidChange(changedItemIds: changedItemIds)
     }
 }
