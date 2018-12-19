@@ -33,28 +33,22 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
     // MARK: - Views
 
-    private var imageView: UIImageView?
-    private let layersView = UIView()
+    private let imageView = UIImageView()
+    private var imageViewConstraints = [NSLayoutConstraint]()
+    private let layersView = OWSLayerView()
 
     @objc
     public func createImageView() -> Bool {
-        guard let image = UIImage(contentsOfFile: model.srcImagePath) else {
-            // TODO:
-            owsFailDebug("Could not load image")
-            return false
-        }
-        guard image.size.width > 0 && image.size.height > 0 else {
-            // TODO:
-            owsFailDebug("Could not load image")
+        self.addSubview(imageView)
+
+        guard updateImageView() else {
             return false
         }
 
-        let imageView = UIImageView(image: image)
-        imageView.layer.minificationFilter = kCAFilterTrilinear
-        imageView.layer.magnificationFilter = kCAFilterTrilinear
-        let aspectRatio = image.size.width / image.size.height
-        addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
-
+        layersView.clipsToBounds = true
+        layersView.layoutCallback = { [weak self] (_) in
+            self?.updateAllContent()
+        }
         self.addSubview(layersView)
         layersView.autoPin(toEdgesOf: imageView)
 
@@ -63,23 +57,46 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         let anyTouchGesture = ImageEditorGestureRecognizer(target: self, action: #selector(handleTouchGesture(_:)))
         layersView.addGestureRecognizer(anyTouchGesture)
 
-        self.imageView = imageView
+        return true
+    }
+
+    @objc
+    public func updateImageView() -> Bool {
+        Logger.verbose("")
+
+        guard let image = UIImage(contentsOfFile: model.currentImagePath) else {
+            owsFailDebug("Could not load image")
+            return false
+        }
+        guard image.size.width > 0 && image.size.height > 0 else {
+            owsFailDebug("Could not load image")
+            return false
+        }
+
+        imageView.image = image
+        imageView.layer.minificationFilter = kCAFilterTrilinear
+        imageView.layer.magnificationFilter = kCAFilterTrilinear
+        let aspectRatio = image.size.width / image.size.height
+        for constraint in imageViewConstraints {
+            constraint.autoRemove()
+        }
+        imageViewConstraints = applyScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
 
         return true
     }
 
-    private func addSubviewWithScaleAspectFitLayout(view: UIView, aspectRatio: CGFloat) {
-        self.addSubview(view)
-
+    private func applyScaleAspectFitLayout(view: UIView, aspectRatio: CGFloat) -> [NSLayoutConstraint] {
         // This emulates the behavior of contentMode = .scaleAspectFit using
         // iOS auto layout constraints.
         //
         // This allows ConversationInputToolbar to place the "cancel" button
         // in the upper-right hand corner of the preview content.
-        view.autoCenterInSuperview()
-        view.autoPin(toAspectRatio: aspectRatio)
-        view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
-        view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
+        var constraints = [NSLayoutConstraint]()
+        constraints.append(contentsOf: view.autoCenterInSuperview())
+        constraints.append(view.autoPin(toAspectRatio: aspectRatio))
+        constraints.append(view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
+        constraints.append(view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
+        return constraints
     }
 
     private let undoButton = UIButton(type: .custom)
@@ -321,6 +338,16 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                 cropLayer.removeFromSuperlayer()
                 cropLayer.removeAllAnimations()
             }
+
+            // Find the upper-left and bottom-right corners of the
+            // crop rectangle, in unit coordinates.
+            let unitMin = CGPointClamp01(CGPointMin(self.cropStartUnit, self.cropEndUnit))
+            let unitMax = CGPointClamp01(CGPointMax(self.cropStartUnit, self.cropEndUnit))
+            let unitCropRect = CGRect(x: unitMin.x,
+                                      y: unitMin.y,
+                                      width: unitMax.x - unitMin.x,
+                                      height: unitMax.y - unitMin.y)
+            self.model.crop(unitCropRect: unitCropRect)
         }
 
         switch gestureRecognizer.state {
@@ -343,7 +370,13 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
     // MARK: - ImageEditorModelDelegate
 
-    public func imageEditorModelDidChange() {
+    public func imageEditorModelDidChange(before: ImageEditorContents,
+                                          after: ImageEditorContents) {
+
+        if before.imagePath != after.imagePath {
+            _ = updateImageView()
+        }
+
         updateAllContent()
 
         updateButtons()
@@ -393,8 +426,9 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             bounds.height > 0 {
 
             for item in model.items() {
+                let viewSize = layersView.bounds.size
                 guard let layer = ImageEditorView.layerForItem(item: item,
-                                                               viewSize: bounds.size) else {
+                                                               viewSize: viewSize) else {
                                                                 continue
                 }
 
@@ -467,7 +501,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                                           viewSize: CGSize) -> CALayer? {
         AssertIsOnMainThread()
 
-        Logger.verbose("\(item.itemId)")
+        Logger.verbose("\(item.itemId), viewSize: \(viewSize)")
 
         let strokeWidth = ImageEditorStrokeItem.strokeWidth(forUnitStrokeWidth: item.unitStrokeWidth,
                                                             dstSize: viewSize)
@@ -591,9 +625,9 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         // Render output at same size as source image.
         let dstSizePixels = model.srcImageSizePixels
 
-        let hasAlpha = NSData.hasAlpha(forValidImageFilePath: model.srcImagePath)
+        let hasAlpha = NSData.hasAlpha(forValidImageFilePath: model.currentImagePath)
 
-        guard let srcImage = UIImage(contentsOfFile: model.srcImagePath) else {
+        guard let srcImage = UIImage(contentsOfFile: model.currentImagePath) else {
             owsFailDebug("Could not load src image.")
             return nil
         }
