@@ -340,8 +340,13 @@ private class ImageEditorOperation: NSObject {
 
 @objc
 public protocol ImageEditorModelDelegate: class {
+    // Used for large changes to the model, when the entire
+    // model should be reloaded.
     func imageEditorModelDidChange(before: ImageEditorContents,
                                    after: ImageEditorContents)
+
+    // Used for small narrow changes to the model, usually
+    // to a single item.
     func imageEditorModelDidChange(changedItemIds: [String])
 }
 

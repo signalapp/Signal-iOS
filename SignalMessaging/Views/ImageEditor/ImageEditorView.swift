@@ -196,7 +196,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         case .brush:
             handleBrushGesture(gestureRecognizer)
         case .crop:
-                handleCropGesture(gestureRecognizer)
+            handleCropGesture(gestureRecognizer)
         }
     }
 

@@ -4,7 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// TODO: We'll eventually want to promote these into an OWSMath.h header.
 CG_INLINE CGFloat CGFloatClamp(CGFloat value, CGFloat minValue, CGFloat maxValue)
 {
     return MAX(minValue, MIN(maxValue, value));
