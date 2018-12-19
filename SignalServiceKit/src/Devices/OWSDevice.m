@@ -13,6 +13,7 @@
 #import "YapDatabaseTransaction.h"
 #import <Mantle/MTLValueTransformer.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -128,6 +129,13 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 + (TSAccountManager *)tsAccountManager
 {
     return TSAccountManager.sharedInstance;
+}
+
+- (OWSIdentityManager *)identityManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.identityManager);
+
+    return SSKEnvironment.shared.identityManager;
 }
 
 #pragma mark -
@@ -275,6 +283,20 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 - (NSString *)displayName
 {
     if (self.name) {
+        ECKeyPair *_Nullable identityKeyPair = self.identityManager.identityKeyPair;
+        OWSAssertDebug(identityKeyPair);
+        if (identityKeyPair) {
+            NSError *error;
+            NSString *_Nullable decryptedName =
+                [DeviceNames decryptDeviceNameWithBase64String:self.name identityKeyPair:identityKeyPair error:&error];
+            if (error) {
+                // Not necessarily an error; might be a legacy device name.
+                OWSLogError(@"Could not decrypt device name: %@", error);
+            } else if (decryptedName) {
+                return decryptedName;
+            }
+        }
+
         return self.name;
     }
 
