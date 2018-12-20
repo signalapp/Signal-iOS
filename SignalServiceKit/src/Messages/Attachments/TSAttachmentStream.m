@@ -524,10 +524,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         self.cachedImageHeight = @(imageSize.height);
 
         [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-
-            NSString *collection = [[self class] collection];
+            NSString *collection = [TSAttachmentStream collection];
             TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-            if (latestInstance) {
+            if (![latestInstance isKindOfClass:[TSAttachmentStream class]]) {
+                OWSFailDebug(@"Attachment has unexpected type: %@", latestInstance.class);
+            } else if (latestInstance) {
                 latestInstance.cachedImageWidth = @(imageSize.width);
                 latestInstance.cachedImageHeight = @(imageSize.height);
                 [latestInstance saveWithTransaction:transaction];
