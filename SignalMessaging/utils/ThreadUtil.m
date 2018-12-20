@@ -214,6 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (TSOutgoingMessage *)sendMessageNonDurablyWithAttachment:(SignalAttachment *)attachment
+                                               messageBody:(nullable NSString *)messageBody
                                                   inThread:(TSThread *)thread
                                           quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                              messageSender:(OWSMessageSender *)messageSender
@@ -232,7 +233,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                            inThread:thread
-                                                        messageBody:attachment.captionText
+                                                        messageBody:messageBody
                                                       attachmentIds:[NSMutableArray new]
                                                    expiresInSeconds:expiresInSeconds
                                                     expireStartedAt:0

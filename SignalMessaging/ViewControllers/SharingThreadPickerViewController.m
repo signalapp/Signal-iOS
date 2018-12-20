@@ -232,6 +232,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *)approvalViewController
      didApproveAttachments:(NSArray<SignalAttachment *> *)attachments
+               messageText:(NSString *_Nullable)messageText
 {
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
@@ -243,6 +244,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         // SAE runs as long as it needs.
         // TODO ALBUMS - send album via SAE
         outgoingMessage = [ThreadUtil sendMessageNonDurablyWithAttachment:attachments.firstObject
+                                                              messageBody:messageText
                                                                  inThread:self.thread
                                                          quotedReplyModel:nil
                                                             messageSender:self.messageSender
