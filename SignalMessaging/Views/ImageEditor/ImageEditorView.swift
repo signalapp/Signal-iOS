@@ -11,21 +11,26 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     private let model: ImageEditorModel
 
     enum EditorMode: String {
+        case none
         case brush
         case crop
     }
 
-    private var editorMode = EditorMode.brush {
+    private var editorMode = EditorMode.none {
         didSet {
             AssertIsOnMainThread()
 
             switch editorMode {
+            case .none:
+                editorGestureRecognizer?.isEnabled = false
             case .brush:
                 // Brush strokes can start and end (and return from) outside the view.
                 editorGestureRecognizer?.shouldAllowOutsideView = true
+                editorGestureRecognizer?.isEnabled = true
             case .crop:
                 // Crop gestures can start and end (and return from) outside the view.
                 editorGestureRecognizer?.shouldAllowOutsideView = true
+                editorGestureRecognizer?.isEnabled = true
             }
         }
     }
@@ -209,6 +214,8 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         AssertIsOnMainThread()
 
         switch editorMode {
+        case .none:
+            break
         case .brush:
             handleBrushGesture(gestureRecognizer)
         case .crop:
