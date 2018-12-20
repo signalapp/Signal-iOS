@@ -379,10 +379,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                       failure:(void (^)(NSError *error))failureBlock
 {
     NSString *authToken = [[self class] generateNewAccountAuthenticationToken];
-    NSString *signalingKey = [[self class] generateNewSignalingKeyToken];
     NSString *phoneNumber = self.phoneNumberAwaitingVerification;
 
-    OWSAssertDebug(signalingKey);
     OWSAssertDebug(authToken);
     OWSAssertDebug(phoneNumber);
 
@@ -400,7 +398,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                 case 200:
                 case 204: {
                     OWSLogInfo(@"Verification code accepted.");
-                    [self storeServerAuthToken:authToken signalingKey:signalingKey];
                     [TSPreKeyManager createPreKeysWithSuccess:successBlock failure:failureBlock];
                     [self.profileManager fetchLocalUsersProfile];
                     break;
@@ -464,15 +461,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return authTokenPrint;
 }
 
-+ (NSString *)generateNewSignalingKeyToken {
-    /*The signalingKey is 32 bytes of AES material (256bit AES) and 20 bytes of
-     * Hmac key material (HmacSHA1) concatenated into a 52 byte slug that is
-     * base64 encoded. */
-    NSData *signalingKeyToken = [Randomness generateRandomBytes:52];
-    NSString *signalingKeyTokenPrint = [[NSData dataWithData:signalingKeyToken] base64EncodedString];
-    return signalingKeyTokenPrint;
-}
-
 + (nullable NSString *)signalingKey
 {
     return [[self sharedInstance] signalingKey];
@@ -495,16 +483,12 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                               inCollection:TSAccountManager_UserAccountCollection];
 }
 
-- (void)storeServerAuthToken:(NSString *)authToken signalingKey:(NSString *)signalingKey
+- (void)storeServerAuthToken:(NSString *)authToken
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:authToken
                         forKey:TSAccountManager_ServerAuthToken
                   inCollection:TSAccountManager_UserAccountCollection];
-        [transaction setObject:signalingKey
-                        forKey:TSAccountManager_ServerSignalingKey
-                  inCollection:TSAccountManager_UserAccountCollection];
-
     }];
 }
 

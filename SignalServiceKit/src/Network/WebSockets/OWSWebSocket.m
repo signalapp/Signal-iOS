@@ -773,8 +773,10 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
                 BOOL useSignalingKey = [message.headers containsObject:@"X-Signal-Key: true"];
                 NSData *_Nullable decryptedPayload;
                 if (useSignalingKey) {
-                    decryptedPayload = [Cryptography decryptAppleMessagePayload:message.body
-                                                               withSignalingKey:TSAccountManager.signalingKey];
+                    NSString *_Nullable signalingKey = TSAccountManager.signalingKey;
+                    OWSAssertDebug(signalingKey);
+                    decryptedPayload =
+                        [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:signalingKey];
                 } else {
                     OWSAssertDebug([message.headers containsObject:@"X-Signal-Key: false"]);
 
