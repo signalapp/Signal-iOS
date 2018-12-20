@@ -3,6 +3,7 @@
 //
 
 #import "TSOutgoingMessage.h"
+#import "NSString+SSK.h"
 #import "OWSContact.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingSyncMessage.h"
@@ -16,7 +17,6 @@
 #import "TSGroupThread.h"
 #import "TSQuotedMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/NSString+SSK.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>

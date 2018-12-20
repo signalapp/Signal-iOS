@@ -4,7 +4,7 @@
 
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
-#import <SignalCoreKit/NSString+SSK.h>
+#import "NSString+SSK.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

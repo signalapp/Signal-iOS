@@ -9,7 +9,7 @@
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import <SignalCoreKit/Cryptography.h>
-#import <SignalCoreKit/NSString+SSK.h>
+#import <SignalCoreKit/NSString+OWS.h>
 
 @import Contacts;
 

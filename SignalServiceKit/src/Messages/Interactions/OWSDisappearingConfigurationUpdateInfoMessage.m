@@ -3,8 +3,8 @@
 //
 
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
+#import "NSString+SSK.h"
 #import "OWSDisappearingMessagesConfiguration.h"
-#import <SignalCoreKit/NSString+SSK.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

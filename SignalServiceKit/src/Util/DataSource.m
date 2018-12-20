@@ -6,7 +6,7 @@
 #import "MIMETypeUtil.h"
 #import "NSData+Image.h"
 #import "OWSFileSystem.h"
-#import <SignalCoreKit/NSString+SSK.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

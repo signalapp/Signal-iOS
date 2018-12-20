@@ -9,7 +9,7 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalMessaging/NSString+OWS.h>
+#import <SignalServiceKit/NSString+SSK.h>
 
 @interface CountryCodeViewController () <OWSTableViewControllerDelegate, UISearchBarDelegate>
 

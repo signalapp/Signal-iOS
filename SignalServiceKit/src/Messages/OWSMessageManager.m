@@ -8,6 +8,7 @@
 #import "ContactsManagerProtocol.h"
 #import "MimeTypeUtil.h"
 #import "NSNotificationCenter+OWS.h"
+#import "NSString+SSK.h"
 #import "NotificationsProtocol.h"
 #import "OWSAttachmentDownloads.h"
 #import "OWSBlockingManager.h"
@@ -47,7 +48,6 @@
 #import "TSQuotedMessage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/NSString+SSK.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>

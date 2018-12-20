@@ -22,7 +22,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/LockInteractionController.h>
 #import <SignalMessaging/NSAttributedString+OWS.h>
-#import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/NewNonContactConversationViewController.h>
 #import <SignalMessaging/OWSAnyTouchGestureRecognizer.h>
 #import <SignalMessaging/OWSAudioPlayer.h>

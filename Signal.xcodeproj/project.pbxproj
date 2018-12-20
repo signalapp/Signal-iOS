@@ -95,9 +95,7 @@
 		346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129B11FD1F7E800532771 /* OWSProfileManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129B21FD1F7E800532771 /* OWSProfileManager.m */; };
 		346129B61FD1F7E800532771 /* ProfileFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129B31FD1F7E800532771 /* ProfileFetcherJob.swift */; };
-		346129C71FD2072E00532771 /* NSString+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129C01FD2072C00532771 /* NSString+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129C81FD2072E00532771 /* NSAttributedString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129C11FD2072D00532771 /* NSAttributedString+OWS.m */; };
-		346129C91FD2072E00532771 /* NSString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129C21FD2072D00532771 /* NSString+OWS.m */; };
 		346129CC1FD2072E00532771 /* NSAttributedString+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129C51FD2072D00532771 /* NSAttributedString+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129D51FD20ADC00532771 /* UIViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129D31FD20ADB00532771 /* UIViewController+OWS.m */; };
 		346129D61FD20ADC00532771 /* UIViewController+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129D41FD20ADC00532771 /* UIViewController+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -235,13 +233,13 @@
 		34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2A1F74C12700D7438D /* DebugUIStress.m */; };
 		34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */; };
 		34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */; };
+		34BEDB0B21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB0A21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift */; };
 		34BEDB0E21C405B0007B0EAE /* ImageEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB0D21C405B0007B0EAE /* ImageEditorModel.swift */; };
 		34BEDB1121C41E71007B0EAE /* ImageEditorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1021C41E71007B0EAE /* ImageEditorTest.swift */; };
 		34BEDB1321C43F6A007B0EAE /* ImageEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */; };
 		34BEDB1621C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34BEDB1721C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */; };
 		34BEDB1921C82AC5007B0EAE /* ImageEditorGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1821C82AC5007B0EAE /* ImageEditorGestureRecognizer.swift */; };
-		34BEDB0B21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB0A21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift */; };
 		34C3C78D20409F320000134C /* Opening.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78C20409F320000134C /* Opening.m4r */; };
 		34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78E2040A4F70000134C /* sonarping.mp3 */; };
 		34C3C7922040B0DD0000134C /* OWSAudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -344,7 +342,6 @@
 		452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
 		452C7CA72037628B003D51A5 /* Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170D51E315310003FC1F2 /* Weak.swift */; };
 		452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */; };
-		452D1AF320810B6F00A67F7F /* String+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1AF220810B6F00A67F7F /* String+OWS.swift */; };
 		452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EA09D1EA7ABE00078744B /* AttachmentPointerView.swift */; };
 		452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */; };
 		452EC6E1205FF5DC000E787C /* Bench.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6E0205FF5DC000E787C /* Bench.swift */; };
@@ -753,9 +750,7 @@
 		346129B31FD1F7E800532771 /* ProfileFetcherJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileFetcherJob.swift; sourceTree = "<group>"; };
 		346129BD1FD2068600532771 /* ThreadUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadUtil.h; sourceTree = "<group>"; };
 		346129BE1FD2068600532771 /* ThreadUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadUtil.m; sourceTree = "<group>"; };
-		346129C01FD2072C00532771 /* NSString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+OWS.h"; sourceTree = "<group>"; };
 		346129C11FD2072D00532771 /* NSAttributedString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+OWS.m"; sourceTree = "<group>"; };
-		346129C21FD2072D00532771 /* NSString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+OWS.m"; sourceTree = "<group>"; };
 		346129C51FD2072D00532771 /* NSAttributedString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+OWS.h"; sourceTree = "<group>"; };
 		346129D31FD20ADB00532771 /* UIViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+OWS.m"; sourceTree = "<group>"; };
 		346129D41FD20ADC00532771 /* UIViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+OWS.h"; sourceTree = "<group>"; };
@@ -914,13 +909,13 @@
 		34BECE2A1F74C12700D7438D /* DebugUIStress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIStress.m; sourceTree = "<group>"; };
 		34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerViewController.swift; sourceTree = "<group>"; };
 		34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerLayout.swift; sourceTree = "<group>"; };
+		34BEDB0A21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS114RemoveDynamicInteractions.swift; sourceTree = "<group>"; };
 		34BEDB0D21C405B0007B0EAE /* ImageEditorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorModel.swift; sourceTree = "<group>"; };
 		34BEDB1021C41E71007B0EAE /* ImageEditorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTest.swift; sourceTree = "<group>"; };
 		34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorView.swift; sourceTree = "<group>"; };
 		34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
 		34BEDB1821C82AC5007B0EAE /* ImageEditorGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorGestureRecognizer.swift; sourceTree = "<group>"; };
-		34BEDB0A21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS114RemoveDynamicInteractions.swift; sourceTree = "<group>"; };
 		34C3C78C20409F320000134C /* Opening.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Opening.m4r; sourceTree = "<group>"; };
 		34C3C78E2040A4F70000134C /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sonarping.mp3; path = Signal/AudioFiles/sonarping.mp3; sourceTree = SOURCE_ROOT; };
 		34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioPlayer.h; sourceTree = "<group>"; };
@@ -1040,7 +1035,6 @@
 		452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddContactShareToExistingContactViewController.swift; sourceTree = "<group>"; };
 		452C468E1E427E200087B011 /* OutboundCallInitiator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutboundCallInitiator.swift; sourceTree = "<group>"; };
 		452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringAdditionsTest.swift; sourceTree = "<group>"; };
-		452D1AF220810B6F00A67F7F /* String+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+OWS.swift"; sourceTree = "<group>"; };
 		452EA09D1EA7ABE00078744B /* AttachmentPointerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentPointerView.swift; sourceTree = "<group>"; };
 		452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryViewController.swift; sourceTree = "<group>"; };
 		452EC6E0205FF5DC000E787C /* Bench.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bench.swift; sourceTree = "<group>"; };
@@ -1595,9 +1589,6 @@
 				4551DB59205C562300C8AE75 /* Collection+OWS.swift */,
 				346129C51FD2072D00532771 /* NSAttributedString+OWS.h */,
 				346129C11FD2072D00532771 /* NSAttributedString+OWS.m */,
-				346129C01FD2072C00532771 /* NSString+OWS.h */,
-				346129C21FD2072D00532771 /* NSString+OWS.m */,
-				452D1AF220810B6F00A67F7F /* String+OWS.swift */,
 				34480B5D1FD0A98800BC14EF /* UIColor+OWS.h */,
 				34480B5E1FD0A98800BC14EF /* UIColor+OWS.m */,
 				45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */,
@@ -2625,7 +2616,6 @@
 				34612A011FD5F31400532771 /* OWS104CreateRecipientIdentities.h in Headers */,
 				450998691FD8C10200D89EB3 /* AttachmentSharing.h in Headers */,
 				34BEDB1621C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.h in Headers */,
-				346129C71FD2072E00532771 /* NSString+OWS.h in Headers */,
 				34AC09EC211B39B100997B47 /* OWSTableViewController.h in Headers */,
 				451F8A3C1FD71392005CB9DA /* UIUtil.h in Headers */,
 				346129D61FD20ADC00532771 /* UIViewController+OWS.h in Headers */,
@@ -3353,7 +3343,6 @@
 				3466087220E550F400AFFE73 /* ConversationStyle.swift in Sources */,
 				3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */,
 				34AC09F6211B39B100997B47 /* LockInteractionController.m in Sources */,
-				452D1AF320810B6F00A67F7F /* String+OWS.swift in Sources */,
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
 				452C7CA72037628B003D51A5 /* Weak.swift in Sources */,
 				34D5872F208E2C4200D2255A /* OWS109OutgoingMessageState.m in Sources */,
@@ -3373,7 +3362,6 @@
 				45BC829D1FD9C4B400011CF3 /* ShareViewDelegate.swift in Sources */,
 				3461295B1FD1D74C00532771 /* Environment.m in Sources */,
 				346129D51FD20ADC00532771 /* UIViewController+OWS.m in Sources */,
-				346129C91FD2072E00532771 /* NSString+OWS.m in Sources */,
 				347850691FD9B78A007B8332 /* AppSetup.m in Sources */,
 				346941A3215D2EE400B5BFAD /* Theme.m in Sources */,
 				4C23A5F2215C4ADE00534937 /* SheetViewController.swift in Sources */,

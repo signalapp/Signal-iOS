@@ -6,12 +6,12 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalMessaging.h"
-#import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/SignalMessaging.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 
 NS_ASSUME_NONNULL_BEGIN

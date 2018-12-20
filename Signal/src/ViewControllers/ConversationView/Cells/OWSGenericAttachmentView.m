@@ -8,10 +8,10 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
-#import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN

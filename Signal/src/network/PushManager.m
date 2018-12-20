@@ -9,9 +9,9 @@
 #import "SignalApp.h"
 #import "ThreadUtil.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/NSString+SSK.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/AppReadiness.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
