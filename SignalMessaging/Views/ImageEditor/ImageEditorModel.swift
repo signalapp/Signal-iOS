@@ -496,6 +496,36 @@ public class ImageEditorModel: NSObject {
         }, changedItemIds: [item.itemId])
     }
 
+    // MARK: - Temp Files
+
+    private var temporaryFilePaths = [String]()
+
+    @objc
+    public func temporaryFilePath(withFileExtension fileExtension: String) -> String {
+        AssertIsOnMainThread()
+
+        let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
+        temporaryFilePaths.append(filePath)
+        return filePath
+    }
+
+    deinit {
+        AssertIsOnMainThread()
+
+        let temporaryFilePaths = self.temporaryFilePaths
+
+        DispatchQueue.global(qos: .background).async {
+            for filePath in temporaryFilePaths {
+                guard OWSFileSystem.deleteFile(filePath) else {
+                    Logger.error("Could not delete temp file: \(filePath)")
+                    continue
+                }
+            }
+        }
+    }
+
+    // MARK: - Crop
+
     @objc
     public func crop(unitCropRect: CGRect) {
         guard let croppedImage = ImageEditorModel.crop(imagePath: contents.imagePath,
@@ -510,7 +540,7 @@ public class ImageEditorModel: NSObject {
             owsFailDebug("Could not convert cropped image to PNG.")
             return
         }
-        let croppedImagePath = OWSFileSystem.temporaryFilePath(withFileExtension: "png")
+        let croppedImagePath = temporaryFilePath(withFileExtension: "png")
         do {
             try croppedImageData.write(to: NSURL.fileURL(withPath: croppedImagePath), options: .atomicWrite)
         } catch let error as NSError {
