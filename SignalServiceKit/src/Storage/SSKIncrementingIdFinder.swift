@@ -22,7 +22,6 @@ public class SSKIncrementingIdFinder: NSObject {
         let nextId: UInt64 = previousId + 1
 
         transaction.setObject(nextId, forKey: key, inCollection: collectionName)
-        Logger.debug("key: \(key) nextId: \(nextId)")
         return nextId
     }
 }
