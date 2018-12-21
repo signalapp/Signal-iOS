@@ -61,6 +61,13 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     return SSKEnvironment.shared.primaryStorage;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark -
 
 - (void)configure
@@ -133,8 +140,17 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         self.thread = [TSContactThread getThreadWithContactId:recipientId transaction:transaction];
     }];
 
-    self.nameLabel.attributedText =
-        [self.contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
+    BOOL isNoteToSelf = [recipientId isEqualToString:self.tsAccountManager.localNumber];
+    if (isNoteToSelf) {
+        self.nameLabel.attributedText = [[NSAttributedString alloc]
+            initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
+                attributes:@{
+                    NSFontAttributeName : self.nameLabel.font,
+                }];
+    } else {
+        self.nameLabel.attributedText =
+            [self.contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
@@ -163,6 +179,12 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     NSString *threadName = thread.name;
     if (threadName.length == 0 && [thread isKindOfClass:[TSGroupThread class]]) {
         threadName = [MessageStrings newGroupDefaultTitle];
+    }
+
+    BOOL isNoteToSelf
+        = (!thread.isGroupThread && [thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
+    if (isNoteToSelf) {
+        threadName = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
     }
 
     NSAttributedString *attributedText =

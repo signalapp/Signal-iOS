@@ -1258,9 +1258,10 @@ typedef enum : NSUInteger {
     } else {
         OWSAssertDebug(self.thread.contactIdentifier);
 
-        if ([self.thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]) {
+        BOOL isNoteToSelf = [self.thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber];
+        if (isNoteToSelf) {
             name = [[NSAttributedString alloc]
-                initWithString:NSLocalizedString(@"NOTE_TO_SELF", "Label for 1:1 conversation with yourself.")
+                initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
                     attributes:@{
                         NSFontAttributeName : self.headerView.titlePrimaryFont,
                     }];

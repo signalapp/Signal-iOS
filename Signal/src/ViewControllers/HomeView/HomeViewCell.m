@@ -53,6 +53,13 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.typingIndicators;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark -
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
@@ -510,9 +517,18 @@ NS_ASSUME_NONNULL_BEGIN
             name = [[NSAttributedString alloc] initWithString:thread.name];
         }
     } else {
-        name = [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
-                                                                          primaryFont:self.nameFont
-                                                                        secondaryFont:self.nameSecondaryFont];
+        BOOL isNoteToSelf = [self.thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber];
+        if (isNoteToSelf) {
+            name = [[NSAttributedString alloc]
+                initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
+                    attributes:@{
+                        NSFontAttributeName : self.nameFont,
+                    }];
+        } else {
+            name = [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
+                                                                              primaryFont:self.nameFont
+                                                                            secondaryFont:self.nameSecondaryFont];
+        }
     }
 
     self.nameLabel.attributedText = name;
