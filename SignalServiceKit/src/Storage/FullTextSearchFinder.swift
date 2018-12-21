@@ -25,6 +25,12 @@ public class SearchIndexer<T> {
 @objc
 public class FullTextSearchFinder: NSObject {
 
+    // MARK: - Dependencies
+
+    private static var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
     // MARK: - Querying
 
     // We want to match by prefix for "search as you type" functionality.
@@ -184,7 +190,16 @@ public class FullTextSearchFinder: NSObject {
             return String(String.UnicodeScalarView(digitScalars))
         }(recipientId)
 
-        return "\(recipientId) \(nationalNumber) \(displayName)"
+        var result = "\(recipientId) \(nationalNumber) \(displayName)"
+
+        if let localNumber = tsAccountManager.storedLocalNumber(transaction) {
+            if localNumber == recipientId {
+                let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
+                result += " \(noteToSelfLabel)"
+            }
+        }
+
+        return result
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in

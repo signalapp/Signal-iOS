@@ -220,6 +220,12 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
 }
 
+- (nullable NSString *)storedLocalNumber:(YapDatabaseReadTransaction *)transaction
+{
+    return [transaction stringForKey:TSAccountManager_RegisteredNumberKey
+                        inCollection:TSAccountManager_UserAccountCollection];
+}
+
 - (void)storeLocalNumber:(NSString *)localNumber
 {
     @synchronized (self) {
