@@ -156,6 +156,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     deinit {
+        Logger.info("")
         NotificationCenter.default.removeObserver(self)
         self.proximityMonitoringManager.remove(lifetime: self)
     }
@@ -177,7 +178,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.proximityMonitoringManager.add(lifetime: self)
+
+        ensureProximityMonitoring()
 
         updateCallUI(callState: call.state)
 
@@ -1129,5 +1131,42 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         updateLocalVideo(captureSession: localCaptureSession)
         updateRemoteVideoTrack(remoteVideoTrack: remoteVideoTrack)
+    }
+
+    // MARK: - Proximity Monitoring
+
+    func ensureProximityMonitoring() {
+        if #available(iOS 11, *) {
+            // BUG: Adding `self` as a Weak reference to the proximityMonitoringManager results in
+            // the CallViewController never being deallocated, which, besides being a memory leak
+            // can interfere with subsequent video capture - presumably because the old capture
+            // session is still retained via the callViewController.localVideoView.
+            //
+            // A code audit has not revealed a retain cycle.
+            //
+            // Using the XCode memory debugger shows that a strong reference is held by
+            // windowManager.callNavigationController->_childViewControllers.
+            // Even though, when inspecting via the debugger, the CallViewController is not shown as
+            // a childViewController.
+            //
+            //     (lldb) po [[[OWSWindowManager sharedManager] callNavigationController] childViewControllers]
+            //     <__NSSingleObjectArrayI 0x1c0418bd0>(
+            //       <OWSWindowRootViewController: 0x13de37550>
+            //     )
+            //
+            // Weirder still, when presenting another CallViewController, the old one remains unallocated
+            // and inspecting it in the memory debugger shows _no_ strong references to it (yet it
+            // is not deallocated). Some weak references do remain - from the proximityMonitoringManager
+            // and the callObserver, both of which use the Weak<T> struct, which could be related.
+            //
+            // In any case, we can apparently avoid this behavior by not adding self as a Weak lifetime
+            // and as of iOS11, the system automatically managages proximityMonitoring
+            // via CallKit and AudioSessions. Proximity monitoring will be enabled whenever a call
+            // is active, unless we switch to VideoChat audio mode (which is actually desirable
+            // behavior), so the proximityMonitoringManager is redundant for calls on iOS11+.
+        } else {
+            // before iOS11, manually enable proximityMonitoring while we're on a call.
+            self.proximityMonitoringManager.add(lifetime: self)
+        }
     }
 }
