@@ -302,6 +302,13 @@ typedef enum : NSUInteger {
     return SSKEnvironment.shared.attachmentDownloads;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -490,7 +497,7 @@ typedef enum : NSUInteger {
     }
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    return ![groupThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]];
+    return ![groupThread.groupModel.groupMemberIds containsObject:self.tsAccountManager.localNumber];
 }
 
 - (void)hideInputIfNeeded
@@ -1250,10 +1257,19 @@ typedef enum : NSUInteger {
         }
     } else {
         OWSAssertDebug(self.thread.contactIdentifier);
-        name =
-            [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:self.thread.contactIdentifier
-                                                                       primaryFont:self.headerView.titlePrimaryFont
-                                                                     secondaryFont:self.headerView.titleSecondaryFont];
+
+        if ([self.thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]) {
+            name = [[NSAttributedString alloc]
+                initWithString:NSLocalizedString(@"NOTE_TO_SELF", "Label for 1:1 conversation with yourself.")
+                    attributes:@{
+                        NSFontAttributeName : self.headerView.titlePrimaryFont,
+                    }];
+        } else {
+            name = [self.contactsManager
+                attributedContactOrProfileNameForPhoneIdentifier:self.thread.contactIdentifier
+                                                     primaryFont:self.headerView.titlePrimaryFont
+                                                   secondaryFont:self.headerView.titleSecondaryFont];
+        }
     }
     self.title = nil;
 
@@ -1557,7 +1573,7 @@ typedef enum : NSUInteger {
 - (BOOL)canCall
 {
     return !(self.isGroupConversation ||
-        [((TSContactThread *)self.thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]);
+        [((TSContactThread *)self.thread).contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
 }
 
 #pragma mark - Dynamic Text
@@ -3807,7 +3823,7 @@ typedef enum : NSUInteger {
     OWSAssertDebug(groupModel);
 
     NSMutableSet *groupMemberIds = [NSMutableSet setWithArray:groupModel.groupMemberIds];
-    [groupMemberIds addObject:[TSAccountManager localNumber]];
+    [groupMemberIds addObject:self.tsAccountManager.localNumber];
     groupModel.groupMemberIds = [NSMutableArray arrayWithArray:[groupMemberIds allObjects]];
     [self updateGroupModelTo:groupModel successCompletion:nil];
 }

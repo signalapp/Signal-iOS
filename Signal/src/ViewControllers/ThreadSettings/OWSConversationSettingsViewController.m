@@ -55,10 +55,6 @@ const CGFloat kIconViewLength = 24;
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 @property (nullable, nonatomic) MediaGallery *mediaGallery;
-@property (nonatomic, readonly) TSAccountManager *accountManager;
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
@@ -110,10 +106,6 @@ const CGFloat kIconViewLength = 24;
 
 - (void)commonInit
 {
-    _accountManager = [TSAccountManager sharedInstance];
-    _contactsManager = Environment.shared.contactsManager;
-    _messageSender = SSKEnvironment.shared.messageSender;
-    _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 
     [self observeNotifications];
@@ -129,6 +121,33 @@ const CGFloat kIconViewLength = 24;
 - (SSKMessageSenderJobQueue *)messageSenderJobQueue
 {
     return SSKEnvironment.shared.messageSenderJobQueue;
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+- (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
+}
+
+- (OWSMessageSender *)messageSender
+{
+    return SSKEnvironment.shared.messageSender;
+}
+
+- (OWSBlockingManager *)blockingManager
+{
+    return [OWSBlockingManager sharedManager];
+}
+
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
 }
 
 #pragma mark
@@ -291,6 +310,9 @@ const CGFloat kIconViewLength = 24;
     OWSTableContents *contents = [OWSTableContents new];
     contents.title = NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen");
 
+    BOOL isNoteToSelf = (!self.thread.isGroupThread &&
+        [self.thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
+
     __weak OWSConversationSettingsViewController *weakSelf = self;
 
     // Main section.
@@ -333,7 +355,7 @@ const CGFloat kIconViewLength = 24;
                                  }]];
     }
 
-    if (!self.isGroupThread && self.thread.hasSafetyNumbers) {
+    if (!isNoteToSelf && !self.isGroupThread && self.thread.hasSafetyNumbers) {
         [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
             return [weakSelf
                 disclosureCellWithName:
@@ -346,7 +368,9 @@ const CGFloat kIconViewLength = 24;
                                  }]];
     }
 
-    if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:self.thread]) {
+    if (isNoteToSelf) {
+        // Skip the profile whitelist.
+    } else if ([self.profileManager isThreadInProfileWhitelist:self.thread]) {
         [mainSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
@@ -564,52 +588,54 @@ const CGFloat kIconViewLength = 24;
 
     // Mute thread section.
 
-    OWSTableSection *notificationsSection = [OWSTableSection new];
-    // We need a section header to separate the notifications UI from the group settings UI.
-    notificationsSection.headerTitle = NSLocalizedString(
-        @"SETTINGS_SECTION_NOTIFICATIONS", @"Label for the notifications section of conversation settings view.");
+    if (!isNoteToSelf) {
+        OWSTableSection *notificationsSection = [OWSTableSection new];
+        // We need a section header to separate the notifications UI from the group settings UI.
+        notificationsSection.headerTitle = NSLocalizedString(
+            @"SETTINGS_SECTION_NOTIFICATIONS", @"Label for the notifications section of conversation settings view.");
 
-    [notificationsSection
-        addItem:[OWSTableItem
-                    itemWithCustomCellBlock:^{
-                        UITableViewCell *cell =
-                            [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
-                        [OWSTableItem configureCell:cell];
-                        OWSConversationSettingsViewController *strongSelf = weakSelf;
-                        OWSCAssertDebug(strongSelf);
-                        cell.preservesSuperviewLayoutMargins = YES;
-                        cell.contentView.preservesSuperviewLayoutMargins = YES;
-                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        [notificationsSection
+            addItem:[OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            UITableViewCell *cell =
+                                [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+                            [OWSTableItem configureCell:cell];
+                            OWSConversationSettingsViewController *strongSelf = weakSelf;
+                            OWSCAssertDebug(strongSelf);
+                            cell.preservesSuperviewLayoutMargins = YES;
+                            cell.contentView.preservesSuperviewLayoutMargins = YES;
+                            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-                        UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_notification_sound"];
+                            UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_notification_sound"];
 
-                        UILabel *rowLabel = [UILabel new];
-                        rowLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
-                            @"Label for settings view that allows user to change the notification sound.");
-                        rowLabel.textColor = [Theme primaryColor];
-                        rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
-                        rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+                            UILabel *rowLabel = [UILabel new];
+                            rowLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
+                                @"Label for settings view that allows user to change the notification sound.");
+                            rowLabel.textColor = [Theme primaryColor];
+                            rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                            rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
-                        UIStackView *contentRow =
-                            [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
-                        contentRow.spacing = strongSelf.iconSpacing;
-                        contentRow.alignment = UIStackViewAlignmentCenter;
-                        [cell.contentView addSubview:contentRow];
-                        [contentRow autoPinEdgesToSuperviewMargins];
+                            UIStackView *contentRow =
+                                [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
+                            contentRow.spacing = strongSelf.iconSpacing;
+                            contentRow.alignment = UIStackViewAlignmentCenter;
+                            [cell.contentView addSubview:contentRow];
+                            [contentRow autoPinEdgesToSuperviewMargins];
 
-                        OWSSound sound = [OWSSounds notificationSoundForThread:strongSelf.thread];
-                        cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
-                        return cell;
-                    }
-                    customRowHeight:UITableViewAutomaticDimension
-                    actionBlock:^{
-                        OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
-                        vc.thread = weakSelf.thread;
-                        [weakSelf.navigationController pushViewController:vc animated:YES];
-                    }]];
+                            OWSSound sound = [OWSSounds notificationSoundForThread:strongSelf.thread];
+                            cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
+                            return cell;
+                        }
+                        customRowHeight:UITableViewAutomaticDimension
+                        actionBlock:^{
+                            OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
+                            vc.thread = weakSelf.thread;
+                            [weakSelf.navigationController pushViewController:vc animated:YES];
+                        }]];
 
-    [notificationsSection
-        addItem:[OWSTableItem
+        [notificationsSection
+            addItem:
+                [OWSTableItem
                     itemWithCustomCellBlock:^{
                         UITableViewCell *cell =
                             [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
@@ -672,52 +698,54 @@ const CGFloat kIconViewLength = 24;
                     actionBlock:^{
                         [weakSelf showMuteUnmuteActionSheet];
                     }]];
-    notificationsSection.footerTitle
-        = NSLocalizedString(@"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
-    [contents addSection:notificationsSection];
-
+        notificationsSection.footerTitle = NSLocalizedString(
+            @"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
+        [contents addSection:notificationsSection];
+    }
     // Block Conversation section.
 
-    OWSTableSection *section = [OWSTableSection new];
-    if (self.thread.isGroupThread) {
-        section.footerTitle = NSLocalizedString(
-            @"BLOCK_GROUP_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking a group.");
-    } else {
-        section.footerTitle = NSLocalizedString(
-            @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
+    if (!isNoteToSelf) {
+        OWSTableSection *section = [OWSTableSection new];
+        if (self.thread.isGroupThread) {
+            section.footerTitle = NSLocalizedString(
+                @"BLOCK_GROUP_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking a group.");
+        } else {
+            section.footerTitle = NSLocalizedString(
+                @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
+        }
+
+        [section addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 OWSConversationSettingsViewController *strongSelf = weakSelf;
+                                 if (!strongSelf) {
+                                     return [UITableViewCell new];
+                                 }
+
+                                 NSString *cellTitle;
+                                 if (strongSelf.thread.isGroupThread) {
+                                     cellTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP",
+                                         @"table cell label in conversation settings");
+                                 } else {
+                                     cellTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_USER",
+                                         @"table cell label in conversation settings");
+                                 }
+                                 UITableViewCell *cell =
+                                     [strongSelf disclosureCellWithName:cellTitle iconName:@"table_ic_block"];
+
+                                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+                                 UISwitch *blockConversationSwitch = [UISwitch new];
+                                 blockConversationSwitch.on =
+                                     [strongSelf.blockingManager isThreadBlocked:strongSelf.thread];
+                                 [blockConversationSwitch addTarget:strongSelf
+                                                             action:@selector(blockConversationSwitchDidChange:)
+                                                   forControlEvents:UIControlEventValueChanged];
+                                 cell.accessoryView = blockConversationSwitch;
+                                 return cell;
+                             }
+                                         actionBlock:nil]];
+        [contents addSection:section];
     }
-
-    [section addItem:[OWSTableItem
-                         itemWithCustomCellBlock:^{
-                             OWSConversationSettingsViewController *strongSelf = weakSelf;
-                             if (!strongSelf) {
-                                 return [UITableViewCell new];
-                             }
-
-                             NSString *cellTitle;
-                             if (strongSelf.thread.isGroupThread) {
-                                 cellTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP",
-                                     @"table cell label in conversation settings");
-                             } else {
-                                 cellTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_USER",
-                                     @"table cell label in conversation settings");
-                             }
-                             UITableViewCell *cell =
-                                 [strongSelf disclosureCellWithName:cellTitle iconName:@"table_ic_block"];
-
-                             cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-                             UISwitch *blockConversationSwitch = [UISwitch new];
-                             blockConversationSwitch.on =
-                                 [strongSelf.blockingManager isThreadBlocked:strongSelf.thread];
-                             [blockConversationSwitch addTarget:strongSelf
-                                                         action:@selector(blockConversationSwitchDidChange:)
-                                               forControlEvents:UIControlEventValueChanged];
-                             cell.accessoryView = blockConversationSwitch;
-                             return cell;
-                         }
-                                     actionBlock:nil]];
-    [contents addSection:section];
 
     self.contents = contents;
 }
@@ -961,11 +989,11 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showShareProfileAlert
 {
-    [OWSProfileManager.sharedManager presentAddThreadToProfileWhitelist:self.thread
-                                                     fromViewController:self
-                                                                success:^{
-                                                                    [self updateTableContents];
-                                                                }];
+    [self.profileManager presentAddThreadToProfileWhitelist:self.thread
+                                         fromViewController:self
+                                                    success:^{
+                                                        [self updateTableContents];
+                                                    }];
 }
 
 - (void)showVerificationView
@@ -1118,8 +1146,8 @@ const CGFloat kIconViewLength = 24;
         }
         [BlockListUIUtils showUnblockThreadActionSheet:self.thread
                                     fromViewController:self
-                                       blockingManager:_blockingManager
-                                       contactsManager:_contactsManager
+                                       blockingManager:self.blockingManager
+                                       contactsManager:self.contactsManager
                                        completionBlock:^(BOOL isBlocked) {
                                            // Update switch state if user cancels action.
                                            blockConversationSwitch.on = isBlocked;
