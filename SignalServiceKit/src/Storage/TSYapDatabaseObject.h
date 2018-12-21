@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)remove;
 
-#pragma mark Update With...
+#pragma mark - Update With...
 
 // This method is used by "updateWith..." methods.
 //

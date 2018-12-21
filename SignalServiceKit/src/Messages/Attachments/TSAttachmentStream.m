@@ -368,11 +368,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 
     if (didUpdateCache) {
-        [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self applyChangeToSelfAndLatestCopy:transaction
-                                     changeBlock:^(TSAttachmentStream *attachmentStream) {
-                                         attachmentStream.isValidImageCached = @(result);
-                                     }];
+        [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
+            latestInstance.isValidImageCached = @(result);
         }];
     }
 
@@ -395,11 +392,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 
     if (didUpdateCache) {
-        [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self applyChangeToSelfAndLatestCopy:transaction
-                                     changeBlock:^(TSAttachmentStream *attachmentStream) {
-                                         attachmentStream.isValidVideoCached = @(result);
-                                     }];
+        [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
+            latestInstance.isValidVideoCached = @(result);
         }];
     }
 
@@ -523,28 +517,42 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         self.cachedImageWidth = @(imageSize.width);
         self.cachedImageHeight = @(imageSize.height);
 
-        [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            NSString *collection = [TSAttachmentStream collection];
-            TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-            if (![latestInstance isKindOfClass:[TSAttachmentStream class]]) {
-                OWSFailDebug(@"Attachment has unexpected type: %@", latestInstance.class);
-            } else if (latestInstance) {
-                latestInstance.cachedImageWidth = @(imageSize.width);
-                latestInstance.cachedImageHeight = @(imageSize.height);
-                [latestInstance saveWithTransaction:transaction];
-            } else {
-                // This message has not yet been saved or has been deleted; do nothing.
-                // This isn't an error per se, but these race conditions should be
-                // _very_ rare.
-                //
-                // An exception is incoming group avatar updates which we don't ever save.
-                OWSLogWarn(@"Attachment not yet saved.");
-            }
+        [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
+            latestInstance.cachedImageWidth = @(imageSize.width);
+            latestInstance.cachedImageHeight = @(imageSize.height);
         }];
 
         return imageSize;
     }
 }
+
+#pragma mark - Update With...
+
+- (void)applyChangeAsyncToLatestCopyWithChangeBlock:(void (^)(TSAttachmentStream *))changeBlock
+{
+    OWSAssertDebug(changeBlock);
+
+    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        NSString *collection = [TSAttachmentStream collection];
+        TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+        if (!latestInstance) {
+            // This attachment has either not yet been saved or has been deleted; do nothing.
+            // This isn't an error per se, but these race conditions should be
+            // _very_ rare.
+            //
+            // An exception is incoming group avatar updates which we don't ever save.
+            OWSLogWarn(@"Attachment not yet saved.");
+        } else if (![latestInstance isKindOfClass:[TSAttachmentStream class]]) {
+            OWSFailDebug(@"Attachment has unexpected type: %@", latestInstance.class);
+        } else {
+            changeBlock(latestInstance);
+
+            [latestInstance saveWithTransaction:transaction];
+        }
+    }];
+}
+
+#pragma mark -
 
 - (CGFloat)calculateAudioDurationSeconds
 {
@@ -577,18 +585,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     CGFloat audioDurationSeconds = [self calculateAudioDurationSeconds];
     self.cachedAudioDurationSeconds = @(audioDurationSeconds);
 
-    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        NSString *collection = [[self class] collection];
-        TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-        if (latestInstance) {
-            latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
-            [latestInstance saveWithTransaction:transaction];
-        } else {
-            // This message has not yet been saved or has been deleted; do nothing.
-            // This isn't an error per se, but these race conditions should be
-            // _very_ rare.
-            OWSFailDebug(@"Attachment not yet saved.");
-        }
+    [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
+        latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
     }];
 
     return audioDurationSeconds;

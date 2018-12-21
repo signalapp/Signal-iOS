@@ -201,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
     return object;
 }
 
-#pragma mark Update With...
+#pragma mark - Update With...
 
 - (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
                            changeBlock:(void (^)(id))changeBlock
