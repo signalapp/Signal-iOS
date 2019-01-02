@@ -243,7 +243,7 @@
 "BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will no longer receive messages or updates from this group.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Kamu tidak akan lagi menerima pesan dan pembaharuan dari grup ini";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokir";
@@ -264,7 +264,7 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Buka blokir";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Existing members will be able to add you to the group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Anggota aktif lainnya dapat menambahkan Anda ke grup lagi";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Unblock This Group?";

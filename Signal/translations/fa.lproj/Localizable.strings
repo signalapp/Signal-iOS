@@ -84,7 +84,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "نسخه %@ هم اكنون در اپ استور موجود است.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "نسخه جدیدی از Signal قابل دسترسی است";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "به روز رسانی";
@@ -99,10 +99,10 @@
 "ATTACHMENT" = "ضمیمه";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "\"عنوان\" به حد خود رسید.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "یک عنوان اضافه کنید...";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "نوع فايل: %@";
@@ -120,7 +120,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "ضميمه";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Download failed. Tap to retry.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "بارگیری ناموفق بود. برای امتحان دوباره فشار دهید.";
 
 /* Status label when an attachment is currently downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "در حال دريافت...";
@@ -132,28 +132,28 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "خطا در ارسال فایل ضمیمه";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Unable to convert image.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "مشکل در تبدیل تصویر.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "مشکل در پردازش ویدئو.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Unable to parse image.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "قادر به تجزیه تصویر نیست.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "مشکل در حذف ابرداده از تصویر.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Unable to resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "مشکل در تغییر سایز تصویر.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "فایل ضمیمه خیلی بزرگ است.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "پیوست دارای محتویات غیرمجاز است.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "فرمت پیوست نامعتبر است.";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "فایل ضمیمه خالی است.";
@@ -228,10 +228,10 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "در حال بازگردانی فایل‌ها";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+"BACKUP_RESTORE_DECISION_TITLE" = "نسخه پشتیبان قابل دسترس است.";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+"BACKUP_RESTORE_DESCRIPTION" = "بازیابی نسخه پشتیبان";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "پیشرفت";
@@ -240,34 +240,34 @@
 "BACKUP_RESTORE_STATUS" = "وضعیت";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "خطا  غیر منتظره نسخه پشتیبان";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will no longer receive messages or updates from this group.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "شما دیگر از این گروه پیام و یا بروز رسانی دریافت نخواهید کرد.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "مسدود کردن";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "آیا می‌خواهید گروه \"%@\" را مسدود و ترک کنید؟";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ مسدود شود؟";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blocked Groups";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "گروه‌های مسدود شده";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blocked Users";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "کاربران مسدود شده";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "رفع مسدودی";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Existing members will be able to add you to the group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "اعضای موجود می‌توانند شما را دوباره به گروه اضافه کنند.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Unblock This Group?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "این گروه را باز میکنید؟";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@از حالت مسدود خارج شود؟";
@@ -276,13 +276,13 @@
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "مسدود";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ مسدود شد.";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "کاربر مسدود شده است";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Group Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "گروه مسدود شد";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "نمیتوانید خودتان را مسدود کنید.";
@@ -294,7 +294,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ از حالت مسدودی خارج شد.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "اعضای موجود می‌توانند شما را دوباره به گروه اضافه کنند.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "مسدود کردن کاربر";
@@ -318,7 +318,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "تماس دوباره";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "شما میتوانید دسترسی به میکروفون را در قسمت تنظیمات iOS فعال کنید تا در Signal تماس برقرار کنید و پیام های صوتی ضبط کنید.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "نیاز به دسترسی به میکروفن";
@@ -327,7 +327,7 @@
 "CALL_LABEL" = "تماس";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "بدون جواب";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "%@ Signal";
@@ -420,10 +420,10 @@
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Only you will see the color you choose.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "فقط رنگ هایی را که انتخاب می کنید خواهید دید.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Conversation Color";
+"COLOR_PICKER_SHEET_TITLE" = "رنگ مکالمه ها.";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "مقایسه با کلیپ‌بورد";
@@ -438,7 +438,7 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "دعوت کردن";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "شما میتوانید دسترسی مخاطبان را در قسمت تنظیمات iOS فعال  کنید تا ببینید کدام یک از مخاطب های شما کاربرهای Signal هستند.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
@@ -555,10 +555,10 @@
 "CONTACT_WITHOUT_NAME" = "مخاطب بدون نام";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "این نمیتواند انجام نشود.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "گفتگو حذف شود؟";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "تنظیمات گفت و گو";
@@ -567,7 +567,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "اضافه کردن به مخاطبین قبلی";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Block This Group";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "این گروه را مسدود کن";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "مسدود کردن کاربر";
@@ -576,7 +576,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "اطلاعات مخاطب";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Conversation Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "رنگ مکالمه ها.";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "اطلاعات گروه";
@@ -636,16 +636,16 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "اضافه کردن به مخاطبین";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile with This User";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "پروفایل خود را با این کاربر به اشتراک بگذارید";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "نام این کاربر در مخاطبین شما نیست.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages…";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "در حال بارگیری پیام‌های بیشتر…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap for More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "برای بیشتر لمس کنید.";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "مسدود کردن کاربر";
@@ -721,7 +721,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "یک قدم بیشتر";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Could not open Email app.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "مشکل در باز کردن اپ ایمیل.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "لینک خلاصه در کلیپ بورد شما کپی شد. در حال ریدایرکت شدن به لیست مسائل گیت هاب می باشید.";
@@ -766,7 +766,7 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "محل دورزدن سانسور";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "شما میتوانید در برنامه تنظیمات iOS دسترسی را اعمال کنید.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "برای ویرایش اطلاعات مخاطبین، Signal نیاز به دسترسی به مخاطبین دارد";
@@ -793,7 +793,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "به‌روزرسانی";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this group?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "آیا تمایل دارید تغییراتی را که برای این گروه انجام داده اید ذخیره کنید.";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "تغییرات ذخیره نشده";
@@ -811,7 +811,7 @@
 "EMAIL_INVITE_SUBJECT" = "به نرم افزار پیام رسان Signal بپیوندید";
 
 /* Body text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TEXT" = "You can archive inactive conversations from your Inbox.";
+"EMPTY_ARCHIVE_TEXT" = "شما میتوانید مکالمات غیر فعال را بایگانی کنید.";
 
 /* Header text an existing user sees when viewing an empty archive */
 "EMPTY_ARCHIVE_TITLE" = "Clean Up Your Conversation List";
@@ -832,7 +832,7 @@
 "EMPTY_INBOX_TEXT" = "None. Zip. Zilch. Nada.";
 
 /* Header text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TITLE" = "Inbox Zero";
+"EMPTY_INBOX_TITLE" = "صندوق ورودی صفر است";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "تایید PIN";
@@ -919,7 +919,7 @@
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "پیام تکراری دریافت شده است.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "کلید دریافت کننده پبام معتبر نیست.";
@@ -928,7 +928,7 @@
 "ERROR_MESSAGE_INVALID_MESSAGE" = "پیام دریافت شده همزمان سازی نشده بود.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Received a message that is not compatible with this version.";
+"ERROR_MESSAGE_INVALID_VERSION" = "پیام دریافت شده با این نسخه سازگار نیست.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "هیج مسیری برای تبادل اطلاعات با این مخاطب فعال نیست.";
@@ -973,10 +973,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "شما در این مکالمه هیچ مدیایی ندارید.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media…";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "در حال بارگذاری مدیا جدیدتر...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "بارگذاری مدیا قدیمی تر...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "ضمیمه";
@@ -1030,7 +1030,7 @@
 "GROUP_MEMBERS_CALL" = "تماس";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Clear Verification for All";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "پاک کردن تائید برای همه";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "این باعث می شود تا تایید تمام اعضای گروه که کد امنیتی آن ها از آخرین باری که تایید شده بودند از بین برود.";
@@ -1078,7 +1078,7 @@
 "IN_CALL_CONNECTING" = "در حال اتصال…";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting…";
+"IN_CALL_RECONNECTING" = "در حال اتصال دوباره...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "در حال زنگ خوردن…";
@@ -1090,7 +1090,7 @@
 "IN_CALL_TERMINATED" = "پایان تماس. ";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "این مکالمه ها بایگانی شده اند و اگر پیام های جدید دریافت شوند فقط در صندوق به نمایش در می آیند.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Signal conversation list.";
@@ -1219,16 +1219,16 @@
 "MESSAGE_ACTION_COPY_TEXT" = "کپی متن پیام";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "حذف این پیام";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will only be deleted on this device.";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "از روی این دستگاه فقط پاک خواهد شد.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "اطلاعات بیشتر";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to This Message";
+"MESSAGE_ACTION_REPLY" = "پاسخ به این پیام";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SAVE_MEDIA" = "ذخیره مدیا";
@@ -1306,7 +1306,7 @@
 "MESSAGE_STATUS_SEND_FAILED" = "ارسال ناموفق بود";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending…";
+"MESSAGE_STATUS_SENDING" = "در حال ارسال...";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "ارسال شد";
@@ -1321,16 +1321,16 @@
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ دیگر تائیدشده نیست. برای مشاهده تنظیمات لمس کنید.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked This User";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "شما این کاربر را مسدود کردید.";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ دیگر تائیدشده نیست. برای مشاهده تنظیمات لمس کنید.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "شما 1 عضو از این گروه را مسدود کردید.";
 
 /* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "You Blocked This Group";
+"MESSAGES_VIEW_GROUP_BLOCKED" = "شما این گروه را مسدود کردید";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
@@ -1374,7 +1374,7 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal requires access to your photos for this feature.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "signal برای این قابلیت نیاز به دسترسی به عکس های شما دارد.";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "تماس بی‌پاسخ از %@.";
@@ -1548,7 +1548,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "فکس محل کار";
 
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "آلبوم بی نام";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "پخش مدیا";
@@ -1761,7 +1761,7 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "شماره تلفن";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "قبل از ارسال پیام نیاز دارید ثبت نام کنید.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_TITLE_LABEL" = "شماره تلفن شما";
@@ -1905,7 +1905,7 @@
 "SEND_INVITE_FAILURE" = "خطا در ارسال دعوتنامه. لطفا دوباره امتحان کنید.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "شما دوست خود را دعوت به استفاده از Signal کردید.";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "دعوت با پیامک: %@";
@@ -1974,7 +1974,7 @@
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "پشتیبان گیری فعال شد";
 
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "وضعیت iCloud";
 
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
@@ -2010,7 +2010,7 @@
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "پشتیبان گیری موفق بود";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Blocked User";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "کاربر های مسدود شده را انتخاب کنید";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "هیچ کدام از مخاطبین شما Signal را نصب نکرده‌اند.";
@@ -2151,7 +2151,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "قفل ثبت نام";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "نشانگر های نوشته";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
@@ -2163,7 +2163,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Sealed Sender";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "نمایش نشانگر ها";
 
 /* table section footer */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
@@ -2190,7 +2190,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "کد امنیتی شما با %@ به تازگی تغییر یافته است. بهتر است در برنامه اصلی قبل از ارسال دوباره آن را تایید کنید.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Loading…";
+"SHARE_EXTENSION_LOADING" = "در حال بارگزاری...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "برای ثبت نام برنامه Signal را اجراء کنید.";
@@ -2328,7 +2328,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "شما قادر به حذف اعضای گروه نیستید. یا خود اعضا باید گروه را ترک کنند و یا شما باید گروه جدیدی بدون اعضای مورد نظر بسازید.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "پشتیبانی نشده است";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "پاسخ به تماس از صفحه قفل شما به سادگی با یکپارچه‌سازی با تماس iOS امکان‌پذیر است. به صورت پیشفرض برای حفظ حریم خصوصی، نام تماس‌گیرنده مخفی است.";
@@ -2382,13 +2382,13 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "سلام به تماس ویدیویی امن!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please use the Software Update feature in the iOS Settings app.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "signal نیاز به iOS 9 یا بالاتر دارد. لطفا در تنظیمات برنامه iOS از قابلیت ارتقا نرم افزار استفاده نمایید.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "به‌روزرسانی iOS";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Upgrading Signal…";
+"Upgrading Signal ..." = "در حال ارتقاء Signal ...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "بازگشت";

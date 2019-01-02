@@ -99,10 +99,10 @@
 "ATTACHMENT" = "Fitxer adjunt";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Limit de descripció assolit";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Afegeix una descripció...";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tipus de fitxer: %@";
@@ -228,19 +228,19 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restaurant arxius";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+"BACKUP_RESTORE_DECISION_TITLE" = "Còpia de seguretat disponible";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+"BACKUP_RESTORE_DESCRIPTION" = "Restauració de còpia de seguretat";
 
 /* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "Progress";
+"BACKUP_RESTORE_PROGRESS" = "Progrés";
 
 /* Label for the backup restore status. */
-"BACKUP_RESTORE_STATUS" = "Status";
+"BACKUP_RESTORE_STATUS" = "Estat";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "Error durant la còpia de seguretat";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "No rebreu missatges ni actualitzacions d'aquest grup.";
@@ -396,10 +396,10 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Seleccioneu un país";
 
 /* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "No restaurar";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "No es pot determinar si hi ha una còpia de seguretat que es pugui restaurar";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Error";
@@ -408,13 +408,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Restaura";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal no ha pogut determinar l'estat del compte iCloud. Identifica't amb teu compte iCloud als ajustos d'iOS per fer la còpia de seguretat de les dades de Signal";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "No hi ha compte iCloud. Identifica't amb teu compte iCloud als ajustos d'iOS per fer la còpia de seguretat de les dades de Signal";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal no ha obtingut permís per accedir a les còpies de seguretat del teu compte iCloud. Dóna accés a Signal als ajustos d'iOS per fer la còpia de seguretat de les dades de Signal.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Trieu el color dels missatges enviats en aquesta conversa.";
@@ -555,10 +555,10 @@
 "CONTACT_WITHOUT_NAME" = "Contacte sense nom";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Això no es pot desfer.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Esborrar conversa?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Configuració del xat";
@@ -880,31 +880,31 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "No s'ha pogut enviar el missatge.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Impossible enviar per dades prekey massa antigues.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "No s'ha pogut enviar el missatge perquè heu blocat l'usuari.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed to write and send attachment.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Error al escriure i enviar fitxer adjunt.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try again.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal no s'ha pogut conectar a Internet. Torna-ho a intentar.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Ha fallat l'enviament del missatge, no hi ha recipients vàlids.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Ha fallat la xarxa.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Ha expirat l'operació de xarxa";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Resposta invàlida del servei";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "This device is no longer registered with your phone number. Please reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Aquest dispositiu ja no està registrat amb el teu numéro de telèfon. Torna a installar Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Error del servidor. Proveu de nou més tard.";
@@ -916,19 +916,19 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "El contacte no és usuari del Signal.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Error amb el fitxer adjunt. Torna'l a demanar després d'actualitzar Signal a la darrera versió.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Rebut un missatge duplicat.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clau del destinatari no és vàlida.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "El missatge rebut està desincronitzat.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Received a message that is not compatible with this version.";
+"ERROR_MESSAGE_INVALID_VERSION" = "Rebut un missatge que no és compatible amb aquesta versió.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "Cap sessió disponible per a contactar.";
@@ -946,7 +946,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Els números de seguretat han canviat.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Usuari no registrat: %@";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
 "EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Ara no";
@@ -1992,10 +1992,10 @@
 "SETTINGS_BACKUP_PHASE" = "Phase";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "Progress";
+"SETTINGS_BACKUP_PROGRESS" = "Progrés";
 
 /* Label for backup status row in the in the backup settings view. */
-"SETTINGS_BACKUP_STATUS" = "Status";
+"SETTINGS_BACKUP_STATUS" = "Estat";
 
 /* Indicates that the last backup failed. */
 "SETTINGS_BACKUP_STATUS_FAILED" = "Backup Failed";

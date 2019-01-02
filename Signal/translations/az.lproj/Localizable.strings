@@ -51,7 +51,7 @@
 "ALERT_ERROR_TITLE" = "Error";
 
 /* The label for the 'save' button in action sheets. */
-"ALERT_SAVE" = "Save";
+"ALERT_SAVE" = "Yaddaşa yaz";
 
 /* No comment provided by engineer. */
 "ANSWER_CALL_BUTTON_TITLE" = "Cavab ver";
@@ -306,7 +306,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Continue";
+"BUTTON_CONTINUE" = "Davam et";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Done";
@@ -429,10 +429,10 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Clipboard-la müqayisə et";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contacts";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kontaktlar";
 
 /* Table section header for group listing when composing a new message */
-"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groups";
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Qruplar";
 
 /* Table section header for invite listing when composing a new message */
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Invite";
@@ -678,10 +678,10 @@
 "DATE_NOW" = "Now";
 
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "Bu gün";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "Dünən";
 
 /* Error indicating that the debug logs could not be copied. */
 "DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
@@ -775,7 +775,7 @@
 "EDIT_GROUP_ACTION" = "Qrupu dəyiş";
 
 /* a title for the contacts section of the 'new/update group' view. */
-"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contacts";
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Kontaktlar";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Qrupu dəyiş";
@@ -1638,7 +1638,7 @@
 "PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profile Name";
 
 /* Button to save the profile view in the profile view. */
-"PROFILE_VIEW_SAVE_BUTTON" = "Save";
+"PROFILE_VIEW_SAVE_BUTTON" = "Yaddaşa yaz";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profile";

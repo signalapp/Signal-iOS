@@ -69,7 +69,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ ve skupině %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Aplikaci Signal nelze spustit. Odešlete prosím debug log na support@signal.org, pokusíme se problém opravit.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Chyba";
@@ -84,7 +84,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "V App Store je dostupná verze %@.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Je dostupná nová verze aplikace Signal.";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Aktualizovat";
@@ -2370,7 +2370,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Představujeme potvrzení o přečtení";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Nyní můžete volitelně vidět a sdílet když je psaná zpráva.";
 
 /* Header for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";

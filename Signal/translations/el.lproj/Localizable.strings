@@ -87,7 +87,7 @@
 "APP_UPDATE_NAG_ALERT_TITLE" = "Μια νέα έκδοση του Signal είναι διαθέσιμη";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Αναβάθμιση";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Ενημέρωση";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";

@@ -1980,7 +1980,7 @@
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Nie udało się przywrócić kopii zapasowej";
 
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Przywracanie kopii zapasowej jest zawieszone";
 
 /* Indicates that app is restoring up. */
 "SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Trwa przywracanie kopii zapasowej";

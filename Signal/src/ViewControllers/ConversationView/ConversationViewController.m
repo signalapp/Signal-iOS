@@ -4510,7 +4510,7 @@ typedef enum : NSUInteger {
                 }
                 case ConversationUpdateItemType_Update: {
                     [self.collectionView reloadItemsAtIndexPaths:@[
-                        [NSIndexPath indexPathForRow:(NSInteger)updateItem.newIndex inSection:section]
+                        [NSIndexPath indexPathForRow:(NSInteger)updateItem.oldIndex inSection:section]
                     ]];
                     hasUpdated = YES;
                     break;
