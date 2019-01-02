@@ -420,7 +420,7 @@
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Scegli il colore dei messaggi in uscita per questa conversazione.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Solo tu potrai vedere il colore hai scelto.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Solo tu potrai vedere il colore scelto.";
 
 /* Modal Sheet title when picking a conversation color. */
 "COLOR_PICKER_SHEET_TITLE" = "Colore conversazione";

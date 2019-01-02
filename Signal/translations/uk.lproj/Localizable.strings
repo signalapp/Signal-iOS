@@ -1695,13 +1695,13 @@
 "REGISTER_2FA_FORGOT_PIN" = "Я забув PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Прив’язати цей номер телефону без вашого ПІНа для блокування входу можна буде після 7 днів з часу останньої активності вашого номера телефону в Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Прив’язати цей номер телефону без вашого ПІНа для блокування входу можна буде через 7 днів з часу останньої активності вашого номера телефону в Signal.";
 
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "На цьому номері телефону увімкнено блокування входу. Уведіть ПІН блокування входу.\n\nВаш ПІН блокування входу відокремлено від автоматичного коду підтвердження, який було надіслано на ваш телефон минулого кроку.";
+"REGISTER_2FA_INSTRUCTIONS" = "Для цього номера телефону увімкнено блокування входу. Уведіть ПІН блокування входу.\n\nВаш ПІН блокування та автоматичний код підтвердження, який було надіслано на ваш телефон у попередньому кроці — це окремі речі.";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Невдалий вхід";
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Невдала прив’язка";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Надіслати";
@@ -1719,13 +1719,13 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Забагато спроб. Зачекайте хвилину і спробуйте знову.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Не вдалося перереєструватися для одержання push-сповіщень.";
+"REGISTRATION_BODY" = "Не вдалося заново реєструватися для одержання push-сповіщень.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Код країни";
 
 /* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Блокування реєстрації";
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Блокування входу";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Уведіть номер";
@@ -1734,13 +1734,13 @@
 "REGISTRATION_ERROR" = "Помилка реєстрації";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Ми не активуємо ваш акаунт, допоки ви не підтвердите код, який ми вам надіслали.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Ми не активуємо ваш акаунт, допоки ви не введете код, який ми вам надіслали.";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "Реєстрація саме зараз вимкне Signal на усіх інших пристроях, що наразі зареєстровані на цей номер телефону.";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "Реєстрація саме зараз від’єднає Signal з усіх інших пристроів, що наразі прив’язані до цього номера телефону.";
 
 /* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Зареєструвати цей iPad";
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Прив’язати цей iPad";
 
 /* alert title when registering an iPad */
 "REGISTRATION_IPAD_CONFIRM_TITLE" = "Вже маєте акаунт Signal?";
