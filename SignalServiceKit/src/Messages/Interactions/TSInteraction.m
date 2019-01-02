@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInteraction.h"
@@ -172,8 +172,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
     if (!self.uniqueId) {
-        OWSFailDebug(self.uniqueId);
-        self.uniqueId = [NSUUID new];
+        OWSFailDebug(@"Missing uniqueId.");
+        self.uniqueId = [NSUUID new].UUIDString;
     }
 
     [super saveWithTransaction:transaction];
