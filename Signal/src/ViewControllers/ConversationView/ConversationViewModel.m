@@ -552,10 +552,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         [self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName];
     OWSAssertDebug([messageDatabaseView isKindOfClass:[YapDatabaseAutoViewConnection class]]);
     if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]) {
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [self.messageMapping updateWithTransaction:transaction];
-        }];
-
         [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate];
         return;
     }
