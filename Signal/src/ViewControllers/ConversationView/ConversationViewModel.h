@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -69,6 +69,8 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 - (void)conversationViewModelDidLoadMoreItems;
 - (void)conversationViewModelDidLoadPrevPage;
 - (void)conversationViewModelRangeDidChange;
+
+- (void)conversationViewModelDidReset;
 
 - (BOOL)isObservingVMUpdates;
 

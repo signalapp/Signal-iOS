@@ -196,6 +196,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) NSDate *lastReloadDate;
 
 @property (nonatomic) CGFloat scrollDistanceToBottomSnapshot;
+@property (nonatomic, nullable) NSNumber *lastKnownDistanceFromBottom;
 
 @end
 
@@ -2954,36 +2955,6 @@ typedef enum : NSUInteger {
     return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
 }
 
-- (BOOL)isScrolledToBottom
-{
-    CGFloat contentHeight = self.safeContentHeight;
-
-    // This is a bit subtle.
-    //
-    // The _wrong_ way to determine if we're scrolled to the bottom is to
-    // measure whether the collection view's content is "near" the bottom edge
-    // of the collection view.  This is wrong because the collection view
-    // might not have enough content to fill the collection view's bounds
-    // _under certain conditions_ (e.g. with the keyboard dismissed).
-    //
-    // What we're really interested in is something a bit more subtle:
-    // "Is the scroll view scrolled down as far as it can, "at rest".
-    //
-    // To determine that, we find the appropriate "content offset y" if
-    // the scroll view were scrolled down as far as possible.  IFF the
-    // actual "content offset y" is "near" that value, we return YES.
-    const CGFloat kIsAtBottomTolerancePts = 5;
-    // Note the usage of MAX() to handle the case where there isn't enough
-    // content to fill the collection view at its current size.
-    CGFloat contentOffsetYBottom
-        = MAX(0.f, contentHeight + self.collectionView.contentInset.bottom - self.collectionView.bounds.size.height);
-
-    CGFloat distanceFromBottom = contentOffsetYBottom - self.collectionView.contentOffset.y;
-    BOOL isScrolledToBottom = distanceFromBottom <= kIsAtBottomTolerancePts;
-
-    return isScrolledToBottom;
-}
-
 #pragma mark - Audio
 
 - (void)requestRecordingVoiceMemo
@@ -3774,6 +3745,13 @@ typedef enum : NSUInteger {
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+    // Constantly update the lastKnownDistanceFromBottom,
+    // unless we're presenting the menu actions which
+    // temporarily gmeddles with the content insets.
+    if (!OWSWindowManager.sharedManager.isPresentingMenuActions) {
+        self.lastKnownDistanceFromBottom = @(self.safeDistanceFromBottom);
+    }
+
     [self updateLastVisibleSortId];
 
     __weak ConversationViewController *weakSelf = self;
@@ -4270,6 +4248,66 @@ typedef enum : NSUInteger {
     conversationViewCell.isCellVisible = NO;
 }
 
+// We use this hook to ensure scroll state continuity.  As the collection
+// view's content size changes, we want to keep the same cells in view.
+- (CGPoint)collectionView:(UICollectionView *)collectionView
+    targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset
+{
+    if (self.lastKnownDistanceFromBottom) {
+        // Adjust the content offset to reflect the "last known" distance
+        // from the bottom of the content.
+        CGFloat contentOffsetYBottom = self.maxContentOffsetY;
+        CGFloat contentOffsetY = contentOffsetYBottom - self.lastKnownDistanceFromBottom.floatValue;
+        proposedContentOffset.y = contentOffsetY;
+    }
+
+    return proposedContentOffset;
+}
+
+#pragma mark - Scroll State
+
+- (BOOL)isScrolledToBottom
+{
+    CGFloat distanceFromBottom = self.safeDistanceFromBottom;
+    const CGFloat kIsAtBottomTolerancePts = 5;
+    BOOL isScrolledToBottom = distanceFromBottom <= kIsAtBottomTolerancePts;
+    return isScrolledToBottom;
+}
+
+- (CGFloat)safeDistanceFromBottom
+{
+    // This is a bit subtle.
+    //
+    // The _wrong_ way to determine if we're scrolled to the bottom is to
+    // measure whether the collection view's content is "near" the bottom edge
+    // of the collection view.  This is wrong because the collection view
+    // might not have enough content to fill the collection view's bounds
+    // _under certain conditions_ (e.g. with the keyboard dismissed).
+    //
+    // What we're really interested in is something a bit more subtle:
+    // "Is the scroll view scrolled down as far as it can, "at rest".
+    //
+    // To determine that, we find the appropriate "content offset y" if
+    // the scroll view were scrolled down as far as possible.  IFF the
+    // actual "content offset y" is "near" that value, we return YES.
+    CGFloat contentOffsetYBottom = self.maxContentOffsetY;
+    CGFloat distanceFromBottom = contentOffsetYBottom - self.collectionView.contentOffset.y;
+    return distanceFromBottom;
+}
+
+- (CGFloat)maxContentOffsetY
+{
+    CGFloat contentHeight = self.safeContentHeight;
+
+    // Note the usage of MAX() to handle the case where there isn't enough
+    // content to fill the collection view at its current size.
+    CGFloat contentOffsetYBottom
+        = MAX(0.f, contentHeight + self.collectionView.contentInset.bottom - self.collectionView.bounds.size.height);
+    //    OWSLogVerbose(@"self.collectionView.contentInset: %@",
+    //    NSStringFromUIEdgeInsets(self.collectionView.contentInset));
+    return contentOffsetYBottom;
+}
+
 #pragma mark - ContactsPickerDelegate
 
 - (void)contactsPickerDidCancel:(ContactsPicker *)contactsPicker
@@ -4430,6 +4468,8 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"");
 
+    // TODO:
+    //
     // HACK to work around radar #28167779
     // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
     // more: https://github.com/PSPDFKit-labs/radar.apple.com/tree/master/28167779%20-%20CollectionViewBatchingIssue
@@ -4471,23 +4511,15 @@ typedef enum : NSUInteger {
     } else if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Reload) {
         [self resetContentAndLayout];
         [self updateLastVisibleSortId];
-        [self scrollToBottomAnimated:NO];
         return;
     }
 
     OWSAssertDebug(conversationUpdate.conversationUpdateType == ConversationUpdateType_Diff);
     OWSAssertDebug(conversationUpdate.updateItems);
 
-    BOOL wasAtBottom = [self isScrolledToBottom];
-    // We want sending messages to feel snappy.  So, if the only
-    // update is a new outgoing message AND we're already scrolled to
-    // the bottom of the conversation, skip the scroll animation.
-    __block BOOL shouldAnimateScrollToBottom = !wasAtBottom;
-    // We want to scroll to the bottom if the user:
-    //
-    // a) already was at the bottom of the conversation.
-    // b) is inserting new interactions.
-    __block BOOL scrollToBottom = wasAtBottom;
+    // We want to auto-scroll to the bottom of the conversation
+    // if the user is inserting new interactions.
+    __block BOOL scrollToBottom = NO;
 
     void (^batchUpdates)(void) = ^{
         OWSAssertIsOnMainThread();
@@ -4518,7 +4550,6 @@ typedef enum : NSUInteger {
                         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
                         if (!outgoingMessage.isFromLinkedDevice) {
                             scrollToBottom = YES;
-                            shouldAnimateScrollToBottom = NO;
                         }
                     }
 
@@ -4545,8 +4576,8 @@ typedef enum : NSUInteger {
 
         [self updateLastVisibleSortId];
 
-        if (scrollToBottom && shouldAnimateUpdates) {
-            [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
+        if (scrollToBottom) {
+            [self scrollToBottomAnimated:NO];
         }
     };
 
@@ -4657,6 +4688,14 @@ typedef enum : NSUInteger {
     }
 
     [self updateShowLoadMoreHeader];
+}
+
+- (void)conversationViewModelDidReset
+{
+    OWSAssertIsOnMainThread();
+
+    // Scroll to bottom to get view back to a known good state.
+    [self scrollToBottomAnimated:NO];
 }
 
 @end
