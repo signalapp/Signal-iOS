@@ -960,7 +960,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
                 imageMediaView.isUserInteractionEnabled = true
                 mediaMessageView.superview?.addSubview(imageEditorView)
                 imageEditorView.autoPin(toEdgesOf: mediaMessageView)
-                imageEditorView.addRedBorder()
 
                 imageEditorView.addControls(to: imageEditorView)
             }

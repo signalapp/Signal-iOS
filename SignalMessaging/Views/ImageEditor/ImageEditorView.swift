@@ -35,6 +35,10 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         }
     }
 
+    // TODO:
+    private static let defaultColor = UIColor.ows_signalBlue
+    private var currentColor = ImageEditorView.defaultColor
+
     @objc
     public required init(model: ImageEditorModel) {
         self.model = model
@@ -143,7 +147,11 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                   label: NSLocalizedString("IMAGE_EDITOR_CROP_BUTTON", comment: "Label for crop button in image editor."),
                   selector: #selector(didTapCrop(sender:)))
 
-        let stackView = UIStackView(arrangedSubviews: [brushButton, cropButton, undoButton, redoButton])
+        let redButton = colorButton(color: UIColor.red)
+        let whiteButton = colorButton(color: UIColor.white)
+        let blackButton = colorButton(color: UIColor.black)
+
+        let stackView = UIStackView(arrangedSubviews: [brushButton, cropButton, undoButton, redoButton, redButton, whiteButton, blackButton])
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.spacing = 10
@@ -164,6 +172,17 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         button.setTitleColor(UIColor.ows_materialBlue, for: .selected)
         button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         button.addTarget(self, action: selector, for: .touchUpInside)
+    }
+
+    private func colorButton(color: UIColor) -> UIButton {
+        let button = OWSButton { [weak self] in
+            self?.didSelectColor(color)
+        }
+        let size: CGFloat = 20
+        let swatch = UIImage(color: color, size: CGSize(width: size, height: size))
+        button.setImage(swatch, for: .normal)
+        button.addBorder(with: UIColor.white)
+        return button
     }
 
     private func updateButtons() {
@@ -209,6 +228,12 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         updateButtons()
     }
 
+    @objc func didSelectColor(_ color: UIColor) {
+        Logger.verbose("")
+
+        currentColor = color
+    }
+
     @objc
     public func handleTouchGesture(_ gestureRecognizer: UIGestureRecognizer) {
         AssertIsOnMainThread()
@@ -250,8 +275,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             self.currentStrokeSamples.append(newSample)
         }
 
-        // TODO: Color picker.
-        let strokeColor = UIColor.blue
+        let strokeColor = currentColor
         // TODO: Tune stroke width.
         let unitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth()
 
