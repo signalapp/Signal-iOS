@@ -15,7 +15,20 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         case crop
     }
 
-    private var editorMode = EditorMode.brush
+    private var editorMode = EditorMode.brush {
+        didSet {
+            AssertIsOnMainThread()
+
+            switch editorMode {
+            case .brush:
+                // Brush strokes can start and end (and return from) outside the view.
+                editorGestureRecognizer?.shouldAllowOutsideView = true
+            case .crop:
+                // Crop gestures can start and end (and return from) outside the view.
+                editorGestureRecognizer?.shouldAllowOutsideView = true
+            }
+        }
+    }
 
     @objc
     public required init(model: ImageEditorModel) {
@@ -36,9 +49,10 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     private let imageView = UIImageView()
     private var imageViewConstraints = [NSLayoutConstraint]()
     private let layersView = OWSLayerView()
+    private var editorGestureRecognizer: ImageEditorGestureRecognizer?
 
     @objc
-    public func createImageView() -> Bool {
+    public func configureSubviews() -> Bool {
         self.addSubview(imageView)
 
         guard updateImageView() else {
@@ -54,8 +68,10 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
 
         self.isUserInteractionEnabled = true
         layersView.isUserInteractionEnabled = true
-        let anyTouchGesture = ImageEditorGestureRecognizer(target: self, action: #selector(handleTouchGesture(_:)))
-        layersView.addGestureRecognizer(anyTouchGesture)
+        let editorGestureRecognizer = ImageEditorGestureRecognizer(target: self, action: #selector(handleTouchGesture(_:)))
+        editorGestureRecognizer.canvasView = layersView
+        self.addGestureRecognizer(editorGestureRecognizer)
+        self.editorGestureRecognizer = editorGestureRecognizer
 
         return true
     }
@@ -217,6 +233,15 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             self.currentStroke = nil
             self.currentStrokeSamples.removeAll()
         }
+        let tryToAppendStrokeSample = {
+            let newSample = self.unitSampleForGestureLocation(gestureRecognizer, shouldClamp: false)
+            if let prevSample = self.currentStrokeSamples.last,
+                    prevSample == newSample {
+                // Ignore duplicate samples.
+                return
+            }
+            self.currentStrokeSamples.append(newSample)
+        }
 
         // TODO: Color picker.
         let strokeColor = UIColor.blue
@@ -227,14 +252,14 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         case .began:
             removeCurrentStroke()
 
-            currentStrokeSamples.append(unitSampleForGestureLocation(gestureRecognizer))
+            tryToAppendStrokeSample()
 
             let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
             model.append(item: stroke)
             currentStroke = stroke
 
         case .changed, .ended:
-            currentStrokeSamples.append(unitSampleForGestureLocation(gestureRecognizer))
+            tryToAppendStrokeSample()
 
             guard let lastStroke = self.currentStroke else {
                 owsFailDebug("Missing last stroke.")
@@ -258,12 +283,17 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         }
     }
 
-    private func unitSampleForGestureLocation(_ gestureRecognizer: UIGestureRecognizer) -> CGPoint {
+    private func unitSampleForGestureLocation(_ gestureRecognizer: UIGestureRecognizer,
+                                              shouldClamp: Bool) -> CGPoint {
         let referenceView = layersView
         // TODO: Smooth touch samples before converting into stroke samples.
         let location = gestureRecognizer.location(in: referenceView)
-        let x = CGFloatClamp01(CGFloatInverseLerp(location.x, 0, referenceView.bounds.width))
-        let y = CGFloatClamp01(CGFloatInverseLerp(location.y, 0, referenceView.bounds.height))
+        var x = CGFloatInverseLerp(location.x, 0, referenceView.bounds.width)
+        var y = CGFloatInverseLerp(location.y, 0, referenceView.bounds.height)
+        if shouldClamp {
+            x = CGFloatClamp01(x)
+            y = CGFloatClamp01(y)
+        }
         return CGPoint(x: x, y: y)
     }
 
@@ -350,18 +380,22 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             self.model.crop(unitCropRect: unitCropRect)
         }
 
+        let currentUnitSample = {
+            self.unitSampleForGestureLocation(gestureRecognizer, shouldClamp: true)
+        }
+
         switch gestureRecognizer.state {
         case .began:
-            let unitSample = unitSampleForGestureLocation(gestureRecognizer)
+            let unitSample = currentUnitSample()
             cropStartUnit = unitSample
             cropEndUnit = unitSample
             startCrop()
 
         case .changed:
-            cropEndUnit = unitSampleForGestureLocation(gestureRecognizer)
+            cropEndUnit = currentUnitSample()
             updateCrop()
         case .ended:
-            cropEndUnit = unitSampleForGestureLocation(gestureRecognizer)
+            cropEndUnit = currentUnitSample()
             endCrop()
         default:
             cancelCrop()
@@ -501,12 +535,10 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
                                           viewSize: CGSize) -> CALayer? {
         AssertIsOnMainThread()
 
-        Logger.verbose("\(item.itemId), viewSize: \(viewSize)")
-
         let strokeWidth = ImageEditorStrokeItem.strokeWidth(forUnitStrokeWidth: item.unitStrokeWidth,
                                                             dstSize: viewSize)
         let unitSamples = item.unitSamples
-        guard unitSamples.count > 1 else {
+        guard unitSamples.count > 0 else {
             // Not an error; the stroke doesn't have enough samples to render yet.
             return nil
         }
@@ -532,7 +564,10 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             let point = points[index]
 
             let forwardVector: CGPoint
-            if index == 0 {
+            if points.count <= 1 {
+                // Skip forward vectors.
+                forwardVector = .zero
+            } else if index == 0 {
                 // First sample.
                 let nextPoint = points[index + 1]
                 forwardVector = CGPointSubtract(nextPoint, point)
@@ -552,6 +587,10 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
             if index == 0 {
                 // First sample.
                 bezierPath.move(to: point)
+
+                if points.count == 1 {
+                    bezierPath.addLine(to: point)
+                }
             } else {
                 let previousPoint = points[index - 1]
                 // We apply more than one kind of smoothing.

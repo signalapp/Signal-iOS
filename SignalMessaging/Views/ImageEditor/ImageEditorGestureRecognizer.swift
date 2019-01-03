@@ -7,6 +7,12 @@ import UIKit
 class ImageEditorGestureRecognizer: UIGestureRecognizer {
 
     @objc
+    public var shouldAllowOutsideView = true
+
+    @objc
+    public weak var canvasView: UIView?
+
+    @objc
     override func canPrevent(_ preventedGestureRecognizer: UIGestureRecognizer) -> Bool {
         return false
     }
@@ -95,8 +101,12 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
     }
 
     private func touchType(for touches: Set<UITouch>, with event: UIEvent) -> TouchType {
-        guard let view = self.view else {
-            owsFailDebug("Missing view")
+        guard let gestureView = self.view else {
+            owsFailDebug("Missing gestureView")
+            return .invalid
+        }
+        guard let canvasView = canvasView else {
+            owsFailDebug("Missing canvasView")
             return .invalid
         }
         guard let allTouches = event.allTouches else {
@@ -112,25 +122,31 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
         guard let firstTouch: UITouch = touches.first else {
             return .invalid
         }
-        let location = firstTouch.location(in: view)
 
         let isNewTouch = firstTouch.phase == .began
         if isNewTouch {
             // Reject new touches that are inside a control subview.
-            if subviewControl(ofView: view, contains: firstTouch) {
+            if subviewControl(ofView: gestureView, contains: firstTouch) {
                 return .invalid
             }
         }
 
         // Reject new touches outside this GR's view's bounds.
-        guard view.bounds.contains(location) else {
-            return isNewTouch ? .invalid : .outside
+        let location = firstTouch.location(in: canvasView)
+        if !canvasView.bounds.contains(location) {
+            if shouldAllowOutsideView {
+                // Do nothing
+            } else if isNewTouch {
+                return .invalid
+            } else {
+                return .outside
+            }
         }
 
         if isNewTouch {
             // Ignore touches that start near the top or bottom edge of the screen;
             // they may be a system edge swipe gesture.
-            let rootView = self.rootView(of: view)
+            let rootView = self.rootView(of: gestureView)
             let rootLocation = firstTouch.location(in: rootView)
             let distanceToTopEdge = max(0, rootLocation.y)
             let distanceToBottomEdge = max(0, rootView.bounds.size.height - rootLocation.y)
