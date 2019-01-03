@@ -8,6 +8,7 @@
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -207,6 +208,22 @@ NS_ASSUME_NONNULL_BEGIN
                              changeBlock:^(TSAttachmentPointer *attachment) {
                                  [attachment setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
                              }];
+}
+
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+#ifdef DEBUG
+    if (self.uniqueId.length > 0) {
+        id _Nullable oldObject = [transaction objectForKey:self.uniqueId inCollection:TSAttachment.collection];
+        if ([oldObject isKindOfClass:[TSAttachmentStream class]]) {
+            OWSFailDebug(@"We should never overwrite a TSAttachmentStream with a TSAttachmentPointer.");
+        }
+    } else {
+        OWSFailDebug(@"Missing uniqueId.");
+    }
+#endif
+
+    [super saveWithTransaction:transaction];
 }
 
 @end
