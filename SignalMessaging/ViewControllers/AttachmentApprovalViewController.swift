@@ -582,7 +582,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     var attachments: [SignalAttachment] {
-        return attachmentItems.map { self.processedAttachment(forAttachmentItem: $0) }
+        return attachmentItems.map { (attachmentItem) in
+            autoreleasepool {
+                return self.processedAttachment(forAttachmentItem: attachmentItem)
+            }
+        }
     }
 
     // For any attachments edited with the image editor, returns a
