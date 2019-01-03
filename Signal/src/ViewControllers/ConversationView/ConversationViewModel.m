@@ -893,7 +893,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                     case OWSInteractionType_IncomingMessage:
                     case OWSInteractionType_OutgoingMessage:
                     case OWSInteractionType_TypingIndicator:
-                        if (updateItem.newIndex < updateItems.count - 1) {
+                        // We skip animations for the last _two_
+                        // interactions, not one since there
+                        // may be a typing indicator.
+                        if (updateItem.newIndex < updateItems.count - 2) {
                             isOnlyModifyingLastMessage = NO;
                         }
                         break;
