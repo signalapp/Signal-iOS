@@ -3747,7 +3747,7 @@ typedef enum : NSUInteger {
 {
     // Constantly update the lastKnownDistanceFromBottom,
     // unless we're presenting the menu actions which
-    // temporarily gmeddles with the content insets.
+    // temporarily meddles with the content insets.
     if (!OWSWindowManager.sharedManager.isPresentingMenuActions) {
         self.lastKnownDistanceFromBottom = @(self.safeDistanceFromBottom);
     }
@@ -4303,8 +4303,6 @@ typedef enum : NSUInteger {
     // content to fill the collection view at its current size.
     CGFloat contentOffsetYBottom
         = MAX(0.f, contentHeight + self.collectionView.contentInset.bottom - self.collectionView.bounds.size.height);
-    //    OWSLogVerbose(@"self.collectionView.contentInset: %@",
-    //    NSStringFromUIEdgeInsets(self.collectionView.contentInset));
     return contentOffsetYBottom;
 }
 
@@ -4468,8 +4466,6 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"");
 
-    // TODO:
-    //
     // HACK to work around radar #28167779
     // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
     // more: https://github.com/PSPDFKit-labs/radar.apple.com/tree/master/28167779%20-%20CollectionViewBatchingIssue
