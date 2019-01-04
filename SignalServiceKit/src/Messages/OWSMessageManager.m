@@ -1237,7 +1237,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                           thread:newGroupThread
                                                                       createdByRemoteRecipientId:nil
-                                                                          createdInExistingGroup:NO
+                                                                          createdInExistingGroup:YES
                                                                                      transaction:transaction];
 
                 // MJK TODO - should be safe to remove senderTimestamp
@@ -1278,7 +1278,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                           thread:oldGroupThread
                                                                       createdByRemoteRecipientId:envelope.source
-                                                                          createdInExistingGroup:YES
+                                                                          createdInExistingGroup:NO
                                                                                      transaction:transaction];
 
                 TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
