@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,7 +30,6 @@ public class Searcher<T> {
 
     public func matches(item: T, query: String) -> Bool {
         let itemString = normalize(string: indexer(item))
-
         return stem(string: query).map { queryStem in
             return itemString.contains(queryStem)
         }.reduce(true) { $0 && $1 }
