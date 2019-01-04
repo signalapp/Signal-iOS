@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSConstants.h"
@@ -14,6 +14,7 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 @class AnyPromise;
 @class OWSPrimaryStorage;
 @class TSNetworkManager;
+@class YapDatabaseReadTransaction;
 @class YapDatabaseReadWriteTransaction;
 
 typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
@@ -56,6 +57,9 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
  */
 + (nullable NSString *)localNumber;
 - (nullable NSString *)localNumber;
+
+// A variant of localNumber that never opens a "sneaky" transaction.
+- (nullable NSString *)storedOrCachedLocalNumber:(YapDatabaseReadTransaction *)transaction;
 
 /**
  *  Symmetric key that's used to encrypt message payloads from the server,

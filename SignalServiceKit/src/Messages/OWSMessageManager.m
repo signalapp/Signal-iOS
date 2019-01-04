@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageManager.h"
@@ -511,7 +511,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (groupThread) {
             if (dataMessage.group.type != SSKProtoGroupContextTypeUpdate) {
-                if (![groupThread.groupModel.groupMemberIds containsObject:self.tsAccountManager.localNumber]) {
+                if (!groupThread.isLocalUserInGroup) {
                     OWSLogInfo(@"Ignoring messages for left group.");
                     return;
                 }
@@ -705,7 +705,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (typingMessage.hasGroupID) {
         TSGroupThread *groupThread = [TSGroupThread threadWithGroupId:typingMessage.groupID transaction:transaction];
 
-        if (![groupThread.groupModel.groupMemberIds containsObject:self.tsAccountManager.localNumber]) {
+        if (!groupThread.isLocalUserInGroup) {
             OWSLogInfo(@"Ignoring messages for left group.");
             return;
         }
@@ -1135,8 +1135,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Ensure we are in the group.
-    NSString *localNumber = self.tsAccountManager.localNumber;
-    if (![gThread.groupModel.groupMemberIds containsObject:localNumber]) {
+    if (!gThread.isLocalUserInGroup) {
         OWSLogWarn(@"Ignoring 'Request Group Info' message for group we no longer belong to.");
         return;
     }

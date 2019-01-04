@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "HomeViewCell.h"
@@ -51,6 +51,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (id<OWSTypingIndicators>)typingIndicators
 {
     return SSKEnvironment.shared.typingIndicators;
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
 }
 
 #pragma mark -
@@ -510,9 +517,17 @@ NS_ASSUME_NONNULL_BEGIN
             name = [[NSAttributedString alloc] initWithString:thread.name];
         }
     } else {
-        name = [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
-                                                                          primaryFont:self.nameFont
-                                                                        secondaryFont:self.nameSecondaryFont];
+        if (self.thread.threadRecord.isNoteToSelf) {
+            name = [[NSAttributedString alloc]
+                initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
+                    attributes:@{
+                        NSFontAttributeName : self.nameFont,
+                    }];
+        } else {
+            name = [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
+                                                                              primaryFont:self.nameFont
+                                                                            secondaryFont:self.nameSecondaryFont];
+        }
     }
 
     self.nameLabel.attributedText = name;

@@ -524,7 +524,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        [recipientIds addObject:[TSAccountManager localNumber]];
+        [recipientIds addObject:self.tsAccountManager.localNumber];
     } else if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
 
@@ -543,7 +543,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // Only send to members in the latest known group member list.
         [recipientIds intersectSet:[NSSet setWithArray:groupThread.groupModel.groupMemberIds]];
 
-        if ([recipientIds containsObject:TSAccountManager.localNumber]) {
+        if ([recipientIds containsObject:self.tsAccountManager.localNumber]) {
             OWSFailDebug(@"Message send recipients should not include self.");
         }
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -565,7 +565,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         [recipientIds addObject:recipientContactId];
 
-        if ([recipientIds containsObject:TSAccountManager.localNumber]) {
+        if ([recipientIds containsObject:self.tsAccountManager.localNumber]) {
             OWSFailDebug(@"Message send recipients should not include self.");
         }
     } else {
@@ -706,14 +706,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     // In the "self-send" special case, we ony need to send a sync message with a delivery receipt.
     if ([thread isKindOfClass:[TSContactThread class]] &&
-        [((TSContactThread *)thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]) {
+        [((TSContactThread *)thread).contactIdentifier isEqualToString:self.tsAccountManager.localNumber]) {
         // Send to self.
         OWSAssertDebug(message.recipientIds.count == 1);
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            for (NSString *recipientId in message.sendingRecipientIds) {
-                [message updateWithReadRecipientId:recipientId readTimestamp:message.timestamp transaction:transaction];
-            }
-        }];
+        // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
         successHandler();
         return;
     }
@@ -1349,7 +1345,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSArray *missingDevices = responseJson[@"missingDevices"];
 
     if (missingDevices.count > 0) {
-        NSString *localNumber = [TSAccountManager localNumber];
+        NSString *localNumber = self.tsAccountManager.localNumber;
         if ([localNumber isEqualToString:recipient.uniqueId]) {
             [OWSDeviceManager.sharedManager setMayHaveLinkedDevices];
         }
@@ -1381,9 +1377,27 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
-                         success:(void (^)(void))success
+                         success:(void (^)(void))successParam
                          failure:(RetryableFailureHandler)failure
 {
+    dispatch_block_t success = ^{
+        TSThread *_Nullable thread = message.thread;
+        if (thread && [thread isKindOfClass:[TSContactThread class]] &&
+            [thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]) {
+            OWSAssertDebug(message.recipientIds.count == 1);
+            // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                for (NSString *recipientId in message.sendingRecipientIds) {
+                    [message updateWithReadRecipientId:recipientId
+                                         readTimestamp:message.timestamp
+                                           transaction:transaction];
+                }
+            }];
+        }
+
+        successParam();
+    };
+
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:message
                                                          expirationStartedAt:[NSDate ows_millisecondTimeStamp]

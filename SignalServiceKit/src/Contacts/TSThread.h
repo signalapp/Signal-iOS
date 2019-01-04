@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSYapDatabaseObject.h"
@@ -67,6 +67,8 @@ extern ConversationColorName const kConversationColorName_Default;
  * @returns recipientId for each recipient in the thread
  */
 @property (nonatomic, readonly) NSArray<NSString *> *recipientIdentifiers;
+
+- (BOOL)isNoteToSelf;
 
 #pragma mark Interactions
 

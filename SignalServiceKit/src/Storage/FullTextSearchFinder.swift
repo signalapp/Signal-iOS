@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -24,6 +24,12 @@ public class SearchIndexer<T> {
 
 @objc
 public class FullTextSearchFinder: NSObject {
+
+    // MARK: - Dependencies
+
+    private static var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
 
     // MARK: - Querying
 
@@ -184,7 +190,16 @@ public class FullTextSearchFinder: NSObject {
             return String(String.UnicodeScalarView(digitScalars))
         }(recipientId)
 
-        return "\(recipientId) \(nationalNumber) \(displayName)"
+        var result = "\(recipientId) \(nationalNumber) \(displayName)"
+
+        if let localNumber = tsAccountManager.storedOrCachedLocalNumber(transaction) {
+            if localNumber == recipientId {
+                let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
+                result += " \(noteToSelfLabel)"
+            }
+        }
+
+        return result
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in
