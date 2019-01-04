@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -354,6 +354,12 @@ public protocol ImageEditorModelDelegate: class {
 
 @objc
 public class ImageEditorModel: NSObject {
+
+    @objc
+    public static var isFeatureEnabled: Bool {
+        return _isDebugAssertConfiguration()
+    }
+
     @objc
     public weak var delegate: ImageEditorModelDelegate?
 
