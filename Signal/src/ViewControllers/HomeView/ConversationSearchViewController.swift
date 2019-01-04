@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -25,7 +25,13 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         }
     }
 
-    var searchResultSet: SearchResultSet = SearchResultSet.empty
+    var searchResultSet: SearchResultSet = SearchResultSet.empty {
+        didSet {
+            AssertIsOnMainThread()
+
+            updateSeparators()
+        }
+    }
 
     var uiDatabaseConnection: YapDatabaseConnection {
         return OWSPrimaryStorage.shared().uiDatabaseConnection
@@ -76,6 +82,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                                                object: nil)
 
         applyTheme()
+        updateSeparators()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -114,6 +121,14 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
         self.view.backgroundColor = Theme.backgroundColor
         self.tableView.backgroundColor = Theme.backgroundColor
+    }
+
+    private func updateSeparators() {
+        AssertIsOnMainThread()
+
+        self.tableView.separatorStyle = (searchResultSet.isEmpty
+            ? UITableViewCell.SeparatorStyle.none
+            : UITableViewCell.SeparatorStyle.singleLine)
     }
 
     // MARK: UITableViewDelegate
