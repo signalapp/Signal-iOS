@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -51,6 +51,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeProfileUpdateFailed = 777424,
     OWSErrorCodeAvatarWriteFailed = 777425,
     OWSErrorCodeAvatarUploadFailed = 777426,
+    OWSErrorCodeNoSessionForTransientMessage,
 };
 
 extern NSString *const OWSErrorRecipientIdentifierKey;

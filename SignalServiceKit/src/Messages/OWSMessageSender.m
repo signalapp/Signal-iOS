@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageSender.h"
@@ -56,6 +56,8 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *NoSessionForTransientMessageException = @"NoSessionForTransientMessageException";
 
 const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
 
@@ -858,7 +860,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     @try {
         deviceMessages = [self throws_deviceMessagesForMessageSend:messageSend];
     } @catch (NSException *exception) {
-        if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
+        if ([exception.name isEqualToString:NoSessionForTransientMessageException]) {
+            // When users re-register, we don't want transient messages (like typing
+            // indicators) to cause users to hit the prekey fetch rate limit.  So
+            // we silently discard these message if there is no pre-existing session
+            // for the recipient.
+            NSError *error = OWSErrorWithCodeDescription(
+                OWSErrorCodeNoSessionForTransientMessage, @"No session for transient message.");
+            [error setIsRetryable:NO];
+            [error setIsFatal:YES];
+            *errorHandle = error;
+            return nil;
+        } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             // This *can* happen under normal usage, but it should happen relatively rarely.
             // We expect it to happen whenever Bob reinstalls, and Alice messages Bob before
             // she can pull down his latest identity.
@@ -1547,6 +1560,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }];
     if (hasSession) {
         return;
+    }
+    // Discard "typing indicator" messages if there is no existing session with the user.
+    BOOL canSafelyBeDiscarded = messageSend.message.isOnline;
+    if (canSafelyBeDiscarded) {
+        OWSRaiseException(NoSessionForTransientMessageException, @"No session for transient message.");
     }
 
     __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
