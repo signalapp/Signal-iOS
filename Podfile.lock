@@ -267,7 +267,7 @@ CHECKOUT OPTIONS:
     :commit: 3e0c2371d125f2d3db26daa498d5d436961b1795
     :git: https://github.com/signalapp/HKDFKit.git
   Mantle:
-    :commit: 86be6280908291114bfacca7b765fe89bd5ca6e2
+    :commit: 9599b1d9796280c97cb2f786f34984fc98a3b6ef
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
     :commit: 2bf143469ab82fb35379fe9f5085450edefb2a2a
