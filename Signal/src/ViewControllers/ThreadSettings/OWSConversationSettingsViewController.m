@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSConversationSettingsViewController.h"
@@ -310,8 +310,7 @@ const CGFloat kIconViewLength = 24;
     OWSTableContents *contents = [OWSTableContents new];
     contents.title = NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen");
 
-    BOOL isNoteToSelf = (!self.thread.isGroupThread &&
-        [self.thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
+    BOOL isNoteToSelf = self.thread.isNoteToSelf;
 
     __weak OWSConversationSettingsViewController *weakSelf = self;
 
@@ -1085,8 +1084,7 @@ const CGFloat kIconViewLength = 24;
 {
     if (self.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        BOOL inGroup = [groupThread.groupModel.groupMemberIds containsObject:TSAccountManager.localNumber];
-        return !inGroup;
+        return !groupThread.isLocalUserInGroup;
     }
 
     return NO;

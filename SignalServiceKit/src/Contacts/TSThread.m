@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSThread.h"
@@ -7,6 +7,8 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadTracking.h"
+#import "SSKEnvironment.h"
+#import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
@@ -54,6 +56,17 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 #pragma mark -
 
 @implementation TSThread
+
+#pragma mark - Dependencies
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+#pragma mark -
 
 + (NSString *)collection {
     return @"TSThread";
@@ -179,7 +192,13 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     }
 }
 
-#pragma mark To be subclassed.
+- (BOOL)isNoteToSelf
+{
+    return (!self.isGroupThread && self.contactIdentifier != nil &&
+        [self.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
+}
+
+#pragma mark - To be subclassed.
 
 - (BOOL)isGroupThread {
     OWSAbstractMethod();
@@ -211,7 +230,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     return NO;
 }
 
-#pragma mark Interactions
+#pragma mark - Interactions
 
 /**
  * Iterate over this thread's interactions
@@ -405,7 +424,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     }
 }
 
-#pragma mark Disappearing Messages
+#pragma mark - Disappearing Messages
 
 - (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
     (YapDatabaseReadTransaction *)transaction

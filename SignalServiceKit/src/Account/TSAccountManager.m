@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAccountManager.h"
@@ -220,8 +220,14 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
 }
 
-- (nullable NSString *)storedLocalNumber:(YapDatabaseReadTransaction *)transaction
+- (nullable NSString *)storedOrCachedLocalNumber:(YapDatabaseReadTransaction *)transaction
 {
+    @synchronized(self) {
+        if (self.cachedLocalNumber) {
+            return self.cachedLocalNumber;
+        }
+    }
+
     return [transaction stringForKey:TSAccountManager_RegisteredNumberKey
                         inCollection:TSAccountManager_UserAccountCollection];
 }

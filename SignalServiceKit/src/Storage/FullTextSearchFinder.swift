@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -192,7 +192,7 @@ public class FullTextSearchFinder: NSObject {
 
         var result = "\(recipientId) \(nationalNumber) \(displayName)"
 
-        if let localNumber = tsAccountManager.storedLocalNumber(transaction) {
+        if let localNumber = tsAccountManager.storedOrCachedLocalNumber(transaction) {
             if localNumber == recipientId {
                 let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
                 result += " \(noteToSelfLabel)"

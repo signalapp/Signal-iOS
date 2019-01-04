@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "HomeViewCell.h"
@@ -517,8 +517,7 @@ NS_ASSUME_NONNULL_BEGIN
             name = [[NSAttributedString alloc] initWithString:thread.name];
         }
     } else {
-        BOOL isNoteToSelf = [self.thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber];
-        if (isNoteToSelf) {
+        if (self.thread.threadRecord.isNoteToSelf) {
             name = [[NSAttributedString alloc]
                 initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
                     attributes:@{

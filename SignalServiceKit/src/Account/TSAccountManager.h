@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSConstants.h"
@@ -59,7 +59,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (nullable NSString *)localNumber;
 
 // A variant of localNumber that never opens a "sneaky" transaction.
-- (nullable NSString *)storedLocalNumber:(YapDatabaseReadTransaction *)transaction;
+- (nullable NSString *)storedOrCachedLocalNumber:(YapDatabaseReadTransaction *)transaction;
 
 /**
  *  Symmetric key that's used to encrypt message payloads from the server,
