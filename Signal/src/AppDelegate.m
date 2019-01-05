@@ -492,7 +492,6 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"Build XCode Version: %@", buildDetails[@"XCodeVersion"]);
     OWSLogInfo(@"Build OS X Version: %@", buildDetails[@"OSXVersion"]);
     OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
-    OWSLogInfo(@"Build Carthage Version: %@", buildDetails[@"CarthageVersion"]);
     OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
 }
 

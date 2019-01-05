@@ -23,9 +23,6 @@ cd $PROJECT_DIR
 _osx_version=`defaults read loginwindow SystemVersionStampAsString`
 /usr/libexec/PlistBuddy -c "add :BuildDetails:OSXVersion string '$_osx_version'" Signal/Signal-Info.plist
 
-_carthage_version=`carthage version`
-/usr/libexec/PlistBuddy -c "add :BuildDetails:CarthageVersion string '$_carthage_version'" Signal/Signal-Info.plist
-
 echo "CONFIGURATION: ${CONFIGURATION}"
 if [ "${CONFIGURATION}" = "App Store Release" ]; then
     /usr/libexec/PlistBuddy -c "add :BuildDetails:XCodeVersion string '${XCODE_VERSION_MAJOR}.${XCODE_VERSION_MINOR}'" Signal/Signal-Info.plist

@@ -154,7 +154,6 @@
 		3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34969559219B605E00DCFE74 /* ImagePickerController.swift */; };
 		3496955D219B605E00DCFE74 /* PhotoCollectionPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496955A219B605E00DCFE74 /* PhotoCollectionPickerController.swift */; };
 		3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496955B219B605E00DCFE74 /* PhotoLibrary.swift */; };
-		3496956021A2FC8100DCFE74 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3496955F21A2FC8100DCFE74 /* CloudKit.framework */; };
 		3496956E21A301A100DCFE74 /* OWSBackupExportJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956221A301A100DCFE74 /* OWSBackupExportJob.m */; };
 		3496956F21A301A100DCFE74 /* OWSBackupLazyRestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496956321A301A100DCFE74 /* OWSBackupLazyRestore.swift */; };
 		3496957021A301A100DCFE74 /* OWSBackupIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956521A301A100DCFE74 /* OWSBackupIO.m */; };
@@ -293,6 +292,8 @@
 		34EA69422194DE8000702471 /* MediaUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA69412194DE7F00702471 /* MediaUploadView.swift */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
+		3AB09D7221E10BC400F97F8F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AB09D7121E10BC400F97F8F /* CloudKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		3AB09D7321E10C4100F97F8F /* WebRTC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4509E7991DD653700025A59F /* WebRTC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
 		4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
 		4503F1C3204711D300CEE724 /* OWS107LegacySounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 4503F1C1204711D200CEE724 /* OWS107LegacySounds.m */; };
@@ -456,7 +457,6 @@
 		4C7537892193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7537882193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift */; };
 		4C858A52212DC5E1001B45D3 /* UIImage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */; };
 		4C948FF72146EB4800349F0D /* BlockListCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C948FF62146EB4800349F0D /* BlockListCache.swift */; };
-		4C9CA25D217E676900607C63 /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C9CA25C217E676900607C63 /* ZXingObjC.framework */; };
 		4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA46F4B219CCC630038ABDE /* CaptionView.swift */; };
 		4CA46F4D219CFDAA0038ABDE /* GalleryRailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA46F49219C78050038ABDE /* GalleryRailView.swift */; };
 		4CA5F793211E1F06008C2708 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA5F792211E1F06008C2708 /* Toast.swift */; };
@@ -597,6 +597,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				3AB09D7321E10C4100F97F8F /* WebRTC.framework in Embed Frameworks */,
 				4535189A1FC63DBF00210559 /* SignalMessaging.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -810,7 +811,6 @@
 		34969559219B605E00DCFE74 /* ImagePickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerController.swift; sourceTree = "<group>"; };
 		3496955A219B605E00DCFE74 /* PhotoCollectionPickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionPickerController.swift; sourceTree = "<group>"; };
 		3496955B219B605E00DCFE74 /* PhotoLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibrary.swift; sourceTree = "<group>"; };
-		3496955F21A2FC8100DCFE74 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		3496956221A301A100DCFE74 /* OWSBackupExportJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupExportJob.m; sourceTree = "<group>"; };
 		3496956321A301A100DCFE74 /* OWSBackupLazyRestore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSBackupLazyRestore.swift; sourceTree = "<group>"; };
 		3496956421A301A100DCFE74 /* OWSBackup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackup.h; sourceTree = "<group>"; };
@@ -1003,6 +1003,7 @@
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
+		3AB09D7121E10BC400F97F8F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "classic-quiet.aifc"; sourceTree = "<group>"; };
 		4503F1BC20470A5B00CEE724 /* classic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = classic.aifc; sourceTree = "<group>"; };
@@ -1173,7 +1174,6 @@
 		4C7537882193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWS113MultiAttachmentMediaMessages.swift; sourceTree = "<group>"; };
 		4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+OWS.swift"; sourceTree = "<group>"; };
 		4C948FF62146EB4800349F0D /* BlockListCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListCache.swift; sourceTree = "<group>"; };
-		4C9CA25C217E676900607C63 /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZXingObjC.framework; path = ThirdParty/Carthage/Build/iOS/ZXingObjC.framework; sourceTree = "<group>"; };
 		4CA46F49219C78050038ABDE /* GalleryRailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryRailView.swift; sourceTree = "<group>"; };
 		4CA46F4B219CCC630038ABDE /* CaptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionView.swift; sourceTree = "<group>"; };
 		4CA5F792211E1F06008C2708 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
@@ -1315,13 +1315,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4509E79A1DD653700025A59F /* WebRTC.framework in Frameworks */,
+				3AB09D7221E10BC400F97F8F /* CloudKit.framework in Frameworks */,
 				4CC1ECF9211A47CE00CC13BE /* StoreKit.framework in Frameworks */,
 				455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */,
 				455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */,
 				45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */,
-				4509E79A1DD653700025A59F /* WebRTC.framework in Frameworks */,
 				4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */,
-				4C9CA25D217E676900607C63 /* ZXingObjC.framework in Frameworks */,
 				B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */,
 				45BD60821DE9547E00A8F436 /* Contacts.framework in Frameworks */,
 				B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */,
@@ -1330,7 +1330,6 @@
 				70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */,
 				B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */,
 				453518991FC63DBF00210559 /* SignalMessaging.framework in Frameworks */,
-				3496956021A2FC8100DCFE74 /* CloudKit.framework in Frameworks */,
 				76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */,
 				768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */,
 				A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */,
@@ -2481,8 +2480,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3496955F21A2FC8100DCFE74 /* CloudKit.framework */,
-				4C9CA25C217E676900607C63 /* ZXingObjC.framework */,
+				3AB09D7121E10BC400F97F8F /* CloudKit.framework */,
 				4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */,
 				455A16DB1F1FEA0000F86704 /* Metal.framework */,
 				455A16DC1F1FEA0000F86704 /* MetalKit.framework */,
@@ -2693,7 +2691,6 @@
 				34C239432180B01B00B6108F /* Run Script: update_list_info */,
 				D221A087169C9E5E00537ABF /* Resources */,
 				59C9DBA462715B5C999FFB02 /* [CP] Embed Pods Frameworks */,
-				451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */,
 				453518771FC635DD00210559 /* Embed App Extensions */,
 				4535189F1FC63DBF00210559 /* Embed Frameworks */,
 			);
@@ -3042,22 +3039,6 @@
 			shellPath = /bin/sh;
 			shellScript = "$PROJECT_DIR/Scripts/update_plist_info.sh\n";
 		};
-		451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/ThirdParty/WebRTC/Build/WebRTC.framework",
-				"$(SRCROOT)/ThirdParty/Carthage/Build/iOS/ZXingObjC.framework",
-			);
-			name = "[Carthage] Copy Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
-		};
 		451DE9FB1DC18D4500810E42 /* [Carthage] Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -3086,7 +3067,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n# disabled for now. too many lint errors outside of the scope of this branch\n#(cd Signal && swiftlint)\n# never fail.\nexit 0\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
+			shellScript = "if which swiftlint >/dev/null; then\n# disabled for now. too many lint errors outside of the scope of this branch\n#(cd Signal && swiftlint)\n# never fail.\nexit 0\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 		59C9DBA462715B5C999FFB02 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3115,6 +3096,7 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
+				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -3139,6 +3121,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3190,6 +3173,7 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
+				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -3213,6 +3197,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;

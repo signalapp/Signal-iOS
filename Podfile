@@ -1,41 +1,40 @@
 platform :ios, '9.0'
-source 'https://github.com/CocoaPods/Specs.git'
 
 use_frameworks!
 
-def shared_pods
-  # OWS Pods
-  pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
-  # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
-  # pod 'SQLCipher', path: '../sqlcipher'
-  pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
-  # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
-  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
-  pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
-  # pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
-  pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tests"]
-  # pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
-  pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
-  # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
-  pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
-  # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
-  pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
-  pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework'
-  #pod 'GRKOpenSSLFramework', path: '../GRKOpenSSLFramework'
+# OWS Pods
+pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
+# pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
+# pod 'SQLCipher', path: '../sqlcipher'
+pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
+# pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
+pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
+pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
+# pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
+pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tests"]
+# pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
+pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
+# pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
+pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
+# pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
+pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
+pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework'
+#pod 'GRKOpenSSLFramework', path: '../GRKOpenSSLFramework'
 
-  # third party pods
-  pod 'AFNetworking', inhibit_warnings: true
-  pod 'Mantle', :inhibit_warnings => true
-  # pod 'YapDatabase/SQLCipher', :inhibit_warnings => true
-  pod 'PureLayout', :inhibit_warnings => true
-  pod 'Reachability', :inhibit_warnings => true
-  # pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', inhibit_warnings: true
-  pod 'SocketRocket', :git => 'https://github.com/signalapp/SocketRocket.git', branch: 'mkirk/handle-sec-err', inhibit_warnings: true
-  pod 'YYImage', :inhibit_warnings => true
-end
+# third party pods
+pod 'AFNetworking', inhibit_warnings: true
+pod 'Mantle', :inhibit_warnings => true
+# pod 'YapDatabase/SQLCipher', :inhibit_warnings => true
+pod 'PureLayout', :inhibit_warnings => true
+pod 'Reachability', :inhibit_warnings => true
+# pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', inhibit_warnings: true
+pod 'SocketRocket', :git => 'https://github.com/signalapp/SocketRocket.git', branch: 'mkirk/handle-sec-err', inhibit_warnings: true
+pod 'YYImage', :inhibit_warnings => true
+pod 'ZXingObjC', git: 'https://github.com/TheLevelUp/ZXingObjC'
+
 
 target 'Signal' do
-  shared_pods
+  # Pods only available inside the main Signal app
   pod 'SSZipArchive', :inhibit_warnings => true
 
   target 'SignalTests' do
@@ -43,13 +42,9 @@ target 'Signal' do
   end
 end
 
-target 'SignalShareExtension' do
-  shared_pods
-end
-
-target 'SignalMessaging' do
-  shared_pods
-end
+# These extensions inherit all of the pods
+target 'SignalShareExtension'
+target 'SignalMessaging'
 
 post_install do |installer|
   enable_extension_support_for_purelayout(installer)

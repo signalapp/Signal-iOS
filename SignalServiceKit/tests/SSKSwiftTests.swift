@@ -5,10 +5,10 @@
 import XCTest
 
 /////
-// Swift Test vs. Cocoapods issue #1
+// Swift Test vs. CocoaPods issue #1
 /////
 //
-// Cocoapods-generated test targets (like this one)
+// CocoaPods-generated test targets (like this one)
 // fail to link if:
 //
 // * They only contain Obj-C tests.
@@ -20,7 +20,7 @@ import XCTest
 // See: https://github.com/CocoaPods/CocoaPods/issues/7170
 
 /////
-// Swift Test vs. Cocoapods issue #2
+// Swift Test vs. CocoaPods issue #2
 /////
 //
 // XCode's test runner doesn't copy swift framework's required by dependencies into
