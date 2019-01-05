@@ -2,11 +2,10 @@
 
 We typically develop against the latest stable version of Xcode.
 
-As of this writing, that's Xcode 10.1
+## Pre-requisites
 
-## Prerequistes
-
-Install [Carthage](https://github.com/Carthage/Carthage#installing-carthage)
+* You need Xcode 10 installed, we're currently using 10.1
+* You need to be using Ruby 2.5.0
 
 ## 1. Clone
 
@@ -16,7 +15,7 @@ Clone the repo to a working directory:
 git clone --recurse-submodules https://github.com/signalapp/Signal-iOS
 ```
 
-Since we make use of submodules, you must use `git clone`, rather than
+Since we make use of sub-modules, you must use `git clone`, rather than
 downloading a prepared zip file from Github.
 
 We recommend you fork the repo on GitHub, then clone your fork:
@@ -41,7 +40,7 @@ make dependencies
 
 ### Building WebRTC
 
-A prebuilt version of WebRTC.framework resides in a submodule and should be
+A prebuilt version of WebRTC.framework resides in a sub-module and should be
 installed by the above steps.  However, if you'd like to build it from source,
 see: https://github.com/signalapp/signal-webrtc-ios
 
