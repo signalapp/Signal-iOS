@@ -2714,7 +2714,6 @@
 				D221A0A6169C9E5F00537ABF /* Frameworks */,
 				D221A0A7169C9E5F00537ABF /* Resources */,
 				B4E9B04E862FB64FC9A8F79B /* [CP] Embed Pods Frameworks */,
-				451DE9FB1DC18D4500810E42 /* [Carthage] Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -3038,22 +3037,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "$PROJECT_DIR/Scripts/update_plist_info.sh\n";
-		};
-		451DE9FB1DC18D4500810E42 /* [Carthage] Copy Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/ThirdParty/WebRTC/Build/WebRTC.framework",
-				"$(SRCROOT)/ThirdParty/Carthage/Build/iOS/ZXingObjC.framework",
-			);
-			name = "[Carthage] Copy Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
 		45AE48531E073428004D96C2 /* Swift Lint */ = {
 			isa = PBXShellScriptBuildPhase;
