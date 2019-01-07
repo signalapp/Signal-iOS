@@ -102,9 +102,9 @@ typedef enum : NSUInteger {
 } kMediaTypes;
 
 typedef enum : NSUInteger {
-    kScrollBiasBottom = 0,
-    kScrollBiasTop,
-} ScrollBias;
+    kScrollContinuityBottom = 0,
+    kScrollContinuityTop,
+} ScrollContinuity;
 
 #pragma mark -
 
@@ -202,7 +202,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) CGFloat scrollDistanceToBottomSnapshot;
 @property (nonatomic, nullable) NSNumber *lastKnownDistanceFromBottom;
-@property (nonatomic) ScrollBias scrollBias;
+@property (nonatomic) ScrollContinuity scrollContinuity;
 @property (nonatomic, nullable) NSTimer *autoLoadMoreTimer;
 
 @end
@@ -247,7 +247,7 @@ typedef enum : NSUInteger {
     NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ voice note", self.logTag];
     _recordVoiceNoteAudioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:OWSAudioBehavior_PlayAndRecord];
 
-    self.scrollBias = kScrollBiasBottom;
+    self.scrollContinuity = kScrollContinuityBottom;
 }
 
 #pragma mark - Dependencies
@@ -810,7 +810,7 @@ typedef enum : NSUInteger {
 
 - (void)resetContentAndLayout
 {
-    self.scrollBias = kScrollBiasBottom;
+    self.scrollContinuity = kScrollContinuityBottom;
     // Avoid layout corrupt issues and out-of-date message subtitles.
     self.lastReloadDate = [NSDate new];
     [self.conversationViewModel viewDidResetContentAndLayout];
@@ -4282,7 +4282,7 @@ typedef enum : NSUInteger {
 - (CGPoint)collectionView:(UICollectionView *)collectionView
     targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset
 {
-    if (self.scrollBias == kScrollBiasBottom && self.lastKnownDistanceFromBottom) {
+    if (self.scrollContinuity == kScrollContinuityBottom && self.lastKnownDistanceFromBottom) {
         // Adjust the content offset to reflect the "last known" distance
         // from the bottom of the content.
         CGFloat contentOffsetYBottom = self.maxContentOffsetY;
@@ -4558,7 +4558,7 @@ typedef enum : NSUInteger {
     // if the user is inserting new interactions.
     __block BOOL scrollToBottom = NO;
 
-    self.scrollBias = ([self isScrolledToBottom] ? kScrollBiasBottom : kScrollBiasTop);
+    self.scrollContinuity = ([self isScrolledToBottom] ? kScrollContinuityBottom : kScrollContinuityTop);
 
     void (^batchUpdates)(void) = ^{
         OWSAssertIsOnMainThread();
@@ -4701,8 +4701,6 @@ typedef enum : NSUInteger {
     // We want to restore the current scroll state after we update the range, update
     // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
     self.scrollDistanceToBottomSnapshot = self.safeContentHeight - self.collectionView.contentOffset.y;
-
-    self.scrollBias = kScrollBiasBottom;
 }
 
 - (void)conversationViewModelDidLoadMoreItems
