@@ -66,7 +66,6 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 + (TSRequest *)verifyCodeRequestWithVerificationCode:(NSString *)verificationCode
                                            forNumber:(NSString *)phoneNumber
                                                  pin:(nullable NSString *)pin
-                                        signalingKey:(NSString *)signalingKey
                                              authKey:(NSString *)authKey;
 
 #pragma mark - Prekeys

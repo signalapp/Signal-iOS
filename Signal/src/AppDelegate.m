@@ -1215,6 +1215,15 @@ static NSTimeInterval launchStartedAt;
     [self.udManager setup];
 
     [self preheatDatabaseViews];
+
+    // Try to update account attributes every time we upgrade.
+    if ([self.tsAccountManager isRegistered]) {
+        AppVersion *appVersion = AppVersion.sharedInstance;
+        if (appVersion.lastAppVersion.length > 0
+            && ![appVersion.lastAppVersion isEqualToString:appVersion.currentAppVersion]) {
+            [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
+        }
+    }
 }
 
 - (void)preheatDatabaseViews
