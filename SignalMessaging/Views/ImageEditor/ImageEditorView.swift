@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -81,6 +81,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
         editorGestureRecognizer.canvasView = layersView
         self.addGestureRecognizer(editorGestureRecognizer)
         self.editorGestureRecognizer = editorGestureRecognizer
+        editorGestureRecognizer.isEnabled = false
 
         return true
     }
