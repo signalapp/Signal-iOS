@@ -896,7 +896,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                         // We skip animations for the last _two_
                         // interactions, not one since there
                         // may be a typing indicator.
-                        if (updateItem.newIndex < updateItems.count - 2) {
+                        if (updateItem.newIndex + 2 < updateItems.count) {
                             isOnlyModifyingLastMessage = NO;
                         }
                         break;
