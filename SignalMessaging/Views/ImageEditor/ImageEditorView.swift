@@ -189,10 +189,8 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     private func updateButtons() {
         undoButton.isEnabled = model.canUndo()
         redoButton.isEnabled = model.canRedo()
-//        brushButton.isSelected = editorMode == .brush
-        brushButton.isEnabled = editorMode != .brush
-//        cropButton.isSelected = editorMode == .crop
-        cropButton.isEnabled = editorMode != .crop
+        brushButton.isSelected = editorMode == .brush
+        cropButton.isSelected = editorMode == .crop
     }
 
     // MARK: - Actions
@@ -218,14 +216,21 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate {
     @objc func didTapBrush(sender: UIButton) {
         Logger.verbose("")
 
-        editorMode = .brush
-        updateButtons()
+        toggle(editorMode: .brush)
     }
 
     @objc func didTapCrop(sender: UIButton) {
         Logger.verbose("")
 
-        editorMode = .crop
+        toggle(editorMode: .crop)
+    }
+
+    func toggle(editorMode: EditorMode) {
+        if self.editorMode == editorMode {
+            self.editorMode = .none
+        } else {
+            self.editorMode = editorMode
+        }
         updateButtons()
     }
 
