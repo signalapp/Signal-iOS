@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSDatabaseView.h"
@@ -473,8 +473,10 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 {
     OWSAssertDebug(transaction);
 
-    id result = [transaction ext:TSUnseenDatabaseViewExtensionName];
+    id _Nullable result = [transaction ext:TSUnseenDatabaseViewExtensionName];
+    OWSAssertDebug(result);
 
+    // TODO: I believe we can now safely remove this?
     if (!result) {
         result = [transaction ext:TSUnreadDatabaseViewExtensionName];
         OWSAssertDebug(result);
