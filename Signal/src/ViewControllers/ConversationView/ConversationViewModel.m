@@ -587,7 +587,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             if ([diffAddedItemIds containsObject:unsavedOutgoingMessage.uniqueId]) {
                 OWSLogVerbose(@"Converting insert to update: %@", unsavedOutgoingMessage.uniqueId);
                 [diffAddedItemIds removeObject:unsavedOutgoingMessage.uniqueId];
-                [diffUpdatedItemIds removeObject:unsavedOutgoingMessage.uniqueId];
+                [diffUpdatedItemIds addObject:unsavedOutgoingMessage.uniqueId];
             }
 
             // Remove the unsavedOutgoingViewItem since it now exists as a persistedViewItem
@@ -662,6 +662,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         OWSFailDebug(@"could not reload view items; hard resetting message mapping.");
         // resetMapping will call delegate.conversationViewModelDidUpdate.
         [self resetMapping];
+        [self.delegate conversationViewModelDidReset];
         return;
     }
 
@@ -928,8 +929,13 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 // This is more expensive than incremental updates.
 //
-// It can be used to get back to a known good state, or to respon
-// It can be done to get back to a known good state
+// We call `resetMapping` for two separate reasons:
+//
+// * Most of the time, we call `resetMapping` after a severe error to get back into a known good state.
+//   We then call `conversationViewModelDidReset` to get the view back into a known good state (by
+//   scrolling to the bottom).
+// * We also call `resetMapping` to load an additional page of older message.  We very much _do not_
+// want to change view scroll state in this case.
 - (void)resetMapping
 {
     // Don't extend the mapping's desired length.
@@ -968,6 +974,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
+    // See comments in touchDbAsync.
     [self touchDbAsync];
 }
 
@@ -1255,7 +1262,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     if (self.unsavedOutgoingMessages.count > 0) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-            for (TSOutgoingMessage *outgoingMessage in [self.unsavedOutgoingMessages copy]) {
+            for (TSOutgoingMessage *outgoingMessage in self.unsavedOutgoingMessages) {
                 if ([interactionIds containsObject:outgoingMessage.uniqueId]) {
                     OWSFailDebug(@"Duplicate interaction: %@", outgoingMessage.uniqueId);
                     continue;

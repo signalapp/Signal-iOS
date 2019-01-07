@@ -70,6 +70,8 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 - (void)conversationViewModelDidLoadPrevPage;
 - (void)conversationViewModelRangeDidChange;
 
+// Called after the view model recovers from a severe error
+// to prod the view to reset its scroll state, etc.
 - (void)conversationViewModelDidReset;
 
 - (BOOL)isObservingVMUpdates;

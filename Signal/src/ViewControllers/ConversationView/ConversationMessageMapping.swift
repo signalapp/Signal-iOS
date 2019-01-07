@@ -15,14 +15,11 @@ public class ConversationMessageMapping: NSObject {
 
     typealias ItemId = String
 
-    // The list currently loaded items
+    // The list of currently loaded items.
     private var itemIds = [ItemId]()
 
-    // We could use this to detect synchronization errors.
-    private var snapshotOfLastUpdate: UInt64?
-
     // When we enter a conversation, we want to load up to N interactions. This
-    // in the "initial load window".
+    // is the "initial load window".
     //
     // We subsequently expand the load window in two directions using two very
     // different behaviors.
@@ -65,6 +62,12 @@ public class ConversationMessageMapping: NSObject {
     // * The pivot doesn't move.
     // * The desired length applies _before_ the pivot.
     // * Everything after the pivot is auto-loaded.
+    //
+    // One last optimization:
+    //
+    // After an update, we _can sometimes_ move the pivot (for perf
+    // reasons), but we also adjust the "desired length" so that this
+    // no effect on the load behavior.
     //
     // And note: we use the pivot's sort id, not its uniqueId, which works
     // even if the pivot itself is deleted.
@@ -142,8 +145,8 @@ public class ConversationMessageMapping: NSObject {
             // Load "uncounted" items after the pivot if possible.
             //
             // As an optimization, we can skip this check (which requires
-            // deserializing the interaction) if beforePivotCount is zero,
-            // e.g. we haven't "passed" the pivot yet.
+            // deserializing the interaction) if beforePivotCount is non-zero,
+            // e.g. after we "pass" the pivot.
             if beforePivotCount == 0,
                 let pivotSortId = self.pivotSortId {
                 if let sortId = sortIdForItemId(itemId) {
@@ -172,7 +175,6 @@ public class ConversationMessageMapping: NSObject {
         // The items need to be reversed, since we load them in reverse order.
         self.itemIds = Array(newItemIds.reversed())
         self.canLoadMore = canLoadMore
-        self.snapshotOfLastUpdate = transaction.connection.snapshot
 
         // Establish the pivot, if necessary and possible.
         //
@@ -184,13 +186,20 @@ public class ConversationMessageMapping: NSObject {
         // conversations with very short disappearing message durations would
         // continuously grow as messages appeared and disappeared.
         //
-        // NOTE: if we do end up "moving" the pivot, we also need to increment
-        // `self.desiredLength` by `afterPivotCount`.
-        if self.pivotSortId == nil {
+        // Therefore, we only move the pivot when we've accumulated N items after
+        // the pivot.  This puts an upper bound on the number of interactions we
+        // have to deserialize while minimizing "load window size creep".
+        let kMaxItemCountAfterPivot = 32
+        let shouldSetPivot = (self.pivotSortId == nil ||
+            afterPivotCount > kMaxItemCountAfterPivot)
+        if shouldSetPivot {
             if let newLastItemId = newItemIds.first {
                 // newItemIds is in reverse order, so its "first" element is actually last.
                 if let sortId = sortIdForItemId(newLastItemId) {
                     // Update the pivot.
+                    if self.pivotSortId != nil {
+                        self.desiredLength += afterPivotCount
+                    }
                     self.pivotSortId = sortId
                 } else {
                     owsFailDebug("Could not determine sort id for interaction: \(newLastItemId)")
