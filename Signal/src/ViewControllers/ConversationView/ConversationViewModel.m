@@ -568,7 +568,11 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return;
     }
     if (diff.addedItemIds.count < 1 && diff.removedItemIds.count < 1 && diff.updatedItemIds.count < 1) {
-        OWSFailDebug(@"Unexpectedly empty diff.");
+        // This probably isn't an error; presumably the modifications
+        // occurred outside the load window.
+        OWSLogDebug(@"Empty diff.");
+        [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate];
+        return;
     }
 
     NSMutableSet<NSString *> *diffAddedItemIds = [diff.addedItemIds mutableCopy];
