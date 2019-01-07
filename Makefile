@@ -10,11 +10,14 @@ XCODE_BUILD = xcrun xcodebuild -workspace $(SCHEME).xcworkspace -scheme $(SCHEME
 
 default: test
 
-ci: dependencies test
-
 update_dependencies:
 	bundle exec pod update
 	carthage update --platform iOS
+
+setup:
+	rbenv install -s
+	gem install bundler
+	bundle install
 
 dependencies:
 	cd $(WORKING_DIR) && \
@@ -27,7 +30,7 @@ build: dependencies
 		$(XCODE_BUILD) build | xcpretty
 
 test:
-	bundle exec fastlane scan
+	bundle exec fastlane test
 
 clean: clean_carthage
 	cd $(WORKING_DIR) && \

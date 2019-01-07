@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewItem.h"
@@ -65,6 +65,7 @@
     OWSAssertDebug([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 
     DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
+    dataSource.sourceFilename = filename;
     TSAttachmentStream *attachment = [AttachmentStreamFactory createWithContentType:mimeType dataSource:dataSource];
 
     TSOutgoingMessage *message =

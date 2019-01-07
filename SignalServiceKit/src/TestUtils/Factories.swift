@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -391,6 +391,7 @@ class AttachmentStreamFactory: NSObject, Factory {
         let factory = AttachmentStreamFactory()
         factory.contentTypeBuilder = { return contentType }
         factory.byteCountBuilder = { return UInt32(dataSource.dataLength()) }
+        factory.sourceFilenameBuilder = { return dataSource.sourceFilename ?? "fake-filename.dat" }
 
         let attachmentStream = factory.build(transaction: transaction)
         dataSource.write(toPath: attachmentStream.originalFilePath!)
