@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsViewHelper.h"
@@ -206,7 +206,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
 {
-    return [self.conversationSearcher filterSignalAccounts:self.signalAccounts withSearchText:searchText];
+    // Check for matches against "Note to Self".
+    NSMutableArray<SignalAccount *> *signalAccountsToSearch = [self.signalAccounts mutableCopy];
+    SignalAccount *selfAccount = [[SignalAccount alloc] initWithRecipientId:self.localNumber];
+    [signalAccountsToSearch addObject:selfAccount];
+    return [self.conversationSearcher filterSignalAccounts:signalAccountsToSearch
+                                            withSearchText:searchText];
 }
 
 - (BOOL)doesContact:(Contact *)contact matchSearchTerm:(NSString *)searchTerm

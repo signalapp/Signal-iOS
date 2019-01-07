@@ -169,7 +169,16 @@ public class FullTextSearchFinder: NSObject {
 
     private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread, transaction: YapDatabaseReadTransaction) in
         let recipientId =  contactThread.contactIdentifier()
-        return recipientIndexer.index(recipientId, transaction: transaction)
+        var result = recipientIndexer.index(recipientId, transaction: transaction)
+
+        if let localNumber = tsAccountManager.storedOrCachedLocalNumber(transaction) {
+            if localNumber == recipientId {
+                let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
+                result += " \(noteToSelfLabel)"
+            }
+        }
+
+        return result
     }
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String, transaction: YapDatabaseReadTransaction) in
@@ -190,16 +199,7 @@ public class FullTextSearchFinder: NSObject {
             return String(String.UnicodeScalarView(digitScalars))
         }(recipientId)
 
-        var result = "\(recipientId) \(nationalNumber) \(displayName)"
-
-        if let localNumber = tsAccountManager.storedOrCachedLocalNumber(transaction) {
-            if localNumber == recipientId {
-                let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
-                result += " \(noteToSelfLabel)"
-            }
-        }
-
-        return result
+        return "\(recipientId) \(nationalNumber) \(displayName)"
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in

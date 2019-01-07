@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -101,6 +101,14 @@ public class SearchResultSet {
 
 @objc
 public class ConversationSearcher: NSObject {
+
+    // MARK: - Dependencies
+
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
+    // MARK: - 
 
     private let finder: FullTextSearchFinder
 
@@ -222,12 +230,25 @@ public class ConversationSearcher: NSObject {
 
     private lazy var contactThreadSearcher: Searcher<TSContactThread> = Searcher { (contactThread: TSContactThread) in
         let recipientId = contactThread.contactIdentifier()
-        return self.indexingString(recipientId: recipientId)
+        return self.conversationIndexingString(recipientId: recipientId)
     }
 
     private lazy var signalAccountSearcher: Searcher<SignalAccount> = Searcher { (signalAccount: SignalAccount) in
         let recipientId = signalAccount.recipientId
-        return self.indexingString(recipientId: recipientId)
+        return self.conversationIndexingString(recipientId: recipientId)
+    }
+
+    private func conversationIndexingString(recipientId: String) -> String {
+        var result = self.indexingString(recipientId: recipientId)
+
+        if let localNumber = tsAccountManager.localNumber() {
+            if localNumber == recipientId {
+                let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
+                result += " \(noteToSelfLabel)"
+            }
+        }
+
+        return result
     }
 
     private var contactsManager: OWSContactsManager {
