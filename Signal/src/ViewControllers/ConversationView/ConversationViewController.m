@@ -203,6 +203,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) CGFloat scrollDistanceToBottomSnapshot;
 @property (nonatomic, nullable) NSNumber *lastKnownDistanceFromBottom;
 @property (nonatomic) ScrollBias scrollBias;
+@property (nonatomic, nullable) NSTimer *autoLoadMoreTimer;
 
 @end
 
@@ -475,6 +476,7 @@ typedef enum : NSUInteger {
 - (void)dealloc
 {
     [self.reloadTimer invalidate];
+    [self.autoLoadMoreTimer invalidate];
 }
 
 - (void)reloadTimerDidFire
@@ -3774,10 +3776,17 @@ typedef enum : NSUInteger {
 
     [self updateLastVisibleSortId];
 
-    __weak ConversationViewController *weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf autoLoadMoreIfNecessary];
-    });
+    [self.autoLoadMoreTimer invalidate];
+    self.autoLoadMoreTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
+                                                                  target:self
+                                                                selector:@selector(autoLoadMoreTimerDidFire)
+                                                                userInfo:nil
+                                                                 repeats:NO];
+}
+
+- (void)autoLoadMoreTimerDidFire
+{
+    [self autoLoadMoreIfNecessary];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
