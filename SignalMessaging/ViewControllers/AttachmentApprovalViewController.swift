@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -68,7 +68,8 @@ class SignalAttachmentItem: Hashable {
 
         // Try and make a ImageEditorModel.
         // This will only apply for valid images.
-        if let dataUrl: URL = attachment.dataUrl,
+        if ImageEditorModel.isFeatureEnabled,
+            let dataUrl: URL = attachment.dataUrl,
             dataUrl.isFileURL {
             let path = dataUrl.path
             do {
