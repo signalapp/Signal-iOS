@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RemoteVideoView () <RTCEAGLVideoViewDelegate>
+@interface RemoteVideoView () <RTCVideoViewDelegate>
 
 @property (nonatomic, readonly) __kindof UIView<RTCVideoRenderer> *videoRenderer;
 
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     _remoteVideoConstraints = @[];
 
 // Currently RTC only supports metal on 64bit machines
-#if defined(RTC_SUPPORTS_METAL)
+#if defined(__arm64__)
     // On 64-bit, iOS9+: uses the MetalKit backed view for improved battery/rendering performance.
     if (_videoRenderer == nil) {
 
@@ -59,9 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     }
-#elif defined(__arm64__)
-    // Canary incase the upstream RTC_SUPPORTS_METAL macro changes semantics
-    OWSFailDebug(@"should only use legacy video view on 32bit systems");
 #endif
 
     // On 32-bit iOS9+ systems, use the legacy EAGL backed view.
@@ -89,11 +86,18 @@ NS_ASSUME_NONNULL_BEGIN
     [self.videoRenderer setSize:size];
 }
 
-#pragma mark - RTCEAGLVideoViewDelegate
+#pragma mark - RTCVideoViewDelegate
 
-- (void)videoView:(RTCEAGLVideoView *)videoView didChangeVideoSize:(CGSize)remoteVideoSize
+- (void)videoView:(id<RTCVideoRenderer>)videoRenderer didChangeVideoSize:(CGSize)remoteVideoSize
 {
     OWSAssertIsOnMainThread();
+
+    if (![videoRenderer isKindOfClass:[RTCEAGLVideoView class]]) {
+        OWSFailDebug(@"Unexpected videoRenderer: %@", videoRenderer);
+        return;
+    }
+    RTCEAGLVideoView *videoView = (RTCEAGLVideoView *)videoRenderer;
+
     if (remoteVideoSize.height <= 0) {
         OWSFailDebug(@"Illegal video height: %f", remoteVideoSize.height);
         return;
@@ -109,11 +113,6 @@ NS_ASSUME_NONNULL_BEGIN
     UIView *containingView = self.superview;
     if (containingView == nil) {
         OWSLogDebug(@"Cannot layout video view without superview");
-        return;
-    }
-
-    if (![self.videoRenderer isKindOfClass:[RTCEAGLVideoView class]]) {
-        OWSFailDebug(@"Unexpected video renderer: %@", self.videoRenderer);
         return;
     }
 
