@@ -33,7 +33,7 @@ pipeline {
             script {
                 // CHANGE_ID is set only for pull requests, so it is safe to access the pullRequest global variable
                 if (env.CHANGE_ID) {
-                    def comment = pullRequest.comment("👍 Build PASSED commit: ${pullRequest.head}")
+                    def comment = pullRequest.comment("👍 Build PASSED commit: ${pullRequest.head}\nbuild: ${currentBuild.absoluteUrl}")
                 }
             }
         }
@@ -42,7 +42,7 @@ pipeline {
             script {
                 // CHANGE_ID is set only for pull requests, so it is safe to access the pullRequest global variable
                 if (env.CHANGE_ID) {
-                    def comment = pullRequest.comment("💥 Build FAILED commit: ${pullRequest.head}")
+                    def comment = pullRequest.comment("💥 Build FAILED commit: ${pullRequest.head}\nbuild: ${currentBuild.absoluteUrl}")
                 }
             }
         }
