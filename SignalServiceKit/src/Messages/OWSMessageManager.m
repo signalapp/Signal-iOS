@@ -1153,16 +1153,18 @@ NS_ASSUME_NONNULL_BEGIN
     [message updateWithSendingToSingleGroupRecipient:envelope.source transaction:transaction];
 
     if (gThread.groupModel.groupImage) {
-        NSData *data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
-        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-        [self.messageSenderJobQueue addMediaMessage:message
-                                         dataSource:dataSource
-                                        contentType:OWSMimeTypeImagePng
-                                     sourceFilename:nil
-                                            caption:nil
-                                     albumMessageId:nil
-                              isTemporaryAttachment:YES];
-
+        NSData *_Nullable data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
+        OWSAssertDebug(data);
+        if (data) {
+            DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+            [self.messageSenderJobQueue addMediaMessage:message
+                                             dataSource:dataSource
+                                            contentType:OWSMimeTypeImagePng
+                                         sourceFilename:nil
+                                                caption:nil
+                                         albumMessageId:nil
+                                  isTemporaryAttachment:YES];
+        }
     } else {
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }
