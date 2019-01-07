@@ -101,6 +101,11 @@ typedef enum : NSUInteger {
     kMediaTypeVideo,
 } kMediaTypes;
 
+typedef enum : NSUInteger {
+    kScrollBiasBottom = 0,
+    kScrollBiasTop,
+} ScrollBias;
+
 #pragma mark -
 
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
@@ -197,6 +202,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) CGFloat scrollDistanceToBottomSnapshot;
 @property (nonatomic, nullable) NSNumber *lastKnownDistanceFromBottom;
+@property (nonatomic) ScrollBias scrollBias;
 
 @end
 
@@ -239,6 +245,8 @@ typedef enum : NSUInteger {
 
     NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ voice note", self.logTag];
     _recordVoiceNoteAudioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:OWSAudioBehavior_PlayAndRecord];
+
+    self.scrollBias = kScrollBiasBottom;
 }
 
 #pragma mark - Dependencies
@@ -800,11 +808,17 @@ typedef enum : NSUInteger {
 
 - (void)resetContentAndLayout
 {
+    self.scrollBias = kScrollBiasBottom;
     // Avoid layout corrupt issues and out-of-date message subtitles.
     self.lastReloadDate = [NSDate new];
     [self.conversationViewModel viewDidResetContentAndLayout];
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
+
+    if (self.viewHasEverAppeared) {
+        // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
+        [self updateLastKnownDistanceFromBottom];
+    }
 }
 
 - (void)setUserHasScrolled:(BOOL)userHasScrolled
@@ -3743,14 +3757,20 @@ typedef enum : NSUInteger {
 
 #pragma mark - UIScrollViewDelegate
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+- (void)updateLastKnownDistanceFromBottom
 {
-    // Constantly update the lastKnownDistanceFromBottom,
-    // unless we're presenting the menu actions which
+    // Never update the lastKnownDistanceFromBottom,
+    // if we're presenting the menu actions which
     // temporarily meddles with the content insets.
     if (!OWSWindowManager.sharedManager.isPresentingMenuActions) {
         self.lastKnownDistanceFromBottom = @(self.safeDistanceFromBottom);
     }
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    // Constantly try to update the lastKnownDistanceFromBottom.
+    [self updateLastKnownDistanceFromBottom];
 
     [self updateLastVisibleSortId];
 
@@ -4253,11 +4273,18 @@ typedef enum : NSUInteger {
 - (CGPoint)collectionView:(UICollectionView *)collectionView
     targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset
 {
-    if (self.lastKnownDistanceFromBottom) {
+    if (self.scrollBias == kScrollBiasBottom && self.lastKnownDistanceFromBottom) {
         // Adjust the content offset to reflect the "last known" distance
         // from the bottom of the content.
         CGFloat contentOffsetYBottom = self.maxContentOffsetY;
-        CGFloat contentOffsetY = contentOffsetYBottom - self.lastKnownDistanceFromBottom.floatValue;
+        CGFloat contentOffsetY = contentOffsetYBottom - MAX(0, self.lastKnownDistanceFromBottom.floatValue);
+        CGFloat minContentOffsetY;
+        if (@available(iOS 11, *)) {
+            minContentOffsetY = -self.collectionView.safeAreaInsets.top;
+        } else {
+            minContentOffsetY = 0.f;
+        }
+        contentOffsetY = MAX(minContentOffsetY, contentOffsetY);
         proposedContentOffset.y = contentOffsetY;
     }
 
@@ -4290,8 +4317,8 @@ typedef enum : NSUInteger {
     // To determine that, we find the appropriate "content offset y" if
     // the scroll view were scrolled down as far as possible.  IFF the
     // actual "content offset y" is "near" that value, we return YES.
-    CGFloat contentOffsetYBottom = self.maxContentOffsetY;
-    CGFloat distanceFromBottom = contentOffsetYBottom - self.collectionView.contentOffset.y;
+    CGFloat maxContentOffsetY = self.maxContentOffsetY;
+    CGFloat distanceFromBottom = maxContentOffsetY - self.collectionView.contentOffset.y;
     return distanceFromBottom;
 }
 
@@ -4299,11 +4326,16 @@ typedef enum : NSUInteger {
 {
     CGFloat contentHeight = self.safeContentHeight;
 
+    UIEdgeInsets adjustedContentInset;
+    if (@available(iOS 11, *)) {
+        adjustedContentInset = self.collectionView.adjustedContentInset;
+    } else {
+        adjustedContentInset = self.collectionView.contentInset;
+    }
     // Note the usage of MAX() to handle the case where there isn't enough
     // content to fill the collection view at its current size.
-    CGFloat contentOffsetYBottom
-        = MAX(0.f, contentHeight + self.collectionView.contentInset.bottom - self.collectionView.bounds.size.height);
-    return contentOffsetYBottom;
+    CGFloat maxContentOffsetY = contentHeight + adjustedContentInset.bottom - self.collectionView.bounds.size.height;
+    return maxContentOffsetY;
 }
 
 #pragma mark - ContactsPickerDelegate
@@ -4517,6 +4549,8 @@ typedef enum : NSUInteger {
     // if the user is inserting new interactions.
     __block BOOL scrollToBottom = NO;
 
+    self.scrollBias = ([self isScrolledToBottom] ? kScrollBiasBottom : kScrollBiasTop);
+
     void (^batchUpdates)(void) = ^{
         OWSAssertIsOnMainThread();
 
@@ -4575,6 +4609,9 @@ typedef enum : NSUInteger {
         if (scrollToBottom) {
             [self scrollToBottomAnimated:NO];
         }
+
+        // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
+        [self updateLastKnownDistanceFromBottom];
     };
 
     @try {
@@ -4655,6 +4692,8 @@ typedef enum : NSUInteger {
     // We want to restore the current scroll state after we update the range, update
     // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
     self.scrollDistanceToBottomSnapshot = self.safeContentHeight - self.collectionView.contentOffset.y;
+
+    self.scrollBias = kScrollBiasBottom;
 }
 
 - (void)conversationViewModelDidLoadMoreItems
