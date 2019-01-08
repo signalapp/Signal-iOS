@@ -577,7 +577,10 @@ typedef enum : NSUInteger {
         self.collectionView.prefetchingEnabled = NO;
     }
     [self.view addSubview:self.collectionView];
-    [self.collectionView autoPinEdgesToSuperviewEdges];
+    [self.collectionView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.collectionView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self.collectionView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [self.collectionView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
     [self.collectionView applyScrollViewInsetsFix];
 
@@ -975,7 +978,8 @@ typedef enum : NSUInteger {
         = (labelDesiredWidth + kBannerHPadding + kBannerHSpacing + closeIcon.size.width + kBannerCloseButtonPadding);
     const CGFloat kMinBannerHMargin = 20.f;
     if (bannerDesiredWidth + kMinBannerHMargin * 2.f >= self.view.width) {
-        [bannerView autoPinWidthToSuperviewWithMargin:kMinBannerHMargin];
+        [bannerView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:kMinBannerHMargin];
+        [bannerView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:kMinBannerHMargin];
     }
 
     [self.view layoutSubviews];
@@ -2402,7 +2406,7 @@ typedef enum : NSUInteger {
     [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
 
     self.scrollDownButtonButtomConstraint = [self.scrollDownButton autoPinEdgeToSuperviewMargin:ALEdgeBottom];
-    [self.scrollDownButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [self.scrollDownButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
 #ifdef DEBUG
     self.scrollUpButton = [[ConversationScrollButton alloc] initWithIconText:@"\uf102"];
@@ -2413,7 +2417,7 @@ typedef enum : NSUInteger {
     [self.scrollUpButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
     [self.scrollUpButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
     [self.scrollUpButton autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [self.scrollUpButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [self.scrollUpButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 #endif
 }
 
@@ -4776,6 +4780,7 @@ typedef enum : NSUInteger {
     [super traitCollectionDidChange:previousTraitCollection];
 
     [self updateNavigationBarSubtitleLabel];
+    [self ensureBannerState];
 }
 
 @end
