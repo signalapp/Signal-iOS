@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSetup.h"
@@ -92,11 +92,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
-        LockInteractionController *lockInteractionController = [[LockInteractionController alloc] initDefault];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
         
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
-                                               lockInteractionController:lockInteractionController
                                                              preferences:preferences
                                               proximityMonitoringManager:proximityMonitoringManager
                                                                   sounds:sounds

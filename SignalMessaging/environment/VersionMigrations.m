@@ -1,10 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "VersionMigrations.h"
 #import "Environment.h"
-#import "LockInteractionController.h"
 #import "OWSDatabaseMigrationRunner.h"
 #import "SignalKeyingStorage.h"
 #import <SignalServiceKit/AppContext.h>
@@ -86,7 +85,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [self.tsAccountManager isRegistered]) {
         [self clearVideoCache];
-        [self blockingAttributesUpdate];
     }
 
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [self.tsAccountManager isRegistered]) {
@@ -133,49 +131,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogError(
             @"An error occured while removing the videos cache folder from old location: %@", error.debugDescription);
     }
-}
-
-#pragma mark - Update Account Attributes
-
-+ (void)blockingAttributesUpdate
-{
-    LIControllerBlockingOperation blockingOperation = ^BOOL(void) {
-        [[NSUserDefaults appUserDefaults] setObject:@YES forKey:NEEDS_TO_REGISTER_ATTRIBUTES];
-
-        __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-
-        __block BOOL success;
-
-        TSRequest *request = [OWSRequestFactory updateAttributesRequest];
-        [[TSNetworkManager sharedManager] makeRequest:request
-            success:^(NSURLSessionDataTask *task, id responseObject) {
-                success = YES;
-                dispatch_semaphore_signal(sema);
-            }
-            failure:^(NSURLSessionDataTask *task, NSError *error) {
-                if (!IsNSErrorNetworkFailure(error)) {
-                    OWSProdError([OWSAnalyticsEvents errorUpdateAttributesRequestFailed]);
-                }
-                success = NO;
-                OWSLogError(@"Updating attributess failed with error: %@", error.description);
-                dispatch_semaphore_signal(sema);
-            }];
-
-
-        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-
-        return success;
-    };
-
-    LIControllerRetryBlock retryBlock = [LockInteractionController defaultNetworkRetry];
-
-    [LockInteractionController performBlock:blockingOperation
-                            completionBlock:^{
-                                [[NSUserDefaults appUserDefaults] removeObjectForKey:NEEDS_TO_REGISTER_ATTRIBUTES];
-                                OWSLogWarn(@"Successfully updated attributes.");
-                            }
-                                 retryBlock:retryBlock
-                                usesNetwork:YES];
 }
 
 #pragma mark Upgrading to 2.3.0
