@@ -563,6 +563,9 @@ typedef enum : NSUInteger {
     self.layout.delegate = self;
     // We use the root view bounds as the initial frame for the collection
     // view so that its contents can be laid out immediately.
+    //
+    // TODO: To avoid relayout, it'd be better to take into account safeAreaInsets,
+    //       but they're not yet set when this method is called.
     _collectionView =
         [[ConversationCollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:self.layout];
     self.collectionView.layoutDelegate = self;
@@ -1621,11 +1624,8 @@ typedef enum : NSUInteger {
 {
     OWSLogInfo(@"didChangePreferredContentSize");
 
-    // Evacuate cached cell sizes.
-    for (id<ConversationViewItem> viewItem in self.viewItems) {
-        [viewItem clearCachedLayoutState];
-    }
-    [self resetContentAndLayout];
+    [self resetForSizeOrOrientationChange];
+
     [self.inputToolbar updateFontSizes];
 }
 
@@ -4218,18 +4218,18 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationCollectionViewDelegate
 
-- (void)collectionViewWillChangeLayout
+- (void)collectionViewWillChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
 {
     OWSAssertIsOnMainThread();
 }
 
-- (void)collectionViewDidChangeLayout
+- (void)collectionViewDidChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
 {
     OWSAssertIsOnMainThread();
 
     [self updateLastVisibleSortId];
-    self.conversationStyle.viewWidth = self.collectionView.width;
-    [self.collectionView.collectionViewLayout invalidateLayout];
+
+    [self resetForSizeOrOrientationChange];
 }
 
 #pragma mark - View Items
@@ -4764,13 +4764,14 @@ typedef enum : NSUInteger {
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-    self.conversationStyle.viewWidth = size.width;
-
-    for (id<ConversationViewItem> viewItem in self.viewItems) {
-        [viewItem clearCachedLayoutState];
-    }
-
-    [self resetContentAndLayout];
+    __weak ConversationViewController *weakSelf = self;
+    [coordinator
+        animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            // Do nothing.
+        }
+        completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            [weakSelf resetForSizeOrOrientationChange];
+        }];
 
     // TODO: Ensure scroll state continuity?
 }
@@ -4781,6 +4782,23 @@ typedef enum : NSUInteger {
 
     [self updateNavigationBarSubtitleLabel];
     [self ensureBannerState];
+}
+
+- (void)resetForSizeOrOrientationChange
+{
+    self.scrollContinuity = kScrollContinuityBottom;
+
+    self.conversationStyle.viewWidth = self.collectionView.width;
+    // Evacuate cached cell sizes.
+    for (id<ConversationViewItem> viewItem in self.viewItems) {
+        [viewItem clearCachedLayoutState];
+    }
+    [self.collectionView.collectionViewLayout invalidateLayout];
+    [self.collectionView reloadData];
+    if (self.viewHasEverAppeared) {
+        // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
+        [self updateLastKnownDistanceFromBottom];
+    }
 }
 
 @end
