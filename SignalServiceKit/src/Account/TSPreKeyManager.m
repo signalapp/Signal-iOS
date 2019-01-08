@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSPreKeyManager.h"
@@ -12,6 +12,8 @@
 #import "TSStorageHeaders.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 // Time before deletion of signed prekeys (measured in seconds)
 #define kSignedPreKeysDeletionTime (7 * kDayInterval)
@@ -107,12 +109,10 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)checkPreKeysIfNecessary
 {
-    if (!CurrentAppContext().isMainApp) {
+    if (!CurrentAppContext().isMainAppAndActive) {
         return;
     }
-    OWSAssertDebug(CurrentAppContext().isMainAppAndActive);
-
-    if (!self.tsAccountManager.isRegistered) {
+    if (!self.tsAccountManager.isRegisteredAndReady) {
         return;
     }
 
@@ -156,6 +156,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)createPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler
 {
+    OWSAssertDebug(!self.tsAccountManager.isRegisteredAndReady);
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         SSKCreatePreKeysOperation *operation = [SSKCreatePreKeysOperation new];
         [self.operationQueue addOperations:@[ operation ] waitUntilFinished:YES];
@@ -175,6 +177,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)rotateSignedPreKeyWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler
 {
+    OWSAssertDebug(!self.tsAccountManager.isRegisteredAndReady);
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         SSKRotateSignedPreKeyOperation *operation = [SSKRotateSignedPreKeyOperation new];
         [self.operationQueue addOperations:@[ operation ] waitUntilFinished:YES];
@@ -195,6 +199,9 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 + (void)checkPreKeys
 {
     if (!CurrentAppContext().isMainApp) {
+        return;
+    }
+    if (!self.tsAccountManager.isRegisteredAndReady) {
         return;
     }
 
@@ -292,3 +299,5 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

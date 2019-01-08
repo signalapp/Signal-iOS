@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -154,6 +154,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     func registrationStateDidChange() {
         AssertIsOnMainThread()
+
+        guard tsAccountManager.isRegisteredAndReady() else {
+            return
+        }
 
         // Any error is silently ignored
         ensureSenderCertificate(certificateExpirationPolicy: .strict).retainUntilComplete()

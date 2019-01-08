@@ -1252,11 +1252,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     void (^handle404)(void) = ^{
         OWSLogWarn(@"Unregistered recipient: %@", recipient.uniqueId);
 
-        TSThread *_Nullable thread = messageSend.thread;
-        OWSAssertDebug(thread);
-
         dispatch_async([OWSDispatch sendingQueue], ^{
-            [self unregisteredRecipient:recipient message:message thread:thread];
+            if (![messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
+                TSThread *_Nullable thread = messageSend.thread;
+                OWSAssertDebug(thread);
+                [self unregisteredRecipient:recipient message:message thread:thread];
+            }
 
             NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
             // No need to retry if the recipient is not registered.
