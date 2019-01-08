@@ -1457,6 +1457,12 @@ typedef enum : NSUInteger {
 
 - (void)updateNavigationBarSubtitleLabel
 {
+    BOOL hasCompactHeader = self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+    if (hasCompactHeader) {
+        self.headerView.attributedSubtitle = nil;
+        return;
+    }
+
     NSMutableAttributedString *subtitleText = [NSMutableAttributedString new];
 
     UIColor *subtitleColor = [Theme.navbarTitleColor colorWithAlphaComponent:(CGFloat)0.9];
@@ -4745,6 +4751,31 @@ typedef enum : NSUInteger {
 
     // Scroll to bottom to get view back to a known good state.
     [self scrollToBottomAnimated:NO];
+}
+
+#pragma mark - Orientation
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    self.conversationStyle.viewWidth = size.width;
+
+    for (id<ConversationViewItem> viewItem in self.viewItems) {
+        [viewItem clearCachedLayoutState];
+    }
+
+    [self resetContentAndLayout];
+
+    // TODO: Ensure scroll state continuity?
+}
+
+- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection
+{
+    [super traitCollectionDidChange:previousTraitCollection];
+
+    [self updateNavigationBarSubtitleLabel];
 }
 
 @end

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS2FARegistrationViewController.h"
@@ -147,6 +147,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)verificationWasCompleted
 {
     [RegistrationController verificationWasCompletedFromView:self];
+}
+
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 @end

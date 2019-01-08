@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSTableViewController.h"
@@ -492,7 +492,8 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         // won't adjust our content insets.
         [self.tableView autoPinToTopLayoutGuideOfViewController:self withInset:0];
         [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
-        [self.tableView autoPinWidthToSuperview];
+        [self.tableView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+        [self.tableView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
         // We don't need a top or bottom insets, since we pin to the top and bottom layout guides.
         self.automaticallyAdjustsScrollViewInsets = NO;

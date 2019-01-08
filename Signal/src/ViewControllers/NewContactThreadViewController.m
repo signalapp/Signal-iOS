@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "NewContactThreadViewController.h"
@@ -112,7 +112,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self addChildViewController:self.tableViewController];
     [self.view insertSubview:self.tableViewController.view atIndex:0];
 
-    [_tableViewController.view autoPinWidthToSuperview];
+    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeTop];
 
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
