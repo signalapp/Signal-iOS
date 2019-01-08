@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,10 +13,18 @@ import SignalServiceKit
 @objc
 public class AccountManager: NSObject {
 
+    // MARK: - Dependencies
+
     var pushManager: PushManager {
         // dependency injection hack since PushManager has *alot* of dependencies, and would induce a cycle.
         return PushManager.shared()
     }
+
+    var profileManager: OWSProfileManager {
+        return OWSProfileManager.shared()
+    }
+
+    // MARK: -
 
     @objc
     public override init() {
@@ -58,22 +66,20 @@ public class AccountManager: NSObject {
         Logger.debug("registering with signal server")
         let registrationPromise: Promise<Void> = firstly {
             return self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
-        }.then {
-            return self.syncPushTokens()
-        }.recover { (error) -> Promise<Void> in
-            switch error {
-            case PushRegistrationError.pushNotSupported(let description):
-                // This can happen with:
-                // - simulators, none of which support receiving push notifications
-                // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
-                Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
-                return self.enableManualMessageFetching()
-            default:
-                throw error
+        }.then { _ -> Promise<Void> in
+            return self.syncPushTokens().recover { (error) -> Promise<Void> in
+                switch error {
+                case PushRegistrationError.pushNotSupported(let description):
+                    // This can happen with:
+                    // - simulators, none of which support receiving push notifications
+                    // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
+                    Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
+                    return self.enableManualMessageFetching()
+                default:
+                    throw error
+                }
             }
-        }.then { (_) in
-            self.tsAccountManager.performUpdateAccountAttributes()
-        }.done { (_) in
+        }.done { (_) -> Void in
             self.completeRegistration()
         }
 
@@ -86,9 +92,9 @@ public class AccountManager: NSObject {
                                        pin: String?) -> Promise<Void> {
         return Promise { resolver in
             tsAccountManager.verifyAccount(withCode: verificationCode,
-                                                        pin: pin,
-                                                        success: resolver.fulfill,
-                                                        failure: resolver.reject)
+                                           pin: pin,
+                                           success: resolver.fulfill,
+                                           failure: resolver.reject)
         }
     }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSWebSocket.h"
@@ -639,7 +639,11 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
             if (responseStatus == 403) {
                 // This should be redundant with our check for the socket
                 // failing due to 403, but let's be thorough.
-                [self.tsAccountManager setIsDeregistered:YES];
+                if (self.tsAccountManager.isRegisteredAndReady) {
+                    [self.tsAccountManager setIsDeregistered:YES];
+                } else {
+                    OWSFailDebug(@"Ignoring auth failure; not registered and ready.");
+                }
             }
 
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageResponseFailed,
@@ -705,7 +709,11 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     if ([error.domain isEqualToString:SRWebSocketErrorDomain] && error.code == 2132) {
         NSNumber *_Nullable statusCode = error.userInfo[SRHTTPResponseErrorKey];
         if (statusCode.unsignedIntegerValue == 403) {
-            [self.tsAccountManager setIsDeregistered:YES];
+            if (self.tsAccountManager.isRegisteredAndReady) {
+                [self.tsAccountManager setIsDeregistered:YES];
+            } else {
+                OWSFailDebug(@"Ignoring auth failure; not registered and ready.");
+            }
         }
     }
 
@@ -932,7 +940,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return NO;
     }
 
-    if (![self.tsAccountManager isRegistered]) {
+    if (![self.tsAccountManager isRegisteredAndReady]) {
         return NO;
     }
 
