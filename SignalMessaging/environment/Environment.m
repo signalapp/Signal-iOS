@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "Environment.h"
@@ -13,7 +13,6 @@ static Environment *sharedEnvironment = nil;
 
 @property (nonatomic) OWSAudioSession *audioSession;
 @property (nonatomic) OWSContactsManager *contactsManager;
-@property (nonatomic) LockInteractionController *lockInteractionController;
 @property (nonatomic) OWSPreferences *preferences;
 @property (nonatomic) id<OWSProximityMonitoringManager> proximityMonitoringManager;
 @property (nonatomic) OWSSounds *sounds;
@@ -50,7 +49,6 @@ static Environment *sharedEnvironment = nil;
 }
 
 - (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession
-           lockInteractionController:(LockInteractionController *)lockInteractionController
                          preferences:(OWSPreferences *)preferences
           proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
                               sounds:(OWSSounds *)sounds
@@ -62,14 +60,12 @@ static Environment *sharedEnvironment = nil;
     }
 
     OWSAssertDebug(audioSession);
-    OWSAssertDebug(lockInteractionController);
     OWSAssertDebug(preferences);
     OWSAssertDebug(proximityMonitoringManager);
     OWSAssertDebug(sounds);
     OWSAssertDebug(windowManager);
 
     _audioSession = audioSession;
-    _lockInteractionController = lockInteractionController;
     _preferences = preferences;
     _proximityMonitoringManager = proximityMonitoringManager;
     _sounds = sounds;

@@ -186,12 +186,10 @@
 		34AC09EE211B39B100997B47 /* EditContactShareNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D0211B39B000997B47 /* EditContactShareNameViewController.swift */; };
 		34AC09EF211B39B100997B47 /* ViewControllerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D1211B39B000997B47 /* ViewControllerUtils.m */; };
 		34AC09F0211B39B100997B47 /* AttachmentApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D2211B39B000997B47 /* AttachmentApprovalViewController.swift */; };
-		34AC09F1211B39B100997B47 /* LockInteractionController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09D3211B39B000997B47 /* LockInteractionController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34AC09F2211B39B100997B47 /* OWSViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09D4211B39B000997B47 /* OWSViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34AC09F3211B39B100997B47 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D5211B39B100997B47 /* NewNonContactConversationViewController.m */; };
 		34AC09F4211B39B100997B47 /* SelectThreadViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09D6211B39B100997B47 /* SelectThreadViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34AC09F5211B39B100997B47 /* SharingThreadPickerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09D7211B39B100997B47 /* SharingThreadPickerViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		34AC09F6211B39B100997B47 /* LockInteractionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D8211B39B100997B47 /* LockInteractionController.m */; };
 		34AC09F7211B39B100997B47 /* MediaMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D9211B39B100997B47 /* MediaMessageView.swift */; };
 		34AC09F8211B39B100997B47 /* CountryCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09DA211B39B100997B47 /* CountryCodeViewController.m */; };
 		34AC09F9211B39B100997B47 /* CountryCodeViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09DB211B39B100997B47 /* CountryCodeViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -854,12 +852,10 @@
 		34AC09D0211B39B000997B47 /* EditContactShareNameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditContactShareNameViewController.swift; sourceTree = "<group>"; };
 		34AC09D1211B39B000997B47 /* ViewControllerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerUtils.m; sourceTree = "<group>"; };
 		34AC09D2211B39B000997B47 /* AttachmentApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalViewController.swift; sourceTree = "<group>"; };
-		34AC09D3211B39B000997B47 /* LockInteractionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LockInteractionController.h; sourceTree = "<group>"; };
 		34AC09D4211B39B000997B47 /* OWSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSViewController.h; sourceTree = "<group>"; };
 		34AC09D5211B39B100997B47 /* NewNonContactConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewNonContactConversationViewController.m; sourceTree = "<group>"; };
 		34AC09D6211B39B100997B47 /* SelectThreadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectThreadViewController.h; sourceTree = "<group>"; };
 		34AC09D7211B39B100997B47 /* SharingThreadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharingThreadPickerViewController.h; sourceTree = "<group>"; };
-		34AC09D8211B39B100997B47 /* LockInteractionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LockInteractionController.m; sourceTree = "<group>"; };
 		34AC09D9211B39B100997B47 /* MediaMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaMessageView.swift; sourceTree = "<group>"; };
 		34AC09DA211B39B100997B47 /* CountryCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryCodeViewController.m; sourceTree = "<group>"; };
 		34AC09DB211B39B100997B47 /* CountryCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryCodeViewController.h; sourceTree = "<group>"; };
@@ -2061,8 +2057,6 @@
 				34AC09DB211B39B100997B47 /* CountryCodeViewController.h */,
 				34AC09DA211B39B100997B47 /* CountryCodeViewController.m */,
 				34AC09D0211B39B000997B47 /* EditContactShareNameViewController.swift */,
-				34AC09D3211B39B000997B47 /* LockInteractionController.h */,
-				34AC09D8211B39B100997B47 /* LockInteractionController.m */,
 				34AC09D9211B39B100997B47 /* MediaMessageView.swift */,
 				34AC09C9211B39AF00997B47 /* MessageApprovalViewController.swift */,
 				34AC09CC211B39B000997B47 /* ModalActivityIndicatorViewController.swift */,
@@ -2630,7 +2624,6 @@
 				346129951FD1E30000532771 /* OWSDatabaseMigration.h in Headers */,
 				34B6D27420F664C900765BE2 /* OWSUnreadIndicator.h in Headers */,
 				34AC09E4211B39B100997B47 /* ScreenLockViewController.h in Headers */,
-				34AC09F1211B39B100997B47 /* LockInteractionController.h in Headers */,
 				346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */,
 				342950892124CB0A0000B063 /* OWSSearchBar.h in Headers */,
 				346941A1215D2EE400B5BFAD /* Theme.h in Headers */,
@@ -3345,7 +3338,6 @@
 				34AC0A1F211B39EA00997B47 /* AvatarImageView.swift in Sources */,
 				3466087220E550F400AFFE73 /* ConversationStyle.swift in Sources */,
 				3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */,
-				34AC09F6211B39B100997B47 /* LockInteractionController.m in Sources */,
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
 				452C7CA72037628B003D51A5 /* Weak.swift in Sources */,
 				34D5872F208E2C4200D2255A /* OWS109OutgoingMessageState.m in Sources */,

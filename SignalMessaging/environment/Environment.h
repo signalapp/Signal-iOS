@@ -1,10 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/SSKEnvironment.h>
 
-@class LockInteractionController;
 @class OWSAudioSession;
 @class OWSContactsManager;
 @class OWSPreferences;
@@ -26,7 +25,6 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession
-           lockInteractionController:(LockInteractionController *)lockInteractionController
                          preferences:(OWSPreferences *)preferences
           proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
                               sounds:(OWSSounds *)sounds
@@ -34,7 +32,6 @@
 
 @property (nonatomic, readonly) OWSAudioSession *audioSession;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) LockInteractionController *lockInteractionController;
 @property (nonatomic, readonly) id<OWSProximityMonitoringManager> proximityMonitoringManager;
 @property (nonatomic, readonly) OWSPreferences *preferences;
 @property (nonatomic, readonly) OWSSounds *sounds;
