@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AvatarViewHelper.h"
@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        UIImagePickerController *picker = [UIImagePickerController new];
+        UIImagePickerController *picker = [OWSImagePickerController new];
         picker.delegate = self;
         picker.allowsEditing = NO;
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        UIImagePickerController *picker = [UIImagePickerController new];
+        UIImagePickerController *picker = [OWSImagePickerController new];
         picker.delegate = self;
         picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage ];

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 //  Originally based on EPContacts
@@ -99,7 +99,10 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         self.tableView.separatorColor = Theme.cellSeparatorColor
 
         view.addSubview(tableView)
-        tableView.autoPinEdgesToSuperviewEdges()
+        tableView.autoPinEdge(toSuperviewEdge: .top)
+        tableView.autoPinEdge(toSuperviewEdge: .bottom)
+        tableView.autoPinEdge(toSuperviewSafeArea: .leading)
+        tableView.autoPinEdge(toSuperviewSafeArea: .trailing)
         tableView.delegate = self
         tableView.dataSource = self
 

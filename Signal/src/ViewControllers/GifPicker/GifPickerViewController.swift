@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -173,7 +173,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         // Inserted below searchbar because we later occlude the collectionview
         // by inserting a masking layer between the search bar and collectionview
         self.view.insertSubview(self.collectionView, belowSubview: searchBar)
-        self.collectionView.autoPinWidthToSuperview()
+        self.collectionView.autoPinEdge(toSuperviewSafeArea: .leading)
+        self.collectionView.autoPinEdge(toSuperviewSafeArea: .trailing)
         self.collectionView.autoPinEdge(.top, to: .bottom, of: searchBar)
 
         // for iPhoneX devices, extends the black background to the bottom edge of the view.

@@ -2692,8 +2692,8 @@ typedef enum : NSUInteger {
             OWSLogWarn(@"camera permission denied.");
             return;
         }
-        
-        UIImagePickerController *picker = [UIImagePickerController new];
+
+        UIImagePickerController *picker = [OWSImagePickerController new];
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
         picker.allowsEditing = NO;
@@ -2737,7 +2737,7 @@ typedef enum : NSUInteger {
 
             pickerModal = [[OWSNavigationController alloc] initWithRootViewController:picker];
         } else {
-            UIImagePickerController *picker = [UIImagePickerController new];
+            UIImagePickerController *picker = [OWSImagePickerController new];
             picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
             picker.delegate = self;
             picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
