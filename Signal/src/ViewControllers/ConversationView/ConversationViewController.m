@@ -571,7 +571,11 @@ typedef enum : NSUInteger {
     self.collectionView.showsVerticalScrollIndicator = YES;
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
-    self.collectionView.prefetchingEnabled = NO;
+    if (@available(iOS 10, *)) {
+        // To minimize time to initial apearance, we initially disable prefetching, but then
+        // re-enable it once the view has appeared.
+        self.collectionView.prefetchingEnabled = NO;
+    }
     [self.view addSubview:self.collectionView];
     [self.collectionView autoPinEdgesToSuperviewEdges];
 
@@ -1148,8 +1152,11 @@ typedef enum : NSUInteger {
     [self autoLoadMoreIfNecessary];
 
     if (!self.viewHasEverAppeared) {
-        // Re-enable prefetching.
-        self.collectionView.prefetchingEnabled = YES;
+        // To minimize time to initial apearance, we initially disable prefetching, but then
+        // re-enable it once the view has appeared.
+        if (@available(iOS 10, *)) {
+            self.collectionView.prefetchingEnabled = YES;
+        }
 
         // Now that we're using a "minimal" initial load window,
         // try to increase the load window a moment after we've
