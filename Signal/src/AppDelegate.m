@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -946,6 +946,16 @@ static NSTimeInterval launchStartedAt;
 - (UIInterfaceOrientationMask)application:(UIApplication *)application
     supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
 {
+    if (!window) {
+        // If `window` is nil, be permissive.  Otherwise orientation
+        // gets messed up during presentation of windows.
+        return UIInterfaceOrientationMaskAllButUpsideDown;
+    }
+
+    if (window == self.windowManager.menuActionsWindow) {
+        return UIInterfaceOrientationMaskAllButUpsideDown;
+    }
+
     if (self.windowManager.rootWindow != window) {
         return UIInterfaceOrientationMaskPortrait;
     }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -92,8 +92,8 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
 
     // MARK: Orientation
 
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
+    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .allButUpsideDown
     }
 
     // MARK: Present / Dismiss animations
