@@ -400,29 +400,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         })
     }
 
-    func addDeleteIcon(cellView: GalleryRailCellView) {
-        guard let attachmentItem = cellView.item as? SignalAttachmentItem else {
-            owsFailDebug("attachmentItem was unexpectedly nil")
-            return
-        }
-
-        let button = OWSButton { [weak self] in
-            guard let strongSelf = self else { return }
-            strongSelf.remove(attachmentItem: attachmentItem)
-        }
-        button.setImage(#imageLiteral(resourceName: "ic_small_x"), for: .normal)
-
-        let kInsetDistance: CGFloat = 5
-        button.imageEdgeInsets = UIEdgeInsets(top: kInsetDistance, left: kInsetDistance, bottom: kInsetDistance, right: kInsetDistance)
-
-        cellView.addSubview(button)
-
-        let kButtonWidth: CGFloat = 9 + kInsetDistance * 2
-        button.autoSetDimensions(to: CGSize(width: kButtonWidth, height: kButtonWidth))
-        button.autoPinEdge(toSuperviewMargin: .top)
-        button.autoPinEdge(toSuperviewMargin: .trailing)
-    }
-
     lazy var pagerScrollView: UIScrollView? = {
         // This is kind of a hack. Since we don't have first class access to the superview's `scrollView`
         // we traverse the view hierarchy until we find it.
@@ -566,12 +543,15 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
 
-        let cellViewDecoratorBlock = { (cellView: GalleryRailCellView) in
-            self.addDeleteIcon(cellView: cellView)
+        let cellViewBuilder: () -> ApprovalRailCellView = { [weak self] in
+            let cell = ApprovalRailCellView()
+            cell.approvalRailCellDelegate = self
+            return cell
         }
+
         galleryRailView.configureCellViews(itemProvider: attachmentItemCollection,
                                            focusedItem: currentItem,
-                                           cellViewDecoratorBlock: cellViewDecoratorBlock)
+                                           cellViewBuilder: cellViewBuilder)
 
         galleryRailView.isHidden = attachmentItemCollection.attachmentItems.count < 2
     }
@@ -1932,5 +1912,56 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
     private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
         let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
         return CGFloatClamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
+    }
+}
+
+extension AttachmentApprovalViewController: ApprovalRailCellViewDelegate {
+    func approvalRailCellView(_ approvalRailCellView: ApprovalRailCellView, didRemoveItem attachmentItem: SignalAttachmentItem) {
+        remove(attachmentItem: attachmentItem)
+    }
+}
+
+protocol ApprovalRailCellViewDelegate: class {
+    func approvalRailCellView(_ approvalRailCellView: ApprovalRailCellView, didRemoveItem attachmentItem: SignalAttachmentItem)
+}
+
+public class ApprovalRailCellView: GalleryRailCellView {
+
+    weak var approvalRailCellDelegate: ApprovalRailCellViewDelegate?
+
+    lazy var deleteButton: UIButton = {
+        let button = OWSButton { [weak self] in
+            guard let strongSelf = self else { return }
+
+            guard let attachmentItem = strongSelf.item as? SignalAttachmentItem else {
+                owsFailDebug("attachmentItem was unexpectedly nil")
+                return
+            }
+
+            strongSelf.approvalRailCellDelegate?.approvalRailCellView(strongSelf, didRemoveItem: attachmentItem)
+        }
+
+        button.setImage(#imageLiteral(resourceName: "ic_circled_x"), for: .normal)
+
+        let kInsetDistance: CGFloat = 5
+        button.imageEdgeInsets = UIEdgeInsets(top: kInsetDistance, left: kInsetDistance, bottom: kInsetDistance, right: kInsetDistance)
+
+        let kButtonWidth: CGFloat = 24 + kInsetDistance * 2
+        button.autoSetDimensions(to: CGSize(width: kButtonWidth, height: kButtonWidth))
+
+        return button
+    }()
+
+    override func setIsSelected(_ isSelected: Bool) {
+        super.setIsSelected(isSelected)
+
+        if isSelected {
+            addSubview(deleteButton)
+
+            deleteButton.autoPinEdge(toSuperviewEdge: .top, withInset: -12)
+            deleteButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: -8)
+        } else {
+            deleteButton.removeFromSuperview()
+        }
     }
 }
