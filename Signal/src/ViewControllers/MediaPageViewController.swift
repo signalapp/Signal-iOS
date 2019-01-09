@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -331,7 +331,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
 
-        galleryRailView.configureCellViews(itemProvider: currentItem.album, focusedItem: currentItem, cellViewDecoratorBlock: { _ in })
+        galleryRailView.configureCellViews(itemProvider: currentItem.album,
+                                           focusedItem: currentItem,
+                                           cellViewBuilder: { return GalleryRailCellView() })
     }
 
     // MARK: Actions

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
@@ -25,7 +25,7 @@ public class GalleryRailCellView: UIView {
         super.init(frame: frame)
 
         layoutMargins = .zero
-        self.clipsToBounds = true
+        clipsToBounds = false
         addSubview(imageView)
         imageView.autoPinEdgesToSuperviewMargins()
 
@@ -107,7 +107,9 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        clipsToBounds = false
         addSubview(scrollView)
+        scrollView.clipsToBounds = false
         scrollView.layoutMargins = .zero
         scrollView.autoPinEdgesToSuperviewMargins()
     }
@@ -118,7 +120,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
     // MARK: Public
 
-    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?, cellViewDecoratorBlock: (GalleryRailCellView) -> Void) {
+    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?, cellViewBuilder: () -> GalleryRailCellView) {
         let animationDuration: TimeInterval = 0.2
 
         guard let itemProvider = itemProvider else {
@@ -169,11 +171,12 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
             self.isHidden = false
         }
 
-        let cellViews = buildCellViews(items: itemProvider.railItems, cellViewDecoratorBlock: cellViewDecoratorBlock)
+        let cellViews = buildCellViews(items: itemProvider.railItems, cellViewBuilder: cellViewBuilder)
         self.cellViews = cellViews
         let stackView = UIStackView(arrangedSubviews: cellViews)
         stackView.axis = .horizontal
         stackView.spacing = 2
+        stackView.clipsToBounds = false
 
         scrollView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
@@ -203,11 +206,10 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         return scrollView
     }()
 
-    private func buildCellViews(items: [GalleryRailItem], cellViewDecoratorBlock: (GalleryRailCellView) -> Void) -> [GalleryRailCellView] {
+    private func buildCellViews(items: [GalleryRailItem], cellViewBuilder: () -> GalleryRailCellView) -> [GalleryRailCellView] {
         return items.map { item in
-            let cellView = GalleryRailCellView()
+            let cellView = cellViewBuilder()
             cellView.configure(item: item, delegate: self)
-            cellViewDecoratorBlock(cellView)
             return cellView
         }
     }
