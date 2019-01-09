@@ -4227,9 +4227,10 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self updateLastVisibleSortId];
 
     [self resetForSizeOrOrientationChange];
+
+    [self updateLastVisibleSortId];
 }
 
 #pragma mark - View Items
