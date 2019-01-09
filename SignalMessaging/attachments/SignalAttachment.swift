@@ -193,7 +193,7 @@ public class SignalAttachment: NSObject {
     // MARK: 
 
     @objc
-    public static let isMultiSendEnabled = _isDebugAssertConfiguration()
+    public static let isMultiSendEnabled = true
 
     @objc
     public static var maxAttachmentsAllowed: Int {
