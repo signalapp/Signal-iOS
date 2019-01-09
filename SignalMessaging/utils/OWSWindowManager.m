@@ -310,6 +310,14 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     [self ensureWindowState];
 }
 
+- (BOOL)isAppWindow:(UIWindow *)window
+{
+    OWSAssertDebug(window);
+
+    return (window == self.rootWindow || window == self.returnToCallWindow || window == self.callViewWindow
+        || window == self.menuActionsWindow || window == self.screenBlockingWindow);
+}
+
 #pragma mark - Message Actions
 
 - (BOOL)isPresentingMenuActions

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
@@ -39,8 +39,6 @@ typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
                               viewItem:(nullable id<ConversationViewItem>)viewItem;
 #pragma mark - Actions
 
-- (void)didPressShare:(id)sender;
-- (void)didPressDelete:(id)sender;
 - (void)didPressPlayBarButton:(id)sender;
 - (void)didPressPauseBarButton:(id)sender;
 - (void)playVideo;

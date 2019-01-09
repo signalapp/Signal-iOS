@@ -31,6 +31,8 @@ extern const UIWindowLevel UIWindowLevel_Background;
 
 - (void)setIsScreenBlockActive:(BOOL)isScreenBlockActive;
 
+- (BOOL)isAppWindow:(UIWindow *)window;
+
 #pragma mark - Message Actions
 
 @property (nonatomic, readonly) BOOL isPresentingMenuActions;
