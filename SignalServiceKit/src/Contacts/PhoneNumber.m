@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumber.h"
@@ -203,8 +203,10 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     static NSString *result = nil;
     static NSString *cachedClientPhoneNumber = nil;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        // clientPhoneNumber is the local user's phone number and should never change.
+
+    // clientPhoneNumber is the local user's phone number and should never change.
+    static void (^updateCachedClientPhoneNumber)(void);
+    updateCachedClientPhoneNumber = ^(void) {
         NSNumber *localCallingCode = [[PhoneNumber phoneNumberFromE164:clientPhoneNumber] getCountryCode];
         if (localCallingCode != nil) {
             NSString *localCallingCodePrefix = [NSString stringWithFormat:@"+%@", localCallingCode];
@@ -214,11 +216,30 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
                 NBMetadataHelper *helper = [[NBMetadataHelper alloc] init];
                 NBPhoneMetaData *localNumberRegionMetadata = [helper getMetadataForRegion:localCountryCode];
                 result = localNumberRegionMetadata.nationalPrefixTransformRule;
+            } else {
+                result = nil;
             }
         }
         cachedClientPhoneNumber = [clientPhoneNumber copy];
+    };
+
+#ifdef DEBUG
+    // For performance, we want to cahce this result, but it breaks tests since local number
+    // can change.
+    if (CurrentAppContext().isRunningTests) {
+        updateCachedClientPhoneNumber();
+    } else {
+        dispatch_once(&onceToken, ^{
+            updateCachedClientPhoneNumber();
+        });
+    }
+#else
+    dispatch_once(&onceToken, ^{
+        updateCachedClientPhoneNumber();
     });
     OWSAssertDebug([cachedClientPhoneNumber isEqualToString:clientPhoneNumber]);
+#endif
+
     return result;
 }
 

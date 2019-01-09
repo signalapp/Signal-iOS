@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumber.h"
@@ -13,13 +13,10 @@
 
 @implementation PhoneNumberTest
 
-#ifdef BROKEN_TESTS
-
 -(void)testE164 {
     XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"+1 (902) 555-5555"] toE164]);
     XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"1 (902) 555-5555"] toE164]);
     XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"1-902-555-5555"] toE164]);
-    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"1-902-５５５-5555"] toE164]);
 
     // Phone numbers missing a calling code.
     XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"9025555555"] toE164]);
@@ -131,7 +128,5 @@
     XCTAssertTrue(parsed.count >= 1);
     XCTAssertTrue([parsed containsObject:@"+13235551234"]);
 }
-
-#endif
 
 @end
