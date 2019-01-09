@@ -4227,8 +4227,9 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-
-    [self resetForSizeOrOrientationChange];
+    if (oldSize.width != newSize.width) {
+        [self resetForSizeOrOrientationChange];
+    }
 
     [self updateLastVisibleSortId];
 }
@@ -4771,6 +4772,8 @@ typedef enum : NSUInteger {
             // Do nothing.
         }
         completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            // When transition animation is complete, update layout to reflect
+            // new size.
             [weakSelf resetForSizeOrOrientationChange];
         }];
 
