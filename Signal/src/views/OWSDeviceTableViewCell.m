@@ -1,21 +1,56 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceTableViewCell.h"
 #import "DateUtil.h"
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/Theme.h>
+#import <SignalMessaging/UIFont+OWS.h>
+#import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDeviceTableViewCell
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
+{
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        [self configure];
+    }
+    return self;
+}
+
+- (void)configure
+{
+    self.preservesSuperviewLayoutMargins = YES;
+    self.contentView.preservesSuperviewLayoutMargins = YES;
+
+    self.nameLabel = [UILabel new];
+    self.linkedLabel = [UILabel new];
+    self.lastSeenLabel = [UILabel new];
+
+    UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.nameLabel,
+        self.linkedLabel,
+        self.lastSeenLabel,
+    ]];
+    stackView.axis = UILayoutConstraintAxisVertical;
+    stackView.alignment = UIStackViewAlignmentLeading;
+    stackView.spacing = 2;
+    [self.contentView addSubview:stackView];
+    [stackView ows_autoPinToSuperviewMargins];
+}
 
 - (void)configureWithDevice:(OWSDevice *)device
 {
     OWSAssertDebug(device);
 
     [OWSTableItem configureCell:self];
+
+    self.nameLabel.font = UIFont.ows_dynamicTypeBodyFont;
+    self.linkedLabel.font = UIFont.ows_dynamicTypeCaption1Font;
+    self.lastSeenLabel.font = UIFont.ows_dynamicTypeCaption1Font;
 
     self.nameLabel.textColor = Theme.primaryColor;
     self.linkedLabel.textColor = Theme.secondaryColor;

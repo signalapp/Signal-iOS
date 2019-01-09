@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSLinkedDevicesTableViewController.h"
@@ -49,7 +49,8 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
     self.tableView.separatorColor = Theme.cellSeparatorColor;
-
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"AddNewDevice"];
+    [self.tableView registerClass:[OWSDeviceTableViewCell class] forCellReuseIdentifier:@"ExistingDevice"];
     [self.tableView applyScrollViewInsetsFix];
 
     self.dbConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
@@ -303,20 +304,29 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
             if (!granted) {
                 return;
             }
-            [self performSegueWithIdentifier:@"LinkDeviceSegue" sender:self];
+            [self showLinkNewDeviceView];
         }];
     }
+}
+
+- (void)showLinkNewDeviceView
+{
+    OWSLinkDeviceViewController *vc = [OWSLinkDeviceViewController new];
+    vc.linkedDevicesTableViewController = self;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionAddDevice) {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AddNewDevice" forIndexPath:indexPath];
+        UITableViewCell *cell =
+            [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"AddNewDevice"];
         [OWSTableItem configureCell:cell];
         cell.textLabel.text
             = NSLocalizedString(@"LINK_NEW_DEVICE_TITLE", @"Navigation title when scanning QR code to add new device.");
         cell.detailTextLabel.text
             = NSLocalizedString(@"LINK_NEW_DEVICE_SUBTITLE", @"Subheading for 'Link New Device' navigation");
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         return cell;
     } else if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionExistingDevices) {
         OWSDeviceTableViewCell *cell =
@@ -425,14 +435,6 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                     [self presentViewController:alertController animated:YES completion:nil];
                                 });
                             }];
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(nullable id)sender
-{
-    if ([segue.destinationViewController isKindOfClass:[OWSLinkDeviceViewController class]]) {
-        OWSLinkDeviceViewController *controller = (OWSLinkDeviceViewController *)segue.destinationViewController;
-        controller.linkedDevicesTableViewController = self;
-    }
 }
 
 @end

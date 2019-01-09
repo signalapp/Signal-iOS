@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSettingsViewController.h"
@@ -360,8 +360,7 @@
 
 - (void)showLinkedDevices
 {
-    OWSLinkedDevicesTableViewController *vc =
-        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"OWSLinkedDevicesTableViewController"];
+    OWSLinkedDevicesTableViewController *vc = [OWSLinkedDevicesTableViewController new];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
