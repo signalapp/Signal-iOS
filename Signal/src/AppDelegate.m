@@ -957,6 +957,15 @@ static NSTimeInterval launchStartedAt;
         return UIInterfaceOrientationMaskAllButUpsideDown;
     }
 
+    if (![self.windowManager isAppWindow:window]) {
+        // iOS uses various windows for animations, transitions, etc.
+        // e.g. _UIInteractiveHighlightEffectWindow,
+        //      UITextEffectsWindow.
+        //
+        // We should be permissive with these windows.
+        return UIInterfaceOrientationMaskAllButUpsideDown;
+    }
+
     if (window == self.windowManager.menuActionsWindow) {
         return UIInterfaceOrientationMaskAllButUpsideDown;
     }
