@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSWindowManager.h"
@@ -65,10 +65,13 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     return CGFLOAT_MAX - 100;
 }
 
+#pragma mark -
 
 @interface MessageActionsWindow : UIWindow
 
 @end
+
+#pragma mark -
 
 @implementation MessageActionsWindow
 
@@ -82,6 +85,8 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 }
 
 @end
+
+#pragma mark -
 
 @implementation OWSWindowRootViewController
 
@@ -99,9 +104,13 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 @end
 
+#pragma mark -
+
 @interface OWSWindowRootNavigationViewController : UINavigationController
 
 @end
+
+#pragma mark -
 
 @implementation OWSWindowRootNavigationViewController : UINavigationController
 

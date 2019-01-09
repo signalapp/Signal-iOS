@@ -563,6 +563,9 @@ typedef enum : NSUInteger {
     self.layout.delegate = self;
     // We use the root view bounds as the initial frame for the collection
     // view so that its contents can be laid out immediately.
+    //
+    // TODO: To avoid relayout, it'd be better to take into account safeAreaInsets,
+    //       but they're not yet set when this method is called.
     _collectionView =
         [[ConversationCollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:self.layout];
     self.collectionView.layoutDelegate = self;
@@ -577,7 +580,10 @@ typedef enum : NSUInteger {
         self.collectionView.prefetchingEnabled = NO;
     }
     [self.view addSubview:self.collectionView];
-    [self.collectionView autoPinEdgesToSuperviewEdges];
+    [self.collectionView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.collectionView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self.collectionView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [self.collectionView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
     [self.collectionView applyScrollViewInsetsFix];
 
@@ -975,7 +981,8 @@ typedef enum : NSUInteger {
         = (labelDesiredWidth + kBannerHPadding + kBannerHSpacing + closeIcon.size.width + kBannerCloseButtonPadding);
     const CGFloat kMinBannerHMargin = 20.f;
     if (bannerDesiredWidth + kMinBannerHMargin * 2.f >= self.view.width) {
-        [bannerView autoPinWidthToSuperviewWithMargin:kMinBannerHMargin];
+        [bannerView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:kMinBannerHMargin];
+        [bannerView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:kMinBannerHMargin];
     }
 
     [self.view layoutSubviews];
@@ -1419,10 +1426,13 @@ typedef enum : NSUInteger {
         // control over the margins and spacing of its content, and the buttons end up
         // too far apart and too far from the edge of the screen. So we use a smaller
         // right inset tighten up the layout.
-        imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
-        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
-        imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
-        imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+        BOOL hasCompactHeader = self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+        if (!hasCompactHeader) {
+            imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
+            imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
+            imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
+            imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+        }
         callButton.imageEdgeInsets = imageEdgeInsets;
         callButton.accessibilityLabel = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
         [callButton addTarget:self action:@selector(startAudioCall) forControlEvents:UIControlEventTouchUpInside];
@@ -1617,11 +1627,8 @@ typedef enum : NSUInteger {
 {
     OWSLogInfo(@"didChangePreferredContentSize");
 
-    // Evacuate cached cell sizes.
-    for (id<ConversationViewItem> viewItem in self.viewItems) {
-        [viewItem clearCachedLayoutState];
-    }
-    [self resetContentAndLayout];
+    [self resetForSizeOrOrientationChange];
+
     [self.inputToolbar updateFontSizes];
 }
 
@@ -2402,7 +2409,7 @@ typedef enum : NSUInteger {
     [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
 
     self.scrollDownButtonButtomConstraint = [self.scrollDownButton autoPinEdgeToSuperviewMargin:ALEdgeBottom];
-    [self.scrollDownButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [self.scrollDownButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
 #ifdef DEBUG
     self.scrollUpButton = [[ConversationScrollButton alloc] initWithIconText:@"\uf102"];
@@ -2413,7 +2420,7 @@ typedef enum : NSUInteger {
     [self.scrollUpButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
     [self.scrollUpButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
     [self.scrollUpButton autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [self.scrollUpButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [self.scrollUpButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 #endif
 }
 
@@ -2688,8 +2695,8 @@ typedef enum : NSUInteger {
             OWSLogWarn(@"camera permission denied.");
             return;
         }
-        
-        UIImagePickerController *picker = [UIImagePickerController new];
+
+        UIImagePickerController *picker = [OWSImagePickerController new];
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
         picker.allowsEditing = NO;
@@ -2733,7 +2740,7 @@ typedef enum : NSUInteger {
 
             pickerModal = [[OWSNavigationController alloc] initWithRootViewController:picker];
         } else {
-            UIImagePickerController *picker = [UIImagePickerController new];
+            UIImagePickerController *picker = [OWSImagePickerController new];
             picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
             picker.delegate = self;
             picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
@@ -4214,18 +4221,20 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationCollectionViewDelegate
 
-- (void)collectionViewWillChangeLayout
+- (void)collectionViewWillChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
 {
     OWSAssertIsOnMainThread();
 }
 
-- (void)collectionViewDidChangeLayout
+- (void)collectionViewDidChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
 {
     OWSAssertIsOnMainThread();
 
+    if (oldSize.width != newSize.width) {
+        [self resetForSizeOrOrientationChange];
+    }
+
     [self updateLastVisibleSortId];
-    self.conversationStyle.viewWidth = self.collectionView.width;
-    [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
 #pragma mark - View Items
@@ -4760,13 +4769,16 @@ typedef enum : NSUInteger {
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-    self.conversationStyle.viewWidth = size.width;
-
-    for (id<ConversationViewItem> viewItem in self.viewItems) {
-        [viewItem clearCachedLayoutState];
-    }
-
-    [self resetContentAndLayout];
+    __weak ConversationViewController *weakSelf = self;
+    [coordinator
+        animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            // Do nothing.
+        }
+        completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            // When transition animation is complete, update layout to reflect
+            // new size.
+            [weakSelf resetForSizeOrOrientationChange];
+        }];
 
     // TODO: Ensure scroll state continuity?
 }
@@ -4776,6 +4788,25 @@ typedef enum : NSUInteger {
     [super traitCollectionDidChange:previousTraitCollection];
 
     [self updateNavigationBarSubtitleLabel];
+    [self ensureBannerState];
+    [self updateBarButtonItems];
+}
+
+- (void)resetForSizeOrOrientationChange
+{
+    self.scrollContinuity = kScrollContinuityBottom;
+
+    self.conversationStyle.viewWidth = self.collectionView.width;
+    // Evacuate cached cell sizes.
+    for (id<ConversationViewItem> viewItem in self.viewItems) {
+        [viewItem clearCachedLayoutState];
+    }
+    [self.collectionView.collectionViewLayout invalidateLayout];
+    [self.collectionView reloadData];
+    if (self.viewHasEverAppeared) {
+        // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
+        [self updateLastKnownDistanceFromBottom];
+    }
 }
 
 @end

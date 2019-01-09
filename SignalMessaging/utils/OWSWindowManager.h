@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,6 +27,7 @@ extern const UIWindowLevel UIWindowLevel_Background;
 - (void)setupWithRootWindow:(UIWindow *)rootWindow screenBlockingWindow:(UIWindow *)screenBlockingWindow;
 
 @property (nonatomic, readonly) UIWindow *rootWindow;
+@property (nonatomic, readonly) UIWindow *menuActionsWindow;
 
 - (void)setIsScreenBlockActive:(BOOL)isScreenBlockActive;
 

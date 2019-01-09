@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationCollectionView.h"
@@ -24,13 +24,15 @@ NS_ASSUME_NONNULL_BEGIN
         // hacks in the conversation view's code.
         return;
     }
-    BOOL isChanging = !CGSizeEqualToSize(frame.size, self.frame.size);
+    CGSize oldSize = self.frame.size;
+    CGSize newSize = frame.size;
+    BOOL isChanging = !CGSizeEqualToSize(oldSize, newSize);
     if (isChanging) {
-        [self.layoutDelegate collectionViewWillChangeLayout];
+        [self.layoutDelegate collectionViewWillChangeSizeFrom:oldSize to:newSize];
     }
     [super setFrame:frame];
     if (isChanging) {
-        [self.layoutDelegate collectionViewDidChangeLayout];
+        [self.layoutDelegate collectionViewDidChangeSizeFrom:oldSize to:newSize];
     }
 }
 
@@ -48,13 +50,15 @@ NS_ASSUME_NONNULL_BEGIN
         // hacks in the conversation view's code.
         return;
     }
-    BOOL isChanging = !CGSizeEqualToSize(bounds.size, self.bounds.size);
+    CGSize oldSize = self.bounds.size;
+    CGSize newSize = bounds.size;
+    BOOL isChanging = !CGSizeEqualToSize(oldSize, newSize);
     if (isChanging) {
-        [self.layoutDelegate collectionViewWillChangeLayout];
+        [self.layoutDelegate collectionViewWillChangeSizeFrom:oldSize to:newSize];
     }
     [super setBounds:bounds];
     if (isChanging) {
-        [self.layoutDelegate collectionViewDidChangeLayout];
+        [self.layoutDelegate collectionViewDidChangeSizeFrom:oldSize to:newSize];
     }
 }
 

@@ -1,13 +1,13 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol ConversationCollectionViewDelegate <NSObject>
 
-- (void)collectionViewWillChangeLayout;
-- (void)collectionViewDidChangeLayout;
+- (void)collectionViewWillChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize;
+- (void)collectionViewDidChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize;
 
 @end
 
