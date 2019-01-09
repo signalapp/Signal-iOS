@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "RegistrationViewController.h"
@@ -502,6 +502,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 {
     CountryCodeViewController *countryCodeController = [CountryCodeViewController new];
     countryCodeController.countryCodeDelegate = self;
+    countryCodeController.interfaceOrientationMask = UIInterfaceOrientationMaskPortrait;
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:countryCodeController];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -627,6 +628,13 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
     return UIStatusBarStyleLightContent;
+}
+
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 @end

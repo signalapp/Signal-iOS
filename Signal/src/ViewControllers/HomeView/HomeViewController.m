@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "HomeViewController.h"
@@ -427,7 +427,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.searchResultsController = searchResultsController;
     [self addChildViewController:searchResultsController];
     [self.view addSubview:searchResultsController.view];
-    [searchResultsController.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
+    [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [searchResultsController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [searchResultsController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
     if (@available(iOS 11, *)) {
         [searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
     } else {

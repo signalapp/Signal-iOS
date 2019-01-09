@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ProfileViewController.h"
@@ -617,6 +617,14 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         [self backOrSkipButtonPressed];
     }
     return result;
+}
+
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return (self.profileViewMode == ProfileViewMode_Registration ? UIInterfaceOrientationMaskPortrait
+                                                                 : UIInterfaceOrientationMaskAllButUpsideDown);
 }
 
 @end

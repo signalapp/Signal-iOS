@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DomainFrontingCountryViewController.h"
@@ -41,7 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     _tableViewController = [OWSTableViewController new];
     [self.view addSubview:self.tableViewController.view];
-    [_tableViewController.view autoPinWidthToSuperview];
+    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
     [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [_tableViewController.view autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 

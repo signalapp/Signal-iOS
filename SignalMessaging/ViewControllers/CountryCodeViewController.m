@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "CountryCodeViewController.h"
@@ -28,6 +28,7 @@
     [super loadView];
 
     self.shouldUseTheme = NO;
+    self.interfaceOrientationMask = UIInterfaceOrientationMaskAllButUpsideDown;
 
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
@@ -159,6 +160,13 @@
 - (void)tableViewWillBeginDragging
 {
     [self.searchBar resignFirstResponder];
+}
+
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return self.interfaceOrientationMask;
 }
 
 @end

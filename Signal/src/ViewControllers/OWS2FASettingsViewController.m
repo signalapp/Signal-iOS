@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS2FASettingsViewController.h"
@@ -148,9 +148,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self createTableView];
 
     [instructionsLabel autoPinToTopLayoutGuideOfViewController:self withInset:kVSpacing];
-    [instructionsLabel autoPinWidthToSuperviewWithMargin:self.hMargin];
+    [instructionsLabel autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:self.hMargin];
+    [instructionsLabel autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:self.hMargin];
 
-    [self.tableViewController.view autoPinWidthToSuperview];
+    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
     [self.tableViewController.view autoPinEdge:ALEdgeTop
                                         toEdge:ALEdgeBottom
                                         ofView:instructionsLabel
@@ -187,16 +189,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self createPinTextfield];
 
     [instructionsLabel autoPinTopToSuperviewMarginWithInset:kVSpacing];
-    [instructionsLabel autoPinWidthToSuperviewWithMargin:self.hMargin];
+    [instructionsLabel autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:self.hMargin];
+    [instructionsLabel autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:self.hMargin];
 
     [self.pinTextfield autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:instructionsLabel withOffset:kVSpacing];
-    [self.pinTextfield autoPinWidthToSuperviewWithMargin:self.hMargin];
+    [self.pinTextfield autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:self.hMargin];
+    [self.pinTextfield autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:self.hMargin];
 
     UIView *underscoreView = [UIView new];
     underscoreView.backgroundColor = [UIColor colorWithWhite:0.5 alpha:1.f];
     [self.view addSubview:underscoreView];
     [underscoreView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.pinTextfield withOffset:3];
-    [underscoreView autoPinWidthToSuperviewWithMargin:self.hMargin];
+    [underscoreView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:self.hMargin];
+    [underscoreView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:self.hMargin];
     [underscoreView autoSetDimension:ALDimensionHeight toSize:1.f];
 
     [self updateNavigationItems];

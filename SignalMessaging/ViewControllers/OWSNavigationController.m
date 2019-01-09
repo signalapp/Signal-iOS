@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSNavigationController.h"
@@ -199,7 +199,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskPortrait;
+    if (self.topViewController) {
+        return self.topViewController.supportedInterfaceOrientations;
+    } else {
+        return UIInterfaceOrientationMaskPortrait;
+    }
 }
 
 @end
