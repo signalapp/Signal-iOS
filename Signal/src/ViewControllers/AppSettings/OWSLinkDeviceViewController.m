@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSLinkDeviceViewController.h"
@@ -16,11 +16,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSLinkDeviceViewController ()
+@interface OWSLinkDeviceViewController () <OWSQRScannerDelegate>
 
 @property (nonatomic) YapDatabaseConnection *dbConnection;
-@property (nonatomic) IBOutlet UIView *qrScanningView;
-@property (nonatomic) IBOutlet UILabel *scanningInstructionsLabel;
+@property (nonatomic) UIView *qrScanningView;
+@property (nonatomic) UILabel *scanningInstructionsLabel;
 @property (nonatomic) OWSQRCodeScanningViewController *qrScanningController;
 @property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
 
@@ -32,16 +32,52 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
+    self.view.backgroundColor = Theme.backgroundColor;
+
     self.dbConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
 
-    // HACK to get full width preview layer
-    CGRect oldFrame = self.qrScanningView.frame;
-    self.qrScanningView.frame = CGRectMake(
-        oldFrame.origin.x, oldFrame.origin.y, self.view.frame.size.width, self.view.frame.size.height / 2.0f - 32.0f);
-    // END HACK to get full width preview layer
+    UIImage *heroImage = [UIImage imageNamed:@"ic_devices_ios"];
+    OWSAssertDebug(heroImage);
+    UIImageView *heroImageView = [[UIImageView alloc] initWithImage:heroImage];
+    [heroImageView autoSetDimensionsToSize:heroImage.size];
 
+    self.scanningInstructionsLabel = [UILabel new];
     self.scanningInstructionsLabel.text = NSLocalizedString(@"LINK_DEVICE_SCANNING_INSTRUCTIONS",
         @"QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes");
+    self.scanningInstructionsLabel.textColor = Theme.primaryColor;
+    self.scanningInstructionsLabel.font = UIFont.ows_dynamicTypeCaption1Font;
+    self.scanningInstructionsLabel.numberOfLines = 0;
+    self.scanningInstructionsLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    self.scanningInstructionsLabel.textAlignment = NSTextAlignmentCenter;
+
+    self.qrScanningController = [OWSQRCodeScanningViewController new];
+    self.qrScanningController.scanDelegate = self;
+    [self.view addSubview:self.qrScanningController.view];
+    [self.qrScanningController.view autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [self.qrScanningController.view autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [self.qrScanningController.view autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
+    [self.qrScanningController.view autoPinToAspectRatio:1.f];
+
+    UIView *bottomView = [UIView new];
+    [self.view addSubview:bottomView];
+    [bottomView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.qrScanningController.view];
+    [bottomView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [bottomView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [bottomView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    UIStackView *bottomStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+        heroImageView,
+        self.scanningInstructionsLabel,
+    ]];
+    bottomStack.axis = UILayoutConstraintAxisVertical;
+    bottomStack.alignment = UIStackViewAlignmentCenter;
+    bottomStack.spacing = 2;
+    bottomStack.layoutMarginsRelativeArrangement = YES;
+    bottomStack.layoutMargins = UIEdgeInsetsMake(20, 20, 20, 20);
+    [bottomView addSubview:bottomStack];
+    [bottomStack autoPinWidthToSuperview];
+    [bottomStack autoVCenterInSuperview];
+
     self.title
         = NSLocalizedString(@"LINK_NEW_DEVICE_TITLE", "Navigation title when scanning QR code to add new device.");
 }
@@ -83,21 +119,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+
     [self.qrScanningController startCapture];
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(nullable id)sender
-{
-    if ([segue.identifier isEqualToString:@"embedDeviceQRScanner"]) {
-        OWSQRCodeScanningViewController *qrScanningController
-            = (OWSQRCodeScanningViewController *)segue.destinationViewController;
-        qrScanningController.scanDelegate = self;
-        self.qrScanningController = qrScanningController;
-    }
-}
-
-
 // pragma mark - OWSQRScannerDelegate
+
 - (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string
 {
     OWSDeviceProvisioningURLParser *parser = [[OWSDeviceProvisioningURLParser alloc] initWithProvisioningURL:string];
@@ -235,6 +262,13 @@ NS_ASSUME_NONNULL_BEGIN
                                }];
     [alertController addAction:cancelAction];
     return alertController;
+}
+
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 @end
