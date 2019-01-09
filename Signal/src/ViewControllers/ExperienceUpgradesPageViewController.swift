@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -813,5 +813,11 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
     @objc func handleDismissGesture(sender: AnyObject) {
         Logger.debug("")
         self.dismiss(animated: true)
+    }
+
+    // MARK: Orientation
+
+    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
     }
 }
