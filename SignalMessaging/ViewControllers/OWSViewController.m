@@ -115,35 +115,39 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
-    [self handleKeyboardNotification:notification];
+    [self handleKeyboardNotificationBase:notification];
 }
 
 - (void)keyboardDidShow:(NSNotification *)notification
 {
-    [self handleKeyboardNotification:notification];
+    [self handleKeyboardNotificationBase:notification];
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
-    [self handleKeyboardNotification:notification];
+    [self handleKeyboardNotificationBase:notification];
 }
 
 - (void)keyboardDidHide:(NSNotification *)notification
 {
-    [self handleKeyboardNotification:notification];
+    [self handleKeyboardNotificationBase:notification];
 }
 
 - (void)keyboardWillChangeFrame:(NSNotification *)notification
 {
-    [self handleKeyboardNotification:notification];
+    [self handleKeyboardNotificationBase:notification];
 }
 
 - (void)keyboardDidChangeFrame:(NSNotification *)notification
 {
-    [self handleKeyboardNotification:notification];
+    [self handleKeyboardNotificationBase:notification];
 }
 
-- (void)handleKeyboardNotification:(NSNotification *)notification
+// We use the name `handleKeyboardNotificationBase` instead of
+// `handleKeyboardNotification` to avoid accidentally
+// calling similarly methods with that name in subclasses,
+// e.g. ConversationViewController.
+- (void)handleKeyboardNotificationBase:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
