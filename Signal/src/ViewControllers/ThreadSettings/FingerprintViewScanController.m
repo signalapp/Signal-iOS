@@ -246,6 +246,13 @@ NS_ASSUME_NONNULL_BEGIN
     [super dismissViewControllerAnimated:animated completion:completion];
 }
 
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

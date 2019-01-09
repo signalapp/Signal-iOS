@@ -946,6 +946,11 @@ static NSTimeInterval launchStartedAt;
 - (UIInterfaceOrientationMask)application:(UIApplication *)application
     supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
 {
+    if (self.windowManager.hasCall) {
+        // The call-banner window is only suitable for portrait display
+        return UIInterfaceOrientationMaskPortrait;
+    }
+    
     if (!window) {
         // If `window` is nil, be permissive.  Otherwise orientation
         // gets messed up during presentation of windows.
@@ -957,11 +962,6 @@ static NSTimeInterval launchStartedAt;
     }
 
     if (self.windowManager.rootWindow != window) {
-        return UIInterfaceOrientationMaskPortrait;
-    }
-
-    if (self.windowManager.hasCall) {
-        // The call-banner window is only suitable for portrait display
         return UIInterfaceOrientationMaskPortrait;
     }
 
