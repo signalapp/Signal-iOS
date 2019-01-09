@@ -1426,10 +1426,13 @@ typedef enum : NSUInteger {
         // control over the margins and spacing of its content, and the buttons end up
         // too far apart and too far from the edge of the screen. So we use a smaller
         // right inset tighten up the layout.
-        imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
-        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
-        imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
-        imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+        BOOL hasCompactHeader = self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+        if (!hasCompactHeader) {
+            imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
+            imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
+            imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
+            imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
+        }
         callButton.imageEdgeInsets = imageEdgeInsets;
         callButton.accessibilityLabel = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
         [callButton addTarget:self action:@selector(startAudioCall) forControlEvents:UIControlEventTouchUpInside];
@@ -4786,6 +4789,7 @@ typedef enum : NSUInteger {
 
     [self updateNavigationBarSubtitleLabel];
     [self ensureBannerState];
+    [self updateBarButtonItems];
 }
 
 - (void)resetForSizeOrOrientationChange
