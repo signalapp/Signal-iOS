@@ -237,6 +237,13 @@ NS_ASSUME_NONNULL_BEGIN
     return alertController;
 }
 
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
