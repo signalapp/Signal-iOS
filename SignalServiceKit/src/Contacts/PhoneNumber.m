@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumber.h"
@@ -203,8 +203,10 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     static NSString *result = nil;
     static NSString *cachedClientPhoneNumber = nil;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        // clientPhoneNumber is the local user's phone number and should never change.
+
+    // clientPhoneNumber is the local user's phone number and should never change.
+    static void (^updateCachedClientPhoneNumber)(void);
+    updateCachedClientPhoneNumber = ^(void) {
         NSNumber *localCallingCode = [[PhoneNumber phoneNumberFromE164:clientPhoneNumber] getCountryCode];
         if (localCallingCode != nil) {
             NSString *localCallingCodePrefix = [NSString stringWithFormat:@"+%@", localCallingCode];
@@ -214,11 +216,30 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
                 NBMetadataHelper *helper = [[NBMetadataHelper alloc] init];
                 NBPhoneMetaData *localNumberRegionMetadata = [helper getMetadataForRegion:localCountryCode];
                 result = localNumberRegionMetadata.nationalPrefixTransformRule;
+            } else {
+                result = nil;
             }
         }
         cachedClientPhoneNumber = [clientPhoneNumber copy];
+    };
+
+#ifdef DEBUG
+    // For performance, we want to cahce this result, but it breaks tests since local number
+    // can change.
+    if (CurrentAppContext().isRunningTests) {
+        updateCachedClientPhoneNumber();
+    } else {
+        dispatch_once(&onceToken, ^{
+            updateCachedClientPhoneNumber();
+        });
+    }
+#else
+    dispatch_once(&onceToken, ^{
+        updateCachedClientPhoneNumber();
     });
     OWSAssertDebug([cachedClientPhoneNumber isEqualToString:clientPhoneNumber]);
+#endif
+
     return result;
 }
 
@@ -303,37 +324,165 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
     // Order matters; better results should appear first so prefer
     // matches with the same country code as this client's phone number.
-    OWSAssertDebug(clientPhoneNumber.length > 0);
-    if (clientPhoneNumber.length > 0) {
-        // Note that NBPhoneNumber uses "country code" to refer to what we call a
-        // "calling code" (i.e. 44 in +44123123).  Within SSK we use "country code"
-        // (and sometimes "region code") to refer to a country's ISO 2-letter code
-        // (ISO 3166-1 alpha-2).
-        NSNumber *callingCodeForLocalNumber = [[PhoneNumber phoneNumberFromE164:clientPhoneNumber] getCountryCode];
-        if (callingCodeForLocalNumber != nil) {
-            NSString *callingCodePrefix = [NSString stringWithFormat:@"+%@", callingCodeForLocalNumber];
-
-            tryParsingWithCountryCode(
-                [callingCodePrefix stringByAppendingString:sanitizedString], [self defaultCountryCode]);
-
-            // Try to determine what the country code is for the local phone number
-            // and also try parsing the phone number using that country code if it
-            // differs from the device's region code.
-            //
-            // For example, a French person living in Italy might have an
-            // Italian phone number but use French region/language for their
-            // phone. They're likely to have both Italian and French contacts.
-            NSString *localCountryCode =
-                [PhoneNumberUtil.sharedThreadLocal probableCountryCodeForCallingCode:callingCodePrefix];
-            if (localCountryCode && ![localCountryCode isEqualToString:[self defaultCountryCode]]) {
-                tryParsingWithCountryCode(
-                    [callingCodePrefix stringByAppendingString:sanitizedString], localCountryCode);
-            }
-        }
+    if (clientPhoneNumber.length == 0) {
+        OWSFailDebug(@"clientPhoneNumber had unexpected length");
+        return result;
     }
-    
+
+    // Note that NBPhoneNumber uses "country code" to refer to what we call a
+    // "calling code" (i.e. 44 in +44123123).  Within SSK we use "country code"
+    // (and sometimes "region code") to refer to a country's ISO 2-letter code
+    // (ISO 3166-1 alpha-2).
+    NSNumber *callingCodeForLocalNumber = [[PhoneNumber phoneNumberFromE164:clientPhoneNumber] getCountryCode];
+    if (callingCodeForLocalNumber == nil) {
+        OWSFailDebug(@"callingCodeForLocalNumber was unexpectedly nil");
+        return result;
+    }
+
+    NSString *callingCodePrefix = [NSString stringWithFormat:@"+%@", callingCodeForLocalNumber];
+
+    tryParsingWithCountryCode([callingCodePrefix stringByAppendingString:sanitizedString], [self defaultCountryCode]);
+
+    // Try to determine what the country code is for the local phone number
+    // and also try parsing the phone number using that country code if it
+    // differs from the device's region code.
+    //
+    // For example, a French person living in Italy might have an
+    // Italian phone number but use French region/language for their
+    // phone. They're likely to have both Italian and French contacts.
+    NSString *localCountryCode =
+        [PhoneNumberUtil.sharedThreadLocal probableCountryCodeForCallingCode:callingCodePrefix];
+    if (localCountryCode && ![localCountryCode isEqualToString:[self defaultCountryCode]]) {
+        tryParsingWithCountryCode([callingCodePrefix stringByAppendingString:sanitizedString], localCountryCode);
+    }
+
+    NSString *_Nullable phoneNumberByApplyingMissingAreaCode =
+        [self applyMissingAreaCodeWithCallingCodeForReferenceNumber:callingCodeForLocalNumber
+                                                    referenceNumber:clientPhoneNumber
+                                                 sanitizedInputText:sanitizedString];
+    if (phoneNumberByApplyingMissingAreaCode) {
+        tryParsingWithCountryCode(phoneNumberByApplyingMissingAreaCode, localCountryCode);
+    }
+
     return result;
 }
+
+#pragma mark - missing area code
+
++ (nullable NSString *)applyMissingAreaCodeWithCallingCodeForReferenceNumber:(NSNumber *)callingCodeForReferenceNumber
+                                                             referenceNumber:(NSString *)referenceNumber
+                                                          sanitizedInputText:(NSString *)sanitizedInputText
+{
+    if ([callingCodeForReferenceNumber isEqual:@(55)]) {
+        return
+            [self applyMissingBrazilAreaCodeWithReferenceNumber:referenceNumber sanitizedInputText:sanitizedInputText];
+    } else if ([callingCodeForReferenceNumber isEqual:@(1)]) {
+        return [self applyMissingUnitedStatesAreaCodeWithReferenceNumber:referenceNumber
+                                                      sanitizedInputText:sanitizedInputText];
+    } else {
+        return nil;
+    }
+}
+
+#pragma mark - missing brazil area code
+
++ (nullable NSString *)applyMissingBrazilAreaCodeWithReferenceNumber:(NSString *)referenceNumber
+                                                  sanitizedInputText:(NSString *)sanitizedInputText
+{
+    NSError *error;
+    NSRegularExpression *missingAreaCodeRegex =
+        [[NSRegularExpression alloc] initWithPattern:@"^(9?\\d{8})$" options:0 error:&error];
+    if (error) {
+        OWSFailDebug(@"failure: %@", error);
+        return nil;
+    }
+
+    if ([missingAreaCodeRegex firstMatchInString:sanitizedInputText
+                                         options:0
+                                           range:NSMakeRange(0, sanitizedInputText.length)]
+        == nil) {
+    }
+
+    NSString *_Nullable referenceAreaCode = [self brazilAreaCodeFromReferenceNumberE164:referenceNumber];
+    if (!referenceAreaCode) {
+        return nil;
+    }
+    return [NSString stringWithFormat:@"+55%@%@", referenceAreaCode, sanitizedInputText];
+}
+
++ (nullable NSString *)brazilAreaCodeFromReferenceNumberE164:(NSString *)referenceNumberE164
+{
+    NSError *error;
+    NSRegularExpression *areaCodeRegex =
+        [[NSRegularExpression alloc] initWithPattern:@"^\\+55(\\d{2})9?\\d{8}" options:0 error:&error];
+    if (error) {
+        OWSFailDebug(@"failure: %@", error);
+        return nil;
+    }
+
+    NSArray<NSTextCheckingResult *> *matches =
+        [areaCodeRegex matchesInString:referenceNumberE164 options:0 range:NSMakeRange(0, referenceNumberE164.length)];
+    if (matches.count == 0) {
+        OWSFailDebug(@"failure: unexpectedly unable to extract area code from US number");
+        return nil;
+    }
+    NSTextCheckingResult *match = matches[0];
+
+    NSRange firstCaptureRange = [match rangeAtIndex:1];
+    return [referenceNumberE164 substringWithRange:firstCaptureRange];
+}
+
+#pragma mark - missing US area code
+
++ (nullable NSString *)applyMissingUnitedStatesAreaCodeWithReferenceNumber:(NSString *)referenceNumber
+                                                        sanitizedInputText:(NSString *)sanitizedInputText
+{
+    NSError *error;
+    NSRegularExpression *missingAreaCodeRegex =
+        [[NSRegularExpression alloc] initWithPattern:@"^(\\d{7})$" options:0 error:&error];
+    if (error) {
+        OWSFailDebug(@"failure: %@", error);
+        return nil;
+    }
+
+    if ([missingAreaCodeRegex firstMatchInString:sanitizedInputText
+                                         options:0
+                                           range:NSMakeRange(0, sanitizedInputText.length)]
+        == nil) {
+        // area code isn't missing
+        return nil;
+    }
+
+    NSString *_Nullable referenceAreaCode = [self unitedStateAreaCodeFromReferenceNumberE164:referenceNumber];
+    if (!referenceAreaCode) {
+        return nil;
+    }
+    return [NSString stringWithFormat:@"+1%@%@", referenceAreaCode, sanitizedInputText];
+}
+
++ (nullable NSString *)unitedStateAreaCodeFromReferenceNumberE164:(NSString *)referenceNumberE164
+{
+    NSError *error;
+    NSRegularExpression *areaCodeRegex =
+        [[NSRegularExpression alloc] initWithPattern:@"^\\+1(\\d{3})" options:0 error:&error];
+    if (error) {
+        OWSFailDebug(@"failure: %@", error);
+        return nil;
+    }
+
+    NSArray<NSTextCheckingResult *> *matches =
+        [areaCodeRegex matchesInString:referenceNumberE164 options:0 range:NSMakeRange(0, referenceNumberE164.length)];
+    if (matches.count == 0) {
+        OWSFailDebug(@"failure: unexpectedly unable to extract area code from US number");
+        return nil;
+    }
+    NSTextCheckingResult *match = matches[0];
+
+    NSRange firstCaptureRange = [match rangeAtIndex:1];
+    return [referenceNumberE164 substringWithRange:firstCaptureRange];
+}
+
+#pragma mark -
 
 + (NSString *)removeFormattingCharacters:(NSString *)inputString {
     char outputString[inputString.length + 1];
