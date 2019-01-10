@@ -367,9 +367,30 @@ typedef enum : NSUInteger {
                                              selector:@selector(profileWhitelistDidChange:)
                                                  name:kNSNotificationName_ProfileWhitelistDidChange
                                                object:nil];
+    // Keyboard events.
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidShow:)
+                                                 name:UIKeyboardDidShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillHide:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidHide:)
+                                                 name:UIKeyboardDidHideNotification
+                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillChangeFrame:)
                                                  name:UIKeyboardWillChangeFrameNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidChangeFrame:)
+                                                 name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
 }
 
@@ -3589,12 +3610,33 @@ typedef enum : NSUInteger {
     });
 }
 
+- (void)keyboardWillShow:(NSNotification *)notification
+{
+    [self handleKeyboardNotification:notification];
+}
+
+- (void)keyboardDidShow:(NSNotification *)notification
+{
+    [self handleKeyboardNotification:notification];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+    [self handleKeyboardNotification:notification];
+}
+
+- (void)keyboardDidHide:(NSNotification *)notification
+{
+    [self handleKeyboardNotification:notification];
+}
+
 - (void)keyboardWillChangeFrame:(NSNotification *)notification
 {
-    // `willChange` is the correct keyboard notifiation to observe when adjusting contentInset
-    // in lockstep with the keyboard presentation animation. `didChange` results in the contentInset
-    // not adjusting until after the keyboard is fully up.
-    OWSLogVerbose(@"");
+    [self handleKeyboardNotification:notification];
+}
+
+- (void)keyboardDidChangeFrame:(NSNotification *)notification
+{
     [self handleKeyboardNotification:notification];
 }
 
