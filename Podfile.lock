@@ -114,10 +114,10 @@ PODS:
     - SwiftProtobuf
     - YapDatabase/SQLCipher
   - SocketRocket (0.5.1)
-  - SQLCipher (3.4.2):
-    - SQLCipher/standard (= 3.4.2)
-  - SQLCipher/common (3.4.2)
-  - SQLCipher/standard (3.4.2):
+  - SQLCipher (4.0.1):
+    - SQLCipher/standard (= 4.0.1)
+  - SQLCipher/common (4.0.1)
+  - SQLCipher/standard (4.0.1):
     - SQLCipher/common
   - SSZipArchive (2.1.4)
   - SwiftProtobuf (1.2.0)
@@ -206,9 +206,9 @@ DEPENDENCIES:
   - SignalServiceKit (from `.`)
   - SignalServiceKit/Tests (from `.`)
   - SocketRocket (from `https://github.com/signalapp/SocketRocket.git`, branch `mkirk/handle-sec-err`)
-  - SQLCipher (from `https://github.com/sqlcipher/sqlcipher.git`, commit `d5c2bec`)
+  - SQLCipher (>= 4.0.1)
   - SSZipArchive
-  - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
+  - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `mkirk/sqlcipher4`)
   - YYImage
 
 SPEC REPOS:
@@ -220,6 +220,7 @@ SPEC REPOS:
     - PureLayout
     - Reachability
     - SAMKeychain
+    - SQLCipher
     - SSZipArchive
     - SwiftProtobuf
     - YYImage
@@ -246,11 +247,8 @@ EXTERNAL SOURCES:
   SocketRocket:
     :branch: mkirk/handle-sec-err
     :git: https://github.com/signalapp/SocketRocket.git
-  SQLCipher:
-    :commit: d5c2bec
-    :git: https://github.com/sqlcipher/sqlcipher.git
   YapDatabase:
-    :branch: signal-release
+    :branch: mkirk/sqlcipher4
     :git: https://github.com/signalapp/YapDatabase.git
 
 CHECKOUT OPTIONS:
@@ -278,11 +276,8 @@ CHECKOUT OPTIONS:
   SocketRocket:
     :commit: 9f9563a83cd8960503074aa8de72206f83fb7a69
     :git: https://github.com/signalapp/SocketRocket.git
-  SQLCipher:
-    :commit: d5c2bec
-    :git: https://github.com/sqlcipher/sqlcipher.git
   YapDatabase:
-    :commit: f1fa4545e1e1594fb80065ffca52a682f5a2e71c
+    :commit: 7ee35e1a42c2c075db005dc0278e57913a00b31a
     :git: https://github.com/signalapp/YapDatabase.git
 
 SPEC CHECKSUMS:
@@ -302,12 +297,12 @@ SPEC CHECKSUMS:
   SignalMetadataKit: 6fa5e9a53c7f104568662521a2f3874672ff7a02
   SignalServiceKit: 80d774c32b22567682f63c36bf9da265d82083bb
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
-  SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
+  SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   SwiftProtobuf: 91a9856079044ef4ec762b2344c763cd9e5a73c1
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 1d3c7b17e2ff7bab54e3551c74559c26d95d9b06
+PODFILE CHECKSUM: 627f656b9187deaf83ab4cfb12fe2a4a0326aee3
 
 COCOAPODS: 1.5.3

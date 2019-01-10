@@ -31,8 +31,7 @@ def shared_pods
   ###
 
   # Includes some soon to be released "unencrypted header" changes required for the Share Extension
-  pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
-  # pod 'SQLCipher', path: '../sqlcipher'
+  pod 'SQLCipher', ">= 4.0.1"
 
   # Forked for performance optimizations that are not likely to be upstreamed as they are specific
   # to our limited use of Mantle 
@@ -46,7 +45,8 @@ def shared_pods
   pod 'SocketRocket', :git => 'https://github.com/signalapp/SocketRocket.git', branch: 'mkirk/handle-sec-err', inhibit_warnings: true
 
   # Forked for compatibily with the ShareExtension, changes have an open PR, but have not been merged.
-  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
+  # pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
+  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'mkirk/sqlcipher4'
   # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
 
   # Forked to incorporate our self-built binary artifact.

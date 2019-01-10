@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
@@ -437,6 +437,11 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     // and our usage of sqlite's write-ahead logging retains a lock on the database, the OS
     // would kill the app/share extension as soon as it is backgrounded.
     options.cipherUnencryptedHeaderLength = kSqliteHeaderLength;
+
+    // If we want to migrate to the new cipher defaults in SQLCipher4+ we'll need to do a one time
+    // migration. See the `PRAGMA cipher_migrate` documentation for details.
+    // https://www.zetetic.net/sqlcipher/sqlcipher-api/#cipher_migrate
+    options.legacyCipherCompatibilityVersion = 3;
 
     // If any of these asserts fails, we need to verify and update
     // OWSDatabaseConverter which assumes the values of these options.
