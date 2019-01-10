@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AboutTableViewController.h"
@@ -56,14 +56,12 @@
                                                   accessoryText:[[[NSBundle mainBundle] infoDictionary]
                                                                     objectForKey:@"CFBundleVersion"]]];
 
-#ifdef SHOW_LEGAL_TERMS_LINK
     [informationSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_LEGAL_TERMS_CELL",
                                                                          @"table cell label")
                                                          actionBlock:^{
                                                              [[UIApplication sharedApplication]
                                                                  openURL:[NSURL URLWithString:kLegalTermsUrlString]];
                                                          }]];
-#endif
 
     [contents addSection:informationSection];
 

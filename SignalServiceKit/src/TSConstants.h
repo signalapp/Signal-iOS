@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #ifndef TextSecureKit_Constants_h
@@ -19,7 +19,6 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureHTTPTimeOut 10
 
 #define kLegalTermsUrlString @"https://signal.org/legal/"
-#define SHOW_LEGAL_TERMS_LINK
 
 //#ifndef DEBUG
 

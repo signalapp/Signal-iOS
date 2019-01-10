@@ -92,7 +92,6 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     headerLabel.textColor = [UIColor whiteColor];
     headerLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(20.f, 24.f)];
 
-#ifdef SHOW_LEGAL_TERMS_LINK
     NSString *legalTopMatterFormat = NSLocalizedString(@"REGISTRATION_LEGAL_TOP_MATTER_FORMAT",
         @"legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink");
     NSString *legalTopMatterLinkWord = NSLocalizedString(
@@ -117,12 +116,9 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     UITapGestureRecognizer *tapGesture =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLegalTerms:)];
     [legalTopMatterLabel addGestureRecognizer:tapGesture];
-#endif
 
     UIStackView *headerContent = [[UIStackView alloc] initWithArrangedSubviews:@[ headerLabel ]];
-#ifdef SHOW_LEGAL_TERMS_LINK
     [headerContent addArrangedSubview:legalTopMatterLabel];
-#endif
     headerContent.axis = UILayoutConstraintAxisVertical;
     headerContent.alignment = UIStackViewAlignmentCenter;
     headerContent.spacing = ScaleFromIPhone5To7Plus(8, 16);
@@ -268,7 +264,6 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [spinnerView autoPinTrailingToSuperviewMarginWithInset:20.f];
     [spinnerView stopAnimating];
 
-#ifdef SHOW_LEGAL_TERMS_LINK
     NSString *bottomTermsLinkText = NSLocalizedString(@"REGISTRATION_LEGAL_TERMS_LINK",
         @"one line label below submit button on registration screen, which links to an external webpage.");
     UIButton *bottomLegalLinkButton = [UIButton new];
@@ -287,7 +282,6 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
                             withOffset:ScaleFromIPhone5To7Plus(8, 12)];
     [bottomLegalLinkButton setCompressionResistanceHigh];
     [bottomLegalLinkButton setContentHuggingHigh];
-#endif
 }
 
 - (void)viewDidAppear:(BOOL)animated
