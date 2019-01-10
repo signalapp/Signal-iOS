@@ -490,7 +490,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         OWSLogInfo(@"showing root window.");
     }
 
-    // By calling makeKeyAndVisible we ensure the rootViewController becomes firt responder.
+    // By calling makeKeyAndVisible we ensure the rootViewController becomes first responder.
     // In the normal case, that means the SignalViewController will call `becomeFirstResponder`
     // on the vc on top of its navigation stack.
     [self.rootWindow makeKeyAndVisible];

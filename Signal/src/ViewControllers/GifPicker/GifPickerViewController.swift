@@ -518,4 +518,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
         tryToSearch()
     }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        layout.invalidateLayout()
+    }
 }
