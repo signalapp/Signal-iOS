@@ -356,8 +356,133 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
         tryParsingWithCountryCode([callingCodePrefix stringByAppendingString:sanitizedString], localCountryCode);
     }
 
+    NSString *_Nullable phoneNumberByApplyingMissingAreaCode =
+        [self applyMissingAreaCodeWithCallingCodeForReferenceNumber:callingCodeForLocalNumber
+                                                    referenceNumber:clientPhoneNumber
+                                                 sanitizedInputText:sanitizedString];
+    if (phoneNumberByApplyingMissingAreaCode) {
+        tryParsingWithCountryCode(phoneNumberByApplyingMissingAreaCode, localCountryCode);
+    }
+
     return result;
 }
+
+#pragma mark - missing area code
+
++ (nullable NSString *)applyMissingAreaCodeWithCallingCodeForReferenceNumber:(NSNumber *)callingCodeForReferenceNumber
+                                                             referenceNumber:(NSString *)referenceNumber
+                                                          sanitizedInputText:(NSString *)sanitizedInputText
+{
+    if ([callingCodeForReferenceNumber isEqual:@(55)]) {
+        return
+            [self applyMissingBrazilAreaCodeWithReferenceNumber:referenceNumber sanitizedInputText:sanitizedInputText];
+    } else if ([callingCodeForReferenceNumber isEqual:@(1)]) {
+        return [self applyMissingUnitedStatesAreaCodeWithReferenceNumber:referenceNumber
+                                                      sanitizedInputText:sanitizedInputText];
+    } else {
+        return nil;
+    }
+}
+
+#pragma mark - missing brazil area code
+
++ (nullable NSString *)applyMissingBrazilAreaCodeWithReferenceNumber:(NSString *)referenceNumber
+                                                  sanitizedInputText:(NSString *)sanitizedInputText
+{
+    NSError *error;
+    NSRegularExpression *missingAreaCodeRegex =
+        [[NSRegularExpression alloc] initWithPattern:@"^(9?\\d{8})$" options:0 error:&error];
+    if (error) {
+        OWSFailDebug(@"failure: %@", error);
+        return nil;
+    }
+
+    if ([missingAreaCodeRegex firstMatchInString:sanitizedInputText
+                                         options:0
+                                           range:NSMakeRange(0, sanitizedInputText.length)]
+        == nil) {
+    }
+
+    NSString *_Nullable referenceAreaCode = [self brazilAreaCodeFromReferenceNumberE164:referenceNumber];
+    if (!referenceAreaCode) {
+        return nil;
+    }
+    return [NSString stringWithFormat:@"+55%@%@", referenceAreaCode, sanitizedInputText];
+}
+
++ (nullable NSString *)brazilAreaCodeFromReferenceNumberE164:(NSString *)referenceNumberE164
+{
+    NSError *error;
+    NSRegularExpression *areaCodeRegex =
+        [[NSRegularExpression alloc] initWithPattern:@"^\\+55(\\d{2})9?\\d{8}" options:0 error:&error];
+    if (error) {
+        OWSFailDebug(@"failure: %@", error);
+        return nil;
+    }
+
+    NSArray<NSTextCheckingResult *> *matches =
+        [areaCodeRegex matchesInString:referenceNumberE164 options:0 range:NSMakeRange(0, referenceNumberE164.length)];
+    if (matches.count == 0) {
+        OWSFailDebug(@"failure: unexpectedly unable to extract area code from US number");
+        return nil;
+    }
+    NSTextCheckingResult *match = matches[0];
+
+    NSRange firstCaptureRange = [match rangeAtIndex:1];
+    return [referenceNumberE164 substringWithRange:firstCaptureRange];
+}
+
+#pragma mark - missing US area code
+
++ (nullable NSString *)applyMissingUnitedStatesAreaCodeWithReferenceNumber:(NSString *)referenceNumber
+                                                        sanitizedInputText:(NSString *)sanitizedInputText
+{
+    NSError *error;
+    NSRegularExpression *missingAreaCodeRegex =
+        [[NSRegularExpression alloc] initWithPattern:@"^(\\d{7})$" options:0 error:&error];
+    if (error) {
+        OWSFailDebug(@"failure: %@", error);
+        return nil;
+    }
+
+    if ([missingAreaCodeRegex firstMatchInString:sanitizedInputText
+                                         options:0
+                                           range:NSMakeRange(0, sanitizedInputText.length)]
+        == nil) {
+        // area code isn't missing
+        return nil;
+    }
+
+    NSString *_Nullable referenceAreaCode = [self unitedStateAreaCodeFromReferenceNumberE164:referenceNumber];
+    if (!referenceAreaCode) {
+        return nil;
+    }
+    return [NSString stringWithFormat:@"+1%@%@", referenceAreaCode, sanitizedInputText];
+}
+
++ (nullable NSString *)unitedStateAreaCodeFromReferenceNumberE164:(NSString *)referenceNumberE164
+{
+    NSError *error;
+    NSRegularExpression *areaCodeRegex =
+        [[NSRegularExpression alloc] initWithPattern:@"^\\+1(\\d{3})" options:0 error:&error];
+    if (error) {
+        OWSFailDebug(@"failure: %@", error);
+        return nil;
+    }
+
+    NSArray<NSTextCheckingResult *> *matches =
+        [areaCodeRegex matchesInString:referenceNumberE164 options:0 range:NSMakeRange(0, referenceNumberE164.length)];
+    if (matches.count == 0) {
+        OWSFailDebug(@"failure: unexpectedly unable to extract area code from US number");
+        return nil;
+    }
+    NSTextCheckingResult *match = matches[0];
+
+    NSRange firstCaptureRange = [match rangeAtIndex:1];
+    return [referenceNumberE164 substringWithRange:firstCaptureRange];
+}
+
+#pragma mark -
 
 + (NSString *)removeFormattingCharacters:(NSString *)inputString {
     char outputString[inputString.length + 1];
