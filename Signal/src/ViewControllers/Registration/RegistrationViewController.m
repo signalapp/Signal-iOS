@@ -414,7 +414,8 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _callingCode, phoneNumberText];
     PhoneNumber *localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
     NSString *parsedPhoneNumber = localNumber.toE164;
-    if (parsedPhoneNumber.length < 1) {
+    if (parsedPhoneNumber.length < 1
+        || ![[PhoneNumberValidator new] isValidForRegistrationWithPhoneNumber:localNumber]) {
         [OWSAlerts showAlertWithTitle:
                        NSLocalizedString(@"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE",
                            @"Title of alert indicating that users needs to enter a valid phone number to register.")
