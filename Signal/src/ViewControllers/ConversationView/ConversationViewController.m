@@ -4347,21 +4347,32 @@ typedef enum : NSUInteger {
     targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset
 {
     if (self.scrollContinuity == kScrollContinuityBottom && self.lastKnownDistanceFromBottom) {
-        // Adjust the content offset to reflect the "last known" distance
-        // from the bottom of the content.
-        CGFloat contentOffsetYBottom = self.maxContentOffsetY;
-        CGFloat contentOffsetY = contentOffsetYBottom - MAX(0, self.lastKnownDistanceFromBottom.floatValue);
-        CGFloat minContentOffsetY;
-        if (@available(iOS 11, *)) {
-            minContentOffsetY = -self.collectionView.safeAreaInsets.top;
-        } else {
-            minContentOffsetY = 0.f;
+        NSValue *_Nullable contentOffset =
+            [self contentOffsetForLastKnownDistanceFromBottom:self.lastKnownDistanceFromBottom.floatValue];
+        if (contentOffset) {
+            proposedContentOffset = contentOffset.CGPointValue;
         }
-        contentOffsetY = MAX(minContentOffsetY, contentOffsetY);
-        proposedContentOffset.y = contentOffsetY;
     }
 
     return proposedContentOffset;
+}
+
+// We use this hook to ensure scroll state continuity.  As the collection
+// view's content size changes, we want to keep the same cells in view.
+- (nullable NSValue *)contentOffsetForLastKnownDistanceFromBottom:(CGFloat)lastKnownDistanceFromBottom
+{
+    // Adjust the content offset to reflect the "last known" distance
+    // from the bottom of the content.
+    CGFloat contentOffsetYBottom = self.maxContentOffsetY;
+    CGFloat contentOffsetY = contentOffsetYBottom - MAX(0, lastKnownDistanceFromBottom);
+    CGFloat minContentOffsetY;
+    if (@available(iOS 11, *)) {
+        minContentOffsetY = -self.collectionView.safeAreaInsets.top;
+    } else {
+        minContentOffsetY = 0.f;
+    }
+    contentOffsetY = MAX(minContentOffsetY, contentOffsetY);
+    return [NSValue valueWithCGPoint:CGPointMake(0, contentOffsetY)];
 }
 
 #pragma mark - Scroll State
@@ -4811,18 +4822,34 @@ typedef enum : NSUInteger {
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
+    // Update and snapshot the "last known distance from bottom".
+    [self updateLastKnownDistanceFromBottom];
+    NSNumber *_Nullable lastKnownDistanceFromBottom = self.lastKnownDistanceFromBottom;
+
     __weak ConversationViewController *weakSelf = self;
     [coordinator
         animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
             // Do nothing.
         }
         completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            ConversationViewController *strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
+
             // When transition animation is complete, update layout to reflect
             // new size.
-            [weakSelf resetForSizeOrOrientationChange];
-        }];
+            [strongSelf resetForSizeOrOrientationChange];
 
-    // TODO: Ensure scroll state continuity?
+            if (lastKnownDistanceFromBottom) {
+                NSValue *_Nullable contentOffsetValue =
+                    [strongSelf contentOffsetForLastKnownDistanceFromBottom:lastKnownDistanceFromBottom.floatValue];
+                if (contentOffsetValue) {
+                    CGPoint contentOffset = contentOffsetValue.CGPointValue;
+                    [strongSelf.collectionView setContentOffset:contentOffset animated:NO];
+                }
+            }
+        }];
 }
 
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection
