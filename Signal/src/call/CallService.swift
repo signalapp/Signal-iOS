@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1615,6 +1615,10 @@ private class SignalCallData: NSObject {
         self.callUIAdapter.didTerminateCall(currentCallData?.call)
 
         fireDidUpdateVideoTracks()
+
+        // Apparently WebRTC will sometimes disable device orientation notifications.
+        // After every call ends, we need to ensure they are enabled.
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     }
 
     // MARK: - CallObserver
