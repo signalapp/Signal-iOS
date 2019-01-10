@@ -208,7 +208,7 @@ DEPENDENCIES:
   - SocketRocket (from `https://github.com/signalapp/SocketRocket.git`, branch `mkirk/handle-sec-err`)
   - SQLCipher (>= 4.0.1)
   - SSZipArchive
-  - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `mkirk/sqlcipher4`)
+  - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
   - YYImage
 
 SPEC REPOS:
@@ -248,7 +248,7 @@ EXTERNAL SOURCES:
     :branch: mkirk/handle-sec-err
     :git: https://github.com/signalapp/SocketRocket.git
   YapDatabase:
-    :branch: mkirk/sqlcipher4
+    :branch: signal-release
     :git: https://github.com/signalapp/YapDatabase.git
 
 CHECKOUT OPTIONS:
@@ -277,7 +277,7 @@ CHECKOUT OPTIONS:
     :commit: 9f9563a83cd8960503074aa8de72206f83fb7a69
     :git: https://github.com/signalapp/SocketRocket.git
   YapDatabase:
-    :commit: 7ee35e1a42c2c075db005dc0278e57913a00b31a
+    :commit: 9f7d82395c534107928990950720fc49073c7b47
     :git: https://github.com/signalapp/YapDatabase.git
 
 SPEC CHECKSUMS:
@@ -303,6 +303,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 627f656b9187deaf83ab4cfb12fe2a4a0326aee3
+PODFILE CHECKSUM: 7ccd091c65f353c7fcc3021a13b557a576d48509
 
 COCOAPODS: 1.5.3

@@ -45,8 +45,7 @@ def shared_pods
   pod 'SocketRocket', :git => 'https://github.com/signalapp/SocketRocket.git', branch: 'mkirk/handle-sec-err', inhibit_warnings: true
 
   # Forked for compatibily with the ShareExtension, changes have an open PR, but have not been merged.
-  # pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
-  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'mkirk/sqlcipher4'
+  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
   # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
 
   # Forked to incorporate our self-built binary artifact.
