@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputToolbar.h"
@@ -53,6 +53,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, nullable) UILabel *recordingLabel;
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutContraints;
 
 @end
 
@@ -163,7 +164,13 @@ const CGFloat kMaxTextViewHeight = 98;
     self.contentRows.axis = UILayoutConstraintAxisVertical;
 
     [self addSubview:self.contentRows];
-    [self.contentRows autoPinEdgesToSuperviewEdges];
+    [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeBottom];
+
+    if (@available(iOS 11, *)) {
+        self.contentRows.insetsLayoutMarginsFromSafeArea = NO;
+        self.composeRow.insetsLayoutMarginsFromSafeArea = NO;
+    }
 
     [self ensureShouldShowVoiceMemoButtonAnimated:NO doLayout:NO];
 }
@@ -320,6 +327,38 @@ const CGFloat kMaxTextViewHeight = 98;
     } else {
         updateBlock();
     }
+}
+
+- (void)updateLayoutWithIsLandscape:(BOOL)isLandscape
+{
+    if (self.layoutContraints) {
+        [NSLayoutConstraint deactivateConstraints:self.layoutContraints];
+    }
+
+    if (isLandscape) {
+        self.layoutContraints = @[
+            [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeLeading],
+            [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing],
+        ];
+    } else {
+        self.layoutContraints = @[
+            [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeLeading],
+            [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
+        ];
+    }
+
+    [self setNeedsUpdateConstraints];
+    [self updateConstraintsIfNeeded];
+    [self.contentRows setNeedsUpdateConstraints];
+    [self.contentRows updateConstraintsIfNeeded];
+    [self.composeRow setNeedsUpdateConstraints];
+    [self.composeRow updateConstraintsIfNeeded];
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
+    [self.contentRows setNeedsLayout];
+    [self.contentRows layoutIfNeeded];
+    [self.composeRow setNeedsLayout];
+    [self.composeRow layoutIfNeeded];
 }
 
 - (void)handleLongPress:(UIGestureRecognizer *)sender
