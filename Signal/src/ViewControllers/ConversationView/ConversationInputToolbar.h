@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -52,8 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)toggleDefaultKeyboard;
 
 - (void)updateFontSizes;
-
-- (void)resetAfterOrientationChange;
 
 #pragma mark - Voice Memo
 

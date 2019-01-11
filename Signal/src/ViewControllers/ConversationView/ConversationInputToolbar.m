@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputToolbar.h"
@@ -165,10 +165,6 @@ const CGFloat kMaxTextViewHeight = 98;
     [self addSubview:self.contentRows];
     [self.contentRows autoPinEdgesToSuperviewEdges];
 
-    [self.composeRow addBackgroundViewWithBackgroundColor:UIColor.greenColor];
-    [self.contentRows addBackgroundViewWithBackgroundColor:UIColor.blueColor];
-    self.contentRows.layoutMarginsRelativeArrangement = YES;
-    self.contentRows.layoutMargins = UIEdgeInsetsMake(1, 1, 1, 1);
     if (@available(iOS 11, *)) {
         self.contentRows.insetsLayoutMarginsFromSafeArea = NO;
     }
@@ -382,16 +378,6 @@ const CGFloat kMaxTextViewHeight = 98;
             }
             break;
     }
-}
-
-- (void)resetAfterOrientationChange
-{
-    [self toggleDefaultKeyboard];
-
-    [self.contentRows setNeedsLayout];
-    [self.contentRows layoutIfNeeded];
-    [self.composeRow setNeedsLayout];
-    [self.composeRow layoutIfNeeded];
 }
 
 #pragma mark - Voice Memo
