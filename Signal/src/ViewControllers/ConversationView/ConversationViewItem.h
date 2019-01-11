@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewLayout.h"
@@ -143,8 +143,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (NSString *)itemId;
 
 - (nullable TSAttachmentStream *)firstValidAlbumAttachment;
-
-- (BOOL)mediaAlbumHasFailedAttachment;
 
 @end
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -433,11 +433,6 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     func firstValidAlbumAttachment() -> TSAttachmentStream? {
         owsFailDebug("unexpected invocation")
         return nil
-    }
-
-    func mediaAlbumHasFailedAttachment() -> Bool {
-        owsFailDebug("unexpected invocation")
-        return false
     }
 }
 

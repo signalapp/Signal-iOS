@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewItem.h"
@@ -1072,22 +1072,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_MediaAlbum:
             return self.firstValidAlbumAttachment != nil;
     }
-}
-
-- (BOOL)mediaAlbumHasFailedAttachment
-{
-    OWSAssertDebug(self.messageCellType == OWSMessageCellType_MediaAlbum);
-    OWSAssertDebug(self.mediaAlbumItems.count > 0);
-
-    for (ConversationMediaAlbumItem *mediaAlbumItem in self.mediaAlbumItems) {
-        if ([mediaAlbumItem.attachment isKindOfClass:[TSAttachmentPointer class]]) {
-            TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)mediaAlbumItem.attachment;
-            if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
-                return YES;
-            }
-        }
-    }
-    return NO;
 }
 
 @end
