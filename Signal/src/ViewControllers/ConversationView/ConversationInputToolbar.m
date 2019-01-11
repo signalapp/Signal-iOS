@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputToolbar.h"
@@ -167,6 +167,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     if (@available(iOS 11, *)) {
         self.contentRows.insetsLayoutMarginsFromSafeArea = NO;
+        self.composeRow.insetsLayoutMarginsFromSafeArea = NO;
     }
 
     [self ensureShouldShowVoiceMemoButtonAnimated:NO doLayout:NO];
