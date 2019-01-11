@@ -53,6 +53,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, nullable) UILabel *recordingLabel;
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutContraints;
 
 @end
 
@@ -165,8 +166,6 @@ const CGFloat kMaxTextViewHeight = 98;
     [self addSubview:self.contentRows];
     [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeBottom];
-    [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
-    [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
     if (@available(iOS 11, *)) {
         self.contentRows.insetsLayoutMarginsFromSafeArea = NO;
@@ -327,6 +326,25 @@ const CGFloat kMaxTextViewHeight = 98;
         [UIView animateWithDuration:0.1 animations:updateBlock];
     } else {
         updateBlock();
+    }
+}
+
+- (void)updateLayoutWithIsLandscape:(BOOL)isLandscape
+{
+    if (self.layoutContraints) {
+        [NSLayoutConstraint deactivateConstraints:self.layoutContraints];
+    }
+
+    if (isLandscape) {
+        self.layoutContraints = @[
+            [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeLeading],
+            [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing],
+        ];
+    } else {
+        self.layoutContraints = @[
+            [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeLeading],
+            [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
+        ];
     }
 }
 
