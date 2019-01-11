@@ -4820,6 +4820,8 @@ typedef enum : NSUInteger {
             // When transition animation is complete, update layout to reflect
             // new size.
             [weakSelf resetForSizeOrOrientationChange];
+
+            [weakSelf.inputToolbar resetAfterOrientationChange];
         }];
 
     // TODO: Ensure scroll state continuity?
@@ -4832,6 +4834,7 @@ typedef enum : NSUInteger {
     [self updateNavigationBarSubtitleLabel];
     [self ensureBannerState];
     [self updateBarButtonItems];
+    [self.inputToolbar resetAfterOrientationChange];
 }
 
 - (void)resetForSizeOrOrientationChange
