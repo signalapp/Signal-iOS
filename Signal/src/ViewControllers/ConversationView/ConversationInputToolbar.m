@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputToolbar.h"
@@ -53,6 +53,9 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, nullable) UILabel *recordingLabel;
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutContraints;
+@property (nonatomic) BOOL isLandscapeLayout;
+@property (nonatomic) UIEdgeInsets receivedSafeAreaInsets;
 
 @end
 
@@ -68,7 +71,9 @@ const CGFloat kMaxTextViewHeight = 98;
     self = [super initWithFrame:CGRectZero];
 
     _conversationStyle = conversationStyle;
-    
+    _isLandscapeLayout = NO;
+    _receivedSafeAreaInsets = UIEdgeInsetsZero;
+
     if (self) {
         [self createContents];
     }
@@ -163,7 +168,18 @@ const CGFloat kMaxTextViewHeight = 98;
     self.contentRows.axis = UILayoutConstraintAxisVertical;
 
     [self addSubview:self.contentRows];
-    [self.contentRows autoPinEdgesToSuperviewEdges];
+    [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeBottom];
+
+    // See comments on updateContentLayout:.
+    if (@available(iOS 11, *)) {
+        self.contentRows.insetsLayoutMarginsFromSafeArea = NO;
+        self.composeRow.insetsLayoutMarginsFromSafeArea = NO;
+        self.insetsLayoutMarginsFromSafeArea = NO;
+    }
+    self.contentRows.preservesSuperviewLayoutMargins = NO;
+    self.composeRow.preservesSuperviewLayoutMargins = NO;
+    self.preservesSuperviewLayoutMargins = NO;
 
     [self ensureShouldShowVoiceMemoButtonAnimated:NO doLayout:NO];
 }
@@ -319,6 +335,37 @@ const CGFloat kMaxTextViewHeight = 98;
         [UIView animateWithDuration:0.1 animations:updateBlock];
     } else {
         updateBlock();
+    }
+}
+
+// iOS doesn't always update the safeAreaInsets correctly & in a timely
+// way for the inputAccessoryView after a orientation change.  The best
+// workaround appears to be to use the safeAreaInsets from
+// ConversationViewController's view.  ConversationViewController updates
+// this input toolbar using updateLayoutWithIsLandscape:.
+- (void)updateContentLayout
+{
+    if (self.layoutContraints) {
+        [NSLayoutConstraint deactivateConstraints:self.layoutContraints];
+    }
+
+    self.layoutContraints = @[
+        [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:self.receivedSafeAreaInsets.left],
+        [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:self.receivedSafeAreaInsets.right],
+    ];
+}
+
+- (void)updateLayoutWithIsLandscape:(BOOL)isLandscape safeAreaInsets:(UIEdgeInsets)safeAreaInsets
+{
+    BOOL didChange = (self.isLandscapeLayout != isLandscape
+        || !UIEdgeInsetsEqualToEdgeInsets(self.receivedSafeAreaInsets, safeAreaInsets));
+    BOOL hasLayout = self.layoutContraints != nil;
+
+    self.isLandscapeLayout = isLandscape;
+    self.receivedSafeAreaInsets = safeAreaInsets;
+
+    if (didChange || !hasLayout) {
+        [self updateContentLayout];
     }
 }
 
