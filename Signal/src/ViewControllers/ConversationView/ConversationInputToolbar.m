@@ -169,6 +169,9 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.contentRows addBackgroundViewWithBackgroundColor:UIColor.blueColor];
     self.contentRows.layoutMarginsRelativeArrangement = YES;
     self.contentRows.layoutMargins = UIEdgeInsetsMake(1, 1, 1, 1);
+    if (@available(iOS 11, *)) {
+        self.contentRows.insetsLayoutMarginsFromSafeArea = NO;
+    }
 
     [self ensureShouldShowVoiceMemoButtonAnimated:NO doLayout:NO];
 }
