@@ -163,7 +163,10 @@ const CGFloat kMaxTextViewHeight = 98;
     self.contentRows.axis = UILayoutConstraintAxisVertical;
 
     [self addSubview:self.contentRows];
-    [self.contentRows autoPinEdgesToSuperviewEdges];
+    [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
     if (@available(iOS 11, *)) {
         self.contentRows.insetsLayoutMarginsFromSafeArea = NO;
