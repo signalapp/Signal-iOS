@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,7 +8,9 @@ public class OWS110SortIdMigration: OWSDatabaseMigration {
     // increment a similar constant for each migration.
     @objc
     class func migrationId() -> String {
-        return "110"
+        // append char "x" because we want to rerun on some internal devices which
+        // have already run this migration.
+        return "110x"
     }
 
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {
