@@ -346,6 +346,19 @@ const CGFloat kMaxTextViewHeight = 98;
             [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
         ];
     }
+
+    [self setNeedsUpdateConstraints];
+    [self updateConstraintsIfNeeded];
+    [self.contentRows setNeedsUpdateConstraints];
+    [self.contentRows updateConstraintsIfNeeded];
+    [self.composeRow setNeedsUpdateConstraints];
+    [self.composeRow updateConstraintsIfNeeded];
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
+    [self.contentRows setNeedsLayout];
+    [self.contentRows layoutIfNeeded];
+    [self.composeRow setNeedsLayout];
+    [self.composeRow layoutIfNeeded];
 }
 
 - (void)handleLongPress:(UIGestureRecognizer *)sender
