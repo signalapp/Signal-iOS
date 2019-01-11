@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -48,12 +48,24 @@ class PhotoPickerAssetItem: PhotoGridItem {
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
         var syncImageResult: UIImage?
+        var hasLoadedImage = false
 
         // Surprisingly, iOS will opportunistically run the completion block sync if the image is
-        // already available
+        // already available.
         photoCollectionContents.requestThumbnail(for: self.asset, thumbnailSize: photoMediaSize.thumbnailSize) { image, _ in
-            syncImageResult = image
-            completion(image)
+            DispatchMainThreadSafe({
+                syncImageResult = image
+
+                // Once we've _successfully_ completed (e.g. invoked the completion with
+                // a non-nil image), don't invoke the completion again with a nil argument.
+                if !hasLoadedImage || image != nil {
+                    completion(image)
+
+                    if image != nil {
+                        hasLoadedImage = true
+                    }
+                }
+            })
         }
         return syncImageResult
     }
@@ -294,7 +306,7 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
         let processPHAssetCollections: (PHFetchResult<PHAssetCollection>) -> Void = { (fetchResult) in
             // undocumented constant
 
-            fetchResult.enumerateObjects { (assetCollection, index, stop) in
+            fetchResult.enumerateObjects { (assetCollection, _, _) in
                 // We're already sorting albums by last-updated. "Recently Added" is mostly redundant
                 guard assetCollection.assetCollectionSubtype != .smartAlbumRecentlyAdded else {
                     return
