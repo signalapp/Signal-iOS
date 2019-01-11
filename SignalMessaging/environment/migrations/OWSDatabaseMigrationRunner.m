@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDatabaseMigrationRunner.h"
@@ -18,6 +18,17 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDatabaseMigrationRunner
+
+#pragma mark - Dependencies
+
+- (OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
+
+    return SSKEnvironment.shared.primaryStorage;
+}
+
+#pragma mark -
 
 // This should all migrations which do NOT qualify as safeBlockingMigrations:
 - (NSArray<OWSDatabaseMigration *> *)allMigrations
@@ -50,7 +61,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)runAllOutstandingWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
+    [self removeUnknownMigrations];
+
     [self runMigrations:[self.allMigrations mutableCopy] completion:completion];
+}
+
+// Some users (especially internal users) will move back and forth between
+// app versions.  Whenever they move "forward" in the version history, we
+// want them to re-run any new migrations. Therefore, when they move "backward"
+// in the version history, we cull any unknown migrations.
+- (void)removeUnknownMigrations
+{
+    NSMutableSet<NSString *> *knownMigrationIds = [NSMutableSet new];
+    for (OWSDatabaseMigration *migration in self.allMigrations) {
+        [knownMigrationIds addObject:migration.uniqueId];
+    }
+
+    [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        NSArray<NSString *> *savedMigrationIds = [transaction allKeysInCollection:OWSDatabaseMigration.collection];
+
+        NSMutableSet<NSString *> *unknownMigrationIds = [NSMutableSet new];
+        [unknownMigrationIds addObjectsFromArray:savedMigrationIds];
+        [unknownMigrationIds minusSet:knownMigrationIds];
+
+        for (NSString *unknownMigrationId in unknownMigrationIds) {
+            OWSLogInfo(@"Culling unknown migration: %@", unknownMigrationId);
+            [transaction removeObjectForKey:unknownMigrationId inCollection:OWSDatabaseMigration.collection];
+        }
+    }];
 }
 
 // Run migrations serially to:
