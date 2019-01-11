@@ -319,9 +319,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     private func didComplete(withAttachments attachments: [SignalAttachment]) {
         AssertIsOnMainThread()
 
-        // If we re-enter image picking, do so in batch mode.
-        isInBatchSelectMode = true
-
         for attachment in attachments {
             guard let assetId = attachment.assetId else {
                 owsFailDebug("Attachment is missing asset id.")
@@ -374,17 +371,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         // disabled until at least one item is selected
         self.doneButton.isEnabled = false
-    }
-
-    @objc
-    func didCancelSelect(_ sender: Any) {
-        endSelectMode()
-    }
-
-    func endSelectMode() {
-        isInBatchSelectMode = false
-
-        deselectAnySelected()
     }
 
     func deselectAnySelected() {
@@ -520,6 +506,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
+        if !isInBatchSelectMode {
+            // Clear previous selection, if any.
+            selectedIds.removeAllObjects()
+        }
+
         let asset = photoCollectionContents.asset(at: indexPath.item)
         let assetId = asset.localIdentifier
         selectedIds.add(assetId)
@@ -577,6 +568,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, addMoreToAttachments attachments: [SignalAttachment]) {
+        // If we re-enter image picking via "add more" button, do so in batch mode.
+        isInBatchSelectMode = true
+
         navigationController?.popToViewController(self, animated: true)
     }
 
