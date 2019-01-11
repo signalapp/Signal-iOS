@@ -48,19 +48,22 @@ class PhotoPickerAssetItem: PhotoGridItem {
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
         var syncImageResult: UIImage?
-        var hasCompleted = false
+        var hasLoadedImage = false
 
         // Surprisingly, iOS will opportunistically run the completion block sync if the image is
-        // already available
+        // already available.
         photoCollectionContents.requestThumbnail(for: self.asset, thumbnailSize: photoMediaSize.thumbnailSize) { image, _ in
             DispatchMainThreadSafe({
                 syncImageResult = image
 
                 // Once we've _successfully_ completed (e.g. invoked the completion with
-                // a non-nil image), don't invoke the completion again.
-                if !hasCompleted {
+                // a non-nil image), don't invoke the completion again with a nil argument.
+                if !hasLoadedImage || image != nil {
                     completion(image)
-                    hasCompleted = image != nil
+
+                    if image != nil {
+                        hasLoadedImage = true
+                    }
                 }
             })
         }
