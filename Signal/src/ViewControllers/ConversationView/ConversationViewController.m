@@ -4822,14 +4822,17 @@ typedef enum : NSUInteger {
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-    // Update and snapshot the "last known distance from bottom".
-    [self updateLastKnownDistanceFromBottom];
-    NSNumber *_Nullable lastKnownDistanceFromBottom = self.lastKnownDistanceFromBottom;
+    // Snapshot the "last visible row".
+    NSIndexPath *_Nullable lastVisibleIndexPath = self.lastVisibleIndexPath;
 
     __weak ConversationViewController *weakSelf = self;
     [coordinator
         animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-            // Do nothing.
+            if (lastVisibleIndexPath) {
+                [self.collectionView scrollToItemAtIndexPath:lastVisibleIndexPath
+                                            atScrollPosition:UICollectionViewScrollPositionBottom
+                                                    animated:NO];
+            }
         }
         completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
             ConversationViewController *strongSelf = weakSelf;
@@ -4841,13 +4844,10 @@ typedef enum : NSUInteger {
             // new size.
             [strongSelf resetForSizeOrOrientationChange];
 
-            if (lastKnownDistanceFromBottom) {
-                NSValue *_Nullable contentOffsetValue =
-                    [strongSelf contentOffsetForLastKnownDistanceFromBottom:lastKnownDistanceFromBottom.floatValue];
-                if (contentOffsetValue) {
-                    CGPoint contentOffset = contentOffsetValue.CGPointValue;
-                    [strongSelf.collectionView setContentOffset:contentOffset animated:NO];
-                }
+            if (lastVisibleIndexPath) {
+                [strongSelf.collectionView scrollToItemAtIndexPath:lastVisibleIndexPath
+                                                  atScrollPosition:UICollectionViewScrollPositionBottom
+                                                          animated:NO];
             }
         }];
 }
