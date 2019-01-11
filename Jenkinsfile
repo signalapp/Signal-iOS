@@ -11,6 +11,12 @@ pipeline {
     stages {
         stage('env setup') {
             steps {
+                script {
+                    // CHANGE_ID is set only for pull requests, so it is safe to access the pullRequest global variable
+                    if (env.CHANGE_ID) {
+                        currentBuild.displayName = "PR #${pullRequest.number}: ${pullRequest.title}"
+                    }
+                }
                 sh 'make setup'
             }
         }
