@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -27,7 +27,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     private let titleLabel = UILabel()
     private let titleIconView = UIImageView()
 
-    private var selectedIds = Set<String>()
+    // We use NSMutableOrderedSet so that we can honor selection order.
+    private let selectedIds = NSMutableOrderedSet()
 
     // This variable should only be accessed on the main thread.
     private var assetIdToCommentMap = [String: String]()
@@ -278,19 +279,30 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     func didPressDone(_ sender: Any) {
         Logger.debug("")
 
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        guard let indexPaths = collectionView.indexPathsForSelectedItems else {
-            owsFailDebug("indexPaths was unexpectedly nil")
-            return
-        }
-
         hasPressedDoneSinceAppeared = true
         updateDoneButton()
-        let assets: [PHAsset] = indexPaths.compactMap { return photoCollectionContents.asset(at: $0.row) }
+
+        // Honor selection order.
+        var assetIdToAssetIndexMap = [String: Int]()
+        let assetCount = photoCollectionContents.assetCount
+        for index in 0..<assetCount {
+            let asset = photoCollectionContents.asset(at: index)
+            let assetId = asset.localIdentifier
+            assetIdToAssetIndexMap[assetId] = index
+        }
+        var assets = [PHAsset]()
+        for selectedIdAny in selectedIds.array {
+            guard let selectedId = selectedIdAny as? String else {
+                owsFailDebug("Invalid asset id: \(selectedIdAny)")
+                continue
+            }
+            guard let assetIndex = assetIdToAssetIndexMap[selectedId] else {
+                owsFailDebug("Missing asset id: \(selectedId)")
+                continue
+            }
+            assets.append(photoCollectionContents.asset(at: assetIndex))
+        }
+
         complete(withAssets: assets)
     }
 
@@ -381,7 +393,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        selectedIds = Set()
+        selectedIds.removeAllObjects()
         collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
 
         if isInBatchSelectMode {
@@ -510,7 +522,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         let asset = photoCollectionContents.asset(at: indexPath.item)
         let assetId = asset.localIdentifier
-        selectedIds.insert(assetId)
+        selectedIds.add(assetId)
 
         if isInBatchSelectMode {
             updateDoneButton()
