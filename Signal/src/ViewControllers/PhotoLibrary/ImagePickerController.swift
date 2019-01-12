@@ -513,17 +513,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-
-        if !isInBatchSelectMode {
-            // Clear previous selection, if any.
-            selectedIds.removeAllObjects()
-        }
-
         let asset = photoCollectionContents.asset(at: indexPath.item)
-        let assetId = asset.localIdentifier
-        selectedIds.add(assetId)
 
         if isInBatchSelectMode {
+            let assetId = asset.localIdentifier
+            selectedIds.add(assetId)
             updateDoneButton()
         } else {
             // Don't show "selected" badge unless we're in batch mode
