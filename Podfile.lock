@@ -277,7 +277,7 @@ CHECKOUT OPTIONS:
     :commit: 9f9563a83cd8960503074aa8de72206f83fb7a69
     :git: https://github.com/signalapp/SocketRocket.git
   YapDatabase:
-    :commit: 9f7d82395c534107928990950720fc49073c7b47
+    :commit: 8e2b69110efd9499a5b553fda0165d2cea4e818d
     :git: https://github.com/signalapp/YapDatabase.git
 
 SPEC CHECKSUMS:
