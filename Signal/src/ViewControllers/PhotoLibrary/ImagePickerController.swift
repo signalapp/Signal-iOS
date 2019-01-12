@@ -116,13 +116,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         reloadDataAndRestoreSelection()
         if !hasEverAppeared {
-            hasEverAppeared = true
             scrollToBottom(animated: false)
         }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        hasEverAppeared = true
         // done button may have been disable from the last time we hit "Done"
         // make sure to re-enable it if appropriate upon returning to the view
         hasPressedDoneSinceAppeared = false
@@ -156,31 +157,37 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        let verticalOffset: CGFloat
-        if #available(iOS 11, *) {
-            // On iOS10 and earlier, we can be precise, but as of iOS11 `collectionView.contentInset`
-            // is based on `safeAreaInsets`, which isn't accurate until `viewDidAppear` at the earliest.
-            //
-            // from https://developer.apple.com/documentation/uikit/uiview/positioning_content_relative_to_the_safe_area
-            // > Make your modifications in [viewDidAppear] because the safe area insets for a view are
-            // > not accurate until the view is added to a view hierarchy.
-            //
-            // Overshooting like this works without visible animation glitch. on iOS11+
-            // However, before iOS11, "overshooting" the contentOffset like this produces a broken
-            // layout or hanging. Luckily for those versions, before the safeAreaInset feature
-            // existed, we can accurately accesse colletionView.contentInset before `viewDidAppear`
-            // and calculate a precise content offset.
-            verticalOffset = CGFloat.greatestFiniteMagnitude
+        var verticalOffset: CGFloat
+
+        let visibleHeight = collectionView.bounds.height - collectionView.contentInset.top
+        let contentHeight = collectionView.contentSize.height
+        if contentHeight <= visibleHeight {
+            verticalOffset = -collectionView.contentInset.top
         } else {
-            let visibleHeight = collectionView.bounds.height - collectionView.contentInset.top
-            let contentHeight = collectionView.contentSize.height
-            if contentHeight <= visibleHeight {
-                verticalOffset = -collectionView.contentInset.top
+            let topOfLastPage = contentHeight - collectionView.bounds.height
+            verticalOffset = topOfLastPage
+        }
+
+        if #available(iOS 11, *) {
+            if hasEverAppeared {
+                verticalOffset += collectionView.safeAreaInsets.bottom
             } else {
-                let topOfLastPage = contentHeight - collectionView.bounds.height
-                verticalOffset = topOfLastPage
+                // On iOS10 and earlier, we can be precise, but as of iOS11 `collectionView.contentInset`
+                // is based on `safeAreaInsets`, which isn't accurate until `viewDidAppear` at the earliest.
+                //
+                // from https://developer.apple.com/documentation/uikit/uiview/positioning_content_relative_to_the_safe_area
+                // > Make your modifications in [viewDidAppear] because the safe area insets for a view are
+                // > not accurate until the view is added to a view hierarchy.
+                //
+                // Overshooting like this works without visible animation glitch. on iOS11+
+                // However, before iOS11, "overshooting" the contentOffset like this produces a broken
+                // layout or hanging. Luckily for those versions, before the safeAreaInset feature
+                // existed, we can accurately access collectionView.contentInset before `viewDidAppear`
+                // and calculate a precise content offset.
+                verticalOffset += 122
             }
         }
+
         collectionView.setContentOffset(CGPoint(x: 0, y: verticalOffset), animated: animated)
     }
 
@@ -478,6 +485,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         collectionView?.reloadData()
+        scrollToBottom(animated: false)
         hideCollectionPicker()
     }
 
