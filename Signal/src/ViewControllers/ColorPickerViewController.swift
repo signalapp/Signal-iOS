@@ -483,7 +483,7 @@ private class MockOutgoingMessage: TSOutgoingMessage {
                    groupMetaMessage: .unspecified,
                    quotedMessage: nil,
                    contactShare: nil,
-            linkPreview: nil)
+                   linkPreview: nil)
     }
 
     required init?(coder: NSCoder) {

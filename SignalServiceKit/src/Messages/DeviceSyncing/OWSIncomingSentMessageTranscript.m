@@ -45,7 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
     _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
-    _linkPreview = [[OWSLinkPreview alloc] initWithDataMessage:_dataMessage body:_body transaction:transaction];
+    _linkPreview =
+        [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:_dataMessage body:_body transaction:transaction];
 
     if (sentProto.unidentifiedStatus.count > 0) {
         NSMutableArray<NSString *> *nonUdRecipientIds = [NSMutableArray new];

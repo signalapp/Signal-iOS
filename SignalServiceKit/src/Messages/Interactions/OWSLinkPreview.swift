@@ -35,9 +35,9 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
-    public required init?(dataMessage: SSKProtoDataMessage,
-                          body: String?,
-                          transaction: YapDatabaseReadWriteTransaction) {
+    public class func buildValidatedLinkPreview(dataMessage: SSKProtoDataMessage,
+                                                body: String?,
+                                                transaction: YapDatabaseReadWriteTransaction) -> OWSLinkPreview? {
         guard let previewProto = dataMessage.preview else {
             return nil
         }
@@ -82,11 +82,7 @@ public class OWSLinkPreview: MTLModel {
             return nil
         }
 
-        self.urlString = urlString
-        self.title = title
-        self.attachmentId = imageAttachmentId
-
-        super.init()
+        return OWSLinkPreview(urlString: urlString, title: title, attachmentId: imageAttachmentId)
     }
 
     @objc

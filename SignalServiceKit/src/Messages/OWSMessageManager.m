@@ -1288,7 +1288,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                             transaction:transaction];
 
                 OWSLinkPreview *_Nullable linkPreview =
-                    [[OWSLinkPreview alloc] initWithDataMessage:dataMessage body:body transaction:transaction];
+                    [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:dataMessage
+                                                                        body:body
+                                                                 transaction:transaction];
 
                 OWSLogDebug(@"incoming message from: %@ for group: %@ with timestamp: %lu",
                     envelopeAddress(envelope),
@@ -1354,7 +1356,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                     transaction:transaction];
 
         OWSLinkPreview *_Nullable linkPreview =
-            [[OWSLinkPreview alloc] initWithDataMessage:dataMessage body:body transaction:transaction];
+            [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:dataMessage body:body transaction:transaction];
 
         // Legit usage of senderTimestamp when creating incoming message from received envelope
         TSIncomingMessage *incomingMessage =
