@@ -317,10 +317,16 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let attachmentPromises: [Promise<SignalAttachment>] = assets.map({
             return photoCollectionContents.outgoingAttachment(for: $0)
         })
-        when(fulfilled: attachmentPromises)
-            .map { attachments in
+
+        firstly {
+            when(fulfilled: attachmentPromises)
+        }.map { attachments in
+            Logger.debug("built all attachments")
             self.didComplete(withAttachments: attachments)
-            }.retainUntilComplete()
+        }.catch { error in
+            Logger.error("failed to prepare attachments. error: \(error)")
+            OWSAlerts.showAlert(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
+        }.retainUntilComplete()
     }
 
     private func didComplete(withAttachments attachments: [SignalAttachment]) {
