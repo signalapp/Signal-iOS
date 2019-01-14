@@ -47,6 +47,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 @property (nonatomic, readonly, nullable) NSString *caption;
 
+@property (nonatomic, readonly) BOOL isFailedDownload;
+
 @end
 
 #pragma mark -

@@ -1388,16 +1388,28 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
                 return;
             }
 
-            TSAttachment *attachment = mediaView.attachment;
-            if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
-                    TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
-                    if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
+            if ([mediaAlbumCellView isMoreItemsViewWithMediaView:mediaView]) {
+                for (ConversationMediaAlbumItem *mediaAlbumItem in self.viewItem.mediaAlbumItems) {
+                    if (mediaAlbumItem.isFailedDownload) {
+                        // Treat the tap as a "retry" tap if:
+                        //
+                        // a) the user tapped on the "more items" cell.
+                        // b) there are any failed downloads in the album.
                         [self.delegate didTapFailedIncomingAttachment:self.viewItem];
                         return;
                     }
                 }
+            }
 
+            TSAttachment *attachment = mediaView.attachment;
+            if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
+                if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
+                    // Treat the tap as a "retry" tap if the user taps on a failed download.
+                    [self.delegate didTapFailedIncomingAttachment:self.viewItem];
+                    return;
+                }
+            } else if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
                 OWSLogWarn(@"Media attachment not yet downloaded.");
                 return;
             }

@@ -64,6 +64,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     return self;
 }
+
+- (BOOL)isFailedDownload
+{
+    if (![self.attachment isKindOfClass:[TSAttachmentPointer class]]) {
+        return NO;
+    }
+    TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)self.attachment;
+    return attachmentPointer.state == TSAttachmentPointerStateFailed;
+}
+
 @end
 
 #pragma mark -
