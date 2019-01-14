@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSOutgoingMessage.h"
@@ -42,7 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:NO
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
-                                                       contactShare:nil];
+                                                       contactShare:nil
+                                                        linkPreview:nil];
     [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
     }];
@@ -60,7 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:NO
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
-                                                       contactShare:nil];
+                                                       contactShare:nil
+                                                        linkPreview:nil];
     [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [message updateWithSentRecipient:self.contactId wasSentByUD:NO transaction:transaction];
         XCTAssertTrue([message shouldStartExpireTimerWithTransaction:transaction]);
@@ -79,7 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:NO
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
-                                                       contactShare:nil];
+                                                       contactShare:nil
+                                                        linkPreview:nil];
     [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
     }];
@@ -97,7 +100,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:NO
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
-                                                       contactShare:nil];
+                                                       contactShare:nil
+                                                        linkPreview:nil];
     [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
         XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);

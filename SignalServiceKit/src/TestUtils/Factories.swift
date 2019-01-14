@@ -137,7 +137,8 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                      isVoiceMessage: isVoiceMessageBuilder(),
                                      groupMetaMessage: groupMetaMessageBuilder(),
                                      quotedMessage: quotedMessageBuilder(),
-                                     contactShare: contactShareBuilder())
+                                     contactShare: contactShareBuilder(),
+                                     linkPreview: linkPreviewBuilder())
 
         return item
     }
@@ -204,6 +205,11 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return nil
     }
 
+    @objc
+    public var linkPreviewBuilder: () -> OWSLinkPreview? = {
+        return nil
+    }
+
     // MARK: Delivery Receipts
 
     @objc
@@ -244,6 +250,7 @@ class IncomingMessageFactory: NSObject, Factory {
                                      expiresInSeconds: expiresInSecondsBuilder(),
                                      quotedMessage: quotedMessageBuilder(),
                                      contactShare: contactShareBuilder(),
+                                     linkPreview: linkPreviewBuilder(),
                                      serverTimestamp: serverTimestampBuilder(),
                                      wasReceivedByUD: wasReceivedByUDBuilder())
 
@@ -298,6 +305,11 @@ class IncomingMessageFactory: NSObject, Factory {
 
     @objc
     public var contactShareBuilder: () -> OWSContact? = {
+        return nil
+    }
+
+    @objc
+    public var linkPreviewBuilder: () -> OWSLinkPreview? = {
         return nil
     }
 

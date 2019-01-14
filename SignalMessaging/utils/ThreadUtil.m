@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ThreadUtil.h"
@@ -134,7 +134,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:isVoiceMessage
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
-                                                       contactShare:nil];
+                                                       contactShare:nil
+                                                        linkPreview:nil];
 
     NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
     for (SignalAttachment *attachment in attachments) {
@@ -167,7 +168,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:NO
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
-                                                       contactShare:contactShare];
+                                                       contactShare:contactShare
+                                                        linkPreview:nil];
 
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [message saveWithTransaction:transaction];
@@ -246,7 +248,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:isVoiceMessage
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
-                                                       contactShare:nil];
+                                                       contactShare:nil
+                                                        linkPreview:nil];
 
     NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
     for (SignalAttachment *attachment in attachments) {
@@ -303,7 +306,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:NO
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
-                                                       contactShare:contactShare];
+                                                       contactShare:contactShare
+                                                        linkPreview:nil];
 
     [messageSender sendMessage:message
         success:^{

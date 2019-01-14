@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSOutgoingMessage.h"
@@ -23,7 +23,8 @@ typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(SignalRecipient *);
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
+                                    contactShare:(nullable OWSContact *)contactShare
+                                     linkPreview:(nullable OWSLinkPreview *)linkPreview NS_UNAVAILABLE;
 
 - (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block thread:(nullable TSThread *)thread;
 - (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block

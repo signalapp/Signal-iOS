@@ -1287,6 +1287,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                                  thread:oldGroupThread
                                                                                             transaction:transaction];
 
+                OWSLinkPreview *_Nullable linkPreview =
+                    [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:dataMessage
+                                                                        body:body
+                                                                 transaction:transaction];
+
                 OWSLogDebug(@"incoming message from: %@ for group: %@ with timestamp: %lu",
                     envelopeAddress(envelope),
                     groupId,
@@ -1303,6 +1308,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                expiresInSeconds:dataMessage.expireTimer
                                                                   quotedMessage:quotedMessage
                                                                    contactShare:contact
+                                                                    linkPreview:linkPreview
                                                                 serverTimestamp:serverTimestamp
                                                                 wasReceivedByUD:wasReceivedByUD];
 
@@ -1349,6 +1355,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                          thread:thread
                                                                                     transaction:transaction];
 
+        OWSLinkPreview *_Nullable linkPreview =
+            [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:dataMessage body:body transaction:transaction];
+
         // Legit usage of senderTimestamp when creating incoming message from received envelope
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
@@ -1360,6 +1369,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        expiresInSeconds:dataMessage.expireTimer
                                                           quotedMessage:quotedMessage
                                                            contactShare:contact
+                                                            linkPreview:linkPreview
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 

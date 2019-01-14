@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSOutgoingMessage.h"
@@ -267,7 +267,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:TSGroupMetaMessageUnspecified
                                                          quotedMessage:quotedMessage
-                                                          contactShare:nil];
+                                                          contactShare:nil
+                                                           linkPreview:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -284,7 +285,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:groupMetaMessage
                                                          quotedMessage:nil
-                                                          contactShare:nil];
+                                                          contactShare:nil
+                                                           linkPreview:nil];
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -297,6 +299,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
+                                     linkPreview:(nullable OWSLinkPreview *)linkPreview
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -305,7 +308,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                           expiresInSeconds:expiresInSeconds
                            expireStartedAt:expireStartedAt
                              quotedMessage:quotedMessage
-                              contactShare:contactShare];
+                              contactShare:contactShare
+                               linkPreview:linkPreview];
     if (!self) {
         return self;
     }

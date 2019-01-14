@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageSender.h"
@@ -239,7 +239,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           isVoiceMessage:NO
                                                                         groupMetaMessage:TSGroupMetaMessageUnspecified
                                                                            quotedMessage:nil
-                                                                            contactShare:nil];
+                                                                            contactShare:nil
+                                                                             linkPreview:nil];
     [self.unexpiringMessage save];
 
     self.expiringMessage = [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:1
@@ -251,7 +252,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         isVoiceMessage:NO
                                                                       groupMetaMessage:TSGroupMetaMessageUnspecified
                                                                          quotedMessage:nil
-                                                                          contactShare:nil];
+                                                                          contactShare:nil
+                                                                           linkPreview:nil];
     [self.expiringMessage save];
 
     OWSPrimaryStorage *storageManager = [OWSPrimaryStorage sharedManager];

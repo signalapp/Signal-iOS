@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIncomingSentMessageTranscript.h"
@@ -45,6 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
     _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
+    _linkPreview =
+        [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:_dataMessage body:_body transaction:transaction];
 
     if (sentProto.unidentifiedStatus.count > 0) {
         NSMutableArray<NSString *> *nonUdRecipientIds = [NSMutableArray new];

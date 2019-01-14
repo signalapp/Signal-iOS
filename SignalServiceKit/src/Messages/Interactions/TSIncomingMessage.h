@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadTracking.h"
@@ -23,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
+                            contactShare:(nullable OWSContact *)contactShare
+                             linkPreview:(nullable OWSLinkPreview *)linkPreview NS_UNAVAILABLE;
 
 /**
  *  Inits an incoming group message that expires.
@@ -56,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 expiresInSeconds:(uint32_t)expiresInSeconds
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
+                                     linkPreview:(nullable OWSLinkPreview *)linkPreview
                                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                                  wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOrphanDataCleaner.h"
@@ -81,7 +81,8 @@
                                                       attachmentIds:attachmentIds
                                                    expiresInSeconds:0
                                                       quotedMessage:nil
-                                                       contactShare:nil];
+                                                       contactShare:nil
+                                                        linkPreview:nil];
     [incomingMessage save];
 
     return incomingMessage;

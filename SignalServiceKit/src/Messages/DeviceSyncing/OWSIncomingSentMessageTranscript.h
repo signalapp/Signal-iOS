@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSContact;
+@class OWSLinkPreview;
 @class SSKProtoAttachmentPointer;
 @class SSKProtoDataMessage;
 @class SSKProtoSyncMessageSent;
@@ -35,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contact;
+@property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 
 // If either nonUdRecipientIds or udRecipientIds is nil,
 // this is either a legacy transcript or it reflects a legacy sync message.

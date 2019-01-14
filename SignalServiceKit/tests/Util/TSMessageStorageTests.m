@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPrimaryStorage.h"
@@ -59,7 +59,8 @@
                                                       attachmentIds:@[]
                                                    expiresInSeconds:0
                                                       quotedMessage:nil
-                                                       contactShare:nil];
+                                                       contactShare:nil
+                                                        linkPreview:nil];
 
     [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [newMessage saveWithTransaction:transaction];
@@ -93,7 +94,8 @@
                                                           attachmentIds:@[]
                                                        expiresInSeconds:0
                                                           quotedMessage:nil
-                                                           contactShare:nil];
+                                                           contactShare:nil
+                                                            linkPreview:nil];
 
         [messages addObject:newMessage];
         [newMessage save];
@@ -147,7 +149,8 @@
                                                                                       attachmentIds:@[]
                                                                                    expiresInSeconds:0
                                                                                       quotedMessage:nil
-                                                                                       contactShare:nil];
+                                                                                       contactShare:nil
+                                                                                        linkPreview:nil];
         [newMessage save];
         [messages addObject:newMessage];
     }
