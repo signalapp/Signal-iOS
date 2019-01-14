@@ -53,8 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateFontSizes;
 
-- (void)updateLayoutWithIsLandscape:(BOOL)isLandscape;
-
 #pragma mark - Voice Memo
 
 - (void)ensureTextViewHeight;

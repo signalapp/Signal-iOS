@@ -53,8 +53,6 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, nullable) UILabel *recordingLabel;
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
-@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutContraints;
-@property (nonatomic) BOOL isLandscapeLayout;
 
 @end
 
@@ -167,8 +165,11 @@ const CGFloat kMaxTextViewHeight = 98;
     [self addSubview:self.contentRows];
     [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeBottom];
+    [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeLeading],
+        [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing],
 
-    if (@available(iOS 11, *)) {
+        if (@available(iOS 11, *))
+    {
         self.contentRows.insetsLayoutMarginsFromSafeArea = NO;
         self.composeRow.insetsLayoutMarginsFromSafeArea = NO;
         self.insetsLayoutMarginsFromSafeArea = NO;
@@ -176,9 +177,6 @@ const CGFloat kMaxTextViewHeight = 98;
     self.contentRows.preservesSuperviewLayoutMargins = NO;
     self.composeRow.preservesSuperviewLayoutMargins = NO;
     self.preservesSuperviewLayoutMargins = NO;
-
-    [self.composeRow addBackgroundViewWithBackgroundColor:UIColor.blueColor];
-    [self.contentRows addBackgroundViewWithBackgroundColor:UIColor.greenColor];
 
     [self ensureShouldShowVoiceMemoButtonAnimated:NO doLayout:NO];
 }
@@ -335,89 +333,6 @@ const CGFloat kMaxTextViewHeight = 98;
     } else {
         updateBlock();
     }
-}
-
-- (void)setIsLandscapeLayout:(BOOL)isLandscapeLayout
-{
-    _isLandscapeLayout = isLandscapeLayout;
-
-    [self updateLayoutDebug];
-}
-
-- (void)updateLayoutDebug
-{
-    OWSLogInfo(@"isLandscapeLayout: %d", self.isLandscapeLayout);
-
-    if (self.layoutContraints) {
-        [NSLayoutConstraint deactivateConstraints:self.layoutContraints];
-    }
-
-    if (self.isLandscapeLayout) {
-        self.layoutContraints = @[
-            [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeLeading],
-            [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing],
-        ];
-    } else {
-        self.layoutContraints = @[
-            [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeLeading],
-            [self.contentRows autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
-        ];
-    }
-
-    [self setNeedsUpdateConstraints];
-    [self updateConstraintsIfNeeded];
-    [self.contentRows setNeedsUpdateConstraints];
-    [self.contentRows updateConstraintsIfNeeded];
-    [self.composeRow setNeedsUpdateConstraints];
-    [self.composeRow updateConstraintsIfNeeded];
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
-    [self.contentRows setNeedsLayout];
-    [self.contentRows layoutIfNeeded];
-    [self.composeRow setNeedsLayout];
-    [self.composeRow layoutIfNeeded];
-
-    [self setNeedsUpdateConstraints];
-    [self updateConstraintsIfNeeded];
-    [self.contentRows setNeedsUpdateConstraints];
-    [self.contentRows updateConstraintsIfNeeded];
-    [self.composeRow setNeedsUpdateConstraints];
-    [self.composeRow updateConstraintsIfNeeded];
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
-    [self.contentRows setNeedsLayout];
-    [self.contentRows layoutIfNeeded];
-    [self.composeRow setNeedsLayout];
-    [self.composeRow layoutIfNeeded];
-}
-
-- (void)updateLayoutWithIsLandscape:(BOOL)isLandscape
-{
-    OWSLogInfo(@"");
-
-    self.isLandscapeLayout = isLandscape;
-}
-
-- (void)safeAreaInsetsDidChange
-{
-    OWSLogInfo(@"");
-
-    [super safeAreaInsetsDidChange];
-
-    [self updateLayoutDebug];
-}
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-
-    OWSLogInfo(@"isLandscapeLayout: %d", self.isLandscapeLayout);
-    OWSLogInfo(@"self: %@ %@", NSStringFromCGRect(self.frame), NSStringFromCGRect(self.bounds));
-    if (@available(iOS 11, *)) {
-        OWSLogInfo(@"safeAreaInsets: %@", NSStringFromUIEdgeInsets(self.safeAreaInsets));
-    }
-    OWSLogInfo(@"contentRows: %@", NSStringFromCGRect(self.contentRows.frame));
-    OWSLogInfo(@"composeRow: %@", NSStringFromCGRect(self.composeRow.frame));
 }
 
 - (void)handleLongPress:(UIGestureRecognizer *)sender
