@@ -97,4 +97,82 @@ public class OWSLinkPreview: MTLModel {
         }
         attachment.remove(with: transaction)
     }
+
+    // MARK: - Domain Whitelist
+
+    private static let linkDomainWhitelist = [
+    "youtube.com",
+    "reddit.com",
+    "imgur.com",
+    "instagram.com"
+    ]
+
+    private static let mediaDomainWhitelist = [
+        "ytimg.com",
+        "cdninstagram.com"
+        ]
+
+    private static let protocolWhitelist = [
+        "https"
+        ]
+
+    @objc
+    public class func isValidLinkUrl(_ urlString: String) -> Bool {
+        guard let url = URL(string: urlString) else {
+            return false
+        }
+        return isUrlInDomainWhitelist(url: url,
+                                      domainWhitelist: OWSLinkPreview.linkDomainWhitelist)
+    }
+
+    @objc
+    public class func isValidMediaUrl(_ urlString: String) -> Bool {
+        guard let url = URL(string: urlString) else {
+            return false
+        }
+        return isUrlInDomainWhitelist(url: url,
+            domainWhitelist: OWSLinkPreview.linkDomainWhitelist + OWSLinkPreview.mediaDomainWhitelist)
+    }
+
+    private class func isUrlInDomainWhitelist(url: URL, domainWhitelist: [String]) -> Bool {
+        guard let urlProtocol = url.scheme?.lowercased() else {
+            return false
+        }
+        guard protocolWhitelist.contains(urlProtocol) else {
+            return false
+        }
+        guard let domain = url.host?.lowercased() else {
+            return false
+        }
+        // TODO: We need to verify:
+        //
+        // * The final domain whitelist.
+        // * The relationship between the "link" whitelist and the "media" whitelist.
+        // * Exact match or suffix-based?
+        // * Case-insensitive?
+        // * Protocol?
+        for whitelistedDomain in domainWhitelist {
+            if domain == whitelistedDomain.lowercased() ||
+                domain.hasSuffix("." + whitelistedDomain.lowercased()) {
+                return true
+            }
+        }
+        return false
+    }
+
+    // MARK: - Text Parsing
+
+    @objc
+    public class func previewUrl(forMessageBodyText body: String?) -> String? {
+        guard let body = body else {
+            return nil
+        }
+        let components = body.components(separatedBy: .whitespacesAndNewlines)
+        for component in components {
+            if isValidLinkUrl(component) {
+                return component
+            }
+        }
+        return nil
+    }
 }
