@@ -171,7 +171,11 @@ const CGFloat kMaxTextViewHeight = 98;
     if (@available(iOS 11, *)) {
         self.contentRows.insetsLayoutMarginsFromSafeArea = NO;
         self.composeRow.insetsLayoutMarginsFromSafeArea = NO;
+        self.insetsLayoutMarginsFromSafeArea = NO;
     }
+    self.contentRows.preservesSuperviewLayoutMargins = NO;
+    self.composeRow.preservesSuperviewLayoutMargins = NO;
+    self.preservesSuperviewLayoutMargins = NO;
 
     [self.composeRow addBackgroundViewWithBackgroundColor:UIColor.blueColor];
     [self.contentRows addBackgroundViewWithBackgroundColor:UIColor.greenColor];
@@ -407,7 +411,8 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     [super layoutSubviews];
 
-    OWSLogInfo(@"self: %@", NSStringFromCGRect(self.frame));
+    OWSLogInfo(@"isLandscapeLayout: %d", self.isLandscapeLayout);
+    OWSLogInfo(@"self: %@ %@", NSStringFromCGRect(self.frame), NSStringFromCGRect(self.bounds));
     if (@available(iOS 11, *)) {
         OWSLogInfo(@"safeAreaInsets: %@", NSStringFromUIEdgeInsets(self.safeAreaInsets));
     }
