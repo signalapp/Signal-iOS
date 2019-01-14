@@ -1226,6 +1226,7 @@ struct SignalServiceProtos_DataMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
     var url: String {
       get {return _storage._url ?? String()}
       set {_uniqueStorage()._url = newValue}

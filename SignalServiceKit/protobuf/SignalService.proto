@@ -207,6 +207,7 @@ message DataMessage {
   }
 
   message Preview {
+    // @required
     optional string            url   = 1;
     optional string            title = 2;
     optional AttachmentPointer image = 3;

@@ -2679,16 +2679,13 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
 
     // MARK: - SSKProtoDataMessagePreviewBuilder
 
-    @objc public class func builder() -> SSKProtoDataMessagePreviewBuilder {
-        return SSKProtoDataMessagePreviewBuilder()
+    @objc public class func builder(url: String) -> SSKProtoDataMessagePreviewBuilder {
+        return SSKProtoDataMessagePreviewBuilder(url: url)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoDataMessagePreviewBuilder {
-        let builder = SSKProtoDataMessagePreviewBuilder()
-        if let _value = url {
-            builder.setUrl(_value)
-        }
+        let builder = SSKProtoDataMessagePreviewBuilder(url: url)
         if let _value = title {
             builder.setTitle(_value)
         }
@@ -2703,6 +2700,12 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
         private var proto = SignalServiceProtos_DataMessage.Preview()
 
         @objc fileprivate override init() {}
+
+        @objc fileprivate init(url: String) {
+            super.init()
+
+            setUrl(url)
+        }
 
         @objc public func setUrl(_ valueParam: String) {
             proto.url = valueParam
@@ -2727,17 +2730,9 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Preview
 
-    @objc public let image: SSKProtoAttachmentPointer?
+    @objc public let url: String
 
-    @objc public var url: String? {
-        guard proto.hasUrl else {
-            return nil
-        }
-        return proto.url
-    }
-    @objc public var hasUrl: Bool {
-        return proto.hasUrl
-    }
+    @objc public let image: SSKProtoAttachmentPointer?
 
     @objc public var title: String? {
         guard proto.hasTitle else {
@@ -2750,8 +2745,10 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
     }
 
     private init(proto: SignalServiceProtos_DataMessage.Preview,
+                 url: String,
                  image: SSKProtoAttachmentPointer?) {
         self.proto = proto
+        self.url = url
         self.image = image
     }
 
@@ -2766,6 +2763,11 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Preview) throws -> SSKProtoDataMessagePreview {
+        guard proto.hasUrl else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: url")
+        }
+        let url = proto.url
+
         var image: SSKProtoAttachmentPointer? = nil
         if proto.hasImage {
             image = try SSKProtoAttachmentPointer.parseProto(proto.image)
@@ -2776,6 +2778,7 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
         // MARK: - End Validation Logic for SSKProtoDataMessagePreview -
 
         let result = SSKProtoDataMessagePreview(proto: proto,
+                                                url: url,
                                                 image: image)
         return result
     }
