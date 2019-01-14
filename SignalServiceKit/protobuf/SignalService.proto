@@ -206,6 +206,12 @@ message DataMessage {
     optional string            organization    = 7;
   }
 
+  message Preview {
+    optional string            url   = 1;
+    optional string            title = 2;
+    optional AttachmentPointer image = 3;
+  }
+
   optional string             body        = 1;
   repeated AttachmentPointer  attachments = 2;
   optional GroupContext       group       = 3;
@@ -215,6 +221,7 @@ message DataMessage {
   optional uint64             timestamp   = 7;
   optional Quote              quote       = 8;
   repeated Contact            contact     = 9;
+  optional Preview            preview     = 10;
 }
 
 message NullMessage {
