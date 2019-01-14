@@ -4848,7 +4848,6 @@ typedef enum : NSUInteger {
             [strongSelf resetForSizeOrOrientationChange];
 
             [strongSelf updateInputToolbarLayout];
-        }];
 
             if (lastVisibleIndexPath) {
                 [strongSelf.collectionView scrollToItemAtIndexPath:lastVisibleIndexPath

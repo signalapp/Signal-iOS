@@ -54,6 +54,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutContraints;
+@property (nonatomic) BOOL isLandscapeLayout;
 
 @end
 
@@ -171,6 +172,9 @@ const CGFloat kMaxTextViewHeight = 98;
         self.contentRows.insetsLayoutMarginsFromSafeArea = NO;
         self.composeRow.insetsLayoutMarginsFromSafeArea = NO;
     }
+
+    [self.composeRow addBackgroundViewWithBackgroundColor:UIColor.blueColor];
+    [self.contentRows addBackgroundViewWithBackgroundColor:UIColor.greenColor];
 
     [self ensureShouldShowVoiceMemoButtonAnimated:NO doLayout:NO];
 }
@@ -329,13 +333,22 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 }
 
-- (void)updateLayoutWithIsLandscape:(BOOL)isLandscape
+- (void)setIsLandscapeLayout:(BOOL)isLandscapeLayout
 {
+    _isLandscapeLayout = isLandscapeLayout;
+
+    [self updateLayoutDebug];
+}
+
+- (void)updateLayoutDebug
+{
+    OWSLogInfo(@"isLandscapeLayout: %d", self.isLandscapeLayout);
+
     if (self.layoutContraints) {
         [NSLayoutConstraint deactivateConstraints:self.layoutContraints];
     }
 
-    if (isLandscape) {
+    if (self.isLandscapeLayout) {
         self.layoutContraints = @[
             [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeLeading],
             [self.contentRows autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing],
@@ -359,6 +372,47 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.contentRows layoutIfNeeded];
     [self.composeRow setNeedsLayout];
     [self.composeRow layoutIfNeeded];
+
+    [self setNeedsUpdateConstraints];
+    [self updateConstraintsIfNeeded];
+    [self.contentRows setNeedsUpdateConstraints];
+    [self.contentRows updateConstraintsIfNeeded];
+    [self.composeRow setNeedsUpdateConstraints];
+    [self.composeRow updateConstraintsIfNeeded];
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
+    [self.contentRows setNeedsLayout];
+    [self.contentRows layoutIfNeeded];
+    [self.composeRow setNeedsLayout];
+    [self.composeRow layoutIfNeeded];
+}
+
+- (void)updateLayoutWithIsLandscape:(BOOL)isLandscape
+{
+    OWSLogInfo(@"");
+
+    self.isLandscapeLayout = isLandscape;
+}
+
+- (void)safeAreaInsetsDidChange
+{
+    OWSLogInfo(@"");
+
+    [super safeAreaInsetsDidChange];
+
+    [self updateLayoutDebug];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    OWSLogInfo(@"self: %@", NSStringFromCGRect(self.frame));
+    if (@available(iOS 11, *)) {
+        OWSLogInfo(@"safeAreaInsets: %@", NSStringFromUIEdgeInsets(self.safeAreaInsets));
+    }
+    OWSLogInfo(@"contentRows: %@", NSStringFromCGRect(self.contentRows.frame));
+    OWSLogInfo(@"composeRow: %@", NSStringFromCGRect(self.composeRow.frame));
 }
 
 - (void)handleLongPress:(UIGestureRecognizer *)sender
