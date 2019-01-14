@@ -410,27 +410,11 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     return OWSPrimaryStorage.sharedManager.areAllRegistrationsComplete;
 }
 
-- (BOOL)tryToLoadDatabase
++ (YapDatabaseOptions *)defaultDatabaseOptions
 {
-    __weak OWSStorage *weakSelf = self;
-
     YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
     options.corruptAction = YapDatabaseCorruptAction_Fail;
     options.enableMultiProcessSupport = YES;
-    options.cipherKeySpecBlock = ^{
-        // NOTE: It's critical that we don't capture a reference to self
-        // (e.g. by using OWSAssertDebug()) or this database will contain a
-        // circular reference and will leak.
-        OWSStorage *strongSelf = weakSelf;
-        OWSCAssertDebug(strongSelf);
-
-        // Rather than compute this once and capture the value of the key
-        // in the closure, we prefer to fetch the key from the keychain multiple times
-        // in order to keep the key out of application memory.
-        NSData *databaseKeySpec = [strongSelf databaseKeySpec];
-        OWSCAssertDebug(databaseKeySpec.length == kSQLCipherKeySpecLength);
-        return databaseKeySpec;
-    };
 
     // We leave a portion of the header decrypted so that iOS will recognize the file
     // as a SQLite database. Otherwise, because the database lives in a shared data container,
@@ -451,6 +435,28 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     OWSAssertDebug(options.pragmaPageSize == 0);
     OWSAssertDebug(options.pragmaJournalSizeLimit == 0);
     OWSAssertDebug(options.pragmaMMapSize == 0);
+
+    return options;
+}
+
+- (BOOL)tryToLoadDatabase
+{
+    __weak OWSStorage *weakSelf = self;
+    YapDatabaseOptions *options = [self.class defaultDatabaseOptions];
+    options.cipherKeySpecBlock = ^{
+        // NOTE: It's critical that we don't capture a reference to self
+        // (e.g. by using OWSAssertDebug()) or this database will contain a
+        // circular reference and will leak.
+        OWSStorage *strongSelf = weakSelf;
+        OWSCAssertDebug(strongSelf);
+
+        // Rather than compute this once and capture the value of the key
+        // in the closure, we prefer to fetch the key from the keychain multiple times
+        // in order to keep the key out of application memory.
+        NSData *databaseKeySpec = [strongSelf databaseKeySpec];
+        OWSCAssertDebug(databaseKeySpec.length == kSQLCipherKeySpecLength);
+        return databaseKeySpec;
+    };
 
     // Sanity checking elsewhere asserts we should only regenerate key specs when
     // there is no existing database, so rather than lazily generate in the cipherKeySpecBlock

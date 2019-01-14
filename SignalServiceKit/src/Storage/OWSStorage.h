@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <YapDatabase/YapDatabase.h>
@@ -68,6 +68,8 @@ typedef void (^OWSStorageMigrationBlock)(void);
 + (void)resetAllStorage;
 
 - (YapDatabaseConnection *)newDatabaseConnection;
+
++ (YapDatabaseOptions *)defaultDatabaseOptions;
 
 #pragma mark - Extension Registration
 
