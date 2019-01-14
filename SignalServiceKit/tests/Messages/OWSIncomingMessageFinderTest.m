@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDevice.h"
@@ -55,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                     expiresInSeconds:0
                                                                                        quotedMessage:nil
                                                                                         contactShare:nil
+                                                                                         linkPreview:nil
                                                                                      serverTimestamp:nil
                                                                                      wasReceivedByUD:NO];
     [incomingMessage save];

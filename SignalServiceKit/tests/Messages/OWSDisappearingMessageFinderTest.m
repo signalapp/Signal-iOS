@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockSSKEnvironment.h"
@@ -70,7 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
                                       expiresInSeconds:expiresInSeconds
                                        expireStartedAt:expireStartedAt
                                          quotedMessage:nil
-                                          contactShare:nil];
+                                          contactShare:nil
+                                           linkPreview:nil];
 }
 
 - (void)testExpiredMessages
@@ -82,7 +83,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                             expiresInSeconds:1
                                                              expireStartedAt:self.now - 20000
                                                                quotedMessage:nil
-                                                                contactShare:nil];
+                                                                contactShare:nil
+                                                                 linkPreview:nil];
     [expiredMessage1 save];
 
     TSMessage *expiredMessage2 =

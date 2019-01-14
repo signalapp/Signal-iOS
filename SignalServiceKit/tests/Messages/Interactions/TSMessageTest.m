@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSMessage.h"
@@ -37,7 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                     expiresInSeconds:100
                                                      expireStartedAt:0
                                                        quotedMessage:nil
-                                                        contactShare:nil];
+                                                        contactShare:nil
+                                                         linkPreview:nil];
 
     XCTAssertEqual(0, message.expiresAt);
 }
@@ -54,7 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                     expiresInSeconds:expirationSeconds
                                                      expireStartedAt:now
                                                        quotedMessage:nil
-                                                        contactShare:nil];
+                                                        contactShare:nil
+                                                         linkPreview:nil];
     XCTAssertEqual(now + expirationMs, message.expiresAt);
 }
 

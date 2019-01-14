@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDevice.h"
@@ -49,6 +49,7 @@
                                                    expiresInSeconds:0
                                                       quotedMessage:nil
                                                        contactShare:nil
+                                                        linkPreview:nil
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO];
     [incomingMessage save];
@@ -63,7 +64,8 @@
                                                      isVoiceMessage:NO
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
-                                                       contactShare:nil];
+                                                       contactShare:nil
+                                                        linkPreview:nil];
     [outgoingMessage save];
 
     XCTAssertEqual(2, [thread numberOfInteractions]);
@@ -100,6 +102,7 @@
                                                    expiresInSeconds:0
                                                       quotedMessage:nil
                                                        contactShare:nil
+                                                        linkPreview:nil
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO];
     [incomingMessage save];
@@ -122,7 +125,8 @@
                                                      isVoiceMessage:NO
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
-                                                       contactShare:nil];
+                                                       contactShare:nil
+                                                        linkPreview:nil];
     [outgoingMessage save];
 
     // Sanity check

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadTracking.h"
@@ -36,7 +36,8 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contact NS_UNAVAILABLE;
+                            contactShare:(nullable OWSContact *)contact
+                             linkPreview:(nullable OWSLinkPreview *)linkPreview NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

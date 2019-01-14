@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -452,6 +452,7 @@ private class MockIncomingMessage: TSIncomingMessage {
                    expiresInSeconds: 0,
                    quotedMessage: nil,
                    contactShare: nil,
+                   linkPreview: nil,
                    serverTimestamp: nil,
                    wasReceivedByUD: false)
     }
@@ -481,7 +482,8 @@ private class MockOutgoingMessage: TSOutgoingMessage {
                    isVoiceMessage: false,
                    groupMetaMessage: .unspecified,
                    quotedMessage: nil,
-                   contactShare: nil)
+                   contactShare: nil,
+            linkPreview: nil)
     }
 
     required init?(coder: NSCoder) {

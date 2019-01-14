@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSMessage.h"
@@ -77,7 +77,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
+                            contactShare:(nullable OWSContact *)contactShare
+                             linkPreview:(nullable OWSLinkPreview *)linkPreview NS_UNAVAILABLE;
 
 // MJK TODO - Can we remove the sender timestamp param?
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -89,7 +90,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare NS_DESIGNATED_INITIALIZER;
+                                    contactShare:(nullable OWSContact *)contactShare
+                                     linkPreview:(nullable OWSLinkPreview *)linkPreview NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

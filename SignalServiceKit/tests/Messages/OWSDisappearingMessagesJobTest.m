@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesJob.h"
@@ -49,7 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
                                       expiresInSeconds:expiresInSeconds
                                        expireStartedAt:expireStartedAt
                                          quotedMessage:nil
-                                          contactShare:nil];
+                                          contactShare:nil
+                                           linkPreview:nil];
 }
 
 #ifdef BROKEN_TESTS

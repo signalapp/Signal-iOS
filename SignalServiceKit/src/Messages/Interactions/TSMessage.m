@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSMessage.h"
@@ -13,6 +13,7 @@
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -61,6 +62,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             contactShare:(nullable OWSContact *)contactShare
+                             linkPreview:(nullable OWSLinkPreview *)linkPreview
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
@@ -77,6 +79,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self updateExpiresAt];
     _quotedMessage = quotedMessage;
     _contactShare = contactShare;
+    _linkPreview = linkPreview;
 
     return self;
 }
@@ -346,6 +349,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (self.contactShare.avatarAttachmentId) {
         [self.contactShare removeAvatarAttachmentWithTransaction:transaction];
+    }
+
+    if (self.linkPreview.attachmentId) {
+        [self.linkPreview removeAttachmentWithTransaction:transaction];
     }
 
     // Updates inbox thread preview

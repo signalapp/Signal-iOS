@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSIncomingMessage.h"
@@ -52,8 +52,10 @@ NS_ASSUME_NONNULL_BEGIN
                                 expiresInSeconds:(uint32_t)expiresInSeconds
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
+                                     linkPreview:(nullable OWSLinkPreview *)linkPreview
                                  serverTimestamp:(nullable NSNumber *)serverTimestamp
-                                 wasReceivedByUD:(BOOL)wasReceivedByUD {
+                                 wasReceivedByUD:(BOOL)wasReceivedByUD
+{
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
                                messageBody:body
@@ -61,7 +63,8 @@ NS_ASSUME_NONNULL_BEGIN
                           expiresInSeconds:expiresInSeconds
                            expireStartedAt:0
                              quotedMessage:quotedMessage
-                              contactShare:contactShare];
+                              contactShare:contactShare
+                               linkPreview:linkPreview];
 
     if (!self) {
         return self;
