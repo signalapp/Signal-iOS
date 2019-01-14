@@ -2673,6 +2673,137 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessagePreview
+
+@objc public class SSKProtoDataMessagePreview: NSObject {
+
+    // MARK: - SSKProtoDataMessagePreviewBuilder
+
+    @objc public class func builder(url: String) -> SSKProtoDataMessagePreviewBuilder {
+        return SSKProtoDataMessagePreviewBuilder(url: url)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoDataMessagePreviewBuilder {
+        let builder = SSKProtoDataMessagePreviewBuilder(url: url)
+        if let _value = title {
+            builder.setTitle(_value)
+        }
+        if let _value = image {
+            builder.setImage(_value)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoDataMessagePreviewBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.Preview()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(url: String) {
+            super.init()
+
+            setUrl(url)
+        }
+
+        @objc public func setUrl(_ valueParam: String) {
+            proto.url = valueParam
+        }
+
+        @objc public func setTitle(_ valueParam: String) {
+            proto.title = valueParam
+        }
+
+        @objc public func setImage(_ valueParam: SSKProtoAttachmentPointer) {
+            proto.image = valueParam.proto
+        }
+
+        @objc public func build() throws -> SSKProtoDataMessagePreview {
+            return try SSKProtoDataMessagePreview.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessagePreview.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Preview
+
+    @objc public let url: String
+
+    @objc public let image: SSKProtoAttachmentPointer?
+
+    @objc public var title: String? {
+        guard proto.hasTitle else {
+            return nil
+        }
+        return proto.title
+    }
+    @objc public var hasTitle: Bool {
+        return proto.hasTitle
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Preview,
+                 url: String,
+                 image: SSKProtoAttachmentPointer?) {
+        self.proto = proto
+        self.url = url
+        self.image = image
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessagePreview {
+        let proto = try SignalServiceProtos_DataMessage.Preview(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Preview) throws -> SSKProtoDataMessagePreview {
+        guard proto.hasURL else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: url")
+        }
+        let url = proto.url
+
+        var image: SSKProtoAttachmentPointer? = nil
+        if proto.hasImage {
+            image = try SSKProtoAttachmentPointer.parseProto(proto.image)
+        }
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessagePreview -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessagePreview -
+
+        let result = SSKProtoDataMessagePreview(proto: proto,
+                                                url: url,
+                                                image: image)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessagePreview {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoDataMessagePreview? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessage
 
 @objc public class SSKProtoDataMessage: NSObject {
@@ -2733,6 +2864,9 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
             builder.setQuote(_value)
         }
         builder.setContact(contact)
+        if let _value = preview {
+            builder.setPreview(_value)
+        }
         return builder
     }
 
@@ -2790,6 +2924,10 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
             proto.contact = wrappedItems.map { $0.proto }
         }
 
+        @objc public func setPreview(_ valueParam: SSKProtoDataMessagePreview) {
+            proto.preview = valueParam.proto
+        }
+
         @objc public func build() throws -> SSKProtoDataMessage {
             return try SSKProtoDataMessage.parseProto(proto)
         }
@@ -2808,6 +2946,8 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
     @objc public let quote: SSKProtoDataMessageQuote?
 
     @objc public let contact: [SSKProtoDataMessageContact]
+
+    @objc public let preview: SSKProtoDataMessagePreview?
 
     @objc public var body: String? {
         guard proto.hasBody else {
@@ -2854,12 +2994,14 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
                  attachments: [SSKProtoAttachmentPointer],
                  group: SSKProtoGroupContext?,
                  quote: SSKProtoDataMessageQuote?,
-                 contact: [SSKProtoDataMessageContact]) {
+                 contact: [SSKProtoDataMessageContact],
+                 preview: SSKProtoDataMessagePreview?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
         self.quote = quote
         self.contact = contact
+        self.preview = preview
     }
 
     @objc
@@ -2889,6 +3031,11 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
         var contact: [SSKProtoDataMessageContact] = []
         contact = try proto.contact.map { try SSKProtoDataMessageContact.parseProto($0) }
 
+        var preview: SSKProtoDataMessagePreview? = nil
+        if proto.hasPreview {
+            preview = try SSKProtoDataMessagePreview.parseProto(proto.preview)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -2897,7 +3044,8 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
                                          attachments: attachments,
                                          group: group,
                                          quote: quote,
-                                         contact: contact)
+                                         contact: contact,
+                                         preview: preview)
         return result
     }
 

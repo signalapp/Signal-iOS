@@ -356,6 +356,10 @@ class MessageField:
             # TODO: I'm not sure why "Apple Swift Proto" code formats the
             # the name in this way.
             name = 'hasID'
+        elif name == 'hasUrl':
+            # TODO: I'm not sure why "Apple Swift Proto" code formats the
+            # the name in this way.
+            name = 'hasURL'
         return name
         
 class MessageContext(BaseContext):
