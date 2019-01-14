@@ -2763,7 +2763,7 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Preview) throws -> SSKProtoDataMessagePreview {
-        guard proto.hasUrl else {
+        guard proto.hasURL else {
             throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: url")
         }
         let url = proto.url
