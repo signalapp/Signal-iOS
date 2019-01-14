@@ -1086,6 +1086,9 @@
 /* Label for crop button in image editor. */
 "IMAGE_EDITOR_CROP_BUTTON" = "Crop";
 
+/* alert title */
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Connecting…";
 
@@ -2401,9 +2404,6 @@
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Upgrade iOS";
-
-/* No comment provided by engineer. */
-"Upgrading Signal ..." = "Upgrading Signal…";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Back";
