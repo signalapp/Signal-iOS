@@ -15,7 +15,6 @@
 #import "OWSMessageReceiver.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSSignalService.h"
-#import "OWSWebsocketSecurityPolicy.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
@@ -24,7 +23,6 @@
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SocketRocket/SRWebSocket.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -144,13 +142,13 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 #pragma mark -
 
 // OWSWebSocket's properties should only be accessed from the main thread.
-@interface OWSWebSocket () <SRWebSocketDelegate>
+@interface OWSWebSocket () <SSKWebSocketDelegate>
 
 // This class has a few "tiers" of state.
 //
 // The first tier is the actual websocket and the timers used
 // to keep it alive and connected.
-@property (nonatomic, nullable) SRWebSocket *websocket;
+@property (nonatomic, nullable) id<SSKWebSocket> websocket;
 @property (nonatomic, nullable) NSTimer *heartbeatTimer;
 @property (nonatomic, nullable) NSTimer *reconnectTimer;
 
@@ -257,11 +255,6 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     return SSKEnvironment.shared.notificationsManager;
 }
 
-- (OWSWebsocketSecurityPolicy *)websocketSecurityPolicy
-{
-    return OWSWebsocketSecurityPolicy.sharedPolicy;
-}
-
 - (id<OWSUDManager>)udManager {
     return SSKEnvironment.shared.udManager;
 }
@@ -310,11 +303,11 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 
     // Try to reuse the existing socket (if any) if it is in a valid state.
     if (self.websocket) {
-        switch ([self.websocket readyState]) {
-            case SR_OPEN:
+        switch (self.websocket.state) {
+            case SSKWebSocketStateOpen:
                 self.state = OWSWebSocketStateOpen;
                 return;
-            case SR_CONNECTING:
+            case SSKWebSocketStateConnecting:
                 OWSLogVerbose(@"WebSocket is already connecting");
                 self.state = OWSWebSocketStateConnecting;
                 return;
@@ -355,8 +348,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 // and class state to reflect changes in app state.
 //
 // We learn about changes to socket state through websocket
-// delegate methods like [webSocketDidOpen:], [didFailWithError:...]
-// and [didCloseWithCode:...].  These delegate methods are sometimes
+// delegate methods. These delegate methods are sometimes
 // invoked _after_ web socket state changes, so we sometimes learn
 // about changes to socket state in [ensureWebsocket].  Put another way,
 // it's not safe to assume we'll learn of changes to websocket state
@@ -425,18 +417,17 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
             NSURL *webSocketConnectURL = [NSURL URLWithString:webSocketConnect];
             NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
 
-            SRWebSocket *socket =
-                [[SRWebSocket alloc] initWithURLRequest:request securityPolicy:self.websocketSecurityPolicy];
+            id<SSKWebSocket> socket = [SSKWebSocketManager buildSocketWithRequest:request];
             socket.delegate = self;
 
             [self setWebsocket:socket];
 
-            // [SRWebSocket open] could hypothetically call a delegate method (e.g. if
+            // `connect` could hypothetically call a delegate method (e.g. if
             // the socket failed immediately for some reason), so we update the state
             // _before_ calling it, not after.
             _state = state;
             self.canMakeRequests = state == OWSWebSocketStateOpen;
-            [socket open];
+            [socket connect];
             [self failAllPendingSocketMessagesIfNecessary];
             return;
         }
@@ -463,7 +454,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     OWSAssertIsOnMainThread();
 
     self.websocket.delegate = nil;
-    [self.websocket close];
+    [self.websocket disconnect];
     self.websocket = nil;
     [self.heartbeatTimer invalidate];
     self.heartbeatTimer = nil;
@@ -554,7 +545,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    BOOL wasScheduled = [self.websocket sendDataNoCopy:messageData error:&error];
+    BOOL wasScheduled = [self.websocket writeData:messageData error:&error];
     if (!wasScheduled || error) {
         OWSFailDebug(@"could not send socket request: %@", error);
         [socketMessage didFailBeforeSending];
@@ -676,13 +667,13 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     }
 }
 
-#pragma mark - Delegate methods
+#pragma mark - SSKWebSocketDelegate
 
-- (void)webSocketDidOpen:(SRWebSocket *)webSocket
+- (void)websocketDidConnectWithSocket:(id<SSKWebSocket>)websocket
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(webSocket);
-    if (webSocket != self.websocket) {
+    OWSAssertDebug(websocket);
+    if (websocket != self.websocket) {
         // Ignore events from obsolete web sockets.
         return;
     }
@@ -695,19 +686,18 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     [self.outageDetection reportConnectionSuccess];
 }
 
-- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error
+- (void)websocketDidDisconnectWithSocket:(id<SSKWebSocket>)websocket error:(nullable NSError *)error
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(webSocket);
-    if (webSocket != self.websocket) {
+    OWSAssertDebug(websocket);
+    if (websocket != self.websocket) {
         // Ignore events from obsolete web sockets.
         return;
     }
 
     OWSLogError(@"Websocket did fail with error: %@", error);
-
-    if ([error.domain isEqualToString:SRWebSocketErrorDomain] && error.code == 2132) {
-        NSNumber *_Nullable statusCode = error.userInfo[SRHTTPResponseErrorKey];
+    if ([error.domain isEqualToString:SSKWebSocketError.errorDomain]) {
+        NSNumber *_Nullable statusCode = error.userInfo[SSKWebSocketError.kStatusCodeKey];
         if (statusCode.unsignedIntegerValue == 403) {
             if (self.tsAccountManager.isRegisteredAndReady) {
                 [self.tsAccountManager setIsDeregistered:YES];
@@ -720,12 +710,12 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     [self handleSocketFailure];
 }
 
-- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(NSData *)data
+- (void)websocketDidReceiveDataWithSocket:(id<SSKWebSocket>)websocket data:(NSData *)data
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(webSocket);
+    OWSAssertDebug(websocket);
 
-    if (webSocket != self.websocket) {
+    if (websocket != self.websocket) {
         // Ignore events from obsolete web sockets.
         return;
     }
@@ -748,6 +738,8 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         OWSLogWarn(@"webSocket:didReceiveMessage: unknown.");
     }
 }
+
+#pragma mark -
 
 - (dispatch_queue_t)serialQueue
 {
@@ -853,7 +845,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    [self.websocket sendDataNoCopy:messageData error:&error];
+    [self.websocket writeData:messageData error:&error];
     if (error) {
         OWSLogWarn(@"Error while trying to write on websocket %@", error);
         [self handleSocketFailure];
@@ -887,30 +879,13 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     [self.outageDetection reportConnectionFailure];
 }
 
-- (void)webSocket:(SRWebSocket *)webSocket
-    didCloseWithCode:(NSInteger)code
-              reason:(nullable NSString *)reason
-            wasClean:(BOOL)wasClean
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(webSocket);
-    if (webSocket != self.websocket) {
-        // Ignore events from obsolete web sockets.
-        return;
-    }
-
-    OWSLogWarn(@"Websocket did close with code: %ld", (long)code);
-
-    [self handleSocketFailure];
-}
-
 - (void)webSocketHeartBeat
 {
     OWSAssertIsOnMainThread();
 
     if ([self shouldSocketBeOpen]) {
         NSError *error;
-        [self.websocket sendPing:nil error:&error];
+        [self.websocket writePingAndReturnError:&error];
         if (error) {
             OWSLogWarn(@"Error in websocket heartbeat: %@", error.localizedDescription);
             [self handleSocketFailure];
