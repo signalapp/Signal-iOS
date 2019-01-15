@@ -152,7 +152,7 @@ public class MediaAlbumCellView: UIStackView {
         }
 
         for itemView in itemViews {
-            guard moreItemsView == itemView else {
+            guard moreItemsView != itemView else {
                 // Don't display the caption indicator on
                 // the "more" item, if any.
                 continue

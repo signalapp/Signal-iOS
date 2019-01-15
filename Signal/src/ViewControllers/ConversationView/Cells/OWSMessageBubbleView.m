@@ -1388,17 +1388,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
                 return;
             }
 
-            if ([mediaAlbumCellView isMoreItemsViewWithMediaView:mediaView]) {
-                for (ConversationMediaAlbumItem *mediaAlbumItem in self.viewItem.mediaAlbumItems) {
-                    if (mediaAlbumItem.isFailedDownload) {
-                        // Treat the tap as a "retry" tap if:
-                        //
-                        // a) the user tapped on the "more items" cell.
-                        // b) there are any failed downloads in the album.
-                        [self.delegate didTapFailedIncomingAttachment:self.viewItem];
-                        return;
-                    }
-                }
+            if ([mediaAlbumCellView isMoreItemsViewWithMediaView:mediaView]
+                && self.viewItem.mediaAlbumHasFailedAttachment) {
+                [self.delegate didTapFailedIncomingAttachment:self.viewItem];
+                return;
             }
 
             TSAttachment *attachment = mediaView.attachment;

@@ -1084,6 +1084,19 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
+- (BOOL)mediaAlbumHasFailedAttachment
+{
+    OWSAssertDebug(self.messageCellType == OWSMessageCellType_MediaAlbum);
+    OWSAssertDebug(self.mediaAlbumItems.count > 0);
+
+    for (ConversationMediaAlbumItem *mediaAlbumItem in self.mediaAlbumItems) {
+        if (mediaAlbumItem.isFailedDownload) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
