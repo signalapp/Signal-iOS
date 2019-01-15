@@ -4893,12 +4893,11 @@ typedef enum : NSUInteger {
 
 - (void)updateInputToolbarLayout
 {
-    BOOL isLandscape = self.view.width > self.view.height;
     UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
     if (@available(iOS 11, *)) {
         safeAreaInsets = self.view.safeAreaInsets;
     }
-    [self.inputToolbar updateLayoutWithIsLandscape:isLandscape safeAreaInsets:safeAreaInsets];
+    [self.inputToolbar updateLayoutWithSafeAreaInsets:safeAreaInsets];
 }
 
 @end

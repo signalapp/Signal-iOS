@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateFontSizes;
 
-- (void)updateLayoutWithIsLandscape:(BOOL)isLandscape safeAreaInsets:(UIEdgeInsets)safeAreaInsets;
+- (void)updateLayoutWithSafeAreaInsets:(UIEdgeInsets)safeAreaInsets;
 
 #pragma mark - Voice Memo
 

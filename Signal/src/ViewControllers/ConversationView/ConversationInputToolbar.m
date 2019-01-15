@@ -54,7 +54,6 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutContraints;
-@property (nonatomic) BOOL isLandscapeLayout;
 @property (nonatomic) UIEdgeInsets receivedSafeAreaInsets;
 
 @end
@@ -71,7 +70,6 @@ const CGFloat kMaxTextViewHeight = 98;
     self = [super initWithFrame:CGRectZero];
 
     _conversationStyle = conversationStyle;
-    _isLandscapeLayout = NO;
     _receivedSafeAreaInsets = UIEdgeInsetsZero;
 
     if (self) {
@@ -355,13 +353,11 @@ const CGFloat kMaxTextViewHeight = 98;
     ];
 }
 
-- (void)updateLayoutWithIsLandscape:(BOOL)isLandscape safeAreaInsets:(UIEdgeInsets)safeAreaInsets
+- (void)updateLayoutWithSafeAreaInsets:(UIEdgeInsets)safeAreaInsets
 {
-    BOOL didChange = (self.isLandscapeLayout != isLandscape
-        || !UIEdgeInsetsEqualToEdgeInsets(self.receivedSafeAreaInsets, safeAreaInsets));
+    BOOL didChange = !UIEdgeInsetsEqualToEdgeInsets(self.receivedSafeAreaInsets, safeAreaInsets);
     BOOL hasLayout = self.layoutContraints != nil;
 
-    self.isLandscapeLayout = isLandscape;
     self.receivedSafeAreaInsets = safeAreaInsets;
 
     if (didChange || !hasLayout) {
