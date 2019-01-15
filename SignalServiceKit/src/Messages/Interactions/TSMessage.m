@@ -48,8 +48,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
  */
 @property (nonatomic, readonly) NSUInteger schemaVersion;
 
-@property (nonatomic, nullable) OWSLinkPreview *linkPreview;
-
 @end
 
 #pragma mark -
@@ -418,17 +416,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSMessage *message) {
                                  [message setExpireStartedAt:expireStartedAt];
-                             }];
-}
-
-- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(linkPreview);
-    OWSAssertDebug(transaction);
-
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 message.linkPreview = linkPreview;
                              }];
 }
 

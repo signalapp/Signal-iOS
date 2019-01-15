@@ -217,13 +217,17 @@ public class OWSLinkPreview: MTLModel {
 
     // MARK: - Domain Whitelist
 
+    // TODO: Finalize
     private static let linkDomainWhitelist = [
         "youtube.com",
         "reddit.com",
         "imgur.com",
+        "instagram.com",
+        "giphy.com",
         "instagram.com"
     ]
 
+    // TODO: Finalize
     private static let mediaDomainWhitelist = [
         "ytimg.com",
         "cdninstagram.com"
@@ -232,16 +236,6 @@ public class OWSLinkPreview: MTLModel {
     private static let protocolWhitelist = [
         "https"
     ]
-
-    //    *.giphy.com
-    //    *.youtube.com
-    //    *.youtu.be
-    //    *.ytimg.com
-    //    *.reddit.com
-    //    *.reddi.it
-    //    *.imgur.com
-    //    *.instagram.com
-    //    *.cdninstagram.com
 
     @objc
     public class func isValidLinkUrl(_ urlString: String) -> Bool {
