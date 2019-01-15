@@ -748,6 +748,8 @@ typedef enum : NSUInteger {
         OWSLogVerbose(@"First viewWillAppear took: %.2fms", appearenceDuration * 1000);
     }
     [self updateInputToolbarLayout];
+
+    [UIViewController attemptRotationToDeviceOrientation];
 }
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
