@@ -3983,6 +3983,7 @@ typedef enum : NSUInteger {
             message = [ThreadUtil enqueueMessageWithText:text
                                                 inThread:self.thread
                                         quotedReplyModel:self.inputToolbar.quotedReply
+                                             linkPreview:nil
                                              transaction:transaction];
         }];
     }

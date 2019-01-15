@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "Pastelog.h"
@@ -591,6 +591,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             [ThreadUtil enqueueMessageWithText:url.absoluteString
                                       inThread:thread
                               quotedReplyModel:nil
+                                   linkPreview:nil
                                    transaction:transaction];
         }];
     });
@@ -615,6 +616,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                 [ThreadUtil enqueueMessageWithText:url.absoluteString
                                           inThread:thread
                                   quotedReplyModel:nil
+                                       linkPreview:nil
                                        transaction:transaction];
             }];
         } else {

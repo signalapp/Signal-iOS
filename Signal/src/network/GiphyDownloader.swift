@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -415,7 +415,7 @@ extension URLSessionTask {
     private lazy var giphyDownloadSession: URLSession = {
         AssertIsOnMainThread()
 
-        let configuration = GiphyAPI.giphySessionConfiguration()
+        let configuration = ReverseProxy.sessionConfiguration()
         configuration.urlCache = nil
         configuration.requestCachePolicy = .reloadIgnoringCacheData
         configuration.httpMaximumConnectionsPerHost = 10

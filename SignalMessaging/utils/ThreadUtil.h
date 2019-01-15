@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSBlockingManager;
 @class OWSContactsManager;
+@class OWSLinkPreview;
 @class OWSMessageSender;
 @class OWSUnreadIndicator;
 @class SignalAttachment;
@@ -47,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)text
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                  linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   transaction:(YapDatabaseReadTransaction *)transaction;
 
 + (TSOutgoingMessage *)enqueueMessageWithAttachment:(SignalAttachment *)attachment

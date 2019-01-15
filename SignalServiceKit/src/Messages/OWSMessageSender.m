@@ -354,6 +354,66 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSAssertDebug([message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold);
     }
 
+    [self ensureLinkPreviewForMessage:message
+                           completion:^{
+                               [self prepareMessageAndEnqueue:message success:successHandler failure:failureHandler];
+                           }];
+}
+
+- (void)ensureLinkPreviewForMessage:(TSOutgoingMessage *)message completion:(dispatch_block_t)completion
+{
+    OWSAssert(message);
+    OWSAssert(completion);
+
+    if (message.linkPreview != nil) {
+        // Message already has link preview.
+        completion();
+        return;
+    }
+
+    [OWSLinkPreview
+        tryToBuildPreviewInfoForMessageBodyText:message.body
+                                     completion:^(OWSLinkPreviewInfo *_Nullable linkPreviewInfo) {
+                                         if (!linkPreviewInfo) {
+                                             completion();
+                                             return;
+                                         }
+
+                                         [self.dbConnection
+                                             asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                                 NSError *linkPreviewError;
+                                                 OWSLinkPreview *_Nullable linkPreview = [OWSLinkPreview
+                                                     buildValidatedLinkPreviewFromInfo:linkPreviewInfo
+                                                                           transaction:transaction
+                                                                                 error:&linkPreviewError];
+                                                 if (linkPreviewError
+                                                     && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
+                                                     OWSFailDebug(@"linkPreviewError: %@", linkPreviewError);
+                                                     completion();
+                                                     return;
+                                                 }
+                                                 if (!linkPreview) {
+                                                     OWSFailDebug(@"Missing linkPreview.");
+                                                     completion();
+                                                     return;
+                                                 }
+
+                                                 [message updateWithLinkPreview:linkPreview transaction:transaction];
+                                                 completion();
+                                             }];
+                                     }];
+}
+
+- (void)prepareMessageAndEnqueue:(TSOutgoingMessage *)message
+                         success:(void (^)(void))successHandler
+                         failure:(void (^)(NSError *error))failureHandler
+{
+    OWSAssertDebug(message);
+    if (message.body.length > 0) {
+        OWSAssertDebug(
+            [message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold);
+    }
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
         __block NSArray<TSAttachmentStream *> *quotedThumbnailAttachments = @[];

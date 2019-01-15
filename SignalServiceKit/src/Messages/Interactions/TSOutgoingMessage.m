@@ -231,7 +231,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                              messageBody:body
                             attachmentId:attachmentId
                         expiresInSeconds:0
-                           quotedMessage:nil];
+                           quotedMessage:nil
+                             linkPreview:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -243,7 +244,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                              messageBody:body
                             attachmentId:attachmentId
                         expiresInSeconds:expiresInSeconds
-                           quotedMessage:nil];
+                           quotedMessage:nil
+                             linkPreview:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -251,6 +253,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                            attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds
                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                            linkPreview:(nullable OWSLinkPreview *)linkPreview
 {
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
     if (attachmentId) {
@@ -268,7 +271,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                       groupMetaMessage:TSGroupMetaMessageUnspecified
                                                          quotedMessage:quotedMessage
                                                           contactShare:nil
-                                                           linkPreview:nil];
+                                                           linkPreview:linkPreview];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -961,6 +964,32 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             [builder addContact:contactProto];
         } else {
             OWSFailDebug(@"contactProto was unexpectedly nil");
+        }
+    }
+
+    // Link Preview
+    if (self.linkPreview) {
+        SSKProtoDataMessagePreviewBuilder *previewBuilder =
+            [SSKProtoDataMessagePreview builderWithUrl:self.linkPreview.urlString];
+        if (self.linkPreview.title.length > 0) {
+            [previewBuilder setTitle:self.linkPreview.title];
+        }
+        if (self.linkPreview.imageAttachmentId) {
+            SSKProtoAttachmentPointer *_Nullable attachmentProto =
+                [TSAttachmentStream buildProtoForAttachmentId:self.linkPreview.imageAttachmentId];
+            if (!attachmentProto) {
+                OWSFailDebug(@"Could not build link preview image protobuf.");
+            } else {
+                [previewBuilder setImage:attachmentProto];
+            }
+        }
+
+        NSError *error;
+        SSKProtoDataMessagePreview *_Nullable previewProto = [previewBuilder buildAndReturnError:&error];
+        if (error || !previewProto) {
+            OWSFailDebug(@"Could not build link preview protobuf: %@.", error);
+        } else {
+            [builder setPreview:previewProto];
         }
     }
 
