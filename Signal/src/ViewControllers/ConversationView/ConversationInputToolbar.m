@@ -340,13 +340,6 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 }
 
-//- (void)setIsLandscapeLayout:(BOOL)isLandscapeLayout
-//{
-//    _isLandscapeLayout = isLandscapeLayout;
-//
-//    [self updateLayoutDebug];
-//}
-
 - (void)updateLayoutDebug
 {
     UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
@@ -378,42 +371,47 @@ const CGFloat kMaxTextViewHeight = 98;
     //                                  ];
     //    }
 
-    [self setNeedsUpdateConstraints];
-    [self updateConstraintsIfNeeded];
-    [self.contentRows setNeedsUpdateConstraints];
-    [self.contentRows updateConstraintsIfNeeded];
-    [self.composeRow setNeedsUpdateConstraints];
-    [self.composeRow updateConstraintsIfNeeded];
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
-    [self.contentRows setNeedsLayout];
-    [self.contentRows layoutIfNeeded];
-    [self.composeRow setNeedsLayout];
-    [self.composeRow layoutIfNeeded];
-
-    [self setNeedsUpdateConstraints];
-    [self updateConstraintsIfNeeded];
-    [self.contentRows setNeedsUpdateConstraints];
-    [self.contentRows updateConstraintsIfNeeded];
-    [self.composeRow setNeedsUpdateConstraints];
-    [self.composeRow updateConstraintsIfNeeded];
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
-    [self.contentRows setNeedsLayout];
-    [self.contentRows layoutIfNeeded];
-    [self.composeRow setNeedsLayout];
-    [self.composeRow layoutIfNeeded];
+    //    [self setNeedsUpdateConstraints];
+    //    [self updateConstraintsIfNeeded];
+    //    [self.contentRows setNeedsUpdateConstraints];
+    //    [self.contentRows updateConstraintsIfNeeded];
+    //    [self.composeRow setNeedsUpdateConstraints];
+    //    [self.composeRow updateConstraintsIfNeeded];
+    //    [self setNeedsLayout];
+    //    [self layoutIfNeeded];
+    //    [self.contentRows setNeedsLayout];
+    //    [self.contentRows layoutIfNeeded];
+    //    [self.composeRow setNeedsLayout];
+    //    [self.composeRow layoutIfNeeded];
+    //
+    //    [self setNeedsUpdateConstraints];
+    //    [self updateConstraintsIfNeeded];
+    //    [self.contentRows setNeedsUpdateConstraints];
+    //    [self.contentRows updateConstraintsIfNeeded];
+    //    [self.composeRow setNeedsUpdateConstraints];
+    //    [self.composeRow updateConstraintsIfNeeded];
+    //    [self setNeedsLayout];
+    //    [self layoutIfNeeded];
+    //    [self.contentRows setNeedsLayout];
+    //    [self.contentRows layoutIfNeeded];
+    //    [self.composeRow setNeedsLayout];
+    //    [self.composeRow layoutIfNeeded];
 }
 
 - (void)updateLayoutWithIsLandscape:(BOOL)isLandscape safeAreaInsets:(UIEdgeInsets)safeAreaInsets
 {
     OWSLogInfo(@"");
 
+    BOOL didChange = (self.isLandscapeLayout != isLandscape
+        || !UIEdgeInsetsEqualToEdgeInsets(self.receivedSafeAreaInsets, safeAreaInsets));
+
     self.isLandscapeLayout = isLandscape;
     self.receivedSafeAreaInsets = safeAreaInsets;
 
     // TODO: Only on change?
-    [self updateLayoutDebug];
+    if (didChange || !self.layoutContraints) {
+        [self updateLayoutDebug];
+    }
 }
 
 - (void)safeAreaInsetsDidChange
@@ -422,7 +420,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     [super safeAreaInsetsDidChange];
 
-    [self updateLayoutDebug];
+    //    [self updateLayoutDebug];
 }
 
 - (void)layoutSubviews
@@ -434,6 +432,7 @@ const CGFloat kMaxTextViewHeight = 98;
     if (@available(iOS 11, *)) {
         OWSLogInfo(@"safeAreaInsets: %@", NSStringFromUIEdgeInsets(self.safeAreaInsets));
     }
+    OWSLogInfo(@"receivedSafeAreaInsets: %@", NSStringFromUIEdgeInsets(self.receivedSafeAreaInsets));
     OWSLogInfo(@"contentRows: %@", NSStringFromCGRect(self.contentRows.frame));
     OWSLogInfo(@"composeRow: %@", NSStringFromCGRect(self.composeRow.frame));
 }
