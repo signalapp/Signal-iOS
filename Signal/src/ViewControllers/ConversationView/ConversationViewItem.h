@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewLayout.h"
@@ -46,6 +46,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) CGSize mediaSize;
 
 @property (nonatomic, readonly, nullable) NSString *caption;
+
+@property (nonatomic, readonly) BOOL isFailedDownload;
 
 @end
 
