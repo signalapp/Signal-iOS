@@ -1287,10 +1287,15 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                                  thread:oldGroupThread
                                                                                             transaction:transaction];
 
+                NSError *linkPreviewError;
                 OWSLinkPreview *_Nullable linkPreview =
                     [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:dataMessage
                                                                         body:body
-                                                                 transaction:transaction];
+                                                                 transaction:transaction
+                                                                       error:&linkPreviewError];
+                if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
+                    OWSLogError(@"linkPreviewError: %@", linkPreviewError);
+                }
 
                 OWSLogDebug(@"incoming message from: %@ for group: %@ with timestamp: %lu",
                     envelopeAddress(envelope),
@@ -1355,8 +1360,15 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                          thread:thread
                                                                                     transaction:transaction];
 
+        NSError *linkPreviewError;
         OWSLinkPreview *_Nullable linkPreview =
-            [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:dataMessage body:body transaction:transaction];
+            [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:dataMessage
+                                                                body:body
+                                                         transaction:transaction
+                                                               error:&linkPreviewError];
+        if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
+            OWSLogError(@"linkPreviewError: %@", linkPreviewError);
+        }
 
         // Legit usage of senderTimestamp when creating incoming message from received envelope
         TSIncomingMessage *incomingMessage =
