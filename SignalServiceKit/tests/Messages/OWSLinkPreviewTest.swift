@@ -18,6 +18,77 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         super.tearDown()
     }
 
+    func testBuildValidatedLinkPreview_TitleAndImage() {
+        let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
+        let body = "\(url)"
+        let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
+        previewBuilder.setTitle("Some Youtube Video")
+        let imageAttachmentBuilder = SSKProtoAttachmentPointer.builder(id: 1)
+        imageAttachmentBuilder.setKey(Randomness.generateRandomBytes(32))
+        imageAttachmentBuilder.setContentType(OWSMimeTypeImageJpeg)
+        previewBuilder.setImage(try! imageAttachmentBuilder.build())
+        let dataBuilder = SSKProtoDataMessage.builder()
+        dataBuilder.setPreview(try! previewBuilder.build())
+
+        self.readWrite { (transaction) in
+            XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
+                                                                     body: body,
+                                                                     transaction: transaction))
+        }
+    }
+
+    func testBuildValidatedLinkPreview_Title() {
+        let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
+        let body = "\(url)"
+        let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
+        previewBuilder.setTitle("Some Youtube Video")
+        let dataBuilder = SSKProtoDataMessage.builder()
+        dataBuilder.setPreview(try! previewBuilder.build())
+
+        self.readWrite { (transaction) in
+            XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
+                                                                     body: body,
+                                                                     transaction: transaction))
+        }
+    }
+
+    func testBuildValidatedLinkPreview_Image() {
+        let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
+        let body = "\(url)"
+        let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
+        let imageAttachmentBuilder = SSKProtoAttachmentPointer.builder(id: 1)
+        imageAttachmentBuilder.setKey(Randomness.generateRandomBytes(32))
+        imageAttachmentBuilder.setContentType(OWSMimeTypeImageJpeg)
+        previewBuilder.setImage(try! imageAttachmentBuilder.build())
+        let dataBuilder = SSKProtoDataMessage.builder()
+        dataBuilder.setPreview(try! previewBuilder.build())
+
+        self.readWrite { (transaction) in
+            XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
+                                                                     body: body,
+                                                                     transaction: transaction))
+        }
+    }
+
+    func testBuildValidatedLinkPreview_NoTitleOrImage() {
+        let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
+        let body = "\(url)"
+        let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
+        let dataBuilder = SSKProtoDataMessage.builder()
+        dataBuilder.setPreview(try! previewBuilder.build())
+
+        self.readWrite { (transaction) in
+            do {
+                _ = try OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
+                                                         body: body,
+                                                         transaction: transaction)
+                XCTFail("Missing expected error.")
+            } catch {
+                // Do nothing.
+            }
+        }
+    }
+
     func testIsValidLinkUrl() {
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.youtube.com/watch?v=tP-Ipsat90c"))
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://youtube.com/watch?v=tP-Ipsat90c"))

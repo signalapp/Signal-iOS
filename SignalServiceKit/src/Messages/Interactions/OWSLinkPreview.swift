@@ -4,6 +4,13 @@
 
 import Foundation
 
+@objc
+public enum LinkPreviewError: Int, Error {
+    case invalidInput
+    case assertionFailure
+    case noPreview
+}
+
 @objc(OWSLinkPreview)
 public class OWSLinkPreview: MTLModel {
     @objc
@@ -13,13 +20,13 @@ public class OWSLinkPreview: MTLModel {
     public var title: String?
 
     @objc
-    public var attachmentId: String?
+    public var imageAttachmentId: String?
 
     @objc
-    public init(urlString: String, title: String?, attachmentId: String?) {
+    public init(urlString: String, title: String?, imageAttachmentId: String?) {
         self.urlString = urlString
         self.title = title
-        self.attachmentId = attachmentId
+        self.imageAttachmentId = imageAttachmentId
 
         super.init()
     }
@@ -35,27 +42,35 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
+    public class func isNoPreviewError(_ error: Error) -> Bool {
+        guard let error = error as? LinkPreviewError else {
+            return false
+        }
+        return error == .noPreview
+    }
+
+    @objc
     public class func buildValidatedLinkPreview(dataMessage: SSKProtoDataMessage,
                                                 body: String?,
-                                                transaction: YapDatabaseReadWriteTransaction) -> OWSLinkPreview? {
+                                                transaction: YapDatabaseReadWriteTransaction) throws -> OWSLinkPreview {
         guard let previewProto = dataMessage.preview else {
-            return nil
+            throw LinkPreviewError.noPreview
         }
         let urlString = previewProto.url
 
         guard URL(string: urlString) != nil else {
-            owsFailDebug("Could not parse preview URL.")
-            return nil
+            Logger.error("Could not parse preview URL.")
+            throw LinkPreviewError.invalidInput
         }
 
         guard let body = body else {
-            owsFailDebug("Preview for message without body.")
-            return nil
+            Logger.error("Preview for message without body.")
+            throw LinkPreviewError.invalidInput
         }
         let bodyComponents = body.components(separatedBy: .whitespacesAndNewlines)
         guard bodyComponents.contains(urlString) else {
-            owsFailDebug("URL not present in body.")
-            return nil
+            Logger.error("URL not present in body.")
+            throw LinkPreviewError.invalidInput
         }
 
         // TODO: Verify that url host is in whitelist.
@@ -68,7 +83,8 @@ public class OWSLinkPreview: MTLModel {
                 imageAttachmentPointer.save(with: transaction)
                 imageAttachmentId = imageAttachmentPointer.uniqueId
             } else {
-                owsFailDebug("Could not parse image proto.")
+                Logger.error("Could not parse image proto.")
+                throw LinkPreviewError.invalidInput
             }
         }
 
@@ -78,20 +94,20 @@ public class OWSLinkPreview: MTLModel {
         }
         let hasImage = imageAttachmentId != nil
         if !hasTitle && !hasImage {
-            owsFailDebug("Preview has neither title nor image.")
-            return nil
+            Logger.error("Preview has neither title nor image.")
+            throw LinkPreviewError.invalidInput
         }
 
-        return OWSLinkPreview(urlString: urlString, title: title, attachmentId: imageAttachmentId)
+        return OWSLinkPreview(urlString: urlString, title: title, imageAttachmentId: imageAttachmentId)
     }
 
     @objc
     public func removeAttachment(transaction: YapDatabaseReadWriteTransaction) {
-        guard let attachmentId = attachmentId else {
+        guard let imageAttachmentId = imageAttachmentId else {
             owsFailDebug("No attachment id.")
             return
         }
-        guard let attachment = TSAttachment.fetch(uniqueId: attachmentId, transaction: transaction) else {
+        guard let attachment = TSAttachment.fetch(uniqueId: imageAttachmentId, transaction: transaction) else {
             owsFailDebug("Could not load attachment.")
             return
         }

@@ -351,7 +351,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         [self.contactShare removeAvatarAttachmentWithTransaction:transaction];
     }
 
-    if (self.linkPreview.attachmentId) {
+    if (self.linkPreview.imageAttachmentId) {
         [self.linkPreview removeAttachmentWithTransaction:transaction];
     }
 

@@ -45,8 +45,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
     _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
-    _linkPreview =
-        [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:_dataMessage body:_body transaction:transaction];
+
+    NSError *linkPreviewError;
+    _linkPreview = [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:_dataMessage
+                                                                       body:_body
+                                                                transaction:transaction
+                                                                      error:&linkPreviewError];
+    if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
+        OWSLogError(@"linkPreviewError: %@", linkPreviewError);
+    }
 
     if (sentProto.unidentifiedStatus.count > 0) {
         NSMutableArray<NSString *> *nonUdRecipientIds = [NSMutableArray new];
