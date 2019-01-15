@@ -713,7 +713,7 @@ typedef enum : NSUInteger {
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    OWSLogDebug(@"viewWillAppear");
+    OWSLogInfo(@"viewWillAppear");
 
     [self ensureBannerState];
 
@@ -747,6 +747,7 @@ typedef enum : NSUInteger {
         NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
         OWSLogVerbose(@"First viewWillAppear took: %.2fms", appearenceDuration * 1000);
     }
+    [self updateInputToolbarLayout];
 }
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
@@ -1170,6 +1171,8 @@ typedef enum : NSUInteger {
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    OWSLogInfo(@"");
+
     [super viewDidAppear:animated];
 
     [ProfileFetcherJob runWithThread:self.thread];
@@ -1249,6 +1252,8 @@ typedef enum : NSUInteger {
 
     // Clear the "on open" state after the view has been presented.
     self.actionOnOpen = ConversationViewActionNone;
+
+    [self updateInputToolbarLayout];
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
@@ -4820,6 +4825,8 @@ typedef enum : NSUInteger {
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
+    OWSLogInfo(@"Before Animation");
+
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
     // Snapshot the "last visible row".
@@ -4844,6 +4851,9 @@ typedef enum : NSUInteger {
             // new size.
             [strongSelf resetForSizeOrOrientationChange];
 
+            OWSLogInfo(@"After Animation");
+            [strongSelf updateInputToolbarLayout];
+
             if (lastVisibleIndexPath) {
                 [strongSelf.collectionView scrollToItemAtIndexPath:lastVisibleIndexPath
                                                   atScrollPosition:UICollectionViewScrollPositionBottom
@@ -4863,6 +4873,8 @@ typedef enum : NSUInteger {
 
 - (void)resetForSizeOrOrientationChange
 {
+    OWSLogInfo(@"");
+
     self.scrollContinuity = kScrollContinuityBottom;
 
     self.conversationStyle.viewWidth = self.collectionView.width;
@@ -4876,6 +4888,27 @@ typedef enum : NSUInteger {
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
         [self updateLastKnownDistanceFromBottom];
     }
+    [self updateInputToolbarLayout];
+}
+
+- (void)viewSafeAreaInsetsDidChange
+{
+    OWSLogInfo(@"");
+
+    [super viewSafeAreaInsetsDidChange];
+
+    [self updateInputToolbarLayout];
+}
+
+- (void)updateInputToolbarLayout
+{
+    BOOL isLandscape = self.view.width > self.view.height;
+    UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
+    if (@available(iOS 11, *)) {
+        safeAreaInsets = self.view.safeAreaInsets;
+    }
+    OWSLogInfo(@"isLandscape: %d, safeAreaInsets: %@", isLandscape, NSStringFromUIEdgeInsets(safeAreaInsets));
+    [self.inputToolbar updateLayoutWithIsLandscape:isLandscape safeAreaInsets:safeAreaInsets];
 }
 
 @end
