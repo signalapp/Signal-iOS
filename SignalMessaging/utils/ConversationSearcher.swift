@@ -51,7 +51,8 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
     }
 }
 
-public class ContactSearchResult: Comparable {
+@objc
+public class ContactSearchResult: NSObject, Comparable {
     public let signalAccount: SignalAccount
     public let contactsManager: ContactsManagerProtocol
 
@@ -77,7 +78,8 @@ public class ContactSearchResult: Comparable {
     }
 }
 
-public class SearchResultSet {
+@objc
+public class SearchResultSet: NSObject {
     public let searchText: String
     public let conversations: [ConversationSearchResult<ConversationSortKey>]
     public let contacts: [ContactSearchResult]
@@ -96,6 +98,67 @@ public class SearchResultSet {
 
     public var isEmpty: Bool {
         return conversations.isEmpty && contacts.isEmpty && messages.isEmpty
+    }
+}
+
+@objc
+public class GroupSearchResult: NSObject, Comparable {
+    public let thread: ThreadViewModel
+
+    private let sortKey: ConversationSortKey
+
+    init(thread: ThreadViewModel, sortKey: ConversationSortKey) {
+        self.thread = thread
+        self.sortKey = sortKey
+    }
+
+    // MARK: Comparable
+
+    public static func < (lhs: GroupSearchResult, rhs: GroupSearchResult) -> Bool {
+        return lhs.sortKey < rhs.sortKey
+    }
+
+    // MARK: Equatable
+
+    public static func == (lhs: GroupSearchResult, rhs: GroupSearchResult) -> Bool {
+        return lhs.thread.threadRecord.uniqueId == rhs.thread.threadRecord.uniqueId
+    }
+}
+
+@objc
+public class ComposeScreenSearchResultSet: NSObject {
+
+    @objc
+    public let searchText: String
+
+    @objc
+    public let groups: [GroupSearchResult]
+
+    @objc
+    public var groupThreads: [TSGroupThread] {
+        return groups.compactMap { $0.thread.threadRecord as? TSGroupThread }
+    }
+
+    @objc
+    public let signalContacts: [ContactSearchResult]
+
+    @objc
+    public var signalAccounts: [SignalAccount] {
+        return signalContacts.map { $0.signalAccount }
+    }
+
+    public init(searchText: String, groups: [GroupSearchResult], signalContacts: [ContactSearchResult]) {
+        self.searchText = searchText
+        self.groups = groups
+        self.signalContacts = signalContacts
+    }
+
+    @objc
+    public static let empty = ComposeScreenSearchResultSet(searchText: "", groups: [], signalContacts: [])
+
+    @objc
+    public var isEmpty: Bool {
+        return groups.isEmpty && signalContacts.isEmpty
     }
 }
 
@@ -119,6 +182,48 @@ public class ConversationSearcher: NSObject {
         super.init()
     }
 
+    @objc
+    public func searchForComposeScreen(searchText: String,
+                                       transaction: YapDatabaseReadTransaction,
+                                       contactsManager: ContactsManagerProtocol) -> ComposeScreenSearchResultSet {
+
+        var signalContacts: [ContactSearchResult] = []
+        var groups: [GroupSearchResult] = []
+
+        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
+
+            switch match {
+            case let signalAccount as SignalAccount:
+                let searchResult = ContactSearchResult(signalAccount: signalAccount, contactsManager: contactsManager)
+                signalContacts.append(searchResult)
+            case let groupThread as TSGroupThread:
+                let sortKey = ConversationSortKey(creationDate: groupThread.creationDate,
+                                                  lastMessageReceivedAtDate: groupThread.lastInteractionForInbox(transaction: transaction)?.receivedAtDate())
+                let threadViewModel = ThreadViewModel(thread: groupThread, transaction: transaction)
+                let searchResult = GroupSearchResult(thread: threadViewModel, sortKey: sortKey)
+                groups.append(searchResult)
+            case is TSContactThread:
+                // not included in compose screen results
+                break
+            case is TSMessage:
+                // not included in compose screen results
+                break
+            default:
+                owsFailDebug("unhandled item: \(match)")
+            }
+        }
+
+        // Order "contact results by display name.
+        signalContacts.sort()
+
+        // Order the conversation and message results in reverse chronological order.
+        // The contact results are pre-sorted by display name.
+        groups.sort(by: >)
+
+        return ComposeScreenSearchResultSet(searchText: searchText, groups: groups, signalContacts: signalContacts)
+    }
+
+    @objc
     public func results(searchText: String,
                         transaction: YapDatabaseReadTransaction,
                         contactsManager: ContactsManagerProtocol) -> SearchResultSet {
@@ -223,7 +328,7 @@ public class ConversationSearcher: NSObject {
         let groupName = groupThread.groupModel.groupName
         let memberStrings = groupThread.groupModel.groupMemberIds.map { recipientId in
             self.indexingString(recipientId: recipientId)
-            }.joined(separator: " ")
+        }.joined(separator: " ")
 
         return "\(memberStrings) \(groupName ?? "")"
     }

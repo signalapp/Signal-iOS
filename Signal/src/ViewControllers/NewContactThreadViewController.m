@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UILocalizedIndexedCollation *collation;
 
 @property (nonatomic, readonly) UISearchBar *searchBar;
+@property (nonatomic) ComposeScreenSearchResultSet *searchResults;
 
 // A list of possible phone numbers parsed from the search text as
 // E164 values.
@@ -71,12 +72,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation NewContactThreadViewController
 
+
+#pragma mark - Dependencies
+
+- (ConversationSearcher *)conversationSearcher
+{
+    return ConversationSearcher.shared;
+}
+
+- (YapDatabaseConnection *)uiDatabaseConnection
+{
+    return OWSPrimaryStorage.sharedManager.uiDatabaseConnection;
+}
+
+- (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
+}
+
+#pragma mark -
+
 - (void)loadView
 {
     [super loadView];
 
+    _searchResults = ComposeScreenSearchResultSet.empty;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
-    _conversationSearcher = [ConversationSearcher shared];
     _nonContactAccountSet = [NSMutableSet set];
     _collation = [UILocalizedIndexedCollation currentCollation];
 
@@ -155,13 +176,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    [self.contactsViewHelper.contactsManager
-        userRequestedSystemContactsRefreshWithCompletion:^(NSError *_Nullable error) {
-            if (error) {
-                OWSLogError(@"refreshing contacts failed with error: %@", error);
-            }
-            [refreshControl endRefreshing];
-        }];
+    [self.contactsManager userRequestedSystemContactsRefreshWithCompletion:^(NSError *_Nullable error) {
+        if (error) {
+            OWSLogError(@"refreshing contacts failed with error: %@", error);
+        }
+        [refreshControl endRefreshing];
+    }];
 }
 
 - (void)showSearchBar:(BOOL)isVisible
@@ -268,7 +288,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Make sure we have requested contact access at this point if, e.g.
     // the user has no messages in their inbox and they choose to compose
     // a message.
-    [self.contactsViewHelper.contactsManager requestSystemContactsOnce];
+    [self.contactsManager requestSystemContactsOnce];
 
     [self showContactAppropriateViews];
 }
@@ -295,7 +315,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // App is killed and restarted when the user changes their contact permissions, so need need to "observe" anything
     // to re-render this.
-    if (self.contactsViewHelper.contactsManager.isSystemContactsDenied) {
+    if (self.contactsManager.isSystemContactsDenied) {
         OWSTableItem *contactReminderItem = [OWSTableItem
             itemWithCustomCellBlock:^{
                 UITableViewCell *newCell = [OWSTableItem newCell];
@@ -334,7 +354,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                       animated:YES];
                                          }]];
 
-    if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
+    if (self.contactsManager.isSystemContactsAuthorized) {
         // Invite Contacts
         [staticSection
             addItem:[OWSTableItem
@@ -347,7 +367,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [contents addSection:staticSection];
 
-    BOOL hasSearchText = [self.searchBar text].length > 0;
+    BOOL hasSearchText = self.searchText.length > 0;
 
     if (hasSearchText) {
         for (OWSTableSection *section in [self contactsSectionsForSearch]) {
@@ -404,7 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
         // No Contacts
         OWSTableSection *contactsSection = [OWSTableSection new];
 
-        if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
+        if (self.contactsManager.isSystemContactsAuthorized) {
             if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
 
                 [contactsSection
@@ -433,7 +453,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [contactsSection addItem:loadingItem];
             }
         }
-        
+
         return @[ contactsSection ];
     }
     __weak NewContactThreadViewController *weakSelf = self;
@@ -650,25 +670,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<SignalAccount *> *)filteredSignalAccounts
 {
-    NSString *searchString = self.searchBar.text;
-
-    ContactsViewHelper *helper = self.contactsViewHelper;
-    return [helper signalAccountsMatchingSearchString:searchString];
+    return self.searchResults.signalAccounts;
 }
 
 - (NSArray<TSGroupThread *> *)filteredGroupThreads
 {
-    NSMutableArray<TSGroupThread *> *groupThreads = [NSMutableArray new];
-    [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
-        if (![obj isKindOfClass:[TSGroupThread class]]) {
-            // group and contact threads are in the same collection.
-            return;
-        }
-        TSGroupThread *groupThread = (TSGroupThread *)obj;
-        [groupThreads addObject:groupThread];
-    }];
-
-    return [self.conversationSearcher filterGroupThreads:groupThreads withSearchText:self.searchBar.text];
+    return self.searchResults.groupThreads;
 }
 
 #pragma mark - No Contacts Mode
@@ -683,14 +690,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentInviteFlow
 {
     OWSInviteFlow *inviteFlow =
-        [[OWSInviteFlow alloc] initWithPresentingViewController:self
-                                                contactsManager:self.contactsViewHelper.contactsManager];
+        [[OWSInviteFlow alloc] initWithPresentingViewController:self contactsManager:self.contactsManager];
     [self presentViewController:inviteFlow.actionSheetController animated:YES completion:nil];
 }
 
 - (void)showContactAppropriateViews
 {
-    if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
+    if (self.contactsManager.isSystemContactsAuthorized) {
         if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce && self.contactsViewHelper.signalAccounts.count < 1
             && ![Environment.shared.preferences hasDeclinedNoContactsView]) {
             self.isNoContactsModeActive = YES;
@@ -733,8 +739,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 
     OWSInviteFlow *inviteFlow =
-        [[OWSInviteFlow alloc] initWithPresentingViewController:self
-                                                contactsManager:self.contactsViewHelper.contactsManager];
+        [[OWSInviteFlow alloc] initWithPresentingViewController:self contactsManager:self.contactsManager];
 
     OWSAssertDebug([phoneNumber length] > 0);
     NSString *confirmMessage = NSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
@@ -866,6 +871,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
+    [BenchManager startEventWithTitle:@"Compose Search" eventId:@"Compose Search"];
     [self searchTextDidChange];
 }
 
@@ -891,10 +897,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)searchTextDidChange
 {
-    [self updateSearchPhoneNumbers];
-
-    [self updateTableContents];
+    NSString *searchText = self.searchText;
+    [self.uiDatabaseConnection
+        asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+            self.searchResults = [self.conversationSearcher searchForComposeScreenWithSearchText:searchText
+                                                                                     transaction:transaction
+                                                                                 contactsManager:self.contactsManager];
+        }
+        completionBlock:^{
+            [self updateSearchPhoneNumbers];
+            [self updateTableContents];
+            [BenchManager completeEventWithEventId:@"Compose Search"];
+        }];
 }
+
+#pragma mark -
 
 - (NSDictionary<NSString *, NSString *> *)callingCodesToCountryCodeMap
 {
@@ -928,9 +945,20 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
+- (NSString *)searchText
+{
+    NSString *rawText = self.searchBar.text;
+    NSString *stripped = rawText.ows_stripped;
+    if (stripped.length == 0) {
+        return @"";
+    } else {
+        return stripped;
+    }
+}
+
 - (NSArray<NSString *> *)parsePossibleSearchPhoneNumbers
 {
-    NSString *searchText = self.searchBar.text;
+    NSString *searchText = self.searchText;
 
     if (searchText.length < 8) {
         return @[];
