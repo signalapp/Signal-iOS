@@ -93,7 +93,7 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
     // MARK: Orientation
 
     override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .allButUpsideDown
+        return DefaultUIInterfaceOrientationMask()
     }
 
     // MARK: Present / Dismiss animations
