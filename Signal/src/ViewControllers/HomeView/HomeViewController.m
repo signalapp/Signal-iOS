@@ -645,8 +645,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     [self.searchResultsController viewWillAppear:animated];
-
-    [UIViewController attemptRotationToDeviceOrientation];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
