@@ -386,7 +386,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 {
     NSString *confirmationTitleFormat
         = NSLocalizedString(@"UNLINK_CONFIRMATION_ALERT_TITLE", @"Alert title for confirming device deletion");
-    NSString *confirmationTitle = [NSString stringWithFormat:confirmationTitleFormat, device.name];
+    NSString *confirmationTitle = [NSString stringWithFormat:confirmationTitleFormat, device.displayName];
     NSString *confirmationMessage
         = NSLocalizedString(@"UNLINK_CONFIRMATION_ALERT_BODY", @"Alert message to confirm unlinking a device");
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:confirmationTitle
