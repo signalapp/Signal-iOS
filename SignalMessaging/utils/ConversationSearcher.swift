@@ -78,8 +78,7 @@ public class ContactSearchResult: NSObject, Comparable {
     }
 }
 
-@objc
-public class SearchResultSet: NSObject {
+public class HomeScreenSearchResultSet: NSObject {
     public let searchText: String
     public let conversations: [ConversationSearchResult<ConversationSortKey>]
     public let contacts: [ContactSearchResult]
@@ -92,8 +91,8 @@ public class SearchResultSet: NSObject {
         self.messages = messages
     }
 
-    public class var empty: SearchResultSet {
-        return SearchResultSet(searchText: "", conversations: [], contacts: [], messages: [])
+    public class var empty: HomeScreenSearchResultSet {
+        return HomeScreenSearchResultSet(searchText: "", conversations: [], contacts: [], messages: [])
     }
 
     public var isEmpty: Bool {
@@ -223,10 +222,9 @@ public class ConversationSearcher: NSObject {
         return ComposeScreenSearchResultSet(searchText: searchText, groups: groups, signalContacts: signalContacts)
     }
 
-    @objc
-    public func results(searchText: String,
-                        transaction: YapDatabaseReadTransaction,
-                        contactsManager: ContactsManagerProtocol) -> SearchResultSet {
+    public func searchForHomeScreen(searchText: String,
+                                    transaction: YapDatabaseReadTransaction,
+                                    contactsManager: ContactsManagerProtocol) -> HomeScreenSearchResultSet {
 
         var conversations: [ConversationSearchResult<ConversationSortKey>] = []
         var contacts: [ContactSearchResult] = []
@@ -278,7 +276,7 @@ public class ConversationSearcher: NSObject {
         // Order "other" contact results by display name.
         otherContacts.sort()
 
-        return SearchResultSet(searchText: searchText, conversations: conversations, contacts: otherContacts, messages: messages)
+        return HomeScreenSearchResultSet(searchText: searchText, conversations: conversations, contacts: otherContacts, messages: messages)
     }
 
     @objc(filterThreads:withSearchText:)

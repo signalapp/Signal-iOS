@@ -25,7 +25,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         }
     }
 
-    var searchResultSet: SearchResultSet = SearchResultSet.empty {
+    var searchResultSet: HomeScreenSearchResultSet = HomeScreenSearchResultSet.empty {
         didSet {
             AssertIsOnMainThread()
 
@@ -392,15 +392,15 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
     private func updateSearchResults(searchText: String) {
         guard searchText.stripped.count > 0 else {
-            self.searchResultSet = SearchResultSet.empty
+            self.searchResultSet = HomeScreenSearchResultSet.empty
             self.tableView.reloadData()
             return
         }
 
-        var searchResults: SearchResultSet?
+        var searchResults: HomeScreenSearchResultSet?
         self.uiDatabaseConnection.asyncRead({[weak self] transaction in
             guard let strongSelf = self else { return }
-            searchResults = strongSelf.searcher.results(searchText: searchText, transaction: transaction, contactsManager: strongSelf.contactsManager)
+            searchResults = strongSelf.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction, contactsManager: strongSelf.contactsManager)
         },
                                             completionBlock: { [weak self] in
                                                 AssertIsOnMainThread()

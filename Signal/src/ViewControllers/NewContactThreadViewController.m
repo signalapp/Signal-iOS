@@ -898,6 +898,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)searchTextDidChange
 {
     NSString *searchText = self.searchText;
+
+    __weak __typeof(self) weakSelf = self;
+
     [self.uiDatabaseConnection
         asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
             self.searchResults = [self.conversationSearcher searchForComposeScreenWithSearchText:searchText
@@ -905,8 +908,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                  contactsManager:self.contactsManager];
         }
         completionBlock:^{
-            [self updateSearchPhoneNumbers];
-            [self updateTableContents];
+            __typeof(self) strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
+
+            [strongSelf updateSearchPhoneNumbers];
+            [strongSelf updateTableContents];
             [BenchManager completeEventWithEventId:@"Compose Search"];
         }];
 }
