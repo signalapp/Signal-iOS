@@ -38,12 +38,6 @@ def shared_pods
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master'
   # pod 'Mantle', path: '../Mantle'
 
-  # SocketRocket has some critical crash fixes on Github, but have published an official release to cocoapods in ages, so
-  # we were following master
-  # Forked and have an open PR with our changes, but they have not been merged.
-  # pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', inhibit_warnings: true
-  pod 'SocketRocket', :git => 'https://github.com/signalapp/SocketRocket.git', branch: 'mkirk/handle-sec-err', inhibit_warnings: true
-
   # Forked for compatibily with the ShareExtension, changes have an open PR, but have not been merged.
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
   # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
@@ -51,6 +45,9 @@ def shared_pods
   # Forked to incorporate our self-built binary artifact.
   pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework'
   #pod 'GRKOpenSSLFramework', path: '../GRKOpenSSLFramework'
+
+  pod 'Starscream', git: 'git@github.com:signalapp/Starscream.git', branch: 'signal-release'
+  # pod 'Starscream', path: '../Starscream'
 
   ###
   # third party pods
