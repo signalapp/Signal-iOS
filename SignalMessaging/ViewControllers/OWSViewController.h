@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define LANDSCAPE_ORIENTATION_ENABLED
+BOOL IsLandscapeOrientationEnabled(void);
 
 UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void);
 

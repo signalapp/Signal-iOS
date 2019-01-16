@@ -8,13 +8,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+BOOL IsLandscapeOrientationEnabled(void)
+{
+    return NO;
+}
+
 UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
 {
-#ifdef LANDSCAPE_ORIENTATION_ENABLED
-    return UIInterfaceOrientationMaskAllButUpsideDown;
-#else
-    return UIInterfaceOrientationMaskPortrait;
-#endif
+    return (IsLandscapeOrientationEnabled() ? UIInterfaceOrientationMaskAllButUpsideDown
+                                            : UIInterfaceOrientationMaskPortrait);
 }
 
 @interface OWSViewController ()
