@@ -18,7 +18,8 @@ update_dependencies:
 
 dependencies:
 	cd $(WORKING_DIR) && \
-		git submodule update --init
+		git submodule sync
+		git submodule update --init --depth 50
 		cd $(THIRD_PARTY_DIR) && \
 			carthage build --platform iOS
 
