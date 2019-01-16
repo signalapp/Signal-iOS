@@ -8,6 +8,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+BOOL IsLandscapeOrientationEnabled(void)
+{
+    return NO;
+}
+
+UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
+{
+    return (IsLandscapeOrientationEnabled() ? UIInterfaceOrientationMaskAllButUpsideDown
+                                            : UIInterfaceOrientationMaskPortrait);
+}
+
 @interface OWSViewController ()
 
 @property (nonatomic, weak) UIView *bottomLayoutView;
@@ -185,7 +196,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskAllButUpsideDown;
+    return DefaultUIInterfaceOrientationMask();
 }
 
 @end

@@ -28,7 +28,7 @@
     [super loadView];
 
     self.shouldUseTheme = NO;
-    self.interfaceOrientationMask = UIInterfaceOrientationMaskAllButUpsideDown;
+    self.interfaceOrientationMask = DefaultUIInterfaceOrientationMask();
 
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
