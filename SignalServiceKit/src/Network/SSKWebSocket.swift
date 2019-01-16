@@ -165,7 +165,7 @@ extension SSKWebSocketImpl: WebSocketDelegate {
 }
 
 private func TextSecureCertificate() -> SSLCert {
-    let data = OWSHTTPSecurityPolicy.dataFromCertificateFile(forService: "textsecure")
+    let data = SSKTextSecureServiceCertificateData()
     return SSLCert(data: data)
 }
 

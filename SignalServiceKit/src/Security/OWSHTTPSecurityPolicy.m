@@ -95,6 +95,11 @@ _out:
     return isValid;
 }
 
+NSData *SSKTextSecureServiceCertificateData()
+{
+    return [OWSHTTPSecurityPolicy dataFromCertificateFileForService:@"textsecure"];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
