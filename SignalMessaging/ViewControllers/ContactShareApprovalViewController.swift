@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -366,7 +366,8 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         scrollView.preservesSuperviewLayoutMargins = false
         self.view.addSubview(scrollView)
         scrollView.layoutMargins = .zero
-        scrollView.autoPinWidthToSuperview()
+        scrollView.autoPinEdge(toSuperviewSafeArea: .leading)
+        scrollView.autoPinEdge(toSuperviewSafeArea: .trailing)
         scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         scrollView.autoPinEdge(toSuperviewEdge: .bottom)
 
