@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,16 +19,15 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     @objc
     let actionSheetController: UIAlertController
+
     @objc
     let presentingViewController: UIViewController
-    let contactsManager: OWSContactsManager
 
     var channel: Channel?
 
     @objc
-    required init(presentingViewController: UIViewController, contactsManager: OWSContactsManager) {
+    required init(presentingViewController: UIViewController) {
         self.presentingViewController = presentingViewController
-        self.contactsManager = contactsManager
         actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
         super.init()
