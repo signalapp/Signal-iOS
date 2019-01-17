@@ -1437,55 +1437,53 @@ NS_ASSUME_NONNULL_BEGIN
         [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
     }
 
-    TSQuotedMessage *_Nullable quotedMessage = incomingMessage.quotedMessage;
-    if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {
-        // We weren't able to derive a local thumbnail, so we'll fetch the referenced attachment.
-        TSAttachmentPointer *attachmentPointer =
-            [TSAttachmentPointer fetchObjectWithUniqueID:quotedMessage.thumbnailAttachmentPointerId
-                                             transaction:transaction];
-
-        if ([attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
-            OWSLogDebug(@"downloading thumbnail for message: %lu", (unsigned long)incomingMessage.timestamp);
-            [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
-                success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                    OWSAssertDebug(attachmentStreams.count == 1);
-                    TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        [incomingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
-                        [incomingMessage saveWithTransaction:transaction];
-                    }];
-                }
-                failure:^(NSError *error) {
-                    OWSLogWarn(@"failed to fetch thumbnail for message: %lu with error: %@",
-                        (unsigned long)incomingMessage.timestamp,
-                        error);
-                }];
-        }
+    NSMutableArray<NSString *> *otherAttachmentIds = [NSMutableArray new];
+    if (incomingMessage.quotedMessage.thumbnailAttachmentPointerId.length > 0) {
+        [otherAttachmentIds addObject:incomingMessage.quotedMessage.thumbnailAttachmentPointerId];
     }
-
-    OWSContact *_Nullable contact = incomingMessage.contactShare;
-    if (contact && contact.avatarAttachmentId) {
-        TSAttachmentPointer *attachmentPointer =
-            [TSAttachmentPointer fetchObjectWithUniqueID:contact.avatarAttachmentId transaction:transaction];
+    if (incomingMessage.contactShare.avatarAttachmentId.length > 0) {
+        [otherAttachmentIds addObject:incomingMessage.contactShare.avatarAttachmentId];
+    }
+    if (incomingMessage.linkPreview.imageAttachmentId.length > 0) {
+        [otherAttachmentIds addObject:incomingMessage.linkPreview.imageAttachmentId];
+    }
+    for (NSString *attachmentId in otherAttachmentIds) {
+        TSAttachmentPointer *_Nullable attachmentPointer =
+            [TSAttachmentPointer fetchObjectWithUniqueID:attachmentId transaction:transaction];
 
         if (![attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
-            OWSFailDebug(@"avatar attachmentPointer was unexpectedly nil");
-        } else {
-            OWSLogDebug(@"downloading contact avatar for message: %lu", (unsigned long)incomingMessage.timestamp);
-
-            [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
-                success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        [incomingMessage touchWithTransaction:transaction];
-                    }];
-                }
-                failure:^(NSError *error) {
-                    OWSLogWarn(@"failed to fetch contact avatar for message: %lu with error: %@",
-                        (unsigned long)incomingMessage.timestamp,
-                        error);
-                }];
+            OWSFailDebug(@"Missing attachment pointer.");
+            continue;
         }
+
+        OWSLogDebug(@"Downloading attachment for message: %lu", (unsigned long)incomingMessage.timestamp);
+
+        // Use a separate download for each attachment so that:
+        //
+        // * We update the message as each comes in.
+        // * Failures don't interfere with successes.
+        [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
+            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    TSAttachmentStream *_Nullable attachmentStream = attachmentStreams.firstObject;
+                    OWSAssertDebug(attachmentStream);
+                    if (attachmentStream && incomingMessage.quotedMessage.thumbnailAttachmentPointerId.length > 0 &&
+                        [attachmentStream.uniqueId
+                            isEqualToString:incomingMessage.quotedMessage.thumbnailAttachmentPointerId]) {
+                        [incomingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
+                        [incomingMessage saveWithTransaction:transaction];
+                    } else {
+                        [incomingMessage touchWithTransaction:transaction];
+                    }
+                }];
+            }
+            failure:^(NSError *error) {
+                OWSLogWarn(@"failed to download attachment for message: %lu with error: %@",
+                    (unsigned long)incomingMessage.timestamp,
+                    error);
+            }];
     }
+
     // In case we already have a read receipt for this new message (this happens sometimes).
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
                                                                       transaction:transaction];

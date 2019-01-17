@@ -425,7 +425,7 @@ NS_ASSUME_NONNULL_BEGIN
         [DDLog flushLog];
     }
     OWSAssertDebug(![attachment hasError]);
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
+    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil linkPreview:nil];
     success();
 }
 
@@ -1741,7 +1741,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(thread);
 
     SignalAttachment *attachment = [self signalAttachmentForFilePath:filePath];
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
+    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil linkPreview:nil];
     success();
 }
 
@@ -3346,7 +3346,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
+    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil linkPreview:nil];
 }
 
 + (NSData *)createRandomNSDataOfSize:(size_t)size
@@ -3379,7 +3379,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         // style them indistinguishably from a separate text message.
         attachment.captionText = [self randomCaptionText];
     }
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
+    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil linkPreview:nil];
 }
 
 + (SSKProtoEnvelope *)createEnvelopeForThread:(TSThread *)thread
@@ -4445,7 +4445,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             [DDLog flushLog];
         }
         OWSAssertDebug(![attachment hasError]);
-        [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
+        [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil linkPreview:nil];
 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             sendUnsafeFile();
@@ -4763,7 +4763,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithAttachments:attachments
                                                                    messageBody:messageBody
                                                                       inThread:thread
-                                                              quotedReplyModel:nil];
+                                                              quotedReplyModel:nil
+                                                                   linkPreview:nil];
         OWSLogError(@"timestamp: %llu.", message.timestamp);
     }];
 }

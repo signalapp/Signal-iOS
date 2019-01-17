@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DataSource.h"
@@ -103,10 +103,8 @@ NS_SWIFT_NAME(MessageSender)
 @interface OutgoingMessagePreparer : NSObject
 
 /// Persists all necessary data to disk before sending, e.g. generate thumbnails
-+ (void)prepareMessageForSending:(TSOutgoingMessage *)message
-      quotedThumbnailAttachments:(NSArray<TSAttachmentStream *> **)outQuotedThumbnailAttachments
-    contactShareAvatarAttachment:(TSAttachmentStream **)outContactShareAvatarAttachment
-                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (NSArray<NSString *> *)prepareMessageForSending:(TSOutgoingMessage *)message
+                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /// Writes attachment to disk and applies original filename to message attributes
 + (void)prepareAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos

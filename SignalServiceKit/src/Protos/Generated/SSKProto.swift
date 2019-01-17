@@ -2864,9 +2864,7 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
             builder.setQuote(_value)
         }
         builder.setContact(contact)
-        if let _value = preview {
-            builder.setPreview(_value)
-        }
+        builder.setPreview(preview)
         return builder
     }
 
@@ -2924,8 +2922,14 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
             proto.contact = wrappedItems.map { $0.proto }
         }
 
-        @objc public func setPreview(_ valueParam: SSKProtoDataMessagePreview) {
-            proto.preview = valueParam.proto
+        @objc public func addPreview(_ valueParam: SSKProtoDataMessagePreview) {
+            var items = proto.preview
+            items.append(valueParam.proto)
+            proto.preview = items
+        }
+
+        @objc public func setPreview(_ wrappedItems: [SSKProtoDataMessagePreview]) {
+            proto.preview = wrappedItems.map { $0.proto }
         }
 
         @objc public func build() throws -> SSKProtoDataMessage {
@@ -2947,7 +2951,7 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
 
     @objc public let contact: [SSKProtoDataMessageContact]
 
-    @objc public let preview: SSKProtoDataMessagePreview?
+    @objc public let preview: [SSKProtoDataMessagePreview]
 
     @objc public var body: String? {
         guard proto.hasBody else {
@@ -2995,7 +2999,7 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
                  group: SSKProtoGroupContext?,
                  quote: SSKProtoDataMessageQuote?,
                  contact: [SSKProtoDataMessageContact],
-                 preview: SSKProtoDataMessagePreview?) {
+                 preview: [SSKProtoDataMessagePreview]) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -3031,10 +3035,8 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
         var contact: [SSKProtoDataMessageContact] = []
         contact = try proto.contact.map { try SSKProtoDataMessageContact.parseProto($0) }
 
-        var preview: SSKProtoDataMessagePreview? = nil
-        if proto.hasPreview {
-            preview = try SSKProtoDataMessagePreview.parseProto(proto.preview)
-        }
+        var preview: [SSKProtoDataMessagePreview] = []
+        preview = try proto.preview.map { try SSKProtoDataMessagePreview.parseProto($0) }
 
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 

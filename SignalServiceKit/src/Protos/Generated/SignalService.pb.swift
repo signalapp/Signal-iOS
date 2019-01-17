@@ -634,14 +634,10 @@ struct SignalServiceProtos_DataMessage {
     set {_uniqueStorage()._contact = newValue}
   }
 
-  var preview: SignalServiceProtos_DataMessage.Preview {
-    get {return _storage._preview ?? SignalServiceProtos_DataMessage.Preview()}
+  var preview: [SignalServiceProtos_DataMessage.Preview] {
+    get {return _storage._preview}
     set {_uniqueStorage()._preview = newValue}
   }
-  /// Returns true if `preview` has been explicitly set.
-  var hasPreview: Bool {return _storage._preview != nil}
-  /// Clears the value of `preview`. Subsequent reads from it will return its default value.
-  mutating func clearPreview() {_uniqueStorage()._preview = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2834,7 +2830,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _timestamp: UInt64? = nil
     var _quote: SignalServiceProtos_DataMessage.Quote? = nil
     var _contact: [SignalServiceProtos_DataMessage.Contact] = []
-    var _preview: SignalServiceProtos_DataMessage.Preview? = nil
+    var _preview: [SignalServiceProtos_DataMessage.Preview] = []
 
     static let defaultInstance = _StorageClass()
 
@@ -2875,7 +2871,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 7: try decoder.decodeSingularUInt64Field(value: &_storage._timestamp)
         case 8: try decoder.decodeSingularMessageField(value: &_storage._quote)
         case 9: try decoder.decodeRepeatedMessageField(value: &_storage._contact)
-        case 10: try decoder.decodeSingularMessageField(value: &_storage._preview)
+        case 10: try decoder.decodeRepeatedMessageField(value: &_storage._preview)
         default: break
         }
       }
@@ -2911,8 +2907,8 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if !_storage._contact.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._contact, fieldNumber: 9)
       }
-      if let v = _storage._preview {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+      if !_storage._preview.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._preview, fieldNumber: 10)
       }
     }
     try unknownFields.traverse(visitor: &visitor)
