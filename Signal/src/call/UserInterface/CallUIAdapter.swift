@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,7 +10,7 @@ import SignalMessaging
 import WebRTC
 
 protocol CallUIAdaptee {
-    var notificationsAdapter: CallNotificationsAdapter { get }
+    var notificationsAdapter: NotificationsAdapter { get }
     var callService: CallService { get }
     var hasManualRinger: Bool { get }
 
@@ -88,7 +88,7 @@ extension CallUIAdaptee {
     internal let audioService: CallAudioService
     internal let callService: CallService
 
-    public required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
+    public required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: NotificationsAdapter) {
         AssertIsOnMainThread()
 
         self.contactsManager = contactsManager

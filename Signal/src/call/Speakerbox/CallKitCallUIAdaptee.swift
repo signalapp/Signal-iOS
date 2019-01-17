@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,7 +20,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     private let callManager: CallKitCallManager
     internal let callService: CallService
-    internal let notificationsAdapter: CallNotificationsAdapter
+    internal let notificationsAdapter: NotificationsAdapter
     internal let contactsManager: OWSContactsManager
     private let showNamesOnCallScreen: Bool
     private let provider: CXProvider
@@ -76,7 +76,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         return providerConfiguration
     }
 
-    init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter, showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
+    init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: NotificationsAdapter, showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
         AssertIsOnMainThread()
 
         Logger.debug("")

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,8 +13,8 @@ class DebugUINotifications: DebugUIPage {
     var notificationsManager: NotificationsManager {
         return AppEnvironment.shared.notificationsManager
     }
-    var notificationsAdapter: CallNotificationsAdapter {
-        return AppEnvironment.shared.callNotificationsAdapter
+    var notificationsAdapter: NotificationsAdapter {
+        return AppEnvironment.shared.NotificationsAdapter
     }
     var messageSender: MessageSender {
         return SSKEnvironment.shared.messageSender

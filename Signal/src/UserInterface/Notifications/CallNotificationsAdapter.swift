@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,8 +7,8 @@ import Foundation
 /**
  * Present call related notifications to the user.
  */
-@objc(OWSCallNotificationsAdapter)
-public class CallNotificationsAdapter: NSObject {
+@objc(OWSNotificationsAdapter)
+public class NotificationsAdapter: NSObject {
 
     var adaptee: OWSCallNotificationsAdaptee {
         // TODO: We may eventually want to use UserNotificationsAdaptee instead.

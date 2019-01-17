@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -44,7 +44,7 @@ import SignalMessaging
     public var accountManager: AccountManager
 
     @objc
-    public var callNotificationsAdapter: CallNotificationsAdapter
+    public var NotificationsAdapter: NotificationsAdapter
 
     @objc
     public var pushRegistrationManager: PushRegistrationManager
@@ -68,7 +68,7 @@ import SignalMessaging
         self.messageFetcherJob = MessageFetcherJob()
         self.notificationsManager = NotificationsManager()
         self.accountManager = AccountManager()
-        self.callNotificationsAdapter = CallNotificationsAdapter()
+        self.notificationsAdapter = NotificationsAdapter()
         self.pushRegistrationManager = PushRegistrationManager()
         self.pushManager = PushManager()
         self.sessionResetJobQueue = SessionResetJobQueue()

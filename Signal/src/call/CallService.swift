@@ -401,8 +401,8 @@ private class SignalCallData: NSObject {
         return AppEnvironment.shared.accountManager
     }
 
-    private var notificationsAdapter: CallNotificationsAdapter {
-        return AppEnvironment.shared.callNotificationsAdapter
+    private var notificationsAdapter: NotificationsAdapter {
+        return AppEnvironment.shared.NotificationsAdapter
     }
 
     // MARK: - Notifications

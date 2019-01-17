@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,13 +11,13 @@ import SignalMessaging
  */
 class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
 
-    let notificationsAdapter: CallNotificationsAdapter
+    let notificationsAdapter: NotificationsAdapter
     let callService: CallService
 
     // Starting/Stopping incoming call ringing is our apps responsibility for the non CallKit interface.
     let hasManualRinger = true
 
-    required init(callService: CallService, notificationsAdapter: CallNotificationsAdapter) {
+    required init(callService: CallService, notificationsAdapter: NotificationsAdapter) {
         AssertIsOnMainThread()
 
         self.callService = callService
