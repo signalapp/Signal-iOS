@@ -1186,27 +1186,6 @@ typedef enum : NSUInteger {
         if (@available(iOS 10, *)) {
             self.collectionView.prefetchingEnabled = YES;
         }
-
-        // Now that we're using a "minimal" initial load window,
-        // try to increase the load window a moment after we've
-        // settled into the view.
-        __weak ConversationViewController *weakSelf = self;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(NSEC_PER_SEC / 2)), dispatch_get_main_queue(), ^{
-            ConversationViewController *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return;
-            }
-
-            // Try to auto-extend the load window.
-            BOOL isMainAppAndActive = CurrentAppContext().isMainAppAndActive;
-            if (strongSelf.isUserScrolling || !strongSelf.isViewVisible || !isMainAppAndActive) {
-                return;
-            }
-            if (!strongSelf.conversationViewModel.canLoadMoreItems) {
-                return;
-            }
-            [strongSelf.conversationViewModel loadAnotherPageOfMessages];
-        });
     }
 
     self.conversationViewModel.focusMessageIdOnOpen = nil;
@@ -1703,8 +1682,9 @@ typedef enum : NSUInteger {
     if (!self.showLoadMoreHeader) {
         return;
     }
-    static const CGFloat kThreshold = 50.f;
-    if (self.collectionView.contentOffset.y < kThreshold) {
+    CGSize screenSize = UIScreen.mainScreen.bounds.size;
+    CGFloat loadMoreThreshold = MAX(screenSize.width, screenSize.height);
+    if (self.collectionView.contentOffset.y < loadMoreThreshold) {
         [self.conversationViewModel loadAnotherPageOfMessages];
     }
 }
