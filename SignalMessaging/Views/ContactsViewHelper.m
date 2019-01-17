@@ -263,8 +263,37 @@ NS_ASSUME_NONNULL_BEGIN
     }]];
 }
 
+- (void)warmNonSignalContactsCacheAsync
+{
+    OWSAssertIsOnMainThread();
+    if (self.nonSignalContacts != nil) {
+        return;
+    }
+
+    NSMutableSet<Contact *> *nonSignalContactSet = [NSMutableSet new];
+    __block NSArray<Contact *> *nonSignalContacts;
+
+    [OWSPrimaryStorage.dbReadConnection
+        asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
+                NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
+                if (signalRecipients.count < 1) {
+                    [nonSignalContactSet addObject:contact];
+                }
+            }
+            nonSignalContacts = [nonSignalContactSet.allObjects
+                sortedArrayUsingComparator:^NSComparisonResult(Contact *_Nonnull left, Contact *_Nonnull right) {
+                    return [left.fullName compare:right.fullName];
+                }];
+        }
+        completionBlock:^{
+            self.nonSignalContacts = nonSignalContacts;
+        }];
+}
+
 - (nullable NSArray<Contact *> *)nonSignalContacts
 {
+    OWSAssertIsOnMainThread();
     if (!_nonSignalContacts) {
         NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
         [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
