@@ -316,7 +316,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                             isOn:SSKPreferences.areLinkPreviewsEnabled
                                           target:weakSelf
                                         selector:@selector(didToggleLinkPreviewsEnabled:)]];
-    linkPreviewsSection.footerTitle
+    linkPreviewsSection.headerTitle
         = NSLocalizedString(@"SETTINGS_LINK_PREVIEWS", @"Setting for enabling & disabling link previews.");
     [contents addSection:linkPreviewsSection];
 
