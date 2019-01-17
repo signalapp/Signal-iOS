@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOperation.h"
@@ -131,18 +131,20 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)runAnyQueuedRetry
 {
-    __block NSTimer *_Nullable retryTimer;
-    dispatch_sync(self.retryTimerSerialQueue, ^{
-        retryTimer = self.retryTimer;
-        self.retryTimer = nil;
-        [retryTimer invalidate];
-    });
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        __block NSTimer *_Nullable retryTimer;
+        dispatch_sync(self.retryTimerSerialQueue, ^{
+            retryTimer = self.retryTimer;
+            self.retryTimer = nil;
+            [retryTimer invalidate];
+        });
 
-    if (retryTimer != nil) {
-        [self run];
-    } else {
-        OWSLogVerbose(@"not re-running since operation is already running.");
-    }
+        if (retryTimer != nil) {
+            [self run];
+        } else {
+            OWSLogVerbose(@"not re-running since operation is already running.");
+        }
+    });
 }
 
 #pragma mark - Public Methods
@@ -193,11 +195,22 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
     dispatch_sync(self.retryTimerSerialQueue, ^{
         OWSAssertDebug(self.retryTimer == nil);
         [self.retryTimer invalidate];
-        self.retryTimer = [NSTimer weakScheduledTimerWithTimeInterval:self.retryInterval
-                                                               target:self
-                                                             selector:@selector(runAnyQueuedRetry)
-                                                             userInfo:nil
-                                                              repeats:NO];
+        NSTimer *retryTimer = [NSTimer weakTimerWithTimeInterval:self.retryInterval
+                                                          target:self
+                                                        selector:@selector(runAnyQueuedRetry)
+                                                        userInfo:nil
+                                                         repeats:NO];
+        
+        self.retryTimer = retryTimer;
+
+        // The `scheduledTimerWith*` methods add the timer to the current thread's RunLoop.
+        // Since Operations typically run on a background thread, that would mean the background
+        // thread's RunLoop. However, the OS can spin down background threads if there's no work
+        // being done, so we run the risk of the timer's RunLoop being deallocated before it's
+        // fired.
+        //
+        // To ensure the timer's thread sticks around, we schedule it on the main RunLoop.
+        [NSRunLoop.mainRunLoop addTimer:retryTimer forMode:NSDefaultRunLoopMode];
     });
 }
 
