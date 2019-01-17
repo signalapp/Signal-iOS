@@ -278,6 +278,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
+    [self.contactsViewHelper warmNonSignalContactsCacheAsync];
+
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 }
 
