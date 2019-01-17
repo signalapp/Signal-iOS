@@ -4,24 +4,21 @@
 
 import Foundation
 
+@objc
+public protocol NotificationsAdaptee: NotificationsProtocol, OWSCallNotificationsAdaptee { }
+
+extension NotificationsManager: NotificationsAdaptee { }
+
 /**
  * Present call related notifications to the user.
  */
 @objc(OWSNotificationsAdapter)
-public class NotificationsAdapter: NSObject {
-
-    var adaptee: OWSCallNotificationsAdaptee {
-        // TODO: We may eventually want to use UserNotificationsAdaptee instead.
-        //
-        // We can't mix UILocalNotification (NotificationManager) with the UNNotifications
-        // Because registering message categories in one, clobbers the registered categories from the other
-        // We have to first port *all* the existing UINotification categories to UNNotifications
-        // which is a good thing to do, but in trying to limit the scope of changes that's been
-        // left out for now.
-        return AppEnvironment.shared.notificationsManager
-    }
+public class NotificationsAdapter: NSObject, NotificationsProtocol {
+    private let adaptee: NotificationsAdaptee
 
     @objc public override init() {
+        self.adaptee = NotificationsManager()
+
         super.init()
 
         SwiftSingletons.register(self)
@@ -45,4 +42,20 @@ public class NotificationsAdapter: NSObject {
        adaptee.presentMissedCallBecauseOfNewIdentity(call: call, callerName: callerName)
     }
 
+    // MJK TODO DI contactsManager
+    public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, contactsManager: ContactsManagerProtocol, transaction: YapDatabaseReadTransaction) {
+        adaptee.notifyUser(for: incomingMessage, in: thread, contactsManager: contactsManager, transaction: transaction)
+    }
+
+    public func notifyUser(for error: TSErrorMessage, thread: TSThread, transaction: YapDatabaseReadWriteTransaction) {
+        adaptee.notifyUser(for: error, thread: thread, transaction: transaction)
+    }
+
+    public func notifyUser(forThreadlessErrorMessage error: TSErrorMessage, transaction: YapDatabaseReadWriteTransaction) {
+        adaptee.notifyUser(forThreadlessErrorMessage: error, transaction: transaction)
+    }
+
+    public func clearAllNotifications() {
+        adaptee.clearAllNotifications()
+    }
 }

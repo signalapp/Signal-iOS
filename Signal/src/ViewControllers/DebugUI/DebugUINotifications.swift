@@ -10,11 +10,8 @@ class DebugUINotifications: DebugUIPage {
 
     // MARK: Dependencies
 
-    var notificationsManager: NotificationsManager {
-        return AppEnvironment.shared.notificationsManager
-    }
     var notificationsAdapter: NotificationsAdapter {
-        return AppEnvironment.shared.NotificationsAdapter
+        return AppEnvironment.shared.notificationsAdapter
     }
     var messageSender: MessageSender {
         return SSKEnvironment.shared.messageSender
@@ -60,7 +57,7 @@ class DebugUINotifications: DebugUIPage {
                             return
                         }
                         Logger.info("notifying user of incoming message")
-                        strongSelf.notificationsManager.notifyUser(for: incomingMessage, in: thread, contactsManager: strongSelf.contactsManager, transaction: transaction)
+                        strongSelf.notificationsAdapter.notifyUser(for: incomingMessage, in: thread, contactsManager: strongSelf.contactsManager, transaction: transaction)
                     }
                 }
             }

@@ -7,7 +7,6 @@
 #import "DebugLogger.h"
 #import "HomeViewController.h"
 #import "MainAppContext.h"
-#import "NotificationsManager.h"
 #import "OWS2FASettingsViewController.h"
 #import "OWSBackup.h"
 #import "OWSOrphanDataCleaner.h"

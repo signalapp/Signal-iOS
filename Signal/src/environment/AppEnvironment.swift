@@ -38,13 +38,10 @@ import SignalMessaging
     public var messageFetcherJob: MessageFetcherJob
 
     @objc
-    public var notificationsManager: NotificationsManager
-
-    @objc
     public var accountManager: AccountManager
 
     @objc
-    public var NotificationsAdapter: NotificationsAdapter
+    public var notificationsAdapter: NotificationsAdapter
 
     @objc
     public var pushRegistrationManager: PushRegistrationManager
@@ -66,7 +63,6 @@ import SignalMessaging
         self.callService = CallService()
         self.outboundCallInitiator = OutboundCallInitiator()
         self.messageFetcherJob = MessageFetcherJob()
-        self.notificationsManager = NotificationsManager()
         self.accountManager = AccountManager()
         self.notificationsAdapter = NotificationsAdapter()
         self.pushRegistrationManager = PushRegistrationManager()
@@ -85,7 +81,7 @@ import SignalMessaging
         callService.createCallUIAdapter()
 
         // Hang certain singletons on SSKEnvironment too.
-        SSKEnvironment.shared.notificationsManager = notificationsManager
+        SSKEnvironment.shared.notificationsManager = notificationsAdapter
         SSKEnvironment.shared.callMessageHandler = callMessageHandler
     }
 }

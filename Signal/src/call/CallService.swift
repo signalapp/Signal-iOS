@@ -402,7 +402,7 @@ private class SignalCallData: NSObject {
     }
 
     private var notificationsAdapter: NotificationsAdapter {
-        return AppEnvironment.shared.NotificationsAdapter
+        return AppEnvironment.shared.notificationsAdapter
     }
 
     // MARK: - Notifications
