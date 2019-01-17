@@ -2090,6 +2090,9 @@
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
 
+/* Setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS" = "Link Previews";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Settings";
 

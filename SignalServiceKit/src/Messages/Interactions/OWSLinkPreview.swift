@@ -101,6 +101,9 @@ public class OWSLinkPreview: MTLModel {
         guard OWSLinkPreview.featureEnabled else {
             throw LinkPreviewError.noPreview
         }
+        guard SSKPreferences.areLinkPreviewsEnabled() else {
+            throw LinkPreviewError.noPreview
+        }
         guard let previewProto = dataMessage.preview.first else {
             throw LinkPreviewError.noPreview
         }
@@ -160,6 +163,9 @@ public class OWSLinkPreview: MTLModel {
     public class func buildValidatedLinkPreview(fromInfo info: OWSLinkPreviewDraft,
                                                 transaction: YapDatabaseReadWriteTransaction) throws -> OWSLinkPreview {
         guard OWSLinkPreview.featureEnabled else {
+            throw LinkPreviewError.noPreview
+        }
+        guard SSKPreferences.areLinkPreviewsEnabled() else {
             throw LinkPreviewError.noPreview
         }
         let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(inputFilePath: info.imageFilePath,
@@ -361,6 +367,9 @@ public class OWSLinkPreview: MTLModel {
         guard OWSLinkPreview.featureEnabled else {
             return nil
         }
+        guard SSKPreferences.areLinkPreviewsEnabled() else {
+            return nil
+        }
         guard let body = body else {
             return nil
         }
@@ -404,6 +413,10 @@ public class OWSLinkPreview: MTLModel {
         }
 
         guard OWSLinkPreview.featureEnabled else {
+            completion(nil)
+            return
+        }
+        guard SSKPreferences.areLinkPreviewsEnabled() else {
             completion(nil)
             return
         }
