@@ -212,7 +212,7 @@ public class ConversationSearcher: NSObject {
             }
         }
 
-        // Order "contact results by display name.
+        // Order contact results by display name.
         signalContacts.sort()
 
         // Order the conversation and message results in reverse chronological order.

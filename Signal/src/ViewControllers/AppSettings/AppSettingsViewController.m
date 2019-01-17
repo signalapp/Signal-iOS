@@ -341,8 +341,7 @@
 
 - (void)showInviteFlow
 {
-    OWSInviteFlow *inviteFlow =
-        [[OWSInviteFlow alloc] initWithPresentingViewController:self contactsManager:self.contactsManager];
+    OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
     [self presentViewController:inviteFlow.actionSheetController animated:YES completion:nil];
 }
 

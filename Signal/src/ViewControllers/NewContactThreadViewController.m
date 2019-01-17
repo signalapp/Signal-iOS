@@ -689,8 +689,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)presentInviteFlow
 {
-    OWSInviteFlow *inviteFlow =
-        [[OWSInviteFlow alloc] initWithPresentingViewController:self contactsManager:self.contactsManager];
+    OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
     [self presentViewController:inviteFlow.actionSheetController animated:YES completion:nil];
 }
 
@@ -738,8 +737,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sendTextToPhoneNumber:(NSString *)phoneNumber
 {
 
-    OWSInviteFlow *inviteFlow =
-        [[OWSInviteFlow alloc] initWithPresentingViewController:self contactsManager:self.contactsManager];
+    OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
 
     OWSAssertDebug([phoneNumber length] > 0);
     NSString *confirmMessage = NSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
@@ -956,12 +954,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)searchText
 {
     NSString *rawText = self.searchBar.text;
-    NSString *stripped = rawText.ows_stripped;
-    if (stripped.length == 0) {
-        return @"";
-    } else {
-        return stripped;
-    }
+    return rawText.ows_stripped ?: @"";
 }
 
 - (NSArray<NSString *> *)parsePossibleSearchPhoneNumbers
