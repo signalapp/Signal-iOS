@@ -64,24 +64,6 @@ static void *kNSTimer_OWS_Proxy = &kNSTimer_OWS_Proxy;
     return timer;
 }
 
-+ (NSTimer *)weakTimerWithTimeInterval:(NSTimeInterval)timeInterval
-                                target:(id)target
-                              selector:(SEL)selector
-                              userInfo:(nullable id)userInfo
-                               repeats:(BOOL)repeats
-{
-    NSTimerProxy *proxy = [NSTimerProxy new];
-    proxy.target = target;
-    proxy.selector = selector;
-    NSTimer *timer = [NSTimer timerWithTimeInterval:timeInterval
-                                             target:proxy
-                                           selector:@selector(timerFired:)
-                                           userInfo:userInfo
-                                            repeats:repeats];
-    [timer ows_setProxy:proxy];
-    return timer;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

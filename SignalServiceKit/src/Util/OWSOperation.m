@@ -192,25 +192,23 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
     self.remainingRetries--;
 
-    dispatch_sync(self.retryTimerSerialQueue, ^{
-        OWSAssertDebug(self.retryTimer == nil);
-        [self.retryTimer invalidate];
-        NSTimer *retryTimer = [NSTimer weakTimerWithTimeInterval:self.retryInterval
-                                                          target:self
-                                                        selector:@selector(runAnyQueuedRetry)
-                                                        userInfo:nil
-                                                         repeats:NO];
-        
-        self.retryTimer = retryTimer;
-
-        // The `scheduledTimerWith*` methods add the timer to the current thread's RunLoop.
-        // Since Operations typically run on a background thread, that would mean the background
-        // thread's RunLoop. However, the OS can spin down background threads if there's no work
-        // being done, so we run the risk of the timer's RunLoop being deallocated before it's
-        // fired.
-        //
-        // To ensure the timer's thread sticks around, we schedule it on the main RunLoop.
-        [NSRunLoop.mainRunLoop addTimer:retryTimer forMode:NSDefaultRunLoopMode];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_sync(self.retryTimerSerialQueue, ^{
+            OWSAssertDebug(self.retryTimer == nil);
+            [self.retryTimer invalidate];
+            // The `scheduledTimerWith*` methods add the timer to the current thread's RunLoop.
+            // Since Operations typically run on a background thread, that would mean the background
+            // thread's RunLoop. However, the OS can spin down background threads if there's no work
+            // being done, so we run the risk of the timer's RunLoop being deallocated before it's
+            // fired.
+            //
+            // To ensure the timer's thread sticks around, we schedule it while on the main RunLoop.
+            self.retryTimer = [NSTimer weakScheduledTimerWithTimeInterval:self.retryInterval
+                                                                   target:self
+                                                                 selector:@selector(runAnyQueuedRetry)
+                                                                 userInfo:nil
+                                                                  repeats:NO];
+        });
     });
 }
 
