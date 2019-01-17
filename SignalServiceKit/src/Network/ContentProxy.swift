@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class ReverseProxy: NSObject {
+public class ContentProxy: NSObject {
 
     @available(*, unavailable, message:"do not instantiate this class.")
     private override init() {

@@ -281,7 +281,7 @@ extension GiphyError: LocalizedError {
     private let kGiphyBaseURL = "https://api.giphy.com/"
 
     private func giphyAPISessionManager() -> AFHTTPSessionManager? {
-        return ReverseProxy.jsonSessionManager(baseUrl: kGiphyBaseURL)
+        return ContentProxy.jsonSessionManager(baseUrl: kGiphyBaseURL)
     }
 
     // MARK: Search

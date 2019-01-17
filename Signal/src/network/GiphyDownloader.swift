@@ -415,7 +415,7 @@ extension URLSessionTask {
     private lazy var giphyDownloadSession: URLSession = {
         AssertIsOnMainThread()
 
-        let configuration = ReverseProxy.sessionConfiguration()
+        let configuration = ContentProxy.sessionConfiguration()
         configuration.urlCache = nil
         configuration.requestCachePolicy = .reloadIgnoringCacheData
         configuration.httpMaximumConnectionsPerHost = 10

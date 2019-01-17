@@ -23,7 +23,6 @@ public class OWSLinkPreviewInfo: NSObject {
     @objc
     public var imageFilePath: String?
 
-    @objc
     public init(urlString: String, title: String?, imageFilePath: String? = nil) {
         self.urlString = urlString
         self.title = title
@@ -152,7 +151,7 @@ public class OWSLinkPreview: MTLModel {
         guard OWSLinkPreview.featureEnabled else {
             throw LinkPreviewError.noPreview
         }
-        let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(forFilePath: info.imageFilePath,
+        let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(inputFilePath: info.imageFilePath,
                                                                         transaction: transaction)
 
         let linkPreview = OWSLinkPreview(urlString: info.urlString, title: info.title, imageAttachmentId: imageAttachmentId)
@@ -165,7 +164,7 @@ public class OWSLinkPreview: MTLModel {
         return linkPreview
     }
 
-    private class func saveAttachmentIfPossible(forFilePath filePath: String?,
+    private class func saveAttachmentIfPossible(inputFilePath filePath: String?,
                                                 transaction: YapDatabaseReadWriteTransaction) -> String? {
         guard let filePath = filePath else {
             return nil
@@ -223,8 +222,7 @@ public class OWSLinkPreview: MTLModel {
         "reddit.com",
         "imgur.com",
         "instagram.com",
-        "giphy.com",
-        "instagram.com"
+        "giphy.com"
     ]
 
     // TODO: Finalize

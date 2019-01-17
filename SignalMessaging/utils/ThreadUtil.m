@@ -8,7 +8,6 @@
 #import "OWSQuotedReplyModel.h"
 #import "OWSUnreadIndicator.h"
 #import "TSUnreadIndicatorInteraction.h"
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
