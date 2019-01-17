@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncManager.h"
@@ -127,8 +127,14 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 #pragma mark -
 
-- (YapDatabaseConnection *)editingDatabaseConnection {
+- (YapDatabaseConnection *)editingDatabaseConnection
+{
     return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
+}
+
+- (YapDatabaseConnection *)readDatabaseConnection
+{
+    return OWSPrimaryStorage.sharedManager.dbReadConnection;
 }
 
 #pragma mark - Methods
@@ -155,7 +161,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
         __block NSData *_Nullable messageData;
         __block NSData *_Nullable lastMessageData;
-        [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.readDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
             lastMessageData = [transaction objectForKey:kSyncManagerLastContactSyncKey
                                            inCollection:kSyncManagerCollection];
@@ -267,7 +273,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                identityManager:self.identityManager
                                                 profileManager:self.profileManager];
     __block DataSource *dataSource;
-    [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.readDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         dataSource = [DataSourceValue
             dataSourceWithSyncMessageData:[syncContactsMessage
                                               buildPlainTextAttachmentDataWithTransaction:transaction]];
