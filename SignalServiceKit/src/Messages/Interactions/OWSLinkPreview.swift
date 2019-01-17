@@ -389,7 +389,7 @@ public class OWSLinkPreview: MTLModel {
 
         Logger.verbose("url: \(url)")
 
-        guard let sessionManager: AFHTTPSessionManager = ReverseProxy.sessionManager(baseUrl: nil) else {
+        guard let sessionManager: AFHTTPSessionManager = ContentProxy.sessionManager(baseUrl: nil) else {
             owsFailDebug("Couldn't create session manager.")
             completion(nil)
             return
@@ -456,10 +456,10 @@ public class OWSLinkPreview: MTLModel {
         }
         Logger.verbose("linkText: \(linkText)")
 
-        let title = parseFirstMatch(pattern: "<meta property=\"og:title\" content=\"([^\"]+)\">", text: linkText)
+        let title = NSRegularExpression.parseFirstMatch(pattern: "<meta property=\"og:title\" content=\"([^\"]+)\">", text: linkText)
         Logger.verbose("title: \(String(describing: title))")
 
-        guard let imageUrlString = parseFirstMatch(pattern: "<meta property=\"og:image\" content=\"([^\"]+)\">", text: linkText) else {
+        guard let imageUrlString = NSRegularExpression.parseFirstMatch(pattern: "<meta property=\"og:image\" content=\"([^\"]+)\">", text: linkText) else {
             return completion(OWSLinkPreviewInfo(urlString: linkUrlString, title: title))
         }
         Logger.verbose("imageUrlString: \(imageUrlString)")
@@ -509,27 +509,5 @@ public class OWSLinkPreview: MTLModel {
                             let linkPreviewInfo = OWSLinkPreviewInfo(urlString: linkUrlString, title: title, imageFilePath: imageFilePath)
                             completion(linkPreviewInfo)
         })
-    }
-
-    private class func parseFirstMatch(pattern: String,
-                                       text: String) -> String? {
-        do {
-            let regex = try NSRegularExpression(pattern: pattern)
-            guard let match = regex.firstMatch(in: text,
-                                                      options: [],
-                                                      range: NSRange(location: 0, length: text.count)) else {
-                                                        return nil
-            }
-            let matchRange = match.range(at: 1)
-            guard let textRange = Range(matchRange, in: text) else {
-                owsFailDebug("Invalid match.")
-                return nil
-            }
-            let substring = String(text[textRange])
-            return substring
-        } catch {
-            Logger.error("Error: \(error)")
-            return nil
-        }
     }
 }
