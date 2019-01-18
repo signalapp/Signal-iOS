@@ -401,8 +401,8 @@ private class SignalCallData: NSObject {
         return AppEnvironment.shared.accountManager
     }
 
-    private var notificationsAdapter: NotificationsAdapter {
-        return AppEnvironment.shared.notificationsAdapter
+    private var notificationPresenter: NotificationPresenter {
+        return AppEnvironment.shared.notificationPresenter
     }
 
     // MARK: - Notifications
@@ -427,7 +427,7 @@ private class SignalCallData: NSObject {
             Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
             self.terminateCall()
         }
-        self.callUIAdapter = CallUIAdapter(callService: self, contactsManager: self.contactsManager, notificationsAdapter: self.notificationsAdapter)
+        self.callUIAdapter = CallUIAdapter(callService: self, contactsManager: self.contactsManager, notificationPresenter: self.notificationPresenter)
     }
 
     // MARK: - Service Actions
@@ -691,11 +691,11 @@ private class SignalCallData: NSObject {
             switch untrustedIdentity!.verificationState {
             case .verified:
                 owsFailDebug("shouldn't have missed a call due to untrusted identity if the identity is verified")
-                self.notificationsAdapter.presentMissedCall(newCall, callerName: callerName)
+                self.notificationPresenter.presentMissedCall(newCall, callerName: callerName)
             case .default:
-                self.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: newCall, callerName: callerName)
+                self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: newCall, callerName: callerName)
             case .noLongerVerified:
-                self.notificationsAdapter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall, callerName: callerName)
+                self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall, callerName: callerName)
             }
 
             // MJK TODO remove this timestamp param

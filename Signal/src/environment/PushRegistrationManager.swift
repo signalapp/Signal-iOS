@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -21,8 +21,12 @@ public enum PushRegistrationError: Error {
 
     // MARK: - Dependencies
 
-    private var pushManager: PushManager {
-        return PushManager.shared()
+    private var messageFetcherJob: MessageFetcherJob {
+        return AppEnvironment.shared.messageFetcherJob
+    }
+
+    private var notificationPresenter: NotificationPresenter {
+        return AppEnvironment.shared.notificationPresenter
     }
 
     // MARK: - Singleton class
@@ -39,9 +43,6 @@ public enum PushRegistrationError: Error {
 
         SwiftSingletons.register(self)
     }
-
-    private var userNotificationSettingsPromise: Promise<Void>?
-    private var userNotificationSettingsResolver: Resolver<Void>?
 
     private var vanillaTokenPromise: Promise<Data>?
     private var vanillaTokenResolver: Resolver<Data>?
@@ -68,21 +69,6 @@ public enum PushRegistrationError: Error {
                 }
             }
         }
-    }
-
-    // Notification registration is confirmed via AppDelegate
-    // Before this occurs, it is not safe to assume push token requests will be acknowledged.
-    // 
-    // e.g. in the case that Background Fetch is disabled, token requests will be ignored until
-    // we register user notification settings.
-    @objc
-    public func didRegisterUserNotificationSettings() {
-        guard let userNotificationSettingsResolver = self.userNotificationSettingsResolver else {
-            owsFailDebug("promise completion in \(#function) unexpectedly nil")
-            return
-        }
-
-        userNotificationSettingsResolver.fulfill(())
     }
 
     // MARK: Vanilla push token
@@ -114,7 +100,9 @@ public enum PushRegistrationError: Error {
     public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
         Logger.info("")
         assert(type == .voIP)
-        self.pushManager.application(UIApplication.shared, didReceiveRemoteNotification: payload.dictionaryPayload)
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            (self.messageFetcherJob.run() as Promise<Void>).retainUntilComplete()
+        }
     }
 
     public func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
@@ -138,26 +126,11 @@ public enum PushRegistrationError: Error {
     // MARK: helpers
 
     // User notification settings must be registered *before* AppDelegate will
-    // return any requested push tokens. We don't consider the notifications settings registration
-    // *complete*  until AppDelegate#didRegisterUserNotificationSettings is called.
+    // return any requested push tokens.
     private func registerUserNotificationSettings() -> Promise<Void> {
         AssertIsOnMainThread()
-
-        guard self.userNotificationSettingsPromise == nil else {
-            let promise = self.userNotificationSettingsPromise!
-            Logger.info("already registered user notification settings")
-            return promise
-        }
-
-        let (promise, resolver) = Promise<Void>.pending()
-        self.userNotificationSettingsPromise = promise
-        self.userNotificationSettingsResolver = resolver
-
         Logger.info("registering user notification settings")
-
-        UIApplication.shared.registerUserNotificationSettings(self.pushManager.userNotificationSettings)
-
-        return promise
+        return notificationPresenter.registerNotificationSettings()
     }
 
     /**

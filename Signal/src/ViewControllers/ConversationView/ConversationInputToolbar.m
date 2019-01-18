@@ -143,9 +143,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
 
     _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.sendButton
-        setTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"Label for the send button in the conversation view.")
-        forState:UIControlStateNormal];
+    [self.sendButton setTitle:MessageStrings.sendButton forState:UIControlStateNormal];
     [self.sendButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
     self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:17.f];

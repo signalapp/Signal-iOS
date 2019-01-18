@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -20,7 +20,6 @@
 #import "HomeViewController.h"
 #import "MediaDetailViewController.h"
 #import "NotificationSettingsViewController.h"
-#import "NotificationsManager.h"
 #import "OWSAddToContactViewController.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioMessageView.h"
@@ -30,7 +29,6 @@
 #import "OWSBezierPathView.h"
 #import "OWSBubbleShapeView.h"
 #import "OWSBubbleView.h"
-#import "OWSCallNotificationsAdaptee.h"
 #import "OWSDatabaseMigration.h"
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageCell.h"
@@ -42,7 +40,6 @@
 #import "PinEntryView.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
-#import "PushManager.h"
 #import "RegistrationViewController.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"

@@ -10,7 +10,7 @@ import SignalMessaging
 import WebRTC
 
 protocol CallUIAdaptee {
-    var notificationsAdapter: NotificationsAdapter { get }
+    var notificationPresenter: NotificationPresenter { get }
     var callService: CallService { get }
     var hasManualRinger: Bool { get }
 
@@ -60,7 +60,7 @@ extension CallUIAdaptee {
     internal func reportMissedCall(_ call: SignalCall, callerName: String) {
         AssertIsOnMainThread()
 
-        notificationsAdapter.presentMissedCall(call, callerName: callerName)
+        notificationPresenter.presentMissedCall(call, callerName: callerName)
     }
 
     internal func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool) {
@@ -88,7 +88,7 @@ extension CallUIAdaptee {
     internal let audioService: CallAudioService
     internal let callService: CallService
 
-    public required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: NotificationsAdapter) {
+    public required init(callService: CallService, contactsManager: OWSContactsManager, notificationPresenter: NotificationPresenter) {
         AssertIsOnMainThread()
 
         self.contactsManager = contactsManager
@@ -99,13 +99,13 @@ extension CallUIAdaptee {
             // e.g. you can't receive calls in the call screen.
             // So we use the non-CallKit call UI.
             Logger.info("choosing non-callkit adaptee for simulator.")
-            adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
+            adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
         } else if #available(iOS 11, *) {
             Logger.info("choosing callkit adaptee for iOS11+")
             let showNames = Environment.shared.preferences.notificationPreviewType() != .noNameNoPreview
             let useSystemCallLog = Environment.shared.preferences.isSystemCallLogEnabled()
 
-            adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
+            adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationPresenter: notificationPresenter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
         } else if #available(iOS 10.0, *), Environment.shared.preferences.isCallKitEnabled() {
             Logger.info("choosing callkit adaptee for iOS10")
             let hideNames = Environment.shared.preferences.isCallKitPrivacyEnabled() || Environment.shared.preferences.notificationPreviewType() == .noNameNoPreview
@@ -114,10 +114,10 @@ extension CallUIAdaptee {
             // All CallKit calls use the system call log on iOS10
             let useSystemCallLog = true
 
-            adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
+            adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationPresenter: notificationPresenter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
         } else {
             Logger.info("choosing non-callkit adaptee")
-            adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
+            adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
         }
 
         audioService = CallAudioService(handleRinging: adaptee.hasManualRinger)

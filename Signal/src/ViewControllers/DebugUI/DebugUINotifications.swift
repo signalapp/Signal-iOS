@@ -11,8 +11,8 @@ class DebugUINotifications: DebugUIPage {
 
     // MARK: Dependencies
 
-    var notificationsAdapter: NotificationsAdapter {
-        return AppEnvironment.shared.notificationsAdapter
+    var notificationPresenter: NotificationPresenter {
+        return AppEnvironment.shared.notificationPresenter
     }
     var messageSender: MessageSender {
         return SSKEnvironment.shared.messageSender
@@ -135,28 +135,28 @@ class DebugUINotifications: DebugUIPage {
     func notifyForIncomingCall(thread: TSContactThread) -> Guarantee<Void> {
         Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationsAdapter.presentIncomingCall(call, callerName: thread.name())
+            self.notificationPresenter.presentIncomingCall(call, callerName: thread.name())
         }
     }
 
     func notifyForMissedCall(thread: TSContactThread) -> Guarantee<Void> {
         Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationsAdapter.presentMissedCall(call, callerName: thread.name())
+            self.notificationPresenter.presentMissedCall(call, callerName: thread.name())
         }
     }
 
     func notifyForMissedCallBecauseOfNewIdentity(thread: TSContactThread) -> Guarantee<Void> {
         Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: call, callerName: thread.name())
+            self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: call, callerName: thread.name())
         }
     }
 
     func notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: TSContactThread) -> Guarantee<Void> {
         Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationsAdapter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: thread.name())
+            self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: thread.name())
         }
     }
 
@@ -168,7 +168,7 @@ class DebugUINotifications: DebugUIPage {
                 factory.threadCreator = { _ in return thread }
                 let incomingMessage = factory.create(transaction: transaction)
 
-                self.notificationsAdapter.notifyUser(for: incomingMessage,
+                self.notificationPresenter.notifyUser(for: incomingMessage,
                                                      in: thread,
                                                      contactsManager: self.contactsManager,
                                                      transaction: transaction)
@@ -184,7 +184,7 @@ class DebugUINotifications: DebugUIPage {
                                               failedMessageType: TSErrorMessageType.invalidMessage)
 
             self.readWrite { transaction in
-                self.notificationsAdapter.notifyUser(for: errorMessage, thread: thread, transaction: transaction)
+                self.notificationPresenter.notifyUser(for: errorMessage, thread: thread, transaction: transaction)
             }
         }
     }
@@ -195,7 +195,7 @@ class DebugUINotifications: DebugUIPage {
             self.readWrite { transaction in
                 let errorMessage = TSErrorMessage.corruptedMessageInUnknownThread()
 
-                self.notificationsAdapter.notifyUser(forThreadlessErrorMessage: errorMessage,
+                self.notificationPresenter.notifyUser(forThreadlessErrorMessage: errorMessage,
                                                      transaction: transaction)
             }
         }

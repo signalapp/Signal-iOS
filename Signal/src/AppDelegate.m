@@ -12,7 +12,6 @@
 #import "OWSOrphanDataCleaner.h"
 #import "OWSScreenLockUI.h"
 #import "Pastelog.h"
-#import "PushManager.h"
 #import "RegistrationViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
@@ -61,7 +60,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 static NSTimeInterval launchStartedAt;
 
-@interface AppDelegate ()
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
 
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
@@ -175,6 +174,11 @@ static NSTimeInterval launchStartedAt;
     return AppEnvironment.shared.backup;
 }
 
+- (OWSNotificationPresenter *)notificationPresenter
+{
+    return AppEnvironment.shared.notificationPresenter;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -284,6 +288,14 @@ static NSTimeInterval launchStartedAt;
     // Show LoadingViewController until the async database view registrations are complete.
     mainWindow.rootViewController = [LoadingViewController new];
     [mainWindow makeKeyAndVisible];
+
+    if (@available(iOS 11, *)) {
+        // This must happen in appDidFinishLaunching or earlier to ensure we don't
+        // miss notifications.
+        // Setting the delegate also seems to prevent us from getting the legacy notification
+        // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
+        UNUserNotificationCenter.currentNotificationCenter.delegate = self;
+    }
 
     // Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -580,8 +592,8 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    OWSLogInfo(@"registered user notification settings");
-    [self.pushRegistrationManager didRegisterUserNotificationSettings];
+    OWSLogInfo(@"registered legacy notification settings");
+    [self.notificationPresenter didRegisterLegacyNotificationSettings];
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -647,11 +659,6 @@ static NSTimeInterval launchStartedAt;
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [self handleActivation];
     }];
-
-    // There is a sequence of actions a user can take where we present a conversation from a notification
-    // multiple times, producing an undesirable "stack" of multiple conversation view controllers.
-    // So we ensure that we only present conversations once per activate.
-    [PushManager sharedManager].hasPresentedConversationSinceLastDeactivation = NO;
 
     // Clear all notifications whenever we become active.
     // When opening the app from a notification,
@@ -733,8 +740,7 @@ static NSTimeInterval launchStartedAt;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
-            // This will fetch new messages, if we're using domain fronting.
-            [[PushManager sharedManager] applicationDidBecomeActive];
+            [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
 
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying to register for remote notifications since user hasn't registered yet.");
@@ -1111,8 +1117,9 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    // It is safe to continue even if the app isn't ready.
-    [[PushManager sharedManager] application:application didReceiveRemoteNotification:userInfo];
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
+    }];
 }
 
 - (void)application:(UIApplication *)application
@@ -1129,10 +1136,12 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    // It is safe to continue even if the app isn't ready.
-    [[PushManager sharedManager] application:application
-                didReceiveRemoteNotification:userInfo
-                      fetchCompletionHandler:completionHandler];
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            completionHandler(UIBackgroundFetchResultNewData);
+        });
+    }];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
@@ -1150,7 +1159,12 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-        [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
+        [LegacyNotificationActionHandler.shared
+            handleNotificationResponseWithActionIdentifier:LegacyNotificationActionHandler.kDefaultActionIdentifier
+                                              notification:notification
+                                              responseInfo:@{}
+                                         completionHandler:^{
+                                         }];
     }];
 }
 
@@ -1180,10 +1194,10 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-        [[PushManager sharedManager] application:application
-                      handleActionWithIdentifier:identifier
-                            forLocalNotification:notification
-                               completionHandler:completionHandler];
+        [LegacyNotificationActionHandler.shared handleNotificationResponseWithActionIdentifier:identifier
+                                                                                  notification:notification
+                                                                                  responseInfo:@{}
+                                                                             completionHandler:completionHandler];
     }];
 }
 
@@ -1216,11 +1230,10 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-        [[PushManager sharedManager] application:application
-                      handleActionWithIdentifier:identifier
-                            forLocalNotification:notification
-                                withResponseInfo:responseInfo
-                               completionHandler:completionHandler];
+        [LegacyNotificationActionHandler.shared handleNotificationResponseWithActionIdentifier:identifier
+                                                                                  notification:notification
+                                                                                  responseInfo:responseInfo
+                                                                             completionHandler:completionHandler];
     }];
 }
 
@@ -1243,6 +1256,7 @@ static NSTimeInterval launchStartedAt;
                 job = nil;
             });
         });
+        [job retainUntilComplete];
     }];
 }
 
@@ -1301,7 +1315,7 @@ static NSTimeInterval launchStartedAt;
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
         // seconds before receiving an actionable push notification.
-        __unused AnyPromise *messagePromise = [AppEnvironment.shared.messageFetcherJob run];
+        [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
 
         // This should happen at any launch, background or foreground.
         __unused AnyPromise *pushTokenpromise =
@@ -1479,6 +1493,54 @@ static NSTimeInterval launchStartedAt;
         OWSLogDebug(@"touched status bar");
         [[NSNotificationCenter defaultCenter] postNotificationName:TappedStatusBarNotification object:nil];
     }
+}
+
+#pragma mark - UNUserNotificationsDelegate
+
+// The method will be called on the delegate only if the application is in the foreground. If the method is not
+// implemented or the handler is not called in a timely manner then the notification will not be presented. The
+// application can choose to have the notification presented as a sound, badge, alert and/or in the notification list.
+// This decision should be based on whether the information in the notification is otherwise visible to the user.
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+    __IOS_AVAILABLE(10.0)__TVOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)__OSX_AVAILABLE(10.14)
+{
+    OWSLogInfo(@"");
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^() {
+        // TODO move this into adaptee ?
+        // we need to respect the in-app notification sound settings, either here
+        // or maybe it's simpler to do that when building the notification. e.g. if the app
+        // is in the forground when the notification was sent, we could just *not* add the sound.
+        UNNotificationPresentationOptions options = UNNotificationPresentationOptionAlert
+            | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
+        completionHandler(options);
+    }];
+}
+
+// The method will be called on the delegate when the user responded to the notification by opening the application,
+// dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application
+// returns from application:didFinishLaunchingWithOptions:.
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+    didReceiveNotificationResponse:(UNNotificationResponse *)response
+             withCompletionHandler:(void (^)(void))completionHandler __IOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)
+                                       __OSX_AVAILABLE(10.14)__TVOS_PROHIBITED
+{
+    OWSLogInfo(@"");
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^() {
+        [UserNotificationActionHandler.shared handleNotificationResponse:response completionHandler:completionHandler];
+    }];
+}
+
+// The method will be called on the delegate when the application is launched in response to the user's request to view
+// in-app notification settings. Add UNAuthorizationOptionProvidesAppNotificationSettings as an option in
+// requestAuthorizationWithOptions:completionHandler: to add a button to inline notification settings view and the
+// notification settings view in Settings. The notification will be nil when opened from Settings.
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+    openSettingsForNotification:(nullable UNNotification *)notification __IOS_AVAILABLE(12.0)
+                                    __OSX_AVAILABLE(10.14)__WATCHOS_PROHIBITED __TVOS_PROHIBITED
+{
+    OWSLogInfo(@"");
 }
 
 @end
