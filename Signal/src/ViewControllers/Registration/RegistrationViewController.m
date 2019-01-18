@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "RegistrationViewController.h"
@@ -17,6 +17,11 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+#define SUBVIEW_ACCESSIBILITY_IDENTIFIER(_root_view, _variable_name)                                                   \
+    ([NSString stringWithFormat:@"%@.%@", _root_view.class, _variable_name])
+#define SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(_root_view, _variable_name)                                               \
+    _variable_name.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(_root_view, (@ #_variable_name))
 
 #ifdef DEBUG
 
@@ -81,6 +86,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     self.view.userInteractionEnabled = YES;
     [self.view
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(backgroundTapped:)]];
+    self.view.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"root_view");
 
     UIView *headerWrapper = [UIView containerView];
     [self.view addSubview:headerWrapper];
@@ -113,6 +119,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     legalTopMatterLabel.textAlignment = NSTextAlignmentCenter;
     legalTopMatterLabel.attributedText = attributedLegalTopMatter;
     legalTopMatterLabel.userInteractionEnabled = YES;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, legalTopMatterLabel);
 
     UITapGestureRecognizer *tapGesture =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLegalTerms:)];
@@ -161,6 +168,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [countryRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(countryCodeRowWasTapped:)]];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, countryRow);
 
     UILabel *countryNameLabel = [UILabel new];
     countryNameLabel.text
@@ -220,6 +228,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [phoneNumberRow addSubview:phoneNumberTextField];
     [phoneNumberTextField autoVCenterInSuperview];
     [phoneNumberTextField autoPinTrailingToSuperviewMargin];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, phoneNumberTextField);
 
     UILabel *examplePhoneNumberLabel = [UILabel new];
     self.examplePhoneNumberLabel = examplePhoneNumberLabel;
@@ -257,6 +266,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [activateButton autoPinLeadingAndTrailingToSuperviewMargin];
     [activateButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:separatorView2 withOffset:15];
     [activateButton autoSetDimension:ALDimensionHeight toSize:kActivateButtonHeight];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, activateButton);
 
     UIActivityIndicatorView *spinnerView =
         [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
@@ -287,6 +297,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
                             withOffset:ScaleFromIPhone5To7Plus(8, 12)];
     [bottomLegalLinkButton setCompressionResistanceHigh];
     [bottomLegalLinkButton setContentHuggingHigh];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, bottomLegalLinkButton);
 #endif
 }
 
