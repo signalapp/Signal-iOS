@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+BOOL IsNoteToSelfEnabled(void);
+
 @class OWSDisappearingMessagesConfiguration;
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
