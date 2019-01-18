@@ -40,7 +40,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 @property (nonatomic, nullable) UIView *bodyMediaView;
 
-@property (nonatomic, nullable) LinkPreviewView *linkPreviewView;
+@property (nonatomic) LinkPreviewView *linkPreviewView;
 
 // Should lazy-load expensive view contents (images, etc.).
 // Should do nothing if view is already loaded.
@@ -101,6 +101,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     // Setting dataDetectorTypes is expensive.  Do it just once.
     self.bodyTextView.dataDetectorTypes = kOWSAllowedDataDetectorTypes;
     self.bodyTextView.hidden = YES;
+
+    self.linkPreviewView = [[LinkPreviewView alloc] initWithDelegate:nil];
 
     self.footerView = [OWSMessageFooterView new];
 }
@@ -358,6 +360,12 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         } else {
             [textViews addObject:bodyMediaView];
         }
+    }
+
+    if (self.viewItem.linkPreview) {
+        self.linkPreviewView.state = self.linkPreviewState;
+        [self.stackView addArrangedSubview:self.linkPreviewView];
+        [self.linkPreviewView addBorderViewsWithBubbleView:self.bubbleView];
     }
 
     // We render malformed messages as "empty text" messages,
@@ -658,6 +666,16 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (CGFloat)quotedReplyTopMargin
 {
     return 6.f;
+}
+
+- (nullable LinkPreviewSent *)linkPreviewState
+{
+    if (!self.viewItem.linkPreview) {
+        return nil;
+    }
+    return [[LinkPreviewSent alloc] initWithLinkPreview:self.viewItem.linkPreview
+                                        imageAttachment:self.viewItem.linkPreviewAttachment
+                                      conversationStyle:self.conversationStyle];
 }
 
 #pragma mark - Load / Unload
@@ -1161,7 +1179,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     }
 
     if (self.viewItem.linkPreview) {
-        CGSize linkPreviewSize = [LinkPreviewView measureWithConversationViewItem:self.viewItem];
+        CGSize linkPreviewSize = [self.linkPreviewView measureWithSentState:self.linkPreviewState];
         linkPreviewSize.width = MIN(linkPreviewSize.width, self.conversationStyle.maxMessageWidth);
         cellSize.width = MAX(cellSize.width, linkPreviewSize.width);
         cellSize.height += linkPreviewSize.height;
@@ -1295,7 +1313,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     self.contactShareButtonsView = nil;
 
     [self.linkPreviewView removeFromSuperview];
-    self.linkPreviewView = nil;
+    self.linkPreviewView.state = nil;
 }
 
 #pragma mark - Gestures
@@ -1445,7 +1463,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         }
     }
 
-    if (self.linkPreviewView) {
+    if (self.viewItem.linkPreview) {
         // Treat this as a "quoted reply" gesture if:
         //
         // * There is a "quoted reply" view.

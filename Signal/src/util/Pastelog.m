@@ -591,7 +591,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             [ThreadUtil enqueueMessageWithText:url.absoluteString
                                       inThread:thread
                               quotedReplyModel:nil
-                                   linkPreview:nil
+                              linkPreviewDraft:nil
                                    transaction:transaction];
         }];
     });
@@ -616,7 +616,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                 [ThreadUtil enqueueMessageWithText:url.absoluteString
                                           inThread:thread
                                   quotedReplyModel:nil
-                                       linkPreview:nil
+                                  linkPreviewDraft:nil
                                        transaction:transaction];
             }];
         } else {

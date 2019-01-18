@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)text
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                  linkPreview:(nullable OWSLinkPreview *)linkPreview
+                             linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
                                   transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSDisappearingMessagesConfiguration *configuration =
@@ -82,12 +82,19 @@ NS_ASSUME_NONNULL_BEGIN
                                       attachmentId:nil
                                   expiresInSeconds:expiresInSeconds
                                      quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
-                                       linkPreview:linkPreview];
+                                       linkPreview:nil];
 
     [BenchManager benchAsyncWithTitle:@"Saving outgoing message" block:^(void (^benchmarkCompletion)(void)) {
         // To avoid blocking the send flow, we dispatch an async write from within this read transaction
         [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull writeTransaction) {
             [message saveWithTransaction:writeTransaction];
+
+            OWSLinkPreview *_Nullable linkPreview =
+                [self linkPreviewForLinkPreviewDraft:linkPreviewDraft transaction:writeTransaction];
+            if (linkPreview) {
+                [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
+            }
+
             [self.messageSenderJobQueue addMessage:message transaction:writeTransaction];
         }
                                    completionBlock:benchmarkCompletion];
@@ -96,25 +103,40 @@ NS_ASSUME_NONNULL_BEGIN
     return message;
 }
 
++ (nullable OWSLinkPreview *)linkPreviewForLinkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
+                                                transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    if (!linkPreviewDraft) {
+        return nil;
+    }
+    NSError *linkPreviewError;
+    OWSLinkPreview *_Nullable linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft
+                                                                                  transaction:transaction
+                                                                                        error:&linkPreviewError];
+    if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
+        OWSLogError(@"linkPreviewError: %@", linkPreviewError);
+    }
+    return linkPreview;
+}
+
 + (TSOutgoingMessage *)enqueueMessageWithAttachment:(SignalAttachment *)attachment
                                            inThread:(TSThread *)thread
                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                        linkPreview:(nullable OWSLinkPreview *)linkPreview
 {
     return [self enqueueMessageWithAttachments:@[
         attachment,
     ]
                                    messageBody:attachment.captionText
                                       inThread:thread
-                              quotedReplyModel:quotedReplyModel
-                                   linkPreview:linkPreview];
+                              quotedReplyModel:quotedReplyModel];
 }
 
 + (TSOutgoingMessage *)enqueueMessageWithAttachments:(NSArray<SignalAttachment *> *)attachments
                                          messageBody:(nullable NSString *)messageBody
                                             inThread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                         linkPreview:(nullable OWSLinkPreview *)linkPreview
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(attachments.count > 0);
@@ -140,7 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                        contactShare:nil
-                                                        linkPreview:linkPreview];
+                                                        linkPreview:nil];
 
     NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
     for (SignalAttachment *attachment in attachments) {

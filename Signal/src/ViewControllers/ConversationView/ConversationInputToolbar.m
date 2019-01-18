@@ -717,6 +717,13 @@ const CGFloat kMaxTextViewHeight = 98;
         return;
     }
 
+    // Don't include link previews for oversize text messages.
+    if ([body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+        self.inputLinkPreview = nil;
+        [self clearLinkPreviewView];
+        return;
+    }
+
     NSString *_Nullable previewUrl = [OWSLinkPreview previewUrlForMessageBodyText:body];
     if (previewUrl.length < 1) {
         self.inputLinkPreview = nil;
