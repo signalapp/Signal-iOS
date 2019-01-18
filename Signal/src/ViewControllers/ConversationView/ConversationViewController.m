@@ -2338,6 +2338,13 @@ typedef enum : NSUInteger {
     // TODO: Highlight the quoted message?
 }
 
+- (void)didTapConversationItem:(id<ConversationViewItem>)viewItem linkPreview:(OWSLinkPreview *)linkPreview
+{
+    OWSAssertIsOnMainThread();
+
+    // TODO:
+}
+
 - (void)showDetailViewForViewItem:(id<ConversationViewItem>)conversationItem
 {
     OWSAssertIsOnMainThread();

@@ -765,7 +765,8 @@ const CGFloat kMaxTextViewHeight = 98;
 
     [self clearLinkPreviewView];
 
-    LinkPreviewView *linkPreviewView = [[LinkPreviewView alloc] initWithState:state delegate:self];
+    LinkPreviewView *linkPreviewView = [[LinkPreviewView alloc] initWithDelegate:self];
+    linkPreviewView.state = state;
     self.linkPreviewView = linkPreviewView;
     // TODO: Revisit once we have a separate quoted reply view.
     [self.contentRows insertArrangedSubview:linkPreviewView atIndex:0];

@@ -197,7 +197,16 @@ public protocol LinkPreviewViewDelegate {
 @objc
 public class LinkPreviewView: UIStackView {
     private weak var delegate: LinkPreviewViewDelegate?
-    private let state: LinkPreviewState
+
+    @objc
+    public var state: LinkPreviewState? {
+        didSet {
+            AssertIsOnMainThread()
+            assert(oldValue == nil)
+
+            updateContents()
+        }
+    }
 
     @available(*, unavailable, message:"use other constructor instead.")
     required init(coder aDecoder: NSCoder) {
@@ -209,30 +218,44 @@ public class LinkPreviewView: UIStackView {
         notImplemented()
     }
 
-    private let imageView = UIImageView()
-    private let titleLabel = UILabel()
-    private let domainLabel = UILabel()
+    private var cancelButton: UIButton?
+    private var layoutConstraints = [NSLayoutConstraint]()
 
     @objc
-    public init(state: LinkPreviewState,
-                delegate: LinkPreviewViewDelegate?) {
-        self.state = state
+    public init(delegate: LinkPreviewViewDelegate?) {
         self.delegate = delegate
 
         super.init(frame: .zero)
 
-        createContents()
+        self.isUserInteractionEnabled = true
+        self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(wasTapped)))
     }
 
     private var isApproval: Bool {
         return delegate != nil
     }
 
-    private func createContents() {
+    private func resetContents() {
+        for subview in subviews {
+            subview.removeFromSuperview()
+        }
+        self.axis = .horizontal
+        self.alignment = .center
+        self.distribution = .fill
+        self.spacing = 0
 
-        self.isUserInteractionEnabled = true
-        self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(wasTapped)))
+        cancelButton = nil
 
+        NSLayoutConstraint.deactivate(layoutConstraints)
+        layoutConstraints = []
+    }
+
+    private func updateContents() {
+        resetContents()
+
+        guard let state = state else {
+            return
+        }
         guard state.isLoaded() else {
             createLoadingContents()
             return
@@ -241,7 +264,7 @@ public class LinkPreviewView: UIStackView {
             createMessageContents()
             return
         }
-        createApprovalContents()
+        createApprovalContents(state: state)
     }
 
     private func createMessageContents() {
@@ -250,9 +273,7 @@ public class LinkPreviewView: UIStackView {
 
     private let approvalHeight: CGFloat = 76
 
-    private var cancelButton: UIButton?
-
-    private func createApprovalContents() {
+    private func createApprovalContents(state: LinkPreviewState) {
         self.axis = .horizontal
         self.alignment = .fill
         self.distribution = .equalSpacing
@@ -260,7 +281,7 @@ public class LinkPreviewView: UIStackView {
 
         // Image
 
-        if let imageView = createImageView() {
+        if let imageView = createImageView(state: state) {
             imageView.contentMode = .scaleAspectFill
             imageView.autoPinToSquareAspectRatio()
             let imageSize = approvalHeight
@@ -346,7 +367,7 @@ public class LinkPreviewView: UIStackView {
         strokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
     }
 
-    private func createImageView() -> UIImageView? {
+    private func createImageView(state: LinkPreviewState) -> UIImageView? {
         guard state.isLoaded() else {
             owsFailDebug("State not loaded.")
             return nil
@@ -367,7 +388,7 @@ public class LinkPreviewView: UIStackView {
     private func createLoadingContents() {
         self.axis = .vertical
         self.alignment = .center
-        self.autoSetDimension(.height, toSize: approvalHeight)
+        self.layoutConstraints.append(self.autoSetDimension(.height, toSize: approvalHeight))
 
         let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
         activityIndicator.startAnimating()
@@ -379,6 +400,9 @@ public class LinkPreviewView: UIStackView {
     // MARK: Events
 
     @objc func wasTapped(sender: UIGestureRecognizer) {
+        guard let state = state else {
+            return
+        }
         guard sender.state == .recognized else {
             return
         }
@@ -392,7 +416,15 @@ public class LinkPreviewView: UIStackView {
                 return
             }
         }
-        self.delegate?.linkPreviewDidTap?(urlString: self.state.urlString())
+        self.delegate?.linkPreviewDidTap?(urlString: state.urlString())
+    }
+
+    // MARK: Measurement
+
+    @objc
+    public class func measure(withConversationViewItem item: ConversationViewItem) -> CGSize {
+        // TODO:
+        return CGSize.zero
     }
 
     @objc func didTapCancel(sender: UIButton) {

@@ -40,6 +40,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 @property (nonatomic, nullable) UIView *bodyMediaView;
 
+@property (nonatomic, nullable) LinkPreviewView *linkPreviewView;
+
 // Should lazy-load expensive view contents (images, etc.).
 // Should do nothing if view is already loaded.
 @property (nonatomic, nullable) dispatch_block_t loadCellContentBlock;
@@ -1158,6 +1160,13 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         }
     }
 
+    if (self.viewItem.linkPreview) {
+        CGSize linkPreviewSize = [LinkPreviewView measureWithConversationViewItem:self.viewItem];
+        linkPreviewSize.width = MIN(linkPreviewSize.width, self.conversationStyle.maxMessageWidth);
+        cellSize.width = MAX(cellSize.width, linkPreviewSize.width);
+        cellSize.height += linkPreviewSize.height;
+    }
+
     NSValue *_Nullable bodyTextSize = [self bodyTextSize];
     if (bodyTextSize) {
         [textViewSizes addObject:bodyTextSize];
@@ -1284,6 +1293,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
     [self.contactShareButtonsView removeFromSuperview];
     self.contactShareButtonsView = nil;
+
+    [self.linkPreviewView removeFromSuperview];
+    self.linkPreviewView = nil;
 }
 
 #pragma mark - Gestures
@@ -1336,6 +1348,13 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
                 [self.delegate didTapConversationItem:self.viewItem quotedReply:self.viewItem.quotedReply];
             } else {
                 OWSFailDebug(@"Missing quoted message.");
+            }
+            break;
+        case OWSMessageGestureLocation_LinkPreview:
+            if (self.viewItem.linkPreview) {
+                [self.delegate didTapConversationItem:self.viewItem linkPreview:self.viewItem.linkPreview];
+            } else {
+                OWSFailDebug(@"Missing link preview.");
             }
             break;
     }
@@ -1423,6 +1442,17 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         CGPoint location = [self convertPoint:locationInMessageBubble toView:self.quotedMessageView];
         if (location.y <= self.quotedMessageView.height) {
             return OWSMessageGestureLocation_QuotedReply;
+        }
+    }
+
+    if (self.linkPreviewView) {
+        // Treat this as a "quoted reply" gesture if:
+        //
+        // * There is a "quoted reply" view.
+        // * The gesture occured within or above the "quoted reply" view.
+        CGPoint location = [self convertPoint:locationInMessageBubble toView:self.linkPreviewView];
+        if (CGRectContainsPoint(self.linkPreviewView.bounds, location)) {
+            return OWSMessageGestureLocation_LinkPreview;
         }
     }
 
