@@ -81,7 +81,7 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Nie teraz";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Wersja %@ jest już dostępna.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Wersja %@ jest już dostępna w App Store.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Dostępna jest nowa wersja aplikacji Signal";
@@ -135,19 +135,19 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Nie można przekonwertować obrazu.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Nie udało się przetworzyć video";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Nie można przetworzyć wideo.";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Nie można przetworzyć załączonej grafiki.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Nie udało się usunąć metadanych z grafiki";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Nie można usunąć metadanych z obrazu.";
 
 /* Attachment error message for image attachments which could not be resized */
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Nie można zmienić rozmiaru obrazu.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Załącznik zbyt duży.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Załącznik jest za duży.";
 
 /* Attachment error message for attachments with invalid data */
 "ATTACHMENT_ERROR_INVALID_DATA" = "Załącznik zawiera nieprawidłową zawartość.";
@@ -183,7 +183,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Głośnik";
 
 /* button text for back button */
-"BACK_BUTTON" = "Cofnij";
+"BACK_BUTTON" = "Wróć";
 
 /* Error indicating the backup export could not export the user's data. */
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Nie udało się eksportować kopii zapasowej.";
@@ -311,8 +311,14 @@
 /* Label for generic done button. */
 "BUTTON_DONE" = "Gotowe";
 
+/* Label for redo button. */
+"BUTTON_REDO" = "Przywróć";
+
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Zaznacz";
+
+/* Label for undo button. */
+"BUTTON_UNDO" = "Cofnij";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Zadzwoń ponownie";
@@ -555,7 +561,7 @@
 "CONTACT_WITHOUT_NAME" = "Kontakt bez nazwy";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tego nie da się cofnąć.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tego nie można cofnąć.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Usunąć konwersację?";
@@ -636,7 +642,7 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Dodaj do kontaktów";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile with This User";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Udostępnij swój profil temu użytkownikowi";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Ten użytkownik nie jest zapisany w Twoich kontaktach.";
@@ -1074,6 +1080,15 @@
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
+/* Label for brush button in image editor. */
+"IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
+
+/* Label for crop button in image editor. */
+"IMAGE_EDITOR_CROP_BUTTON" = "Crop";
+
+/* alert title */
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Łączenie...";
 
@@ -1454,6 +1469,9 @@
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Odszukaj kontakty po numerze telefonu";
 
+/* Label for 1:1 conversation with yourself. */
+"NOTE_TO_SELF" = "Note to Self";
+
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Możliwe, że otrzymałeś wiadomości podczas restartowania %@.";
 
@@ -1506,7 +1524,7 @@
 "OUTGOING_MISSED_CALL" = "Nieodebrane połączenie wychodzące";
 
 /* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@ ...";
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@...";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Przykład: %@";
@@ -1557,16 +1575,16 @@
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@ nie jest oznaczony(a) jako zweryfikowany.";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Zweryfikowany";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Zweryfikowano";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ jest zweryfikowany.";
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ jest zweryfikowany(a).";
 
 /* Label for a link to more information about safety numbers and verification. */
 "PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Dowiedz się więcej";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Dotknij by zeskanować";
+"PRIVACY_TAP_TO_SCAN" = "Dotknij, aby zeskanować";
 
 /* Button that lets user mark another user's identity as unverified. */
 "PRIVACY_UNVERIFY_BUTTON" = "Wycofaj weryfikację";
@@ -1623,7 +1641,7 @@
 "PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Aktualizacja profilu nie powiodła się.";
 
 /* Default text for the profile name field of the profile view. */
-"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Podaj swoją nazwę";
+"PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Podaj swoje imię";
 
 /* Label for the profile avatar field of the profile view. */
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Awatar";
@@ -1668,7 +1686,7 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Cytuje siebie";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
-"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Oryginalna wiadomość nie odnaleziona.";
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Nie znaleziono oryginalnej wiadomości.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
 "QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Oryginalna wiadomość nie jest już dostępna.";
@@ -2386,9 +2404,6 @@
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Uaktualnij iOS";
-
-/* No comment provided by engineer. */
-"Upgrading Signal ..." = "Aktualizuję Signal...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Wróć";
