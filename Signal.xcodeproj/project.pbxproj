@@ -321,7 +321,7 @@
 		45194F931FD7215C00333B2C /* OWSContactOffersInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D631F4734ED0072EC04 /* OWSContactOffersInteraction.m */; };
 		45194F941FD7216000333B2C /* TSUnreadIndicatorInteraction.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C42D641F4734ED0072EC04 /* TSUnreadIndicatorInteraction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		45194F951FD7216600333B2C /* TSUnreadIndicatorInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D651F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m */; };
-		451A13B11E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */; };
+		451A13B11E13DED2000A50FD /* NotificationsAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451A13B01E13DED2000A50FD /* NotificationsAdapter.swift */; };
 		451F8A341FD710C3005CB9DA /* ConversationSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451777C71FD61554001225FF /* ConversationSearcher.swift */; };
 		451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8C1F9521F800FA666C /* Searcher.swift */; };
 		451F8A3B1FD71297005CB9DA /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B97940261832BD2400BD66CB /* UIUtil.m */; };
@@ -1028,7 +1028,7 @@
 		451166BF1FD86B98000739BA /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
 		451764291DE939FD00EDB8B9 /* ContactCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
 		451777C71FD61554001225FF /* ConversationSearcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationSearcher.swift; sourceTree = "<group>"; };
-		451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = CallNotificationsAdapter.swift; path = ../UserInterface/Notifications/CallNotificationsAdapter.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		451A13B01E13DED2000A50FD /* NotificationsAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = NotificationsAdapter.swift; path = UserInterface/Notifications/NotificationsAdapter.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		452037CF1EE84975004E4CDF /* DebugUISessionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUISessionState.h; sourceTree = "<group>"; };
 		452037D01EE84975004E4CDF /* DebugUISessionState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUISessionState.m; sourceTree = "<group>"; };
 		4520D8D41D417D8E00123472 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
@@ -2040,6 +2040,7 @@
 		450DF2071E0DD29E003D14BE /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
+				451A13B01E13DED2000A50FD /* NotificationsAdapter.swift */,
 				450DF2081E0DD2C6003D14BE /* UserNotificationsAdaptee.swift */,
 			);
 			name = Notifications;
@@ -2168,7 +2169,6 @@
 			children = (
 				45FBC57A1DF8575700E9B410 /* CallKit */,
 				45E2E91E1E13EE3500457AA0 /* OWSCallNotificationsAdaptee.h */,
-				451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */,
 				45794E851E00620000066731 /* CallUIAdapter.swift */,
 				45F659811E1BE77000444429 /* NonCallKitCallUIAdaptee.swift */,
 			);
@@ -3441,7 +3441,7 @@
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */,
 				34D1F0871F8678AA0066283D /* ConversationViewItem.m in Sources */,
-				451A13B11E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */,
+				451A13B11E13DED2000A50FD /* NotificationsAdapter.swift in Sources */,
 				34D99CE4217509C2000AFB39 /* AppEnvironment.swift in Sources */,
 				348570A820F67575004FF32B /* OWSMessageHeaderView.m in Sources */,
 				450DF2091E0DD2C6003D14BE /* UserNotificationsAdaptee.swift in Sources */,
