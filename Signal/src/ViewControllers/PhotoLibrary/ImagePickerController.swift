@@ -120,6 +120,21 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
     }
 
+    override func viewSafeAreaInsetsDidChange() {
+        if !hasEverAppeared {
+            // To scroll precisely to the bottom of the content, we have to account for the space
+            // taken up by the navbar and any notch.
+            //
+            // Before iOS11 the system accounts for this by assigning contentInset to the scrollView
+            // which is available by the time `viewWillAppear` is called.
+            //
+            // On iOS11+, contentInsets are not assigned to the scrollView in `viewWillAppear`, but
+            // this method, `viewSafeAreaInsetsDidChange` is called *between* `viewWillAppear` and
+            // `viewDidAppear` and indicates `safeAreaInsets` have been assigned.
+            scrollToBottom(animated: false)
+        }
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -157,38 +172,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        var verticalOffset: CGFloat
-
-        let visibleHeight = collectionView.bounds.height - collectionView.contentInset.top
-        let contentHeight = collectionView.contentSize.height
-        if contentHeight <= visibleHeight {
-            verticalOffset = -collectionView.contentInset.top
-        } else {
-            let topOfLastPage = contentHeight - collectionView.bounds.height
-            verticalOffset = topOfLastPage
+        let lastSection = collectionView.numberOfSections - 1
+        let lastItem = collectionView.numberOfItems(inSection: lastSection) - 1
+        if lastSection >= 0 && lastItem >= 0 {
+            let lastIndex = IndexPath(item: lastItem, section: lastSection)
+            collectionView.scrollToItem(at: lastIndex, at: .bottom, animated: animated)
         }
-
-        if #available(iOS 11, *) {
-            if hasEverAppeared {
-                verticalOffset += collectionView.safeAreaInsets.bottom
-            } else {
-                // On iOS10 and earlier, we can be precise, but as of iOS11 `collectionView.contentInset`
-                // is based on `safeAreaInsets`, which isn't accurate until `viewDidAppear` at the earliest.
-                //
-                // from https://developer.apple.com/documentation/uikit/uiview/positioning_content_relative_to_the_safe_area
-                // > Make your modifications in [viewDidAppear] because the safe area insets for a view are
-                // > not accurate until the view is added to a view hierarchy.
-                //
-                // Overshooting like this works without visible animation glitch. on iOS11+
-                // However, before iOS11, "overshooting" the contentOffset like this produces a broken
-                // layout or hanging. Luckily for those versions, before the safeAreaInset feature
-                // existed, we can accurately access collectionView.contentInset before `viewDidAppear`
-                // and calculate a precise content offset.
-                verticalOffset += 122
-            }
-        }
-
-        collectionView.setContentOffset(CGPoint(x: 0, y: verticalOffset), animated: animated)
     }
 
     private func reloadDataAndRestoreSelection() {
