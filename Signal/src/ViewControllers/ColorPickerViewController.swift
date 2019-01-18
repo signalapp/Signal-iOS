@@ -341,6 +341,8 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var hasMediaActionContent: Bool = false
     var mediaAlbumItems: [ConversationMediaAlbumItem]?
     var hasCachedLayoutState: Bool = false
+    var linkPreview: OWSLinkPreview?
+    var linkPreviewAttachment: TSAttachment?
 
     override init() {
         super.init()

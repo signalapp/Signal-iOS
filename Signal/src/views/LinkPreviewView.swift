@@ -369,11 +369,11 @@ public class LinkPreviewView: UIStackView {
         self.alignment = .center
         self.autoSetDimension(.height, toSize: approvalHeight)
 
-        let label = UILabel()
-        label.text = NSLocalizedString("LINK_PREVIEW_LOADING", comment: "Indicates that the link preview is being loaded.")
-        label.textColor = Theme.secondaryColor
-        label.font = UIFont.ows_dynamicTypeBody
-        addArrangedSubview(label)
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        activityIndicator.startAnimating()
+        addArrangedSubview(activityIndicator)
+        let activityIndicatorSize: CGFloat = 25
+        activityIndicator.autoSetDimensions(to: CGSize(width: activityIndicatorSize, height: activityIndicatorSize))
     }
 
     // MARK: Events

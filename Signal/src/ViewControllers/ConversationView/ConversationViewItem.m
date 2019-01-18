@@ -97,6 +97,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
+@property (nonatomic, nullable) OWSLinkPreview *linkPreview;
+@property (nonatomic, nullable) TSAttachment *linkPreviewAttachment;
 @property (nonatomic, nullable) NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems;
 @property (nonatomic, nullable) NSString *systemMessageText;
 @property (nonatomic, nullable) TSThread *incomingMessageAuthorThread;
@@ -158,10 +160,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.displayableBodyText = nil;
     self.attachmentStream = nil;
     self.attachmentPointer = nil;
+    self.mediaAlbumItems = nil;
     self.displayableQuotedText = nil;
     self.quotedReply = nil;
+    self.contactShare = nil;
     self.systemMessageText = nil;
-    self.mediaAlbumItems = nil;
+    self.authorConversationColorName = nil;
+    self.linkPreview = nil;
+    self.linkPreviewAttachment = nil;
 
     [self updateAuthorConversationColorNameWithTransaction:transaction];
 
@@ -658,6 +664,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         self.displayableBodyText = [self displayableBodyTextForText:message.body interactionId:message.uniqueId];
         OWSAssertDebug(self.displayableBodyText);
+    }
+
+    if (self.hasBodyText && attachment == nil && message.linkPreview) {
+        self.linkPreview = message.linkPreview;
+        if (message.linkPreview.imageAttachmentId.length > 0) {
+            self.linkPreviewAttachment =
+                [TSAttachment fetchObjectWithUniqueID:message.linkPreview.imageAttachmentId transaction:transaction];
+            if (!self.linkPreviewAttachment) {
+                OWSFailDebug(@"Could not load link preview image attachment.");
+            }
+        }
     }
 
     if (self.messageCellType == OWSMessageCellType_Unknown) {
