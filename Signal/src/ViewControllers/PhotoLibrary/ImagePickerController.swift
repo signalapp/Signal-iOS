@@ -579,6 +579,23 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         // If we re-enter image picking via "add more" button, do so in batch mode.
         isInBatchSelectMode = true
 
+        // clear selection
+        deselectAnySelected()
+
+        // removing-and-readding accomplishes two things
+        // 1. respect items removed from the rail while in the approval view
+        // 2. in the case of the user adding more to what was a single item
+        //    which was not selected in batch mode, ensure that item is now
+        //    part of the "batch selection"
+        for previouslySelected in attachments {
+            guard let assetId = previouslySelected.assetId else {
+                owsFailDebug("assetId was unexpectedly nil")
+                continue
+            }
+
+            selectedIds.add(assetId as Any)
+        }
+
         navigationController?.popToViewController(self, animated: true)
     }
 
