@@ -235,7 +235,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
 }
 
 @objc
-class IncomingMessageFactory: NSObject, Factory {
+public class IncomingMessageFactory: NSObject, Factory {
 
     // MARK: Factory
 
