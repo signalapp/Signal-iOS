@@ -389,6 +389,27 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
     }
 
+    func showTooManySelectedToast() {
+        Logger.info("")
+
+        guard let  collectionView  = collectionView else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        let toastFormat = NSLocalizedString("IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT",
+                                            comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.")
+
+        let toastText = String(format: toastFormat, NSNumber(value: SignalAttachment.maxAttachmentsAllowed))
+
+        let toastController = ToastController(text: toastText)
+
+        let kToastInset: CGFloat = 10
+        let bottomInset = kToastInset + collectionView.contentInset.bottom + view.layoutMargins.bottom
+
+        toastController.presentToastView(fromBottomOfView: view, inset: bottomInset)
+    }
+
     // MARK: - PhotoLibraryDelegate
 
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
@@ -504,7 +525,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return true
         }
 
-        return indexPathsForSelectedItems.count < SignalAttachment.maxAttachmentsAllowed
+        if (indexPathsForSelectedItems.count < SignalAttachment.maxAttachmentsAllowed) {
+            return true
+        } else {
+            showTooManySelectedToast()
+            return false
+        }
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
