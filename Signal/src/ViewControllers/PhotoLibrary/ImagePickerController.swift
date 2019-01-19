@@ -92,6 +92,69 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         collectionView.backgroundColor = .ows_gray95
+
+        let selectionPanGesture = DirectionalPanGestureRecognizer(direction: [.horizontal], target: self, action: #selector(didPanSelection))
+        selectionPanGesture.delegate = self
+        self.selectionPanGesture = selectionPanGesture
+        collectionView.addGestureRecognizer(selectionPanGesture)
+    }
+
+    var selectionPanGesture: UIPanGestureRecognizer?
+
+    @objc
+    func didPanSelection(_ selectionPanGesture: UIPanGestureRecognizer) {
+        guard isInBatchSelectMode else {
+            return
+        }
+
+        guard let collectionView = collectionView else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        switch selectionPanGesture.state {
+        case .possible:
+            break
+        case .began:
+            collectionView.isUserInteractionEnabled = false
+            collectionView.isScrollEnabled = false
+        case .changed:
+            let location = selectionPanGesture.location(in: collectionView)
+            guard let indexPath = collectionView.indexPathForItem(at: location) else {
+                return
+            }
+            tryToBatchSelectItem(at: indexPath)
+        case .cancelled, .ended, .failed:
+            collectionView.isUserInteractionEnabled = true
+            collectionView.isScrollEnabled = true
+        }
+    }
+
+    func tryToBatchSelectItem(at indexPath: IndexPath) {
+        guard isInBatchSelectMode else {
+            owsFailDebug("isInBatchSelectMode was unexpectedly false")
+            return
+        }
+
+        guard let collectionView = collectionView else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        guard canSelectAdditionalItems else {
+            showTooManySelectedToast()
+            return
+        }
+
+        let asset = photoCollectionContents.asset(at: indexPath.item)
+        selectedIds.add(asset.localIdentifier)
+        updateDoneButton()
+
+        collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+    }
+
+    var canSelectAdditionalItems: Bool {
+        return selectedIds.count <= SignalAttachment.maxAttachmentsAllowed
     }
 
     override func viewWillLayoutSubviews() {
@@ -626,5 +689,22 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
         assetIdToCommentMap[assetId] = captionText
+    }
+}
+
+extension ImagePickerGridController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // Ensure we can still scroll the collectionView by allowing other gestures to
+        // take precedence.
+        guard otherGestureRecognizer == selectionPanGesture else {
+            return true
+        }
+
+        // Once we've startd the selectionPanGesture, don't allow scrolling
+        if otherGestureRecognizer.state == .began || otherGestureRecognizer.state == .changed {
+            return false
+        }
+
+        return true
     }
 }
