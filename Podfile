@@ -1,4 +1,5 @@
 platform :ios, '10.0'
+plugin 'cocoapods-binary'
 
 use_frameworks!
 
@@ -64,7 +65,7 @@ pod 'PureLayout', :inhibit_warnings => true
 pod 'Reachability', :inhibit_warnings => true
 pod 'lottie-ios', :inhibit_warnings => true
 pod 'YYImage', :inhibit_warnings => true
-pod 'ZXingObjC', git: 'https://github.com/TheLevelUp/ZXingObjC'
+pod 'ZXingObjC', git: 'https://github.com/TheLevelUp/ZXingObjC', :binary => true
 
 target 'Signal' do
   # Pods only available inside the main Signal app
