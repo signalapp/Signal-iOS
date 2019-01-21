@@ -1,4 +1,5 @@
 platform :ios, '9.0'
+plugin 'cocoapods-binary'
 
 use_frameworks!
 
@@ -30,7 +31,8 @@ pod 'Reachability', :inhibit_warnings => true
 # pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', inhibit_warnings: true
 pod 'SocketRocket', :git => 'https://github.com/signalapp/SocketRocket.git', branch: 'mkirk/handle-sec-err', inhibit_warnings: true
 pod 'YYImage', :inhibit_warnings => true
-pod 'ZXingObjC', git: 'https://github.com/TheLevelUp/ZXingObjC'
+
+pod 'ZXingObjC', git: 'https://github.com/TheLevelUp/ZXingObjC', :binary => true
 
 
 target 'Signal' do

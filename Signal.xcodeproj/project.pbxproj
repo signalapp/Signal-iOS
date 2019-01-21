@@ -3079,7 +3079,7 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
-				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
+				"${PODS_ROOT}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -3156,7 +3156,7 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
-				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
+				"${PODS_ROOT}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
