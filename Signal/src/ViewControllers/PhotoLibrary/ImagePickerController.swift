@@ -23,9 +23,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     private let photoMediaSize = PhotoMediaSize()
 
     var collectionViewFlowLayout: UICollectionViewFlowLayout
-
-    private let titleLabel = UILabel()
-    private let titleIconView = UIImageView()
+    var titleView: TitleView!
 
     // We use NSMutableOrderedSet so that we can honor selection order.
     private let selectedIds = NSMutableOrderedSet()
@@ -67,24 +65,19 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         cancelButton.tintColor = .ows_gray05
         navigationItem.leftBarButtonItem = cancelButton
 
+        let titleView = TitleView()
+        titleView.delegate = self
+        titleView.text = photoCollection.localizedTitle()
+
         if #available(iOS 11, *) {
-            titleLabel.text = photoCollection.localizedTitle()
-            titleLabel.textColor = .ows_gray05
-            titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
-
-            titleIconView.tintColor = .ows_gray05
-            titleIconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
-
-            let titleView = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
-            titleView.axis = .horizontal
-            titleView.alignment = .center
-            titleView.spacing = 5
-            titleView.isUserInteractionEnabled = true
-            titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
-            navigationItem.titleView = titleView
+            // do nothing
         } else {
-            navigationItem.title = photoCollection.localizedTitle()
+            // must assign titleView frame manually on older iOS
+            titleView.frame = CGRect(origin: .zero, size: titleView.systemLayoutSizeFitting(UILayoutFittingCompressedSize))
         }
+
+        navigationItem.titleView = titleView
+        self.titleView = titleView
 
         let featureFlag_isMultiselectEnabled = true
         if featureFlag_isMultiselectEnabled {
@@ -538,9 +531,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
             self.updateSelectButton()
 
-            // *slightly* more than `pi` to ensure the chevron animates counter-clockwise
-            let chevronRotationAngle = CGFloat.pi + 0.001
-            self.titleIconView.transform = CGAffineTransform(rotationAngle: chevronRotationAngle)
+            self.titleView.rotateIcon(.up)
         }.retainUntilComplete()
     }
 
@@ -557,7 +548,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
             self.updateSelectButton()
 
-            self.titleIconView.transform = .identity
+            self.titleView.rotateIcon(.down)
         }.done { _ in
             collectionPickerController.view.removeFromSuperview()
             collectionPickerController.removeFromParentViewController()
@@ -578,28 +569,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         photoCollection = collection
         photoCollectionContents = photoCollection.contents()
 
-        if #available(iOS 11, *) {
-            titleLabel.text = photoCollection.localizedTitle()
-        } else {
-            navigationItem.title = photoCollection.localizedTitle()
-        }
+        titleView.text = photoCollection.localizedTitle()
 
         collectionView?.reloadData()
         scrollToBottom(animated: false)
         hideCollectionPicker()
-    }
-
-    // MARK: - Event Handlers
-
-    @objc func titleTapped(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else {
-            return
-        }
-        if isShowingCollectionPickerController {
-            hideCollectionPicker()
-        } else {
-            showCollectionPicker()
-        }
     }
 
     // MARK: - UICollectionView
@@ -727,5 +701,92 @@ extension ImagePickerGridController: UIGestureRecognizerDelegate {
         }
 
         return true
+    }
+}
+
+protocol TitleViewDelegate: class {
+    func titleViewWasTapped(_ titleView: TitleView)
+}
+
+class TitleView: UIView {
+
+    // MARK: - Private
+
+    private let label = UILabel()
+    private let iconView = UIImageView()
+    private let stackView: UIStackView
+
+    // MARK: - Initializers
+
+    override init(frame: CGRect) {
+        let stackView = UIStackView(arrangedSubviews: [label, iconView])
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 5
+        stackView.isUserInteractionEnabled = true
+
+        self.stackView = stackView
+
+        super.init(frame: frame)
+
+        addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewEdges()
+
+        label.textColor = .ows_gray05
+        label.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+
+        iconView.tintColor = .ows_gray05
+        iconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
+
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Public
+
+    weak var delegate: TitleViewDelegate?
+
+    public var text: String? {
+        get {
+            return label.text
+        }
+        set {
+            label.text = newValue
+        }
+    }
+
+    public enum TitleViewRotationDirection {
+        case up, down
+    }
+
+    public func rotateIcon(_ direction: TitleViewRotationDirection) {
+        switch direction {
+        case .up:
+            // *slightly* more than `pi` to ensure the chevron animates counter-clockwise
+            let chevronRotationAngle = CGFloat.pi + 0.001
+            iconView.transform = CGAffineTransform(rotationAngle: chevronRotationAngle)
+        case .down:
+            iconView.transform = .identity
+        }
+    }
+
+    // MARK: - Events
+
+    @objc
+    func titleTapped(_ tapGesture: UITapGestureRecognizer) {
+        self.delegate?.titleViewWasTapped(self)
+    }
+}
+
+extension ImagePickerGridController: TitleViewDelegate {
+    func titleViewWasTapped(_ titleView: TitleView) {
+        if isShowingCollectionPickerController {
+            hideCollectionPicker()
+        } else {
+            showCollectionPicker()
+        }
     }
 }
