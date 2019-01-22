@@ -1473,6 +1473,8 @@ NS_ASSUME_NONNULL_BEGIN
                         [incomingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
                         [incomingMessage saveWithTransaction:transaction];
                     } else {
+                        // We touch the message to trigger redraw of any views displaying it,
+                        // since the attachment might be a contact avatar, etc.
                         [incomingMessage touchWithTransaction:transaction];
                     }
                 }];
