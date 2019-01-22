@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSData+Image.h"
@@ -7,6 +7,8 @@
 #import "OWSFileSystem.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Unknown,
@@ -403,3 +405,5 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
