@@ -100,6 +100,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     var selectionPanGesture: UIPanGestureRecognizer?
+    enum BatchSelectionGestureMode {
+        case select, deselect
+    }
+    var selectionPanGestureMode: BatchSelectionGestureMode = .select
 
     @objc
     func didPanSelection(_ selectionPanGesture: UIPanGestureRecognizer) {
@@ -118,19 +122,30 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         case .began:
             collectionView.isUserInteractionEnabled = false
             collectionView.isScrollEnabled = false
+
+            let location = selectionPanGesture.location(in: collectionView)
+            guard let indexPath = collectionView.indexPathForItem(at: location) else {
+                return
+            }
+            let asset = photoCollectionContents.asset(at: indexPath.item)
+            if selectedIds.contains(asset.localIdentifier) {
+                selectionPanGestureMode = .deselect
+            } else {
+                selectionPanGestureMode = .select
+            }
         case .changed:
             let location = selectionPanGesture.location(in: collectionView)
             guard let indexPath = collectionView.indexPathForItem(at: location) else {
                 return
             }
-            tryToBatchSelectItem(at: indexPath)
+            tryToToggleBatchSelect(at: indexPath)
         case .cancelled, .ended, .failed:
             collectionView.isUserInteractionEnabled = true
             collectionView.isScrollEnabled = true
         }
     }
 
-    func tryToBatchSelectItem(at indexPath: IndexPath) {
+    func tryToToggleBatchSelect(at indexPath: IndexPath) {
         guard isInBatchSelectMode else {
             owsFailDebug("isInBatchSelectMode was unexpectedly false")
             return
@@ -147,10 +162,16 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         let asset = photoCollectionContents.asset(at: indexPath.item)
-        selectedIds.add(asset.localIdentifier)
-        updateDoneButton()
+        switch selectionPanGestureMode {
+        case .select:
+            selectedIds.add(asset.localIdentifier)
+            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+        case .deselect:
+            selectedIds.remove(asset.localIdentifier)
+            collectionView.deselectItem(at: indexPath, animated: true)
+        }
 
-        collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+        updateDoneButton()
     }
 
     var canSelectAdditionalItems: Bool {
