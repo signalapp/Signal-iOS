@@ -1,71 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-protocol ToastViewDelegate: class {
-    func didTapToastView(_ toastView: ToastView)
-    func didSwipeToastView(_ toastView: ToastView)
-}
-
-class ToastView: UIView {
-
-    var text: String? {
-        get {
-            return label.text
-        }
-        set {
-            label.text = newValue
-        }
-    }
-    weak var delegate: ToastViewDelegate?
-
-    private let label: UILabel
-
-    // MARK: Initializers
-
-    override init(frame: CGRect) {
-        label = UILabel()
-        super.init(frame: frame)
-
-        self.layer.cornerRadius = 4
-        self.backgroundColor = Theme.toastBackgroundColor
-        self.layoutMargins = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
-
-        label.textAlignment = .center
-        label.textColor = Theme.toastForegroundColor
-        label.font = UIFont.ows_dynamicTypeBody
-        label.numberOfLines = 0
-        self.addSubview(label)
-        label.autoPinEdgesToSuperviewMargins()
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(gesture:)))
-        self.addGestureRecognizer(tapGesture)
-
-        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe(gesture:)))
-        self.addGestureRecognizer(swipeGesture)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
-    // MARK: Gestures
-
-    @objc
-    func didTap(gesture: UITapGestureRecognizer) {
-        self.delegate?.didTapToastView(self)
-    }
-
-    @objc
-    func didSwipe(gesture: UISwipeGestureRecognizer) {
-        self.delegate?.didSwipeToastView(self)
-    }
-}
-
 @objc
-class ToastController: NSObject, ToastViewDelegate {
+public class ToastController: NSObject, ToastViewDelegate {
 
     static var currentToastController: ToastController?
 
@@ -75,7 +15,7 @@ class ToastController: NSObject, ToastViewDelegate {
     // MARK: Initializers
 
     @objc
-    required init(text: String) {
+    required public init(text: String) {
         toastView = ToastView()
         toastView.text = text
         isDismissing = false
@@ -85,14 +25,10 @@ class ToastController: NSObject, ToastViewDelegate {
         toastView.delegate = self
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     // MARK: Public
 
     @objc
-    func presentToastView(fromBottomOfView view: UIView, inset: CGFloat) {
+    public func presentToastView(fromBottomOfView view: UIView, inset: CGFloat) {
         Logger.debug("")
         toastView.alpha = 0
         view.addSubview(toastView)
@@ -151,5 +87,65 @@ class ToastController: NSObject, ToastViewDelegate {
                        completion: { (_) in
             self.toastView.removeFromSuperview()
         })
+    }
+}
+
+protocol ToastViewDelegate: class {
+    func didTapToastView(_ toastView: ToastView)
+    func didSwipeToastView(_ toastView: ToastView)
+}
+
+class ToastView: UIView {
+
+    var text: String? {
+        get {
+            return label.text
+        }
+        set {
+            label.text = newValue
+        }
+    }
+    weak var delegate: ToastViewDelegate?
+
+    private let label: UILabel
+
+    // MARK: Initializers
+
+    override init(frame: CGRect) {
+        label = UILabel()
+        super.init(frame: frame)
+
+        self.layer.cornerRadius = 4
+        self.backgroundColor = Theme.toastBackgroundColor
+        self.layoutMargins = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+
+        label.textAlignment = .center
+        label.textColor = Theme.toastForegroundColor
+        label.font = UIFont.ows_dynamicTypeBody
+        label.numberOfLines = 0
+        self.addSubview(label)
+        label.autoPinEdgesToSuperviewMargins()
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(gesture:)))
+        self.addGestureRecognizer(tapGesture)
+
+        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe(gesture:)))
+        self.addGestureRecognizer(swipeGesture)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        notImplemented()
+    }
+
+    // MARK: Gestures
+
+    @objc
+    func didTap(gesture: UITapGestureRecognizer) {
+        self.delegate?.didTapToastView(self)
+    }
+
+    @objc
+    func didSwipe(gesture: UISwipeGestureRecognizer) {
+        self.delegate?.didSwipeToastView(self)
     }
 }

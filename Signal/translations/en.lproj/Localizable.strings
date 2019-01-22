@@ -1086,6 +1086,9 @@
 /* Label for crop button in image editor. */
 "IMAGE_EDITOR_CROP_BUTTON" = "Crop";
 
+/* Momentarily shown to the user when attempting to select more images than is allowed. */
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
 
