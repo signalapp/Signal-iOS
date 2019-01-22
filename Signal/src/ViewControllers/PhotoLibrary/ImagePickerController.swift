@@ -92,6 +92,90 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         collectionView.backgroundColor = .ows_gray95
+
+        let selectionPanGesture = DirectionalPanGestureRecognizer(direction: [.horizontal], target: self, action: #selector(didPanSelection))
+        selectionPanGesture.delegate = self
+        self.selectionPanGesture = selectionPanGesture
+        collectionView.addGestureRecognizer(selectionPanGesture)
+    }
+
+    var selectionPanGesture: UIPanGestureRecognizer?
+    enum BatchSelectionGestureMode {
+        case select, deselect
+    }
+    var selectionPanGestureMode: BatchSelectionGestureMode = .select
+
+    @objc
+    func didPanSelection(_ selectionPanGesture: UIPanGestureRecognizer) {
+        guard isInBatchSelectMode else {
+            return
+        }
+
+        guard let collectionView = collectionView else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        switch selectionPanGesture.state {
+        case .possible:
+            break
+        case .began:
+            collectionView.isUserInteractionEnabled = false
+            collectionView.isScrollEnabled = false
+
+            let location = selectionPanGesture.location(in: collectionView)
+            guard let indexPath = collectionView.indexPathForItem(at: location) else {
+                return
+            }
+            let asset = photoCollectionContents.asset(at: indexPath.item)
+            if selectedIds.contains(asset.localIdentifier) {
+                selectionPanGestureMode = .deselect
+            } else {
+                selectionPanGestureMode = .select
+            }
+        case .changed:
+            let location = selectionPanGesture.location(in: collectionView)
+            guard let indexPath = collectionView.indexPathForItem(at: location) else {
+                return
+            }
+            tryToToggleBatchSelect(at: indexPath)
+        case .cancelled, .ended, .failed:
+            collectionView.isUserInteractionEnabled = true
+            collectionView.isScrollEnabled = true
+        }
+    }
+
+    func tryToToggleBatchSelect(at indexPath: IndexPath) {
+        guard isInBatchSelectMode else {
+            owsFailDebug("isInBatchSelectMode was unexpectedly false")
+            return
+        }
+
+        guard let collectionView = collectionView else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        guard canSelectAdditionalItems else {
+            showTooManySelectedToast()
+            return
+        }
+
+        let asset = photoCollectionContents.asset(at: indexPath.item)
+        switch selectionPanGestureMode {
+        case .select:
+            selectedIds.add(asset.localIdentifier)
+            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+        case .deselect:
+            selectedIds.remove(asset.localIdentifier)
+            collectionView.deselectItem(at: indexPath, animated: true)
+        }
+
+        updateDoneButton()
+    }
+
+    var canSelectAdditionalItems: Bool {
+        return selectedIds.count <= SignalAttachment.maxAttachmentsAllowed
     }
 
     override func viewWillLayoutSubviews() {
@@ -626,5 +710,22 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
         assetIdToCommentMap[assetId] = captionText
+    }
+}
+
+extension ImagePickerGridController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // Ensure we can still scroll the collectionView by allowing other gestures to
+        // take precedence.
+        guard otherGestureRecognizer == selectionPanGesture else {
+            return true
+        }
+
+        // Once we've startd the selectionPanGesture, don't allow scrolling
+        if otherGestureRecognizer.state == .began || otherGestureRecognizer.state == .changed {
+            return false
+        }
+
+        return true
     }
 }
