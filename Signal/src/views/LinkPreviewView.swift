@@ -245,34 +245,12 @@ public class LinkPreviewView: UIStackView {
     }
 
     private func createMessageContents() {
-//        guard state.isLoaded() else {
-//            createLoadingContents()
-//            return
-//        }
-//
-//        if let imageView = createImageView() {
-//
-//        }
-//
-//        switch state.imageState() {
-//        case .loaded:
-//            guard
-//                let imageView = UIImageView()
-//
-//        case .loading:
-//        default:
-//            break
-//        }
-//
-//        let textStack = UIStackView()
-//        self.axis = .vertical
-//        self.alignment = .leading
-//        self.spacing = 5
+        // TODO:
     }
 
     private let approvalHeight: CGFloat = 76
 
-    private var cancelButton: UIImageView?
+    private var cancelButton: UIButton?
 
     private func createApprovalContents() {
         self.axis = .horizontal
@@ -348,7 +326,9 @@ public class LinkPreviewView: UIStackView {
         cancelStack.setCompressionResistanceHigh()
 
         let cancelImage: UIImage = #imageLiteral(resourceName: "quoted-message-cancel").withRenderingMode(.alwaysTemplate)
-        let cancelButton = UIImageView(image: cancelImage)
+        let cancelButton = UIButton(type: .custom)
+        cancelButton.setImage(cancelImage, for: .normal)
+        cancelButton.addTarget(self, action: #selector(didTapCancel(sender:)), for: .touchUpInside)
         self.cancelButton = cancelButton
         cancelButton.tintColor = Theme.secondaryColor
         cancelButton.setContentHuggingHigh()
@@ -413,5 +393,9 @@ public class LinkPreviewView: UIStackView {
             }
         }
         self.delegate?.linkPreviewDidTap?(urlString: self.state.urlString())
+    }
+
+    @objc func didTapCancel(sender: UIButton) {
+        self.delegate?.linkPreviewDidCancel?()
     }
 }
