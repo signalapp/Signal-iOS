@@ -747,6 +747,7 @@ typedef enum : NSUInteger {
         NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
         OWSLogVerbose(@"First viewWillAppear took: %.2fms", appearenceDuration * 1000);
     }
+    [self updateInputToolbarLayout];
 }
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
@@ -1185,27 +1186,6 @@ typedef enum : NSUInteger {
         if (@available(iOS 10, *)) {
             self.collectionView.prefetchingEnabled = YES;
         }
-
-        // Now that we're using a "minimal" initial load window,
-        // try to increase the load window a moment after we've
-        // settled into the view.
-        __weak ConversationViewController *weakSelf = self;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(NSEC_PER_SEC / 2)), dispatch_get_main_queue(), ^{
-            ConversationViewController *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return;
-            }
-
-            // Try to auto-extend the load window.
-            BOOL isMainAppAndActive = CurrentAppContext().isMainAppAndActive;
-            if (strongSelf.isUserScrolling || !strongSelf.isViewVisible || !isMainAppAndActive) {
-                return;
-            }
-            if (!strongSelf.conversationViewModel.canLoadMoreItems) {
-                return;
-            }
-            [strongSelf.conversationViewModel loadAnotherPageOfMessages];
-        });
     }
 
     self.conversationViewModel.focusMessageIdOnOpen = nil;
@@ -1249,6 +1229,8 @@ typedef enum : NSUInteger {
 
     // Clear the "on open" state after the view has been presented.
     self.actionOnOpen = ConversationViewActionNone;
+
+    [self updateInputToolbarLayout];
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
@@ -1700,8 +1682,9 @@ typedef enum : NSUInteger {
     if (!self.showLoadMoreHeader) {
         return;
     }
-    static const CGFloat kThreshold = 50.f;
-    if (self.collectionView.contentOffset.y < kThreshold) {
+    CGSize screenSize = UIScreen.mainScreen.bounds.size;
+    CGFloat loadMoreThreshold = MAX(screenSize.width, screenSize.height);
+    if (self.collectionView.contentOffset.y < loadMoreThreshold) {
         [self.conversationViewModel loadAnotherPageOfMessages];
     }
 }
@@ -4847,6 +4830,8 @@ typedef enum : NSUInteger {
             // new size.
             [strongSelf resetForSizeOrOrientationChange];
 
+            [strongSelf updateInputToolbarLayout];
+
             if (lastVisibleIndexPath) {
                 [strongSelf.collectionView scrollToItemAtIndexPath:lastVisibleIndexPath
                                                   atScrollPosition:UICollectionViewScrollPositionBottom
@@ -4879,6 +4864,23 @@ typedef enum : NSUInteger {
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
         [self updateLastKnownDistanceFromBottom];
     }
+    [self updateInputToolbarLayout];
+}
+
+- (void)viewSafeAreaInsetsDidChange
+{
+    [super viewSafeAreaInsetsDidChange];
+
+    [self updateInputToolbarLayout];
+}
+
+- (void)updateInputToolbarLayout
+{
+    UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
+    if (@available(iOS 11, *)) {
+        safeAreaInsets = self.view.safeAreaInsets;
+    }
+    [self.inputToolbar updateLayoutWithSafeAreaInsets:safeAreaInsets];
 }
 
 @end

@@ -1327,6 +1327,8 @@ static NSTimeInterval launchStartedAt;
     self.window.rootViewController = navigationController;
 
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
+
+    [UIViewController attemptRotationToDeviceOrientation];
 }
 
 #pragma mark - status bar touches

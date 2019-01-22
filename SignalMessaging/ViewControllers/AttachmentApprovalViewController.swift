@@ -224,6 +224,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         self.setCurrentItem(firstItem, direction: .forward, animated: false)
 
+        // layout immediately to avoid animating the layout process during the transition
+        self.currentPageViewController.view.layoutIfNeeded()
+
         // As a refresher, the _Information Architecture_ here is:
         //
         // You are approving an "Album", which has multiple "Attachments"
@@ -532,6 +535,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             owsFailDebug("unexpectedly unable to build new page")
             return
         }
+
+        page.loadViewIfNeeded()
+        let keyboardScenario: KeyboardScenario = bottomToolView.isEditingMediaMessage ? .editingMessage : .hidden
+        page.updateCaptionViewBottomInset(keyboardScenario: keyboardScenario)
 
         self.setViewControllers([page], direction: direction, animated: isAnimated, completion: nil)
         updateMediaRail()

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewItem.h"
@@ -64,6 +64,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     return self;
 }
+
+- (BOOL)isFailedDownload
+{
+    if (![self.attachment isKindOfClass:[TSAttachmentPointer class]]) {
+        return NO;
+    }
+    TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)self.attachment;
+    return attachmentPointer.state == TSAttachmentPointerStateFailed;
+}
+
 @end
 
 #pragma mark -
@@ -1080,11 +1090,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     OWSAssertDebug(self.mediaAlbumItems.count > 0);
 
     for (ConversationMediaAlbumItem *mediaAlbumItem in self.mediaAlbumItems) {
-        if ([mediaAlbumItem.attachment isKindOfClass:[TSAttachmentPointer class]]) {
-            TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)mediaAlbumItem.attachment;
-            if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
-                return YES;
-            }
+        if (mediaAlbumItem.isFailedDownload) {
+            return YES;
         }
     }
     return NO;

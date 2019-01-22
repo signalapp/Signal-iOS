@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactCellView.h"
@@ -140,7 +140,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         self.thread = [TSContactThread getThreadWithContactId:recipientId transaction:transaction];
     }];
 
-    BOOL isNoteToSelf = [recipientId isEqualToString:self.tsAccountManager.localNumber];
+    BOOL isNoteToSelf = (IsNoteToSelfEnabled() && [recipientId isEqualToString:self.tsAccountManager.localNumber]);
     if (isNoteToSelf) {
         self.nameLabel.attributedText = [[NSAttributedString alloc]
             initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")

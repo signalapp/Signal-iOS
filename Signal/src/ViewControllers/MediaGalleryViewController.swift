@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -377,6 +377,11 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         // For a speedy load, we only fetch a few items on either side of
         // the initial message
         ensureGalleryItemsLoaded(.around, item: initialDetailItem, amount: 10)
+
+        // We lazily load media into the gallery, but with large albums, we want to be sure
+        // we load all the media required to render the album's media rail.
+        ensureAlbumEntirelyLoaded(galleryItem: initialDetailItem)
+
         self.initialDetailItem = initialDetailItem
 
         let pageViewController = MediaPageViewController(initialItem: initialDetailItem, mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection, options: self.options)
@@ -736,6 +741,16 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         galleryItem.album = getAlbum(item: galleryItem)
 
         return galleryItem
+    }
+
+    func ensureAlbumEntirelyLoaded(galleryItem: MediaGalleryItem) {
+        ensureGalleryItemsLoaded(.before, item: galleryItem, amount: UInt(galleryItem.albumIndex))
+
+        let followingCount = galleryItem.message.attachmentIds.count - 1 - galleryItem.albumIndex
+        guard followingCount >= 0 else {
+            return
+        }
+        ensureGalleryItemsLoaded(.after, item: galleryItem, amount: UInt(followingCount))
     }
 
     var galleryAlbums: [String: MediaGalleryAlbum] = [:]

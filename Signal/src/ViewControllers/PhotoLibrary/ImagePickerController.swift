@@ -317,10 +317,16 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let attachmentPromises: [Promise<SignalAttachment>] = assets.map({
             return photoCollectionContents.outgoingAttachment(for: $0)
         })
-        when(fulfilled: attachmentPromises)
-            .map { attachments in
+
+        firstly {
+            when(fulfilled: attachmentPromises)
+        }.map { attachments in
+            Logger.debug("built all attachments")
             self.didComplete(withAttachments: attachments)
-            }.retainUntilComplete()
+        }.catch { error in
+            Logger.error("failed to prepare attachments. error: \(error)")
+            OWSAlerts.showAlert(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
+        }.retainUntilComplete()
     }
 
     private func didComplete(withAttachments attachments: [SignalAttachment]) {
@@ -572,6 +578,23 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, addMoreToAttachments attachments: [SignalAttachment]) {
         // If we re-enter image picking via "add more" button, do so in batch mode.
         isInBatchSelectMode = true
+
+        // clear selection
+        deselectAnySelected()
+
+        // removing-and-readding accomplishes two things
+        // 1. respect items removed from the rail while in the approval view
+        // 2. in the case of the user adding more to what was a single item
+        //    which was not selected in batch mode, ensure that item is now
+        //    part of the "batch selection"
+        for previouslySelected in attachments {
+            guard let assetId = previouslySelected.assetId else {
+                owsFailDebug("assetId was unexpectedly nil")
+                continue
+            }
+
+            selectedIds.add(assetId as Any)
+        }
 
         navigationController?.popToViewController(self, animated: true)
     }

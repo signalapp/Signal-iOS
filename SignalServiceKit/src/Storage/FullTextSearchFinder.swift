@@ -171,11 +171,12 @@ public class FullTextSearchFinder: NSObject {
         let recipientId =  contactThread.contactIdentifier()
         var result = recipientIndexer.index(recipientId, transaction: transaction)
 
-        if let localNumber = tsAccountManager.storedOrCachedLocalNumber(transaction) {
-            if localNumber == recipientId {
-                let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
-                result += " \(noteToSelfLabel)"
-            }
+        if IsNoteToSelfEnabled(),
+            let localNumber = tsAccountManager.storedOrCachedLocalNumber(transaction),
+            localNumber == recipientId {
+
+            let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
+            result += " \(noteToSelfLabel)"
         }
 
         return result

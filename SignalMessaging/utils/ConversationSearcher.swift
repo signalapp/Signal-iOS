@@ -344,11 +344,11 @@ public class ConversationSearcher: NSObject {
     private func conversationIndexingString(recipientId: String) -> String {
         var result = self.indexingString(recipientId: recipientId)
 
-        if let localNumber = tsAccountManager.localNumber() {
-            if localNumber == recipientId {
-                let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
-                result += " \(noteToSelfLabel)"
-            }
+        if IsNoteToSelfEnabled(),
+            let localNumber = tsAccountManager.localNumber(),
+            localNumber == recipientId {
+            let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
+            result += " \(noteToSelfLabel)"
         }
 
         return result

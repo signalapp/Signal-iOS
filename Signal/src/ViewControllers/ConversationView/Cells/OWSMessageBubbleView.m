@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageBubbleView.h"
@@ -1376,10 +1376,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             OWSAssertDebug(self.bodyMediaView);
             OWSAssertDebug(self.viewItem.mediaAlbumItems.count > 0);
 
-            if (self.viewItem.mediaAlbumHasFailedAttachment) {
-                [self.delegate didTapFailedIncomingAttachment:self.viewItem];
-                return;
-            }
             if (![self.bodyMediaView isKindOfClass:[OWSMediaAlbumCellView class]]) {
                 OWSFailDebug(@"Unexpected body media view: %@", self.bodyMediaView.class);
                 return;
@@ -1392,8 +1388,21 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
                 return;
             }
 
+            if ([mediaAlbumCellView isMoreItemsViewWithMediaView:mediaView]
+                && self.viewItem.mediaAlbumHasFailedAttachment) {
+                [self.delegate didTapFailedIncomingAttachment:self.viewItem];
+                return;
+            }
+
             TSAttachment *attachment = mediaView.attachment;
-            if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+            if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
+                if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
+                    // Treat the tap as a "retry" tap if the user taps on a failed download.
+                    [self.delegate didTapFailedIncomingAttachment:self.viewItem];
+                    return;
+                }
+            } else if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
                 OWSLogWarn(@"Media attachment not yet downloaded.");
                 return;
             }
