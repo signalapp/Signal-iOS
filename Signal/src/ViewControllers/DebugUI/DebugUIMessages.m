@@ -359,7 +359,11 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
     __block TSOutgoingMessage *message;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        message = [ThreadUtil enqueueMessageWithText:text inThread:thread quotedReplyModel:nil transaction:transaction];
+        message = [ThreadUtil enqueueMessageWithText:text
+                                            inThread:thread
+                                    quotedReplyModel:nil
+                                         linkPreview:nil
+                                         transaction:transaction];
     }];
     OWSLogError(@"sendTextMessageInThread timestamp: %llu.", message.timestamp);
 }
@@ -3884,6 +3888,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             [ThreadUtil enqueueMessageWithText:[@(counter) description]
                                       inThread:thread
                               quotedReplyModel:nil
+                                   linkPreview:nil
                                    transaction:transaction];
         }];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{

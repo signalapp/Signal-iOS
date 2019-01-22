@@ -68,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)text
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                  linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSDisappearingMessagesConfiguration *configuration =
@@ -80,7 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
                                        messageBody:text
                                       attachmentId:nil
                                   expiresInSeconds:expiresInSeconds
-                                     quotedMessage:[quotedReplyModel buildQuotedMessageForSending]];
+                                     quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
+                                       linkPreview:linkPreview];
 
     [BenchManager benchAsyncWithTitle:@"Saving outgoing message" block:^(void (^benchmarkCompletion)(void)) {
         // To avoid blocking the send flow, we dispatch an async write from within this read transaction
@@ -193,6 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // MARK: Non-Durable Sending
 
+// We might want to generate a link preview here.
 + (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)text
                                             inThread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
@@ -213,7 +216,8 @@ NS_ASSUME_NONNULL_BEGIN
                                        messageBody:text
                                       attachmentId:nil
                                   expiresInSeconds:expiresInSeconds
-                                     quotedMessage:[quotedReplyModel buildQuotedMessageForSending]];
+                                     quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
+                                       linkPreview:nil];
 
     [messageSender sendMessage:message success:successHandler failure:failureHandler];
 

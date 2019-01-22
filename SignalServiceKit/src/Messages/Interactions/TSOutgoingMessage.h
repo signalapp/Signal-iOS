@@ -108,7 +108,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                             messageBody:(nullable NSString *)body
                            attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds
-                          quotedMessage:(nullable TSQuotedMessage *)quotedMessage;
+                          quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                            linkPreview:(nullable OWSLinkPreview *)linkPreview;
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
