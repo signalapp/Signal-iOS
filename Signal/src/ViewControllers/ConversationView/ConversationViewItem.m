@@ -98,6 +98,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
+@property (nonatomic, nullable) NSArray<TSAttachment *> *allMediaAlbumAttachments;
 @property (nonatomic, nullable) NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems;
 @property (nonatomic, nullable) NSString *systemMessageText;
 @property (nonatomic, nullable) TSThread *incomingMessageAuthorThread;
@@ -162,6 +163,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.displayableQuotedText = nil;
     self.quotedReply = nil;
     self.systemMessageText = nil;
+    self.allMediaAlbumAttachments = nil;
     self.mediaAlbumItems = nil;
 
     [self updateAuthorConversationColorNameWithTransaction:transaction];
@@ -601,6 +603,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             }
         }
 
+        self.allMediaAlbumAttachments = attachments;
         self.mediaAlbumItems = mediaAlbumItems;
         self.messageCellType = OWSMessageCellType_MediaAlbum;
         NSString *_Nullable albumTitle = [message bodyTextWithTransaction:transaction];
@@ -925,9 +928,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             // TODO: We need a "canShareMediaAction" method.
             OWSAssertDebug(self.mediaAlbumItems);
             NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
-            for (ConversationMediaAlbumItem *mediaAlbumItem in self.mediaAlbumItems) {
-                if (mediaAlbumItem.attachmentStream && mediaAlbumItem.attachmentStream.isValidVisualMedia) {
-                    [attachmentStreams addObject:mediaAlbumItem.attachmentStream];
+            for (TSAttachment *attachment in self.allMediaAlbumAttachments) {
+                if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                    continue;
+                }
+                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+                if (attachmentStream.isValidVisualMedia) {
+                    [attachmentStreams addObject:attachmentStream];
                 }
             }
             if (attachmentStreams.count < 1) {
@@ -1022,15 +1029,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_MediaAlbum: {
             // TODO: Use PHPhotoLibrary.
             ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-            for (ConversationMediaAlbumItem *mediaAlbumItem in self.mediaAlbumItems) {
-                if (!mediaAlbumItem.attachmentStream) {
+            for (TSAttachment *attachment in self.allMediaAlbumAttachments) {
+                if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
                     continue;
                 }
-                if (!mediaAlbumItem.attachmentStream.isValidVisualMedia) {
+                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+                if (!attachmentStream.isValidVisualMedia) {
                     continue;
                 }
-                if (mediaAlbumItem.attachmentStream.isImage || mediaAlbumItem.attachmentStream.isAnimated) {
-                    NSData *data = [NSData dataWithContentsOfURL:[mediaAlbumItem.attachmentStream originalMediaURL]];
+                if (attachmentStream.isImage || attachmentStream.isAnimated) {
+                    NSData *data = [NSData dataWithContentsOfURL:[attachmentStream originalMediaURL]];
                     if (!data) {
                         OWSFailDebug(@"Could not load image data");
                         continue;
@@ -1043,11 +1051,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                                                   }
                                               }];
                 }
-                if (mediaAlbumItem.attachmentStream.isVideo) {
-                    if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(
-                            mediaAlbumItem.attachmentStream.originalFilePath)) {
-                        UISaveVideoAtPathToSavedPhotosAlbum(
-                            mediaAlbumItem.attachmentStream.originalFilePath, self, nil, nil);
+                if (attachmentStream.isVideo) {
+                    if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(attachmentStream.originalFilePath)) {
+                        UISaveVideoAtPathToSavedPhotosAlbum(attachmentStream.originalFilePath, self, nil, nil);
                     }
                 }
             }
