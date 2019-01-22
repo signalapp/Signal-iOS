@@ -1173,6 +1173,9 @@ typedef enum : NSUInteger {
 {
     [super viewDidAppear:animated];
 
+    // recover status bar when returning from PhotoPicker, which is dark (uses light status bar)
+    [self setNeedsStatusBarAppearanceUpdate];
+
     [ProfileFetcherJob runWithThread:self.thread];
     [self markVisibleMessagesAsRead];
     [self startReadTimer];
