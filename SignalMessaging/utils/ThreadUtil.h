@@ -53,12 +53,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)enqueueMessageWithAttachment:(SignalAttachment *)attachment
                                            inThread:(TSThread *)thread
-                                   quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel;
+                                   quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                        linkPreview:(nullable OWSLinkPreview *)linkPreview;
 
 + (TSOutgoingMessage *)enqueueMessageWithAttachments:(NSArray<SignalAttachment *> *)attachments
                                          messageBody:(nullable NSString *)messageBody
                                             inThread:(TSThread *)thread
-                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel;
+                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                         linkPreview:(nullable OWSLinkPreview *)linkPreview;
 
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
 + (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread;

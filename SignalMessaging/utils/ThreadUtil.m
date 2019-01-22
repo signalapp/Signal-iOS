@@ -99,19 +99,22 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)enqueueMessageWithAttachment:(SignalAttachment *)attachment
                                            inThread:(TSThread *)thread
                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                        linkPreview:(nullable OWSLinkPreview *)linkPreview
 {
     return [self enqueueMessageWithAttachments:@[
         attachment,
     ]
                                    messageBody:attachment.captionText
                                       inThread:thread
-                              quotedReplyModel:quotedReplyModel];
+                              quotedReplyModel:quotedReplyModel
+                                   linkPreview:linkPreview];
 }
 
 + (TSOutgoingMessage *)enqueueMessageWithAttachments:(NSArray<SignalAttachment *> *)attachments
                                          messageBody:(nullable NSString *)messageBody
                                             inThread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                         linkPreview:(nullable OWSLinkPreview *)linkPreview
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(attachments.count > 0);
@@ -137,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                        contactShare:nil
-                                                        linkPreview:nil];
+                                                        linkPreview:linkPreview];
 
     NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
     for (SignalAttachment *attachment in attachments) {

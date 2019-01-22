@@ -989,7 +989,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         if (error || !previewProto) {
             OWSFailDebug(@"Could not build link preview protobuf: %@.", error);
         } else {
-            [builder setPreview:previewProto];
+            [builder addPreview:previewProto];
         }
     }
 

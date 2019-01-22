@@ -222,7 +222,7 @@ message DataMessage {
   optional uint64             timestamp   = 7;
   optional Quote              quote       = 8;
   repeated Contact            contact     = 9;
-  optional Preview            preview     = 10;
+  repeated Preview preview = 10;
 }
 
 message NullMessage {

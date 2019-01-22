@@ -355,9 +355,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-        __block NSArray<TSAttachmentStream *> *quotedThumbnailAttachments = @[];
-        __block TSAttachmentStream *_Nullable contactShareAvatarAttachment;
+        NSMutableArray<NSString *> *allAttachmentIds = [NSMutableArray new];
 
         // This method will use a read/write transaction. This transaction
         // will block until any open read/write transactions are complete.
@@ -372,10 +370,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // So we're using YDB behavior to ensure this invariant, which is a bit
         // unorthodox.
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [OutgoingMessagePreparer prepareMessageForSending:message
-                                   quotedThumbnailAttachments:&quotedThumbnailAttachments
-                                 contactShareAvatarAttachment:&contactShareAvatarAttachment
-                                                  transaction:transaction];
+            [allAttachmentIds
+                addObjectsFromArray:[OutgoingMessagePreparer prepareMessageForSending:message transaction:transaction]];
         }];
 
         NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
@@ -386,39 +382,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                      success:successHandler
                                                      failure:failureHandler];
 
-        // TODO: de-dupe attachment enqueue logic.
-        for (NSString *attachmentId in message.attachmentIds) {
+        for (NSString *attachmentId in allAttachmentIds) {
             OWSUploadOperation *uploadAttachmentOperation =
                 [[OWSUploadOperation alloc] initWithAttachmentId:attachmentId dbConnection:self.dbConnection];
+            // TODO: put attachment uploads on a (low priority) concurrent queue
             [sendMessageOperation addDependency:uploadAttachmentOperation];
             [sendingQueue addOperation:uploadAttachmentOperation];
-        }
-
-        // Though we currently only ever expect at most one thumbnail, the proto data model
-        // suggests this could change. The logic is intended to work with multiple, but
-        // if we ever actually want to send multiple, we should do more testing.
-        OWSAssertDebug(quotedThumbnailAttachments.count <= 1);
-        for (TSAttachmentStream *thumbnailAttachment in quotedThumbnailAttachments) {
-            OWSAssertDebug(message.quotedMessage);
-
-            OWSUploadOperation *uploadQuoteThumbnailOperation =
-                [[OWSUploadOperation alloc] initWithAttachmentId:thumbnailAttachment.uniqueId
-                                                    dbConnection:self.dbConnection];
-
-            // TODO put attachment uploads on a (lowly) concurrent queue
-            [sendMessageOperation addDependency:uploadQuoteThumbnailOperation];
-            [sendingQueue addOperation:uploadQuoteThumbnailOperation];
-        }
-
-        if (contactShareAvatarAttachment != nil) {
-            OWSAssertDebug(message.contactShare);
-            OWSUploadOperation *uploadAvatarOperation =
-                [[OWSUploadOperation alloc] initWithAttachmentId:contactShareAvatarAttachment.uniqueId
-                                                    dbConnection:self.dbConnection];
-
-            // TODO put attachment uploads on a (lowly) concurrent queue
-            [sendMessageOperation addDependency:uploadAvatarOperation];
-            [sendingQueue addOperation:uploadAvatarOperation];
         }
 
         [sendingQueue addOperation:sendMessageOperation];
@@ -1838,22 +1807,45 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 #pragma mark -
 
-+ (void)prepareMessageForSending:(TSOutgoingMessage *)message
-      quotedThumbnailAttachments:(NSArray<TSAttachmentStream *> **)outQuotedThumbnailAttachments
-    contactShareAvatarAttachment:(TSAttachmentStream *_Nullable *)outContactShareAvatarAttachment
-                     transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (NSArray<NSString *> *)prepareMessageForSending:(TSOutgoingMessage *)message
+                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssertDebug(message);
+    OWSAssertDebug(transaction);
+
+    NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
+
+    if (message.attachmentIds) {
+        [attachmentIds addObjectsFromArray:message.attachmentIds];
+    }
+
     if (message.quotedMessage) {
-        *outQuotedThumbnailAttachments =
+        // Though we currently only ever expect at most one thumbnail, the proto data model
+        // suggests this could change. The logic is intended to work with multiple, but
+        // if we ever actually want to send multiple, we should do more testing.
+        NSArray<TSAttachmentStream *> *quotedThumbnailAttachments =
             [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
+        for (TSAttachmentStream *attachment in quotedThumbnailAttachments) {
+            [attachmentIds addObject:attachment.uniqueId];
+        }
     }
 
     if (message.contactShare.avatarAttachmentId != nil) {
-        TSAttachment *avatarAttachment = [message.contactShare avatarAttachmentWithTransaction:transaction];
-        if ([avatarAttachment isKindOfClass:[TSAttachmentStream class]]) {
-            *outContactShareAvatarAttachment = (TSAttachmentStream *)avatarAttachment;
+        TSAttachment *attachment = [message.contactShare avatarAttachmentWithTransaction:transaction];
+        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+            [attachmentIds addObject:attachment.uniqueId];
         } else {
-            OWSFailDebug(@"unexpected avatarAttachment: %@", avatarAttachment);
+            OWSFailDebug(@"unexpected avatarAttachment: %@", attachment);
+        }
+    }
+
+    if (message.linkPreview.imageAttachmentId != nil) {
+        TSAttachment *attachment =
+            [TSAttachment fetchObjectWithUniqueID:message.linkPreview.imageAttachmentId transaction:transaction];
+        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+            [attachmentIds addObject:attachment.uniqueId];
+        } else {
+            OWSFailDebug(@"unexpected attachment: %@", attachment);
         }
     }
 
@@ -1861,6 +1853,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [message saveWithTransaction:transaction];
     // When we start a message send, all "failed" recipients should be marked as "sending".
     [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
+
+    return attachmentIds;
 }
 
 + (void)prepareAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos

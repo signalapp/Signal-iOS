@@ -3600,7 +3600,8 @@ typedef enum : NSUInteger {
         TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithAttachments:attachments
                                                                    messageBody:messageText
                                                                       inThread:self.thread
-                                                              quotedReplyModel:self.inputToolbar.quotedReply];
+                                                              quotedReplyModel:self.inputToolbar.quotedReply
+                                                                   linkPreview:nil];
 
         [self messageWasSent:message];
 
@@ -3977,7 +3978,8 @@ typedef enum : NSUInteger {
         // before the attachment is downloaded)
         message = [ThreadUtil enqueueMessageWithAttachment:attachment
                                                   inThread:self.thread
-                                          quotedReplyModel:self.inputToolbar.quotedReply];
+                                          quotedReplyModel:self.inputToolbar.quotedReply
+                                               linkPreview:nil];
     } else {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
             message = [ThreadUtil enqueueMessageWithText:text
