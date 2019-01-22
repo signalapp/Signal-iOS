@@ -3991,7 +3991,6 @@ typedef enum : NSUInteger {
 
     [self messageWasSent:message];
 
-
     dispatch_async(dispatch_get_main_queue(), ^{
         [BenchManager benchWithTitle:@"toggleDefaultKeyboard"
                                block:^{
