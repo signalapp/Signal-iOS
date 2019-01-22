@@ -156,14 +156,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        guard canSelectAdditionalItems else {
-            showTooManySelectedToast()
-            return
-        }
-
         let asset = photoCollectionContents.asset(at: indexPath.item)
         switch selectionPanGestureMode {
         case .select:
+            guard canSelectAdditionalItems else {
+                showTooManySelectedToast()
+                return
+            }
+
             selectedIds.add(asset.localIdentifier)
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
         case .deselect:
