@@ -1531,6 +1531,10 @@ class CaptionView: UIView {
 }
 
 let kMaxCaptionCharacterCount = 240
+
+// Coincides with Android's max text message length
+let kMaxMessageBodyCharacterCount = 2000
+
 extension CaptionView: UITextViewDelegate {
 
     public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
@@ -1841,6 +1845,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
         let existingText: String = textView.text ?? ""
         let proposedText: String = (existingText as NSString).replacingCharacters(in: range, with: text)
 
+        // Don't complicate things by mixing media attachments with oversize text attachments
         guard proposedText.utf8.count <= kOversizeTextMessageSizeThreshold else {
             Logger.debug("long text was truncated")
             self.lengthLimitLabel.isHidden = false
@@ -1860,6 +1865,25 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
             return false
         }
         self.lengthLimitLabel.isHidden = true
+
+        // After verifying the byte-length is sufficiently small, verify the character count is within bounds.
+        guard proposedText.count <= kMaxMessageBodyCharacterCount else {
+            Logger.debug("hit attachment message body character count limit")
+
+            self.lengthLimitLabel.isHidden = false
+
+            // `range` represents the section of the existing text we will replace. We can re-use that space.
+            let charsAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").count
+
+            // Accept as much of the input as we can
+            let charBudget: Int = Int(kMaxMessageBodyCharacterCount) - charsAfterDelete
+            if charBudget >= 0 {
+                let acceptableNewText = String(text.prefix(charBudget))
+                textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
+            }
+
+            return false
+        }
 
         // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
         // allows the user to get the keyboard out of the way while in the attachment approval view.
