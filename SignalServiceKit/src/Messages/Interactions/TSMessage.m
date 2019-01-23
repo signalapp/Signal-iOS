@@ -184,6 +184,28 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return self.attachmentIds ? (self.attachmentIds.count > 0) : NO;
 }
 
+- (NSArray<NSString *> *)allAttachmentIds
+{
+    NSMutableArray<NSString *> *result = [NSMutableArray new];
+    if (self.attachmentIds.count > 0) {
+        [result addObjectsFromArray:self.attachmentIds];
+    }
+
+    if (self.quotedMessage) {
+        [result addObjectsFromArray:self.quotedMessage.thumbnailAttachmentStreamIds];
+    }
+
+    if (self.contactShare.avatarAttachmentId) {
+        [result addObject:self.contactShare.avatarAttachmentId];
+    }
+
+    if (self.linkPreview.imageAttachmentId) {
+        [result addObject:self.linkPreview.imageAttachmentId];
+    }
+
+    return [result copy];
+}
+
 - (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSMutableArray<TSAttachment *> *attachments = [NSMutableArray new];
@@ -338,7 +360,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     [super removeWithTransaction:transaction];
 
-    for (NSString *attachmentId in self.attachmentIds) {
+    for (NSString *attachmentId in self.allAttachmentIds) {
         // We need to fetch each attachment, since [TSAttachment removeWithTransaction:] does important work.
         TSAttachment *_Nullable attachment =
             [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
@@ -348,14 +370,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
         [attachment removeWithTransaction:transaction];
     };
-
-    if (self.contactShare.avatarAttachmentId) {
-        [self.contactShare removeAvatarAttachmentWithTransaction:transaction];
-    }
-
-    if (self.linkPreview.imageAttachmentId) {
-        [self.linkPreview removeAttachmentWithTransaction:transaction];
-    }
 
     // Updates inbox thread preview
     [self touchThreadWithTransaction:transaction];

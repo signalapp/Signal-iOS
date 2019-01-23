@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOrphanDataCleaner.h"
@@ -297,9 +297,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     __block NSSet *threadIds;
     // Messages
     NSMutableSet<NSString *> *orphanInteractionIds = [NSMutableSet new];
-    NSMutableSet<NSString *> *messageAttachmentIds = [NSMutableSet new];
-    NSMutableSet<NSString *> *quotedReplyThumbnailAttachmentIds = [NSMutableSet new];
-    NSMutableSet<NSString *> *contactShareAvatarAttachmentIds = [NSMutableSet new];
+    NSMutableSet<NSString *> *allMessageAttachmentIds = [NSMutableSet new];
     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [transaction
             enumerateKeysAndObjectsInCollection:TSAttachmentStream.collection
@@ -351,21 +349,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                          }
 
                                          TSMessage *message = (TSMessage *)interaction;
-                                         if (message.attachmentIds.count > 0) {
-                                             [messageAttachmentIds addObjectsFromArray:message.attachmentIds];
-                                         }
-
-                                         TSQuotedMessage *_Nullable quotedMessage = message.quotedMessage;
-                                         if (quotedMessage) {
-                                             [quotedReplyThumbnailAttachmentIds
-                                                 addObjectsFromArray:quotedMessage.thumbnailAttachmentStreamIds];
-                                         }
-
-                                         OWSContact *_Nullable contactShare = message.contactShare;
-                                         if (contactShare && contactShare.avatarAttachmentId) {
-                                             [contactShareAvatarAttachmentIds
-                                                 addObject:contactShare.avatarAttachmentId];
-                                         }
+                                         [allMessageAttachmentIds addObjectsFromArray:message.allAttachmentIds];
                                      }];
     }];
     if (shouldAbort) {
@@ -390,15 +374,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [self printPaths:missingAttachmentFilePaths.allObjects label:@"missing attachment file paths"];
 
     OWSLogDebug(@"attachmentIds: %zu", allAttachmentIds.count);
-    OWSLogDebug(@"messageAttachmentIds: %zu", messageAttachmentIds.count);
-    OWSLogDebug(@"quotedReplyThumbnailAttachmentIds: %zu", quotedReplyThumbnailAttachmentIds.count);
-    OWSLogDebug(@"contactShareAvatarAttachmentIds: %zu", contactShareAvatarAttachmentIds.count);
+    OWSLogDebug(@"allMessageAttachmentIds: %zu", allMessageAttachmentIds.count);
 
     NSMutableSet<NSString *> *orphanAttachmentIds = [allAttachmentIds mutableCopy];
-    [orphanAttachmentIds minusSet:messageAttachmentIds];
-    [orphanAttachmentIds minusSet:quotedReplyThumbnailAttachmentIds];
-    [orphanAttachmentIds minusSet:contactShareAvatarAttachmentIds];
-    NSMutableSet<NSString *> *missingAttachmentIds = [messageAttachmentIds mutableCopy];
+    [orphanAttachmentIds minusSet:allMessageAttachmentIds];
+    NSMutableSet<NSString *> *missingAttachmentIds = [allMessageAttachmentIds mutableCopy];
     [missingAttachmentIds minusSet:allAttachmentIds];
 
     OWSLogDebug(@"orphan attachmentIds: %zu", orphanAttachmentIds.count);

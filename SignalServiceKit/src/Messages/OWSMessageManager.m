@@ -1437,15 +1437,10 @@ NS_ASSUME_NONNULL_BEGIN
         [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
     }
 
-    NSMutableArray<NSString *> *otherAttachmentIds = [NSMutableArray new];
-    if (incomingMessage.quotedMessage.thumbnailAttachmentPointerId.length > 0) {
-        [otherAttachmentIds addObject:incomingMessage.quotedMessage.thumbnailAttachmentPointerId];
-    }
-    if (incomingMessage.contactShare.avatarAttachmentId.length > 0) {
-        [otherAttachmentIds addObject:incomingMessage.contactShare.avatarAttachmentId];
-    }
-    if (incomingMessage.linkPreview.imageAttachmentId.length > 0) {
-        [otherAttachmentIds addObject:incomingMessage.linkPreview.imageAttachmentId];
+    // Download the "non-message body" attachments.
+    NSMutableArray<NSString *> *otherAttachmentIds = [incomingMessage.allAttachmentIds mutableCopy];
+    if (incomingMessage.attachmentIds) {
+        [otherAttachmentIds removeObjectsInArray:incomingMessage.attachmentIds];
     }
     for (NSString *attachmentId in otherAttachmentIds) {
         TSAttachmentPointer *_Nullable attachmentPointer =
