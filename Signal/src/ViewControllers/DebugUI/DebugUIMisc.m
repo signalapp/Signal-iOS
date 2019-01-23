@@ -257,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
         return;
     }
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil linkPreview:nil];
+    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
 }
 
 + (void)sendUnencryptedDatabase:(TSThread *)thread
@@ -279,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
         return;
     }
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil linkPreview:nil];
+    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
 }
 
 #ifdef DEBUG

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageCell.h"
@@ -438,7 +438,8 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint locationInMessageBubble = [sender locationInView:self.messageBubbleView];
     switch ([self.messageBubbleView gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
-        case OWSMessageGestureLocation_OversizeText: {
+        case OWSMessageGestureLocation_OversizeText:
+        case OWSMessageGestureLocation_LinkPreview: {
             [self.delegate conversationCell:self
                            shouldAllowReply:shouldAllowReply
                    didLongpressTextViewItem:self.viewItem];

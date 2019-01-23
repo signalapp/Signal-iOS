@@ -26,6 +26,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class ConversationViewCell;
 @class DisplayableText;
 @class OWSAudioMessageView;
+@class OWSLinkPreview;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
 @class TSAttachment;
@@ -120,6 +121,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic) BOOL didCellMediaFailToLoad;
 
 @property (nonatomic, readonly, nullable) ContactShareViewModel *contactShare;
+
+@property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
+@property (nonatomic, readonly, nullable) TSAttachment *linkPreviewAttachment;
 
 @property (nonatomic, readonly, nullable) NSString *systemMessageText;
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -708,6 +708,18 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     func didTapConversationItem(_ viewItem: ConversationViewItem, quotedReply: OWSQuotedReplyModel, failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
         // no - op
+    }
+
+    func didTapConversationItem(_ viewItem: ConversationViewItem, linkPreview: OWSLinkPreview) {
+        guard let urlString = linkPreview.urlString else {
+            owsFailDebug("Missing url.")
+            return
+        }
+        guard let url = URL(string: urlString) else {
+            owsFailDebug("Invalid url: \(urlString).")
+            return
+        }
+        UIApplication.shared.openURL(url)
     }
 
     @objc func didLongPressSent(sender: UIGestureRecognizer) {

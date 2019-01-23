@@ -717,6 +717,13 @@ const CGFloat kMaxTextViewHeight = 98;
         return;
     }
 
+    // Don't include link previews for oversize text messages.
+    if ([body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+        self.inputLinkPreview = nil;
+        [self clearLinkPreviewView];
+        return;
+    }
+
     NSString *_Nullable previewUrl = [OWSLinkPreview previewUrlForMessageBodyText:body];
     if (previewUrl.length < 1) {
         self.inputLinkPreview = nil;
@@ -765,7 +772,8 @@ const CGFloat kMaxTextViewHeight = 98;
 
     [self clearLinkPreviewView];
 
-    LinkPreviewView *linkPreviewView = [[LinkPreviewView alloc] initWithState:state delegate:self];
+    LinkPreviewView *linkPreviewView = [[LinkPreviewView alloc] initWithDelegate:self];
+    linkPreviewView.state = state;
     self.linkPreviewView = linkPreviewView;
     // TODO: Revisit once we have a separate quoted reply view.
     [self.contentRows insertArrangedSubview:linkPreviewView atIndex:0];

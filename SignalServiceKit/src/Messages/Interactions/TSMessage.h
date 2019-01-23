@@ -61,6 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -140,7 +140,7 @@ public class OWSLinkPreview: MTLModel {
         }
 
         var title: String?
-        if let rawTitle = previewProto.title?.trimmingCharacters(in: .whitespacesAndNewlines) {
+        if let rawTitle = previewProto.title {
             let normalizedTitle = OWSLinkPreview.normalizeTitle(title: rawTitle)
             if normalizedTitle.count > 0 {
                 title = normalizedTitle
@@ -263,7 +263,7 @@ public class OWSLinkPreview: MTLModel {
             let endIndex = result.index(result.startIndex, offsetBy: maxCharacterCount)
             result = String(result[...endIndex])
         }
-        return result
+        return result.filterStringForDisplay()
     }
 
     // MARK: - Domain Whitelist
@@ -280,7 +280,8 @@ public class OWSLinkPreview: MTLModel {
     // TODO: Finalize
     private static let mediaDomainWhitelist = [
         "ytimg.com",
-        "cdninstagram.com"
+        "cdninstagram.com",
+        "redd.it"
     ]
 
     private static let protocolWhitelist = [
@@ -541,16 +542,21 @@ public class OWSLinkPreview: MTLModel {
         }
 
         var title: String?
-        if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta property=\"og:title\" content=\"([^\"]+)\">", text: linkText) {
-            let normalizedTitle = OWSLinkPreview.normalizeTitle(title: rawTitle)
-            if normalizedTitle.count > 0 {
-                title = normalizedTitle
+        if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property=\"og:title\"\\s+content=\"([^\"]+)\"\\s*/?>", text: linkText) {
+            if let decodedTitle = decodeHTMLEntities(inString: rawTitle) {
+                let normalizedTitle = OWSLinkPreview.normalizeTitle(title: decodedTitle)
+                if normalizedTitle.count > 0 {
+                    title = normalizedTitle
+                }
             }
         }
 
         Logger.verbose("title: \(String(describing: title))")
 
-        guard let imageUrlString = NSRegularExpression.parseFirstMatch(pattern: "<meta property=\"og:image\" content=\"([^\"]+)\">", text: linkText) else {
+        guard let rawImageUrlString = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property=\"og:image\"\\s+content=\"([^\"]+)\"\\s*/?>", text: linkText) else {
+            return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+        }
+        guard let imageUrlString = decodeHTMLEntities(inString: rawImageUrlString)?.ows_stripped() else {
             return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
         Logger.verbose("imageUrlString: \(imageUrlString)")
@@ -600,5 +606,22 @@ public class OWSLinkPreview: MTLModel {
                             let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, imageFilePath: imageFilePath)
                             completion(linkPreviewDraft)
         })
+    }
+
+    private class func decodeHTMLEntities(inString value: String) -> String? {
+        guard let data = value.data(using: .utf8) else {
+            return nil
+        }
+
+        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+            NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html,
+            NSAttributedString.DocumentReadingOptionKey.characterEncoding: String.Encoding.utf8.rawValue
+        ]
+
+        guard let attributedString = try? NSAttributedString(data: data, options: options, documentAttributes: nil) else {
+            return nil
+        }
+
+        return attributedString.string
     }
 }

@@ -40,6 +40,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 @property (nonatomic, nullable) UIView *bodyMediaView;
 
+@property (nonatomic) LinkPreviewView *linkPreviewView;
+
 // Should lazy-load expensive view contents (images, etc.).
 // Should do nothing if view is already loaded.
 @property (nonatomic, nullable) dispatch_block_t loadCellContentBlock;
@@ -99,6 +101,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     // Setting dataDetectorTypes is expensive.  Do it just once.
     self.bodyTextView.dataDetectorTypes = kOWSAllowedDataDetectorTypes;
     self.bodyTextView.hidden = YES;
+
+    self.linkPreviewView = [[LinkPreviewView alloc] initWithDelegate:nil];
 
     self.footerView = [OWSMessageFooterView new];
 }
@@ -356,6 +360,12 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         } else {
             [textViews addObject:bodyMediaView];
         }
+    }
+
+    if (self.viewItem.linkPreview) {
+        self.linkPreviewView.state = self.linkPreviewState;
+        [self.stackView addArrangedSubview:self.linkPreviewView];
+        [self.linkPreviewView addBorderViewsWithBubbleView:self.bubbleView];
     }
 
     // We render malformed messages as "empty text" messages,
@@ -656,6 +666,16 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (CGFloat)quotedReplyTopMargin
 {
     return 6.f;
+}
+
+- (nullable LinkPreviewSent *)linkPreviewState
+{
+    if (!self.viewItem.linkPreview) {
+        return nil;
+    }
+    return [[LinkPreviewSent alloc] initWithLinkPreview:self.viewItem.linkPreview
+                                        imageAttachment:self.viewItem.linkPreviewAttachment
+                                      conversationStyle:self.conversationStyle];
 }
 
 #pragma mark - Load / Unload
@@ -1158,6 +1178,13 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         }
     }
 
+    if (self.viewItem.linkPreview) {
+        CGSize linkPreviewSize = [self.linkPreviewView measureWithSentState:self.linkPreviewState];
+        linkPreviewSize.width = MIN(linkPreviewSize.width, self.conversationStyle.maxMessageWidth);
+        cellSize.width = MAX(cellSize.width, linkPreviewSize.width);
+        cellSize.height += linkPreviewSize.height;
+    }
+
     NSValue *_Nullable bodyTextSize = [self bodyTextSize];
     if (bodyTextSize) {
         [textViewSizes addObject:bodyTextSize];
@@ -1284,6 +1311,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
     [self.contactShareButtonsView removeFromSuperview];
     self.contactShareButtonsView = nil;
+
+    [self.linkPreviewView removeFromSuperview];
+    self.linkPreviewView.state = nil;
 }
 
 #pragma mark - Gestures
@@ -1336,6 +1366,13 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
                 [self.delegate didTapConversationItem:self.viewItem quotedReply:self.viewItem.quotedReply];
             } else {
                 OWSFailDebug(@"Missing quoted message.");
+            }
+            break;
+        case OWSMessageGestureLocation_LinkPreview:
+            if (self.viewItem.linkPreview) {
+                [self.delegate didTapConversationItem:self.viewItem linkPreview:self.viewItem.linkPreview];
+            } else {
+                OWSFailDebug(@"Missing link preview.");
             }
             break;
     }
@@ -1423,6 +1460,13 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         CGPoint location = [self convertPoint:locationInMessageBubble toView:self.quotedMessageView];
         if (location.y <= self.quotedMessageView.height) {
             return OWSMessageGestureLocation_QuotedReply;
+        }
+    }
+
+    if (self.viewItem.linkPreview) {
+        CGPoint location = [self convertPoint:locationInMessageBubble toView:self.linkPreviewView];
+        if (CGRectContainsPoint(self.linkPreviewView.bounds, location)) {
+            return OWSMessageGestureLocation_LinkPreview;
         }
     }
 

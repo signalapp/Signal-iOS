@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ConversationViewItem;
 
 @class OWSContact;
+@class OWSLinkPreview;
 @class OWSQuotedReplyModel;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
@@ -21,6 +22,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
     OWSMessageGestureLocation_OversizeText,
     OWSMessageGestureLocation_Media,
     OWSMessageGestureLocation_QuotedReply,
+    OWSMessageGestureLocation_LinkPreview,
 };
 
 extern const UIDataDetectorTypes kOWSAllowedDataDetectorTypes;
@@ -45,6 +47,8 @@ extern const UIDataDetectorTypes kOWSAllowedDataDetectorTypes;
 - (void)didTapConversationItem:(id<ConversationViewItem>)viewItem
                                  quotedReply:(OWSQuotedReplyModel *)quotedReply
     failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer;
+
+- (void)didTapConversationItem:(id<ConversationViewItem>)viewItem linkPreview:(OWSLinkPreview *)linkPreview;
 
 - (void)didTapContactShareViewItem:(id<ConversationViewItem>)viewItem;
 
