@@ -1182,6 +1182,9 @@
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Link New Device";
 
+/* Indicates that the link preview is being loaded. */
+"LINK_PREVIEW_LOADING" = "Loading…";
+
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Linked Devices";
 

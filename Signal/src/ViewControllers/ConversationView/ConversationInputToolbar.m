@@ -26,7 +26,24 @@ const CGFloat kMaxTextViewHeight = 98;
 
 #pragma mark -
 
-@interface ConversationInputToolbar () <ConversationTextViewToolbarDelegate, QuotedReplyPreviewDelegate>
+@interface InputLinkPreview : NSObject
+
+@property (nonatomic) NSString *previewUrl;
+@property (nonatomic, nullable) OWSLinkPreviewDraft *linkPreviewDraft;
+
+@end
+
+#pragma mark -
+
+@implementation InputLinkPreview
+
+@end
+
+#pragma mark -
+
+@interface ConversationInputToolbar () <ConversationTextViewToolbarDelegate,
+    QuotedReplyPreviewDelegate,
+    LinkPreviewViewDelegate>
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
@@ -55,11 +72,11 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutContraints;
 @property (nonatomic) UIEdgeInsets receivedSafeAreaInsets;
+@property (nonatomic, nullable) InputLinkPreview *inputLinkPreview;
+@property (nonatomic, nullable) LinkPreviewView *linkPreviewView;
+@property (nonatomic) BOOL wasLinkPreviewCancelled;
 
 @end
-
-#pragma mark -
-
 
 #pragma mark -
 
@@ -210,6 +227,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     [self ensureShouldShowVoiceMemoButtonAnimated:isAnimated doLayout:YES];
     [self ensureTextViewHeight];
+    [self updateInputLinkPreview];
 }
 
 - (void)ensureTextViewHeight
@@ -221,6 +239,7 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     [self setMessageText:nil animated:isAnimated];
     [self.inputTextView.undoManager removeAllActions];
+    self.wasLinkPreviewCancelled = NO;
 }
 
 - (void)toggleDefaultKeyboard
@@ -646,6 +665,7 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSAssertDebug(self.inputToolbarDelegate);
     [self ensureShouldShowVoiceMemoButtonAnimated:YES doLayout:YES];
     [self updateHeightWithTextView:textView];
+    [self updateInputLinkPreview];
 }
 
 - (void)updateHeightWithTextView:(UITextView *)textView
@@ -674,6 +694,122 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)quotedReplyPreviewDidPressCancel:(QuotedReplyPreview *)preview
 {
     self.quotedReply = nil;
+}
+
+#pragma mark - Link Preview
+
+- (void)updateInputLinkPreview
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.wasLinkPreviewCancelled) {
+        self.inputLinkPreview = nil;
+        [self clearLinkPreviewView];
+        return;
+    }
+
+    NSString *body =
+        [[self messageText] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (body.length < 1) {
+        self.inputLinkPreview = nil;
+        [self clearLinkPreviewView];
+        self.wasLinkPreviewCancelled = NO;
+        return;
+    }
+
+    NSString *_Nullable previewUrl = [OWSLinkPreview previewUrlForMessageBodyText:body];
+    if (previewUrl.length < 1) {
+        self.inputLinkPreview = nil;
+        [self clearLinkPreviewView];
+        return;
+    }
+
+    if (self.inputLinkPreview && [self.inputLinkPreview.previewUrl isEqualToString:previewUrl]) {
+        // No need to update.
+        return;
+    }
+
+    InputLinkPreview *inputLinkPreview = [InputLinkPreview new];
+    self.inputLinkPreview = inputLinkPreview;
+    self.inputLinkPreview.previewUrl = previewUrl;
+
+    [self ensureLinkPreviewViewWithState:[LinkPreviewLoading new]];
+
+    __weak ConversationInputToolbar *weakSelf = self;
+    [OWSLinkPreview tryToBuildPreviewInfoWithPreviewUrl:previewUrl
+                                          callbackQueue:dispatch_get_main_queue()
+                                             completion:^(OWSLinkPreviewDraft *_Nullable linkPreviewDraft) {
+                                                 ConversationInputToolbar *_Nullable strongSelf = weakSelf;
+                                                 if (!strongSelf) {
+                                                     return;
+                                                 }
+                                                 if (strongSelf.inputLinkPreview != inputLinkPreview) {
+                                                     // Obsolete callback.
+                                                     return;
+                                                 }
+                                                 if (!linkPreviewDraft) {
+                                                     // The link preview could not be loaded.
+                                                     [strongSelf clearLinkPreviewView];
+                                                     return;
+                                                 }
+                                                 inputLinkPreview.linkPreviewDraft = linkPreviewDraft;
+                                                 LinkPreviewDraft *viewState = [[LinkPreviewDraft alloc]
+                                                     initWithLinkPreviewDraft:linkPreviewDraft];
+                                                 [strongSelf ensureLinkPreviewViewWithState:viewState];
+                                             }];
+}
+
+- (void)ensureLinkPreviewViewWithState:(id<LinkPreviewState>)state
+{
+    OWSAssertIsOnMainThread();
+
+    [self clearLinkPreviewView];
+
+    LinkPreviewView *linkPreviewView = [[LinkPreviewView alloc] initWithState:state delegate:self];
+    self.linkPreviewView = linkPreviewView;
+    // TODO: Revisit once we have a separate quoted reply view.
+    [self.contentRows insertArrangedSubview:linkPreviewView atIndex:0];
+}
+
+- (void)clearLinkPreviewView
+{
+    OWSAssertIsOnMainThread();
+
+    // Clear old link preview state.
+    [self.linkPreviewView removeFromSuperview];
+    self.linkPreviewView = nil;
+}
+
+- (nullable OWSLinkPreviewDraft *)linkPreviewDraft
+{
+    OWSAssertIsOnMainThread();
+
+    if (!self.inputLinkPreview) {
+        return nil;
+    }
+    if (self.wasLinkPreviewCancelled) {
+        return nil;
+    }
+    return self.inputLinkPreview.linkPreviewDraft;
+}
+
+#pragma mark - LinkPreviewViewDelegate
+
+- (BOOL)linkPreviewCanCancel
+{
+    OWSAssertIsOnMainThread();
+
+    return YES;
+}
+
+- (void)linkPreviewDidCancel
+{
+    OWSAssertIsOnMainThread();
+
+    self.wasLinkPreviewCancelled = YES;
+
+    self.self.inputLinkPreview = nil;
+    [self clearLinkPreviewView];
 }
 
 @end

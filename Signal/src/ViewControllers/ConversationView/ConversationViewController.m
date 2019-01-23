@@ -3579,12 +3579,15 @@ typedef enum : NSUInteger {
             }
         }
 
+        OWSLinkPreview *_Nullable linkPreview =
+            [self linkPreviewForLinkPreviewDraft:self.inputToolbar.linkPreviewDraft];
+
         BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
         TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithAttachments:attachments
                                                                    messageBody:messageText
                                                                       inThread:self.thread
                                                               quotedReplyModel:self.inputToolbar.quotedReply
-                                                                   linkPreview:nil];
+                                                                   linkPreview:linkPreview];
 
         [self messageWasSent:message];
 
@@ -3916,6 +3919,7 @@ typedef enum : NSUInteger {
 
 - (void)tryToSendTextMessage:(NSString *)text updateKeyboardState:(BOOL)updateKeyboardState
 {
+    OWSAssertIsOnMainThread();
 
     __weak ConversationViewController *weakSelf = self;
     if ([self isBlockedConversation]) {
@@ -3952,6 +3956,8 @@ typedef enum : NSUInteger {
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     __block TSOutgoingMessage *message;
 
+    OWSLinkPreview *_Nullable linkPreview = [self linkPreviewForLinkPreviewDraft:self.inputToolbar.linkPreviewDraft];
+
     if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
         SignalAttachment *attachment =
@@ -3962,13 +3968,13 @@ typedef enum : NSUInteger {
         message = [ThreadUtil enqueueMessageWithAttachment:attachment
                                                   inThread:self.thread
                                           quotedReplyModel:self.inputToolbar.quotedReply
-                                               linkPreview:nil];
+                                               linkPreview:linkPreview];
     } else {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
             message = [ThreadUtil enqueueMessageWithText:text
                                                 inThread:self.thread
                                         quotedReplyModel:self.inputToolbar.quotedReply
-                                             linkPreview:nil
+                                             linkPreview:linkPreview
                                              transaction:transaction];
         }];
     }
@@ -3995,6 +4001,36 @@ typedef enum : NSUInteger {
     if (didAddToProfileWhitelist) {
         [self.conversationViewModel ensureDynamicInteractions];
     }
+}
+
+- (nullable OWSLinkPreview *)linkPreviewForLinkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
+{
+    if (!linkPreviewDraft) {
+        return nil;
+    }
+    __block OWSLinkPreview *_Nullable linkPreview;
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        linkPreview = [self linkPreviewForLinkPreviewDraft:linkPreviewDraft transaction:transaction];
+    }];
+    return linkPreview;
+}
+
+- (nullable OWSLinkPreview *)linkPreviewForLinkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
+                                                transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    if (!linkPreviewDraft) {
+        return nil;
+    }
+    NSError *linkPreviewError;
+    OWSLinkPreview *_Nullable linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft
+                                                                                  transaction:transaction
+                                                                                        error:&linkPreviewError];
+    if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
+        OWSLogError(@"linkPreviewError: %@", linkPreviewError);
+    }
+    return linkPreview;
 }
 
 - (void)voiceMemoGestureDidStart
