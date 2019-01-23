@@ -435,6 +435,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
 
     // MARK: - Properties
 
+    @objc
     public static let defaultDownloader = ProxiedContentDownloader(downloadFolderName: "proxiedContent")
 
     private let downloadFolderName: String
@@ -462,8 +463,11 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         AssertIsOnMainThread()
 
         let configuration = ContentProxy.sessionConfiguration()
+
+        // Don't use any caching to protect privacy of these requests.
         configuration.urlCache = nil
         configuration.requestCachePolicy = .reloadIgnoringCacheData
+
         configuration.httpMaximumConnectionsPerHost = 10
         let session = URLSession(configuration: configuration,
                                  delegate: self,
