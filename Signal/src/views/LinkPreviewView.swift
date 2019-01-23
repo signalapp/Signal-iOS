@@ -618,7 +618,7 @@ public class LinkPreviewView: UIStackView {
         cancelStack.setContentHuggingHigh()
         cancelStack.setCompressionResistanceHigh()
 
-        let cancelImage: UIImage = #imageLiteral(resourceName: "quoted-message-cancel").withRenderingMode(.alwaysTemplate)
+        let cancelImage = UIImage(named: "compose-cancel")?.withRenderingMode(.alwaysTemplate)
         let cancelButton = UIButton(type: .custom)
         cancelButton.setImage(cancelImage, for: .normal)
         cancelButton.addTarget(self, action: #selector(didTapCancel(sender:)), for: .touchUpInside)
