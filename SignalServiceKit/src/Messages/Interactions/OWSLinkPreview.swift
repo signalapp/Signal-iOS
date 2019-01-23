@@ -278,7 +278,8 @@ public class OWSLinkPreview: MTLModel {
         "reddit.com",
         "imgur.com",
         "instagram.com",
-        "giphy.com"
+        "giphy.com",
+        "youtu.be"
     ]
 
     // TODO: Finalize
