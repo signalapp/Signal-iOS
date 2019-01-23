@@ -116,6 +116,10 @@ public class OWSLinkPreview: MTLModel {
         guard let previewProto = dataMessage.preview.first else {
             throw LinkPreviewError.noPreview
         }
+        guard dataMessage.attachments.count < 1 else {
+            Logger.error("Discarding link preview; message has attachments.")
+            throw LinkPreviewError.invalidInput
+        }
         let urlString = previewProto.url
 
         guard URL(string: urlString) != nil else {
