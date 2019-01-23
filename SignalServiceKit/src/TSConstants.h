@@ -2,6 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+NS_ASSUME_NONNULL_BEGIN
+
 #ifndef TextSecureKit_Constants_h
 #define TextSecureKit_Constants_h
 
@@ -67,3 +69,5 @@ BOOL IsUsingProductionService(void);
 #define SignalApplicationGroup @"group.org.whispersystems.signal.group"
 
 #endif
+
+NS_ASSUME_NONNULL_END

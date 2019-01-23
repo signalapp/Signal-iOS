@@ -1,12 +1,10 @@
 //
-//  NSURLSessionDataTask+StatusCode.m
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 04/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSURLSessionDataTask+StatusCode.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 @implementation NSURLSessionTask (StatusCode)
 
@@ -16,3 +14,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

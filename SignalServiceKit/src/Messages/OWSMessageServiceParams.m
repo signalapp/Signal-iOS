@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageServiceParams.h"
 #import "TSConstants.h"
 #import <SignalCoreKit/NSData+OWS.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSMessageServiceParams
 
@@ -39,3 +41,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -10,6 +10,8 @@
 #import <libPhoneNumber_iOS/NBPhoneNumber.h>
 #import <libPhoneNumber_iOS/NBPhoneNumberUtil.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 static NSString *const RPDefaultsKeyPhoneNumberString    = @"RPDefaultsKeyPhoneNumberString";
 static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneNumberCanonical";
 
@@ -36,7 +38,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return self;
 }
 
-+ (PhoneNumber *)phoneNumberFromText:(NSString *)text andRegion:(NSString *)regionCode {
++ (nullable PhoneNumber *)phoneNumberFromText:(NSString *)text andRegion:(NSString *)regionCode {
     OWSAssertDebug(text != nil);
     OWSAssertDebug(regionCode != nil);
 
@@ -59,7 +61,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return [[PhoneNumber alloc] initWithPhoneNumber:number e164:e164];
 }
 
-+ (PhoneNumber *)phoneNumberFromUserSpecifiedText:(NSString *)text {
++ (nullable PhoneNumber *)phoneNumberFromUserSpecifiedText:(NSString *)text {
     OWSAssertDebug(text != nil);
 
     return [PhoneNumber phoneNumberFromText:text andRegion:[self defaultCountryCode]];
@@ -86,7 +88,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return countryCode;
 }
 
-+ (PhoneNumber *)phoneNumberFromE164:(NSString *)text {
++ (nullable PhoneNumber *)phoneNumberFromE164:(NSString *)text {
     OWSAssertDebug(text != nil);
     OWSAssertDebug([text hasPrefix:COUNTRY_CODE_PREFIX]);
     PhoneNumber *number = [PhoneNumber phoneNumberFromText:text andRegion:@"ZZ"];
@@ -170,7 +172,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return regionCode;
 }
 
-+ (PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text {
++ (nullable PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text {
     OWSAssertDebug(text != nil);
 
     if ([text isEqualToString:@""]) {
@@ -181,7 +183,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return [self phoneNumberFromUserSpecifiedText:sanitizedString];
 }
 
-+ (NSString *)nationalPrefixTransformRuleForDefaultRegion
++ (nullable NSString *)nationalPrefixTransformRuleForDefaultRegion
 {
     static NSString *result = nil;
     static dispatch_once_t onceToken;
@@ -195,7 +197,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 // clientPhoneNumber is the local user's phone number and should never change.
-+ (NSString *)nationalPrefixTransformRuleForClientPhoneNumber:(NSString *)clientPhoneNumber
++ (nullable NSString *)nationalPrefixTransformRuleForClientPhoneNumber:(NSString *)clientPhoneNumber
 {
     if (clientPhoneNumber.length < 1) {
         return nil;
@@ -499,7 +501,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return [NSString stringWithUTF8String:(void *)outputString];
 }
 
-+ (PhoneNumber *)tryParsePhoneNumberFromE164:(NSString *)text {
++ (nullable PhoneNumber *)tryParsePhoneNumberFromE164:(NSString *)text {
     OWSAssertDebug(text != nil);
     if (![text hasPrefix:COUNTRY_CODE_PREFIX]) {
         return nil;
@@ -517,7 +519,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return self.e164;
 }
 
-- (NSNumber *)getCountryCode {
+- (nullable NSNumber *)getCountryCode {
     return self.phoneNumber.countryCode;
 }
 
@@ -573,3 +575,5 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

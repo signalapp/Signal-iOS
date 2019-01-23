@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPrimaryStorage+PreKeyStore.h"
@@ -13,6 +13,8 @@
 #define OWSPrimaryStoragePreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
 #define TSNextPrekeyIdKey @"TSStorageInternalSettingsNextPreKeyId"
 #define BATCH_SIZE 100
+
+NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSPrimaryStorage (PreKeyStore)
 
@@ -100,3 +102,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

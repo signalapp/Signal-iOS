@@ -15,6 +15,8 @@
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 NSString *const TSInboxGroup = @"TSInboxGroup";
 NSString *const TSArchiveGroup = @"TSArchiveGroup";
 
@@ -507,3 +509,5 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

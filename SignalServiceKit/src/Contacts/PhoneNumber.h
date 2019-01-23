@@ -1,6 +1,8 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
+
+NS_ASSUME_NONNULL_BEGIN
 
 #define COUNTRY_CODE_PREFIX @"+"
 
@@ -12,10 +14,10 @@
  */
 @interface PhoneNumber : NSObject
 
-+ (PhoneNumber *)phoneNumberFromE164:(NSString *)text;
++ (nullable PhoneNumber *)phoneNumberFromE164:(NSString *)text;
 
-+ (PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text;
-+ (PhoneNumber *)tryParsePhoneNumberFromE164:(NSString *)text;
++ (nullable PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text;
++ (nullable PhoneNumber *)tryParsePhoneNumberFromE164:(NSString *)text;
 
 // This will try to parse the input text as a phone number using
 // the default region and the country code for this client's phone
@@ -35,7 +37,7 @@
 
 - (NSURL *)toSystemDialerURL;
 - (NSString *)toE164;
-- (NSNumber *)getCountryCode;
+- (nullable NSNumber *)getCountryCode;
 @property (nonatomic, readonly, nullable) NSString *nationalNumber;
 - (BOOL)isValid;
 
@@ -44,3 +46,5 @@
 + (NSString *)defaultCountryCode;
 
 @end
+
+NS_ASSUME_NONNULL_END
