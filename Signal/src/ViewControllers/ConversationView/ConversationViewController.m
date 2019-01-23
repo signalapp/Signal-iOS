@@ -2342,7 +2342,13 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    // TODO:
+    NSURL *_Nullable url = [NSURL URLWithString:linkPreview.urlString];
+    if (!url) {
+        OWSFailDebug(@"Invalid link preview URL.");
+        return;
+    }
+
+    [UIApplication.sharedApplication openURL:url];
 }
 
 - (void)showDetailViewForViewItem:(id<ConversationViewItem>)conversationItem
