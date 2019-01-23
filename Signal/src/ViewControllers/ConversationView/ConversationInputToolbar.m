@@ -43,7 +43,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
 @interface ConversationInputToolbar () <ConversationTextViewToolbarDelegate,
     QuotedReplyPreviewDelegate,
-    LinkPreviewViewDelegate>
+    LinkPreviewViewDraftDelegate>
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
@@ -768,7 +768,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     [self clearLinkPreviewView];
 
-    LinkPreviewView *linkPreviewView = [[LinkPreviewView alloc] initWithDelegate:self];
+    LinkPreviewView *linkPreviewView = [[LinkPreviewView alloc] initWithDraftDelegate:self];
     linkPreviewView.state = state;
 
     self.linkPreviewWrapper.hidden = NO;
@@ -800,7 +800,7 @@ const CGFloat kMaxTextViewHeight = 98;
     return self.inputLinkPreview.linkPreviewDraft;
 }
 
-#pragma mark - LinkPreviewViewDelegate
+#pragma mark - LinkPreviewViewDraftDelegate
 
 - (BOOL)linkPreviewCanCancel
 {

@@ -102,7 +102,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     self.bodyTextView.dataDetectorTypes = kOWSAllowedDataDetectorTypes;
     self.bodyTextView.hidden = YES;
 
-    self.linkPreviewView = [[LinkPreviewView alloc] initWithDelegate:nil];
+    self.linkPreviewView = [[LinkPreviewView alloc] initWithDraftDelegate:nil];
 
     self.footerView = [OWSMessageFooterView new];
 }
