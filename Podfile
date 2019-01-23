@@ -26,6 +26,10 @@ def shared_pods
 
   pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
 
+  # Project does not compile with PromiseKit 6.7.1
+  # see: https://github.com/mxcl/PromiseKit/issues/990
+  pod 'PromiseKit', "6.5.3"
+
   ###
   # forked third party pods
   ###
