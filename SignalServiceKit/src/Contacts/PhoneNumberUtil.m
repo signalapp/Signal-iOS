@@ -1,11 +1,13 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumberUtil.h"
 #import "ContactsManagerProtocol.h"
 #import "FunctionalUtil.h"
 #import <libPhoneNumber_iOS/NBPhoneNumber.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface PhoneNumberUtil ()
 
@@ -467,7 +469,7 @@
 }
 
 // search term -> country codes
-+ (NSArray *)countryCodesForSearchTerm:(NSString *)searchTerm {
++ (NSArray *)countryCodesForSearchTerm:(nullable NSString *)searchTerm {
     searchTerm = [searchTerm stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
     NSArray *countryCodes = NSLocale.ISOCountryCodes;
@@ -602,3 +604,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

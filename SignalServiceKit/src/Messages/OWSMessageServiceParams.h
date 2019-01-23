@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSConstants.h"
 #import <Mantle/Mantle.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Contstructs the per-device-message parameters used when submitting a message to
@@ -31,3 +33,5 @@
               registrationId:(int)registrationId;
 
 @end
+
+NS_ASSUME_NONNULL_END

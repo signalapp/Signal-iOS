@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
 #import <YapDatabase/YapDatabaseViewTransaction.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const TSInboxGroup;
 extern NSString *const TSArchiveGroup;
@@ -68,3 +70,5 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 + (void)asyncRegisterLazyRestoreAttachmentsDatabaseView:(OWSStorage *)storage;
 
 @end
+
+NS_ASSUME_NONNULL_END

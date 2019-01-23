@@ -1,6 +1,8 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
+
+NS_ASSUME_NONNULL_BEGIN
 
 @class YapDatabaseReadWriteTransaction;
 
@@ -30,3 +32,5 @@
                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -15,6 +15,8 @@
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 NSErrorDomain const TSNetworkManagerErrorDomain = @"SignalServiceKit.TSNetworkManager";
 
 BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
@@ -427,9 +429,9 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 }
 
 + (NSError *)errorWithHTTPCode:(NSInteger)code
-                   description:(NSString *)description
-                 failureReason:(NSString *)failureReason
-            recoverySuggestion:(NSString *)recoverySuggestion
+                   description:(nullable NSString *)description
+                 failureReason:(nullable NSString *)failureReason
+            recoverySuggestion:(nullable NSString *)recoverySuggestion
                  fallbackError:(NSError *)fallbackError
 {
     OWSAssertDebug(fallbackError);
@@ -468,3 +470,5 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

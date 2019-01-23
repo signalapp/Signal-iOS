@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSRequest.h"
@@ -7,6 +7,8 @@
 #import "TSConstants.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSRequest
 
@@ -94,7 +96,7 @@
     }
 }
 
-- (NSString *)authUsername
+- (nullable NSString *)authUsername
 {
     OWSAssertDebug(self.shouldHaveAuthorizationHeaders);
 
@@ -103,7 +105,7 @@
     }
 }
 
-- (NSString *)authPassword
+- (nullable NSString *)authPassword
 {
     OWSAssertDebug(self.shouldHaveAuthorizationHeaders);
 
@@ -113,3 +115,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

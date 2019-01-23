@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppVersion.h"
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kNSUserDefaults_FirstAppVersion = @"kNSUserDefaults_FirstAppVersion";
 NSString *const kNSUserDefaults_LastAppVersion = @"kNSUserDefaults_LastVersion";
@@ -16,12 +18,12 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_SAE
 @interface AppVersion ()
 
 @property (atomic) NSString *firstAppVersion;
-@property (atomic) NSString *lastAppVersion;
+@property (atomic, nullable) NSString *lastAppVersion;
 @property (atomic) NSString *currentAppVersion;
 
-@property (atomic) NSString *lastCompletedLaunchAppVersion;
-@property (atomic) NSString *lastCompletedLaunchMainAppVersion;
-@property (atomic) NSString *lastCompletedLaunchSAEAppVersion;
+@property (atomic, nullable) NSString *lastCompletedLaunchAppVersion;
+@property (atomic, nullable) NSString *lastCompletedLaunchMainAppVersion;
+@property (atomic, nullable) NSString *lastCompletedLaunchSAEAppVersion;
 
 @end
 
@@ -126,3 +128,5 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_SAE
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

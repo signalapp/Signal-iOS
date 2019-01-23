@@ -46,7 +46,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 @property (nonatomic) NSDate *creationDate;
 @property (nonatomic) NSString *conversationColorName;
-@property (nonatomic) NSNumber *archivedAsOfMessageSortId;
+@property (nonatomic, nullable) NSNumber *archivedAsOfMessageSortId;
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 
