@@ -1081,13 +1081,16 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
+"IMAGE_EDITOR_BRUSH_BUTTON" = "Pędzel";
 
 /* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Crop";
+"IMAGE_EDITOR_CROP_BUTTON" = "Przytnij";
+
+/* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Nie udało się wybrać załącznika.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Łączenie...";

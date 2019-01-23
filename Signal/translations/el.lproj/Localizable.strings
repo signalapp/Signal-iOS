@@ -228,10 +228,10 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Επαναφορά Αρχείων";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+"BACKUP_RESTORE_DECISION_TITLE" = "Αντίγραφο ασφαλείας διαθέσιμο ";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+"BACKUP_RESTORE_DESCRIPTION" = "Γίνεται επαναφορά του αντιγράφου ασφαλείας ";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Πρόοδος";
@@ -240,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "Κατάσταση";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "Αναπάντεχο σφάλμα κατά τη δημιουργία του αντιγράφου ασφαλείας ";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Δεν θα λαμβάνετε πλέον μηνύματα ή ενημερώσεις από αυτήν την ομάδα.";
@@ -402,10 +402,10 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Επιλογή Χώρας";
 
 /* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Να μη γίνει επαναφορά";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Δε μπόρεσε να διαπιστωθεί αν υπάρχει αντίγραφο ασφαλείας για επαναφορά.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Σφάλμα";
@@ -414,13 +414,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Επαναφορά";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Το Signal δεν μπορεσε να εξακριβώσει την κατάσταση του iCloud λογαριασμού σας. Συνδεθείτε στον iCloud λογαριασμό σας μέσω των ρυθμίσεων του iOS ώστε να αποθηκεύσετε αντίγραφο ασφαλείας των δεδομένων του Signal.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Δεν υπάρχει iCloud λογαριασμός. Συνδεθείτε στον iCloud λογαριασμό σας μέσω των ρυθμίσεων του iOS ώστε να αποθηκεύσετε αντίγραφο ασφαλείας των δεδομένων του Signal.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Το Signal δεν μπόρεσε να αποκτήσει πρόσβαση στον iCloud λογαριασμό σας για τη δημιουργία αντιγράφου ασφαλείας. Παραχωρήστε στο Signal  πρόσβαση στον iCloud λογαριασμό σας μέσω των ρυθμίσεων του iOS ώστε να μπορέσετε να δημιουργήσετε αντίγραφο ασφαλείας των Signal δεδομένων σας.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Επιλέξτε το χρώμα των εξερχόμενων μηνυμάτων σε αυτήν τη συνομιλία.";
@@ -561,10 +561,10 @@
 "CONTACT_WITHOUT_NAME" = "Ανώνυμη Επαφή";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Η ενέρεια αυτη δεν μπορεί να αναιρεθεί.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Διαγραφή συνομιλίας;";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Ρυθμίσεις Συνομιλίας";
@@ -1081,13 +1081,16 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
+"IMAGE_EDITOR_BRUSH_BUTTON" = "Βούρτσα.";
 
 /* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Crop";
+"IMAGE_EDITOR_CROP_BUTTON" = "Περικοπή";
+
+/* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Δεν ήταν δυνατό να επιλεχθεί το συνημμένο.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Συνδέεται...";
@@ -1216,10 +1219,10 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Διαγραφή Μηνύματος";
 
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ on %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ στις%@";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
-"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ Περισσότερα%@";
 
 /* Short sender label for media sent by you */
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "Εσείς";
@@ -1470,7 +1473,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Εύρεση επαφών μέσω αριθμού τηλεφώνου";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Να μην ξεχάσω ";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Μπορεί να έχετε λάβει μηνύματα κατά την επανεκκίνηση του %@ σας.";
@@ -1566,7 +1569,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Φαξ Εργασίας";
 
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Ανώνυμο άλμπουμ";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Αναπαραγωγή Πολυμέσων";
@@ -1992,10 +1995,10 @@
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Δημιουργία Αντιγράφων Ενεργοποιημένη";
 
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "Καατάσταση iCloud";
 
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Η επαναφορά του αντιγράφου ασφαλείας απέτυχε ";
 
 /* Indicates that app is not restoring up. */
 "SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";

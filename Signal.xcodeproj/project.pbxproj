@@ -337,7 +337,6 @@
 		452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 452037D01EE84975004E4CDF /* DebugUISessionState.m */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
 		4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */; };
-		452314A01F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */; };
 		4523D016206EDC2B00A2AB51 /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4523D015206EDC2B00A2AB51 /* LRUCache.swift */; };
 		452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */; };
 		452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
@@ -450,6 +449,8 @@
 		4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */; };
 		4C23A5F2215C4ADE00534937 /* SheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C23A5F1215C4ADE00534937 /* SheetViewController.swift */; };
 		4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */; };
+		4C3E245C21F29FCE000AE092 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA5F792211E1F06008C2708 /* Toast.swift */; };
+		4C3E245D21F2B395000AE092 /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */; };
 		4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */; };
 		4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF801210918740007EBF7 /* SSKProtoEnvelopeTest.swift */; };
 		4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */; };
@@ -466,7 +467,6 @@
 		4C9CA25D217E676900607C63 /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C9CA25C217E676900607C63 /* ZXingObjC.framework */; };
 		4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA46F4B219CCC630038ABDE /* CaptionView.swift */; };
 		4CA46F4D219CFDAA0038ABDE /* GalleryRailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA46F49219C78050038ABDE /* GalleryRailView.swift */; };
-		4CA5F793211E1F06008C2708 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA5F792211E1F06008C2708 /* Toast.swift */; };
 		4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */; };
 		4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5F26820F7D060004D1B42 /* MessageActions.swift */; };
 		4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */; };
@@ -1720,6 +1720,7 @@
 		346129CE1FD207F200532771 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */,
 				34AC0A0C211B39EA00997B47 /* AvatarImageView.swift */,
 				34AC0A07211B39E900997B47 /* CommonStrings.swift */,
 				34AC0A0A211B39EA00997B47 /* ContactCellView.h */,
@@ -1747,6 +1748,7 @@
 				34AC09FD211B39E700997B47 /* TappableView.swift */,
 				34AC0A0D211B39EA00997B47 /* ThreadViewHelper.h */,
 				34AC0A0B211B39EA00997B47 /* ThreadViewHelper.m */,
+				4CA5F792211E1F06008C2708 /* Toast.swift */,
 				34AC0A04211B39E800997B47 /* VideoPlayerView.swift */,
 			);
 			path = Views;
@@ -2334,7 +2336,6 @@
 				4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */,
 				4CA46F4B219CCC630038ABDE /* CaptionView.swift */,
 				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
-				4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */,
 				4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */,
 				45A663C41F92EC760027B59E /* GroupTableViewCell.swift */,
 				34129B8521EF8779005457A8 /* LinkPreviewView.swift */,
@@ -2353,7 +2354,6 @@
 				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
 				450D19111F85236600970622 /* RemoteVideoView.h */,
 				450D19121F85236600970622 /* RemoteVideoView.m */,
-				4CA5F792211E1F06008C2708 /* Toast.swift */,
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
 			);
 			name = Views;
@@ -3314,6 +3314,7 @@
 				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
 				34BEDB1721C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m in Sources */,
 				34B6A909218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift in Sources */,
+				4C3E245D21F2B395000AE092 /* DirectionalPanGestureRecognizer.swift in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				4CBBCA6321714B4500EEB37D /* OWS110SortIdMigration.swift in Sources */,
 				342950832124C9750000B063 /* OWSTextView.m in Sources */,
@@ -3391,6 +3392,7 @@
 				4C618199219DF03A009BD6B5 /* OWSButton.swift in Sources */,
 				4598198F204E2F28009414F2 /* OWS108CallLoggingPreference.m in Sources */,
 				34AC09F3211B39B100997B47 /* NewNonContactConversationViewController.m in Sources */,
+				4C3E245C21F29FCE000AE092 /* Toast.swift in Sources */,
 				34AC09FA211B39B100997B47 /* SharingThreadPickerViewController.m in Sources */,
 				45F59A082028E4FB00E8D2B0 /* OWSAudioSession.swift in Sources */,
 				34612A071FD7238600532771 /* OWSSyncManager.m in Sources */,
@@ -3512,7 +3514,6 @@
 				4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */,
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
-				452314A01F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				344825C6211390C800DB4BD8 /* OWSOrphanDataCleaner.m in Sources */,
 				45D2AC02204885170033C692 /* OWS2FAReminderViewController.swift in Sources */,
@@ -3569,7 +3570,6 @@
 				34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */,
 				458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
-				4CA5F793211E1F06008C2708 /* Toast.swift in Sources */,
 				3488F9362191CC4000E524CC /* ConversationMediaView.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,

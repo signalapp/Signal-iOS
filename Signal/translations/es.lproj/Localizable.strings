@@ -1081,13 +1081,16 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
+"IMAGE_EDITOR_BRUSH_BUTTON" = "Pincel";
 
 /* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Crop";
+"IMAGE_EDITOR_CROP_BUTTON" = "Recortar";
+
+/* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Fallo al seleccionar adjunto.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Conectando ...";
@@ -1470,7 +1473,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Encontrar por núm. de teléfono";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Tú mismo";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Has recibido mensajes mientras tu %@ estaba reiniciándose.";

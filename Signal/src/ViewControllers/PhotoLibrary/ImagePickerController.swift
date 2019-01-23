@@ -23,9 +23,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     private let photoMediaSize = PhotoMediaSize()
 
     var collectionViewFlowLayout: UICollectionViewFlowLayout
-
-    private let titleLabel = UILabel()
-    private let titleIconView = UIImageView()
+    var titleView: TitleView!
 
     // We use NSMutableOrderedSet so that we can honor selection order.
     private let selectedIds = NSMutableOrderedSet()
@@ -67,24 +65,19 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         cancelButton.tintColor = .ows_gray05
         navigationItem.leftBarButtonItem = cancelButton
 
+        let titleView = TitleView()
+        titleView.delegate = self
+        titleView.text = photoCollection.localizedTitle()
+
         if #available(iOS 11, *) {
-            titleLabel.text = photoCollection.localizedTitle()
-            titleLabel.textColor = .ows_gray05
-            titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
-
-            titleIconView.tintColor = .ows_gray05
-            titleIconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
-
-            let titleView = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
-            titleView.axis = .horizontal
-            titleView.alignment = .center
-            titleView.spacing = 5
-            titleView.isUserInteractionEnabled = true
-            titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
-            navigationItem.titleView = titleView
+            // do nothing
         } else {
-            navigationItem.title = photoCollection.localizedTitle()
+            // must assign titleView frame manually on older iOS
+            titleView.frame = CGRect(origin: .zero, size: titleView.systemLayoutSizeFitting(UILayoutFittingCompressedSize))
         }
+
+        navigationItem.titleView = titleView
+        self.titleView = titleView
 
         let featureFlag_isMultiselectEnabled = true
         if featureFlag_isMultiselectEnabled {
@@ -92,6 +85,90 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         collectionView.backgroundColor = .ows_gray95
+
+        let selectionPanGesture = DirectionalPanGestureRecognizer(direction: [.horizontal], target: self, action: #selector(didPanSelection))
+        selectionPanGesture.delegate = self
+        self.selectionPanGesture = selectionPanGesture
+        collectionView.addGestureRecognizer(selectionPanGesture)
+    }
+
+    var selectionPanGesture: UIPanGestureRecognizer?
+    enum BatchSelectionGestureMode {
+        case select, deselect
+    }
+    var selectionPanGestureMode: BatchSelectionGestureMode = .select
+
+    @objc
+    func didPanSelection(_ selectionPanGesture: UIPanGestureRecognizer) {
+        guard isInBatchSelectMode else {
+            return
+        }
+
+        guard let collectionView = collectionView else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        switch selectionPanGesture.state {
+        case .possible:
+            break
+        case .began:
+            collectionView.isUserInteractionEnabled = false
+            collectionView.isScrollEnabled = false
+
+            let location = selectionPanGesture.location(in: collectionView)
+            guard let indexPath = collectionView.indexPathForItem(at: location) else {
+                return
+            }
+            let asset = photoCollectionContents.asset(at: indexPath.item)
+            if selectedIds.contains(asset.localIdentifier) {
+                selectionPanGestureMode = .deselect
+            } else {
+                selectionPanGestureMode = .select
+            }
+        case .changed:
+            let location = selectionPanGesture.location(in: collectionView)
+            guard let indexPath = collectionView.indexPathForItem(at: location) else {
+                return
+            }
+            tryToToggleBatchSelect(at: indexPath)
+        case .cancelled, .ended, .failed:
+            collectionView.isUserInteractionEnabled = true
+            collectionView.isScrollEnabled = true
+        }
+    }
+
+    func tryToToggleBatchSelect(at indexPath: IndexPath) {
+        guard isInBatchSelectMode else {
+            owsFailDebug("isInBatchSelectMode was unexpectedly false")
+            return
+        }
+
+        guard let collectionView = collectionView else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        let asset = photoCollectionContents.asset(at: indexPath.item)
+        switch selectionPanGestureMode {
+        case .select:
+            guard canSelectAdditionalItems else {
+                showTooManySelectedToast()
+                return
+            }
+
+            selectedIds.add(asset.localIdentifier)
+            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+        case .deselect:
+            selectedIds.remove(asset.localIdentifier)
+            collectionView.deselectItem(at: indexPath, animated: true)
+        }
+
+        updateDoneButton()
+    }
+
+    var canSelectAdditionalItems: Bool {
+        return selectedIds.count <= SignalAttachment.maxAttachmentsAllowed
     }
 
     override func viewWillLayoutSubviews() {
@@ -116,6 +193,21 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         reloadDataAndRestoreSelection()
         if !hasEverAppeared {
+            scrollToBottom(animated: false)
+        }
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        if !hasEverAppeared {
+            // To scroll precisely to the bottom of the content, we have to account for the space
+            // taken up by the navbar and any notch.
+            //
+            // Before iOS11 the system accounts for this by assigning contentInset to the scrollView
+            // which is available by the time `viewWillAppear` is called.
+            //
+            // On iOS11+, contentInsets are not assigned to the scrollView in `viewWillAppear`, but
+            // this method, `viewSafeAreaInsetsDidChange` is called *between* `viewWillAppear` and
+            // `viewDidAppear` and indicates `safeAreaInsets` have been assigned.
             scrollToBottom(animated: false)
         }
     }
@@ -157,38 +249,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        var verticalOffset: CGFloat
-
-        let visibleHeight = collectionView.bounds.height - collectionView.contentInset.top
-        let contentHeight = collectionView.contentSize.height
-        if contentHeight <= visibleHeight {
-            verticalOffset = -collectionView.contentInset.top
-        } else {
-            let topOfLastPage = contentHeight - collectionView.bounds.height
-            verticalOffset = topOfLastPage
+        let lastSection = collectionView.numberOfSections - 1
+        let lastItem = collectionView.numberOfItems(inSection: lastSection) - 1
+        if lastSection >= 0 && lastItem >= 0 {
+            let lastIndex = IndexPath(item: lastItem, section: lastSection)
+            collectionView.scrollToItem(at: lastIndex, at: .bottom, animated: animated)
         }
-
-        if #available(iOS 11, *) {
-            if hasEverAppeared {
-                verticalOffset += collectionView.safeAreaInsets.bottom
-            } else {
-                // On iOS10 and earlier, we can be precise, but as of iOS11 `collectionView.contentInset`
-                // is based on `safeAreaInsets`, which isn't accurate until `viewDidAppear` at the earliest.
-                //
-                // from https://developer.apple.com/documentation/uikit/uiview/positioning_content_relative_to_the_safe_area
-                // > Make your modifications in [viewDidAppear] because the safe area insets for a view are
-                // > not accurate until the view is added to a view hierarchy.
-                //
-                // Overshooting like this works without visible animation glitch. on iOS11+
-                // However, before iOS11, "overshooting" the contentOffset like this produces a broken
-                // layout or hanging. Luckily for those versions, before the safeAreaInset feature
-                // existed, we can accurately access collectionView.contentInset before `viewDidAppear`
-                // and calculate a precise content offset.
-                verticalOffset += 122
-            }
-        }
-
-        collectionView.setContentOffset(CGPoint(x: 0, y: verticalOffset), animated: animated)
     }
 
     private func reloadDataAndRestoreSelection() {
@@ -400,6 +466,27 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
     }
 
+    func showTooManySelectedToast() {
+        Logger.info("")
+
+        guard let  collectionView  = collectionView else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        let toastFormat = NSLocalizedString("IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT",
+                                            comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.")
+
+        let toastText = String(format: toastFormat, NSNumber(value: SignalAttachment.maxAttachmentsAllowed))
+
+        let toastController = ToastController(text: toastText)
+
+        let kToastInset: CGFloat = 10
+        let bottomInset = kToastInset + collectionView.contentInset.bottom + view.layoutMargins.bottom
+
+        toastController.presentToastView(fromBottomOfView: view, inset: bottomInset)
+    }
+
     // MARK: - PhotoLibraryDelegate
 
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
@@ -444,9 +531,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
             self.updateSelectButton()
 
-            // *slightly* more than `pi` to ensure the chevron animates counter-clockwise
-            let chevronRotationAngle = CGFloat.pi + 0.001
-            self.titleIconView.transform = CGAffineTransform(rotationAngle: chevronRotationAngle)
+            self.titleView.rotateIcon(.up)
         }.retainUntilComplete()
     }
 
@@ -463,7 +548,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
             self.updateSelectButton()
 
-            self.titleIconView.transform = .identity
+            self.titleView.rotateIcon(.down)
         }.done { _ in
             collectionPickerController.view.removeFromSuperview()
             collectionPickerController.removeFromParentViewController()
@@ -484,28 +569,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         photoCollection = collection
         photoCollectionContents = photoCollection.contents()
 
-        if #available(iOS 11, *) {
-            titleLabel.text = photoCollection.localizedTitle()
-        } else {
-            navigationItem.title = photoCollection.localizedTitle()
-        }
+        titleView.text = photoCollection.localizedTitle()
 
         collectionView?.reloadData()
         scrollToBottom(animated: false)
         hideCollectionPicker()
-    }
-
-    // MARK: - Event Handlers
-
-    @objc func titleTapped(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else {
-            return
-        }
-        if isShowingCollectionPickerController {
-            hideCollectionPicker()
-        } else {
-            showCollectionPicker()
-        }
     }
 
     // MARK: - UICollectionView
@@ -515,7 +583,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return true
         }
 
-        return indexPathsForSelectedItems.count < SignalAttachment.maxAttachmentsAllowed
+        if (indexPathsForSelectedItems.count < SignalAttachment.maxAttachmentsAllowed) {
+            return true
+        } else {
+            showTooManySelectedToast()
+            return false
+        }
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -611,5 +684,109 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
         assetIdToCommentMap[assetId] = captionText
+    }
+}
+
+extension ImagePickerGridController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // Ensure we can still scroll the collectionView by allowing other gestures to
+        // take precedence.
+        guard otherGestureRecognizer == selectionPanGesture else {
+            return true
+        }
+
+        // Once we've startd the selectionPanGesture, don't allow scrolling
+        if otherGestureRecognizer.state == .began || otherGestureRecognizer.state == .changed {
+            return false
+        }
+
+        return true
+    }
+}
+
+protocol TitleViewDelegate: class {
+    func titleViewWasTapped(_ titleView: TitleView)
+}
+
+class TitleView: UIView {
+
+    // MARK: - Private
+
+    private let label = UILabel()
+    private let iconView = UIImageView()
+    private let stackView: UIStackView
+
+    // MARK: - Initializers
+
+    override init(frame: CGRect) {
+        let stackView = UIStackView(arrangedSubviews: [label, iconView])
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 5
+        stackView.isUserInteractionEnabled = true
+
+        self.stackView = stackView
+
+        super.init(frame: frame)
+
+        addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewEdges()
+
+        label.textColor = .ows_gray05
+        label.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+
+        iconView.tintColor = .ows_gray05
+        iconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
+
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Public
+
+    weak var delegate: TitleViewDelegate?
+
+    public var text: String? {
+        get {
+            return label.text
+        }
+        set {
+            label.text = newValue
+        }
+    }
+
+    public enum TitleViewRotationDirection {
+        case up, down
+    }
+
+    public func rotateIcon(_ direction: TitleViewRotationDirection) {
+        switch direction {
+        case .up:
+            // *slightly* more than `pi` to ensure the chevron animates counter-clockwise
+            let chevronRotationAngle = CGFloat.pi + 0.001
+            iconView.transform = CGAffineTransform(rotationAngle: chevronRotationAngle)
+        case .down:
+            iconView.transform = .identity
+        }
+    }
+
+    // MARK: - Events
+
+    @objc
+    func titleTapped(_ tapGesture: UITapGestureRecognizer) {
+        self.delegate?.titleViewWasTapped(self)
+    }
+}
+
+extension ImagePickerGridController: TitleViewDelegate {
+    func titleViewWasTapped(_ titleView: TitleView) {
+        if isShowingCollectionPickerController {
+            hideCollectionPicker()
+        } else {
+            showCollectionPicker()
+        }
     }
 }

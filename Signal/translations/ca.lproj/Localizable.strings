@@ -1072,7 +1072,7 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Cerca";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No s'ha trobat cap resultat per a «%@»";
 
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Arxiva";
@@ -1086,14 +1086,17 @@
 /* Label for crop button in image editor. */
 "IMAGE_EDITOR_CROP_BUTTON" = "Crop";
 
+/* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Ha fallat seleccionar l'adjunt.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "S'està connectant...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting…";
+"IN_CALL_RECONNECTING" = "Reconnectant...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Està sonant...";
@@ -1105,10 +1108,10 @@
 "IN_CALL_TERMINATED" = "Ha finalitzat.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Aquestes converses estan arxivades i només apareixeran a la bústia d'entrada si es reben missatges nous.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Signal conversation list.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per veure els noms dels contactes a la llista de converses del Signal.";
 
 /* notification body */
 "INCOMING_CALL" = "Telefonada rebuda";
@@ -1129,7 +1132,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Fitxer d'àudio no vàlid.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "You can enable contacts access in the iOS Settings app to invite your friends to join Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per convidar les amistats al  Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Doneu accés als contactes";
@@ -1198,7 +1201,7 @@
 "LONG_TEXT_VIEW_TITLE" = "Missatge";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Tot el contingut";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Càmera";
@@ -1210,13 +1213,13 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Galeria";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Suprimeix %d missatges";
 
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Suprimeix el missatge";
 
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ on %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ el %@";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -1228,25 +1231,25 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Aquest mes";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
+"MESSAGE_ACTION_COPY_MEDIA" = "Copia el contingut";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+"MESSAGE_ACTION_COPY_TEXT" = "Copia el text del missatge";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Suprimeix aquest missatge";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will only be deleted on this device.";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Només se suprimirà d'aquest dispositiu.";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "More Info";
+"MESSAGE_ACTION_DETAILS" = "Més informació";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to This Message";
+"MESSAGE_ACTION_REPLY" = "Respon aquest missatge";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Desa el contingut";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Missatge";
@@ -1267,7 +1270,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Entregat";
 
 /* Status label for messages which are failed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Failed";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Ha fallat";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "S'ha llegit";
@@ -1279,19 +1282,19 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Enviament";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "S'ha omès";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Uploading";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Pujant";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Message has no content or attachment.";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "El missatge no té contingut o no té cap adjunt.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Rebut";
 
 /* Label for the 'sender' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENDER" = "Sender";
+"MESSAGE_METADATA_VIEW_SENDER" = "Remitent";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Enviament";
@@ -1306,22 +1309,22 @@
 "MESSAGE_STATUS_DELIVERED" = "S'ha enviat";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Ha fallat l'enviament.";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+"MESSAGE_STATUS_FAILED_SHORT" = "Ha fallat";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "S'ha llegit";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "S'ha omès";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "Ha fallat l'enviament";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending…";
+"MESSAGE_STATUS_SENDING" = "Enviant...";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "S'ha enviat";
@@ -1336,19 +1339,19 @@
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ja no és marcat com a verificat. Toqueu per a més opcions.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked This User";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "Heu blocat aquest usuari";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ ja no és marcat com a verificat. Toqueu per a més opcions.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Heu blocat 1 membre d'aquest grup";
 
 /* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "You Blocked This Group";
+"MESSAGES_VIEW_GROUP_BLOCKED" = "Heu blocat aquest grup";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Heu blocat %@ membres d'aquest grup";
 
 /* Text for banner in group conversation view that offers to share your profile with this group. */
 "MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Share Your Profile With This Group?";

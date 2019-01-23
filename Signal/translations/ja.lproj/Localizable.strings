@@ -1081,13 +1081,16 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
+"IMAGE_EDITOR_BRUSH_BUTTON" = "ブラシ";
 
 /* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Crop";
+"IMAGE_EDITOR_CROP_BUTTON" = "切り取り";
+
+/* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "添付ファイルを選択できませんでした";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "接続しています...";
@@ -1470,7 +1473,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "連絡先を電話番号で検索";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "自分のためのメモ";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "%@の再起動中にメッセージが届いたかもしれません";
