@@ -34,7 +34,7 @@ public class OWSLinkPreviewDraft: NSObject {
     deinit {
         // Eagerly clean up temp files.
         if let imageFilePath = imageFilePath {
-            DispatchQueue.main.async {
+            DispatchQueue.global().async {
                 OWSFileSystem.deleteFile(imageFilePath)
             }
         }
@@ -472,9 +472,11 @@ public class OWSLinkPreview: MTLModel {
         Logger.verbose("url: \(url)")
 
         let sessionConfiguration = ContentProxy.sessionConfiguration()
-        // Don't use any caching.
+
+        // Don't use any caching to protect privacy of these requests.
         sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalCacheData
         sessionConfiguration.urlCache = nil
+
         let sessionManager = AFHTTPSessionManager(baseURL: nil,
                                                   sessionConfiguration: sessionConfiguration)
         sessionManager.requestSerializer = AFHTTPRequestSerializer()
