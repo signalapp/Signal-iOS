@@ -510,7 +510,7 @@ public class OWSLinkPreview: MTLModel {
         }
 
         sessionManager.get(url,
-                           parameters: {},
+                           parameters: [String: AnyObject](),
                            progress: nil,
                            success: { _, value in
 
