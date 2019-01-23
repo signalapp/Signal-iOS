@@ -711,9 +711,15 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     }
 
     func didTapConversationItem(_ viewItem: ConversationViewItem, linkPreview: OWSLinkPreview) {
-        // no - op
-
-        // TODO:
+        guard let urlString = linkPreview.urlString else {
+            owsFailDebug("Missing url.")
+            return
+        }
+        guard let url = URL(string: urlString) else {
+            owsFailDebug("Invalid url: \(urlString).")
+            return
+        }
+        UIApplication.shared.openURL(url)
     }
 
     @objc func didLongPressSent(sender: UIGestureRecognizer) {

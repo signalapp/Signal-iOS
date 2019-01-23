@@ -1464,10 +1464,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     }
 
     if (self.viewItem.linkPreview) {
-        // Treat this as a "quoted reply" gesture if:
-        //
-        // * There is a "quoted reply" view.
-        // * The gesture occured within or above the "quoted reply" view.
         CGPoint location = [self convertPoint:locationInMessageBubble toView:self.linkPreviewView];
         if (CGRectContainsPoint(self.linkPreviewView.bounds, location)) {
             return OWSMessageGestureLocation_LinkPreview;
