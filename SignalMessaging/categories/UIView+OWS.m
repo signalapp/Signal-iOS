@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIView+OWS.h"
@@ -556,8 +556,26 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     subview.backgroundColor = backgroundColor;
     [self addSubview:subview];
     [subview autoPinEdgesToSuperviewEdges];
+    [subview setCompressionResistanceLow];
+    [subview setContentHuggingLow];
     [self sendSubviewToBack:subview];
     return subview;
+}
+
+- (UIView *)addBorderViewWithColor:(UIColor *)color strokeWidth:(CGFloat)strokeWidth cornerRadius:(CGFloat)cornerRadius
+{
+
+    UIView *borderView = [UIView new];
+    borderView.userInteractionEnabled = NO;
+    borderView.backgroundColor = nil;
+    borderView.layer.borderColor = color.CGColor;
+    borderView.layer.borderWidth = strokeWidth;
+    borderView.layer.cornerRadius = cornerRadius;
+    [self addSubview:borderView];
+    [borderView autoPinEdgesToSuperviewEdges];
+    [borderView setCompressionResistanceLow];
+    [borderView setContentHuggingLow];
+    return borderView;
 }
 
 @end

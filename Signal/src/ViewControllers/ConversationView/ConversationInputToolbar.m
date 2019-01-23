@@ -10,10 +10,10 @@
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
-#import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 
@@ -199,22 +199,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.hStack.preservesSuperviewLayoutMargins = NO;
     self.preservesSuperviewLayoutMargins = NO;
 
-    OWSLayerView *contentBorderView = [[OWSLayerView alloc] init];
-    contentBorderView.userInteractionEnabled = NO;
-    contentBorderView.backgroundColor = nil;
-    CAShapeLayer *contentBorderLayer = [CAShapeLayer new];
-    contentBorderLayer.strokeColor = Theme.secondaryColor.CGColor;
-    contentBorderLayer.fillColor = nil;
-    contentBorderLayer.lineWidth = CGHairlineWidth();
-    [contentBorderView.layer addSublayer:contentBorderLayer];
-    contentBorderView.layoutCallback = ^(UIView *layerView) {
-        contentBorderLayer.frame = layerView.bounds;
-        contentBorderLayer.path = [UIBezierPath bezierPathWithRoundedRect:layerView.bounds cornerRadius:18.f].CGPath;
-    };
-    [self.vStack addSubview:contentBorderView];
-    [contentBorderView autoPinEdgesToSuperviewEdges];
-    [contentBorderView setCompressionResistanceLow];
-    [contentBorderView setContentHuggingLow];
+    [self.vStack addBorderViewWithColor:Theme.secondaryColor strokeWidth:CGHairlineWidth() cornerRadius:18.f];
 
     [self ensureShouldShowVoiceMemoButtonAnimated:NO doLayout:NO];
 }
