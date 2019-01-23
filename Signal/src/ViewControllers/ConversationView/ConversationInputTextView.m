@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputTextView.h"
@@ -26,12 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
         self.delegate = self;
-
-        self.backgroundColor = (Theme.isDarkThemeEnabled ? UIColor.ows_gray90Color : UIColor.ows_gray02Color);
-        self.layer.borderColor
-            = (Theme.isDarkThemeEnabled ? [Theme.primaryColor colorWithAlphaComponent:0.06f].CGColor
-                                        : [Theme.primaryColor colorWithAlphaComponent:0.12f].CGColor);
-        self.layer.borderWidth = 0.5f;
+        self.backgroundColor = nil;
 
         self.scrollIndicatorInsets = UIEdgeInsetsMake(4, 4, 4, 4);
 
@@ -56,7 +51,14 @@ NS_ASSUME_NONNULL_BEGIN
 
         // We need to do these steps _after_ placeholderView is configured.
         self.font = [UIFont ows_dynamicTypeBodyFont];
-        self.textContainerInset = UIEdgeInsetsMake(7.0f, 12.0f, 7.0f, 12.0f);
+        CGFloat hMarginLeading = 12.f;
+        CGFloat hMarginTrailing = 24.f;
+        self.textContainerInset = UIEdgeInsetsMake(7.f,
+            CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
+            7.f,
+            CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing);
+        self.textContainer.lineFragmentPadding = 0;
+        self.contentInset = UIEdgeInsetsZero;
 
         [self ensurePlaceholderConstraints];
         [self updatePlaceholderVisibility];

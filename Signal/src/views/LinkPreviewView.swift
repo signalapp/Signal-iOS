@@ -2,6 +2,18 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+public extension CGPoint {
+    public func offsetBy(dx: CGFloat) -> CGPoint {
+        return CGPoint(x: x + dx, y: y)
+    }
+
+    public func offsetBy(dy: CGFloat) -> CGPoint {
+        return CGPoint(x: x, y: y + dy)
+    }
+}
+
+// MARK: -
+
 @objc
 public enum LinkPreviewImageState: Int {
     case none
@@ -206,7 +218,7 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
 // MARK: -
 
 @objc
-public protocol LinkPreviewViewDelegate {
+public protocol LinkPreviewViewDraftDelegate {
     func linkPreviewCanCancel() -> Bool
     func linkPreviewDidCancel()
 }
@@ -214,8 +226,92 @@ public protocol LinkPreviewViewDelegate {
 // MARK: -
 
 @objc
+public class LinkPreviewImageView: UIImageView {
+    private let maskLayer = CAShapeLayer()
+
+    @objc
+    public init() {
+        super.init(frame: .zero)
+
+        self.layer.mask = maskLayer
+    }
+
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    public override var bounds: CGRect {
+        didSet {
+            updateMaskLayer()
+        }
+    }
+
+    public override var frame: CGRect {
+        didSet {
+            updateMaskLayer()
+        }
+    }
+
+    public override var center: CGPoint {
+        didSet {
+            updateMaskLayer()
+        }
+    }
+
+    private func updateMaskLayer() {
+        let layerBounds = self.bounds
+
+        // One of the corners has assymetrical rounding to match the input toolbar border.
+        // This is somewhat inconvenient.
+        let upperLeft = CGPoint(x: 0, y: 0)
+        let upperRight = CGPoint(x: layerBounds.size.width, y: 0)
+        let lowerRight = CGPoint(x: layerBounds.size.width, y: layerBounds.size.height)
+        let lowerLeft = CGPoint(x: 0, y: layerBounds.size.height)
+
+        let bigRounding: CGFloat = 14
+        let smallRounding: CGFloat = 4
+
+        let upperLeftRounding = CurrentAppContext().isRTL ? smallRounding : bigRounding
+        let upperRightRounding = CurrentAppContext().isRTL ? bigRounding : smallRounding
+        let lowerRightRounding = smallRounding
+        let lowerLeftRounding = smallRounding
+
+        let path = UIBezierPath()
+
+        // It's sufficient to "draw" the rounded corners and not the edges that connect them.
+        path.addArc(withCenter: upperLeft.offsetBy(dx: +upperLeftRounding).offsetBy(dy: +upperLeftRounding),
+                    radius: upperLeftRounding,
+                    startAngle: CGFloat.pi * 1.0,
+                    endAngle: CGFloat.pi * 1.5,
+                    clockwise: true)
+
+        path.addArc(withCenter: upperRight.offsetBy(dx: -upperRightRounding).offsetBy(dy: +upperRightRounding),
+                    radius: upperRightRounding,
+                    startAngle: CGFloat.pi * 1.5,
+                    endAngle: CGFloat.pi * 0.0,
+                    clockwise: true)
+
+        path.addArc(withCenter: lowerRight.offsetBy(dx: -lowerRightRounding).offsetBy(dy: -lowerRightRounding),
+                    radius: lowerRightRounding,
+                    startAngle: CGFloat.pi * 0.0,
+                    endAngle: CGFloat.pi * 0.5,
+                    clockwise: true)
+
+        path.addArc(withCenter: lowerLeft.offsetBy(dx: +lowerLeftRounding).offsetBy(dy: -lowerLeftRounding),
+                    radius: lowerLeftRounding,
+                    startAngle: CGFloat.pi * 0.5,
+                    endAngle: CGFloat.pi * 1.0,
+                    clockwise: true)
+
+        maskLayer.path = path.cgPath
+    }
+}
+
+// MARK: -
+
+@objc
 public class LinkPreviewView: UIStackView {
-    private weak var delegate: LinkPreviewViewDelegate?
+    private weak var draftDelegate: LinkPreviewViewDraftDelegate?
 
     @objc
     public var state: LinkPreviewState? {
@@ -243,20 +339,20 @@ public class LinkPreviewView: UIStackView {
     private var layoutConstraints = [NSLayoutConstraint]()
 
     @objc
-    public init(delegate: LinkPreviewViewDelegate?) {
-        self.delegate = delegate
+    public init(draftDelegate: LinkPreviewViewDraftDelegate?) {
+        self.draftDelegate = draftDelegate
 
         super.init(frame: .zero)
 
-        if let delegate = delegate,
-            delegate.linkPreviewCanCancel() {
+        if let draftDelegate = draftDelegate,
+            draftDelegate.linkPreviewCanCancel() {
             self.isUserInteractionEnabled = true
             self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(wasTapped)))
         }
     }
 
-    private var isApproval: Bool {
-        return delegate != nil
+    private var isDraft: Bool {
+        return draftDelegate != nil
     }
 
     private func resetContents() {
@@ -285,15 +381,15 @@ public class LinkPreviewView: UIStackView {
             return
         }
 
-        guard isApproval else {
+        guard isDraft else {
             createSentContents()
             return
         }
         guard state.isLoaded() else {
-            createLoadingContents()
+            createDraftLoadingContents()
             return
         }
-        createApprovalContents(state: state)
+        createDraftContents(state: state)
     }
 
     private func createSentContents() {
@@ -436,29 +532,34 @@ public class LinkPreviewView: UIStackView {
         return label
     }
 
-    private let approvalHeight: CGFloat = 76
+    private let draftHeight: CGFloat = 72
+    private let draftMarginTop: CGFloat = 6
 
-    private func createApprovalContents(state: LinkPreviewState) {
+    private func createDraftContents(state: LinkPreviewState) {
         self.axis = .horizontal
         self.alignment = .fill
         self.distribution = .fill
         self.spacing = 8
+        self.isLayoutMarginsRelativeArrangement = true
+        let hMarginLeading: CGFloat = 6
+        let hMarginTrailing: CGFloat = 12
+        self.layoutMargins = UIEdgeInsets(top: draftMarginTop,
+                                          left: CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
+                                          bottom: 0,
+                                          right: CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing)
 
-        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultHigh) {
-            self.layoutConstraints.append(self.autoSetDimension(.height, toSize: approvalHeight))
-        }
+        self.layoutConstraints.append(self.autoSetDimension(.height, toSize: draftHeight + draftMarginTop))
 
         // Image
 
-        if let imageView = createImageView(state: state) {
+        if let imageView = createDraftImageView(state: state) {
             imageView.contentMode = .scaleAspectFill
             imageView.autoPinToSquareAspectRatio()
-            let imageSize = approvalHeight
+            let imageSize = draftHeight
             imageView.autoSetDimensions(to: CGSize(width: imageSize, height: imageSize))
             imageView.setContentHuggingHigh()
             imageView.setCompressionResistanceHigh()
             imageView.clipsToBounds = true
-            // TODO: Cropping, stroke.
             addArrangedSubview(imageView)
         }
 
@@ -554,13 +655,29 @@ public class LinkPreviewView: UIStackView {
         return imageView
     }
 
-    private func createLoadingContents() {
+    private func createDraftImageView(state: LinkPreviewState) -> UIImageView? {
+        guard state.isLoaded() else {
+            owsFailDebug("State not loaded.")
+            return nil
+        }
+
+        guard state.imageState()  == .loaded else {
+            return nil
+        }
+        guard let image = state.image() else {
+            owsFailDebug("Could not load image.")
+            return nil
+        }
+        let imageView = LinkPreviewImageView()
+        imageView.image = image
+        return imageView
+    }
+
+    private func createDraftLoadingContents() {
         self.axis = .vertical
         self.alignment = .center
 
-        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultHigh) {
-            self.layoutConstraints.append(self.autoSetDimension(.height, toSize: approvalHeight))
-        }
+        self.layoutConstraints.append(self.autoSetDimension(.height, toSize: draftHeight + draftMarginTop))
 
         let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
         activityIndicator.startAnimating()
@@ -581,7 +698,7 @@ public class LinkPreviewView: UIStackView {
             let hotAreaInset: CGFloat = -20
             let cancelButtonHotArea = cancelButton.bounds.insetBy(dx: hotAreaInset, dy: hotAreaInset)
             if cancelButtonHotArea.contains(cancelLocation) {
-                self.delegate?.linkPreviewDidCancel()
+                self.draftDelegate?.linkPreviewDidCancel()
                 return
             }
         }
@@ -677,6 +794,6 @@ public class LinkPreviewView: UIStackView {
     }
 
     @objc func didTapCancel(sender: UIButton) {
-        self.delegate?.linkPreviewDidCancel()
+        self.draftDelegate?.linkPreviewDidCancel()
     }
 }

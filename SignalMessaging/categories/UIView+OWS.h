@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMath.h"
@@ -149,6 +149,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 @interface UIStackView (OWS)
 
 - (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor;
+
+- (UIView *)addBorderViewWithColor:(UIColor *)color strokeWidth:(CGFloat)strokeWidth cornerRadius:(CGFloat)cornerRadius;
 
 @end
 
