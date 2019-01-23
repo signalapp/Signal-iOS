@@ -31,6 +31,15 @@ public class OWSLinkPreviewDraft: NSObject {
         super.init()
     }
 
+    deinit {
+        // Eagerly clean up temp files.
+        if let imageFilePath = imageFilePath {
+            DispatchQueue.global().async {
+                OWSFileSystem.deleteFile(imageFilePath)
+            }
+        }
+    }
+
     fileprivate func isValid() -> Bool {
         var hasTitle = false
         if let titleValue = title {
@@ -462,11 +471,14 @@ public class OWSLinkPreview: MTLModel {
 
         Logger.verbose("url: \(url)")
 
-        guard let sessionManager: AFHTTPSessionManager = ContentProxy.sessionManager(baseUrl: nil) else {
-            owsFailDebug("Couldn't create session manager.")
-            completion(nil)
-            return
-        }
+        let sessionConfiguration = ContentProxy.sessionConfiguration()
+
+        // Don't use any caching to protect privacy of these requests.
+        sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalCacheData
+        sessionConfiguration.urlCache = nil
+
+        let sessionManager = AFHTTPSessionManager(baseURL: nil,
+                                                  sessionConfiguration: sessionConfiguration)
         sessionManager.requestSerializer = AFHTTPRequestSerializer()
         sessionManager.responseSerializer = AFHTTPResponseSerializer()
 
