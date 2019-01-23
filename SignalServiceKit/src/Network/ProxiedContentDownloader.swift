@@ -6,72 +6,39 @@ import Foundation
 import ObjectiveC
 
 // Stills should be loaded before full GIFs.
-enum ProxiedContentRequestPriority {
+public enum ProxiedContentRequestPriority {
     case low, high
 }
 
 // MARK: -
 
-@objc class ProxiedContentDescription: NSObject {
-//    let format: GiphyFormat
-//    let name: String
-//    let width: UInt
-//    let height: UInt
-//    let fileSize: UInt
-//    let url: NSURL
-//
-//    init(format: GiphyFormat,
-//         name: String,
-//         width: UInt,
-//         height: UInt,
-//         fileSize: UInt,
-//         url: NSURL) {
-//        self.format = format
-//        self.name = name
-//        self.width = width
-//        self.height = height
-//        self.fileSize = fileSize
-//        self.url = url
-//    }
-//
-//    public var fileExtension: String {
-//        switch format {
-//        case .gif:
-//            return "gif"
-//        case .mp4:
-//            return "mp4"
-//        case .jpg:
-//            return "jpg"
-//        }
-//    }
-//
-//    public var utiType: String {
-//        switch format {
-//        case .gif:
-//            return kUTTypeGIF as String
-//        case .mp4:
-//            return kUTTypeMPEG4 as String
-//        case .jpg:
-//            return kUTTypeJPEG as String
-//        }
-//    }
-//
-//    public var isStill: Bool {
-//        return name.hasSuffix("_still")
-//    }
-//
-//    public var isDownsampled: Bool {
-//        return name.hasSuffix("_downsampled")
-//    }
-//
-//    public func log() {
-//        Logger.verbose("\t \(format), \(name), \(width), \(height), \(fileSize)")
-//    }
+@objc
+open class ProxiedContentAssetDescription: NSObject {
+    @objc
+    public let url: NSURL
+
+    @objc
+    public let fileExtension: String
+
+    public init?(url: NSURL,
+                 fileExtension: String? = nil) {
+        self.url = url
+
+        if let fileExtension = fileExtension {
+            self.fileExtension = fileExtension
+        } else {
+            guard let pathExtension = url.pathExtension else {
+                owsFailDebug("URL has not path extension.")
+                return nil
+            }
+            self.fileExtension = pathExtension
+        }
+    }
 }
 
 // MARK: -
 
-enum ProxiedContentAssetSegmentState: UInt {
+public enum ProxiedContentAssetSegmentState: UInt {
     case waiting
     case downloading
     case complete
@@ -80,7 +47,7 @@ enum ProxiedContentAssetSegmentState: UInt {
 
 // MARK: -
 
-class ProxiedContentAssetSegment: NSObject {
+public class ProxiedContentAssetSegment: NSObject {
 
     public let index: UInt
     public let segmentStart: UInt
@@ -154,7 +121,7 @@ class ProxiedContentAssetSegment: NSObject {
 
 // MARK: -
 
-enum ProxiedContentAssetRequestState: UInt {
+public enum ProxiedContentAssetRequestState: UInt {
     // Does not yet have content length.
     case waiting
     // Getting content length.
@@ -172,9 +139,10 @@ enum ProxiedContentAssetRequestState: UInt {
 // Represents a request to download an asset.
 //
 // Should be cancelled if no longer necessary.
-@objc class ProxiedContentAssetRequest: NSObject {
+@objc
+public class ProxiedContentAssetRequest: NSObject {
 
-    let rendition: ProxiedContentRendition
+    let assetDescription: ProxiedContentAssetDescription
     let priority: ProxiedContentRequestPriority
     // Exactly one of success or failure should be called once,
     // on the main thread _unless_ this request is cancelled before
@@ -200,11 +168,11 @@ enum ProxiedContentAssetRequestState: UInt {
     }
     public weak var contentLengthTask: URLSessionDataTask?
 
-    init(rendition: ProxiedContentRendition,
+    init(assetDescription: ProxiedContentAssetDescription,
          priority: ProxiedContentRequestPriority,
          success:@escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
          failure:@escaping ((ProxiedContentAssetRequest) -> Void)) {
-        self.rendition = rendition
+        self.assetDescription = assetDescription
         self.priority = priority
         self.success = success
         self.failure = failure
@@ -342,7 +310,7 @@ enum ProxiedContentAssetRequestState: UInt {
             return nil
         }
 
-        let fileExtension = rendition.fileExtension
+        let fileExtension = assetDescription.fileExtension
         let fileName = (NSUUID().uuidString as NSString).appendingPathExtension(fileExtension)!
         let filePath = (downloadFolderPath as NSString).appendingPathComponent(fileName)
 
@@ -350,7 +318,7 @@ enum ProxiedContentAssetRequestState: UInt {
 
         do {
             try assetData.write(to: NSURL.fileURL(withPath: filePath), options: .atomicWrite)
-            let asset = ProxiedContentAsset(rendition: rendition, filePath: filePath)
+            let asset = ProxiedContentAsset(assetDescription: assetDescription, filePath: filePath)
             return asset
         } catch let error as NSError {
             owsFailDebug("file write failed: \(filePath), \(error)")
@@ -406,14 +374,18 @@ enum ProxiedContentAssetRequestState: UInt {
 // The blob on disk is cleaned up when this instance is deallocated,
 // so consumers of this resource should retain a strong reference to
 // this instance as long as they are using the asset.
-@objc class ProxiedContentAsset: NSObject {
+@objc
+public class ProxiedContentAsset: NSObject {
 
-    let rendition: ProxiedContentRendition
-    let filePath: String
+    @objc
+    public let assetDescription: ProxiedContentAssetDescription
 
-    init(rendition: ProxiedContentRendition,
+    @objc
+    public let filePath: String
+
+    init(assetDescription: ProxiedContentAssetDescription,
          filePath: String) {
-        self.rendition = rendition
+        self.assetDescription = assetDescription
         self.filePath = filePath
     }
 
@@ -458,17 +430,22 @@ extension URLSessionTask {
 
 // MARK: -
 
-@objc class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
+@objc
+open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
 
     // MARK: - Properties
 
-    static let sharedInstance = ProxiedContentDownloader()
+    public static let defaultDownloader = ProxiedContentDownloader(downloadFolderName: "proxiedContent")
 
-    var downloadFolderPath = ""
+    private let downloadFolderName: String
+
+    private var downloadFolderPath: String?
 
     // Force usage as a singleton
-    override private init() {
+    public required init(downloadFolderName: String) {
         AssertIsOnMainThread()
+
+        self.downloadFolderName = downloadFolderName
 
         super.init()
 
@@ -510,15 +487,15 @@ extension URLSessionTask {
     //
     // The success callbacks may be called synchronously on cache hit, in
     // which case the ProxiedContentAssetRequest parameter will be nil.
-    public func requestAsset(rendition: ProxiedContentRendition,
+    public func requestAsset(assetDescription: ProxiedContentAssetDescription,
                              priority: ProxiedContentRequestPriority,
                              success:@escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
                              failure:@escaping ((ProxiedContentAssetRequest) -> Void)) -> ProxiedContentAssetRequest? {
         AssertIsOnMainThread()
 
-        if let asset = assetMap.get(key: rendition.url) {
+        if let asset = assetMap.get(key: assetDescription.url) {
             // Synchronous cache hit.
-            Logger.verbose("asset cache hit: \(rendition.url)")
+            Logger.verbose("asset cache hit: \(assetDescription.url)")
             success(nil, asset)
             return nil
         }
@@ -526,8 +503,8 @@ extension URLSessionTask {
         // Cache miss.
         //
         // Asset requests are done queued and performed asynchronously.
-        Logger.verbose("asset cache miss: \(rendition.url)")
-        let assetRequest = ProxiedContentAssetRequest(rendition: rendition,
+        Logger.verbose("asset cache miss: \(assetDescription.url)")
+        let assetRequest = ProxiedContentAssetRequest(assetDescription: assetDescription,
                                              priority: priority,
                                              success: success,
                                              failure: failure)
@@ -560,7 +537,11 @@ extension URLSessionTask {
 
                 // Move write off main thread.
                 DispatchQueue.global().async {
-                    guard let asset = assetRequest.writeAssetToFile(downloadFolderPath: self.downloadFolderPath) else {
+                    guard let downloadFolderPath = self.downloadFolderPath else {
+                        owsFailDebug("Missing downloadFolderPath")
+                        return
+                    }
+                    guard let asset = assetRequest.writeAssetToFile(downloadFolderPath: downloadFolderPath) else {
                         self.segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
                         return
                     }
@@ -575,7 +556,7 @@ extension URLSessionTask {
     private func assetRequestDidSucceed(assetRequest: ProxiedContentAssetRequest, asset: ProxiedContentAsset) {
 
         DispatchQueue.main.async {
-            self.assetMap.set(key: assetRequest.rendition.url, value: asset)
+            self.assetMap.set(key: assetRequest.assetDescription.url, value: asset)
             self.removeAssetRequestFromQueue(assetRequest: assetRequest)
             assetRequest.requestDidSucceed(asset: asset)
         }
@@ -603,7 +584,7 @@ extension URLSessionTask {
         AssertIsOnMainThread()
 
         guard assetRequestQueue.contains(assetRequest) else {
-            Logger.warn("could not remove asset request from queue: \(assetRequest.rendition.url)")
+            Logger.warn("could not remove asset request from queue: \(assetRequest.assetDescription.url)")
             return
         }
 
@@ -641,7 +622,7 @@ extension URLSessionTask {
             return
         }
 
-        if let asset = assetMap.get(key: assetRequest.rendition.url) {
+        if let asset = assetMap.get(key: assetRequest.assetDescription.url) {
             // Deferred cache hit, avoids re-downloading assets that were
             // downloaded while this request was queued.
 
@@ -655,7 +636,7 @@ extension URLSessionTask {
             // try to do so now.
             assetRequest.state = .requestingSize
 
-            var request = URLRequest(url: assetRequest.rendition.url as URL)
+            var request = URLRequest(url: assetRequest.assetDescription.url as URL)
             request.httpMethod = "HEAD"
             request.httpShouldUsePipelining = true
 
@@ -676,7 +657,7 @@ extension URLSessionTask {
             }
             assetSegment.state = .downloading
 
-            var request = URLRequest(url: assetRequest.rendition.url as URL)
+            var request = URLRequest(url: assetRequest.assetDescription.url as URL)
             request.httpShouldUsePipelining = true
             let rangeHeaderValue = "bytes=\(assetSegment.segmentStart)-\(assetSegment.segmentStart + assetSegment.segmentLength - 1)"
             request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
@@ -850,7 +831,7 @@ extension URLSessionTask {
         // We try to eagerly clean up these assets when they are no longer in use.
 
         let tempDirPath = OWSTemporaryDirectory()
-        let dirPath = (tempDirPath as NSString).appendingPathComponent("GIFs")
+        let dirPath = (tempDirPath as NSString).appendingPathComponent(downloadFolderName)
         do {
             let fileManager = FileManager.default
 
