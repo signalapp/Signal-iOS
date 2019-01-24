@@ -3,11 +3,15 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc
 public enum LinkPreviewError: Int, Error {
     case invalidInput
     case noPreview
+    case assertionFailure
+    case couldNotDownload
+    case featureDisabled
 }
 
 // MARK: - OWSLinkPreviewDraft
@@ -424,70 +428,62 @@ public class OWSLinkPreview: MTLModel {
     // This cache should only be accessed on serialQueue.
     private static var linkPreviewDraftCache: NSCache<AnyObject, OWSLinkPreviewDraft> = NSCache()
 
+    private class func cachedLinkPreview(forPreviewUrl previewUrl: String) -> OWSLinkPreviewDraft? {
+        var result: OWSLinkPreviewDraft?
+        serialQueue.sync {
+            result = linkPreviewDraftCache.object(forKey: previewUrl as AnyObject)
+        }
+        return result
+    }
+
+    private class func setCachedLinkPreview(_ linkPreviewDraft: OWSLinkPreviewDraft,
+                                            forPreviewUrl previewUrl: String) {
+        serialQueue.sync {
+            previewUrlCache.setObject(linkPreviewDraft, forKey: previewUrl as AnyObject)
+        }
+    }
+
+    @objc
+    public class func tryToBuildPreviewInfoObjc(previewUrl: String?) -> AnyPromise {
+        return AnyPromise(tryToBuildPreviewInfo(previewUrl: previewUrl))
+    }
+
     // Completion will always be invoked exactly once.
     //
     // The completion is called with a link preview if one can be built for
     // the message body.  It building the preview fails, completion will be
     // called with nil to avoid failing the message send.
-    @objc
-    public class func tryToBuildPreviewInfo(previewUrl: String?,
-                                            callbackQueue: DispatchQueue,
-                                            completion completionParam: @escaping (OWSLinkPreviewDraft?) -> Void) {
-
-        // Ensure we invoke completion on the callback queue.
-        let completion = { (linkPreviewDraft) in
-            callbackQueue.async {
-                completionParam(linkPreviewDraft)
-            }
-        }
+    public class func tryToBuildPreviewInfo(previewUrl: String?) -> Promise<OWSLinkPreviewDraft> {
 
         guard OWSLinkPreview.featureEnabled else {
-            completion(nil)
-            return
+            return Promise(error: LinkPreviewError.featureDisabled)
         }
         guard SSKPreferences.areLinkPreviewsEnabled() else {
-            completion(nil)
-            return
+            return Promise(error: LinkPreviewError.featureDisabled)
         }
         guard let previewUrl = previewUrl else {
-            completion(nil)
-            return
+            return Promise(error: LinkPreviewError.invalidInput)
         }
-        serialQueue.async {
-            if let cachedInfo = linkPreviewDraftCache.object(forKey: previewUrl as AnyObject) {
-                Logger.verbose("Link preview info cache hit.")
-                completion(cachedInfo)
-                return
-            }
-            downloadLink(url: previewUrl, completion: { (data) in
-                DispatchQueue.global().async {
-                    guard let data = data else {
-                        completion(nil)
-                        return
-                    }
-                    parse(linkData: data, linkUrlString: previewUrl) { (linkPreviewDraft) in
-                        guard let linkPreviewDraft = linkPreviewDraft else {
-                            completion(nil)
-                            return
-                        }
+        if let cachedInfo = cachedLinkPreview(forPreviewUrl: previewUrl) {
+            Logger.verbose("Link preview info cache hit.")
+            return Promise.value(cachedInfo)
+        }
+        return downloadLink(url: previewUrl)
+            .then(on: DispatchQueue.global()) { (data) -> Promise<OWSLinkPreviewDraft> in
+                return parse(linkData: data, linkUrlString: previewUrl)
+                    .then(on: DispatchQueue.global()) { (linkPreviewDraft) -> Promise<OWSLinkPreviewDraft> in
                         guard linkPreviewDraft.isValid() else {
-                            completion(nil)
-                            return
+                            return Promise(error: LinkPreviewError.noPreview)
                         }
-                        serialQueue.async {
-                            previewUrlCache.setObject(linkPreviewDraft, forKey: previewUrl as AnyObject)
+                        setCachedLinkPreview(linkPreviewDraft, forPreviewUrl: previewUrl)
 
-                            completion(linkPreviewDraft)
-                        }
-                    }
+                        return Promise.value(linkPreviewDraft)
                 }
-            })
         }
     }
 
     private class func downloadLink(url: String,
-                                    completion: @escaping (Data?) -> Void,
-                                    remainingRetries: UInt = 3) {
+                                    remainingRetries: UInt = 3) -> Promise<Data> {
 
         Logger.verbose("url: \(url)")
 
@@ -507,6 +503,7 @@ public class OWSLinkPreview: MTLModel {
             sessionManager.requestSerializer.setValue(nil, forHTTPHeaderField: headerField)
         }
 
+        let (promise, resolver) = Promise<Data>.pending()
         sessionManager.get(url,
                            parameters: [String: AnyObject](),
                            progress: nil,
@@ -514,64 +511,67 @@ public class OWSLinkPreview: MTLModel {
 
                             guard let data = value as? Data else {
                                 Logger.warn("Result is not data: \(type(of: value)).")
-                                completion(nil)
+                                resolver.reject( LinkPreviewError.assertionFailure)
                                 return
                             }
-                            completion(data)
+                            resolver.fulfill(data)
         },
                            failure: { _, error in
                             Logger.verbose("Error: \(error)")
 
                             guard isRetryable(error: error) else {
                                 Logger.warn("Error is not retryable.")
-                                completion(nil)
+                                resolver.reject( LinkPreviewError.couldNotDownload)
                                 return
                             }
 
                             guard remainingRetries > 0 else {
                                 Logger.warn("No more retries.")
-                                completion(nil)
+                                resolver.reject( LinkPreviewError.couldNotDownload)
                                 return
                             }
-                            OWSLinkPreview.downloadLink(url: url, completion: completion, remainingRetries: remainingRetries - 1)
+                            OWSLinkPreview.downloadLink(url: url, remainingRetries: remainingRetries - 1)
+                            .done(on: DispatchQueue.global()) { (data) in
+                                resolver.fulfill(data)
+                            }.catch(on: DispatchQueue.global()) { (error) in
+                                resolver.reject( error)
+                            }.retainUntilComplete()
         })
+        return promise
     }
 
-    private class func downloadImage(url urlString: String,
-                                     completion: @escaping (Data?) -> Void) {
+    private class func downloadImage(url urlString: String) -> Promise<Data> {
 
         Logger.verbose("url: \(urlString)")
 
         guard let url = URL(string: urlString) else {
             Logger.error("Could not parse URL.")
-            return completion(nil)
+            return Promise(error: LinkPreviewError.invalidInput)
         }
 
         guard let assetDescription = ProxiedContentAssetDescription(url: url as NSURL) else {
             Logger.error("Could not create asset description.")
-            return completion(nil)
+            return Promise(error: LinkPreviewError.invalidInput)
         }
+        let (promise, resolver) = Promise<ProxiedContentAsset>.pending()
         DispatchQueue.main.async {
             _ = ProxiedContentDownloader.defaultDownloader.requestAsset(assetDescription: assetDescription,
                                                                         priority: .high,
                                                                         success: { (_, asset) in
-                                                                            DispatchQueue.global().async {
-                                                                                do {
-                                                                                    let data = try Data(contentsOf: URL(fileURLWithPath: asset.filePath))
-                                                                                    completion(data)
-                                                                                } catch {
-                                                                                    owsFailDebug("Could not load asset data: \(type(of: asset.filePath)).")
-                                                                                    completion(nil)
-                                                                                }
-                                                                            }
-
+                                                                            resolver.fulfill(asset)
             }, failure: { (_) in
-                DispatchQueue.global().async {
-                    Logger.verbose("Error downloading asset")
-
-                    completion(nil)
-                }
+                Logger.warn("Error downloading asset")
+                resolver.reject(LinkPreviewError.couldNotDownload)
             })
+        }
+        return promise.then(on: DispatchQueue.global()) { (asset: ProxiedContentAsset) -> Promise<Data> in
+            do {
+                let data = try Data(contentsOf: URL(fileURLWithPath: asset.filePath))
+                return Promise.value(data)
+            } catch {
+                owsFailDebug("Could not load asset data: \(type(of: asset.filePath)).")
+                return Promise(error: LinkPreviewError.assertionFailure)
+            }
         }
     }
 
@@ -589,12 +589,10 @@ public class OWSLinkPreview: MTLModel {
     //    <meta property="og:title" content="Randomness is Random - Numberphile">
     //    <meta property="og:image" content="https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg">
     private class func parse(linkData: Data,
-                             linkUrlString: String,
-                             completion: @escaping (OWSLinkPreviewDraft?) -> Void) {
+                             linkUrlString: String) -> Promise<OWSLinkPreviewDraft> {
         guard let linkText = String(bytes: linkData, encoding: .utf8) else {
             owsFailDebug("Could not parse link text.")
-            completion(nil)
-            return
+            return Promise(error: LinkPreviewError.invalidInput)
         }
 
         var title: String?
@@ -610,25 +608,25 @@ public class OWSLinkPreview: MTLModel {
         Logger.verbose("title: \(String(describing: title))")
 
         guard let rawImageUrlString = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:image\"\\s+content\\s*=\\s*\"(.*?)\"\\s*/?>", text: linkText) else {
-            return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
         guard let imageUrlString = decodeHTMLEntities(inString: rawImageUrlString)?.ows_stripped() else {
-            return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
         guard isValidMediaUrl(imageUrlString) else {
             Logger.error("Invalid image URL.")
-            return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
         Logger.verbose("imageUrlString: \(imageUrlString)")
         guard let imageUrl = URL(string: imageUrlString) else {
             Logger.error("Could not parse image URL.")
-            return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
         let imageFilename = imageUrl.lastPathComponent
         let imageFileExtension = (imageFilename as NSString).pathExtension.lowercased()
         guard let imageMimeType = MIMETypeUtil.mimeType(forFileExtension: imageFileExtension) else {
             Logger.error("Image URL has unknown content type: \(imageFileExtension).")
-            return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
         let kValidMimeTypes = [
             OWSMimeTypeImagePng,
@@ -636,36 +634,35 @@ public class OWSLinkPreview: MTLModel {
         ]
         guard kValidMimeTypes.contains(imageMimeType) else {
             Logger.error("Image URL has invalid content type: \(imageMimeType).")
-            return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
 
-        downloadImage(url: imageUrlString,
-                      completion: { (imageData) in
-                        guard let imageData = imageData else {
-                            Logger.error("Could not download image.")
-                            return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
-                        }
-                        let imageFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: imageFileExtension)
-                        do {
-                            try imageData.write(to: NSURL.fileURL(withPath: imageFilePath), options: .atomicWrite)
-                        } catch let error as NSError {
-                            owsFailDebug("file write failed: \(imageFilePath), \(error)")
-                            return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
-                        }
-                        // NOTE: imageSize(forFilePath:...) will call ows_isValidImage(...).
-                        let imageSize = NSData.imageSize(forFilePath: imageFilePath, mimeType: imageMimeType)
-                        let kMaxImageSize: CGFloat = 2048
-                        guard imageSize.width > 0,
-                            imageSize.height > 0,
-                            imageSize.width < kMaxImageSize,
-                            imageSize.height < kMaxImageSize else {
-                                Logger.error("Image has invalid size: \(imageSize).")
-                                return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
-                        }
+        return downloadImage(url: imageUrlString)
+            .then(on: DispatchQueue.global()) { (imageData: Data) -> Promise<OWSLinkPreviewDraft> in
+                let imageFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: imageFileExtension)
+                do {
+                    try imageData.write(to: NSURL.fileURL(withPath: imageFilePath), options: .atomicWrite)
+                } catch let error as NSError {
+                    owsFailDebug("file write failed: \(imageFilePath), \(error)")
+                    return Promise(error: LinkPreviewError.assertionFailure)
+                }
+                // NOTE: imageSize(forFilePath:...) will call ows_isValidImage(...).
+                let imageSize = NSData.imageSize(forFilePath: imageFilePath, mimeType: imageMimeType)
+                let kMaxImageSize: CGFloat = 2048
+                guard imageSize.width > 0,
+                    imageSize.height > 0,
+                    imageSize.width < kMaxImageSize,
+                    imageSize.height < kMaxImageSize else {
+                        Logger.error("Image has invalid size: \(imageSize).")
+                        return Promise(error: LinkPreviewError.assertionFailure)
+                }
 
-                        let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, imageFilePath: imageFilePath)
-                        completion(linkPreviewDraft)
-        })
+                let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, imageFilePath: imageFilePath)
+                return Promise.value(linkPreviewDraft)
+        }
+        .recover(on: DispatchQueue.global()) { (_) -> Promise<OWSLinkPreviewDraft> in
+            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+        }
     }
 
     private class func decodeHTMLEntities(inString value: String) -> String? {

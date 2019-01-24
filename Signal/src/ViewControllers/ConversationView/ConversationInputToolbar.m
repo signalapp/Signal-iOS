@@ -11,6 +11,7 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "ViewControllerUtils.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIView+OWS.h>
@@ -739,27 +740,24 @@ const CGFloat kMaxTextViewHeight = 98;
     [self ensureLinkPreviewViewWithState:[LinkPreviewLoading new]];
 
     __weak ConversationInputToolbar *weakSelf = self;
-    [OWSLinkPreview tryToBuildPreviewInfoWithPreviewUrl:previewUrl
-                                          callbackQueue:dispatch_get_main_queue()
-                                             completion:^(OWSLinkPreviewDraft *_Nullable linkPreviewDraft) {
-                                                 ConversationInputToolbar *_Nullable strongSelf = weakSelf;
-                                                 if (!strongSelf) {
-                                                     return;
-                                                 }
-                                                 if (strongSelf.inputLinkPreview != inputLinkPreview) {
-                                                     // Obsolete callback.
-                                                     return;
-                                                 }
-                                                 if (!linkPreviewDraft) {
-                                                     // The link preview could not be loaded.
-                                                     [strongSelf clearLinkPreviewView];
-                                                     return;
-                                                 }
-                                                 inputLinkPreview.linkPreviewDraft = linkPreviewDraft;
-                                                 LinkPreviewDraft *viewState = [[LinkPreviewDraft alloc]
-                                                     initWithLinkPreviewDraft:linkPreviewDraft];
-                                                 [strongSelf ensureLinkPreviewViewWithState:viewState];
-                                             }];
+    [[OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:previewUrl]
+            .then(^(OWSLinkPreviewDraft *linkPreviewDraft) {
+                ConversationInputToolbar *_Nullable strongSelf = weakSelf;
+                if (!strongSelf) {
+                    return;
+                }
+                if (strongSelf.inputLinkPreview != inputLinkPreview) {
+                    // Obsolete callback.
+                    return;
+                }
+                inputLinkPreview.linkPreviewDraft = linkPreviewDraft;
+                LinkPreviewDraft *viewState = [[LinkPreviewDraft alloc] initWithLinkPreviewDraft:linkPreviewDraft];
+                [strongSelf ensureLinkPreviewViewWithState:viewState];
+            })
+            .catch(^(id error) {
+                // The link preview could not be loaded.
+                [weakSelf clearLinkPreviewView];
+            }) retainUntilComplete];
 }
 
 - (void)ensureLinkPreviewViewWithState:(id<LinkPreviewState>)state
