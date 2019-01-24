@@ -110,9 +110,6 @@ public class OWSLinkPreview: MTLModel {
         guard OWSLinkPreview.featureEnabled else {
             throw LinkPreviewError.noPreview
         }
-        guard SSKPreferences.areLinkPreviewsEnabled() else {
-            throw LinkPreviewError.noPreview
-        }
         guard let previewProto = dataMessage.preview.first else {
             throw LinkPreviewError.noPreview
         }
