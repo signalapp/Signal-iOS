@@ -345,34 +345,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 {
     // See comments in primaryStorage.touchDbAsync.
     [self.primaryStorage touchDbAsync];
-
-    id<ConversationViewItem> _Nullable firstViewItem = self.viewItems.firstObject;
-    if (firstViewItem) {
-        __weak ConversationViewModel *weakSelf = self;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.15 * NSEC_PER_SEC)),
-            dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-            ^{
-                ConversationViewModel *_Nullable strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return;
-                }
-                if (CurrentAppContext().reportedApplicationState == UIApplicationStateBackground) {
-                    return;
-                }
-                [strongSelf.editingDatabaseConnection
-                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        // Reload the interaction to ensure it still exists.
-                        TSInteraction *_Nullable interaction =
-                            [TSInteraction fetchObjectWithUniqueID:firstViewItem.interaction.uniqueId
-                                                       transaction:transaction];
-                        if (!interaction) {
-                            // Interaction appears to have been deleted.
-                            return;
-                        }
-                        [interaction touchWithTransaction:transaction];
-                    }];
-            });
-    }
 }
 
 - (void)dealloc
