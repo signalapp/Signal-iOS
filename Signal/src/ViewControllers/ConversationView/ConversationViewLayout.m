@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewLayout.h"
@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ConversationViewLayout ()
 
+@property (nonatomic) CGFloat lastViewWidth;
 @property (nonatomic) CGSize contentSize;
 
 @property (nonatomic, readonly) NSMutableDictionary<NSNumber *, UICollectionViewLayoutAttributes *> *itemAttributesMap;
@@ -66,6 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.contentSize = CGSizeZero;
     [self.itemAttributesMap removeAllObjects];
     self.hasLayout = NO;
+    self.lastViewWidth = 0.f;
 }
 
 - (void)prepareLayout
@@ -135,6 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     contentBottom += self.conversationStyle.contentMarginBottom;
     self.contentSize = CGSizeMake(viewWidth, contentBottom);
+    self.lastViewWidth = viewWidth;
 }
 
 - (nullable NSArray<__kindof UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect
@@ -160,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
 {
-    return self.collectionView.bounds.size.width != newBounds.size.width;
+    return self.lastViewWidth != newBounds.size.width;
 }
 
 @end
