@@ -17,6 +17,21 @@ public enum LinkPreviewError: Int, Error {
 
 // MARK: - OWSLinkPreviewDraft
 
+public class OWSLinkPreviewContents: NSObject {
+    @objc
+    public var title: String?
+
+    @objc
+    public var imageUrl: String?
+
+    public init(title: String?, imageUrl: String? = nil) {
+        self.title = title
+        self.imageUrl = imageUrl
+
+        super.init()
+    }
+}
+
 // This contains the info for a link preview "draft".
 public class OWSLinkPreviewDraft: NSObject {
     @objc
@@ -310,10 +325,6 @@ public class OWSLinkPreview: MTLModel {
             owsFailDebug("Invalid url.")
             return nil
         }
-        guard url.path.count > 0 else {
-            owsFailDebug("Invalid url (empty path).")
-            return nil
-        }
         guard let result = whitelistedDomain(forUrl: url,
                                              domainWhitelist: OWSLinkPreview.linkDomainWhitelist) else {
                                                 owsFailDebug("Missing domain.")
@@ -360,13 +371,11 @@ public class OWSLinkPreview: MTLModel {
         guard let domain = url.host?.lowercased() else {
             return nil
         }
-        // TODO: We need to verify:
-        //
-        // * The final domain whitelist.
-        // * The relationship between the "link" whitelist and the "media" whitelist.
-        // * Exact match or suffix-based?
-        // * Case-insensitive?
-        // * Protocol?
+        guard url.path.count > 1 else {
+            // URL must have non-empty path.
+            return nil
+        }
+
         for whitelistedDomain in domainWhitelist {
             if domain == whitelistedDomain.lowercased() ||
                 domain.hasSuffix("." + whitelistedDomain.lowercased()) {
@@ -491,7 +500,7 @@ public class OWSLinkPreview: MTLModel {
         }
         return downloadLink(url: previewUrl)
             .then(on: DispatchQueue.global()) { (data) -> Promise<OWSLinkPreviewDraft> in
-                return parse(linkData: data, linkUrlString: previewUrl)
+                return parseLinkDataAndBuildDraft(linkData: data, linkUrlString: previewUrl)
                     .then(on: DispatchQueue.global()) { (linkPreviewDraft) -> Promise<OWSLinkPreviewDraft> in
                         guard linkPreviewDraft.isValid() else {
                             return Promise(error: LinkPreviewError.noPreview)
@@ -629,16 +638,72 @@ public class OWSLinkPreview: MTLModel {
         return false
     }
 
+    class func parseLinkDataAndBuildDraft(linkData: Data,
+                                          linkUrlString: String) -> Promise<OWSLinkPreviewDraft> {
+        do {
+            let contents = try parse(linkData: linkData)
+
+            let title = contents.title
+            guard let imageUrl = contents.imageUrl else {
+                return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            }
+
+            guard isValidMediaUrl(imageUrl) else {
+                Logger.error("Invalid image URL.")
+                return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            }
+            guard let imageFileExtension = fileExtension(forImageUrl: imageUrl) else {
+                Logger.error("Image URL has unknown or invalid file extension: \(imageUrl).")
+                return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            }
+            guard let imageMimeType = mimetype(forImageFileExtension: imageFileExtension) else {
+                Logger.error("Image URL has unknown or invalid content type: \(imageUrl).")
+                return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            }
+
+            return downloadImage(url: imageUrl, imageMimeType: imageMimeType)
+                .then(on: DispatchQueue.global()) { (imageData: Data) -> Promise<OWSLinkPreviewDraft> in
+                    let imageFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: imageFileExtension)
+                    do {
+                        try imageData.write(to: NSURL.fileURL(withPath: imageFilePath), options: .atomicWrite)
+                    } catch let error as NSError {
+                        owsFailDebug("file write failed: \(imageFilePath), \(error)")
+                        return Promise(error: LinkPreviewError.assertionFailure)
+                    }
+                    // NOTE: imageSize(forFilePath:...) will call ows_isValidImage(...).
+                    let imageSize = NSData.imageSize(forFilePath: imageFilePath, mimeType: imageMimeType)
+                    let kMaxImageSize: CGFloat = 2048
+                    guard imageSize.width > 0,
+                        imageSize.height > 0,
+                        imageSize.width < kMaxImageSize,
+                        imageSize.height < kMaxImageSize else {
+                            Logger.error("Image has invalid size: \(imageSize).")
+                            return Promise(error: LinkPreviewError.assertionFailure)
+                    }
+
+                    let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, imageFilePath: imageFilePath)
+                    return Promise.value(linkPreviewDraft)
+                }
+                .recover(on: DispatchQueue.global()) { (_) -> Promise<OWSLinkPreviewDraft> in
+                    return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            }
+        } catch {
+            owsFailDebug("Could not parse link data: \(error).")
+            return Promise(error: error)
+        }
+    }
+
     // Example:
     //
     //    <meta property="og:title" content="Randomness is Random - Numberphile">
     //    <meta property="og:image" content="https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg">
-    private class func parse(linkData: Data,
-                             linkUrlString: String) -> Promise<OWSLinkPreviewDraft> {
+    class func parse(linkData: Data) throws -> OWSLinkPreviewContents {
         guard let linkText = String(bytes: linkData, encoding: .utf8) else {
             owsFailDebug("Could not parse link text.")
-            return Promise(error: LinkPreviewError.invalidInput)
+            throw LinkPreviewError.invalidInput
         }
+
+        Logger.verbose("linkText: \(linkText)")
 
         var title: String?
         if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:title\"\\s+content\\s*=\\s*\"(.*?)\"\\s*/?>", text: linkText) {
@@ -653,63 +718,32 @@ public class OWSLinkPreview: MTLModel {
         Logger.verbose("title: \(String(describing: title))")
 
         guard let rawImageUrlString = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:image\"\\s+content\\s*=\\s*\"(.*?)\"\\s*/?>", text: linkText) else {
-            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            return OWSLinkPreviewContents(title: title)
         }
         guard let imageUrlString = decodeHTMLEntities(inString: rawImageUrlString)?.ows_stripped() else {
-            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
-        }
-        guard isValidMediaUrl(imageUrlString) else {
-            Logger.error("Invalid image URL.")
-            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
-        }
-        guard let imageFileExtension = fileExtension(forImageUrl: imageUrlString) else {
-            Logger.error("Image URL has unknown or invalid file extension: \(imageUrlString).")
-            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
-        }
-        guard let imageMimeType = mimetype(forImageFileExtension: imageFileExtension) else {
-            Logger.error("Image URL has unknown or invalid content type: \(imageUrlString).")
-            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            return OWSLinkPreviewContents(title: title)
         }
 
-        return downloadImage(url: imageUrlString, imageMimeType: imageMimeType)
-            .then(on: DispatchQueue.global()) { (imageData: Data) -> Promise<OWSLinkPreviewDraft> in
-                let imageFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: imageFileExtension)
-                do {
-                    try imageData.write(to: NSURL.fileURL(withPath: imageFilePath), options: .atomicWrite)
-                } catch let error as NSError {
-                    owsFailDebug("file write failed: \(imageFilePath), \(error)")
-                    return Promise(error: LinkPreviewError.assertionFailure)
-                }
-                // NOTE: imageSize(forFilePath:...) will call ows_isValidImage(...).
-                let imageSize = NSData.imageSize(forFilePath: imageFilePath, mimeType: imageMimeType)
-                let kMaxImageSize: CGFloat = 2048
-                guard imageSize.width > 0,
-                    imageSize.height > 0,
-                    imageSize.width < kMaxImageSize,
-                    imageSize.height < kMaxImageSize else {
-                        Logger.error("Image has invalid size: \(imageSize).")
-                        return Promise(error: LinkPreviewError.assertionFailure)
-                }
-
-                let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, imageFilePath: imageFilePath)
-                return Promise.value(linkPreviewDraft)
-        }
-        .recover(on: DispatchQueue.global()) { (_) -> Promise<OWSLinkPreviewDraft> in
-            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
-        }
+        return OWSLinkPreviewContents(title: title, imageUrl: imageUrlString)
     }
 
-    private class func fileExtension(forImageUrl urlString: String) -> String? {
+    class func fileExtension(forImageUrl urlString: String) -> String? {
         guard let imageUrl = URL(string: urlString) else {
             Logger.error("Could not parse image URL.")
             return nil
         }
         let imageFilename = imageUrl.lastPathComponent
         let imageFileExtension = (imageFilename as NSString).pathExtension.lowercased()
+        guard imageFileExtension.count > 0 else {
+            return nil
+        }
         return imageFileExtension
     }
 
-    private class func mimetype(forImageFileExtension imageFileExtension: String) -> String? {
+    class func mimetype(forImageFileExtension imageFileExtension: String) -> String? {
+        guard imageFileExtension.count > 0 else {
+            return nil
+        }
         guard let imageMimeType = MIMETypeUtil.mimeType(forFileExtension: imageFileExtension) else {
             Logger.error("Image URL has unknown content type: \(imageFileExtension).")
             return nil
