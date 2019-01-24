@@ -60,7 +60,6 @@
 		343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */; };
 		3441FD9F21A3604F00BB9542 /* BackupRestoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3441FD9E21A3604F00BB9542 /* BackupRestoreViewController.swift */; };
 		34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */; };
-		34480B491FD0A60200BC14EF /* OWSMath.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B481FD0A60200BC14EF /* OWSMath.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4D1FD0A7A300BC14EF /* DebugLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B4E1FD0A7A300BC14EF /* DebugLogger.m */; };
 		34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4F1FD0A7A300BC14EF /* OWSScrubbingLogFormatter.h */; };
@@ -710,7 +709,6 @@
 		34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareAppExtensionContext.m; sourceTree = "<group>"; };
 		34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalShareExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		34480B381FD092E300BC14EF /* SignalShareExtension-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalShareExtension-Prefix.pch"; sourceTree = "<group>"; };
-		34480B481FD0A60200BC14EF /* OWSMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMath.h; sourceTree = "<group>"; };
 		34480B4D1FD0A7A300BC14EF /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugLogger.h; sourceTree = "<group>"; };
 		34480B4E1FD0A7A300BC14EF /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugLogger.m; sourceTree = "<group>"; };
 		34480B4F1FD0A7A300BC14EF /* OWSScrubbingLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSScrubbingLogFormatter.h; sourceTree = "<group>"; };
@@ -1564,7 +1562,6 @@
 				346129AA1FD1F0EE00532771 /* OWSFormat.m */,
 				45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */,
 				45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */,
-				34480B481FD0A60200BC14EF /* OWSMath.h */,
 				346129371FD1B47200532771 /* OWSPreferences.h */,
 				346129381FD1B47200532771 /* OWSPreferences.m */,
 				34641E172088D7E900E2EDE5 /* OWSScreenLock.swift */,
@@ -2606,7 +2603,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				34480B491FD0A60200BC14EF /* OWSMath.h in Headers */,
 				346129E71FD5C0C600532771 /* OWSDatabaseMigrationRunner.h in Headers */,
 				34AC09F9211B39B100997B47 /* CountryCodeViewController.h in Headers */,
 				34ABB2C52090C59700C727A6 /* OWSResaveCollectionDBMigration.h in Headers */,

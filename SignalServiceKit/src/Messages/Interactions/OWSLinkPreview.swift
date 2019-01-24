@@ -12,6 +12,7 @@ public enum LinkPreviewError: Int, Error {
     case assertionFailure
     case couldNotDownload
     case featureDisabled
+    case invalidContent
 }
 
 // MARK: - OWSLinkPreviewDraft
@@ -540,7 +541,7 @@ public class OWSLinkPreview: MTLModel {
         return promise
     }
 
-    private class func downloadImage(url urlString: String) -> Promise<Data> {
+    private class func downloadImage(url urlString: String, imageMimeType: String) -> Promise<Data> {
 
         Logger.verbose("url: \(urlString)")
 
@@ -566,8 +567,32 @@ public class OWSLinkPreview: MTLModel {
         }
         return promise.then(on: DispatchQueue.global()) { (asset: ProxiedContentAsset) -> Promise<Data> in
             do {
+                let imageSize = NSData.imageSize(forFilePath: asset.filePath, mimeType: imageMimeType)
+                guard imageSize.width > 0, imageSize.height > 0 else {
+                    Logger.error("Link preview is invalid or has invalid size.")
+                    return Promise(error: LinkPreviewError.invalidContent)
+               }
                 let data = try Data(contentsOf: URL(fileURLWithPath: asset.filePath))
-                return Promise.value(data)
+
+                let maxImageSize: CGFloat = 1024
+                let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
+                guard shouldResize else {
+                    return Promise.value(data)
+                }
+
+                guard let srcImage = UIImage(data: data) else {
+                    Logger.error("Could not parse image.")
+                    return Promise(error: LinkPreviewError.invalidContent)
+                }
+                guard let dstImage = srcImage.resized(withMaxDimensionPoints: maxImageSize) else {
+                    Logger.error("Could not resize image.")
+                    return Promise(error: LinkPreviewError.invalidContent)
+                }
+                guard let dstData = UIImageJPEGRepresentation(dstImage, 0.8) else {
+                    Logger.error("Could not write resized image.")
+                    return Promise(error: LinkPreviewError.invalidContent)
+                }
+                return Promise.value(dstData)
             } catch {
                 owsFailDebug("Could not load asset data: \(type(of: asset.filePath)).")
                 return Promise(error: LinkPreviewError.assertionFailure)
@@ -617,27 +642,16 @@ public class OWSLinkPreview: MTLModel {
             Logger.error("Invalid image URL.")
             return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
-        Logger.verbose("imageUrlString: \(imageUrlString)")
-        guard let imageUrl = URL(string: imageUrlString) else {
-            Logger.error("Could not parse image URL.")
+        guard let imageFileExtension = fileExtension(forImageUrl: imageUrlString) else {
+            Logger.error("Image URL has unknown or invalid file extension: \(imageUrlString).")
             return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
-        let imageFilename = imageUrl.lastPathComponent
-        let imageFileExtension = (imageFilename as NSString).pathExtension.lowercased()
-        guard let imageMimeType = MIMETypeUtil.mimeType(forFileExtension: imageFileExtension) else {
-            Logger.error("Image URL has unknown content type: \(imageFileExtension).")
-            return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
-        }
-        let kValidMimeTypes = [
-            OWSMimeTypeImagePng,
-            OWSMimeTypeImageJpeg
-        ]
-        guard kValidMimeTypes.contains(imageMimeType) else {
-            Logger.error("Image URL has invalid content type: \(imageMimeType).")
+        guard let imageMimeType = mimetype(forImageFileExtension: imageFileExtension) else {
+            Logger.error("Image URL has unknown or invalid content type: \(imageUrlString).")
             return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
 
-        return downloadImage(url: imageUrlString)
+        return downloadImage(url: imageUrlString, imageMimeType: imageMimeType)
             .then(on: DispatchQueue.global()) { (imageData: Data) -> Promise<OWSLinkPreviewDraft> in
                 let imageFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: imageFileExtension)
                 do {
@@ -663,6 +677,32 @@ public class OWSLinkPreview: MTLModel {
         .recover(on: DispatchQueue.global()) { (_) -> Promise<OWSLinkPreviewDraft> in
             return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
+    }
+
+    private class func fileExtension(forImageUrl urlString: String) -> String? {
+        guard let imageUrl = URL(string: urlString) else {
+            Logger.error("Could not parse image URL.")
+            return nil
+        }
+        let imageFilename = imageUrl.lastPathComponent
+        let imageFileExtension = (imageFilename as NSString).pathExtension.lowercased()
+        return imageFileExtension
+    }
+
+    private class func mimetype(forImageFileExtension imageFileExtension: String) -> String? {
+        guard let imageMimeType = MIMETypeUtil.mimeType(forFileExtension: imageFileExtension) else {
+            Logger.error("Image URL has unknown content type: \(imageFileExtension).")
+            return nil
+        }
+        let kValidMimeTypes = [
+            OWSMimeTypeImagePng,
+            OWSMimeTypeImageJpeg
+        ]
+        guard kValidMimeTypes.contains(imageMimeType) else {
+            Logger.error("Image URL has invalid content type: \(imageMimeType).")
+            return nil
+        }
+        return imageMimeType
     }
 
     private class func decodeHTMLEntities(inString value: String) -> String? {

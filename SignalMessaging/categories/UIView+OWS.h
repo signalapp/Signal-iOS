@@ -2,8 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMath.h"
 #import <PureLayout/PureLayout.h>
+#import <SignalServiceKit/OWSMath.h>
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN

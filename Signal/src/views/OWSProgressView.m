@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSProgressView.h"
-#import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/UIView+OWS.h>
+#import <SignalServiceKit/OWSMath.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
