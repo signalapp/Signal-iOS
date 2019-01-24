@@ -6,9 +6,9 @@
 #import "OWSAvatarBuilder.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSFormat.h>
-#import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
