@@ -133,8 +133,8 @@ public class OWSLinkPreview: MTLModel {
             Logger.error("Preview for message without body.")
             throw LinkPreviewError.invalidInput
         }
-        let bodyComponents = body.components(separatedBy: .whitespacesAndNewlines)
-        guard bodyComponents.contains(urlString) else {
+        let previewUrls = allPreviewUrls(forMessageBodyText: body)
+        guard previewUrls.contains(urlString) else {
             Logger.error("URL not present in body.")
             throw LinkPreviewError.invalidInput
         }
@@ -395,15 +395,6 @@ public class OWSLinkPreview: MTLModel {
     public class func previewUrl(forMessageBodyText body: String?) -> String? {
         AssertIsOnMainThread()
 
-        guard OWSLinkPreview.featureEnabled else {
-            return nil
-        }
-        guard SSKPreferences.areLinkPreviewsEnabled() else {
-            return nil
-        }
-        guard let body = body else {
-            return nil
-        }
         if let cachedUrl = previewUrlCache.object(forKey: body as AnyObject) as? String {
             Logger.verbose("URL parsing cache hit.")
             guard cachedUrl.count > 0 else {
@@ -411,17 +402,51 @@ public class OWSLinkPreview: MTLModel {
             }
             return cachedUrl
         }
-        let components = body.components(separatedBy: .whitespacesAndNewlines)
-        for component in components {
-            let urlString = stripPossibleLinkUrl(component)
+        let previewUrls = allPreviewUrls(forMessageBodyText: body)
+        guard let previewUrl = previewUrls.first else {
+            // Use empty string to indicate "no preview URL" in the cache.
+            previewUrlCache.setObject("" as AnyObject, forKey: body as AnyObject)
+            return nil
+        }
+
+        previewUrlCache.setObject(previewUrl as AnyObject, forKey: body as AnyObject)
+        return previewUrl
+    }
+
+    class func allPreviewUrls(forMessageBodyText body: String?) -> [String] {
+        AssertIsOnMainThread()
+
+        guard OWSLinkPreview.featureEnabled else {
+            return []
+        }
+        guard SSKPreferences.areLinkPreviewsEnabled() else {
+            return []
+        }
+        guard let body = body else {
+            return []
+        }
+
+        let detector: NSDataDetector
+        do {
+            detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+        } catch {
+            owsFailDebug("Could not create NSDataDetector: \(error).")
+            return []
+        }
+
+        var previewUrls = [String]()
+        let matches = detector.matches(in: body, options: [], range: NSRange(location: 0, length: body.count))
+        for match in matches {
+            guard let matchURL = match.url else {
+                owsFailDebug("Match missing url")
+                continue
+            }
+            let urlString = matchURL.absoluteString
             if isValidLinkUrl(urlString) {
-                previewUrlCache.setObject(urlString as AnyObject, forKey: body as AnyObject)
-                return urlString
+                previewUrls.append(urlString)
             }
         }
-        // Use empty string to indicate "no preview URL" in the cache.
-        previewUrlCache.setObject("" as AnyObject, forKey: body as AnyObject)
-        return nil
+        return previewUrls
     }
 
     // MARK: - Preview Construction
