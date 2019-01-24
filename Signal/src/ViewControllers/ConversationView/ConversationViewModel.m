@@ -337,6 +337,42 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 - (void)viewDidLoad
 {
     [self addNotificationListeners];
+
+    [self touchDbAsync];
+}
+
+- (void)touchDbAsync
+{
+    // See comments in primaryStorage.touchDbAsync.
+    [self.primaryStorage touchDbAsync];
+
+    id<ConversationViewItem> _Nullable firstViewItem = self.viewItems.firstObject;
+    if (firstViewItem) {
+        __weak ConversationViewModel *weakSelf = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.15 * NSEC_PER_SEC)),
+            dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+            ^{
+                ConversationViewModel *_Nullable strongSelf = weakSelf;
+                if (!strongSelf) {
+                    return;
+                }
+                if (CurrentAppContext().reportedApplicationState == UIApplicationStateBackground) {
+                    return;
+                }
+                [strongSelf.editingDatabaseConnection
+                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        // Reload the interaction to ensure it still exists.
+                        TSInteraction *_Nullable interaction =
+                            [TSInteraction fetchObjectWithUniqueID:firstViewItem.interaction.uniqueId
+                                                       transaction:transaction];
+                        if (!interaction) {
+                            // Interaction appears to have been deleted.
+                            return;
+                        }
+                        [interaction touchWithTransaction:transaction];
+                    }];
+            });
+    }
 }
 
 - (void)dealloc
@@ -963,22 +999,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
 }
 
-- (void)touchDbAsync
-{
-    OWSLogInfo(@"");
-
-    // There appears to be a bug in YapDatabase that sometimes delays modifications
-    // made in another process (e.g. the SAE) from showing up in other processes.
-    // There's a simple workaround: a trivial write to the database flushes changes
-    // made from other processes.
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
-    }];
-}
-
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
-    // See comments in touchDbAsync.
     [self touchDbAsync];
 }
 

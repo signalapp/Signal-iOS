@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPrimaryStorage.h"
@@ -429,6 +429,21 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
     return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
+}
+
+#pragma mark - Misc.
+
+- (void)touchDbAsync
+{
+    OWSLogInfo(@"");
+
+    // There appears to be a bug in YapDatabase that sometimes delays modifications
+    // made in another process (e.g. the SAE) from showing up in other processes.
+    // There's a simple workaround: a trivial write to the database flushes changes
+    // made from other processes.
+    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
+    }];
 }
 
 @end

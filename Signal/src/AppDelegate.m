@@ -1237,6 +1237,8 @@ static NSTimeInterval launchStartedAt;
 
     [self preheatDatabaseViews];
 
+    [self.primaryStorage touchDbAsync];
+
     // Try to update account attributes every time we upgrade.
     if ([self.tsAccountManager isRegistered]) {
         AppVersion *appVersion = AppVersion.sharedInstance;
