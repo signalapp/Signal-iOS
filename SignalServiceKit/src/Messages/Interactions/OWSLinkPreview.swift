@@ -449,11 +449,6 @@ public class OWSLinkPreview: MTLModel {
         return AnyPromise(tryToBuildPreviewInfo(previewUrl: previewUrl))
     }
 
-    // Completion will always be invoked exactly once.
-    //
-    // The completion is called with a link preview if one can be built for
-    // the message body.  It building the preview fails, completion will be
-    // called with nil to avoid failing the message send.
     public class func tryToBuildPreviewInfo(previewUrl: String?) -> Promise<OWSLinkPreviewDraft> {
 
         guard OWSLinkPreview.featureEnabled else {
