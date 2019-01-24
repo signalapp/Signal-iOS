@@ -512,8 +512,8 @@ public class OWSLinkPreview: MTLModel {
         }
     }
 
-    private class func downloadLink(url: String,
-                                    remainingRetries: UInt = 3) -> Promise<Data> {
+    class func downloadLink(url: String,
+                            remainingRetries: UInt = 3) -> Promise<Data> {
 
         Logger.verbose("url: \(url)")
 
@@ -702,8 +702,6 @@ public class OWSLinkPreview: MTLModel {
             owsFailDebug("Could not parse link text.")
             throw LinkPreviewError.invalidInput
         }
-
-        Logger.verbose("linkText: \(linkText)")
 
         var title: String?
         if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:title\"\\s+content\\s*=\\s*\"(.*?)\"\\s*/?>", text: linkText) {
