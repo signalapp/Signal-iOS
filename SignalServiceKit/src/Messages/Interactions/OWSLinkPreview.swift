@@ -137,7 +137,7 @@ public class OWSLinkPreview: MTLModel {
             Logger.error("Discarding link preview; message has attachments.")
             throw LinkPreviewError.invalidInput
         }
-        let urlString = stripPossibleLinkUrl(previewProto.url)
+        let urlString = previewProto.url
 
         guard URL(string: urlString) != nil else {
             Logger.error("Could not parse preview URL.")
@@ -289,7 +289,6 @@ public class OWSLinkPreview: MTLModel {
 
     // MARK: - Domain Whitelist
 
-    // TODO: Finalize
     private static let linkDomainWhitelist = [
         "youtube.com",
         "reddit.com",
@@ -299,7 +298,6 @@ public class OWSLinkPreview: MTLModel {
         "youtu.be"
     ]
 
-    // TODO: Finalize
     private static let mediaDomainWhitelist = [
         "ytimg.com",
         "cdninstagram.com",
@@ -329,16 +327,6 @@ public class OWSLinkPreview: MTLModel {
                                              domainWhitelist: OWSLinkPreview.linkDomainWhitelist) else {
                                                 owsFailDebug("Missing domain.")
                                                 return nil
-        }
-        return result
-    }
-
-    private class func stripPossibleLinkUrl(_ urlString: String) -> String {
-        var result = urlString.ows_stripped()
-        let suffixToStrip = ","
-        while result.hasSuffix(suffixToStrip) {
-            let endIndex = result.index(result.endIndex, offsetBy: -suffixToStrip.count)
-            result = String(result[..<endIndex]).ows_stripped()
         }
         return result
     }
