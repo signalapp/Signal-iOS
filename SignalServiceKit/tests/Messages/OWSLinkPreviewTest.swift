@@ -157,6 +157,13 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
 
         // Allow media domains.
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg"))
+        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://external-preview.redd.it/j5lhdY0huShdzyrbSEdKzOb09BKhNreyEZOLDu1UzBA.jpg?auto=webp&s=2cb8bdb5ac5b54fc9514719030c0c9f08a03f684"))
+        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://preview.redd.it/ehakvm9vx5521.jpg?auto=webp&s=925fb2d8776ca7102b944ab00e0615ae20c1bd5a"))
+        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://i.imgur.com/Y3wjlwY.jpg?fb"))
+        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://i.imgur.com/Vot3iHh.jpg?fbplay"))
+        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com"))
+        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com"))
+        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://i.imgur.com/PYiyLv1.jpg?fbplay"))
     }
 
     func testPreviewUrlForMessageBodyText() {
@@ -235,5 +242,194 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
 
         XCTAssertEqual(content.title, "Randomness is Random - Numberphile")
         XCTAssertEqual(content.imageUrl, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
+    }
+
+    func testLinkParsingWithRealData1() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.downloadLink(url: "https://www.youtube.com/watch?v=tP-Ipsat90c")
+            .done { (linkData) in
+                let content = try! OWSLinkPreview.parse(linkData: linkData)
+                XCTAssertNotNil(content)
+
+                XCTAssertEqual(content.title, "Randomness is Random - Numberphile")
+                XCTAssertEqual(content.imageUrl, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testLinkParsingWithRealData2() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.downloadLink(url: "https://youtu.be/tP-Ipsat90c")
+            .done { (linkData) in
+                let content = try! OWSLinkPreview.parse(linkData: linkData)
+                XCTAssertNotNil(content)
+
+                XCTAssertEqual(content.title, "Randomness is Random - Numberphile")
+                XCTAssertEqual(content.imageUrl, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testLinkParsingWithRealData3() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.downloadLink(url: "https://www.reddit.com/r/androiddev/comments/a7gctz/androidx_release_notes_this_is_the_first_release/")
+            .done { (linkData) in
+                let content = try! OWSLinkPreview.parse(linkData: linkData)
+                XCTAssertNotNil(content)
+
+                XCTAssertEqual(content.title, "r/androiddev - AndroidX release notes | This is the first release of SavedState")
+                XCTAssertEqual(content.imageUrl, "https://external-preview.redd.it/j5lhdY0huShdzyrbSEdKzOb09BKhNreyEZOLDu1UzBA.jpg?auto=webp&s=2cb8bdb5ac5b54fc9514719030c0c9f08a03f684")
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testLinkParsingWithRealData4() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.downloadLink(url: "https://www.reddit.com/r/WhitePeopleTwitter/comments/a7j3mm/why/")
+            .done { (linkData) in
+                let content = try! OWSLinkPreview.parse(linkData: linkData)
+                XCTAssertNotNil(content)
+
+                XCTAssertEqual(content.title, "r/WhitePeopleTwitter - Why")
+                XCTAssertEqual(content.imageUrl, "https://preview.redd.it/ehakvm9vx5521.jpg?auto=webp&s=925fb2d8776ca7102b944ab00e0615ae20c1bd5a")
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testLinkParsingWithRealData5() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.downloadLink(url: "https://imgur.com/gallery/KFCL8fm")
+            .done { (linkData) in
+                let content = try! OWSLinkPreview.parse(linkData: linkData)
+                XCTAssertNotNil(content)
+
+                XCTAssertNil(content.title)
+                XCTAssertEqual(content.imageUrl, "https://i.imgur.com/Y3wjlwY.jpg?fb")
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testLinkParsingWithRealData6() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.downloadLink(url: "https://imgur.com/gallery/FMdwTiV")
+            .done { (linkData) in
+                let content = try! OWSLinkPreview.parse(linkData: linkData)
+                XCTAssertNotNil(content)
+
+                XCTAssertEqual(content.title, "Freddy would be proud!")
+                XCTAssertEqual(content.imageUrl, "https://i.imgur.com/Vot3iHh.jpg?fbplay")
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testLinkParsingWithRealData7() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.downloadLink(url: "https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_web_button_share_sheet")
+            .done { (linkData) in
+                let content = try! OWSLinkPreview.parse(linkData: linkData)
+                XCTAssertNotNil(content)
+
+                XCTAssertEqual(content.title, "Walter \"MFPallytime\" on Instagram: “Lol gg”")
+                XCTAssertEqual(content.imageUrl, "https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com")
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testLinkParsingWithRealData8() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.downloadLink(url: "https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_share_sheet&igshid=94c7ihqjfmbm")
+            .done { (linkData) in
+                let content = try! OWSLinkPreview.parse(linkData: linkData)
+                XCTAssertNotNil(content)
+
+                XCTAssertEqual(content.title, "Walter \"MFPallytime\" on Instagram: “Lol gg”")
+                XCTAssertEqual(content.imageUrl, "https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com")
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testLinkParsingWithRealData9() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.downloadLink(url: "https://imgur.com/gallery/igHOwDM")
+            .done { (linkData) in
+                let content = try! OWSLinkPreview.parse(linkData: linkData)
+                XCTAssertNotNil(content)
+
+                XCTAssertEqual(content.title, "Sheet dance")
+                XCTAssertEqual(content.imageUrl, "https://i.imgur.com/PYiyLv1.jpg?fbplay")
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
     }
 }
