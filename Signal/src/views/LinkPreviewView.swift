@@ -684,6 +684,14 @@ public class LinkPreviewView: UIStackView {
         addArrangedSubview(activityIndicator)
         let activityIndicatorSize: CGFloat = 25
         activityIndicator.autoSetDimensions(to: CGSize(width: activityIndicatorSize, height: activityIndicatorSize))
+
+        // Stroke
+        let strokeView = UIView()
+        strokeView.backgroundColor = Theme.secondaryColor
+        self.addSubview(strokeView)
+        strokeView.autoPinWidthToSuperview(withMargin: 12)
+        strokeView.autoPinEdge(toSuperviewEdge: .bottom)
+        strokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
     }
 
     // MARK: Events

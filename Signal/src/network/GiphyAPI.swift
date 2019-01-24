@@ -310,7 +310,7 @@ extension GiphyError: LocalizedError {
         let urlString = "/v1/gifs/search?api_key=\(kGiphyApiKey)&offset=\(kGiphyPageOffset)&limit=\(kGiphyPageSize)&q=\(queryEncoded)"
 
         sessionManager.get(urlString,
-                           parameters: {},
+                           parameters: [String: AnyObject](),
                            progress: nil,
                            success: { _, value in
                             Logger.error("search request succeeded")

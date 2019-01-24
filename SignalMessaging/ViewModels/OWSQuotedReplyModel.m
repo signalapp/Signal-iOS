@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSQuotedReplyModel.h"
@@ -165,7 +165,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *_Nullable quotedText = message.body;
     BOOL hasText = quotedText.length > 0;
-    BOOL hasAttachment = NO;
 
     TSAttachment *_Nullable attachment = [message attachmentsWithTransaction:transaction].firstObject;
     TSAttachmentStream *quotedAttachment;
@@ -213,10 +212,16 @@ NS_ASSUME_NONNULL_BEGIN
             }
         } else {
             quotedAttachment = attachmentStream;
-            hasAttachment = YES;
         }
     }
 
+    if (!quotedAttachment && conversationItem.linkPreview && conversationItem.linkPreviewAttachment &&
+        [conversationItem.linkPreviewAttachment isKindOfClass:[TSAttachmentStream class]]) {
+
+        quotedAttachment = (TSAttachmentStream *)conversationItem.linkPreviewAttachment;
+    }
+
+    BOOL hasAttachment = quotedAttachment != nil;
     if (!hasText && !hasAttachment) {
         OWSFailDebug(@"quoted message has neither text nor attachment");
         quotedText = @"";

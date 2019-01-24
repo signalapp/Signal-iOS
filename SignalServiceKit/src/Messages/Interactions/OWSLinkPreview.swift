@@ -120,7 +120,7 @@ public class OWSLinkPreview: MTLModel {
             Logger.error("Discarding link preview; message has attachments.")
             throw LinkPreviewError.invalidInput
         }
-        let urlString = previewProto.url
+        let urlString = stripPossibleLinkUrl(previewProto.url)
 
         guard URL(string: urlString) != nil else {
             Logger.error("Could not parse preview URL.")
@@ -265,7 +265,7 @@ public class OWSLinkPreview: MTLModel {
         let maxCharacterCount = 2048
         if result.count > maxCharacterCount {
             let endIndex = result.index(result.startIndex, offsetBy: maxCharacterCount)
-            result = String(result[...endIndex])
+            result = String(result[..<endIndex])
         }
         return result.filterStringForDisplay()
     }
@@ -278,7 +278,8 @@ public class OWSLinkPreview: MTLModel {
         "reddit.com",
         "imgur.com",
         "instagram.com",
-        "giphy.com"
+        "giphy.com",
+        "youtu.be"
     ]
 
     // TODO: Finalize
@@ -307,10 +308,24 @@ public class OWSLinkPreview: MTLModel {
             owsFailDebug("Invalid url.")
             return nil
         }
+        guard url.path.count > 0 else {
+            owsFailDebug("Invalid url (empty path).")
+            return nil
+        }
         guard let result = whitelistedDomain(forUrl: url,
                                              domainWhitelist: OWSLinkPreview.linkDomainWhitelist) else {
                                                 owsFailDebug("Missing domain.")
                                                 return nil
+        }
+        return result
+    }
+
+    private class func stripPossibleLinkUrl(_ urlString: String) -> String {
+        var result = urlString.ows_stripped()
+        let suffixToStrip = ","
+        while result.hasSuffix(suffixToStrip) {
+            let endIndex = result.index(result.endIndex, offsetBy: -suffixToStrip.count)
+            result = String(result[..<endIndex]).ows_stripped()
         }
         return result
     }
@@ -396,11 +411,14 @@ public class OWSLinkPreview: MTLModel {
         }
         let components = body.components(separatedBy: .whitespacesAndNewlines)
         for component in components {
-            if isValidLinkUrl(component) {
-                previewUrlCache.setObject(component as AnyObject, forKey: body as AnyObject)
-                return component
+            let urlString = stripPossibleLinkUrl(component)
+            if isValidLinkUrl(urlString) {
+                previewUrlCache.setObject(urlString as AnyObject, forKey: body as AnyObject)
+                return urlString
             }
         }
+        // Use empty string to indicate "no preview URL" in the cache.
+        previewUrlCache.setObject("" as AnyObject, forKey: body as AnyObject)
         return nil
     }
 
@@ -493,7 +511,7 @@ public class OWSLinkPreview: MTLModel {
         }
 
         sessionManager.get(url,
-                           parameters: {},
+                           parameters: [String: AnyObject](),
                            progress: nil,
                            success: { _, value in
 
@@ -546,7 +564,7 @@ public class OWSLinkPreview: MTLModel {
         }
 
         var title: String?
-        if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property=\"og:title\"\\s+content=\"([^\"]+)\"\\s*/?>", text: linkText) {
+        if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:title\"\\s+content\\s*=\\s*\"(.*?)\"\\s*/?>", text: linkText) {
             if let decodedTitle = decodeHTMLEntities(inString: rawTitle) {
                 let normalizedTitle = OWSLinkPreview.normalizeTitle(title: decodedTitle)
                 if normalizedTitle.count > 0 {
@@ -557,10 +575,14 @@ public class OWSLinkPreview: MTLModel {
 
         Logger.verbose("title: \(String(describing: title))")
 
-        guard let rawImageUrlString = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property=\"og:image\"\\s+content=\"([^\"]+)\"\\s*/?>", text: linkText) else {
+        guard let rawImageUrlString = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:image\"\\s+content\\s*=\\s*\"(.*?)\"\\s*/?>", text: linkText) else {
             return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
         guard let imageUrlString = decodeHTMLEntities(inString: rawImageUrlString)?.ows_stripped() else {
+            return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+        }
+        guard isValidMediaUrl(imageUrlString) else {
+            Logger.error("Invalid image URL.")
             return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
         Logger.verbose("imageUrlString: \(imageUrlString)")
