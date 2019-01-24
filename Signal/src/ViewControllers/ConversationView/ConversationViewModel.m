@@ -337,6 +337,14 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 - (void)viewDidLoad
 {
     [self addNotificationListeners];
+
+    [self touchDbAsync];
+}
+
+- (void)touchDbAsync
+{
+    // See comments in primaryStorage.touchDbAsync.
+    [self.primaryStorage touchDbAsync];
 }
 
 - (void)dealloc
@@ -963,22 +971,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
 }
 
-- (void)touchDbAsync
-{
-    OWSLogInfo(@"");
-
-    // There appears to be a bug in YapDatabase that sometimes delays modifications
-    // made in another process (e.g. the SAE) from showing up in other processes.
-    // There's a simple workaround: a trivial write to the database flushes changes
-    // made from other processes.
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
-    }];
-}
-
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
-    // See comments in touchDbAsync.
     [self touchDbAsync];
 }
 
