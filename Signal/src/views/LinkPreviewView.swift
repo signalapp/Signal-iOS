@@ -506,6 +506,8 @@ public class LinkPreviewView: UIStackView {
         return imageSize.width >= sentMinimumHeroSize && imageSize.height >= sentMinimumHeroSize
     }
 
+    private let sentTitleLineCount: Int = 2
+
     private func sentTitleLabel(state: LinkPreviewState) -> UILabel? {
         guard let text = state.title() else {
             return nil
@@ -514,7 +516,7 @@ public class LinkPreviewView: UIStackView {
         label.text = text
         label.font = UIFont.systemFont(ofSize: sentTitleFontSizePoints).ows_mediumWeight()
         label.textColor = Theme.primaryColor
-        label.numberOfLines = 2
+        label.numberOfLines = sentTitleLineCount
         label.lineBreakMode = .byWordWrapping
         return label
     }
@@ -754,7 +756,7 @@ public class LinkPreviewView: UIStackView {
 
         if hasImage {
             result.width += sentNonHeroImageSize + sentNonHeroHSpacing
-            result.height += max(result.height, sentNonHeroImageSize)
+            result.height = max(result.height, sentNonHeroImageSize)
         }
 
         result.width += 2 * sentNonHeroHMargin
@@ -771,8 +773,9 @@ public class LinkPreviewView: UIStackView {
 
         if let titleLabel = sentTitleLabel(state: state) {
             let titleLabelSize = CGSizeCeil(titleLabel.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)))
+            let maxTitleLabelHeight: CGFloat = ceil(CGFloat(sentTitleLineCount) * titleLabel.font.lineHeight)
             result.width = max(result.width, titleLabelSize.width)
-            result.height += titleLabelSize.height + sentVSpacing
+            result.height += min(maxTitleLabelHeight, titleLabelSize.height) + sentVSpacing
         }
 
         return result
