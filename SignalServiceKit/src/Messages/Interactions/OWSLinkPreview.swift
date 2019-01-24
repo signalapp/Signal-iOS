@@ -345,7 +345,7 @@ public class OWSLinkPreview: MTLModel {
             return false
         }
         return whitelistedDomain(forUrl: url,
-                                      domainWhitelist: OWSLinkPreview.linkDomainWhitelist + OWSLinkPreview.mediaDomainWhitelist) != nil
+                                 domainWhitelist: OWSLinkPreview.linkDomainWhitelist + OWSLinkPreview.mediaDomainWhitelist) != nil
     }
 
     private class func whitelistedDomain(forUrl url: URL, domainWhitelist: [String]) -> String? {
@@ -462,7 +462,7 @@ public class OWSLinkPreview: MTLModel {
                 completion(cachedInfo)
                 return
             }
-            downloadContents(ofUrl: previewUrl, completion: { (data) in
+            downloadLink(url: previewUrl, completion: { (data) in
                 DispatchQueue.global().async {
                     guard let data = data else {
                         completion(nil)
@@ -488,9 +488,9 @@ public class OWSLinkPreview: MTLModel {
         }
     }
 
-    private class func downloadContents(ofUrl url: String,
-                                        completion: @escaping (Data?) -> Void,
-                                        remainingRetries: UInt = 3) {
+    private class func downloadLink(url: String,
+                                    completion: @escaping (Data?) -> Void,
+                                    remainingRetries: UInt = 3) {
 
         Logger.verbose("url: \(url)")
 
@@ -536,9 +536,46 @@ public class OWSLinkPreview: MTLModel {
                                 completion(nil)
                                 return
                             }
-                            OWSLinkPreview.downloadContents(ofUrl: url, completion: completion, remainingRetries: remainingRetries - 1)
+                            OWSLinkPreview.downloadLink(url: url, completion: completion, remainingRetries: remainingRetries - 1)
         })
+    }
 
+    private class func downloadImage(url urlString: String,
+                                     completion: @escaping (Data?) -> Void) {
+
+        Logger.verbose("url: \(urlString)")
+
+        guard let url = URL(string: urlString) else {
+            Logger.error("Could not parse URL.")
+            return completion(nil)
+        }
+
+        guard let assetDescription = ProxiedContentAssetDescription(url: url as NSURL) else {
+            Logger.error("Could not create asset description.")
+            return completion(nil)
+        }
+        DispatchQueue.main.async {
+            _ = ProxiedContentDownloader.defaultDownloader.requestAsset(assetDescription: assetDescription,
+                                                                        priority: .high,
+                                                                        success: { (_, asset) in
+                                                                            DispatchQueue.global().async {
+                                                                                do {
+                                                                                    let data = try Data(contentsOf: URL(fileURLWithPath: asset.filePath))
+                                                                                    completion(data)
+                                                                                } catch {
+                                                                                    owsFailDebug("Could not load asset data: \(type(of: asset.filePath)).")
+                                                                                    completion(nil)
+                                                                                }
+                                                                            }
+
+            }, failure: { (_) in
+                DispatchQueue.global().async {
+                    Logger.verbose("Error downloading asset")
+
+                    completion(nil)
+                }
+            })
+        }
     }
 
     private class func isRetryable(error: Error) -> Bool {
@@ -599,38 +636,38 @@ public class OWSLinkPreview: MTLModel {
         let kValidMimeTypes = [
             OWSMimeTypeImagePng,
             OWSMimeTypeImageJpeg
-            ]
+        ]
         guard kValidMimeTypes.contains(imageMimeType) else {
             Logger.error("Image URL has invalid content type: \(imageMimeType).")
             return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
         }
 
-        downloadContents(ofUrl: imageUrlString,
-                         completion: { (imageData) in
-                            guard let imageData = imageData else {
-                                Logger.error("Could not download image.")
+        downloadImage(url: imageUrlString,
+                      completion: { (imageData) in
+                        guard let imageData = imageData else {
+                            Logger.error("Could not download image.")
+                            return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+                        }
+                        let imageFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: imageFileExtension)
+                        do {
+                            try imageData.write(to: NSURL.fileURL(withPath: imageFilePath), options: .atomicWrite)
+                        } catch let error as NSError {
+                            owsFailDebug("file write failed: \(imageFilePath), \(error)")
+                            return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+                        }
+                        // NOTE: imageSize(forFilePath:...) will call ows_isValidImage(...).
+                        let imageSize = NSData.imageSize(forFilePath: imageFilePath, mimeType: imageMimeType)
+                        let kMaxImageSize: CGFloat = 2048
+                        guard imageSize.width > 0,
+                            imageSize.height > 0,
+                            imageSize.width < kMaxImageSize,
+                            imageSize.height < kMaxImageSize else {
+                                Logger.error("Image has invalid size: \(imageSize).")
                                 return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
-                            }
-                            let imageFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: imageFileExtension)
-                            do {
-                                try imageData.write(to: NSURL.fileURL(withPath: imageFilePath), options: .atomicWrite)
-                            } catch let error as NSError {
-                                owsFailDebug("file write failed: \(imageFilePath), \(error)")
-                                return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
-                            }
-                            // NOTE: imageSize(forFilePath:...) will call ows_isValidImage(...).
-                            let imageSize = NSData.imageSize(forFilePath: imageFilePath, mimeType: imageMimeType)
-                            let kMaxImageSize: CGFloat = 2048
-                            guard imageSize.width > 0,
-                                imageSize.height > 0,
-                                imageSize.width < kMaxImageSize,
-                                imageSize.height < kMaxImageSize else {
-                                    Logger.error("Image has invalid size: \(imageSize).")
-                                    return completion(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
-                            }
+                        }
 
-                            let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, imageFilePath: imageFilePath)
-                            completion(linkPreviewDraft)
+                        let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, imageFilePath: imageFilePath)
+                        completion(linkPreviewDraft)
         })
     }
 

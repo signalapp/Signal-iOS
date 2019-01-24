@@ -337,7 +337,6 @@
 		452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 452037D01EE84975004E4CDF /* DebugUISessionState.m */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
 		4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */; };
-		4523D016206EDC2B00A2AB51 /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4523D015206EDC2B00A2AB51 /* LRUCache.swift */; };
 		452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */; };
 		452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
 		452C7CA72037628B003D51A5 /* Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170D51E315310003FC1F2 /* Weak.swift */; };
@@ -1035,7 +1034,6 @@
 		4520D8D41D417D8E00123472 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldHelper.swift; sourceTree = "<group>"; };
 		4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectionalPanGestureRecognizer.swift; sourceTree = "<group>"; };
-		4523D015206EDC2B00A2AB51 /* LRUCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
 		452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddContactShareToExistingContactViewController.swift; sourceTree = "<group>"; };
 		452C468E1E427E200087B011 /* OutboundCallInitiator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutboundCallInitiator.swift; sourceTree = "<group>"; };
 		452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringAdditionsTest.swift; sourceTree = "<group>"; };
@@ -1554,7 +1552,6 @@
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				344F248C2007CCD600CFB4F4 /* DisplayableText.swift */,
 				346129AC1FD1F34E00532771 /* ImageCache.swift */,
-				4523D015206EDC2B00A2AB51 /* LRUCache.swift */,
 				34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */,
 				34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */,
 				34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */,
@@ -3305,7 +3302,6 @@
 				34AC09EE211B39B100997B47 /* EditContactShareNameViewController.swift in Sources */,
 				346129F71FD5F31400532771 /* OWS105AttachmentFilePaths.m in Sources */,
 				45194F931FD7215C00333B2C /* OWSContactOffersInteraction.m in Sources */,
-				4523D016206EDC2B00A2AB51 /* LRUCache.swift in Sources */,
 				450998681FD8C0FF00D89EB3 /* AttachmentSharing.m in Sources */,
 				347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */,
 				34BEDB1921C82AC5007B0EAE /* ImageEditorGestureRecognizer.swift in Sources */,

@@ -29,15 +29,14 @@ extension GiphyError: LocalizedError {
 // They vary in content size (i.e. width,  height), 
 // format (.jpg, .gif, .mp4, webp, etc.),
 // quality, etc.
-@objc class GiphyRendition: NSObject {
+@objc class GiphyRendition: ProxiedContentAssetDescription {
     let format: GiphyFormat
     let name: String
     let width: UInt
     let height: UInt
     let fileSize: UInt
-    let url: NSURL
 
-    init(format: GiphyFormat,
+    init?(format: GiphyFormat,
          name: String,
          width: UInt,
          height: UInt,
@@ -48,10 +47,12 @@ extension GiphyError: LocalizedError {
         self.width = width
         self.height = height
         self.fileSize = fileSize
-        self.url = url
+
+        let fileExtension = GiphyRendition.fileExtension(forFormat: format)
+        super.init(url: url, fileExtension: fileExtension)
     }
 
-    public var fileExtension: String {
+    private class func fileExtension(forFormat format: GiphyFormat) -> String {
         switch format {
         case .gif:
             return "gif"
