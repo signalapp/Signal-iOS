@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+@testable import SignalServiceKit
 import XCTest
 
 class OWSLinkPreviewTest: SSKBaseTestSwift {
@@ -92,7 +92,9 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testIsValidLinkUrl() {
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.youtube.com/watch?v=tP-Ipsat90c"))
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://youtube.com/watch?v=tP-Ipsat90c"))
-        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.youtube.com"))
+
+        // Case shouldn't matter.
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://WWW.YOUTUBE.COM/watch?v=tP-Ipsat90c"))
 
         // Allow arbitrary subdomains.
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://some.random.subdomain.youtube.com/watch?v=tP-Ipsat90c"))
@@ -112,12 +114,30 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
 
         // Don't allow media domains.
         XCTAssertFalse(OWSLinkPreview.isValidLinkUrl("https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg"))
+
+        // Allow all whitelisted domains.
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.youtube.com/watch?v=tP-Ipsat90c"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://youtu.be/tP-Ipsat90c"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.reddit.com/r/androiddev/comments/a7gctz/androidx_release_notes_this_is_the_first_release/"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.reddit.com/r/WhitePeopleTwitter/comments/a7j3mm/why/"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://imgur.com/gallery/KFCL8fm"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://imgur.com/gallery/FMdwTiV"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_web_button_share_sheet"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_share_sheet&igshid=94c7ihqjfmbm"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://imgur.com/gallery/igHOwDM"))
+
+        // Strip trailing commas.
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://imgur.com/gallery/igHOwDM,"))
+
+        // Ignore URLs with an empty path.
+        XCTAssertFalse(OWSLinkPreview.isValidLinkUrl("https://imgur.com"))
+        XCTAssertFalse(OWSLinkPreview.isValidLinkUrl("https://imgur.com/"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://imgur.com/X"))
     }
 
     func testIsValidMediaUrl() {
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://www.youtube.com/watch?v=tP-Ipsat90c"))
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://youtube.com/watch?v=tP-Ipsat90c"))
-        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://www.youtube.com"))
 
         // Allow arbitrary subdomains.
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://some.random.subdomain.youtube.com/watch?v=tP-Ipsat90c"))
@@ -153,5 +173,67 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         // If there are more than one, take the first.
         XCTAssertEqual(OWSLinkPreview.previewUrl(forMessageBodyText: "alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim https://www.youtube.com/watch?v=other-url carol"),
                        "https://www.youtube.com/watch?v=tP-Ipsat90c")
+    }
+
+    func testUtils() {
+        XCTAssertNil(OWSLinkPreview.fileExtension(forImageUrl: ""))
+        XCTAssertNil(OWSLinkPreview.fileExtension(forImageUrl: "https://www.some.host/path/imagename"))
+        XCTAssertNil(OWSLinkPreview.fileExtension(forImageUrl: "https://www.some.host/path/imagename."))
+
+        XCTAssertEqual(OWSLinkPreview.fileExtension(forImageUrl: "https://www.some.host/path/imagename.jpg"), "jpg")
+        XCTAssertEqual(OWSLinkPreview.fileExtension(forImageUrl: "https://www.some.host/path/imagename.gif"), "gif")
+        XCTAssertEqual(OWSLinkPreview.fileExtension(forImageUrl: "https://www.some.host/path/imagename.png"), "png")
+        XCTAssertEqual(OWSLinkPreview.fileExtension(forImageUrl: "https://www.some.host/path/imagename.boink"), "boink")
+
+        XCTAssertNil(OWSLinkPreview.mimetype(forImageFileExtension: ""))
+        XCTAssertNil(OWSLinkPreview.mimetype(forImageFileExtension: "boink"))
+        XCTAssertNil(OWSLinkPreview.mimetype(forImageFileExtension: "tiff"))
+        XCTAssertNil(OWSLinkPreview.mimetype(forImageFileExtension: "gif"))
+
+        XCTAssertEqual(OWSLinkPreview.mimetype(forImageFileExtension: "jpg"), OWSMimeTypeImageJpeg)
+        XCTAssertEqual(OWSLinkPreview.mimetype(forImageFileExtension: "png"), OWSMimeTypeImagePng)
+    }
+
+    func testLinkDownloadAndParsing() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.tryToBuildPreviewInfo(previewUrl: "https://www.youtube.com/watch?v=tP-Ipsat90c")
+            .done { (draft) in
+                XCTAssertNotNil(draft)
+
+                XCTAssertEqual(draft.title, "Randomness is Random - Numberphile")
+                XCTAssertNotNil(draft.imageFilePath)
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testLinkDataParsing_Empty() {
+        let linkText = ""
+        let linkData = linkText.data(using: .utf8)!
+
+        let content = try! OWSLinkPreview.parse(linkData: linkData)
+        XCTAssertNotNil(content)
+
+        XCTAssertNil(content.title)
+        XCTAssertNil(content.imageUrl)
+    }
+
+    func testLinkDataParsing() {
+        let linkText = ("<meta property=\"og:title\" content=\"Randomness is Random - Numberphile\">" +
+                        "<meta property=\"og:image\" content=\"https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg\">")
+        let linkData = linkText.data(using: .utf8)!
+
+        let content = try! OWSLinkPreview.parse(linkData: linkData)
+        XCTAssertNotNil(content)
+
+        XCTAssertEqual(content.title, "Randomness is Random - Numberphile")
+        XCTAssertEqual(content.imageUrl, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
     }
 }
