@@ -28,7 +28,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         imageAttachmentBuilder.setContentType(OWSMimeTypeImageJpeg)
         previewBuilder.setImage(try! imageAttachmentBuilder.build())
         let dataBuilder = SSKProtoDataMessage.builder()
-        dataBuilder.setPreview(try! previewBuilder.build())
+        dataBuilder.addPreview(try! previewBuilder.build())
 
         self.readWrite { (transaction) in
             XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
@@ -43,7 +43,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
         previewBuilder.setTitle("Some Youtube Video")
         let dataBuilder = SSKProtoDataMessage.builder()
-        dataBuilder.setPreview(try! previewBuilder.build())
+        dataBuilder.addPreview(try! previewBuilder.build())
 
         self.readWrite { (transaction) in
             XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
@@ -61,7 +61,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         imageAttachmentBuilder.setContentType(OWSMimeTypeImageJpeg)
         previewBuilder.setImage(try! imageAttachmentBuilder.build())
         let dataBuilder = SSKProtoDataMessage.builder()
-        dataBuilder.setPreview(try! previewBuilder.build())
+        dataBuilder.addPreview(try! previewBuilder.build())
 
         self.readWrite { (transaction) in
             XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
@@ -75,13 +75,13 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let body = "\(url)"
         let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
         let dataBuilder = SSKProtoDataMessage.builder()
-        dataBuilder.setPreview(try! previewBuilder.build())
+        dataBuilder.addPreview(try! previewBuilder.build())
 
         self.readWrite { (transaction) in
             do {
                 _ = try OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
-                                                         body: body,
-                                                         transaction: transaction)
+                                                                 body: body,
+                                                                 transaction: transaction)
                 XCTFail("Missing expected error.")
             } catch {
                 // Do nothing.

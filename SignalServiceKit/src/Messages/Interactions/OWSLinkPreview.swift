@@ -167,7 +167,7 @@ public class OWSLinkPreview: MTLModel {
         let linkPreview = OWSLinkPreview(urlString: urlString, title: title, imageAttachmentId: imageAttachmentId)
 
         guard linkPreview.isValid() else {
-            owsFailDebug("Preview has neither title nor image.")
+            Logger.error("Preview has neither title nor image.")
             throw LinkPreviewError.invalidInput
         }
 
