@@ -170,13 +170,24 @@ const CGFloat kMaxTextViewHeight = 98;
 
     _quotedReplyWrapper = [UIView containerView];
     self.quotedReplyWrapper.hidden = YES;
+    [self.quotedReplyWrapper setContentHuggingHorizontalLow];
+    [self.quotedReplyWrapper setCompressionResistanceHorizontalLow];
 
     _linkPreviewWrapper = [UIView containerView];
     self.linkPreviewWrapper.hidden = YES;
+    [self.linkPreviewWrapper setContentHuggingHorizontalLow];
+    [self.linkPreviewWrapper setCompressionResistanceHorizontalLow];
 
     _vStack = [[UIStackView alloc]
         initWithArrangedSubviews:@[ self.quotedReplyWrapper, self.linkPreviewWrapper, self.inputTextView ]];
     self.vStack.axis = UILayoutConstraintAxisVertical;
+    [self.vStack setContentHuggingHorizontalLow];
+    [self.vStack setCompressionResistanceHorizontalLow];
+
+    for (UIView *button in @[ self.attachmentButton, self.voiceMemoButton, self.sendButton ]) {
+        [button setContentHuggingHorizontalHigh];
+        [button setCompressionResistanceHorizontalHigh];
+    }
 
     _hStack = [[UIStackView alloc]
         initWithArrangedSubviews:@[ self.attachmentButton, self.vStack, self.voiceMemoButton, self.sendButton ]];
@@ -189,6 +200,8 @@ const CGFloat kMaxTextViewHeight = 98;
     [self addSubview:self.hStack];
     [self.hStack autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.hStack autoPinEdgeToSuperviewSafeArea:ALEdgeBottom];
+    [self.hStack setContentHuggingHorizontalLow];
+    [self.hStack setCompressionResistanceHorizontalLow];
 
     // See comments on updateContentLayout:.
     if (@available(iOS 11, *)) {
@@ -285,6 +298,8 @@ const CGFloat kMaxTextViewHeight = 98;
     QuotedReplyPreview *quotedMessagePreview =
         [[QuotedReplyPreview alloc] initWithQuotedReply:quotedReply conversationStyle:self.conversationStyle];
     quotedMessagePreview.delegate = self;
+    [quotedMessagePreview setContentHuggingHorizontalLow];
+    [quotedMessagePreview setCompressionResistanceHorizontalLow];
 
     self.quotedReplyWrapper.hidden = NO;
     self.quotedReplyWrapper.layoutMargins = UIEdgeInsetsMake(self.quotedMessageTopMargin, 0, 0, 0);

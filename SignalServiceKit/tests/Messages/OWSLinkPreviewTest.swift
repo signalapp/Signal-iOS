@@ -96,8 +96,8 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         // Case shouldn't matter.
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://WWW.YOUTUBE.COM/watch?v=tP-Ipsat90c"))
 
-        // Allow arbitrary subdomains.
-        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://some.random.subdomain.youtube.com/watch?v=tP-Ipsat90c"))
+        // Don't allow arbitrary subdomains.
+        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://some.random.subdomain.youtube.com/watch?v=tP-Ipsat90c"))
 
         // Don't allow HTTP, only HTTPS
         XCTAssertFalse(OWSLinkPreview.isValidLinkUrl("http://youtube.com/watch?v=tP-Ipsat90c"))
@@ -136,24 +136,26 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     }
 
     func testIsValidMediaUrl() {
-        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://www.youtube.com/watch?v=tP-Ipsat90c"))
-        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://youtube.com/watch?v=tP-Ipsat90c"))
+        // Only allow domains on the media whitelist.
+        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://www.youtube.com/watch?v=tP-Ipsat90c"))
+        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://youtube.com/watch?v=tP-Ipsat90c"))
 
         // Allow arbitrary subdomains.
-        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://some.random.subdomain.youtube.com/watch?v=tP-Ipsat90c"))
+        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://ytimg.com/something"))
+        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://something.ytimg.com/something"))
 
         // Don't allow HTTP, only HTTPS
-        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("http://youtube.com/watch?v=tP-Ipsat90c"))
-        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("mailto://youtube.com/watch?v=tP-Ipsat90c"))
-        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("ftp://youtube.com/watch?v=tP-Ipsat90c"))
+        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("http://ytimg.com/watch?v=tP-Ipsat90c"))
+        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("mailto://ytimg.com/watch?v=tP-Ipsat90c"))
+        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("ftp://ytimg.com/watch?v=tP-Ipsat90c"))
 
         // Don't allow similar domains.
-        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://xyoutube.com/watch?v=tP-Ipsat90c"))
+        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://xytimg.com/watch?v=tP-Ipsat90c"))
         XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://youtubex.com/watch?v=tP-Ipsat90c"))
-        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://youtube.comx/watch?v=tP-Ipsat90c"))
-        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://www.xyoutube.com/watch?v=tP-Ipsat90c"))
-        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://www.youtubex.com/watch?v=tP-Ipsat90c"))
-        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://www.youtube.comx/watch?v=tP-Ipsat90c"))
+        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://ytimg.comx/watch?v=tP-Ipsat90c"))
+        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://www.xytimg.com/watch?v=tP-Ipsat90c"))
+        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://www.ytimgx.com/watch?v=tP-Ipsat90c"))
+        XCTAssertFalse(OWSLinkPreview.isValidMediaUrl("https://www.ytimg.comx/watch?v=tP-Ipsat90c"))
 
         // Allow media domains.
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg"))

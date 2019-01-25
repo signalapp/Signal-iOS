@@ -163,7 +163,7 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
 
     public func displayDomain() -> String? {
         guard let displayDomain = linkPreview.displayDomain() else {
-            owsFailDebug("Missing display domain")
+            Logger.error("Missing display domain")
             return nil
         }
         return displayDomain

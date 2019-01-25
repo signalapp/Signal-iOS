@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSQuotedMessageView.h"
@@ -195,6 +195,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     [innerBubbleView autoPinTrailingToSuperviewMarginWithInset:self.bubbleHMargin];
     [innerBubbleView autoPinTopToSuperviewMargin];
     [innerBubbleView autoPinBottomToSuperviewMargin];
+    [innerBubbleView setContentHuggingHorizontalLow];
+    [innerBubbleView setCompressionResistanceHorizontalLow];
 
     UIStackView *hStackView = [UIStackView new];
     hStackView.axis = UILayoutConstraintAxisHorizontal;
