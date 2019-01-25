@@ -363,6 +363,13 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     }
 
     if (self.viewItem.linkPreview) {
+        if (self.isQuotedReply) {
+            UIView *spacerView = [UIView containerView];
+            [spacerView autoSetDimension:ALDimensionHeight toSize:self.bodyMediaQuotedReplyVSpacing];
+            [spacerView setCompressionResistanceHigh];
+            [self.stackView addArrangedSubview:spacerView];
+        }
+
         self.linkPreviewView.state = self.linkPreviewState;
         [self.stackView addArrangedSubview:self.linkPreviewView];
         [self.linkPreviewView addBorderViewsWithBubbleView:self.bubbleView];
@@ -1174,6 +1181,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         }
 
         if (bodyMediaSize && quotedMessageSize && self.hasFullWidthMediaView) {
+            cellSize.height += self.bodyMediaQuotedReplyVSpacing;
+        } else if (quotedMessageSize && self.viewItem.linkPreview) {
             cellSize.height += self.bodyMediaQuotedReplyVSpacing;
         }
     }

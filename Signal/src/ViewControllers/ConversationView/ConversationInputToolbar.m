@@ -73,6 +73,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic) UIEdgeInsets receivedSafeAreaInsets;
 @property (nonatomic, nullable) InputLinkPreview *inputLinkPreview;
 @property (nonatomic) BOOL wasLinkPreviewCancelled;
+@property (nonatomic, nullable, weak) LinkPreviewView *linkPreviewView;
 
 @end
 
@@ -122,6 +123,7 @@ const CGFloat kMaxTextViewHeight = 98;
     _inputTextView = [ConversationInputTextView new];
     self.inputTextView.textViewToolbarDelegate = self;
     self.inputTextView.font = [UIFont ows_dynamicTypeBodyFont];
+    self.inputTextView.backgroundColor = Theme.toolbarBackgroundColor;
     [self.inputTextView setContentHuggingHorizontalLow];
 
     _textViewHeightConstraint = [self.inputTextView autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
@@ -302,9 +304,11 @@ const CGFloat kMaxTextViewHeight = 98;
     [quotedMessagePreview setCompressionResistanceHorizontalLow];
 
     self.quotedReplyWrapper.hidden = NO;
-    self.quotedReplyWrapper.layoutMargins = UIEdgeInsetsMake(self.quotedMessageTopMargin, 0, 0, 0);
+    self.quotedReplyWrapper.layoutMargins = UIEdgeInsetsZero;
     [self.quotedReplyWrapper addSubview:quotedMessagePreview];
     [quotedMessagePreview ows_autoPinToSuperviewMargins];
+
+    self.linkPreviewView.hasAsymmetricalRounding = !self.quotedReply;
 }
 
 - (CGFloat)quotedMessageTopMargin
@@ -715,31 +719,27 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSAssertIsOnMainThread();
 
     if (self.wasLinkPreviewCancelled) {
-        self.inputLinkPreview = nil;
-        [self clearLinkPreviewView];
+        [self clearLinkPreviewStateAndView];
         return;
     }
 
     NSString *body =
         [[self messageText] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     if (body.length < 1) {
-        self.inputLinkPreview = nil;
-        [self clearLinkPreviewView];
+        [self clearLinkPreviewStateAndView];
         self.wasLinkPreviewCancelled = NO;
         return;
     }
 
     // Don't include link previews for oversize text messages.
     if ([body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
-        self.inputLinkPreview = nil;
-        [self clearLinkPreviewView];
+        [self clearLinkPreviewStateAndView];
         return;
     }
 
     NSString *_Nullable previewUrl = [OWSLinkPreview previewUrlForMessageBodyText:body];
     if (previewUrl.length < 1) {
-        self.inputLinkPreview = nil;
-        [self clearLinkPreviewView];
+        [self clearLinkPreviewStateAndView];
         return;
     }
 
@@ -783,10 +783,22 @@ const CGFloat kMaxTextViewHeight = 98;
 
     LinkPreviewView *linkPreviewView = [[LinkPreviewView alloc] initWithDraftDelegate:self];
     linkPreviewView.state = state;
+    linkPreviewView.hasAsymmetricalRounding = !self.quotedReply;
+    self.linkPreviewView = linkPreviewView;
 
     self.linkPreviewWrapper.hidden = NO;
     [self.linkPreviewWrapper addSubview:linkPreviewView];
     [linkPreviewView ows_autoPinToSuperviewMargins];
+}
+
+- (void)clearLinkPreviewStateAndView
+{
+    OWSAssertIsOnMainThread();
+
+    self.inputLinkPreview = nil;
+    self.linkPreviewView = nil;
+
+    [self clearLinkPreviewView];
 }
 
 - (void)clearLinkPreviewView
@@ -828,8 +840,8 @@ const CGFloat kMaxTextViewHeight = 98;
 
     self.wasLinkPreviewCancelled = YES;
 
-    self.self.inputLinkPreview = nil;
-    [self clearLinkPreviewView];
+    self.inputLinkPreview = nil;
+    [self clearLinkPreviewStateAndView];
 }
 
 @end

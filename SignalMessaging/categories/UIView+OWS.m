@@ -567,7 +567,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
     UIView *borderView = [UIView new];
     borderView.userInteractionEnabled = NO;
-    borderView.backgroundColor = nil;
+    borderView.backgroundColor = UIColor.clearColor;
+    borderView.opaque = NO;
     borderView.layer.borderColor = color.CGColor;
     borderView.layer.borderWidth = strokeWidth;
     borderView.layer.cornerRadius = cornerRadius;

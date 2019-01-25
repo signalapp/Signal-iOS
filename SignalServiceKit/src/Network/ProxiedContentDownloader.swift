@@ -643,6 +643,8 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             var request = URLRequest(url: assetRequest.assetDescription.url as URL)
             request.httpMethod = "HEAD"
             request.httpShouldUsePipelining = true
+            // Some services like Reddit will severely rate-limit requests without a user agent.
+            request.addValue("Signal", forHTTPHeaderField: "User-Agent")
 
             let task = downloadSession.dataTask(with: request, completionHandler: { data, response, error -> Void in
                 if let data = data, data.count > 0 {

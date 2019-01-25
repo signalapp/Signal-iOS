@@ -130,7 +130,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (CGFloat)bubbleHMargin
 {
-    return 6.f;
+    return (self.isForPreview ? 0.f : 6.f);
 }
 
 - (CGFloat)hSpacing
@@ -203,7 +203,12 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     hStackView.spacing = self.hSpacing;
 
     UIView *stripeView = [UIView new];
-    stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:!self.isOutgoing];
+    if (self.isForPreview) {
+        // TODO:
+        stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:YES];
+    } else {
+        stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:!self.isOutgoing];
+    }
     [stripeView autoSetDimension:ALDimensionWidth toSize:self.stripeThickness];
     [stripeView setContentHuggingHigh];
     [stripeView setCompressionResistanceHigh];
@@ -214,6 +219,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     vStackView.layoutMargins = UIEdgeInsetsMake(self.textVMargin, 0, self.textVMargin, 0);
     vStackView.layoutMarginsRelativeArrangement = YES;
     vStackView.spacing = self.vSpacing;
+    [vStackView setContentHuggingHorizontalLow];
+    [vStackView setCompressionResistanceHorizontalLow];
     [hStackView addArrangedSubview:vStackView];
 
     UILabel *quotedAuthorLabel = [self configureQuotedAuthorLabel];
@@ -275,7 +282,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
             quotedAttachmentView = wrapper;
         }
 
-        [quotedAttachmentView autoSetDimension:ALDimensionWidth toSize:self.quotedAttachmentSize];
+        [quotedAttachmentView autoPinToSquareAspectRatio];
         [quotedAttachmentView setContentHuggingHigh];
         [quotedAttachmentView setCompressionResistanceHigh];
         [hStackView addArrangedSubview:quotedAttachmentView];

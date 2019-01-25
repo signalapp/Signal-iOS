@@ -10,7 +10,7 @@ protocol QuotedReplyPreviewDelegate: class {
 }
 
 @objc
-class QuotedReplyPreview: UIView {
+class QuotedReplyPreview: UIStackView {
     @objc
     public weak var delegate: QuotedReplyPreviewDelegate?
 
@@ -19,8 +19,13 @@ class QuotedReplyPreview: UIView {
     private var quotedMessageView: OWSQuotedMessageView?
     private var heightConstraint: NSLayoutConstraint!
 
-    @objc
-    required init?(coder aDecoder: NSCoder) {
+    @available(*, unavailable, message:"use other constructor instead.")
+    required init(coder aDecoder: NSCoder) {
+        notImplemented()
+    }
+
+    @available(*, unavailable, message:"use other constructor instead.")
+    override init(frame: CGRect) {
         notImplemented()
     }
 
@@ -38,6 +43,8 @@ class QuotedReplyPreview: UIView {
         NotificationCenter.default.addObserver(self, selector: #selector(contentSizeCategoryDidChange), name: .UIContentSizeCategoryDidChange, object: nil)
     }
 
+    private let draftMarginTop: CGFloat = 6
+
     func updateContents() {
         subviews.forEach { $0.removeFromSuperview() }
 
@@ -53,21 +60,35 @@ class QuotedReplyPreview: UIView {
 
         let cancelButton: UIButton = UIButton(type: .custom)
 
-        let buttonImage: UIImage = #imageLiteral(resourceName: "quoted-message-cancel").withRenderingMode(.alwaysTemplate)
-        cancelButton.setImage(buttonImage, for: .normal)
+        let cancelImage = UIImage(named: "compose-cancel")?.withRenderingMode(.alwaysTemplate)
+        cancelButton.setImage(cancelImage, for: .normal)
         cancelButton.imageView?.tintColor = Theme.secondaryColor
         cancelButton.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
+        if let cancelSize = cancelImage?.size {
+            cancelButton.autoSetDimensions(to: cancelSize)
+        }
 
-        self.layoutMargins = .zero
+        self.axis = .horizontal
+        self.alignment = .fill
+        self.distribution = .fill
+        self.spacing = 8
+        self.isLayoutMarginsRelativeArrangement = true
+        let hMarginLeading: CGFloat = 6
+        let hMarginTrailing: CGFloat = 12
+        self.layoutMargins = UIEdgeInsets(top: draftMarginTop,
+                                          left: CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
+                                          bottom: 0,
+                                          right: CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing)
 
-        self.addSubview(quotedMessageView)
-        self.addSubview(cancelButton)
+        self.addArrangedSubview(quotedMessageView)
 
-        quotedMessageView.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
-        cancelButton.autoPinEdges(toSuperviewMarginsExcludingEdge: .leading)
-        cancelButton.autoPinEdge(.leading, to: .trailing, of: quotedMessageView)
-
-        cancelButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+        let cancelStack = UIStackView()
+        cancelStack.axis = .horizontal
+        cancelStack.alignment = .top
+        cancelStack.setContentHuggingHigh()
+        cancelStack.setCompressionResistanceHigh()
+        cancelStack.addArrangedSubview(cancelButton)
+        self.addArrangedSubview(cancelStack)
 
         updateHeight()
     }

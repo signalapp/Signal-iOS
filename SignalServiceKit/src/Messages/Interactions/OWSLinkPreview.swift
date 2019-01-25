@@ -453,8 +453,6 @@ public class OWSLinkPreview: MTLModel {
     }
 
     class func allPreviewUrls(forMessageBodyText body: String?) -> [String] {
-        AssertIsOnMainThread()
-
         guard OWSLinkPreview.featureEnabled else {
             return []
         }
@@ -650,16 +648,21 @@ public class OWSLinkPreview: MTLModel {
                }
                 let data = try Data(contentsOf: URL(fileURLWithPath: asset.filePath))
 
-                let maxImageSize: CGFloat = 1024
-                let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
-                guard shouldResize else {
-                    return Promise.value(data)
-                }
-
                 guard let srcImage = UIImage(data: data) else {
                     Logger.error("Could not parse image.")
                     return Promise(error: LinkPreviewError.invalidContent)
                 }
+
+                let maxImageSize: CGFloat = 1024
+                let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
+                guard shouldResize else {
+                    guard let dstData = UIImageJPEGRepresentation(srcImage, 0.8) else {
+                        Logger.error("Could not write resized image.")
+                        return Promise(error: LinkPreviewError.invalidContent)
+                    }
+                    return Promise.value(dstData)
+                }
+
                 guard let dstImage = srcImage.resized(withMaxDimensionPoints: maxImageSize) else {
                     Logger.error("Could not resize image.")
                     return Promise(error: LinkPreviewError.invalidContent)
@@ -710,22 +713,13 @@ public class OWSLinkPreview: MTLModel {
 
             return downloadImage(url: imageUrl, imageMimeType: imageMimeType)
                 .then(on: DispatchQueue.global()) { (imageData: Data) -> Promise<OWSLinkPreviewDraft> in
-                    let imageFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: imageFileExtension)
+                    // We always recompress images to Jpeg.
+                    let imageFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: "jpg")
                     do {
                         try imageData.write(to: NSURL.fileURL(withPath: imageFilePath), options: .atomicWrite)
                     } catch let error as NSError {
                         owsFailDebug("file write failed: \(imageFilePath), \(error)")
                         return Promise(error: LinkPreviewError.assertionFailure)
-                    }
-                    // NOTE: imageSize(forFilePath:...) will call ows_isValidImage(...).
-                    let imageSize = NSData.imageSize(forFilePath: imageFilePath, mimeType: imageMimeType)
-                    let kMaxImageSize: CGFloat = 2048
-                    guard imageSize.width > 0,
-                        imageSize.height > 0,
-                        imageSize.width < kMaxImageSize,
-                        imageSize.height < kMaxImageSize else {
-                            Logger.error("Image has invalid size: \(imageSize).")
-                            return Promise(error: LinkPreviewError.assertionFailure)
                     }
 
                     let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, imageFilePath: imageFilePath)
