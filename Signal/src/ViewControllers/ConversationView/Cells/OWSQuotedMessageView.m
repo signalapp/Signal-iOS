@@ -130,7 +130,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (CGFloat)bubbleHMargin
 {
-    return 6.f;
+    return (self.isForPreview ? 0.f : 6.f);
 }
 
 - (CGFloat)hSpacing

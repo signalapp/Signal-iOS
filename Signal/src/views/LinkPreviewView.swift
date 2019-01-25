@@ -231,14 +231,20 @@ public protocol LinkPreviewViewDraftDelegate {
 public class LinkPreviewImageView: UIImageView {
     private let maskLayer = CAShapeLayer()
 
+    private let hasAsymmetricalRounding: Bool
+
     @objc
-    public init() {
+    public init(hasAsymmetricalRounding: Bool) {
+        self.hasAsymmetricalRounding = hasAsymmetricalRounding
+
         super.init(frame: .zero)
 
         self.layer.mask = maskLayer
     }
 
     public required init?(coder aDecoder: NSCoder) {
+        self.hasAsymmetricalRounding = false
+
         super.init(coder: aDecoder)
     }
 
@@ -273,8 +279,15 @@ public class LinkPreviewImageView: UIImageView {
         let bigRounding: CGFloat = 14
         let smallRounding: CGFloat = 4
 
-        let upperLeftRounding = CurrentAppContext().isRTL ? smallRounding : bigRounding
-        let upperRightRounding = CurrentAppContext().isRTL ? bigRounding : smallRounding
+        let upperLeftRounding: CGFloat
+        let upperRightRounding: CGFloat
+        if hasAsymmetricalRounding {
+            upperLeftRounding = CurrentAppContext().isRTL ? smallRounding : bigRounding
+            upperRightRounding = CurrentAppContext().isRTL ? bigRounding : smallRounding
+        } else {
+            upperLeftRounding = smallRounding
+            upperRightRounding = smallRounding
+        }
         let lowerRightRounding = smallRounding
         let lowerLeftRounding = smallRounding
 
@@ -322,6 +335,17 @@ public class LinkPreviewView: UIStackView {
             assert(state == nil || oldValue == nil)
 
             updateContents()
+        }
+    }
+
+    @objc
+    public var hasAsymmetricalRounding: Bool = false {
+        didSet {
+            AssertIsOnMainThread()
+
+            if hasAsymmetricalRounding != oldValue {
+                updateContents()
+            }
         }
     }
 
@@ -672,7 +696,7 @@ public class LinkPreviewView: UIStackView {
             owsFailDebug("Could not load image.")
             return nil
         }
-        let imageView = LinkPreviewImageView()
+        let imageView = LinkPreviewImageView(hasAsymmetricalRounding: self.hasAsymmetricalRounding)
         imageView.image = image
         return imageView
     }
