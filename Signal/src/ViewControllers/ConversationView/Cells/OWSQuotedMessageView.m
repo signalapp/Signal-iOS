@@ -219,6 +219,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     vStackView.layoutMargins = UIEdgeInsetsMake(self.textVMargin, 0, self.textVMargin, 0);
     vStackView.layoutMarginsRelativeArrangement = YES;
     vStackView.spacing = self.vSpacing;
+    [vStackView setContentHuggingHorizontalLow];
+    [vStackView setCompressionResistanceHorizontalLow];
     [hStackView addArrangedSubview:vStackView];
 
     UILabel *quotedAuthorLabel = [self configureQuotedAuthorLabel];
@@ -280,7 +282,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
             quotedAttachmentView = wrapper;
         }
 
-        [quotedAttachmentView autoSetDimension:ALDimensionWidth toSize:self.quotedAttachmentSize];
+        [quotedAttachmentView autoPinToSquareAspectRatio];
         [quotedAttachmentView setContentHuggingHigh];
         [quotedAttachmentView setCompressionResistanceHigh];
         [hStackView addArrangedSubview:quotedAttachmentView];
