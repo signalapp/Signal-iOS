@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -46,6 +46,8 @@ class QuotedReplyPreview: UIView {
         // sizes changes).
         let quotedMessageView = OWSQuotedMessageView(forPreview: quotedReply, conversationStyle: conversationStyle)
         self.quotedMessageView = quotedMessageView
+        quotedMessageView.setContentHuggingHorizontalLow()
+        quotedMessageView.setCompressionResistanceHorizontalLow()
 
         quotedMessageView.backgroundColor = .clear
 

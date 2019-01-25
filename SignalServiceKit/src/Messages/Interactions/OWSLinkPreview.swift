@@ -289,20 +289,23 @@ public class OWSLinkPreview: MTLModel {
 
     // MARK: - Whitelists
 
+    // For link domains, we require an exact match - no subdomains allowed.
+    //
+    // Note that order matters in this whitelist since the logic for determining
+    // how to render link preview domains in displayDomain(...) uses the first match.
+    // We should list TLDs first and subdomains later.
     private static let linkDomainWhitelist = [
         // YouTube
         "youtube.com",
         "www.youtube.com",
         "m.youtube.com",
         "youtu.be",
-        "youtube-nocookie.com",
-        "www.youtube-nocookie.com",
 
         // Reddit
         "reddit.com",
         "www.reddit.com",
         "m.reddit.com",
-        "redd.it",
+        // NOTE: We don't use redd.it.
 
         // Imgur
         //
@@ -311,7 +314,7 @@ public class OWSLinkPreview: MTLModel {
         // For example, you can access "user/member" pages: https://sillygoose2.imgur.com/
         // A different member page can be accessed without a subdomain: https://imgur.com/user/SillyGoose2
         //
-        // I'm not sure we need to support these subdomains; they don't appear to be core functionality?
+        // I'm not sure we need to support these subdomains; they don't appear to be core functionality.
         "imgur.com",
         "www.imgur.com",
         "m.imgur.com",
@@ -319,17 +322,21 @@ public class OWSLinkPreview: MTLModel {
         // Instagram
         "instagram.com",
         "www.instagram.com",
-        "m.instagram.com",
-
-        // Giphy
-        "giphy.com",
-        "www.giphy.com",
-        "media.giphy.com",
-        "gph.is"
+        "m.instagram.com"
     ]
 
+    // For media domains, we DO NOT require an exact match - subdomains are allowed.
     private static let mediaDomainWhitelist = [
+        // YouTube
         "ytimg.com",
+
+        // Reddit
+        "redd.it",
+
+        // Imgur
+        "imgur.com",
+
+        // Instagram
         "cdninstagram.com"
     ]
 
@@ -355,7 +362,7 @@ public class OWSLinkPreview: MTLModel {
         guard let result = whitelistedDomain(forUrl: url,
                                              domainWhitelist: OWSLinkPreview.linkDomainWhitelist,
                                              allowSubdomains: false) else {
-                                                owsFailDebug("Missing domain.")
+                                                Logger.error("Missing domain.")
                                                 return nil
         }
         return result
@@ -377,7 +384,7 @@ public class OWSLinkPreview: MTLModel {
             return false
         }
         return whitelistedDomain(forUrl: url,
-                                 domainWhitelist: OWSLinkPreview.linkDomainWhitelist + OWSLinkPreview.mediaDomainWhitelist,
+                                 domainWhitelist: OWSLinkPreview.mediaDomainWhitelist,
                                  allowSubdomains: true) != nil
     }
 
