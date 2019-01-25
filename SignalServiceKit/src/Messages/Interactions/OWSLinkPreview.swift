@@ -287,21 +287,50 @@ public class OWSLinkPreview: MTLModel {
         return result.filterStringForDisplay()
     }
 
-    // MARK: - Domain Whitelist
+    // MARK: - Whitelists
 
     private static let linkDomainWhitelist = [
+        // YouTube
         "youtube.com",
+        "www.youtube.com",
+        "m.youtube.com",
+        "youtu.be",
+        "youtube-nocookie.com",
+        "www.youtube-nocookie.com",
+
+        // Reddit
         "reddit.com",
+        "www.reddit.com",
+        "m.reddit.com",
+        "redd.it",
+
+        // Imgur
+        //
+        // NOTE: Subdomains are also used for content.
+        //
+        // For example, you can access "user/member" pages: https://sillygoose2.imgur.com/
+        // A different member page can be accessed without a subdomain: https://imgur.com/user/SillyGoose2
+        //
+        // I'm not sure we need to support these subdomains; they don't appear to be core functionality?
         "imgur.com",
+        "www.imgur.com",
+        "m.imgur.com",
+
+        // Instagram
         "instagram.com",
+        "www.instagram.com",
+        "m.instagram.com",
+
+        // Giphy
         "giphy.com",
-        "youtu.be"
+        "www.giphy.com",
+        "media.giphy.com",
+        "gph.is"
     ]
 
     private static let mediaDomainWhitelist = [
         "ytimg.com",
-        "cdninstagram.com",
-        "redd.it"
+        "cdninstagram.com"
     ]
 
     private static let protocolWhitelist = [
@@ -324,7 +353,8 @@ public class OWSLinkPreview: MTLModel {
             return nil
         }
         guard let result = whitelistedDomain(forUrl: url,
-                                             domainWhitelist: OWSLinkPreview.linkDomainWhitelist) else {
+                                             domainWhitelist: OWSLinkPreview.linkDomainWhitelist,
+                                             allowSubdomains: false) else {
                                                 owsFailDebug("Missing domain.")
                                                 return nil
         }
@@ -337,7 +367,8 @@ public class OWSLinkPreview: MTLModel {
             return false
         }
         return whitelistedDomain(forUrl: url,
-                                 domainWhitelist: OWSLinkPreview.linkDomainWhitelist) != nil
+                                 domainWhitelist: OWSLinkPreview.linkDomainWhitelist,
+                                 allowSubdomains: false) != nil
     }
 
     @objc
@@ -346,10 +377,11 @@ public class OWSLinkPreview: MTLModel {
             return false
         }
         return whitelistedDomain(forUrl: url,
-                                 domainWhitelist: OWSLinkPreview.linkDomainWhitelist + OWSLinkPreview.mediaDomainWhitelist) != nil
+                                 domainWhitelist: OWSLinkPreview.linkDomainWhitelist + OWSLinkPreview.mediaDomainWhitelist,
+                                 allowSubdomains: true) != nil
     }
 
-    private class func whitelistedDomain(forUrl url: URL, domainWhitelist: [String]) -> String? {
+    private class func whitelistedDomain(forUrl url: URL, domainWhitelist: [String], allowSubdomains: Bool) -> String? {
         guard let urlProtocol = url.scheme?.lowercased() else {
             return nil
         }
@@ -365,7 +397,10 @@ public class OWSLinkPreview: MTLModel {
         }
 
         for whitelistedDomain in domainWhitelist {
-            if domain == whitelistedDomain.lowercased() ||
+            if domain == whitelistedDomain.lowercased() {
+                return whitelistedDomain
+            }
+            if allowSubdomains,
                 domain.hasSuffix("." + whitelistedDomain.lowercased()) {
                 return whitelistedDomain
             }
@@ -525,11 +560,28 @@ public class OWSLinkPreview: MTLModel {
         sessionManager.get(url,
                            parameters: [String: AnyObject](),
                            progress: nil,
-                           success: { _, value in
+                           success: { task, value in
 
+                            guard let response = task.response as? HTTPURLResponse else {
+                                Logger.warn("Invalid response: \(type(of: task.response)).")
+                                resolver.reject(LinkPreviewError.assertionFailure)
+                                return
+                            }
+                            if let contentType = response.allHeaderFields["Content-Type"] as? String {
+                                guard contentType.lowercased().hasPrefix("text/") else {
+                                    Logger.warn("Invalid content type: \(contentType).")
+                                    resolver.reject(LinkPreviewError.invalidContent)
+                                    return
+                                }
+                            }
                             guard let data = value as? Data else {
                                 Logger.warn("Result is not data: \(type(of: value)).")
-                                resolver.reject( LinkPreviewError.assertionFailure)
+                                resolver.reject(LinkPreviewError.assertionFailure)
+                                return
+                            }
+                            guard data.count > 0 else {
+                                Logger.warn("Empty data: \(type(of: value)).")
+                                resolver.reject(LinkPreviewError.invalidContent)
                                 return
                             }
                             resolver.fulfill(data)
@@ -539,20 +591,20 @@ public class OWSLinkPreview: MTLModel {
 
                             guard isRetryable(error: error) else {
                                 Logger.warn("Error is not retryable.")
-                                resolver.reject( LinkPreviewError.couldNotDownload)
+                                resolver.reject(LinkPreviewError.couldNotDownload)
                                 return
                             }
 
                             guard remainingRetries > 0 else {
                                 Logger.warn("No more retries.")
-                                resolver.reject( LinkPreviewError.couldNotDownload)
+                                resolver.reject(LinkPreviewError.couldNotDownload)
                                 return
                             }
                             OWSLinkPreview.downloadLink(url: url, remainingRetries: remainingRetries - 1)
                             .done(on: DispatchQueue.global()) { (data) in
                                 resolver.fulfill(data)
                             }.catch(on: DispatchQueue.global()) { (error) in
-                                resolver.reject( error)
+                                resolver.reject(error)
                             }.retainUntilComplete()
         })
         return promise
