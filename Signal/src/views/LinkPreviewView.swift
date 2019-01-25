@@ -188,7 +188,8 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
             return .loading
         }
-        guard attachmentStream.isValidImage else {
+        guard attachmentStream.isImage,
+            attachmentStream.isValidImage else {
             return .invalid
         }
         return .loaded
@@ -201,7 +202,8 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
             owsFailDebug("Could not load image.")
             return nil
         }
-        guard attachmentStream.isValidImage else {
+        guard attachmentStream.isImage,
+            attachmentStream.isValidImage else {
             return nil
         }
         guard let imageFilepath = attachmentStream.originalFilePath else {

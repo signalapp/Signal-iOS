@@ -669,10 +669,21 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (self.hasBodyText && attachment == nil && message.linkPreview) {
         self.linkPreview = message.linkPreview;
         if (message.linkPreview.imageAttachmentId.length > 0) {
-            self.linkPreviewAttachment =
+            TSAttachment *_Nullable linkPreviewAttachment =
                 [TSAttachment fetchObjectWithUniqueID:message.linkPreview.imageAttachmentId transaction:transaction];
-            if (!self.linkPreviewAttachment) {
+            if (!linkPreviewAttachment) {
                 OWSFailDebug(@"Could not load link preview image attachment.");
+            } else if (!linkPreviewAttachment.isImage) {
+                OWSFailDebug(@"Link preview attachment isn't an image.");
+            } else if ([linkPreviewAttachment isKindOfClass:[TSAttachmentStream class]]) {
+                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)linkPreviewAttachment;
+                if (!attachmentStream.isValidImage) {
+                    OWSFailDebug(@"Link preview image attachment isn't valid.");
+                } else {
+                    self.linkPreviewAttachment = linkPreviewAttachment;
+                }
+            } else {
+                self.linkPreviewAttachment = linkPreviewAttachment;
             }
         }
     }
