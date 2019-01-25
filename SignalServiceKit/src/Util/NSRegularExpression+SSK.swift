@@ -14,12 +14,13 @@ public extension NSRegularExpression {
 
     @objc
     public class func parseFirstMatch(pattern: String,
-                                      text: String) -> String? {
+                                      text: String,
+                                      options: NSRegularExpression.Options = []) -> String? {
         do {
-            let regex = try NSRegularExpression(pattern: pattern)
+            let regex = try NSRegularExpression(pattern: pattern, options: options)
             guard let match = regex.firstMatch(in: text,
                                                options: [],
-                                               range: NSRange(location: 0, length: text.count)) else {
+                                               range: NSRange(location: 0, length: text.utf16.count)) else {
                                                 return nil
             }
             let matchRange = match.range(at: 1)

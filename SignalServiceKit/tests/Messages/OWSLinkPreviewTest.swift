@@ -434,4 +434,24 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
 
         self.waitForExpectations(timeout: 5.0, handler: nil)
     }
+
+    // When using regular expressions to parse link titles, we need to use
+    // String.utf16.count, not String.count in the range.
+    func testRegexRanges() {
+        let regex = try! NSRegularExpression(pattern: "bob", options: [])
+        var text = "bob"
+        XCTAssertNotNil(regex.firstMatch(in: text,
+                                         options: [],
+                                         range: NSRange(location: 0, length: text.count)))
+        XCTAssertNotNil(regex.firstMatch(in: text,
+                                         options: [],
+                                         range: NSRange(location: 0, length: text.utf16.count)))
+        text = "😂😘🙂 bob"
+        XCTAssertNil(regex.firstMatch(in: text,
+                                         options: [],
+                                         range: NSRange(location: 0, length: text.count)))
+        XCTAssertNotNil(regex.firstMatch(in: text,
+                                         options: [],
+                                         range: NSRange(location: 0, length: text.utf16.count)))
+    }
 }

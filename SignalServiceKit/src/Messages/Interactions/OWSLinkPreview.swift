@@ -751,7 +751,9 @@ public class OWSLinkPreview: MTLModel {
         }
 
         var title: String?
-        if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:title\"\\s+content\\s*=\\s*\"(.*?)\"\\s*/?>", text: linkText) {
+        if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:title\"\\s+content\\s*=\\s*\"(.*?)\"\\s*/?>",
+                                                              text: linkText,
+                                                              options: .dotMatchesLineSeparators) {
             if let decodedTitle = decodeHTMLEntities(inString: rawTitle) {
                 let normalizedTitle = OWSLinkPreview.normalizeTitle(title: decodedTitle)
                 if normalizedTitle.count > 0 {
