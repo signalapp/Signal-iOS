@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -94,7 +94,7 @@ import PromiseKit
         var recipientIds = [String]()
         for recordName in recordNames {
             let regex = recordNamePrefixRegex
-            guard let match: NSTextCheckingResult = regex.firstMatch(in: recordName, options: [], range: NSRange(location: 0, length: recordName.count)) else {
+            guard let match: NSTextCheckingResult = regex.firstMatch(in: recordName, options: [], range: NSRange(location: 0, length: recordName.utf16.count)) else {
                 Logger.warn("no match: \(recordName)")
                 continue
             }

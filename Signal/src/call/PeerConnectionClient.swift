@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1107,12 +1107,12 @@ class HardenedRTCSessionDescription {
 
         // Enforce Constant bit rate.
         let cbrRegex = try! NSRegularExpression(pattern: "(a=fmtp:111 ((?!cbr=).)*)\r?\n", options: .caseInsensitive)
-        description = cbrRegex.stringByReplacingMatches(in: description, options: [], range: NSRange(location: 0, length: description.count), withTemplate: "$1;cbr=1\r\n")
+        description = cbrRegex.stringByReplacingMatches(in: description, options: [], range: NSRange(location: 0, length: description.utf16.count), withTemplate: "$1;cbr=1\r\n")
 
         // Strip plaintext audio-level details
         // https://tools.ietf.org/html/rfc6464
         let audioLevelRegex = try! NSRegularExpression(pattern: ".+urn:ietf:params:rtp-hdrext:ssrc-audio-level.*\r?\n", options: .caseInsensitive)
-        description = audioLevelRegex.stringByReplacingMatches(in: description, options: [], range: NSRange(location: 0, length: description.count), withTemplate: "")
+        description = audioLevelRegex.stringByReplacingMatches(in: description, options: [], range: NSRange(location: 0, length: description.utf16.count), withTemplate: "")
 
         return RTCSessionDescription.init(type: rtcSessionDescription.type, sdp: description)
     }
@@ -1161,7 +1161,7 @@ class HardenedRTCSessionDescription {
         do {
             let regex = try NSRegularExpression(pattern: "[\\da-f]*:[\\da-f]*:[\\da-f:\\.]*",
                 options: .caseInsensitive)
-            return regex.stringByReplacingMatches(in: sdp, options: [], range: NSRange(location: 0, length: sdp.count), withTemplate: "[ REDACTED_IPV6_ADDRESS ]")
+            return regex.stringByReplacingMatches(in: sdp, options: [], range: NSRange(location: 0, length: sdp.utf16.count), withTemplate: "[ REDACTED_IPV6_ADDRESS ]")
         } catch {
             owsFailDebug("Could not redact IPv6 addresses.")
             return "[Could not redact IPv6 addresses.]"
