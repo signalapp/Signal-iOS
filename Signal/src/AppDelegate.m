@@ -68,6 +68,34 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
 
+// Signal iOS uses multiple "key" windows, e.g. the screen lock window.
+// We usually switch "key" windows while becoming active.  At the same
+// time, we often change the state of our orientation mask.
+//
+// For reasons unknown, this confuses iOS and leads to very strange
+// behavior, e.g.:
+//
+// * Multiple activation of the app returning from the background, e.g.
+//   transitions from "background, inactive" -> "foreground, inactive"
+//   -> "foreground, active"  -> "foreground, inactive"  ->
+//   "foreground, active".
+// * Multiple (sometimes incomplete) orientation changes while becoming
+//   active.
+// * The side effects of orientation changes (e.g. safe area insets)
+//   being left in a bad state.
+//
+// The solution:
+//
+// * Lock app in portrait unless "foreground, active".
+// * Don't "unlock" until the app has been "foreground, active"
+//   for a short duration (to allow activation process to safely complete).
+// * After unlocking, try to rotate to the current device orientation.
+//
+// The user experience is reasonable: if the user activates the app
+// while in landscape, the user sees a rotation animation.
+@property (nonatomic) BOOL isLandscapeEnabled;
+@property (nonatomic, nullable) NSTimer *landscapeTimer;
+
 @end
 
 #pragma mark -
@@ -152,11 +180,15 @@ static NSTimeInterval launchStartedAt;
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     OWSLogWarn(@"applicationDidEnterBackground.");
 
+    [self disableLandscape];
+
     [DDLog flushLog];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     OWSLogWarn(@"applicationWillEnterForeground.");
+
+    [self disableLandscape];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
@@ -619,6 +651,8 @@ static NSTimeInterval launchStartedAt;
     // be called _before_ we become active.
     [self clearAllNotificationsAndRestoreBadgeCount];
 
+    [self enableLandscapeAfterDelay];
+
     OWSLogInfo(@"applicationDidBecomeActive completed.");
 }
 
@@ -731,6 +765,8 @@ static NSTimeInterval launchStartedAt;
     }
 
     OWSLogWarn(@"applicationWillResignActive.");
+
+    [self disableLandscape];
 
     [DDLog flushLog];
 }
@@ -948,6 +984,16 @@ static NSTimeInterval launchStartedAt;
 - (UIInterfaceOrientationMask)application:(UIApplication *)application
     supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
 {
+    // See comments on isLandscapeEnabled property.
+    if (!self.isLandscapeEnabled) {
+        return UIInterfaceOrientationMaskPortrait;
+    }
+    // This clause shouldn't be necessary, but it's nice to
+    // be explicit about our invariants.
+    if (!self.hasInitialRootViewController) {
+        return UIInterfaceOrientationMaskPortrait;
+    }
+
     if (self.windowManager.hasCall) {
         // The call-banner window is only suitable for portrait display
         return UIInterfaceOrientationMaskPortrait;
@@ -977,6 +1023,47 @@ static NSTimeInterval launchStartedAt;
     }
 
     return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
+// See comments on isLandscapeEnabled property.
+- (void)disableLandscape
+{
+    OWSAssertIsOnMainThread();
+
+    BOOL wasEnabled = self.isLandscapeEnabled;
+    self.isLandscapeEnabled = NO;
+    [self.landscapeTimer invalidate];
+    self.landscapeTimer = nil;
+
+    if (wasEnabled) {
+        [UIViewController attemptRotationToDeviceOrientation];
+    }
+}
+
+// See comments on isLandscapeEnabled property.
+- (void)enableLandscape
+{
+    OWSAssertIsOnMainThread();
+
+    self.isLandscapeEnabled = YES;
+    [self.landscapeTimer invalidate];
+    self.landscapeTimer = nil;
+
+    [UIViewController attemptRotationToDeviceOrientation];
+}
+
+// See comments on isLandscapeEnabled property.
+- (void)enableLandscapeAfterDelay
+{
+    OWSAssertIsOnMainThread();
+
+    [self disableLandscape];
+    NSTimeInterval delay = 0.35f;
+    self.landscapeTimer = [NSTimer weakScheduledTimerWithTimeInterval:delay
+                                                               target:self
+                                                             selector:@selector(enableLandscape)
+                                                             userInfo:nil
+                                                              repeats:NO];
 }
 
 #pragma mark Push Notifications Delegate Methods
