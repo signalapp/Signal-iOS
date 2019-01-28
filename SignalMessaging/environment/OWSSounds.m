@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSounds.h"
@@ -220,7 +220,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
             // Calls
         case OWSSound_CallConnecting:
-            return @"sonarping.mp3";
+            return @"ringback_tone_ansi.caf";
         case OWSSound_CallOutboundRinging:
             return @"ringback_tone_ansi.caf";
         case OWSSound_CallBusy:
