@@ -189,7 +189,11 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
             maskLayer.path = bezierPath.CGPath;
         }];
     innerBubbleView.layer.mask = maskLayer;
-    innerBubbleView.backgroundColor = self.quoteBubbleBackgroundColor;
+    if (self.isForPreview) {
+        innerBubbleView.backgroundColor = [UIColor.ows_signalBlueColor colorWithAlphaComponent:0.4f];
+    } else {
+        innerBubbleView.backgroundColor = self.quoteBubbleBackgroundColor;
+    }
     [self addSubview:innerBubbleView];
     [innerBubbleView autoPinLeadingToSuperviewMarginWithInset:self.bubbleHMargin];
     [innerBubbleView autoPinTrailingToSuperviewMarginWithInset:self.bubbleHMargin];
@@ -204,8 +208,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
     UIView *stripeView = [UIView new];
     if (self.isForPreview) {
-        // TODO:
-        stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:YES];
+        stripeView.backgroundColor = UIColor.ows_signalBlueColor;
     } else {
         stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:!self.isOutgoing];
     }
