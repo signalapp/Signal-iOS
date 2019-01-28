@@ -54,8 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateFontSizes;
 
-- (void)updateLayoutWithSafeAreaInsets:(UIEdgeInsets)safeAreaInsets;
-
 #pragma mark - Voice Memo
 
 - (void)ensureTextViewHeight;

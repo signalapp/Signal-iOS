@@ -747,7 +747,6 @@ typedef enum : NSUInteger {
         NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
         OWSLogVerbose(@"First viewWillAppear took: %.2fms", appearenceDuration * 1000);
     }
-    [self updateInputToolbarLayout];
 }
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
@@ -1232,8 +1231,6 @@ typedef enum : NSUInteger {
 
     // Clear the "on open" state after the view has been presented.
     self.actionOnOpen = ConversationViewActionNone;
-
-    [self updateInputToolbarLayout];
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
@@ -4844,8 +4841,6 @@ typedef enum : NSUInteger {
             // new size.
             [strongSelf resetForSizeOrOrientationChange];
 
-            [strongSelf updateInputToolbarLayout];
-
             if (lastVisibleIndexPath) {
                 [strongSelf.collectionView scrollToItemAtIndexPath:lastVisibleIndexPath
                                                   atScrollPosition:UICollectionViewScrollPositionBottom
@@ -4878,23 +4873,6 @@ typedef enum : NSUInteger {
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
         [self updateLastKnownDistanceFromBottom];
     }
-    [self updateInputToolbarLayout];
-}
-
-- (void)viewSafeAreaInsetsDidChange
-{
-    [super viewSafeAreaInsetsDidChange];
-
-    [self updateInputToolbarLayout];
-}
-
-- (void)updateInputToolbarLayout
-{
-    UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
-    if (@available(iOS 11, *)) {
-        safeAreaInsets = self.view.safeAreaInsets;
-    }
-    [self.inputToolbar updateLayoutWithSafeAreaInsets:safeAreaInsets];
 }
 
 @end
