@@ -1509,6 +1509,11 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         failedThumbnailDownloadAttachmentPointer:attachmentPointer];
 }
 
+- (void)didCancelQuotedReply
+{
+    OWSFailDebug(@"Sent quoted replies should not be cancellable.");
+}
+
 #pragma mark - OWSContactShareButtonsViewDelegate
 
 - (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare

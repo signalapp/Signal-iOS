@@ -10,7 +10,7 @@ protocol QuotedReplyPreviewDelegate: class {
 }
 
 @objc
-class QuotedReplyPreview: UIStackView {
+class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
     @objc
     public weak var delegate: QuotedReplyPreviewDelegate?
 
@@ -48,56 +48,25 @@ class QuotedReplyPreview: UIStackView {
     func updateContents() {
         subviews.forEach { $0.removeFromSuperview() }
 
+        let hMargin: CGFloat = 6
+        self.layoutMargins = UIEdgeInsets(top: draftMarginTop,
+                                          left: hMargin,
+                                          bottom: 0,
+                                          right: hMargin)
+
         // We instantiate quotedMessageView late to ensure that it is updated
         // every time contentSizeCategoryDidChange (i.e. when dynamic type
         // sizes changes).
         let quotedMessageView = OWSQuotedMessageView(forPreview: quotedReply, conversationStyle: conversationStyle)
+        quotedMessageView.delegate = self
         self.quotedMessageView = quotedMessageView
         quotedMessageView.setContentHuggingHorizontalLow()
         quotedMessageView.setCompressionResistanceHorizontalLow()
-
         quotedMessageView.backgroundColor = .clear
-
-        let cancelButton: UIButton = UIButton(type: .custom)
-
-        let cancelImage = UIImage(named: "compose-cancel")?.withRenderingMode(.alwaysTemplate)
-        cancelButton.setImage(cancelImage, for: .normal)
-        cancelButton.imageView?.tintColor = Theme.secondaryColor
-        cancelButton.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
-        if let cancelSize = cancelImage?.size {
-            cancelButton.autoSetDimensions(to: cancelSize)
-        }
-
-        self.axis = .horizontal
-        self.alignment = .fill
-        self.distribution = .fill
-        self.spacing = 8
-        self.isLayoutMarginsRelativeArrangement = true
-        let hMarginLeading: CGFloat = 6
-        let hMarginTrailing: CGFloat = 12
-        self.layoutMargins = UIEdgeInsets(top: draftMarginTop,
-                                          left: CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
-                                          bottom: 0,
-                                          right: CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing)
-
-        self.addArrangedSubview(quotedMessageView)
-
-        let cancelStack = UIStackView()
-        cancelStack.axis = .horizontal
-        cancelStack.alignment = .top
-        cancelStack.setContentHuggingHigh()
-        cancelStack.setCompressionResistanceHigh()
-        cancelStack.addArrangedSubview(cancelButton)
-        self.addArrangedSubview(cancelStack)
+        self.addSubview(quotedMessageView)
+        quotedMessageView.ows_autoPinToSuperviewMargins()
 
         updateHeight()
-    }
-
-    // MARK: Actions
-
-    @objc
-    func didTapCancel(_ sender: Any) {
-        self.delegate?.quotedReplyPreviewDidPressCancel(self)
     }
 
     // MARK: Sizing
@@ -108,12 +77,22 @@ class QuotedReplyPreview: UIStackView {
             return
         }
         let size = quotedMessageView.size(forMaxWidth: CGFloat.infinity)
-        self.heightConstraint.constant = size.height
+        self.heightConstraint.constant = size.height + draftMarginTop
     }
 
     @objc func contentSizeCategoryDidChange(_ notification: Notification) {
         Logger.debug("")
 
         updateContents()
+    }
+
+    // MARK: - OWSQuotedMessageViewDelegate
+
+    @objc public func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel, failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
+        // Do nothing.
+    }
+
+    @objc public func didCancelQuotedReply() {
+        self.delegate?.quotedReplyPreviewDidPressCancel(self)
     }
 }

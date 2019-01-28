@@ -124,7 +124,8 @@ const CGFloat kMaxTextViewHeight = 98;
     self.inputTextView.textViewToolbarDelegate = self;
     self.inputTextView.font = [UIFont ows_dynamicTypeBodyFont];
     self.inputTextView.backgroundColor = Theme.toolbarBackgroundColor;
-    [self.inputTextView setContentHuggingHorizontalLow];
+    [self.inputTextView setContentHuggingLow];
+    [self.inputTextView setCompressionResistanceLow];
 
     _textViewHeightConstraint = [self.inputTextView autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
 

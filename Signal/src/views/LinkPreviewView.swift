@@ -590,9 +590,9 @@ public class LinkPreviewView: UIStackView {
         let hMarginLeading: CGFloat = hasImage ? 6 : 12
         let hMarginTrailing: CGFloat = 12
         self.layoutMargins = UIEdgeInsets(top: draftMarginTop,
-                                          left: CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
+                                          leading: hMarginLeading,
                                           bottom: 0,
-                                          right: CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing)
+                                          trailing: hMarginTrailing)
 
         // Right
 
