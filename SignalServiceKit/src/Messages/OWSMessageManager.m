@@ -1443,13 +1443,13 @@ NS_ASSUME_NONNULL_BEGIN
         [otherAttachmentIds removeObjectsInArray:incomingMessage.attachmentIds];
     }
     for (NSString *attachmentId in otherAttachmentIds) {
-        TSAttachmentPointer *_Nullable attachmentPointer =
-            [TSAttachmentPointer fetchObjectWithUniqueID:attachmentId transaction:transaction];
-
-        if (![attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
-            OWSFailDebug(@"Missing attachment pointer.");
+        TSAttachment *_Nullable attachment =
+            [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
+            OWSLogInfo(@"Skipping attachment stream.");
             continue;
         }
+        TSAttachmentPointer *_Nullable attachmentPointer = (TSAttachmentPointer *)attachment;
 
         OWSLogDebug(@"Downloading attachment for message: %lu", (unsigned long)incomingMessage.timestamp);
 
