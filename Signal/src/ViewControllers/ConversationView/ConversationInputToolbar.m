@@ -69,6 +69,8 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, nullable) UILabel *recordingLabel;
 @property (nonatomic) BOOL isRecordingVoiceMemo;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutContraints;
+@property (nonatomic) UIEdgeInsets receivedSafeAreaInsets;
 @property (nonatomic, nullable) InputLinkPreview *inputLinkPreview;
 @property (nonatomic) BOOL wasLinkPreviewCancelled;
 @property (nonatomic, nullable, weak) LinkPreviewView *linkPreviewView;
@@ -84,6 +86,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self = [super initWithFrame:CGRectZero];
 
     _conversationStyle = conversationStyle;
+    _receivedSafeAreaInsets = UIEdgeInsetsZero;
 
     if (self) {
         [self createContents];
@@ -199,8 +202,6 @@ const CGFloat kMaxTextViewHeight = 98;
     [self addSubview:self.hStack];
     [self.hStack autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.hStack autoPinEdgeToSuperviewSafeArea:ALEdgeBottom];
-    [self.hStack autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
-    [self.hStack autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
     [self.hStack setContentHuggingHorizontalLow];
     [self.hStack setCompressionResistanceHorizontalLow];
 
@@ -367,6 +368,35 @@ const CGFloat kMaxTextViewHeight = 98;
         [UIView animateWithDuration:0.1 animations:updateBlock];
     } else {
         updateBlock();
+    }
+}
+
+// iOS doesn't always update the safeAreaInsets correctly & in a timely
+// way for the inputAccessoryView after a orientation change.  The best
+// workaround appears to be to use the safeAreaInsets from
+// ConversationViewController's view.  ConversationViewController updates
+// this input toolbar using updateLayoutWithIsLandscape:.
+- (void)updateContentLayout
+{
+    if (self.layoutContraints) {
+        [NSLayoutConstraint deactivateConstraints:self.layoutContraints];
+    }
+
+    self.layoutContraints = @[
+        [self.hStack autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:self.receivedSafeAreaInsets.left],
+        [self.hStack autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:self.receivedSafeAreaInsets.right],
+    ];
+}
+
+- (void)updateLayoutWithSafeAreaInsets:(UIEdgeInsets)safeAreaInsets
+{
+    BOOL didChange = !UIEdgeInsetsEqualToEdgeInsets(self.receivedSafeAreaInsets, safeAreaInsets);
+    BOOL hasLayout = self.layoutContraints != nil;
+
+    self.receivedSafeAreaInsets = safeAreaInsets;
+
+    if (didChange || !hasLayout) {
+        [self updateContentLayout];
     }
 }
 
