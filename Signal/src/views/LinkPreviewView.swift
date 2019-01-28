@@ -569,18 +569,13 @@ public class LinkPreviewView: UIStackView {
         self.distribution = .fill
         self.spacing = 8
         self.isLayoutMarginsRelativeArrangement = true
-        let hMarginLeading: CGFloat = 6
-        let hMarginTrailing: CGFloat = 12
-        self.layoutMargins = UIEdgeInsets(top: draftMarginTop,
-                                          left: CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
-                                          bottom: 0,
-                                          right: CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing)
 
         self.layoutConstraints.append(self.autoSetDimension(.height, toSize: draftHeight + draftMarginTop))
 
         // Image
 
-        if let imageView = createDraftImageView(state: state) {
+        let draftImageView = createDraftImageView(state: state)
+        if let imageView = draftImageView {
             imageView.contentMode = .scaleAspectFill
             imageView.autoPinToSquareAspectRatio()
             let imageSize = draftHeight
@@ -590,6 +585,14 @@ public class LinkPreviewView: UIStackView {
             imageView.clipsToBounds = true
             addArrangedSubview(imageView)
         }
+
+        let hasImage = draftImageView != nil
+        let hMarginLeading: CGFloat = hasImage ? 6 : 12
+        let hMarginTrailing: CGFloat = 12
+        self.layoutMargins = UIEdgeInsets(top: draftMarginTop,
+                                          left: CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
+                                          bottom: 0,
+                                          right: CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing)
 
         // Right
 
