@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachmentStream.h"
@@ -776,6 +776,10 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail
 {
+    if (!self.isValidVisualMedia) {
+        return nil;
+    }
+
     NSData *_Nullable thumbnailData = self.thumbnailDataSmallSync;
     //  Only some media types have thumbnails
     if (!thumbnailData) {
