@@ -66,13 +66,13 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         displayableQuotedText = [DisplayableText displayableText:quotedMessage.body];
     }
 
-    OWSQuotedMessageView *instance =
-        [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
-                                      displayableQuotedText:displayableQuotedText
-                                          conversationStyle:conversationStyle
-                                               isForPreview:YES
-                                                 isOutgoing:YES
-                                               sharpCorners:OWSDirectionalRectCornerAllCorners];
+    OWSQuotedMessageView *instance = [[OWSQuotedMessageView alloc]
+        initWithQuotedMessage:quotedMessage
+        displayableQuotedText:displayableQuotedText
+            conversationStyle:conversationStyle
+                 isForPreview:YES
+                   isOutgoing:YES
+                 sharpCorners:(OWSDirectionalRectCornerBottomLeading | OWSDirectionalRectCornerBottomTrailing)];
     [instance createContents];
     return instance;
 }
@@ -235,8 +235,9 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
     UILabel *quotedTextLabel = [self configureQuotedTextLabel];
     [vStackView addArrangedSubview:quotedTextLabel];
-    [quotedTextLabel setContentHuggingLow];
-    [quotedTextLabel setCompressionResistanceLow];
+    [quotedTextLabel setContentHuggingHorizontalLow];
+    [quotedTextLabel setCompressionResistanceHorizontalLow];
+    [quotedTextLabel setCompressionResistanceVerticalHigh];
 
     if (self.hasQuotedAttachment) {
         UIView *_Nullable quotedAttachmentView = nil;
@@ -299,15 +300,57 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         [emptyView autoSetDimension:ALDimensionWidth toSize:0.f];
     }
 
-    UIStackView *quoteSourceWrapper = [[UIStackView alloc] initWithArrangedSubviews:@[ hStackView ]];
-    quoteSourceWrapper.axis = UILayoutConstraintAxisVertical;
+    UIView *contentView = hStackView;
+    [contentView setContentHuggingHorizontalLow];
+    [contentView setCompressionResistanceHorizontalLow];
 
     if (self.quotedMessage.isRemotelySourced) {
-        [quoteSourceWrapper addArrangedSubview:[self buildRemoteContentSourceView]];
+        UIStackView *quoteSourceWrapper = [[UIStackView alloc] initWithArrangedSubviews:@[
+            contentView,
+            [self buildRemoteContentSourceView],
+        ]];
+        quoteSourceWrapper.axis = UILayoutConstraintAxisVertical;
+        contentView = quoteSourceWrapper;
+        [contentView setContentHuggingHorizontalLow];
+        [contentView setCompressionResistanceHorizontalLow];
     }
 
-    [innerBubbleView addSubview:quoteSourceWrapper];
-    [quoteSourceWrapper ows_autoPinToSuperviewEdges];
+    if (self.isForPreview) {
+        UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [cancelButton
+            setImage:[[UIImage imageNamed:@"compose-cancel"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+            forState:UIControlStateNormal];
+        cancelButton.imageView.tintColor = Theme.secondaryColor;
+        [cancelButton addTarget:self action:@selector(didTapCancel) forControlEvents:UIControlEventTouchUpInside];
+        [cancelButton setContentHuggingHorizontalHigh];
+        [cancelButton setCompressionResistanceHorizontalHigh];
+
+        UIStackView *cancelStack = [[UIStackView alloc] initWithArrangedSubviews:@[ cancelButton ]];
+        cancelStack.axis = UILayoutConstraintAxisHorizontal;
+        cancelStack.alignment = UIStackViewAlignmentTop;
+        cancelStack.layoutMarginsRelativeArrangement = YES;
+        CGFloat hMarginLeading = 0;
+        CGFloat hMarginTrailing = 6;
+        cancelStack.layoutMargins = UIEdgeInsetsMake(6,
+            CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
+            0,
+            CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing);
+        [cancelStack setContentHuggingHorizontalHigh];
+        [cancelStack setCompressionResistanceHorizontalHigh];
+
+        UIStackView *cancelWrapper = [[UIStackView alloc] initWithArrangedSubviews:@[
+            contentView,
+            cancelStack,
+        ]];
+        cancelWrapper.axis = UILayoutConstraintAxisHorizontal;
+
+        contentView = cancelWrapper;
+        [contentView setContentHuggingHorizontalLow];
+        [contentView setCompressionResistanceHorizontalLow];
+    }
+
+    [innerBubbleView addSubview:contentView];
+    [contentView ows_autoPinToSuperviewEdges];
 }
 
 - (UIView *)buildRemoteContentSourceView
@@ -635,6 +678,11 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 - (CGSize)sizeThatFits:(CGSize)size
 {
     return [self sizeForMaxWidth:CGFLOAT_MAX];
+}
+
+- (void)didTapCancel
+{
+    [self.delegate didCancelQuotedReply];
 }
 
 @end
