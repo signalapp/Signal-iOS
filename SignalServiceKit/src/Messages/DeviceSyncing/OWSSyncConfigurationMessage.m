@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncConfigurationMessage.h"
@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL areReadReceiptsEnabled;
 @property (nonatomic, readonly) BOOL showUnidentifiedDeliveryIndicators;
 @property (nonatomic, readonly) BOOL showTypingIndicators;
+@property (nonatomic, readonly) BOOL sendLinkPreviews;
 
 @end
 
@@ -19,7 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithReadReceiptsEnabled:(BOOL)areReadReceiptsEnabled
          showUnidentifiedDeliveryIndicators:(BOOL)showUnidentifiedDeliveryIndicators
-                       showTypingIndicators:(BOOL)showTypingIndicators {
+                       showTypingIndicators:(BOOL)showTypingIndicators
+                           sendLinkPreviews:(BOOL)sendLinkPreviews
+{
     self = [super init];
     if (!self) {
         return nil;
@@ -28,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
     _areReadReceiptsEnabled = areReadReceiptsEnabled;
     _showUnidentifiedDeliveryIndicators = showUnidentifiedDeliveryIndicators;
     _showTypingIndicators = showTypingIndicators;
+    _sendLinkPreviews = sendLinkPreviews;
 
     return self;
 }
@@ -43,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
     configurationBuilder.readReceipts = self.areReadReceiptsEnabled;
     configurationBuilder.unidentifiedDeliveryIndicators = self.showUnidentifiedDeliveryIndicators;
     configurationBuilder.typingIndicators = self.showTypingIndicators;
+    configurationBuilder.linkPreviews = self.sendLinkPreviews;
 
     NSError *error;
     SSKProtoSyncMessageConfiguration *_Nullable configurationProto = [configurationBuilder buildAndReturnError:&error];

@@ -21,8 +21,9 @@ public class SSKPreferences: NSObject {
 
     @objc
     public class func setAreLinkPreviewsEnabled(value: Bool) {
-        return OWSPrimaryStorage.dbReadWriteConnection().setBool(value,
-                                                                 forKey: areLinkPreviewsEnabledKey,
-                                                                 inCollection: collection)
+        OWSPrimaryStorage.dbReadWriteConnection().setBool(value,
+                                                          forKey: areLinkPreviewsEnabledKey,
+                                                          inCollection: collection)
+        SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
     }
 }

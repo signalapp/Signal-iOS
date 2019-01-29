@@ -304,9 +304,10 @@ message SyncMessage {
   }
 
   message Configuration {
-      optional bool readReceipts = 1;
+      optional bool readReceipts                   = 1;
       optional bool unidentifiedDeliveryIndicators = 2;
-      optional bool typingIndicators = 3;
+      optional bool typingIndicators               = 3;
+      optional bool linkPreviews                   = 4;
   }
 
   optional Sent          sent          = 1;

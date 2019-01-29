@@ -1795,6 +1795,15 @@ struct SignalServiceProtos_SyncMessage {
     /// Clears the value of `typingIndicators`. Subsequent reads from it will return its default value.
     mutating func clearTypingIndicators() {self._typingIndicators = nil}
 
+    var linkPreviews: Bool {
+      get {return _linkPreviews ?? false}
+      set {_linkPreviews = newValue}
+    }
+    /// Returns true if `linkPreviews` has been explicitly set.
+    var hasLinkPreviews: Bool {return self._linkPreviews != nil}
+    /// Clears the value of `linkPreviews`. Subsequent reads from it will return its default value.
+    mutating func clearLinkPreviews() {self._linkPreviews = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
@@ -1802,6 +1811,7 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _readReceipts: Bool? = nil
     fileprivate var _unidentifiedDeliveryIndicators: Bool? = nil
     fileprivate var _typingIndicators: Bool? = nil
+    fileprivate var _linkPreviews: Bool? = nil
   }
 
   init() {}
@@ -4199,6 +4209,7 @@ extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, 
     1: .same(proto: "readReceipts"),
     2: .same(proto: "unidentifiedDeliveryIndicators"),
     3: .same(proto: "typingIndicators"),
+    4: .same(proto: "linkPreviews"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4207,6 +4218,7 @@ extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, 
       case 1: try decoder.decodeSingularBoolField(value: &self._readReceipts)
       case 2: try decoder.decodeSingularBoolField(value: &self._unidentifiedDeliveryIndicators)
       case 3: try decoder.decodeSingularBoolField(value: &self._typingIndicators)
+      case 4: try decoder.decodeSingularBoolField(value: &self._linkPreviews)
       default: break
       }
     }
@@ -4222,6 +4234,9 @@ extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, 
     if let v = self._typingIndicators {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 3)
     }
+    if let v = self._linkPreviews {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4229,6 +4244,7 @@ extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, 
     if lhs._readReceipts != rhs._readReceipts {return false}
     if lhs._unidentifiedDeliveryIndicators != rhs._unidentifiedDeliveryIndicators {return false}
     if lhs._typingIndicators != rhs._typingIndicators {return false}
+    if lhs._linkPreviews != rhs._linkPreviews {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
