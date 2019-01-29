@@ -8,12 +8,6 @@ import SignalServiceKit
 @objc
 public class OWS115LinkPreviewsMigration: OWSDatabaseMigration {
 
-    // MARK: - Dependencies
-
-    private var typingIndicators: TypingIndicators {
-        return SSKEnvironment.shared.typingIndicators
-    }
-
     // MARK: -
 
     // Increment a similar constant for each migration.
