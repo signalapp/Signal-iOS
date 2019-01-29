@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 BOOL IsNoteToSelfEnabled(void)
 {
-    return YES;
+    return NO;
 }
 
 ConversationColorName const ConversationColorNameCrimson = @"red";
