@@ -1582,6 +1582,17 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                                   transaction:transaction];
     }];
 
+    self.collapseCutoffDate = [NSDate new];
+
+    [self ensureDynamicInteractions];
+
+    if (![self reloadViewItems]) {
+        OWSFailDebug(@"failed to reload view items in resetMapping.");
+    }
+
+    [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
+    [self.delegate conversationViewModelRangeDidChange];
+
     return indexPath;
 }
 
