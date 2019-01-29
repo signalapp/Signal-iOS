@@ -434,6 +434,15 @@ public class OWSLinkPreview: MTLModel {
     public class func previewUrl(forMessageBodyText body: String?) -> String? {
         AssertIsOnMainThread()
 
+        // Exit early if link previews are not enabled in order to avoid
+        // tainting the cache.
+        guard OWSLinkPreview.featureEnabled else {
+            return nil
+        }
+        guard SSKPreferences.areLinkPreviewsEnabled() else {
+            return nil
+        }
+
         if let cachedUrl = previewUrlCache.object(forKey: body as AnyObject) as? String {
             Logger.verbose("URL parsing cache hit.")
             guard cachedUrl.count > 0 else {
@@ -501,6 +510,16 @@ public class OWSLinkPreview: MTLModel {
 
     private class func setCachedLinkPreview(_ linkPreviewDraft: OWSLinkPreviewDraft,
                                             forPreviewUrl previewUrl: String) {
+
+        // Exit early if link previews are not enabled in order to avoid
+        // tainting the cache.
+        guard OWSLinkPreview.featureEnabled else {
+            return
+        }
+        guard SSKPreferences.areLinkPreviewsEnabled() else {
+            return
+        }
+
         serialQueue.sync {
             previewUrlCache.setObject(linkPreviewDraft, forKey: previewUrl as AnyObject)
         }

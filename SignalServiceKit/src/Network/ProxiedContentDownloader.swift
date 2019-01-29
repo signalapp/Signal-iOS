@@ -644,7 +644,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             request.httpMethod = "HEAD"
             request.httpShouldUsePipelining = true
             // Some services like Reddit will severely rate-limit requests without a user agent.
-            request.addValue("Signal", forHTTPHeaderField: "User-Agent")
+            request.addValue("Signal iOS (+https://signal.org/download)", forHTTPHeaderField: "User-Agent")
 
             let task = downloadSession.dataTask(with: request, completionHandler: { data, response, error -> Void in
                 if let data = data, data.count > 0 {

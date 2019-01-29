@@ -719,16 +719,16 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     OWSAssertIsOnMainThread();
 
-    if (self.wasLinkPreviewCancelled) {
-        [self clearLinkPreviewStateAndView];
-        return;
-    }
-
     NSString *body =
         [[self messageText] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     if (body.length < 1) {
         [self clearLinkPreviewStateAndView];
         self.wasLinkPreviewCancelled = NO;
+        return;
+    }
+
+    if (self.wasLinkPreviewCancelled) {
+        [self clearLinkPreviewStateAndView];
         return;
     }
 
