@@ -4307,6 +4307,9 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
         if hasTypingIndicators {
             builder.setTypingIndicators(typingIndicators)
         }
+        if hasLinkPreviews {
+            builder.setLinkPreviews(linkPreviews)
+        }
         return builder
     }
 
@@ -4326,6 +4329,10 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
 
         @objc public func setTypingIndicators(_ valueParam: Bool) {
             proto.typingIndicators = valueParam
+        }
+
+        @objc public func setLinkPreviews(_ valueParam: Bool) {
+            proto.linkPreviews = valueParam
         }
 
         @objc public func build() throws -> SSKProtoSyncMessageConfiguration {
@@ -4358,6 +4365,13 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
     }
     @objc public var hasTypingIndicators: Bool {
         return proto.hasTypingIndicators
+    }
+
+    @objc public var linkPreviews: Bool {
+        return proto.linkPreviews
+    }
+    @objc public var hasLinkPreviews: Bool {
+        return proto.hasLinkPreviews
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Configuration) {
