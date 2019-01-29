@@ -48,7 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS112TypingIndicatorsMigration alloc] init],
         [[OWS113MultiAttachmentMediaMessages alloc] init],
         [[OWS114RemoveDynamicInteractions alloc] init],
-        [[OWS115LinkPreviewsMigration alloc] init],
     ];
 }
 

@@ -1326,12 +1326,17 @@ static NSTimeInterval launchStartedAt;
 
     [self.primaryStorage touchDbAsync];
 
-    // Try to update account attributes every time we upgrade.
+    // Every time the user upgrades to a new version:
+    //
+    // * Update account attributes.
+    // * Sync configuration.
     if ([self.tsAccountManager isRegistered]) {
         AppVersion *appVersion = AppVersion.sharedInstance;
         if (appVersion.lastAppVersion.length > 0
             && ![appVersion.lastAppVersion isEqualToString:appVersion.currentAppVersion]) {
             [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
+
+            [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
         }
     }
 }

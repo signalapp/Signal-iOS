@@ -298,7 +298,6 @@
 		34EA69422194DE8000702471 /* MediaUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA69412194DE7F00702471 /* MediaUploadView.swift */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
 		34FDB29221FF986600A01202 /* UIView+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FDB29121FF986600A01202 /* UIView+OWS.swift */; };
-		34FDB2942200974600A01202 /* OWS115LinkPreviewsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FDB2932200974600A01202 /* OWS115LinkPreviewsMigration.swift */; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
 		4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
 		4503F1C3204711D300CEE724 /* OWS107LegacySounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 4503F1C1204711D200CEE724 /* OWS107LegacySounds.m */; };
@@ -1015,7 +1014,6 @@
 		34F308A01ECB469700BB7697 /* OWSBezierPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBezierPathView.h; sourceTree = "<group>"; };
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
 		34FDB29121FF986600A01202 /* UIView+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+OWS.swift"; sourceTree = "<group>"; };
-		34FDB2932200974600A01202 /* OWS115LinkPreviewsMigration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS115LinkPreviewsMigration.swift; sourceTree = "<group>"; };
 		435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "classic-quiet.aifc"; sourceTree = "<group>"; };
 		4503F1BC20470A5B00CEE724 /* classic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = classic.aifc; sourceTree = "<group>"; };
@@ -1682,7 +1680,6 @@
 				34B6A908218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift */,
 				4C7537882193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift */,
 				34BEDB0A21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift */,
-				34FDB2932200974600A01202 /* OWS115LinkPreviewsMigration.swift */,
 				346129931FD1E30000532771 /* OWSDatabaseMigration.h */,
 				346129941FD1E30000532771 /* OWSDatabaseMigration.m */,
 				346129E51FD5C0C600532771 /* OWSDatabaseMigrationRunner.h */,
@@ -3414,7 +3411,6 @@
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
 				34AC09E3211B39B100997B47 /* OWSViewController.m in Sources */,
 				346129C81FD2072E00532771 /* NSAttributedString+OWS.m in Sources */,
-				34FDB2942200974600A01202 /* OWS115LinkPreviewsMigration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
