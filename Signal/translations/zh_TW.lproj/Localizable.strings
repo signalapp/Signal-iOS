@@ -1087,7 +1087,7 @@
 "IMAGE_EDITOR_CROP_BUTTON" = "裁剪";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "你無法分享超過%@個項目。";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "無法選擇附檔。";
@@ -1184,6 +1184,9 @@
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "連結新的裝置";
+
+/* Label for link previews with an unknown host. */
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "已連結的裝置";
@@ -2086,6 +2089,15 @@
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "條款和隱私政策";
+
+/* Setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+
+/* Footer for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+
+/* Header for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "設定";

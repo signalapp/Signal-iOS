@@ -99,10 +99,10 @@
 "ATTACHMENT" = "Anexo";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Atingido o limite da legenda.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Adicionar uma legenda…";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tipo de ficheiro: %@";
@@ -228,10 +228,10 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "A restaurar Ficheiros";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+"BACKUP_RESTORE_DECISION_TITLE" = "Cópia de segurança disponível";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+"BACKUP_RESTORE_DESCRIPTION" = "A restaurar a cópia de segurança";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Progresso";
@@ -240,7 +240,7 @@
 "BACKUP_RESTORE_STATUS" = "Estado";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "Erro inesperado com a cópia de segurança";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Não voltará a receber mensagens ou actualizações deste grupo.";
@@ -402,10 +402,10 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Seleccione País";
 
 /* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Não Restaurar";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Não foi possível determinar se existe uma cópia de segurança que possa ser restaurada.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Erro";
@@ -414,13 +414,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Restaurar";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "O Signal não consegui determinar o estado da sua conta iCloud. Autentique-se na sua conta iCloud nas configurações do iOS para fazer uma cópia de segurança dos seus dados do Signal.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Sem conta iCloud. Autentique-se na sua conta iCloud nas configurações do iOS para fazer uma cópia de segurança dos seus dados do Signal.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "O Signal têm o acesso barrado à sua conta iCloud para fazer cópias de segurança. Forneça o acesso do Signal à sua conta iCloud nas configurações do iOS para fazer uma cópia de segurança dos seus dados do Signal.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Escolha a cor das mensagens nesta conversa.";
@@ -561,10 +561,10 @@
 "CONTACT_WITHOUT_NAME" = "Contacto Sem Nome";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Isto não pode ser desfeito.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Apagar conversa?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Definições da Conversa";
@@ -727,7 +727,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "Mais Um Passo";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Could not open Email app.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "Não foi possível abrir a app de Email.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "O link para o \"gist\" foi copiado para o seu clipboard. Vai ser redireccionado para a lista de problemas do GitHub.";
@@ -1081,16 +1081,16 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
+"IMAGE_EDITOR_BRUSH_BUTTON" = "Pincel";
 
 /* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Crop";
+"IMAGE_EDITOR_CROP_BUTTON" = "Recortar";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Não pode partilhar mais do que %@ itens.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Não foi possível selecionar o anexo.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "A ligar...";
@@ -1185,6 +1185,9 @@
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Associar";
 
+/* Label for link previews with an unknown host. */
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Dispositivos";
 
@@ -1219,7 +1222,7 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Apagar Mensagem";
 
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ on %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ em %@";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -1333,7 +1336,7 @@
 "MESSAGE_STATUS_UPLOADING" = "A enviar...";
 
 /* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Nova mensagem";
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Nova Mensagem";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@: contacto deixou de estar marcado como verificado. Toque aqui para ver opções. ";
@@ -1473,7 +1476,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Procurar contactos por número de telefone";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Nota para Mim";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Poderá receber mensagens enquanto %@ estiver a reiniciar.";
@@ -1569,7 +1572,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Trabalho Fax";
 
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Álbum Sem Nome";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reproduzir";
@@ -1737,7 +1740,7 @@
 "REGISTER_RATE_LIMITING_BODY" = "Tentou demasiado rápido. Por favor espere um minuto antes de voltar a tentar.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "Tentou demasiado rápido. Por favor espere um minuto antes de voltar a tentar.";
+"REGISTER_RATE_LIMITING_ERROR" = "Tentou demasiadas vezes. Por favor espere um minuto antes de voltar a tentar.";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Falhou a reinscrição nas Push Notifications.";
@@ -1995,19 +1998,19 @@
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Activo";
 
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "Estado do iCloud";
 
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Falha a restaurar da cópia de segurança";
 
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Restauro da Cópia de Segurança Inactivo";
 
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "A Restaurar Cópia de Segurança";
 
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Restauro da Cópia de Segurança Bem Sucedido";
 
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "Fase";
@@ -2086,6 +2089,15 @@
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Termos e Política de Privacidade";
+
+/* Setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+
+/* Footer for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+
+/* Header for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Definições";
@@ -2172,10 +2184,10 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Bloqueio de Registo";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "Indicadores de Escrita";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Veja e partilhe quando as mensagens estão a ser escritas. Esta definição é opcional e aplica-se a todas as conversas.";
 
 /* Label for a link to more info about unidentified delivery. */
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Saber Mais";
@@ -2184,16 +2196,16 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Emissor Selado";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Indicadores de Visualização";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Mostrar um ícone de estado quando seleciona \"Mais info\" em mensagens que foram entregues utilizando o emissor selado.";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir de Todos";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Ativar o emissor selado para mensagens recebidas de não-contactos e pessoas com as quais não partilhou o seu perfil.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Activar o emissor selado para mensagens recebidas de números que não se encontram na sua lista de contactos e pessoas com as quais não partilhou o seu perfil.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versão";
@@ -2361,7 +2373,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Arrastar para Atender";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Activar Indicadores de Escrita";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Pode escolher notificações personalizadas por conversa. Chamadas irão ter o mesmo toque que o contacto no sistema.";
@@ -2394,7 +2406,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Agora pode opcionalmente ver e partilhar quando as mensagens estão a ser escritas.";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Apresentando os Indicadores de Escrita";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "O Signal agora suporta videochamadas seguras. Simplesmente comece uma chamada, como sempre, e toque no botão da câmara.";

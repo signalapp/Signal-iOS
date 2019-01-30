@@ -414,7 +414,7 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Återställ";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal kunde inte bestämma din iCloud-konto status. Logga in på ditt iCloud-konto i iOS-inställningsappen för att säkerhetskopiera din Signal-data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal kunde inte bestämma statusen för ditt iCloud-konto. Logga in på ditt iCloud-konto i iOS-inställningsappen för att säkerhetskopiera din Signal-data.";
 
 /* Error indicating that user does not have an iCloud account. */
 "CLOUDKIT_STATUS_NO_ACCOUNT" = "Inget iCloud-konto. Logga in på ditt iCloud-konto i iOS-inställningsappen för att säkerhetskopiera din Signal-data.";
@@ -621,7 +621,7 @@
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tryck för att ändra";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Av-tysta";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ljud på";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Denna grupp kan se din profil.";
@@ -730,7 +730,7 @@
 "DEBUG_LOG_COULD_NOT_EMAIL" = "Kunde inte öppna Mail appen.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist-länken kopierades till urklipp. Du kommer bli skickad vidare till listan över issues på GitHub.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist-länken kopierades till urklipp. Du kommer bli skickad vidare till listan över problem på GitHub.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Går vidare till GitHub";
@@ -811,7 +811,7 @@
 "EDIT_TXT" = "Ändra";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hej,\n\nDen senaste tiden har jag använt Signal för att hålla mina konversationer på min iPhone privata. Jag vill att du installerar det också, så att vi kan vara säkra på att endast du och jag kan läsa våra meddelanden eller höra våra samtal.\n\nSignal finns tillgänglig för iPhone och för Android. Hämta den här: %@\n\nSignal fungerar som din redan befintliga meddelande-app. Vi kan skicka bilder och video, ringa samtal, och starta gruppkonversationer. Den bästa delen med det är att ingen annan kan se något av det, inte ens de som gör Signal!\n\nDu kan läsa mer om Open Whisper Systems, och de som ligger bakom här: %@";
+"EMAIL_INVITE_BODY" = "Hej,\n\nDen senaste tiden har jag använt Signal för att hålla mina konversationer på min iPhone privata. Jag vill att du installerar det också, så att vi kan vara säkra på att endast du och jag kan läsa våra meddelanden eller höra våra samtal.\n\nSignal finns tillgänglig för iPhone och för Android. Hämta den här: %@\n\nSignal fungerar som din redan befintliga meddelandeapp. Vi kan skicka bilder och video, ringa samtal, och starta gruppkonversationer. Den bästa delen med det är att ingen annan kan se något av det, inte ens de som gör Signal!\n\nDu kan läsa mer om Open Whisper Systems, och de som ligger bakom här: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Låt oss byta till Signal";
@@ -1081,16 +1081,16 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
+"IMAGE_EDITOR_BRUSH_BUTTON" = "Pensel";
 
 /* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Crop";
+"IMAGE_EDITOR_CROP_BUTTON" = "Beskära";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Du kan inte dela mer än %@ objekt.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = " Kunde inte välja bilaga.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Ansluter...";
@@ -1184,6 +1184,9 @@
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Länka ny enhet";
+
+/* Label for link previews with an unknown host. */
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Länkade enheter";
@@ -1473,7 +1476,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Hitta kontakter via telefonnummer";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Notera till mig själv";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Du kan ha fått nya meddelanden medan din %@ startades om.";
@@ -1971,10 +1974,10 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Kringgå censur";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Slå på debug-log";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Slå på felsökningslogg";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Skicka in debug-loggar";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Skicka in felsökningslogg";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avancerat";
@@ -2087,6 +2090,15 @@
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Villkor & Dataskyddspolicy";
 
+/* Setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+
+/* Footer for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+
+/* Header for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Inställningar";
 
@@ -2172,7 +2184,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registreringslås";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Skriv-indikatorer";
+"SETTINGS_TYPING_INDICATORS" = "Skrivindikatorer";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Visa och dela när meddelanden skrivs. Inställningen är valfri och påverkar alla konversationer.";
@@ -2361,7 +2373,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Svep för att svara";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Sätt på skriv-indikatorer";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Sätt på skrivindikatorer";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Nu kan du välja standard-notisljud men också sätta per konversation. Samtal kommer respektera ringtoner du valt för varje kontakt i systemet.";
@@ -2394,7 +2406,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Nu kan du valfritt visa och dela när meddelanden skrivs.";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducerar skriv-indikatorer";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducerar skrivindikatorer";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal har nu stöd för säkra videosamtal. Påbörja ett samtal som vanligt, tryck på kameraknappen och vinka hej.";
@@ -2439,7 +2451,7 @@
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Du markerade %@ som verifierad på en annan enhet.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "Verifierings-status ändrad.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "Verifieringsstatus ändrad.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
 "VERIFY_PRIVACY" = "Visa säkerhetsnummer";

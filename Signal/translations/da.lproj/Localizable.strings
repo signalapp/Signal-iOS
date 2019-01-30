@@ -1,18 +1,18 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ikke Nu";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ikke nu";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accepter nyt sikkerheds nummer";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Acceptér nyt sikkerhedsnummer";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal Opkald";
+"ACTION_AUDIO_CALL" = "Signal opkald";
 
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Invitér til Signal";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "Send Besked";
+"ACTION_SEND_MESSAGE" = "Send besked";
 
 /* Label for 'share contact' button. */
 "ACTION_SHARE_CONTACT" = "Del kontakt";
@@ -24,13 +24,13 @@
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Tilføj";
 
 /* Title for the 'add contact' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Tilføj Kontakt";
+"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Tilføj kontakt";
 
 /* Title for the 'add by phone number' section of the 'add group member' view. */
 "ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Tilføj via telefon nummer";
 
 /* Title for the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_TITLE" = "Tilføj Medlem";
+"ADD_GROUP_MEMBER_VIEW_TITLE" = "Tilføj medlem";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Vil du dele din profil med denne gruppe?";
@@ -69,7 +69,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ i gruppe %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kan ikke starte. Send venligst en fejlsøgningslog til support@signal.org, så vi kan fejlsøge dette problem.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Fejl";
@@ -78,13 +78,13 @@
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Skriv dit navn";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Ikke Nu";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Ikke nu";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ er nu tilgængelig i App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "En ny version af Signal er tilgængelig";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Opdater";
@@ -99,10 +99,10 @@
 "ATTACHMENT" = "Vedhæftning";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Billedtekst grænse nået.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Tilføj en billedtekst...";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Fil type: %@";
@@ -120,40 +120,40 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Vedhæftning";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Download failed. Tap to retry.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Fejl ved afhentning. Tryk for at prøve igen.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Downloader...";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Henter...";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Sat i kø";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+"ATTACHMENT_ERROR_ALERT_TITLE" = " Kunne ikke sende fil";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Unable to convert image.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Kunne ikke konvertere billede.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Kan ikke processere videoen.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Unable to parse image.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Kan ikke analysere billede.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Kan ikke fjerne metadata fra billedet.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Unable to resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Kunne ikke ændre billedets størrelse.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Vedhæftning er for stor.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Vedhæftet fil indeholder ugyldigt indhold.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Vedhæftet fil har et ugyldigt filformat.";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Vedhæftning er tom.";
@@ -171,7 +171,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Dokumentet kunne ikke vælges.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Opret et komprimeret arkiv af denne fil eller mappe, og prøv at sende det i stedet.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Filen understøttes ikke";
@@ -189,58 +189,58 @@
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Data til sikkerhedskopi kunne ikke eksporteres.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Ugyldig Service Svar";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Ugyldig service svar";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Renser Sikkerhedskopi";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Renser sikkerhedskopi";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initialisere Sikkerhedskopi";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initialisere sikkerhedskopi";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Eksporterer Data";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Eksporterer data";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Eksporterer Sikkerhedskopi";
+"BACKUP_EXPORT_PHASE_EXPORT" = "Eksporterer sikkerhedskopi";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploader Sikkerhedskopi";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploader sikkerhedskopi";
 
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Sikkerhedskopi kunne ikke importeres.";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Konfigurerer Sikkerhedskopi";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Konfigurerer sikkerhedskopi";
 
 /* Indicates that the backup import data is being downloaded. */
 "BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloader data til sikkerhedskopi";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Færdiggører Sikkerhedskopi";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Færdiggører sikkerhedskopi";
 
 /* Indicates that the backup import data is being imported. */
 "BACKUP_IMPORT_PHASE_IMPORT" = "Importerer sikkerhedskopi.";
 
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Gendanner Databasen";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Gendanner databasen";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Gendanner Filer";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Gendanner filer";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+"BACKUP_RESTORE_DECISION_TITLE" = "Sikkerhedskopi tilgængelig";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+"BACKUP_RESTORE_DESCRIPTION" = "Gendanner sikkerhedskopi";
 
 /* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "Progress";
+"BACKUP_RESTORE_PROGRESS" = "Forløb";
 
 /* Label for the backup restore status. */
 "BACKUP_RESTORE_STATUS" = "Status";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "Uventet sikkerhedskopieringsfejl";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Du vil ikke længere modtage beskeder eller opdateringer fra gruppen";
@@ -249,25 +249,25 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Bloker";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blokér og forlad \"%@\" gruppen?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Bloker %@?";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blocked Groups";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blokerede grupper";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blocked Users";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blokerede brugere";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Ophæv Blokade";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Ophæv blokade";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Eksisterende medlemmer vil kunne tilføje dig til gruppen igen";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Unblock This Group?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Fjern blokering af gruppen?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Ophæv blokade for %@?";
@@ -276,13 +276,13 @@
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Bloker";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ er blevet blokeret.";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Bruger blokeret";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Group Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Gruppe blokeret";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Du kan ikke blokkere dig selv.";
@@ -294,7 +294,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@'s blokering er blevet fjernet.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Eksisterende medlemmer kan nu tilføje dig til gruppen igen.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Bloker";
@@ -321,10 +321,10 @@
 "BUTTON_UNDO" = "Fortryd";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+"CALL_AGAIN_BUTTON_TITLE" = "Ring igen";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Du kan aktivere mikrofonadgang i Indstillinger-appen for at foretage opkald og optage talemeddelelser i Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Adgang til mikrofonen er påkrævet";
@@ -333,7 +333,7 @@
 "CALL_LABEL" = "Ring op";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Intet svar";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -363,10 +363,10 @@
 "CALL_VIEW_MUTE_LABEL" = "Slå lyd fra";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can enable iOS Call Integration in your Signal privacy settings to answer incoming calls from your lock screen.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Du kan aktivere iOS opkaldsintegration i dine Signal privatlivsindstillinger for at besvare indgående opkald fra din låseskærm.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can enable iOS Call Integration in your Signal privacy settings to see the name and phone number for incoming calls.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Du kan aktivere iOS opkaldsintegration i dine Signal privatlivsindstillinger for at se navn og telefonnummer for indgående opkald.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ikke nu";
@@ -375,7 +375,7 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Vis privatlivsindstillingerne";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Skift Kamera Retning";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Skift kamera retning";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Skift til lydopkald";
@@ -399,13 +399,13 @@
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Fejl";
 
 /* Title for the 'censorship circumvention country' view. */
-"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Vælg Land";
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Vælg land";
 
 /* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Gendan ikke";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Kunne ikke afgøre, om der er en sikkerhedskopi, der kan gendannes.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Fejl";
@@ -414,25 +414,25 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Gendan";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal kunne ikke bestemme din iCloud-konto status. Log ind på din iCloud-konto i Indstillinger-appen for at sikkerhedskopiere dine Signal data.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Ingen iCloud-konto. Log ind på din iCloud-konto i Indstillinger-appen for at sikkerhedskopiere dine Signal data.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal blev nægtet adgang til din iCloud-konto til sikkerhedskopier. Giv Signal adgang til din iCloud-konto i Indstillinger-appen for at sikkerhedskopiere dine Signal data.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Vælg farven på udgående meddelelser i denne samtale.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Only you will see the color you choose.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Kun du vil se den farve du vælger.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Conversation Color";
+"COLOR_PICKER_SHEET_TITLE" = "Samtale farve";
 
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Sammenlign med Udklipsholder";
+"COMPARE_SAFETY_NUMBER_ACTION" = "Sammenlign med udklipsholder";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kontakter";
@@ -444,13 +444,13 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Invitér";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kan aktivere kontaktadgang i Indstillinger-appen for at se, hvilke af dine kontakter der er Signal-brugere.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Dette vil nulstille appen ved at slette dine meddelelser og afregistrere dig med serveren. Appen lukkes, efter at denne proces er afsluttet.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Er du sikker på, du vil slette din bruger?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Er du sikker på, du vil slette din konto?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Du vil ikke længere kunde sende eller modtage beskeder i denne gruppe.";
@@ -477,7 +477,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "Blokeret";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Ikke Verificeret";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Ikke verificeret";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Ikke-registreret nummer";
@@ -498,22 +498,22 @@
 "CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Nabolag";
 
 /* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
+"CONTACT_FIELD_ADDRESS_POBOX" = "Postboks";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postal Code";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postnummer";
 
 /* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "Region";
+"CONTACT_FIELD_ADDRESS_REGION" = "Område";
 
 /* Label for the 'street' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_STREET" = "Gade";
 
 /* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "Family Name";
+"CONTACT_FIELD_FAMILY_NAME" = "Efternavn";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Given Name";
+"CONTACT_FIELD_GIVEN_NAME" = "Fornavn";
 
 /* Label for the 'middle name' field of a contact. */
 "CONTACT_FIELD_MIDDLE_NAME" = "Mellemnavn";
@@ -537,13 +537,13 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Intet telefonnummer tilgængeligt.";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Vælg Kontakt";
+"CONTACT_PICKER_TITLE" = "Vælg kontakt";
 
 /* Title for the 'Approve contact share' view. */
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Del kontakt";
 
 /* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Ændre Navn";
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Ændre navn";
 
 /* Error indicating that an invalid contact cannot be shared. */
 "CONTACT_SHARE_INVALID_CONTACT" = "Ugyldig kontakt";
@@ -552,19 +552,19 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Ingen kontaktfelter valgt.";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Åben i Maps";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Åben i Kort";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send Email";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send email";
 
 /* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "Unavngivet Kontakt";
+"CONTACT_WITHOUT_NAME" = "Unavngivet kontakt";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Dette kan ikke fortrydes.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Slet samtale?";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Samtale indstillingér";
@@ -573,16 +573,16 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Tilføj til eksisterende kontakt";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Block This Group";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Bloker denne gruppe";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloker Denne Bruger";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloker denne bruger";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontaktinformation";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Conversation Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Samtale farve";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Gruppeinformation";
@@ -594,31 +594,31 @@
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Slå lyd fra";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Not muted";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Ikke dæmpet";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Mute for one day";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Dæmp for en dag";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Mute for one hour";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Dæmp i en time";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mute for one minute";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Dæmp i et minut";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Mute for one week";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Dæmp for en uge";
 
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Dæmp i et år";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "indtil %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Opret Ny Kontakt";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Opret ny kontakt";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tryk for at ændre";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ophæv dæmpning";
@@ -630,34 +630,34 @@
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Denne bruger kan se din profil.";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Del Profil";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Del profil";
 
 /* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Del Din Profil";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Del din profil";
 
 /* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Del Din Profil";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Del din profil";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Tilføj til Kontakter";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile with This User";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Del din profil med denne bruger";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Denne bruger er ikke i dine kontakter.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages…";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Henter flere beskeder...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap for More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tryk for mere";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Bloker Denne Bruger";
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Bloker denne bruger";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Nulstilling af din session giver dig mulighed for at modtage fremtidige meddelelser fra %@, men det vil ikke gendanne allerede beskadigede meddelelser.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Vælg landekode";
@@ -672,13 +672,13 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dette kan tage et par minutter.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Optimerer Database";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Optimerer database";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@ t. siden ";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@ min. siden ";
 
 /* The present; the current time. */
 "DATE_NOW" = "Nu";
@@ -705,16 +705,16 @@
 "DEBUG_LOG_ALERT_NO_LOGS" = "Kunne ikke finde nogle logfiler.";
 
 /* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Open a Bug Report";
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Indsend en fejlrapport";
 
 /* Label for the 'copy link' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Kopier Link";
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Kopier link";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email Support";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email support";
 
 /* Label for the 'send to last thread' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send til Sidste Tråd";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send til sidste tråd";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send til dig selv";
@@ -724,16 +724,16 @@
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
-"DEBUG_LOG_ALERT_TITLE" = "Et Trin Mere";
+"DEBUG_LOG_ALERT_TITLE" = "Et trin mere";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Could not open Email app.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "Kunne ikke åbne e-mail-appen.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "The gist link was copied in your clipboard. You are about to be redirected to the GitHub issue list.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist-linket blev kopieret til dit udklipsholder. Du er ved at blive omdirigeret til GitHub problemlisten.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Omdirigering til GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Genregistrer dette telefonnummer";
@@ -769,10 +769,10 @@
 "DISMISS_BUTTON_TEXT" = "Luk";
 
 /* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censurens omgåelse beliggenhed";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kan aktivere adgang i iOS Indstillinger-appen.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Behøver Kontakt Adgang for at Rediger Kontakt Oplysninger";
@@ -784,7 +784,7 @@
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Kontakter";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Rediger Gruppe";
+"EDIT_GROUP_DEFAULT_TITLE" = "Rediger gruppe";
 
 /* Label for the cell that lets you add a new member to a group. */
 "EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Tilføj...";
@@ -799,10 +799,10 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Opdatér";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this group?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vil du gerne gemme de ændringer, du har foretaget til denne gruppe?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Ikke Gemte Ændringer";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Ikke gemte ændringer";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Kopier";
@@ -817,10 +817,10 @@
 "EMAIL_INVITE_SUBJECT" = "Lad os skifte til Signal";
 
 /* Body text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TEXT" = "You can archive inactive conversations from your Inbox.";
+"EMPTY_ARCHIVE_TEXT" = "Du kan arkivere inaktive samtaler fra din indbakke.";
 
 /* Header text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TITLE" = "Clean Up Your Conversation List";
+"EMPTY_ARCHIVE_TITLE" = "Ryd op i dine samtaler";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Ingen af dine kontakter har Signal.";
@@ -829,16 +829,16 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Hvorfor ikke invitere nogle af dem?";
 
 /* Body text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TEXT" = "Tap on the compose button";
+"EMPTY_INBOX_NEW_USER_TEXT" = "Tryk på Skriv knappen";
 
 /* Header text a new user sees when viewing an empty inbox */
 "EMPTY_INBOX_NEW_USER_TITLE" = "Start din første Signalsamtale!";
 
 /* Body text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TEXT" = "None. Zip. Zilch. Nada.";
+"EMPTY_INBOX_TEXT" = "Intet at se her.";
 
 /* Header text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TITLE" = "Inbox Zero";
+"EMPTY_INBOX_TITLE" = "Indbakken er tom";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Bekræft din PIN";
@@ -886,16 +886,16 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Beskeden kunne ikke sendes.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Kunne ikke sende pga. gammel prekey data.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kunne ikke sende beskeden til brugeren fordi du har blokeret dem.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed to write and send attachment.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Kunne ikke skrive og sende vedhæftet fil.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try again.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal kunne ikke oprette forbindelse til internettet. Prøv igen.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Besked afsendelse mislykkedes på grund af manglende gyldige modtagere.";
@@ -910,10 +910,10 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Ugyldigt svar fra tjenesten.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "This device is no longer registered with your phone number. Please reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Denne enhed er ikke længere registreret med dit telefonnummer. Installer venligst Signal igen.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Sever fejl. Prøv igen senere.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Server fejl. Prøv igen senere.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Der er sket en ukendt fejl.";
@@ -922,19 +922,19 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakten benytter ikke Signal.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Vedhæftningsfejl: Bed denne kontakt om at sende deres besked igen efter opdatering til den nyeste version af Signal.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Modtog en duplikeret besked.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Modtagerens nøgle er ikke gyldig.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Modtaget besked var ude af synkronisering.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Received a message that is not compatible with this version.";
+"ERROR_MESSAGE_INVALID_VERSION" = "Modtaget en meddelelse, der ikke er kompatibel med denne version.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "Ingen tilgængelig session med kontakten.";
@@ -952,61 +952,61 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sikkerhedsnummeret har ændret sig.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Ikke-registreret bruger: %@";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Ikke Nu";
+"EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Ikke nu";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again later.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Received a message that is not compatible with this version.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before sending this message again.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Dit sikkerhedsnummer med %@ har ændret sig fornyeligt. Du kan ønske at bekræfte inden du sender igen.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Kunne ikke bekræfte sikkerhedsnummer!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marker som Verificeret";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marker som verificeret";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Nulstil Session";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Nulstil session";
 
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Færdigør gruppe opretning";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this conversation.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Du har ingen mediefiler i denne samtale.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media…";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Henter nyere medier...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Henter gamle medier...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Vedhæftning";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Kunne ikke hente den ønskede GIF. Bekræft venligst, at du er online.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Der er sket en ukendt fejl.";
 
 /* Shown when selected GIF couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to Choose GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "Kunne ikke vælge GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Indtast venligst din søgning.";
 
 /* Title for the 'GIF picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "GIF Search";
+"GIF_PICKER_VIEW_TITLE" = "GIF søgning";
 
 /* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "Fejl. Tryk for at prøve igen.";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "Ingen Resultater.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Ingen resultater.";
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Indtast din søgning";
@@ -1030,13 +1030,13 @@
 "GROUP_MEMBER_LEFT" = "%@ forlod gruppen.";
 
 /* Button label to add information to an unknown contact */
-"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Tilføj Kontakt";
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Tilføj kontakt";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Ring op";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Clear Verification for All";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Ryd verificering for alle";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Dette fjerner verificeringen af alle gruppemedlemmer, hvis sikkerhedsnumre er ændret, siden de sidst blev verificeret.";
@@ -1063,7 +1063,7 @@
 "GROUP_YOU_LEFT" = "Du har forladt gruppen.";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkiveret Samtaler";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkiveret samtaler";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Blokeret";
@@ -1081,22 +1081,22 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
+"IMAGE_EDITOR_BRUSH_BUTTON" = "Børste";
 
 /* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Crop";
+"IMAGE_EDITOR_CROP_BUTTON" = "Beskær";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Du kan ikke dele mere end %@ ting.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Kunne ikke vælge vedhæftet fil.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Forbinder...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting…";
+"IN_CALL_RECONNECTING" = "Genopretter forbindelse...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Ringer...";
@@ -1108,10 +1108,10 @@
 "IN_CALL_TERMINATED" = "Opkald afsluttet.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Disse samtaler arkiveres og vises kun i indbakken, hvis der modtages nye meddelelser.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Signal conversation list.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Du kan aktivere kontaktadgang i Indstillinger-appen for at se kontaktnavne i din Signal-samtale-liste.";
 
 /* notification body */
 "INCOMING_CALL" = "Indkommende opkald";
@@ -1132,7 +1132,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Ugyldig lydfil.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "You can enable contacts access in the iOS Settings app to invite your friends to join Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Du kan aktivere kontaktadgang i Indstillinger-appen for at invitere dine venner til at deltage i Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Tillad Kontakt Adgang";
@@ -1147,7 +1147,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Invitér venner";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will start a group message and the recipients will be able to see each other.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Hvis du inviterer flere brugere på samme tid, starter dette en gruppemeddelelse, og modtagerne kan se hinanden.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Beskeder forsvinder efter %@.";
@@ -1162,13 +1162,13 @@
 "LEAVE_GROUP_ACTION" = "Forlad gruppe";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid. Please make sure you are scanning the QR code that is displayed on the device you want to link.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Denne QR-kode er ikke gyldig. Sørg for, at du scanner QR-koden, der vises på den enhed, du vil tilkoble.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Tilkobling af enhed mislykkedes";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your conversations, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Denne enhed vil kunne se dine grupper og kontakter, få adgang til dine samtaler og sende beskeder i dit navn.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Tilføj denne enhed?";
@@ -1177,13 +1177,16 @@
 "LINK_DEVICE_RESTART" = "Prøv igen";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan the QR code that is displayed on the device you want to link.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan QR-koden, der vises på den enhed, du vil tilkoble.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Scan QR kode";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Tilknyt ny enhed";
+
+/* Label for link previews with an unknown host. */
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Tilknyttede enheder";
@@ -1201,7 +1204,7 @@
 "LONG_TEXT_VIEW_TITLE" = "Besked";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Alle mediefiler";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
@@ -1213,13 +1216,13 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Billedbibliotek";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Slet %dBeskeder";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Slet %d beskeder";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Slet Besked";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Slet besked";
 
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ on %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ på %@";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -1228,28 +1231,28 @@
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "Dig";
 
 /* Section header in media gallery collection view */
-"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Denne Måned";
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Denne måned";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
+"MESSAGE_ACTION_COPY_MEDIA" = "Kopiér mediefiler";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+"MESSAGE_ACTION_COPY_TEXT" = "Kopiér tekst";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Slet besked";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will only be deleted on this device.";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Det slettes kun på denne enhed.";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "More Info";
+"MESSAGE_ACTION_DETAILS" = "Mere info";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to This Message";
+"MESSAGE_ACTION_REPLY" = "Svar på denne besked";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Gem medier";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Besked";
@@ -1285,7 +1288,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Sprunget over";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Uploading";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Uploader";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Beskeden har intet indhold eller vedhæftning.";
@@ -1309,7 +1312,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Leveret";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Afsendelse fejlede.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Fejlede";
@@ -1324,7 +1327,7 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Indikator for beskedfejl";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending…";
+"MESSAGE_STATUS_SENDING" = "Sender...";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Sendt";
@@ -1339,22 +1342,22 @@
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ er ikke længere markeret som verificeret. Tryk for muligheder.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked This User";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "Du blokerede denne bruger";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ er ikke længere markeret som verificeret. Tryk for muligheder.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Du blokerede 1 medlem af denne gruppe";
 
 /* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "You Blocked This Group";
+"MESSAGES_VIEW_GROUP_BLOCKED" = "Du blokerede denne gruppe";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Du blokerede %@ medlemmer af denne gruppe";
 
 /* Text for banner in group conversation view that offers to share your profile with this group. */
-"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Del Din Profil Med Denne Gruppe?";
+"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Del din profil med denne gruppe?";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mere end et medlem af denne gruppe er ikke længere markeret som verificeret. Tryk for muligheder.";
@@ -1363,7 +1366,7 @@
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Tryk her for indstillinger";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "Nye Beskeder";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "Nye beskeder";
 
 /* Messages that indicates that there are more unseen messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Der er flere ulæste beskeder.";
@@ -1382,26 +1385,26 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Du kan aktivere kameraadgang i Indstillinger-appen til at foretage videoopkald i Signal.";
 
 /* Alert title
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal kræver adgang til dit kamera.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Du kan give denne tilladelse i appen Indstillinger.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal requires access to your photos for this feature.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal kræver adgang til dine fotos for at gøre dette.";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Ubesvaret opkald fra %@.";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan ikke forbinde flere enheder.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device and try again.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nået det maksimale antal enheder, du i øjeblikket kan tilkoble til din konto. Fjern en enhed, og prøv igen.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Du modtager ikke underretninger for dæmpede samtaler.";
@@ -1410,10 +1413,10 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Spring over";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Please check if you are online and try again.";
+"NETWORK_ERROR_RECOVERY" = "Se venligst om du er online og prøv igen.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Censorship Circumvention: On";
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Censurens omgåelse: På";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTED" = "Forbundet";
@@ -1431,7 +1434,7 @@
 "NETWORK_STATUS_OFFLINE" = "Offline";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Find via Telefonnummer";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Find via telefonnummer";
 
 /* A label for the cell that lets you add a new non-contact member to a group. */
 "NEW_GROUP_ADD_NON_CONTACT" = "Tilføj via telefon nummer";
@@ -1449,7 +1452,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "Medlem";
 
 /* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Navngiv denne gruppesamtale";
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Navngiv gruppesamtalen";
 
 /* a title for the non-contacts section of the 'new group' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Andre Brugere";
@@ -1458,22 +1461,22 @@
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vil du kassere disse ændringer?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Ikke Gemte Ændringer";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Ikke gemte ændringer";
 
 /* No comment provided by engineer. */
-"new_message" = "Ny Besked";
+"new_message" = "Ny besked";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Søg";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find Bruger";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find bruger";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find kontakter efter telefonnummer";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Note til dig selv";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Du har muligvis fået beskeder, mens din %@ blev genstartet.";
@@ -1488,16 +1491,16 @@
 "NOTIFICATIONS_NONE" = "Intet navn eller indhold";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
+"NOTIFICATIONS_SECTION_INAPP" = "Afspil, mens appen er åben";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Lyde";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Navn og Indhold";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Navn og indhold";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Kun Navn";
+"NOTIFICATIONS_SENDER_ONLY" = "Kun navn";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Vis";
@@ -1539,7 +1542,7 @@
 "PHONE_NUMBER_TYPE_HOME" = "Hjem";
 
 /* Label for 'HomeFAX' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME_FAX" = "Hjemme Fax";
+"PHONE_NUMBER_TYPE_HOME_FAX" = "Hjemme fax";
 
 /* Label for 'iPhone' phone numbers. */
 "PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
@@ -1554,10 +1557,10 @@
 "PHONE_NUMBER_TYPE_OTHER" = "Andre";
 
 /* Label for 'Other FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER_FAX" = "Anden Fax";
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "Anden fax";
 
 /* Label for 'Pager' phone numbers. */
-"PHONE_NUMBER_TYPE_PAGER" = "Pager";
+"PHONE_NUMBER_TYPE_PAGER" = "Personsøger";
 
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
 "PHONE_NUMBER_TYPE_UNKNOWN" = "Ukendt";
@@ -1566,13 +1569,13 @@
 "PHONE_NUMBER_TYPE_WORK" = "Arbejde";
 
 /* Label for 'Work FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK_FAX" = "Work Fax";
+"PHONE_NUMBER_TYPE_WORK_FAX" = "Arbejdsfax";
 
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unavngivet album";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Afspil medier";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Du har ikke markeret %@ som verificeret.";
@@ -1584,13 +1587,13 @@
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ er godkendt.";
 
 /* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Lær Mere";
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Lær mere";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Tryk for at Scanne";
+"PRIVACY_TAP_TO_SCAN" = "Tryk for at scanne";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Ryd Verifikation";
+"PRIVACY_UNVERIFY_BUTTON" = "Ryd verifikation";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dette ligner ikke dit sikkerhedsnummer med %@. Verificere du den korrekte kontakt?";
@@ -1602,7 +1605,7 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal kunne ikke finde noget sikkerhedsnummer i din udklipsholder. Har du kopieret det korrekt?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Hvert par Signal brugere deler et særskilt sikkerhedsnummer. Dobbelt-tjek, at %@ viser *dit* særskilt sikkerhedsnummer.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Du bruger en gammel version af SIgnal. Du skal opdatere før du kan bekræfte.";
@@ -1611,7 +1614,7 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Din partner kører en gammel version af Signal. De skal opdatere, før du kan verificere.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Den scannede kode ser ikke ud som et sikkerhedsnummer. Bruger I begge en opdateret version af Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Hvis du ønsker at bekræfte sikkerheden for din ende-til-ende kryptering med %@, skal du sammenligne tallene ovenfor med numrene på deres enhed.\n\nAlternativt kan du scanne koden på deres telefon eller bede dem om at scanne din kode.";
@@ -1620,7 +1623,7 @@
 "PRIVACY_VERIFICATION_TITLE" = "Bekræft sikkerhedsnummer";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Marker som Verificeret";
+"PRIVACY_VERIFY_BUTTON" = "Marker som verificeret";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Fortsæt";
@@ -1632,10 +1635,10 @@
 "PROFILE_NAME_LABEL_FORMAT" = "~%@";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Indstil Profil Avatar";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Indstil profilbillede";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Fjern Avatar";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Fjern profilbillede";
 
 /* Error message shown when user tries to update profile with a profile name that is too long. */
 "PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Dit profilnavn er for langt.";
@@ -1647,7 +1650,7 @@
 "PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Skriv dit navn";
 
 /* Label for the profile avatar field of the profile view. */
-"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
+"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Profilbillede";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Din Signal profil vil være synlig for dine kontakter, når du starter nye samtaler, og når du deler den med andre brugere og grupper.";
@@ -1656,7 +1659,7 @@
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tryk her for at lære mere.";
 
 /* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profil Navn";
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profil navn";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Gem";
@@ -1683,19 +1686,19 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Svarer til %@";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Svarer til Dig";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Svarer til dig";
 
 /* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Svarer til Dig Selv";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Svarer til dig selv";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
-"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original besked blev ikke fundet.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Original message no longer available.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Original besked er ikke længere tilgængelig.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Original message not found.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Original besked blev ikke fundet.";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Vedhæftet fil";
@@ -1722,7 +1725,7 @@
 "REGISTER_2FA_INSTRUCTIONS" = "Dette telefonnummer har Registreringslås aktiveret. Indtast venligst Registreringslås PIN-koden.\n\nDin Registreringslås PIN er separat fra den automatiske verifikationskode, der blev sendt til din telefon under det sidste trin.";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registrering Fejlede";
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registrering fejlede";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Indsend";
@@ -1767,13 +1770,13 @@
 "REGISTRATION_IPAD_CONFIRM_TITLE" = "Har du allerede en Signal konto?";
 
 /* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Vilkår og Fortrolighedspolitik";
+"REGISTRATION_LEGAL_TERMS_LINK" = "Vilkår og privatlivspolitik";
 
 /* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
 "REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Ved at registrere denne enhed accepterer du Signal's %@";
 
 /* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "betingelser";
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "vilkår";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Dette telefonnummerformat er ikke understøttet.";
@@ -1782,19 +1785,19 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefonnummer";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "Du skal registrere dig, før du kan sende en besked.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_TITLE_LABEL" = "Dit telefonnummer";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Bekræftelse mislykkedes";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikation mislykkedes";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "De tal du skrev matcher ikke dem vi sendte. Prøv at dobbeltchecke.";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Forkert Registreringslås PIN.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Forkert registreringslås PIN.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Registrer";
@@ -1803,13 +1806,13 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Indtast venligst et gyldigt telefonnummer for at registrere.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Ugyldigt Telefonnummer";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Ugyldigt telefonnummer";
 
 /* Message of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Indtast venligst et telefonnummer for at registrere.";
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Intet Telefonnummer";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Intet telefonnummer";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Afvis";
@@ -1824,13 +1827,13 @@
 "REMINDER_2FA_BODY_HEADER" = "Påmindelse:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registreringslås hjælper dig med at beskytte dit telefonnummer fra uautoriserede registreringsforsøg. Denne funktion kan til enhver tid slås fra under privatlivsindstillinger.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";
+"REMINDER_2FA_NAV_TITLE" = "Indtast din registreringslås PIN";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "You can set a new PIN in your privacy settings.";
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Du kan indstille en ny pinkode i dine privatlivsindstillinger.";
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Det er ikke den rigtige PIN.";
@@ -1842,13 +1845,13 @@
 "RETRY_BUTTON_TEXT" = "Prøv igen";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Tilføj Alligevel til Gruppe";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Tilføj alligevel til gruppe";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Ring Alligevel";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Ring alligevel";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Send Alligevel";
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Send alligevel";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Vores Signal sikkerhedsnummer\n%@";
@@ -1863,10 +1866,10 @@
 "SCAN_QR_CODE_VIEW_TITLE" = "Scan QR kode";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Øjeblikkelig";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Autentificering kunne ikke nås.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Autentificering mislykkedes.";
@@ -1875,28 +1878,28 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "For mange mislykkede godkendelsesforsøg. Prøv igen senere.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Du skal aktivere en adgangskode i dine iOS-indstillinger for at bruge skærmlås.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Du skal aktivere en adgangskode i dine iOS-indstillinger for at bruge skærmlås.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Du skal aktivere en adgangskode i dine iOS-indstillinger for at bruge skærmlås.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Godkend for at åbne Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "Autentificering mislykkedes";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Lås op Signal";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Søg via navn eller nummer";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
-"SEARCH_SECTION_CONTACTS" = "Andre Kontakter";
+"SEARCH_SECTION_CONTACTS" = "Andre kontakter";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
 "SEARCH_SECTION_CONVERSATIONS" = "Samtaler";
@@ -1911,10 +1914,10 @@
 "SELECT_GIF_BUTTON" = "GIF";
 
 /* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Andre Kontakter";
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Andre kontakter";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Seneste Samtaler";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Seneste samtaler";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Send igen";
@@ -1926,7 +1929,7 @@
 "SEND_INVITE_FAILURE" = "Kunne ikke sende invitation. Prøv igen senere.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "Du inviterede din ven til at bruge Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invitér via SMS: %@";
@@ -1950,25 +1953,25 @@
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Bloker";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censorship Circumvention";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censurens omgåelse";
 
 /* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Placering: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "If enabled, Signal will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Signal is censored.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Hvis aktiveret, vil Signal forsøge at omgå censur. Aktivér ikke denne funktion, medmindre du er på et sted, hvor Signal er censureret.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censorship circumvention has been activated based on your account's phone number.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censur omgåelse er blevet aktiveret baseret på din kontos telefonnummer.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censorship circumvention can only be activated when connected to the internet.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censuromgåelse kan kun aktiveres, når den er tilsluttet internettet.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censorship circumvention is not necessary; you are already connected to the Signal service.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censur omgåelse er ikke nødvendigt; du har allerede forbindelse til Signal-tjenesten.";
 
 /* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censorship Circumvention";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censurens omgåelse";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Aktiver fejlrapporteringslog";
@@ -1980,64 +1983,64 @@
 "SETTINGS_ADVANCED_TITLE" = "Avanceret";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (standard)";
 
 /* Label for the backup view in app settings. */
 "SETTINGS_BACKUP" = "Sikkerhedskopi";
 
 /* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "Sikkerhedskopier Nu";
+"SETTINGS_BACKUP_BACKUP_NOW" = "Sikkerhedskopier nu";
 
 /* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "Annuller Sikkerhedskopiering";
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "Annuller sikkerhedskopiering";
 
 /* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Sikkerhedskopiering Aktiveret";
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Sikkerhedskopiering aktiveret";
 
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud status";
 
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup gendannelse mislykkedes";
 
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup gendannelse tomgang";
 
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup gendannelse i gang";
 
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup gendannelse lykkedes";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "Phase";
+"SETTINGS_BACKUP_PHASE" = "Fase";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "Progress";
+"SETTINGS_BACKUP_PROGRESS" = "Forløb";
 
 /* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "Status";
 
 /* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Sikkerhedskopiering Fejlede";
+"SETTINGS_BACKUP_STATUS_FAILED" = "Sikkerhedskopiering fejlede";
 
 /* Indicates that app is not backing up. */
 "SETTINGS_BACKUP_STATUS_IDLE" = "Venter";
 
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Sikkerhedskopiering Igang";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Sikkerhedskopiering igang";
 
 /* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Sikkerhedskopiering Vellykket";
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Sikkerhedskopiering vellykket";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Blocked User";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Tilføj blokeret bruger";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Du har ingen kontakter på Signal";
 
 /* A label that indicates the user's search has no matching results. */
-"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Ingen Søgereslutater";
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Ingen søgereslutater";
 
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Blokeret";
@@ -2046,31 +2049,31 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Videresend altid opkald";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relæ alle opkald via en Signal-server for at undgå at afsløre din IP-adresse til din kontaktperson. Aktivering vil reducere opkaldskvaliteten.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Ryd Samtale Historik";
+"SETTINGS_CLEAR_HISTORY" = "Ryd samtale historik";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nUdgivet under GPLv3–licensen";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Slet bruger";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Slet konto";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Slet Alle Data";
+"SETTINGS_DELETE_DATA_BUTTON" = "Slet alle data";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Er du sikker på du vil slette hele din historik (beskeder, vedhæftede filer, opkaldshistorik...)? Denne handling er irreversibel.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Slet Alt";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Slet alt";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Hjælp";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Ryd Samtale Historik";
+"SETTINGS_HISTORYLOG_TITLE" = "Ryd samtale historik";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Information";
@@ -2079,13 +2082,22 @@
 "SETTINGS_INVITE_TITLE" = "Invitér dine venner";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Du kan få fat på mig ved at bruge @signalapp. Hent det nu: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Besked Lyd";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Besked lyd";
 
 /* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "Vilkår og Fortrolighedspolitik";
+"SETTINGS_LEGAL_TERMS_CELL" = "Vilkår og privatlivspolitik";
+
+/* Setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+
+/* Footer for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+
+/* Header for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Indstillinger";
@@ -2106,7 +2118,7 @@
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Vis opkald i \"Seneste\" listen i iOS Telefon appen.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Vis Opkald i Seneste";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Vis opkald i Seneste";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS opkaldsintegration";
@@ -2121,10 +2133,10 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Se og del, når meddelelser er blevet læst. Denne indstilling er valgfri og gælder for alle samtaler.";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Re-register";
+"SETTINGS_REREGISTER_BUTTON" = "Genregistrering";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Skærmlås timeout";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lås op Signals skærmen ved hjælp af Touch ID, Face ID eller din iOS-enhedens adgangskode. Du kan stadig svare på indgående opkald og modtage meddelelsesnotifikationer, mens Skærmlås er aktiveret. Signal's underretningsindstillinger giver dig mulighed for at tilpasse de oplysninger, der vises.";
@@ -2142,7 +2154,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Forhindre Signal forhåndsvisninger vises i app skifteren.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS opkaldsintegration viser Signal-opkald på din låseskærm og i systemets opkaldshistorik. Du kan eventuelt vise din kontaktpersons navn og nummer. Hvis iCloud er aktiveret, deles denne opkaldshistorik med Apple.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Notifikationer";
@@ -2172,25 +2184,25 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registreringslås";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "Skrive indikator";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Se og del, når der skrives meddelelser. Denne indstilling er valgfri og gælder for alle samtaler.";
 
 /* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Lær Mere";
+"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Lær mere";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Sikker afsender";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Vis indikator";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Vis et status ikon når ´Mere info´ vælges for beskeder som er modtaget, ved brug af sikker afsender.";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Tillad fra alle";
 
 /* table section footer */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Aktiver ´Sikker afsender´ for indgående beskeder fra personer som ikke er kontakter, og som hvem du ikke har delt din profil med";
@@ -2211,19 +2223,19 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Dit sikkerhedsnummer med %@ har ændret sig fornyeligt. Du kan ønske at bekræfte inden du sender igen.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Loading…";
+"SHARE_EXTENSION_LOADING" = "Henter...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Launch the Signal app to register.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Start Signal appen for at registrere.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Not Registered";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Ikke registreret";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Start Signal appen for at opdatere eller registrere.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Not Ready";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Ikke klar";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Kunne ikke sende vedhæftede fil";
@@ -2235,7 +2247,7 @@
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Kunne ikke klargøre vedhæftede fil";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Del til Signal";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Vis sikkerhedsnummer";
@@ -2250,7 +2262,7 @@
 "SOUNDS_NONE" = "Ingen";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Dit sikkerhedsnummer med %@ er ens. Du kan markere denne kontakt som verificeret.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Sikkerhedsnummer Matcher!";
@@ -2262,25 +2274,25 @@
 "TIME_AMOUNT_DAYS" = "%@ dage";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@ d";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@ timer";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@t";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ t";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ minutter";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@ m";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ sekunder";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@ s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_DAY" = "%@ dag";
@@ -2298,7 +2310,7 @@
 "TIME_AMOUNT_WEEKS" = "%@ uger";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@u";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ u";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Annullér";
@@ -2325,7 +2337,7 @@
 "UNLINK_ACTION" = "Frakobl";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "This device will no longer be able to send or receive messages if it is unlinked.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Denne enhed vil ikke længere kunne sende eller modtage meddelelser, hvis den ikke er forbundet.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Frakobl \"%@\"?";
@@ -2334,7 +2346,7 @@
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal var ikke i stand til at frakoble din enhed.";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Ikke navngivet enhed";
+"UNNAMED_DEVICE" = "Unavngivet enhed";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Afregistrering af Signal mislykkedes.";
@@ -2349,61 +2361,61 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Du kan ikke fjerne gruppemedlemmer. De bliver enten nødt til at forlade gruppen selv, eller du kan oprette en ny gruppe uden dette medlem.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Ikke understøttet ";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Besvarelse af opkald fra din låseskærm er let med iOS opkaldsintegration. Vi anonymiserer din opkalder som standard, så det er også privat.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
 "UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Lær mere in privatlivsindstillingerne";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Bare sveip for at svare";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Aktivér skrive indikatorer";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've chosen for each system contact.";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Du kan nu vælge standard og samtale-specifikke meddelelseslyde, og opkald vil respektere den ringetone, du har valgt for hver systemkontakt.";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Gennemse Notifikationsindstillinger";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Gennemse notifikationsindstillinger";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Opdater Opkalds- og Beskedlyde";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Opdater opkalds- og beskedlyde";
 
 /* button label shown one time, after user upgrades app */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Set up Your Profile";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Konfigurer din profil";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "You can now share a profile photo and name with your friends on Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Nu kan du dele dit profilbillede og navn med dine venner på Signal";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Ready for Your Closeup?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Er du klar til et nærbilled?";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "You now have the option of seeing and sharing when messages have been read.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Du har nu mulighed for at se og dele, når meddelelser er blevet læst.";
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Aktiver læskvitteringer i dine privatlivsindstillinger.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introducing Read Receipts";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introducerer læskvitteringer";
 
 /* Body text for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Nu kan du vælge at se og vise, når beskeder skrives";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducerer skrive indikatorer";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal now supports secure video calling. Just start a call like normal, tap the camera button, and wave hello.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal understøtter nu sikker videoopkald. Bare start et opkald som normalt, tryk på kameraknappen og vink hej.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hej Sikre Videoopkald!";
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hej sikre videoopkald!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please use the Software Update feature in the iOS Settings app.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal kræver iOS 9 eller nyere. Brug funktionen Softwareopdatering i Indstillinger-appen.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Opgrader iOS";
@@ -2439,7 +2451,7 @@
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Du har markeret %@ som godkendt på en anden enhed.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "Verification state changed.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "Verifikationsstatus ændret.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
 "VERIFY_PRIVACY" = "Vis Sikkerhedsnummer";
@@ -2448,7 +2460,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Gennemse Sikkerhedsnumre";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Skub for at annullere";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Talebesked";

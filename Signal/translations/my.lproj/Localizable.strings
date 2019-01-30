@@ -1185,6 +1185,9 @@
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "ဖုန်းအသစ်ကို ချိတ်ရန်";
 
+/* Label for link previews with an unknown host. */
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "ချိတ်ဆက်ထားသော ဖုန်းများ";
 
@@ -2086,6 +2089,15 @@
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "လိုက်နာဆောင်ရွက်ရမည့် အချက်များ";
+
+/* Setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+
+/* Footer for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+
+/* Header for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "အပြင်အဆင်များ";
