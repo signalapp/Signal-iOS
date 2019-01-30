@@ -1186,7 +1186,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Привязка устройства";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Предпросмотр ссылки";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Привязанные устройства";
@@ -2091,13 +2091,13 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Условия и политика конфиденциальности";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Отправлять предпросмотр ссылки";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Предварительный просмотр поддерживается для ссылок Imgur, Instagram, Reddit и YouTube.";
 
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Предпросмотры ссылок";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Настройки";
@@ -2374,6 +2374,15 @@
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Включить индикаторы ввода";
+
+/* Body text for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Optional link previews are now supported for some of the most popular sites on the Internet.";
+
+/* Subtitle for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
+
+/* Header for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Предпросмотры ссылок";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Теперь вы можете выбирать звуки уведомлений по умолчанию и для разговора, а сигнал вызова будет воспроизводить ту мелодию звонка, которую вы выбрали для каждого системного контакта.";

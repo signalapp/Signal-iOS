@@ -1186,7 +1186,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Susieti naują įrenginį";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Nuorodos peržiūra";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Susieti įrenginiai";
@@ -2091,13 +2091,13 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Sąlygos ir Privatumo politika";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Siųsti nuorodų peržiūras";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Peržiūros yra palaikomos Imgur, Instagram, Reddit, ir YouTube nuorodoms.";
 
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Nuorodų peržiūros";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Nustatymai";
@@ -2374,6 +2374,15 @@
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Įjungti rašymo indikatorius";
+
+/* Body text for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Optional link previews are now supported for some of the most popular sites on the Internet.";
+
+/* Subtitle for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
+
+/* Header for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Nuorodų peržiūros";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Dabar, galite pasirinkti numatytuosius bei kiekvieno atskiro pokalbio pranešimų garsus, o skambučiai taikys kiekvienam jūsų sistemos kontaktui pasirinktą skambučio melodiją.";

@@ -337,6 +337,84 @@ private class IntroductingTypingIndicatorsExperienceUpgradeViewController: Exper
         primaryButtonAction(sender)
     }
 }
+private class IntroducingLinkPreviewsExperienceUpgradeViewController: ExperienceUpgradeViewController {
+
+    override func loadView() {
+        self.view = UIView.container()
+
+        /// Create Views
+
+        // Title label
+        let titleLabel = UILabel()
+        view.addSubview(titleLabel)
+        titleLabel.text = header
+        titleLabel.textAlignment = .center
+        titleLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5(24))
+        titleLabel.textColor = UIColor.white
+        titleLabel.minimumScaleFactor = 0.5
+        titleLabel.adjustsFontSizeToFitWidth = true
+
+        // Body label
+        let bodyLabel = UILabel()
+        self.bodyLabel = bodyLabel
+        view.addSubview(bodyLabel)
+        bodyLabel.text = body
+        bodyLabel.font = UIFont.ows_lightFont(withSize: ScaleFromIPhone5To7Plus(17, 22))
+        bodyLabel.textColor = Theme.primaryColor
+        bodyLabel.numberOfLines = 0
+        bodyLabel.lineBreakMode = .byWordWrapping
+        bodyLabel.textAlignment = .center
+
+        // Subtitle label
+
+        let subtitleLabel = UILabel()
+        view.addSubview(subtitleLabel)
+        subtitleLabel.text = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE", comment: "Subtitle for upgrading users")
+        subtitleLabel.font = UIFont.ows_lightFont(withSize: ScaleFromIPhone5To7Plus(14, 17))
+        subtitleLabel.textColor = Theme.primaryColor
+        subtitleLabel.numberOfLines = 0
+        subtitleLabel.lineBreakMode = .byWordWrapping
+        subtitleLabel.textAlignment = .center
+
+        // Image
+
+        let imageView = UIImageView(image: image)
+
+        view.addSubview(imageView)
+        imageView.contentMode = .scaleAspectFit
+
+        let bottomSpacer = UIView()
+        view.addSubview(bottomSpacer)
+
+        /// Layout Views
+
+        // Image layout
+        imageView.autoAlignAxis(toSuperviewAxis: .vertical)
+        imageView.autoPinToSquareAspectRatio()
+        imageView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: ScaleFromIPhone5To7Plus(36, 40))
+        imageView.autoSetDimension(.width, toSize: ScaleFromIPhone5(180))
+
+        // Title label layout
+        titleLabel.autoSetDimension(.height, toSize: ScaleFromIPhone5(40))
+        titleLabel.autoPinWidthToSuperview(withMargin: ScaleFromIPhone5To7Plus(16, 24))
+        titleLabel.autoPinTopToSuperviewMargin()
+
+        // Body label layout
+        bodyLabel.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: ScaleFromIPhone5To7Plus(18, 28))
+        bodyLabel.autoPinWidthToSuperview(withMargin: bodyMargin)
+        bodyLabel.setContentHuggingVerticalHigh()
+
+        // Subtitle label layout
+        subtitleLabel.autoPinEdge(.top, to: .bottom, of: bodyLabel, withOffset: ScaleFromIPhone5To7Plus(18, 28))
+        subtitleLabel.autoPinWidthToSuperview(withMargin: bodyMargin)
+        subtitleLabel.setContentHuggingVerticalHigh()
+
+        // Bottom Spacer layout
+        bottomSpacer.autoPinEdge(.top, to: .bottom, of: subtitleLabel, withOffset: ScaleFromIPhone5(16))
+        bottomSpacer.autoPinEdge(toSuperviewEdge: .bottom)
+        bottomSpacer.autoPinWidthToSuperview()
+    }
+}
 
 /**
  * Allows multiple lines of button text, and ensures the buttons intrinsic content size reflects that of it's label.
@@ -796,6 +874,8 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
                 return IntroducingCustomNotificationAudioExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade, experienceUpgradesPageViewController: self)
             case .introducingTypingIndicators:
                 return IntroductingTypingIndicatorsExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade, experienceUpgradesPageViewController: self)
+            case .introducingLinkPreviews:
+                return IntroducingLinkPreviewsExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade, experienceUpgradesPageViewController: self)
             default:
                 return ExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade, experienceUpgradesPageViewController: self)
             }
