@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +11,8 @@ enum ExperienceUpgradeId: String {
     introducingProfiles = "003",
     introducingReadReceipts = "004",
     introducingCustomNotificationAudio = "005",
-    introducingTypingIndicators = "006"
+    introducingTypingIndicators = "006",
+    introducingLinkPreviews = "007"
 }
 
 @objc public class ExperienceUpgradeFinder: NSObject {
@@ -69,6 +70,21 @@ enum ExperienceUpgradeId: String {
                                  image: #imageLiteral(resourceName: "introductory_splash_custom_audio"))
     }
 
+    var linkPreviews: ExperienceUpgrade {
+        let imageName = Theme.isDarkThemeEnabled ? "introducing-link-previews-dark" : "introducing-link-previews-light"
+        let image: UIImage
+        if let heroImage = UIImage(named: imageName) {
+            image = heroImage
+        } else {
+            owsFailDebug("Could not load hero image.")
+            image = #imageLiteral(resourceName: "introductory_splash_custom_audio")
+        }
+        return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingLinkPreviews.rawValue,
+                                 title: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE", comment: "Header for upgrading users"),
+                                 body: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION", comment: "Body text for upgrading users"),
+                                 image: image)
+    }
+
     // Keep these ordered by increasing uniqueId.
     @objc
     public var allExperienceUpgrades: [ExperienceUpgrade] {
@@ -82,7 +98,8 @@ enum ExperienceUpgradeId: String {
             // introducingProfiles,
             // introducingReadReceipts,
             // configurableNotificationAudio
-            typingIndicators
+            // typingIndicators
+            linkPreviews
         ].compactMap { $0 }
     }
 

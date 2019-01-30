@@ -640,6 +640,17 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
         self.pageViewController.setViewControllers([ firstViewController ], direction: .forward, animated: false, completion: nil)
     }
 
+    func dismissButtonTitle() -> String {
+        // This should be true for "Opt-in" features/upgrades.
+        let useNotNowButton = false
+        if useNotNowButton {
+            return NSLocalizedString("EXPERIENCE_UPGRADE_DISMISS_BUTTON",
+                                     comment: "Button to dismiss/ignore the one time splash screen that appears after upgrading")
+        } else {
+            return NSLocalizedString("OK", comment: "")
+        }
+    }
+
     @objc public override func loadView() {
         self.view = UIView.container()
         view.backgroundColor = Theme.backgroundColor
@@ -658,7 +669,7 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
         // Dismiss button
         let dismissButton = UIButton()
         view.addSubview(dismissButton)
-        dismissButton.setTitle(NSLocalizedString("EXPERIENCE_UPGRADE_DISMISS_BUTTON", comment: "Button to dismiss/ignore the one time splash screen that appears after upgrading"), for: .normal)
+        dismissButton.setTitle(dismissButtonTitle(), for: .normal)
         dismissButton.setTitleColor(UIColor.ows_signalBrandBlue, for: .normal)
         dismissButton.isUserInteractionEnabled = true
         dismissButton.addTarget(self, action: #selector(didTapDismissButton), for: .touchUpInside)
