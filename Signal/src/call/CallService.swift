@@ -249,12 +249,18 @@ private class SignalCallData: NSObject {
 
             return callData?.call
         }
+        didSet {
+            AssertIsOnMainThread()
+        }
     }
     var peerConnectionClient: PeerConnectionClient? {
         get {
             AssertIsOnMainThread()
 
             return callData?.peerConnectionClient
+        }
+        didSet {
+            AssertIsOnMainThread()
         }
     }
 
@@ -264,6 +270,9 @@ private class SignalCallData: NSObject {
 
             return callData?.localCaptureSession
         }
+        didSet {
+            AssertIsOnMainThread()
+        }
     }
 
     var remoteVideoTrack: RTCVideoTrack? {
@@ -271,6 +280,9 @@ private class SignalCallData: NSObject {
             AssertIsOnMainThread()
 
             return callData?.remoteVideoTrack
+        }
+        didSet {
+            AssertIsOnMainThread()
         }
     }
     var isRemoteVideoEnabled: Bool {
@@ -281,6 +293,9 @@ private class SignalCallData: NSObject {
                 return false
             }
             return callData.isRemoteVideoEnabled
+        }
+        didSet {
+            AssertIsOnMainThread()
         }
     }
 
@@ -371,7 +386,8 @@ private class SignalCallData: NSObject {
         callRecord.save()
         call.callRecord = callRecord
 
-        let promise = getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
+        let promise = getIceServers()
+            .then { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("got ice servers:\(iceServers) for call: \(call.identifiersForLogs)")
 
             guard self.call == call else {
@@ -686,9 +702,8 @@ private class SignalCallData: NSObject {
             strongSelf.handleFailedCall(failedCall: newCall, error: timeout)
         })
 
-        firstly {
-            getIceServers()
-        }.then { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
+        getIceServers()
+            .then { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
             // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
             // even though, from the users perspective, no incoming call is yet visible.
             guard self.call == newCall else {
@@ -1520,11 +1535,9 @@ private class SignalCallData: NSObject {
      * a list of servers, plus we have fallback servers hardcoded in the app.
      */
     private func getIceServers() -> Promise<[RTCIceServer]> {
-        AssertIsOnMainThread()
 
-        return firstly {
-            accountManager.getTurnServerInfo()
-        }.map { turnServerInfo -> [RTCIceServer] in
+        self.accountManager.getTurnServerInfo()
+        .map(on: DispatchQueue.global()) { turnServerInfo -> [RTCIceServer] in
             Logger.debug("got turn server urls: \(turnServerInfo.urls)")
 
             return turnServerInfo.urls.map { url in
@@ -1537,7 +1550,7 @@ private class SignalCallData: NSObject {
                     return RTCIceServer(urlStrings: [url])
                 }
             } + [CallService.fallbackIceServer]
-        }.recover { (error: Error) -> Guarantee<[RTCIceServer]> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Guarantee<[RTCIceServer]> in
             Logger.error("fetching ICE servers failed with error: \(error)")
             Logger.warn("using fallback ICE Servers")
 
