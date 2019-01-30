@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)incomingMessage
                             inThread:(TSThread *)thread
-                     contactsManager:(id<ContactsManagerProtocol>)contactsManager
                          transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)error

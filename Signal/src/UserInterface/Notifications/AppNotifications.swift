@@ -153,6 +153,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     // MARK: - Dependencies
 
+    var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
     var identityManager: OWSIdentityManager {
         return OWSIdentityManager.shared()
     }
@@ -332,8 +336,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    // MJK TODO DI contactsManager
-    public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, contactsManager: ContactsManagerProtocol, transaction: YapDatabaseReadTransaction) {
+    public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
 
         guard !thread.isMuted else {
             return

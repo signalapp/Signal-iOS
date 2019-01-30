@@ -170,7 +170,6 @@ class DebugUINotifications: DebugUIPage {
 
                 self.notificationPresenter.notifyUser(for: incomingMessage,
                                                      in: thread,
-                                                     contactsManager: self.contactsManager,
                                                      transaction: transaction)
             }
         }
