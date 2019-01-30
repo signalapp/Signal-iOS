@@ -99,8 +99,14 @@ protocol CallServiceObserver: class {
                               remoteVideoTrack: RTCVideoTrack?)
 }
 
+protocol SignalCallDataDelegate: class {
+    func outgoingIceUpdateDidFail(call: SignalCall)
+}
+
 // Gather all per-call state in one place.
 private class SignalCallData: NSObject {
+    fileprivate weak var delegate: SignalCallDataDelegate?
+
     public let call: SignalCall
 
     // Used to coordinate promises across delegate methods
@@ -147,8 +153,9 @@ private class SignalCallData: NSObject {
         }
     }
 
-    required init(call: SignalCall) {
+    required init(call: SignalCall, delegate: SignalCallDataDelegate) {
         self.call = call
+        self.delegate = delegate
 
         let (callConnectedPromise, callConnectedResolver) = Promise<Void>.pending()
         self.callConnectedPromise = callConnectedPromise
@@ -245,7 +252,7 @@ private class SignalCallData: NSObject {
          */
         let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessages: iceUpdateProtos)
         let sendPromise = self.messageSender.sendPromise(message: callMessage)
-            .ensure { [weak self] in
+            .done { [weak self] in
                 AssertIsOnMainThread()
 
                 guard let strongSelf = self else {
@@ -254,13 +261,22 @@ private class SignalCallData: NSObject {
 
                 strongSelf.outgoingIceUpdatesInFlight = false
                 strongSelf.tryToSendIceUpdates()
+        }.catch { [weak self] (_) in
+                AssertIsOnMainThread()
+
+                guard let strongSelf = self else {
+                    return
+                }
+
+                strongSelf.outgoingIceUpdatesInFlight = false
+            strongSelf.delegate?.outgoingIceUpdateDidFail(call: strongSelf.call)
         }
         sendPromise.retainUntilComplete()
     }
 }
 
 // This class' state should only be accessed on the main queue.
-@objc public class CallService: NSObject, CallObserver, PeerConnectionClientDelegate {
+@objc public class CallService: NSObject, CallObserver, PeerConnectionClientDelegate, SignalCallDataDelegate {
 
     // MARK: - Properties
 
@@ -280,6 +296,7 @@ private class SignalCallData: NSObject {
         didSet {
             AssertIsOnMainThread()
 
+            oldValue?.delegate = nil
             oldValue?.call.removeObserver(self)
             callData?.call.addObserverAndSyncState(observer: self)
 
@@ -427,7 +444,7 @@ private class SignalCallData: NSObject {
             return Promise(error: CallError.assertionError(description: errorDescription))
         }
 
-        let callData = SignalCallData(call: call)
+        let callData = SignalCallData(call: call, delegate: self)
         self.callData = callData
 
         // MJK TODO remove this timestamp param
@@ -728,7 +745,7 @@ private class SignalCallData: NSObject {
 
         Logger.info("starting new call: \(newCall.identifiersForLogs)")
 
-        let callData = SignalCallData(call: newCall)
+        let callData = SignalCallData(call: newCall, delegate: self)
         self.callData = callData
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
@@ -1875,5 +1892,16 @@ private class SignalCallData: NSObject {
 
         self.activeCallTimer?.invalidate()
         self.activeCallTimer = nil
+    }
+
+    // MARK: - SignalCallDataDelegate
+
+    func outgoingIceUpdateDidFail(call: SignalCall) {
+        guard self.call == call else {
+            Logger.warn("obsolete call")
+            return
+        }
+
+        terminateCall()
     }
 }
