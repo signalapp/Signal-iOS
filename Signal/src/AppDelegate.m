@@ -1508,10 +1508,11 @@ static NSTimeInterval launchStartedAt;
 {
     OWSLogInfo(@"");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^() {
-        // TODO move this into adaptee ?
-        // we need to respect the in-app notification sound settings, either here
-        // or maybe it's simpler to do that when building the notification. e.g. if the app
-        // is in the forground when the notification was sent, we could just *not* add the sound.
+        // We need to respect the in-app notification sound preference. This method, which is called
+        // for modern UNUserNotification users, could be a place to do that, but since we'd still
+        // need to handle this behavior for legacy UINotification users anyway, we "allow" all
+        // notification options here, and rely on the shared logic in NotificationPresenter to
+        // honor notification sound preferences for both modern and legacy users.
         UNNotificationPresentationOptions options = UNNotificationPresentationOptionAlert
             | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
         completionHandler(options);

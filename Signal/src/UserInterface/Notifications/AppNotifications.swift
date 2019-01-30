@@ -108,6 +108,9 @@ extension AppNotificationAction {
 // avoid notifying a user on their phone while a conversation is actively happening on desktop.
 let kNotificationDelayForRemoteRead: TimeInterval = 5
 
+let kAudioNotificationsThrottleCount = 2
+let kAudioNotificationsThrottleInterval: TimeInterval = 5
+
 protocol NotificationPresenterAdaptee: class {
 
     func registerNotificationSettings() -> Promise<Void>
@@ -118,7 +121,6 @@ protocol NotificationPresenterAdaptee: class {
     func cancelNotifications(threadId: String)
     func clearAllNotifications()
 
-    var shouldPlaySoundForNotification: Bool { get }
     var hasReceivedSyncMessageRecently: Bool { get }
 }
 
@@ -155,8 +157,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return OWSIdentityManager.shared()
     }
 
+    var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
+
     var previewType: NotificationType {
-        return Environment.shared.preferences.notificationPreviewType()
+        return preferences.notificationPreviewType()
     }
 
     // MARK: -
@@ -222,13 +228,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.localCallId: call.localId.uuidString
         ]
 
-        let sound = OWSSound.defaultiOSIncomingRingtone
-
         DispatchQueue.main.async {
             self.adaptee.notify(category: .incomingCall,
                                 body: notificationBody,
                                 userInfo: userInfo,
-                                sound: sound,
+                                sound: .defaultiOSIncomingRingtone,
                                 replacingIdentifier: call.localId.uuidString)
         }
     }
@@ -250,19 +254,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
 
-        let sound: OWSSound?
-        if shouldPlaySoundForNotification {
-            sound = OWSSounds.notificationSound(for: thread)
-        } else {
-            sound = nil
-        }
-
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId,
             AppNotificationUserInfoKey.localCallId: call.localId.uuidString
         ]
 
         DispatchQueue.main.async {
+            let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .missedCall,
                                 body: notificationBody,
                                 userInfo: userInfo,
@@ -287,18 +285,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
 
-        let sound: OWSSound?
-        if shouldPlaySoundForNotification {
-            sound = OWSSounds.notificationSound(for: thread)
-        } else {
-            sound = nil
-        }
-
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId
         ]
 
         DispatchQueue.main.async {
+            let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .missedCallFromNoLongerVerifiedIdentity,
                                 body: notificationBody,
                                 userInfo: userInfo,
@@ -325,19 +317,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
 
-        let sound: OWSSound?
-        if shouldPlaySoundForNotification {
-            sound = OWSSounds.notificationSound(for: thread)
-        } else {
-            sound = nil
-        }
-
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId,
             AppNotificationUserInfoKey.callBackNumber: remotePhoneNumber
         ]
 
         DispatchQueue.main.async {
+            let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .missedCall,
                                 body: notificationBody,
                                 userInfo: userInfo,
@@ -407,13 +393,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             }
         }
 
-        let sound: OWSSound?
-        if shouldPlaySoundForNotification {
-            sound = OWSSounds.notificationSound(for: thread)
-        } else {
-            sound = nil
-        }
-
         guard let threadId = thread.uniqueId else {
             owsFailDebug("threadId was unexpectedly nil")
             return
@@ -434,6 +413,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ]
 
         DispatchQueue.main.async {
+            let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category, body: notificationBody, userInfo: userInfo, sound: sound)
         }
     }
@@ -441,13 +421,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func notifyForFailedSend(inThread thread: TSThread) {
         let notificationFormat = NSLocalizedString("NOTIFICATION_SEND_FAILED", comment: "subsequent notification body when replying from notification fails")
         let notificationBody = String(format: notificationFormat, thread.name())
-
-        let sound: OWSSound?
-        if shouldPlaySoundForNotification {
-            sound = OWSSounds.notificationSound(for: thread)
-        } else {
-            sound = nil
-        }
 
         guard let threadId = thread.uniqueId else {
             owsFailDebug("threadId was unexpectedly nil")
@@ -459,6 +432,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ]
 
         DispatchQueue.main.async {
+            let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .errorMessage, body: notificationBody, userInfo: userInfo, sound: sound)
         }
     }
@@ -476,13 +450,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationBody = messageText
         }
 
-        let sound: OWSSound?
-        if shouldPlaySoundForNotification {
-            sound = OWSSounds.notificationSound(for: thread)
-        } else {
-            sound = nil
-        }
-
         guard let threadId = thread.uniqueId else {
             owsFailDebug("threadId was unexpectedly nil")
             return
@@ -493,6 +460,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ]
 
         transaction.addCompletionQueue(DispatchQueue.main) {
+            let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .errorMessage, body: notificationBody, userInfo: userInfo, sound: sound)
         }
     }
@@ -500,14 +468,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func notifyUser(forThreadlessErrorMessage errorMessage: TSErrorMessage, transaction: YapDatabaseReadWriteTransaction) {
         let notificationBody = errorMessage.previewText(with: transaction)
 
-        let sound: OWSSound?
-        if shouldPlaySoundForNotification {
-            sound = OWSSounds.globalNotificationSound()
-        } else {
-            sound = nil
-        }
-
         transaction.addCompletionQueue(DispatchQueue.main) {
+            let sound = self.checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil
             self.adaptee.notify(category: .threadlessErrorMessage, body: notificationBody, userInfo: [:], sound: sound)
         }
     }
@@ -520,9 +482,40 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         adaptee.clearAllNotifications()
     }
 
-    // TODO rename to something like 'shouldThrottle' or 'requestAudioUsage'
-    var shouldPlaySoundForNotification: Bool {
-        return adaptee.shouldPlaySoundForNotification
+    // MARK: -
+
+    var mostRecentNotifications = TruncatedList<UInt64>(maxLength: kAudioNotificationsThrottleCount)
+
+    private func requestSound(thread: TSThread) -> OWSSound? {
+        guard checkIfShouldPlaySound() else {
+            return nil
+        }
+
+        return OWSSounds.notificationSound(for: thread)
+    }
+
+    private func checkIfShouldPlaySound() -> Bool {
+        AssertIsOnMainThread()
+
+        guard UIApplication.shared.applicationState == .active else {
+            return true
+        }
+
+        guard preferences.soundInForeground() else {
+            return false
+        }
+
+        let now = NSDate.ows_millisecondTimeStamp()
+        let recentThreshold = now - UInt64(kAudioNotificationsThrottleInterval * Double(kSecondInMs))
+
+        let recentNotifications = mostRecentNotifications.filter { $0 > recentThreshold }
+
+        guard recentNotifications.count < kAudioNotificationsThrottleCount else {
+            return false
+        }
+
+        mostRecentNotifications.append(now)
+        return true
     }
 }
 
@@ -654,12 +647,6 @@ extension ThreadUtil {
     }
 }
 
-extension OWSSound {
-    var filename: String? {
-        return OWSSounds.filename(for: self)
-    }
-}
-
 enum NotificationError: Error {
     case assertionError(description: String)
 }
@@ -668,5 +655,40 @@ extension NotificationError {
     static func failDebug(_ description: String) -> NotificationError {
         owsFailDebug(description)
         return NotificationError.assertionError(description: description)
+    }
+}
+
+struct TruncatedList<Element> {
+    let maxLength: Int
+    private var contents: [Element] = []
+
+    init(maxLength: Int) {
+        self.maxLength = maxLength
+    }
+
+    mutating func append(_ newElement: Element) {
+        var newElements = self.contents
+        newElements.append(newElement)
+        self.contents = Array(newElements.suffix(maxLength))
+    }
+}
+
+extension TruncatedList: Collection {
+    typealias Index = Int
+
+    var startIndex: Index {
+        return contents.startIndex
+    }
+
+    var endIndex: Index {
+        return contents.endIndex
+    }
+
+    subscript (position: Index) -> Element {
+        return contents[position]
+    }
+
+    func index(after i: Index) -> Index {
+        return contents.index(after: i)
     }
 }

@@ -145,7 +145,12 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
     func notify(category: AppNotificationCategory, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
         AssertIsOnMainThread()
         guard UIApplication.shared.applicationState != .active else {
-            Logger.info("skipping notification; app is in foreground")
+            if let sound = sound {
+                let soundId = OWSSounds.systemSoundID(for: sound, quiet: true)
+
+                // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
+                AudioServicesPlayAlertSound(soundId)
+            }
             return
         }
 
@@ -209,12 +214,6 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         for (_, notification) in notifications {
             cancelNotification(notification)
         }
-    }
-
-    // FIXME: Accomodate 'playSoundsInForeground' preference
-    // FIXME: debounce
-    var shouldPlaySoundForNotification: Bool {
-        return true
     }
 }
 
@@ -286,5 +285,11 @@ public class LegacyNotificationActionHandler: NSObject {
         case .showThread:
             return try actionHandler.showThread(userInfo: userInfo)
         }
+    }
+}
+
+extension OWSSound {
+    var filename: String? {
+        return OWSSounds.filename(for: self, quiet: false)
     }
 }

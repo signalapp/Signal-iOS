@@ -112,7 +112,8 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         let content = UNMutableNotificationContent()
         content.categoryIdentifier = category.identifier
         content.userInfo = userInfo
-        content.sound = sound?.notificationSound
+        let isAppActive = UIApplication.shared.applicationState == .active
+        content.sound = sound?.notificationSound(isQuiet: isAppActive)
 
         var notificationIdentifier: String = UUID().uuidString
         if let replacingIdentifier = replacingIdentifier {
@@ -175,11 +176,6 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         AssertIsOnMainThread()
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
-    }
-
-    // UNUserNotification framework does it's own audio throttling
-    var shouldPlaySoundForNotification: Bool {
-        return true
     }
 
     func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
@@ -278,8 +274,8 @@ public class UserNotificationActionHandler: NSObject {
 
 extension OWSSound {
     @available(iOS 10.0, *)
-    var notificationSound: UNNotificationSound {
-        guard let filename = OWSSounds.filename(for: self) else {
+    func notificationSound(isQuiet: Bool) -> UNNotificationSound {
+        guard let filename = OWSSounds.filename(for: self, quiet: isQuiet) else {
             owsFailDebug("filename was unexpectedly nil")
             return UNNotificationSound.default()
         }
