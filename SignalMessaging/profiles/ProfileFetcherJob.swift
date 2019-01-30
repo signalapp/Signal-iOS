@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -98,7 +98,7 @@ public class ProfileFetcherJob: NSObject {
             Logger.error("background task time ran out before profile fetch completed.")
         })
 
-        DispatchQueue.main.async {
+        DispatchQueue.global().async {
             for recipientId in recipientIds {
                 self.getAndUpdateProfile(recipientId: recipientId)
             }
@@ -112,7 +112,7 @@ public class ProfileFetcherJob: NSObject {
     public func getAndUpdateProfile(recipientId: String, remainingRetries: Int = 3) {
         self.getProfile(recipientId: recipientId).map(on: DispatchQueue.global()) { profile in
             self.updateProfile(signalServiceProfile: profile)
-        }.catch { error in
+        }.catch(on: DispatchQueue.global()) { error in
             switch error {
             case ProfileFetcherJobError.throttled(let lastTimeInterval):
                 Logger.info("skipping updateProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
@@ -129,7 +129,6 @@ public class ProfileFetcherJob: NSObject {
     }
 
     public func getProfile(recipientId: String) -> Promise<SignalServiceProfile> {
-        AssertIsOnMainThread()
         if !ignoreThrottling {
             if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
                 let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
@@ -162,8 +161,6 @@ public class ProfileFetcherJob: NSObject {
     private func requestProfile(recipientId: String,
                                 udAccess: OWSUDAccess?,
                                 canFailoverUDAuth: Bool) -> Promise<SignalServiceProfile> {
-        AssertIsOnMainThread()
-
         let requestMaker = RequestMaker(label: "Profile Fetch",
                                         requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest in
             return OWSRequestFactory.getProfileRequest(recipientId: recipientId, udAccessKey: udAccessKeyForRequest)

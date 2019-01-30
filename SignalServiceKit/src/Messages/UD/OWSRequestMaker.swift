@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -95,7 +95,7 @@ public class RequestMaker: NSObject {
     @objc
     public func makeRequestObjc() -> AnyPromise {
         let promise = makeRequest()
-            .recover { (error: Error) -> Promise<RequestMakerResult> in
+            .recover(on: DispatchQueue.global()) { (error: Error) -> Promise<RequestMakerResult> in
                 switch error {
                 case NetworkManagerError.taskError(_, let underlyingError):
                     throw underlyingError
@@ -140,7 +140,7 @@ public class RequestMaker: NSObject {
                 }) { (statusCode: Int, responseData: Data?, error: Error) in
                     resolver.reject(RequestMakerError.websocketRequestError(statusCode: statusCode, responseData: responseData, underlyingError: error))
                 }
-                }.recover { (error: Error) -> Promise<RequestMakerResult> in
+                }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<RequestMakerResult> in
                     switch error {
                     case RequestMakerError.websocketRequestError(let statusCode, _, _):
                         if isUDRequest && (statusCode == 401 || statusCode == 403) {
@@ -173,7 +173,7 @@ public class RequestMaker: NSObject {
                 }
         } else {
             return self.networkManager.makePromise(request: request)
-                .map { (networkManagerResult: TSNetworkManager.NetworkManagerResult) -> RequestMakerResult in
+                .map(on: DispatchQueue.global()) { (networkManagerResult: TSNetworkManager.NetworkManagerResult) -> RequestMakerResult in
                     if self.udManager.isUDVerboseLoggingEnabled() {
                         if isUDRequest {
                             Logger.debug("UD REST request '\(self.label)' succeeded.")
@@ -188,7 +188,7 @@ public class RequestMaker: NSObject {
                     return RequestMakerResult(responseObject: networkManagerResult.responseObject,
                                               wasSentByUD: isUDRequest,
                                               wasSentByWebsocket: false)
-                }.recover { (error: Error) -> Promise<RequestMakerResult> in
+                }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<RequestMakerResult> in
                     switch error {
                     case NetworkManagerError.taskError(let task, _):
                         let statusCode = task.statusCode()
