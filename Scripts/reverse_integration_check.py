@@ -56,6 +56,8 @@ def main():
         '3.0',
         '3.0.1',
         '3.0.2',
+        # These tags were from unmerged branches investigating an issue that only reproduced when installed from TF.
+        '2.34.0.10', '2.34.0.11', '2.34.0.12', '2.34.0.13', '2.34.0.15', '2.34.0.16', '2.34.0.17', '2.34.0.18', '2.34.0.19', '2.34.0.20', '2.34.0.6', '2.34.0.7', '2.34.0.8', '2.34.0.9',
     ]
     tags_of_concern = [tag for tag in tags_of_concern if tag not in tags_to_ignore]
 
