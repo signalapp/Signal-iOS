@@ -1186,7 +1186,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Enlazar nuevo dispositivo";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Previsualizar enlace";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Dispositivos enlazados";
@@ -2091,13 +2091,13 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Aviso legal y privacidad";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Enviar previsualización";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Al activar, las previsualizaciones de enlaces de Imgur, Instagram, Reddit y YouTube se envian automáticamente.";
 
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Previsualizar enlaces";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Ajustes";
@@ -2115,7 +2115,7 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Mostrar nombre y número";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Mostrar las llamadas de Signal en la lista de «Recientes» de la aplicación «Teléfono» de iOS.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Al activar, las llamadas de Signal se muestran en la lista de «Recientes» de la aplicación «Teléfono» de iOS.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Llamadas en Recientes";
@@ -2187,7 +2187,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Indicador de tecleo";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "Muestra cuando tus contactos escriben en un chat y a tus contactos cuando tú lo haces. La activación es opcional y se aplica a todos los chats.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Al activar se muestra cuando tus contactos escriben en un chat y a tus contactos cuando tú tecleas. El ajuste es opcional y se aplica a todos los chats.";
 
 /* Label for a link to more info about unidentified delivery. */
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Saber más";
@@ -2199,7 +2199,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Mostrar indicador";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Muestra un icono de estado en la sección «Más detalles» de los mensajes entregados con remitente sellado.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Al activar se muestra un icono de estado en la sección «Más detalles» de los mensajes entregados con remitente sellado.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir de cualquiera";
@@ -2374,6 +2374,15 @@
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Activar indicador de tecleo";
+
+/* Body text for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Optional link previews are now supported for some of the most popular sites on the Internet.";
+
+/* Subtitle for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
+
+/* Header for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Previsualizar enlaces";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Ahora puedes asignar diferentes sonidos de notificaciones a cada chat. Además, las llamadas respetan el tono de llamada personalizado de iOS.";
