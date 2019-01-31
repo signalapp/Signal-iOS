@@ -79,6 +79,7 @@ public enum CallError: Error {
     case timeout(description: String)
     case obsoleteCall(description: String)
     case fatalError(description: String)
+    case messageSendFailure(underlyingError: Error)
 }
 
 // Should be roughly synced with Android client for consistency
@@ -100,7 +101,7 @@ protocol CallServiceObserver: class {
 }
 
 protocol SignalCallDataDelegate: class {
-    func outgoingIceUpdateDidFail(call: SignalCall)
+    func outgoingIceUpdateDidFail(call: SignalCall, error: Error)
 }
 
 // Gather all per-call state in one place.
@@ -261,7 +262,7 @@ private class SignalCallData: NSObject {
 
                 strongSelf.outgoingIceUpdatesInFlight = false
                 strongSelf.tryToSendIceUpdates()
-        }.catch { [weak self] (_) in
+            }.catch { [weak self] (error) in
                 AssertIsOnMainThread()
 
                 guard let strongSelf = self else {
@@ -269,7 +270,7 @@ private class SignalCallData: NSObject {
                 }
 
                 strongSelf.outgoingIceUpdatesInFlight = false
-            strongSelf.delegate?.outgoingIceUpdateDidFail(call: strongSelf.call)
+                strongSelf.delegate?.outgoingIceUpdateDidFail(call: strongSelf.call, error: error)
         }
         sendPromise.retainUntilComplete()
     }
@@ -969,8 +970,6 @@ private class SignalCallData: NSObject {
      */
     private func handleIceConnected() {
         AssertIsOnMainThread()
-
-        Logger.verbose("-----.")
 
         guard let call = self.call else {
             // This will only be called for the current peerConnectionClient, so
@@ -1896,12 +1895,14 @@ private class SignalCallData: NSObject {
 
     // MARK: - SignalCallDataDelegate
 
-    func outgoingIceUpdateDidFail(call: SignalCall) {
+    func outgoingIceUpdateDidFail(call: SignalCall, error: Error) {
+        AssertIsOnMainThread()
+
         guard self.call == call else {
             Logger.warn("obsolete call")
             return
         }
 
-        terminateCall()
+        handleFailedCall(failedCall: call, error: CallError.messageSendFailure(underlyingError: error))
     }
 }
