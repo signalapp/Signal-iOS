@@ -988,6 +988,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
+    // This upper bound should have no effect in portrait orientation.
+    // It limits body media size in landscape.
     const CGFloat kMaxBodyMediaSize = 350;
     CGFloat maxMessageWidth = MIN(kMaxBodyMediaSize, self.conversationStyle.maxMessageWidth);
     if (!self.hasFullWidthMediaView) {
