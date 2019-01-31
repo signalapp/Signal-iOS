@@ -98,15 +98,15 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     // We don't actually use the `transaction` but other sibling classes do.
     switch (_callType) {
         case RPRecentCallTypeIncoming:
-            return NSLocalizedString(@"INCOMING_CALL", @"");
+            return NSLocalizedString(@"INCOMING_CALL", @"info message text in conversation view");
         case RPRecentCallTypeOutgoing:
-            return NSLocalizedString(@"OUTGOING_CALL", @"");
+            return NSLocalizedString(@"OUTGOING_CALL", @"info message text in conversation view");
         case RPRecentCallTypeIncomingMissed:
-            return NSLocalizedString(@"MISSED_CALL", @"");
+            return NSLocalizedString(@"MISSED_CALL", @"info message text in conversation view");
         case RPRecentCallTypeOutgoingIncomplete:
-            return NSLocalizedString(@"OUTGOING_INCOMPLETE_CALL", @"");
+            return NSLocalizedString(@"OUTGOING_INCOMPLETE_CALL", @"info message text in conversation view");
         case RPRecentCallTypeIncomingIncomplete:
-            return NSLocalizedString(@"INCOMING_INCOMPLETE_CALL", @"");
+            return NSLocalizedString(@"INCOMING_INCOMPLETE_CALL", @"info message text in conversation view");
         case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
             return NSLocalizedString(@"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY", @"info message text shown in conversation view");
         case RPRecentCallTypeIncomingDeclined:

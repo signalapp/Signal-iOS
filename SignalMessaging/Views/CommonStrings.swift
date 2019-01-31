@@ -37,6 +37,27 @@ import Foundation
     static public let sendButton =  NSLocalizedString("SEND_BUTTON_TITLE", comment: "Label for the button to send a message")
 }
 
+@objc
+public class NotificationStrings: NSObject {
+    @objc
+    static public let incomingCallBody = NSLocalizedString("CALL_INCOMING_NOTIFICATION_BODY", comment: "notification body")
+
+    @objc
+    static public let missedCallBody = NSLocalizedString("CALL_MISSED_NOTIFICATION_BODY", comment: "notification body")
+
+    @objc
+    static public let missedCallBecauseOfIdentityChangeBody = NSLocalizedString("CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY", comment: "notification body")
+
+    @objc
+    static public let incomingMessageBody = NSLocalizedString("APN_Message", comment: "notification body")
+
+    @objc
+    static public let incomingGroupMessageTitleFormat = NSLocalizedString("NEW_GROUP_MESSAGE_NOTIFICATION_TITLE", comment: "notification title. Embeds {{author name}} and {{group name}}")
+
+    @objc
+    static public let failedToSendBody = NSLocalizedString("SEND_FAILED_NOTIFICATION_BODY", comment: "notification body")
+}
+
 @objc public class CallStrings: NSObject {
     @objc
     static public let callStatusFormat = NSLocalizedString("CALL_STATUS_FORMAT", comment: "embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call'")
@@ -59,25 +80,7 @@ import Foundation
     @objc
     static public let answerCallButtonTitle = NSLocalizedString("ANSWER_CALL_BUTTON_TITLE", comment: "notification action")
     @objc
-    static public let declineCallButtonTitle = NSLocalizedString("REJECT_CALL_BUTTON_TITLE", comment: "")
-
-    // MARK: Missed Call Notification
-    @objc
-    static public let missedCallNotificationBodyWithoutCallerName = NSLocalizedString("MISSED_CALL", comment: "notification title")
-    @objc
-    static public let missedCallNotificationBodyWithCallerName = NSLocalizedString("MSGVIEW_MISSED_CALL_WITH_NAME", comment: "notification title. Embeds {{caller's name or phone number}}")
-
-    // MARK: Missed with changed identity notification (for not previously verified identity)
-    @objc
-    static public let missedCallWithIdentityChangeNotificationBodyWithoutCallerName =  NSLocalizedString("MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME", comment: "notification title")
-    @objc
-    static public let missedCallWithIdentityChangeNotificationBodyWithCallerName =  NSLocalizedString("MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME", comment: "notification title. Embeds {{caller's name or phone number}}")
-
-    @objc
-    static public let incomingCallWithoutCallerNameNotification = NSLocalizedString("INCOMING_CALL", comment: "notification body, does not include the callers name")
-
-    @objc
-    static public let incomingCallNotificationFormat = NSLocalizedString("INCOMING_CALL_FROM", comment: "notification body, embeds {{caller name or number}}")
+    static public let declineCallButtonTitle = NSLocalizedString("REJECT_CALL_BUTTON_TITLE", comment: "notification action")
 }
 
 @objc public class MediaStrings: NSObject {

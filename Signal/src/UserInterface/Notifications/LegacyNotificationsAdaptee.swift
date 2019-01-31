@@ -137,12 +137,12 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         return promise
     }
 
-    func notify(category: AppNotificationCategory, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?) {
         AssertIsOnMainThread()
-        notify(category: category, body: body, userInfo: userInfo, sound: sound, replacingIdentifier: nil)
+        notify(category: category, title: title, body: body, userInfo: userInfo, sound: sound, replacingIdentifier: nil)
     }
 
-    func notify(category: AppNotificationCategory, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
         AssertIsOnMainThread()
         guard UIApplication.shared.applicationState != .active else {
             if let sound = sound {
@@ -154,9 +154,16 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             return
         }
 
+        let alertBody: String
+        if let title = title {
+            alertBody = title.rtlSafeAppend(":").rtlSafeAppend(" ").rtlSafeAppend(body)
+        } else {
+            alertBody = body
+        }
+
         let notification = UILocalNotification()
         notification.category = category.identifier
-        notification.alertBody = body
+        notification.alertBody = alertBody
         notification.userInfo = userInfo
         notification.soundName = sound?.filename
 
