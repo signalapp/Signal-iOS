@@ -988,7 +988,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
-    CGFloat maxMessageWidth = self.conversationStyle.maxMessageWidth;
+    const CGFloat kMaxBodyMediaSize = 350;
+    CGFloat maxMessageWidth = MIN(kMaxBodyMediaSize, self.conversationStyle.maxMessageWidth);
     if (!self.hasFullWidthMediaView) {
         CGFloat hMargins = self.conversationStyle.textInsetHorizontal * 2;
         maxMessageWidth -= hMargins;
