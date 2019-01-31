@@ -231,9 +231,6 @@ const CGFloat kMaxTextViewHeight = 98;
     self.hStack.preservesSuperviewLayoutMargins = NO;
     self.preservesSuperviewLayoutMargins = NO;
 
-    //    [vStack addBorderViewWithColor:Theme.secondaryColor strokeWidth:CGHairlineWidth()
-    //    cornerRadius:vStackRounding];
-
     [self ensureShouldShowVoiceMemoButtonAnimated:NO doLayout:NO];
 }
 
