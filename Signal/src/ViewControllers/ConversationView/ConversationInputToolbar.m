@@ -50,7 +50,6 @@ const CGFloat kMaxTextViewHeight = 98;
 
 @property (nonatomic, readonly) ConversationInputTextView *inputTextView;
 @property (nonatomic, readonly) UIStackView *hStack;
-@property (nonatomic, readonly) UIStackView *vStack;
 @property (nonatomic, readonly) UIButton *attachmentButton;
 @property (nonatomic, readonly) UIButton *sendButton;
 @property (nonatomic, readonly) UIButton *voiceMemoButton;
@@ -123,8 +122,7 @@ const CGFloat kMaxTextViewHeight = 98;
     _inputTextView = [ConversationInputTextView new];
     self.inputTextView.textViewToolbarDelegate = self;
     self.inputTextView.font = [UIFont ows_dynamicTypeBodyFont];
-    self.inputTextView.backgroundColor = UIColor.clearColor;
-    self.inputTextView.opaque = NO;
+    self.inputTextView.backgroundColor = Theme.toolbarBackgroundColor;
     [self.inputTextView setContentHuggingLow];
     [self.inputTextView setCompressionResistanceLow];
 
@@ -182,19 +180,33 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.linkPreviewWrapper setContentHuggingHorizontalLow];
     [self.linkPreviewWrapper setCompressionResistanceHorizontalLow];
 
-    _vStack = [[UIStackView alloc]
+    // V Stack
+    UIStackView *vStack = [[UIStackView alloc]
         initWithArrangedSubviews:@[ self.quotedReplyWrapper, self.linkPreviewWrapper, self.inputTextView ]];
-    self.vStack.axis = UILayoutConstraintAxisVertical;
-    [self.vStack setContentHuggingHorizontalLow];
-    [self.vStack setCompressionResistanceHorizontalLow];
+    vStack.axis = UILayoutConstraintAxisVertical;
+    [vStack setContentHuggingHorizontalLow];
+    [vStack setCompressionResistanceHorizontalLow];
 
     for (UIView *button in @[ self.attachmentButton, self.voiceMemoButton, self.sendButton ]) {
         [button setContentHuggingHorizontalHigh];
         [button setCompressionResistanceHorizontalHigh];
     }
 
+    // V Stack Wrapper
+    const CGFloat vStackRounding = 18.f;
+    UIView *vStackWrapper = [UIView containerView];
+    vStackWrapper.layer.cornerRadius = vStackRounding;
+    vStackWrapper.layer.borderColor = Theme.secondaryColor.CGColor;
+    vStackWrapper.layer.borderWidth = CGHairlineWidth();
+    vStackWrapper.clipsToBounds = YES;
+    [vStackWrapper addSubview:vStack];
+    [vStack ows_autoPinToSuperviewEdges];
+    [vStackWrapper setContentHuggingHorizontalLow];
+    [vStackWrapper setCompressionResistanceHorizontalLow];
+
+    // H Stack
     _hStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ self.attachmentButton, self.vStack, self.voiceMemoButton, self.sendButton ]];
+        initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, self.voiceMemoButton, self.sendButton ]];
     self.hStack.axis = UILayoutConstraintAxisHorizontal;
     self.hStack.layoutMarginsRelativeArrangement = YES;
     self.hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
@@ -209,15 +221,15 @@ const CGFloat kMaxTextViewHeight = 98;
 
     // See comments on updateContentLayout:.
     if (@available(iOS 11, *)) {
-        self.vStack.insetsLayoutMarginsFromSafeArea = NO;
+        vStack.insetsLayoutMarginsFromSafeArea = NO;
+        vStackWrapper.insetsLayoutMarginsFromSafeArea = NO;
         self.hStack.insetsLayoutMarginsFromSafeArea = NO;
         self.insetsLayoutMarginsFromSafeArea = NO;
     }
-    self.vStack.preservesSuperviewLayoutMargins = NO;
+    vStack.preservesSuperviewLayoutMargins = NO;
+    vStackWrapper.preservesSuperviewLayoutMargins = NO;
     self.hStack.preservesSuperviewLayoutMargins = NO;
     self.preservesSuperviewLayoutMargins = NO;
-
-    [self.vStack addBorderViewWithColor:Theme.secondaryColor strokeWidth:CGHairlineWidth() cornerRadius:18.f];
 
     [self ensureShouldShowVoiceMemoButtonAnimated:NO doLayout:NO];
 }
