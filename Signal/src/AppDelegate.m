@@ -179,6 +179,16 @@ static NSTimeInterval launchStartedAt;
     return AppEnvironment.shared.notificationPresenter;
 }
 
+- (OWSUserNotificationActionHandler *)userNotificationActionHandler
+{
+    return AppEnvironment.shared.userNotificationActionHandler;
+}
+
+- (OWSLegacyNotificationActionHandler *)legacyNotificationActionHandler
+{
+    return AppEnvironment.shared.legacyNotificationActionHandler;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -1159,8 +1169,8 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-        [LegacyNotificationActionHandler.shared
-            handleNotificationResponseWithActionIdentifier:LegacyNotificationActionHandler.kDefaultActionIdentifier
+        [self.legacyNotificationActionHandler
+            handleNotificationResponseWithActionIdentifier:OWSLegacyNotificationActionHandler.kDefaultActionIdentifier
                                               notification:notification
                                               responseInfo:@{}
                                          completionHandler:^{
@@ -1194,10 +1204,10 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-        [LegacyNotificationActionHandler.shared handleNotificationResponseWithActionIdentifier:identifier
-                                                                                  notification:notification
-                                                                                  responseInfo:@{}
-                                                                             completionHandler:completionHandler];
+        [self.legacyNotificationActionHandler handleNotificationResponseWithActionIdentifier:identifier
+                                                                                notification:notification
+                                                                                responseInfo:@{}
+                                                                           completionHandler:completionHandler];
     }];
 }
 
@@ -1230,10 +1240,10 @@ static NSTimeInterval launchStartedAt;
             return;
         }
 
-        [LegacyNotificationActionHandler.shared handleNotificationResponseWithActionIdentifier:identifier
-                                                                                  notification:notification
-                                                                                  responseInfo:responseInfo
-                                                                             completionHandler:completionHandler];
+        [self.legacyNotificationActionHandler handleNotificationResponseWithActionIdentifier:identifier
+                                                                                notification:notification
+                                                                                responseInfo:responseInfo
+                                                                           completionHandler:completionHandler];
     }];
 }
 
@@ -1529,7 +1539,7 @@ static NSTimeInterval launchStartedAt;
 {
     OWSLogInfo(@"");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^() {
-        [UserNotificationActionHandler.shared handleNotificationResponse:response completionHandler:completionHandler];
+        [self.userNotificationActionHandler handleNotificationResponse:response completionHandler:completionHandler];
     }];
 }
 

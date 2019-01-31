@@ -217,15 +217,11 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
     }
 }
 
-@objc
+@objc(OWSLegacyNotificationActionHandler)
 public class LegacyNotificationActionHandler: NSObject {
 
     @objc
     public static let kDefaultActionIdentifier = "LegacyNotificationActionHandler.kDefaultActionIdentifier"
-
-    // TODO move this to environment?
-    @objc
-    static let shared: LegacyNotificationActionHandler = LegacyNotificationActionHandler()
 
     var actionHandler: NotificationActionHandler {
         return NotificationActionHandler.shared

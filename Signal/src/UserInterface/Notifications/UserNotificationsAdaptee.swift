@@ -202,13 +202,9 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
     }
 }
 
-@objc
+@objc(OWSUserNotificationActionHandler)
 @available(iOS 10.0, *)
 public class UserNotificationActionHandler: NSObject {
-
-    // TODO move this to environment?
-    @objc
-    static let shared: UserNotificationActionHandler = UserNotificationActionHandler()
 
     var actionHandler: NotificationActionHandler {
         return NotificationActionHandler.shared
