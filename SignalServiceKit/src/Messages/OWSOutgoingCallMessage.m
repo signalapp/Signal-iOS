@@ -58,18 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread iceUpdateMessage:(SSKProtoCallMessageIceUpdate *)iceUpdateMessage
-{
-    self = [self initWithThread:thread];
-    if (!self) {
-        return self;
-    }
-
-    _iceUpdateMessages = @[ iceUpdateMessage ];
-
-    return self;
-}
-
 - (instancetype)initWithThread:(TSThread *)thread
              iceUpdateMessages:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdateMessages
 {
@@ -189,7 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (self.answerMessage) {
         payload = @"answerMessage";
     } else if (self.iceUpdateMessages.count > 0) {
-        payload = @"iceUpdateMessage";
+        payload = [NSString stringWithFormat:@"iceUpdateMessages: %lu", (unsigned long)self.iceUpdateMessages.count];
     } else if (self.hangupMessage) {
         payload = @"hangupMessage";
     } else if (self.busyMessage) {

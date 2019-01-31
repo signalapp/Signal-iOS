@@ -4580,8 +4580,6 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.conversationViewModel);
 
-    OWSLogVerbose(@"");
-
     // HACK to work around radar #28167779
     // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
     // more: https://github.com/PSPDFKit-labs/radar.apple.com/tree/master/28167779%20-%20CollectionViewBatchingIssue
@@ -4603,8 +4601,6 @@ typedef enum : NSUInteger {
     if (!self.shouldObserveVMUpdates) {
         return;
     }
-
-    OWSLogVerbose(@"");
 
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];

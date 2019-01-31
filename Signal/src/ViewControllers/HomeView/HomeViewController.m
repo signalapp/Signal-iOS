@@ -1321,8 +1321,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         return;
     }
 
-    OWSLogVerbose(@"");
-
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
     if (![[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
