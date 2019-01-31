@@ -710,7 +710,10 @@ public class LinkPreviewView: UIStackView {
 
         self.layoutConstraints.append(self.autoSetDimension(.height, toSize: draftHeight + draftMarginTop))
 
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        let activityIndicatorStyle: UIActivityIndicatorView.Style = (Theme.isDarkThemeEnabled
+            ? .white
+            : .gray)
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: activityIndicatorStyle)
         activityIndicator.startAnimating()
         addArrangedSubview(activityIndicator)
         let activityIndicatorSize: CGFloat = 25
