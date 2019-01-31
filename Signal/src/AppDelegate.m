@@ -94,6 +94,7 @@ static NSTimeInterval launchStartedAt;
 // The user experience is reasonable: if the user activates the app
 // while in landscape, the user sees a rotation animation.
 @property (nonatomic) BOOL isLandscapeEnabled;
+@property (nonatomic) BOOL shouldEnableLandscape;
 @property (nonatomic, nullable) NSTimer *landscapeTimer;
 
 @end
@@ -180,7 +181,7 @@ static NSTimeInterval launchStartedAt;
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     OWSLogWarn(@"applicationDidEnterBackground.");
 
-    [self disableLandscape];
+    [self updateShouldEnableLandscape];
 
     [DDLog flushLog];
 }
@@ -188,7 +189,7 @@ static NSTimeInterval launchStartedAt;
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     OWSLogWarn(@"applicationWillEnterForeground.");
 
-    [self disableLandscape];
+    [self updateShouldEnableLandscape];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
@@ -308,6 +309,14 @@ static NSTimeInterval launchStartedAt;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationLockDidChange:)
                                                  name:NSNotificationName_2FAStateDidChange
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(isScreenBlockActiveDidChange:)
+                                                 name:IsScreenBlockActiveDidChangeNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reportedApplicationStateDidChange:)
+                                                 name:ReportedApplicationStateDidChangeNotification
                                                object:nil];
 
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
@@ -651,7 +660,7 @@ static NSTimeInterval launchStartedAt;
     // be called _before_ we become active.
     [self clearAllNotificationsAndRestoreBadgeCount];
 
-    [self enableLandscapeAfterDelay];
+    [self updateShouldEnableLandscape];
 
     OWSLogInfo(@"applicationDidBecomeActive completed.");
 }
@@ -766,7 +775,7 @@ static NSTimeInterval launchStartedAt;
 
     OWSLogWarn(@"applicationWillResignActive.");
 
-    [self disableLandscape];
+    [self updateShouldEnableLandscape];
 
     [DDLog flushLog];
 }
@@ -988,6 +997,11 @@ static NSTimeInterval launchStartedAt;
     if (!self.isLandscapeEnabled) {
         return UIInterfaceOrientationMaskPortrait;
     }
+    // We use isAppForegroundAndActive which depends on "reportedApplicationState"
+    // and therefore is more conservative about being active.
+    if (!CurrentAppContext().isAppForegroundAndActive) {
+        return UIInterfaceOrientationMaskPortrait;
+    }
     // This clause shouldn't be necessary, but it's nice to
     // be explicit about our invariants.
     if (!self.hasInitialRootViewController) {
@@ -1026,17 +1040,49 @@ static NSTimeInterval launchStartedAt;
 }
 
 // See comments on isLandscapeEnabled property.
-- (void)disableLandscape
+- (void)updateShouldEnableLandscape
 {
     OWSAssertIsOnMainThread();
 
-    BOOL wasEnabled = self.isLandscapeEnabled;
-    self.isLandscapeEnabled = NO;
-    [self.landscapeTimer invalidate];
-    self.landscapeTimer = nil;
+    // We use isAppForegroundAndActive which depends on "reportedApplicationState"
+    // and therefore is more conservative about being active.
+    self.shouldEnableLandscape = (CurrentAppContext().isAppForegroundAndActive && [AppReadiness isAppReady]
+        && ![OWSWindowManager sharedManager].isScreenBlockActive);
+}
 
-    if (wasEnabled) {
-        [UIViewController attemptRotationToDeviceOrientation];
+// See comments on isLandscapeEnabled property.
+- (void)setShouldEnableLandscape:(BOOL)shouldEnableLandscape
+{
+    if (_shouldEnableLandscape == shouldEnableLandscape) {
+        return;
+    }
+
+    _shouldEnableLandscape = shouldEnableLandscape;
+
+    void (^disableLandscape)(void) = ^{
+        BOOL wasEnabled = self.isLandscapeEnabled;
+        self.isLandscapeEnabled = NO;
+        [self.landscapeTimer invalidate];
+        self.landscapeTimer = nil;
+
+        if (wasEnabled) {
+            [UIViewController attemptRotationToDeviceOrientation];
+        }
+    };
+
+    if (shouldEnableLandscape) {
+        disableLandscape();
+
+        // Enable Async
+        NSTimeInterval delay = 0.35f;
+        self.landscapeTimer = [NSTimer weakScheduledTimerWithTimeInterval:delay
+                                                                   target:self
+                                                                 selector:@selector(enableLandscape)
+                                                                 userInfo:nil
+                                                                  repeats:NO];
+    } else {
+        // Disable.
+        disableLandscape();
     }
 }
 
@@ -1050,20 +1096,6 @@ static NSTimeInterval launchStartedAt;
     self.landscapeTimer = nil;
 
     [UIViewController attemptRotationToDeviceOrientation];
-}
-
-// See comments on isLandscapeEnabled property.
-- (void)enableLandscapeAfterDelay
-{
-    OWSAssertIsOnMainThread();
-
-    [self disableLandscape];
-    NSTimeInterval delay = 0.35f;
-    self.landscapeTimer = [NSTimer weakScheduledTimerWithTimeInterval:delay
-                                                               target:self
-                                                             selector:@selector(enableLandscape)
-                                                             userInfo:nil
-                                                              repeats:NO];
 }
 
 #pragma mark Push Notifications Delegate Methods
@@ -1326,6 +1358,8 @@ static NSTimeInterval launchStartedAt;
 
     [self.primaryStorage touchDbAsync];
 
+    [self updateShouldEnableLandscape];
+
     // Every time the user upgrades to a new version:
     //
     // * Update account attributes.
@@ -1386,6 +1420,16 @@ static NSTimeInterval launchStartedAt;
 - (void)registrationLockDidChange:(NSNotification *)notification
 {
     [self enableBackgroundRefreshIfNecessary];
+}
+
+- (void)isScreenBlockActiveDidChange:(NSNotification *)notification
+{
+    [self updateShouldEnableLandscape];
+}
+
+- (void)reportedApplicationStateDidChange:(NSNotification *)notification
+{
+    [self updateShouldEnableLandscape];
 }
 
 - (void)ensureRootViewController

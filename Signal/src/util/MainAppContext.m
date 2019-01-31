@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "MainAppContext.h"
@@ -11,6 +11,8 @@
 #import <SignalServiceKit/OWSIdentityManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplicationStateDidChangeNotification";
 
 @interface MainAppContext ()
 
@@ -73,6 +75,20 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Notifications
+
+- (void)setReportedApplicationState:(UIApplicationState)reportedApplicationState
+{
+    OWSAssertIsOnMainThread();
+
+    if (_reportedApplicationState == reportedApplicationState) {
+        return;
+    }
+    _reportedApplicationState = reportedApplicationState;
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:ReportedApplicationStateDidChangeNotification
+                                                        object:nil
+                                                      userInfo:nil];
+}
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
