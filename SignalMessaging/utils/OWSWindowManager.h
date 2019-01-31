@@ -4,6 +4,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const OWSWindowManagerCallDidChangeNotification;
+
+extern NSString *const IsScreenBlockActiveDidChangeNotification;
+
 // This VC can become first responder
 // when presented to ensure that the input accessory is updated.
 @interface OWSWindowRootViewController : UIViewController
@@ -12,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-extern NSString *const OWSWindowManagerCallDidChangeNotification;
 const CGFloat OWSWindowManagerCallBannerHeight(void);
 
 extern const UIWindowLevel UIWindowLevel_Background;
@@ -28,8 +31,7 @@ extern const UIWindowLevel UIWindowLevel_Background;
 
 @property (nonatomic, readonly) UIWindow *rootWindow;
 @property (nonatomic, readonly) UIWindow *menuActionsWindow;
-
-- (void)setIsScreenBlockActive:(BOOL)isScreenBlockActive;
+@property (nonatomic) BOOL isScreenBlockActive;
 
 - (BOOL)isAppWindow:(UIWindow *)window;
 

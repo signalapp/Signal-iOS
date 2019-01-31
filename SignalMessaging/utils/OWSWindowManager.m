@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSWindowManagerCallDidChangeNotification = @"OWSWindowManagerCallDidChangeNotification";
 
+NSString *const IsScreenBlockActiveDidChangeNotification = @"IsScreenBlockActiveDidChangeNotification";
+
 const CGFloat OWSWindowManagerCallBannerHeight(void)
 {
     if (@available(iOS 11.4, *)) {
@@ -145,8 +147,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 // UIWindowLevel_Background if inactive,
 // UIWindowLevel_ScreenBlocking() if active.
 @property (nonatomic) UIWindow *screenBlockingWindow;
-
-@property (nonatomic) BOOL isScreenBlockActive;
 
 @property (nonatomic) BOOL shouldShowCallView;
 
@@ -308,6 +308,10 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     _isScreenBlockActive = isScreenBlockActive;
 
     [self ensureWindowState];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:IsScreenBlockActiveDidChangeNotification
+                                                        object:nil
+                                                      userInfo:nil];
 }
 
 - (BOOL)isAppWindow:(UIWindow *)window
