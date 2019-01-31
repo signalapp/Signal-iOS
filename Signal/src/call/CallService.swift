@@ -231,6 +231,7 @@ private class SignalCallData: NSObject {
     }
 
     private func tryToSendIceUpdates() {
+        AssertIsOnMainThread()
 
         guard !outgoingIceUpdatesInFlight else {
             Logger.verbose("Enqueued outgoing ice update")

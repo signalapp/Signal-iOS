@@ -140,7 +140,7 @@ public class RequestMaker: NSObject {
                 }) { (statusCode: Int, responseData: Data?, error: Error) in
                     resolver.reject(RequestMakerError.websocketRequestError(statusCode: statusCode, responseData: responseData, underlyingError: error))
                 }
-                }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<RequestMakerResult> in
+                }.recover { (error: Error) -> Promise<RequestMakerResult> in
                     switch error {
                     case RequestMakerError.websocketRequestError(let statusCode, _, _):
                         if isUDRequest && (statusCode == 401 || statusCode == 403) {
@@ -188,7 +188,7 @@ public class RequestMaker: NSObject {
                     return RequestMakerResult(responseObject: networkManagerResult.responseObject,
                                               wasSentByUD: isUDRequest,
                                               wasSentByWebsocket: false)
-                }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<RequestMakerResult> in
+                }.recover { (error: Error) -> Promise<RequestMakerResult> in
                     switch error {
                     case NetworkManagerError.taskError(let task, _):
                         let statusCode = task.statusCode()
