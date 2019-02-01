@@ -25,17 +25,160 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
         && error.code == TSNetworkManagerErrorFailedConnection);
 }
 
+#pragma mark -
+
+@interface OWSSessionManager : NSObject
+
+@property (nonatomic) AFHTTPSessionManager *sessionManager;
+@property (nonatomic, readonly) NSDictionary *defaultHeaders;
+
+@end
+
+#pragma mark -
+
+@implementation OWSSessionManager
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    self.sessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
+    self.sessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    // NOTE: We could enable HTTPShouldUsePipelining here.
+    // Make a copy of the default headers for this session manager.
+    _defaultHeaders = [self.sessionManager.requestSerializer.HTTPRequestHeaders copy];
+
+    return self;
+}
+
+- (void)performRequest:(TSRequest *)request
+               success:(TSNetworkManagerSuccess)success
+               failure:(TSNetworkManagerFailure)failure
+{
+    OWSAssertDebug(request);
+    OWSAssertDebug(success);
+    OWSAssertDebug(failure);
+
+    // Clear all headers so that we don't retain headers from previous requests.
+    for (NSString *headerField in self.sessionManager.requestSerializer.HTTPRequestHeaders.allKeys.copy) {
+        [self.sessionManager.requestSerializer setValue:nil forHTTPHeaderField:headerField];
+    }
+
+    // Apply the default headers for this session manager.
+    for (NSString *headerField in self.defaultHeaders) {
+        NSString *headerValue = self.defaultHeaders[headerField];
+        [self.sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
+    }
+
+    if (request.shouldHaveAuthorizationHeaders) {
+        [self.sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:request.authUsername
+                                                                              password:request.authPassword];
+    }
+
+    // Honor the request's headers.
+    for (NSString *headerField in request.allHTTPHeaderFields) {
+        NSString *headerValue = request.allHTTPHeaderFields[headerField];
+        [self.sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
+    }
+
+    if ([request.HTTPMethod isEqualToString:@"GET"]) {
+        [self.sessionManager GET:request.URL.absoluteString
+                      parameters:request.parameters
+                        progress:nil
+                         success:success
+                         failure:failure];
+    } else if ([request.HTTPMethod isEqualToString:@"POST"]) {
+        [self.sessionManager POST:request.URL.absoluteString
+                       parameters:request.parameters
+                         progress:nil
+                          success:success
+                          failure:failure];
+    } else if ([request.HTTPMethod isEqualToString:@"PUT"]) {
+        [self.sessionManager PUT:request.URL.absoluteString
+                      parameters:request.parameters
+                         success:success
+                         failure:failure];
+    } else if ([request.HTTPMethod isEqualToString:@"DELETE"]) {
+        [self.sessionManager DELETE:request.URL.absoluteString
+                         parameters:request.parameters
+                            success:success
+                            failure:failure];
+    } else {
+        OWSLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
+    }
+}
+
+@end
+
+#pragma mark -
+
+@interface OWSSessionManagerPool : NSObject
+
+@property (nonatomic) NSMutableArray<OWSSessionManager *> *pool;
+
+@end
+
+#pragma mark -
+
+@implementation OWSSessionManagerPool
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    self.pool = [NSMutableArray new];
+
+    return self;
+}
+
+- (OWSSessionManager *)get
+{
+    OWSSessionManager *_Nullable sessionManager = [self.pool lastObject];
+    if (sessionManager) {
+        OWSLogVerbose(@"Cache hit.");
+        [self.pool removeLastObject];
+    } else {
+        OWSLogVerbose(@"Cache miss.");
+        sessionManager = [OWSSessionManager new];
+    }
+    OWSAssertDebug(sessionManager);
+    return sessionManager;
+}
+
+- (void)returnToPool:(OWSSessionManager *)sessionManager
+{
+    OWSAssertDebug(sessionManager);
+    const NSUInteger kMaxPoolSize = 3;
+    if (self.pool.count >= kMaxPoolSize) {
+        // Discard
+        return;
+    }
+    [self.pool addObject:sessionManager];
+}
+
+@end
+
+#pragma mark -
+
 @interface TSNetworkManager ()
 
-// This property should only be accessed on udSerialQueue.
-@property (atomic, readonly) AFHTTPSessionManager *udSessionManager;
-@property (atomic, readonly) NSDictionary *udSessionManagerDefaultHeaders;
+// These properties should only be accessed on serialQueue.
+@property (atomic, readonly) OWSSessionManagerPool *udSessionManagerPool;
+@property (atomic, readonly) OWSSessionManagerPool *nonUdSessionManagerPool;
 
-@property (atomic, readonly) dispatch_queue_t udSerialQueue;
+@property (atomic, readonly) dispatch_queue_t serialQueue;
 
 typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
 @end
+
+#pragma mark -
 
 @implementation TSNetworkManager
 
@@ -48,8 +191,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
 #pragma mark -
 
-@synthesize udSessionManager = _udSessionManager;
-@synthesize udSerialQueue = _udSerialQueue;
+@synthesize serialQueue = _serialQueue;
 
 #pragma mark - Singleton
 
@@ -67,7 +209,9 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         return self;
     }
 
-    _udSerialQueue = dispatch_queue_create("org.whispersystems.networkManager.udQueue", DISPATCH_QUEUE_SERIAL);
+    _udSessionManagerPool = [OWSSessionManagerPool new];
+    _nonUdSessionManagerPool = [OWSSessionManagerPool new];
+    _serialQueue = dispatch_queue_create("org.whispersystems.networkManager", DISPATCH_QUEUE_SERIAL);
 
     OWSSingletonAssert();
 
@@ -92,148 +236,100 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
-    if (request.isUDRequest) {
-        dispatch_async(self.udSerialQueue, ^{
+    dispatch_async(self.serialQueue, ^{
+        if (request.isUDRequest) {
             [self makeUDRequestSync:request success:successBlock failure:failureBlock];
-        });
-    } else {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        } else {
             [self makeRequestSync:request completionQueue:completionQueue success:successBlock failure:failureBlock];
-        });
-    }
+        }
+    });
 }
 
 - (void)makeRequestSync:(TSRequest *)request
         completionQueue:(dispatch_queue_t)completionQueue
-                success:(TSNetworkManagerSuccess)successBlock
-                failure:(TSNetworkManagerFailure)failureBlock
+                success:(TSNetworkManagerSuccess)successParam
+                failure:(TSNetworkManagerFailure)failureParam
 {
     OWSAssertDebug(request);
-    OWSAssertDebug(successBlock);
-    OWSAssertDebug(failureBlock);
+    OWSAssertDebug(successParam);
+    OWSAssertDebug(failureParam);
 
     OWSLogInfo(@"Making Non-UD request: %@", request);
 
-    // TODO: Remove this logging when the call connection issues have been resolved.
+
+    OWSSessionManagerPool *sessionManagerPool = self.nonUdSessionManagerPool;
+    OWSSessionManager *sessionManager = [sessionManagerPool get];
+
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
-        OWSLogInfo(@"Non-UD request succeeded : %@", request);
+        dispatch_async(self.serialQueue, ^{
+            [sessionManagerPool returnToPool:sessionManager];
+        });
 
-        if (request.shouldHaveAuthorizationHeaders) {
-            [TSNetworkManager.tsAccountManager setIsDeregistered:NO];
-        }
+        dispatch_async(completionQueue, ^{
+            OWSLogInfo(@"Non-UD request succeeded : %@", request);
 
-        successBlock(task, responseObject);
+            if (request.shouldHaveAuthorizationHeaders) {
+                [TSNetworkManager.tsAccountManager setIsDeregistered:NO];
+            }
 
-        [OutageDetection.sharedManager reportConnectionSuccess];
+            successParam(task, responseObject);
+
+            [OutageDetection.sharedManager reportConnectionSuccess];
+        });
     };
-    TSNetworkManagerFailure failure = [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock request:request];
+    TSNetworkManagerSuccess failure = ^(NSURLSessionDataTask *task, NSError *error) {
+        dispatch_async(self.serialQueue, ^{
+            [sessionManagerPool returnToPool:sessionManager];
+        });
 
-    AFHTTPSessionManager *sessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
-    // [OWSSignalService signalServiceSessionManager] always returns a new instance of
-    // session manager, so its safe to reconfigure it here.
-    sessionManager.completionQueue = completionQueue;
+        // TODO: Refactor this.
+        [TSNetworkManager
+            errorPrettifyingForFailureBlock:^(NSURLSessionDataTask *task, NSError *error) {
+                dispatch_async(completionQueue, ^{
+                    failureParam(task, error);
+                });
+            }
+                                    request:request](task, error);
+    };
 
-    if (request.shouldHaveAuthorizationHeaders) {
-        [sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:request.authUsername
-                                                                         password:request.authPassword];
-    }
-
-    // Honor the request's headers.
-    for (NSString *headerField in request.allHTTPHeaderFields) {
-        NSString *headerValue = request.allHTTPHeaderFields[headerField];
-        [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
-    }
-
-    [self performRequest:request sessionManager:sessionManager success:success failure:failure];
-}
-
-// This method should only be invoked on udSerialQueue.
-- (AFHTTPSessionManager *)udSessionManager
-{
-    if (!_udSessionManager) {
-        AFHTTPSessionManager *udSessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
-        udSessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        // NOTE: We could enable HTTPShouldUsePipelining here.
-        _udSessionManager = udSessionManager;
-        // Make a copy of the default headers for this session manager.
-        _udSessionManagerDefaultHeaders = [udSessionManager.requestSerializer.HTTPRequestHeaders copy];
-    }
-
-    return _udSessionManager;
+    [sessionManager performRequest:request success:success failure:failure];
 }
 
 - (void)makeUDRequestSync:(TSRequest *)request
-                  success:(TSNetworkManagerSuccess)successBlock
-                  failure:(TSNetworkManagerFailure)failureBlock
+                  success:(TSNetworkManagerSuccess)successParam
+                  failure:(TSNetworkManagerFailure)failureParam
 {
     OWSAssertDebug(request);
     OWSAssert(!request.shouldHaveAuthorizationHeaders);
-    OWSAssertDebug(successBlock);
-    OWSAssertDebug(failureBlock);
+    OWSAssertDebug(successParam);
+    OWSAssertDebug(failureParam);
 
     OWSLogInfo(@"Making UD request: %@", request);
+
+    OWSSessionManagerPool *sessionManagerPool = self.udSessionManagerPool;
+    OWSSessionManager *sessionManager = [sessionManagerPool get];
 
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
         OWSLogInfo(@"UD request succeeded : %@", request);
 
-        successBlock(task, responseObject);
+        dispatch_async(self.serialQueue, ^{
+            [sessionManagerPool returnToPool:sessionManager];
+        });
+
+        successParam(task, responseObject);
 
         [OutageDetection.sharedManager reportConnectionSuccess];
     };
-    TSNetworkManagerFailure failure = [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock request:request];
+    TSNetworkManagerSuccess failure = ^(NSURLSessionDataTask *task, NSError *error) {
+        dispatch_async(self.serialQueue, ^{
+            [sessionManagerPool returnToPool:sessionManager];
+        });
 
-    AFHTTPSessionManager *sessionManager = self.udSessionManager;
+        // TODO: Refactor this.
+        [TSNetworkManager errorPrettifyingForFailureBlock:failureParam request:request](task, error);
+    };
 
-    // Clear all headers so that we don't retain headers from previous requests.
-    for (NSString *headerField in sessionManager.requestSerializer.HTTPRequestHeaders.allKeys.copy) {
-        [sessionManager.requestSerializer setValue:nil forHTTPHeaderField:headerField];
-    }
-    // Apply the default headers for this session manager.
-    for (NSString *headerField in self.udSessionManagerDefaultHeaders) {
-        NSString *headerValue = self.udSessionManagerDefaultHeaders[headerField];
-        [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
-    }
-    // Honor the request's headers.
-    for (NSString *headerField in request.allHTTPHeaderFields) {
-        NSString *headerValue = request.allHTTPHeaderFields[headerField];
-        [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
-    }
-
-    [self performRequest:request sessionManager:sessionManager success:success failure:failure];
-}
-
-- (void)performRequest:(TSRequest *)request
-        sessionManager:(AFHTTPSessionManager *)sessionManager
-               success:(TSNetworkManagerSuccess)success
-               failure:(TSNetworkManagerFailure)failure
-{
-    OWSAssertDebug(request);
-    OWSAssertDebug(sessionManager);
-    OWSAssertDebug(success);
-    OWSAssertDebug(failure);
-
-    if ([request.HTTPMethod isEqualToString:@"GET"]) {
-        [sessionManager GET:request.URL.absoluteString
-                 parameters:request.parameters
-                   progress:nil
-                    success:success
-                    failure:failure];
-    } else if ([request.HTTPMethod isEqualToString:@"POST"]) {
-        [sessionManager POST:request.URL.absoluteString
-                  parameters:request.parameters
-                    progress:nil
-                     success:success
-                     failure:failure];
-    } else if ([request.HTTPMethod isEqualToString:@"PUT"]) {
-        [sessionManager PUT:request.URL.absoluteString parameters:request.parameters success:success failure:failure];
-    } else if ([request.HTTPMethod isEqualToString:@"DELETE"]) {
-        [sessionManager DELETE:request.URL.absoluteString
-                    parameters:request.parameters
-                       success:success
-                       failure:failure];
-    } else {
-        OWSLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
-    }
+    [sessionManager performRequest:request success:success failure:failure];
 }
 
 #ifdef DEBUG
