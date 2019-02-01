@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "Theme.h"
@@ -15,20 +15,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIViewController *)findFrontmostViewController:(BOOL)ignoringAlerts
 {
+    NSMutableArray<UIViewController *> *visitedViewControllers = [NSMutableArray new];
+
     UIViewController *viewController = self;
     while (YES) {
+        [visitedViewControllers addObject:viewController];
+
         UIViewController *_Nullable nextViewController = viewController.presentedViewController;
         if (nextViewController) {
-            if (ignoringAlerts) {
-                if ([nextViewController isKindOfClass:[UIAlertController class]]) {
-                    break;
+            if (!ignoringAlerts || ![nextViewController isKindOfClass:[UIAlertController class]]) {
+                if ([visitedViewControllers containsObject:nextViewController]) {
+                    // Cycle detected.
+                    return viewController;
                 }
+                viewController = nextViewController;
+                continue;
             }
-            viewController = nextViewController;
-        } else if ([viewController isKindOfClass:[UINavigationController class]]) {
+        }
+
+        if ([viewController isKindOfClass:[UINavigationController class]]) {
             UINavigationController *navigationController = (UINavigationController *)viewController;
-            if (navigationController.topViewController) {
-                viewController = navigationController.topViewController;
+            nextViewController = navigationController.topViewController;
+            if (nextViewController) {
+                if ([visitedViewControllers containsObject:nextViewController]) {
+                    // Cycle detected.
+                    return viewController;
+                }
+                viewController = nextViewController;
             } else {
                 break;
             }
