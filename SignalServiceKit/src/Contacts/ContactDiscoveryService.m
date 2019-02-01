@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactDiscoveryService.h"
@@ -390,7 +390,7 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
     }
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     NSArray<NSHTTPCookie *> *cookies =
-        [NSHTTPCookie cookiesWithResponseHeaderFields:httpResponse.allHeaderFields forURL:[NSURL new]];
+        [NSHTTPCookie cookiesWithResponseHeaderFields:httpResponse.allHeaderFields forURL:httpResponse.URL];
     if (cookies.count < 1) {
         OWSFailDebug(@"couldn't parse cookie.");
         return nil;
