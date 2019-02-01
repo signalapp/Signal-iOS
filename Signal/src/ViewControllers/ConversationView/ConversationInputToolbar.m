@@ -196,8 +196,6 @@ const CGFloat kMaxTextViewHeight = 98;
     const CGFloat vStackRounding = 18.f;
     UIView *vStackWrapper = [UIView containerView];
     vStackWrapper.layer.cornerRadius = vStackRounding;
-    vStackWrapper.layer.borderColor = Theme.secondaryColor.CGColor;
-    vStackWrapper.layer.borderWidth = CGHairlineWidth();
     vStackWrapper.clipsToBounds = YES;
     [vStackWrapper addSubview:vStack];
     [vStack ows_autoPinToSuperviewEdges];
@@ -230,6 +228,23 @@ const CGFloat kMaxTextViewHeight = 98;
     vStackWrapper.preservesSuperviewLayoutMargins = NO;
     self.hStack.preservesSuperviewLayoutMargins = NO;
     self.preservesSuperviewLayoutMargins = NO;
+
+    // Border
+    //
+    // The border must reside _outside_ of vStackWrapper so
+    // that it doesn't run afoul of its clipping, so we can't
+    // use addBorderViewWithColor.
+    UIView *borderView = [UIView new];
+    borderView.userInteractionEnabled = NO;
+    borderView.backgroundColor = UIColor.clearColor;
+    borderView.opaque = NO;
+    borderView.layer.borderColor = Theme.secondaryColor.CGColor;
+    borderView.layer.borderWidth = CGHairlineWidth();
+    borderView.layer.cornerRadius = vStackRounding;
+    [self addSubview:borderView];
+    [borderView autoPinToEdgesOfView:vStackWrapper];
+    [borderView setCompressionResistanceLow];
+    [borderView setContentHuggingLow];
 
     [self ensureShouldShowVoiceMemoButtonAnimated:NO doLayout:NO];
 }
