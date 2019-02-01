@@ -211,7 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Successfully provisioned device.");
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.linkedDevicesTableViewController expectMoreDevices];
-                [self popToAppSettings];
+                [self popToLinkedDeviceList];
 
                 // The service implementation of the socket connection caches the linked device state,
                 // so all sync message sends will fail on the socket until it is cycled.
@@ -267,15 +267,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                   completion:^{
                                                       [UIViewController attemptRotationToDeviceOrientation];
                                                   }];
-}
-
-- (void)popToAppSettings
-{
-    [self.navigationController popToViewControllerWithViewController:self.linkedDevicesTableViewController
-                                                            animated:YES
-                                                          completion:^{
-                                                              [UIViewController attemptRotationToDeviceOrientation];
-                                                          }];
 }
 
 #pragma mark - Orientation
