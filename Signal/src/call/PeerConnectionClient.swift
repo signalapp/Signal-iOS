@@ -171,6 +171,10 @@ class PeerConnectionProxy: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDe
         self.get()?.peerConnection(peerConnection, didOpen: dataChannel)
     }
 
+    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange connectionState: RTCPeerConnectionState) {
+        self.get()?.peerConnection(peerConnection, didChange: connectionState)
+    }
+
     // MARK: - RTCDataChannelDelegate
 
     public func dataChannelDidChangeState(_ dataChannel: RTCDataChannel) {
@@ -1046,6 +1050,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
     }
 
+    internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didChange connectionState: RTCPeerConnectionState) {
+        Logger.info("didChange PeerConnectionState:\(connectionState.debugDescription)")
+    }
+
     // MARK: Helpers
 
     /**
@@ -1346,6 +1354,25 @@ fileprivate extension RTCIceConnectionState {
             return "closed"
         case .count:
             return "count"
+        }
+    }
+}
+
+fileprivate extension RTCPeerConnectionState {
+    var debugDescription: String {
+        switch self {
+        case .new:
+            return "new"
+        case .connecting:
+            return "connecting"
+        case .connected:
+            return "connected"
+        case .disconnected:
+            return "disconnected"
+        case .failed:
+            return "failed"
+        case .closed:
+            return "closed"
         }
     }
 }
