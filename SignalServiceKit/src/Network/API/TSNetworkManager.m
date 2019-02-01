@@ -250,14 +250,12 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
     OWSAssertDebug(failureParam);
 
     BOOL isUDRequest = request.isUDRequest;
+    NSString *label = (isUDRequest ? @"UD request" : @"Non-UD request");
     BOOL canUseAuth = !isUDRequest;
     if (isUDRequest) {
         OWSAssert(!request.shouldHaveAuthorizationHeaders);
-
-        OWSLogInfo(@"Making UD request: %@", request);
-    } else {
-        OWSLogInfo(@"Making Non-UD request: %@", request);
     }
+    OWSLogInfo(@"Making %@: %@", label, request);
 
     OWSSessionManagerPool *sessionManagerPool
         = (isUDRequest ? self.udSessionManagerPool : self.nonUdSessionManagerPool);
@@ -269,7 +267,7 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
         });
 
         dispatch_async(completionQueue, ^{
-            OWSLogInfo(@"Non-UD request succeeded : %@", request);
+            OWSLogInfo(@"%@ succeeded : %@", label, request);
 
             if (canUseAuth && request.shouldHaveAuthorizationHeaders) {
                 [TSNetworkManager.tsAccountManager setIsDeregistered:NO];
