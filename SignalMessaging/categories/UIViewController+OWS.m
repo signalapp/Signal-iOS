@@ -15,11 +15,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIViewController *)findFrontmostViewController:(BOOL)ignoringAlerts
 {
+    NSMutableArray<UIViewController *> *visitedViewControllers = [NSMutableArray new];
+
     UIViewController *viewController = self;
     while (YES) {
+        [visitedViewControllers addObject:viewController];
+
         UIViewController *_Nullable nextViewController = viewController.presentedViewController;
         if (nextViewController) {
             if (!ignoringAlerts || ![nextViewController isKindOfClass:[UIAlertController class]]) {
+                if ([visitedViewControllers containsObject:nextViewController]) {
+                    // Cycle detected.
+                    return viewController;
+                }
                 viewController = nextViewController;
                 continue;
             }
@@ -27,8 +35,13 @@ NS_ASSUME_NONNULL_BEGIN
 
         if ([viewController isKindOfClass:[UINavigationController class]]) {
             UINavigationController *navigationController = (UINavigationController *)viewController;
-            if (navigationController.topViewController) {
-                viewController = navigationController.topViewController;
+            nextViewController = navigationController.topViewController;
+            if (nextViewController) {
+                if ([visitedViewControllers containsObject:nextViewController]) {
+                    // Cycle detected.
+                    return viewController;
+                }
+                viewController = nextViewController;
             } else {
                 break;
             }
