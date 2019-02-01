@@ -115,9 +115,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidAppear:animated];
 
-    [self.qrScanningController startCapture];
-
     [UIDevice.currentDevice ows_setOrientation:UIInterfaceOrientationPortrait];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.qrScanningController startCapture];
+    });
 }
 
 #pragma mark - OWSQRScannerDelegate
