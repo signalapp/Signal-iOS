@@ -111,19 +111,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
 
     [self.qrScanningController startCapture];
+
+    [UIDevice.currentDevice ows_setOrientation:UIInterfaceOrientationPortrait];
 }
 
-// pragma mark - OWSQRScannerDelegate
+#pragma mark - OWSQRScannerDelegate
 
 - (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string
 {
@@ -137,14 +134,13 @@ NS_ASSUME_NONNULL_BEGIN
         UIAlertController *alertController =
             [UIAlertController alertControllerWithTitle:title message:body preferredStyle:UIAlertControllerStyleAlert];
 
-        UIAlertAction *cancelAction =
-            [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                     style:UIAlertActionStyleCancel
-                                   handler:^(UIAlertAction *action) {
-                                       dispatch_async(dispatch_get_main_queue(), ^{
-                                           [self.navigationController popViewControllerAnimated:YES];
-                                       });
-                                   }];
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
+                                                               style:UIAlertActionStyleCancel
+                                                             handler:^(UIAlertAction *action) {
+                                                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                                                     [self popToLinkedDeviceList];
+                                                                 });
+                                                             }];
         [alertController addAction:cancelAction];
 
         UIAlertAction *proceedAction =
@@ -166,14 +162,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                  message:linkingDescription
                                                                           preferredStyle:UIAlertControllerStyleAlert];
 
-        UIAlertAction *cancelAction =
-            [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                     style:UIAlertActionStyleCancel
-                                   handler:^(UIAlertAction *action) {
-                                       dispatch_async(dispatch_get_main_queue(), ^{
-                                           [self.navigationController popViewControllerAnimated:YES];
-                                       });
-                                   }];
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
+                                                               style:UIAlertActionStyleCancel
+                                                             handler:^(UIAlertAction *action) {
+                                                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                                                     [self popToLinkedDeviceList];
+                                                                 });
+                                                             }];
         [alertController addAction:cancelAction];
 
         UIAlertAction *proceedAction =
@@ -214,7 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Successfully provisioned device.");
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.linkedDevicesTableViewController expectMoreDevices];
-                [self.navigationController popToViewController:self.linkedDevicesTableViewController animated:YES];
+                [self popToAppSettings];
 
                 // The service implementation of the socket connection caches the linked device state,
                 // so all sync message sends will fail on the socket until it is cycled.
@@ -262,6 +257,23 @@ NS_ASSUME_NONNULL_BEGIN
                                }];
     [alertController addAction:cancelAction];
     return alertController;
+}
+
+- (void)popToLinkedDeviceList
+{
+    [self.navigationController popViewControllerWithAnimated:YES
+                                                  completion:^{
+                                                      [UIViewController attemptRotationToDeviceOrientation];
+                                                  }];
+}
+
+- (void)popToAppSettings
+{
+    [self.navigationController popToViewControllerWithViewController:self.linkedDevicesTableViewController
+                                                            animated:YES
+                                                          completion:^{
+                                                              [UIViewController attemptRotationToDeviceOrientation];
+                                                          }];
 }
 
 #pragma mark - Orientation

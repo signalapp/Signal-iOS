@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "Theme.h"
@@ -19,13 +19,13 @@ NS_ASSUME_NONNULL_BEGIN
     while (YES) {
         UIViewController *_Nullable nextViewController = viewController.presentedViewController;
         if (nextViewController) {
-            if (ignoringAlerts) {
-                if ([nextViewController isKindOfClass:[UIAlertController class]]) {
-                    break;
-                }
+            if (!ignoringAlerts || ![nextViewController isKindOfClass:[UIAlertController class]]) {
+                viewController = nextViewController;
+                continue;
             }
-            viewController = nextViewController;
-        } else if ([viewController isKindOfClass:[UINavigationController class]]) {
+        }
+
+        if ([viewController isKindOfClass:[UINavigationController class]]) {
             UINavigationController *navigationController = (UINavigationController *)viewController;
             if (navigationController.topViewController) {
                 viewController = navigationController.topViewController;
