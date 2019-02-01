@@ -423,7 +423,7 @@
 "CLOUDKIT_STATUS_RESTRICTED" = "Signal'in iCloud erişimi engellenmiş. Signal verilerinizi yedeklemek için iOS ayarlar uygulamasından Signal'in iCloud hesabınıza erişimine izni verin.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Bu sohbete gönderilen mesajarın rengini seçin.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Bu sohbete gönderilen mesajların rengini seçin.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "Seçtiğiniz rengi sadece siz göreceksiniz.";
@@ -733,7 +733,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist bağlantısı panonuza kopyalandı. GitHub sorunlar listesine yönlendirilmek üzeresiniz.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GıtHub'a Yönlendirme";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub'a Yönlendirme";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Bu telefon numarasını tekrar kaydet";
@@ -1587,7 +1587,7 @@
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ doğrulandı.";
 
 /* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Dahasını Öğrenin";
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Daha Fazla Öğrenin";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Taramak için dokunun";
@@ -2190,7 +2190,7 @@
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "İletiler yazılma sürecindeyken görün ve paylaşın. Bu ayar isteğe bağlıdır ve tüm sohbetler için geçerlidir.";
 
 /* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Dahasını Öğrenin";
+"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Daha Fazla Öğrenin";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Gizli Gönderen";
@@ -2364,7 +2364,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Desteklenmiyor";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "IOS çağrı entegrasyonu ile kilit ekranınızdan gelen aramaları cevaplamak kolaydır. Varsayılan olarak arayan bilgilerini saklarız.";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "iOS çağrı entegrasyonu ile kilit ekranınızdan gelen aramaları cevaplamak kolaydır. Varsayılan olarak arayan bilgilerini saklarız.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
 "UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Daha fazlasını gizlilik ayarlarınızdan öğrenin.";
@@ -2424,7 +2424,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Merhaba Güvenli Görüntülü Aramalar!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal iOS 9 veya daha sonrasını gerektirir. Lütfen iOS Ayarlar uygulamasından Yazılım Güncelleştirme özeliğini kullanın.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal iOS 9 veya daha sonrasını gerektirir. Lütfen iOS Ayarlar uygulamasından Yazılım Güncelleme özeliğini kullanın.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOS'u Güncelle";
