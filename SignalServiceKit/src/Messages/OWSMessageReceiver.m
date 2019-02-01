@@ -24,6 +24,7 @@
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -135,6 +136,15 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         OWSMessageDecryptJob *job = [[OWSMessageDecryptJob alloc] initWithEnvelopeData:envelopeData];
+
+        SSKProtoEnvelope *envelopeProto = job.envelopeProto;
+        OWSAssertDebug(envelopeProto);
+        OWSLogVerbose(@"----- Enqueuing. timestamp: %llu, serverTimestamp: %llu, createdAt: %llu %@",
+                      envelopeProto.timestamp,
+                      envelopeProto.serverTimestamp,
+                      [NSDate ows_millisecondsSince1970ForDate:job.createdAt],
+                      [NSDateFormatter localizedStringFromDate:job.createdAt dateStyle:NSDateFormatterFullStyle timeStyle:NSDateFormatterFullStyle]);
+
         [job saveWithTransaction:transaction];
     }];
 }
