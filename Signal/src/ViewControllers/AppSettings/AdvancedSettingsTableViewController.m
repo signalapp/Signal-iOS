@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AdvancedSettingsTableViewController.h"
@@ -7,7 +7,6 @@
 #import "DomainFrontingCountryViewController.h"
 #import "OWSCountryMetadata.h"
 #import "Pastelog.h"
-#import "PushManager.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import <PromiseKit/AnyPromise.h>

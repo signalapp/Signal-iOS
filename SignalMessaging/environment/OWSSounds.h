@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAudioPlayer.h"
@@ -54,6 +54,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 + (NSString *)displayNameForSound:(OWSSound)sound;
 
 + (nullable NSString *)filenameForSound:(OWSSound)sound;
++ (nullable NSString *)filenameForSound:(OWSSound)sound quiet:(BOOL)quiet;
 
 #pragma mark - Notifications
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -38,25 +38,43 @@ import SignalMessaging
     public var messageFetcherJob: MessageFetcherJob
 
     @objc
-    public var notificationsManager: NotificationsManager
-
-    @objc
     public var accountManager: AccountManager
 
     @objc
-    public var callNotificationsAdapter: CallNotificationsAdapter
+    public var notificationPresenter: NotificationPresenter
 
     @objc
     public var pushRegistrationManager: PushRegistrationManager
-
-    @objc
-    public var pushManager: PushManager
 
     @objc
     public var sessionResetJobQueue: SessionResetJobQueue
 
     @objc
     public var backup: OWSBackup
+
+    private var _legacyNotificationActionHandler: LegacyNotificationActionHandler
+    @objc
+    public var legacyNotificationActionHandler: LegacyNotificationActionHandler {
+        get {
+            if #available(iOS 10, *) {
+                owsFailDebug("shouldn't user legacyNotificationActionHandler on modern iOS")
+            }
+            return _legacyNotificationActionHandler
+        }
+        set {
+            _legacyNotificationActionHandler = newValue
+        }
+    }
+
+    // Stored properties cannot be marked as `@available`, only classes and functions.
+    // Instead, store a private `Any` and wrap it with a public `@available` getter
+    private var _userNotificationActionHandler: Any?
+
+    @objc
+    @available(iOS 10.0, *)
+    public var userNotificationActionHandler: UserNotificationActionHandler {
+        return _userNotificationActionHandler as! UserNotificationActionHandler
+    }
 
     @objc
     public var backupLazyRestore: BackupLazyRestore
@@ -66,14 +84,16 @@ import SignalMessaging
         self.callService = CallService()
         self.outboundCallInitiator = OutboundCallInitiator()
         self.messageFetcherJob = MessageFetcherJob()
-        self.notificationsManager = NotificationsManager()
         self.accountManager = AccountManager()
-        self.callNotificationsAdapter = CallNotificationsAdapter()
+        self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()
-        self.pushManager = PushManager()
         self.sessionResetJobQueue = SessionResetJobQueue()
         self.backup = OWSBackup()
         self.backupLazyRestore = BackupLazyRestore()
+        if #available(iOS 10.0, *) {
+            self._userNotificationActionHandler = UserNotificationActionHandler()
+        }
+        self._legacyNotificationActionHandler = LegacyNotificationActionHandler()
 
         super.init()
 
@@ -85,7 +105,7 @@ import SignalMessaging
         callService.createCallUIAdapter()
 
         // Hang certain singletons on SSKEnvironment too.
-        SSKEnvironment.shared.notificationsManager = notificationsManager
+        SSKEnvironment.shared.notificationsManager = notificationPresenter
         SSKEnvironment.shared.callMessageHandler = callMessageHandler
     }
 }

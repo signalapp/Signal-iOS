@@ -10,7 +10,6 @@
 #import "OWSNavigationController.h"
 #import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"
-#import "PushManager.h"
 #import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
@@ -943,10 +942,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     OWSAssertIsOnMainThread();
     OWSLogInfo(@"beggining refreshing.");
-    [AppEnvironment.shared.messageFetcherJob run].ensure(^{
+    [[AppEnvironment.shared.messageFetcherJob run].ensure(^{
         OWSLogInfo(@"ending refreshing.");
         [refreshControl endRefreshing];
-    });
+    }) retainUntilComplete];
 }
 
 #pragma mark - Edit Actions

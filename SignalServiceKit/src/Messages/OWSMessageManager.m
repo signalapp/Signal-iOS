@@ -1490,7 +1490,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage
                                                                     inThread:thread
-                                                             contactsManager:self.contactsManager
                                                                  transaction:transaction];
 
     dispatch_async(dispatch_get_main_queue(), ^{

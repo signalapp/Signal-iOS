@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -28,8 +28,7 @@ public class MessageFetcherJob: NSObject {
         return SSKEnvironment.shared.messageReceiver
     }
 
-private
-    var signalService: OWSSignalService {
+    private var signalService: OWSSignalService {
         return OWSSignalService.sharedInstance()
     }
 

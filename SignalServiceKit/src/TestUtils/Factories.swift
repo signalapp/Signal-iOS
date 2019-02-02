@@ -235,15 +235,18 @@ public class OutgoingMessageFactory: NSObject, Factory {
 }
 
 @objc
-class IncomingMessageFactory: NSObject, Factory {
+public class IncomingMessageFactory: NSObject, Factory {
 
     // MARK: Factory
 
     @objc
     public func create(transaction: YapDatabaseReadWriteTransaction) -> TSIncomingMessage {
+
+        let thread = threadCreator(transaction)
+
         let item = TSIncomingMessage(incomingMessageWithTimestamp: timestampBuilder(),
-                                     in: threadCreator(transaction),
-                                     authorId: authorIdBuilder(),
+                                     in: thread,
+                                     authorId: authorIdBuilder(thread),
                                      sourceDeviceId: sourceDeviceIdBuilder(),
                                      messageBody: messageBodyBuilder(),
                                      attachmentIds: attachmentIdsBuilder(),
@@ -279,8 +282,16 @@ class IncomingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var authorIdBuilder: () -> String = {
-        return CommonGenerator.contactId
+    public var authorIdBuilder: (TSThread) -> String = { thread in
+        switch thread {
+        case let contactThread as TSContactThread:
+            return contactThread.contactIdentifier()
+        case let groupThread as TSGroupThread:
+            return groupThread.recipientIdentifiers.ows_randomElement() ?? CommonGenerator.contactId
+        default:
+            owsFailDebug("unexpected thread type")
+            return CommonGenerator.contactId
+        }
     }
 
     @objc
@@ -344,7 +355,6 @@ class GroupThreadFactory: NSObject, Factory {
 
         (0..<messageCount).forEach { _ in
             if [true, false].ows_randomElement()! {
-                incomingMessageFactory.authorIdBuilder = { thread.recipientIdentifiers.ows_randomElement()!  }
                 _ = incomingMessageFactory.create(transaction: transaction)
             } else {
                 _ = outgoingMessageFactory.create(transaction: transaction)

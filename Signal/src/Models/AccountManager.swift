@@ -15,11 +15,6 @@ public class AccountManager: NSObject {
 
     // MARK: - Dependencies
 
-    var pushManager: PushManager {
-        // dependency injection hack since PushManager has *alot* of dependencies, and would induce a cycle.
-        return PushManager.shared()
-    }
-
     var profileManager: OWSProfileManager {
         return OWSProfileManager.shared()
     }

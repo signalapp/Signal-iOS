@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -26,6 +26,15 @@ import Foundation
 @objc public class MessageStrings: NSObject {
     @objc
     static public let newGroupDefaultTitle = NSLocalizedString("NEW_GROUP_DEFAULT_TITLE", comment: "Used in place of the group name when a group has not yet been named.")
+
+    @objc
+    static public let replyNotificationAction = NSLocalizedString("PUSH_MANAGER_REPLY", comment: "Notification action button title")
+
+    @objc
+    static public let markAsReadNotificationAction = NSLocalizedString("PUSH_MANAGER_MARKREAD", comment: "Notification action button title")
+
+    @objc
+    static public let sendButton =  NSLocalizedString("SEND_BUTTON_TITLE", comment: "Label for the button to send a message")
 }
 
 @objc public class CallStrings: NSObject {
@@ -47,6 +56,10 @@ import Foundation
     static public let callBackButtonTitle = NSLocalizedString("CALLBACK_BUTTON_TITLE", comment: "notification action")
     @objc
     static public let showThreadButtonTitle = NSLocalizedString("SHOW_THREAD_BUTTON_TITLE", comment: "notification action")
+    @objc
+    static public let answerCallButtonTitle = NSLocalizedString("ANSWER_CALL_BUTTON_TITLE", comment: "notification action")
+    @objc
+    static public let declineCallButtonTitle = NSLocalizedString("REJECT_CALL_BUTTON_TITLE", comment: "")
 
     // MARK: Missed Call Notification
     @objc
@@ -59,6 +72,12 @@ import Foundation
     static public let missedCallWithIdentityChangeNotificationBodyWithoutCallerName =  NSLocalizedString("MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME", comment: "notification title")
     @objc
     static public let missedCallWithIdentityChangeNotificationBodyWithCallerName =  NSLocalizedString("MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME", comment: "notification title. Embeds {{caller's name or phone number}}")
+
+    @objc
+    static public let incomingCallWithoutCallerNameNotification = NSLocalizedString("INCOMING_CALL", comment: "notification body, does not include the callers name")
+
+    @objc
+    static public let incomingCallNotificationFormat = NSLocalizedString("INCOMING_CALL_FROM", comment: "notification body, embeds {{caller name or number}}")
 }
 
 @objc public class MediaStrings: NSObject {

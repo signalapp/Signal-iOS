@@ -85,7 +85,6 @@
 		346129951FD1E30000532771 /* OWSDatabaseMigration.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129931FD1E30000532771 /* OWSDatabaseMigration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129941FD1E30000532771 /* OWSDatabaseMigration.m */; };
 		346129991FD1E4DA00532771 /* SignalApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129971FD1E4D900532771 /* SignalApp.m */; };
-		3461299C1FD1EA9E00532771 /* NotificationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3461299B1FD1EA9E00532771 /* NotificationsManager.m */; };
 		346129A51FD1F09100532771 /* OWSContactsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129A21FD1F09100532771 /* OWSContactsManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129A31FD1F09100532771 /* OWSContactsManager.m */; };
 		346129A91FD1F0E000532771 /* OWSFormat.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129A81FD1F0DF00532771 /* OWSFormat.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -137,7 +136,6 @@
 		347850691FD9B78A007B8332 /* AppSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = 347850651FD9B789007B8332 /* AppSetup.m */; };
 		3478506A1FD9B78A007B8332 /* AppSetup.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850661FD9B789007B8332 /* AppSetup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */; };
-		3478506C1FD9B78A007B8332 /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */; };
 		347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 3478506F1FDAEB16007B8332 /* OWSUserProfile.m */; };
 		347850721FDAEB17007B8332 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850701FDAEB16007B8332 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
@@ -321,7 +319,7 @@
 		45194F931FD7215C00333B2C /* OWSContactOffersInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D631F4734ED0072EC04 /* OWSContactOffersInteraction.m */; };
 		45194F941FD7216000333B2C /* TSUnreadIndicatorInteraction.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C42D641F4734ED0072EC04 /* TSUnreadIndicatorInteraction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		45194F951FD7216600333B2C /* TSUnreadIndicatorInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D651F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m */; };
-		451A13B11E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */; };
+		451A13B11E13DED2000A50FD /* AppNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451A13B01E13DED2000A50FD /* AppNotifications.swift */; };
 		451F8A341FD710C3005CB9DA /* ConversationSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451777C71FD61554001225FF /* ConversationSearcher.swift */; };
 		451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8C1F9521F800FA666C /* Searcher.swift */; };
 		451F8A3B1FD71297005CB9DA /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B97940261832BD2400BD66CB /* UIUtil.m */; };
@@ -474,6 +472,7 @@
 		4CC1ECF9211A47CE00CC13BE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */; };
 		4CEB78C92178EBAB00F315D2 /* OWSSessionResetJobRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEB78C82178EBAB00F315D2 /* OWSSessionResetJobRecord.m */; };
+		4CFE6B6C21F92BA700006701 /* LegacyNotificationsAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFE6B6B21F92BA700006701 /* LegacyNotificationsAdaptee.swift */; };
 		70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -510,7 +509,6 @@
 		B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5421A1D190B0059AC12 /* mute_on@2x.png */; };
 		B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C54C1A1D190B0059AC12 /* quit@2x.png */; };
 		B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5501A1D190B0059AC12 /* savephoto@2x.png */; };
-		B660F6D21C29868000687D6E /* PushManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F69C1C29868000687D6E /* PushManagerTest.m */; };
 		B660F6D41C29868000687D6E /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B660F69F1C29868000687D6E /* whisperFake.cer */; };
 		B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */; };
 		B660F6E01C29868000687D6E /* UtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6B41C29868000687D6E /* UtilTest.m */; };
@@ -518,7 +516,6 @@
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
 		B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6B226961BE4B7D200860F4D /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
 		B6F509971AA53F760068F56A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
@@ -739,8 +736,6 @@
 		346129941FD1E30000532771 /* OWSDatabaseMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDatabaseMigration.m; sourceTree = "<group>"; };
 		346129971FD1E4D900532771 /* SignalApp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalApp.m; sourceTree = "<group>"; };
 		346129981FD1E4DA00532771 /* SignalApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalApp.h; sourceTree = "<group>"; };
-		3461299A1FD1EA9E00532771 /* NotificationsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationsManager.h; sourceTree = "<group>"; };
-		3461299B1FD1EA9E00532771 /* NotificationsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationsManager.m; sourceTree = "<group>"; };
 		346129A21FD1F09100532771 /* OWSContactsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsManager.h; sourceTree = "<group>"; };
 		346129A31FD1F09100532771 /* OWSContactsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsManager.m; sourceTree = "<group>"; };
 		346129A81FD1F0DF00532771 /* OWSFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSFormat.h; sourceTree = "<group>"; };
@@ -794,7 +789,6 @@
 		347850651FD9B789007B8332 /* AppSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSetup.m; sourceTree = "<group>"; };
 		347850661FD9B789007B8332 /* AppSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSetup.h; sourceTree = "<group>"; };
 		347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopCallMessageHandler.swift; sourceTree = "<group>"; };
-		347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopNotificationsManager.swift; sourceTree = "<group>"; };
 		3478506F1FDAEB16007B8332 /* OWSUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUserProfile.m; sourceTree = "<group>"; };
 		347850701FDAEB16007B8332 /* OWSUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUserProfile.h; sourceTree = "<group>"; };
 		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
@@ -1028,7 +1022,7 @@
 		451166BF1FD86B98000739BA /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
 		451764291DE939FD00EDB8B9 /* ContactCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
 		451777C71FD61554001225FF /* ConversationSearcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationSearcher.swift; sourceTree = "<group>"; };
-		451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = CallNotificationsAdapter.swift; path = ../UserInterface/Notifications/CallNotificationsAdapter.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		451A13B01E13DED2000A50FD /* AppNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = AppNotifications.swift; path = UserInterface/Notifications/AppNotifications.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		452037CF1EE84975004E4CDF /* DebugUISessionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUISessionState.h; sourceTree = "<group>"; };
 		452037D01EE84975004E4CDF /* DebugUISessionState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUISessionState.m; sourceTree = "<group>"; };
 		4520D8D41D417D8E00123472 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
@@ -1144,7 +1138,6 @@
 		45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompareSafetyNumbersActivity.swift; sourceTree = "<group>"; };
 		45E282DE1D08E67800ADD4C8 /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = translations/gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45E282DF1D08E6CC00ADD4C8 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = translations/id.lproj/Localizable.strings; sourceTree = "<group>"; };
-		45E2E91E1E13EE3500457AA0 /* OWSCallNotificationsAdaptee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = OWSCallNotificationsAdaptee.h; path = UserInterface/OWSCallNotificationsAdaptee.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarqueeLabel.swift; sourceTree = "<group>"; };
 		45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableTextFilterTest.swift; sourceTree = "<group>"; };
 		45F170AB1E2F0351003FC1F2 /* OWSAudioSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAudioSession.swift; sourceTree = "<group>"; };
@@ -1197,6 +1190,7 @@
 		4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateNag.swift; sourceTree = "<group>"; };
 		4CEB78C72178EBAB00F315D2 /* OWSSessionResetJobRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSSessionResetJobRecord.h; sourceTree = "<group>"; };
 		4CEB78C82178EBAB00F315D2 /* OWSSessionResetJobRecord.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSSessionResetJobRecord.m; sourceTree = "<group>"; };
+		4CFE6B6B21F92BA700006701 /* LegacyNotificationsAdaptee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LegacyNotificationsAdaptee.swift; path = UserInterface/Notifications/LegacyNotificationsAdaptee.swift; sourceTree = "<group>"; };
 		4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuActionsViewController.swift; sourceTree = "<group>"; };
 		69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -1244,7 +1238,6 @@
 		B646D10F1AA54626004133BA /* fil */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fil; path = translations/fil.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B646D1141AA54674004133BA /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = translations/hu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
-		B660F69C1C29868000687D6E /* PushManagerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushManagerTest.m; sourceTree = "<group>"; };
 		B660F69E1C29868000687D6E /* SignalTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "SignalTests-Info.plist"; sourceTree = "<group>"; };
 		B660F69F1C29868000687D6E /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
 		B660F6A01C29868000687D6E /* TestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtil.h; sourceTree = "<group>"; };
@@ -1269,8 +1262,6 @@
 		B69C2D1B1AA5448300A640C2 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = translations/cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B69CD25019773E79005CE69A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B6B226961BE4B7D200860F4D /* ContactsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ContactsUI.framework; path = System/Library/Frameworks/ContactsUI.framework; sourceTree = SDKROOT; };
-		B6B9ECFA198B31BA00C620D3 /* PushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PushManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		B6B9ECFB198B31BA00C620D3 /* PushManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PushManager.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B6BC3D0C1AA544B100C2907F /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = translations/da.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6F509961AA53F760068F56A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = translations/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
@@ -1641,7 +1632,6 @@
 				346129411FD1D74B00532771 /* Environment.m */,
 				346129921FD1E30000532771 /* migrations */,
 				347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */,
-				347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */,
 				45F170AB1E2F0351003FC1F2 /* OWSAudioSession.swift */,
 				34074F60203D0CBE004596AE /* OWSSounds.h */,
 				34074F5F203D0CBD004596AE /* OWSSounds.m */,
@@ -1798,13 +1788,6 @@
 				3496956321A301A100DCFE74 /* OWSBackupLazyRestore.swift */,
 			);
 			path = Backup;
-			sourceTree = "<group>";
-		};
-		3496957521A301A300DCFE74 /* New Group */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "New Group";
 			sourceTree = "<group>";
 		};
 		34B3F8331E8DF1700035BE1A /* ViewControllers */ = {
@@ -2040,7 +2023,9 @@
 		450DF2071E0DD29E003D14BE /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
+				451A13B01E13DED2000A50FD /* AppNotifications.swift */,
 				450DF2081E0DD2C6003D14BE /* UserNotificationsAdaptee.swift */,
+				4CFE6B6B21F92BA700006701 /* LegacyNotificationsAdaptee.swift */,
 			);
 			name = Notifications;
 			sourceTree = "<group>";
@@ -2167,8 +2152,6 @@
 			isa = PBXGroup;
 			children = (
 				45FBC57A1DF8575700E9B410 /* CallKit */,
-				45E2E91E1E13EE3500457AA0 /* OWSCallNotificationsAdaptee.h */,
-				451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */,
 				45794E851E00620000066731 /* CallUIAdapter.swift */,
 				45F659811E1BE77000444429 /* NonCallKitCallUIAdaptee.swift */,
 			);
@@ -2279,8 +2262,6 @@
 			children = (
 				34D99CE3217509C1000AFB39 /* AppEnvironment.swift */,
 				4505C2BD1E648E6E00CEBF41 /* ExperienceUpgrades */,
-				3461299A1FD1EA9E00532771 /* NotificationsManager.h */,
-				3461299B1FD1EA9E00532771 /* NotificationsManager.m */,
 				4539B5851F79348F007141FF /* PushRegistrationManager.swift */,
 				346129981FD1E4DA00532771 /* SignalApp.h */,
 				346129971FD1E4D900532771 /* SignalApp.m */,
@@ -2293,8 +2274,6 @@
 			children = (
 				3430FE171F7751D4000EC51B /* GiphyAPI.swift */,
 				34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */,
-				B6B9ECFA198B31BA00C620D3 /* PushManager.h */,
-				B6B9ECFB198B31BA00C620D3 /* PushManager.m */,
 			);
 			path = network;
 			sourceTree = "<group>";
@@ -2302,7 +2281,6 @@
 		76EB04C818170B33006006FC /* util */ = {
 			isa = PBXGroup;
 			children = (
-				3496957521A301A300DCFE74 /* New Group */,
 				4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */,
 				B90418E4183E9DD40038554A /* DateUtil.h */,
 				3496956121A301A100DCFE74 /* Backup */,
@@ -2415,7 +2393,6 @@
 				B660F6751C29867F00687D6E /* contact */,
 				34843B29214FE295004DED45 /* mocks */,
 				458E38381D6699110094BD24 /* Models */,
-				B660F69B1C29868000687D6E /* push */,
 				34843B2321432293004DED45 /* SignalBaseTest.h */,
 				34843B2221432292004DED45 /* SignalBaseTest.m */,
 				4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */,
@@ -2443,14 +2420,6 @@
 				954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */,
 			);
 			path = contact;
-			sourceTree = "<group>";
-		};
-		B660F69B1C29868000687D6E /* push */ = {
-			isa = PBXGroup;
-			children = (
-				B660F69C1C29868000687D6E /* PushManagerTest.m */,
-			);
-			path = push;
 			sourceTree = "<group>";
 		};
 		B660F69D1C29868000687D6E /* Supporting Files */ = {
@@ -3317,7 +3286,6 @@
 				342950882124CB0A0000B063 /* OWSSearchBar.m in Sources */,
 				342950822124C9750000B063 /* OWSTextField.m in Sources */,
 				34AC0A13211B39EA00997B47 /* DisappearingTimerConfigurationView.swift in Sources */,
-				3478506C1FD9B78A007B8332 /* NoopNotificationsManager.swift in Sources */,
 				4CA46F4D219CFDAA0038ABDE /* GalleryRailView.swift in Sources */,
 				34480B621FD0A98800BC14EF /* UIColor+OWS.m in Sources */,
 				4C20B2B720CA0034001BAC90 /* ThreadViewModel.swift in Sources */,
@@ -3441,7 +3409,7 @@
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */,
 				34D1F0871F8678AA0066283D /* ConversationViewItem.m in Sources */,
-				451A13B11E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */,
+				451A13B11E13DED2000A50FD /* AppNotifications.swift in Sources */,
 				34D99CE4217509C2000AFB39 /* AppEnvironment.swift in Sources */,
 				348570A820F67575004FF32B /* OWSMessageHeaderView.m in Sources */,
 				450DF2091E0DD2C6003D14BE /* UserNotificationsAdaptee.swift in Sources */,
@@ -3460,7 +3428,6 @@
 				4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */,
 				4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */,
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
-				B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */,
 				34129B8621EF877A005457A8 /* LinkPreviewView.swift in Sources */,
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
@@ -3542,6 +3509,7 @@
 				45D308AD2049A439000189E4 /* PinEntryView.m in Sources */,
 				340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */,
 				45B5360E206DD8BB00D61655 /* UIResponder+OWS.swift in Sources */,
+				4CFE6B6C21F92BA700006701 /* LegacyNotificationsAdaptee.swift in Sources */,
 				3441FD9F21A3604F00BB9542 /* BackupRestoreViewController.swift in Sources */,
 				45F659821E1BE77000444429 /* NonCallKitCallUIAdaptee.swift in Sources */,
 				4C5250D221E7BD7D00CE3D95 /* PhoneNumberValidator.swift in Sources */,
@@ -3586,7 +3554,6 @@
 				340FC8B9204DAC8D007AEB0F /* UpdateGroupViewController.m in Sources */,
 				4574A5D61DD6704700C6B692 /* CallService.swift in Sources */,
 				340FC8A8204DAC8D007AEB0F /* CodeVerificationViewController.m in Sources */,
-				3461299C1FD1EA9E00532771 /* NotificationsManager.m in Sources */,
 				4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */,
 				34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */,
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
@@ -3641,7 +3608,6 @@
 				4C5250D421E7C51900CE3D95 /* PhoneNumberValidatorTest.swift in Sources */,
 				452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */,
 				4C4BC6C32102D697004040C9 /* ContactDiscoveryOperationTest.swift in Sources */,
-				B660F6D21C29868000687D6E /* PushManagerTest.m in Sources */,
 				455AC69E1F4F8B0300134004 /* ImageCacheTest.swift in Sources */,
 				34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */,
 			);

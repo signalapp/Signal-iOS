@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockSSKEnvironment.h"
@@ -13,7 +13,6 @@
 #import "OWSFakeContactsUpdater.h"
 #import "OWSFakeMessageSender.h"
 #import "OWSFakeNetworkManager.h"
-#import "OWSFakeNotificationsManager.h"
 #import "OWSFakeProfileManager.h"
 #import "OWSIdentityManager.h"
 #import "OWSMessageDecrypter.h"
@@ -109,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.callMessageHandler = [OWSFakeCallMessageHandler new];
-    self.notificationsManager = [OWSFakeNotificationsManager new];
+    self.notificationsManager = [NoopNotificationsManager new];
     return self;
 }
 

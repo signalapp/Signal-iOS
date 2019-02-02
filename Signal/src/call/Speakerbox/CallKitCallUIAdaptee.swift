@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,7 +20,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     private let callManager: CallKitCallManager
     internal let callService: CallService
-    internal let notificationsAdapter: CallNotificationsAdapter
+    internal let notificationPresenter: NotificationPresenter
     internal let contactsManager: OWSContactsManager
     private let showNamesOnCallScreen: Bool
     private let provider: CXProvider
@@ -76,7 +76,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         return providerConfiguration
     }
 
-    init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter, showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
+    init(callService: CallService, contactsManager: OWSContactsManager, notificationPresenter: NotificationPresenter, showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
         AssertIsOnMainThread()
 
         Logger.debug("")
@@ -84,7 +84,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         self.callManager = CallKitCallManager(showNamesOnCallScreen: showNamesOnCallScreen)
         self.callService = callService
         self.contactsManager = contactsManager
-        self.notificationsAdapter = notificationsAdapter
+        self.notificationPresenter = notificationPresenter
 
         self.provider = type(of: self).sharedProvider(useSystemCallLog: useSystemCallLog)
 
