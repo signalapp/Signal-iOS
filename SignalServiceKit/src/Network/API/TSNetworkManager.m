@@ -7,6 +7,7 @@
 #import "NSError+messageSending.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSError.h"
+#import "OWSQueues.h"
 #import "OWSSignalService.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
@@ -25,11 +26,21 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
         && error.code == TSNetworkManagerErrorFailedConnection);
 }
 
+dispatch_queue_t NetworkManagerQueue()
+{
+    static dispatch_queue_t serialQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        serialQueue = dispatch_queue_create("org.whispersystems.networkManager", DISPATCH_QUEUE_SERIAL);
+    });
+    return serialQueue;
+}
+
 #pragma mark -
 
 @interface OWSSessionManager : NSObject
 
-@property (nonatomic) AFHTTPSessionManager *sessionManager;
+@property (nonatomic, readonly) AFHTTPSessionManager *sessionManager;
 @property (nonatomic, readonly) NSDictionary *defaultHeaders;
 
 @end
@@ -38,14 +49,25 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
 
 @implementation OWSSessionManager
 
+#pragma mark - Dependencies
+
+- (OWSSignalService *)signalService
+{
+    return [OWSSignalService sharedInstance];
+}
+
+#pragma mark -
+
 - (instancetype)init
 {
+    AssertOnDispatchQueue(NetworkManagerQueue());
+
     self = [super init];
     if (!self) {
         return self;
     }
 
-    self.sessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
+    _sessionManager = [self.signalService buildSignalServiceSessionManager];
     self.sessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     // NOTE: We could enable HTTPShouldUsePipelining here.
     // Make a copy of the default headers for this session manager.
@@ -54,11 +76,13 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
     return self;
 }
 
+//  TSNetworkManager.serialQueue
 - (void)performRequest:(TSRequest *)request
             canUseAuth:(BOOL)canUseAuth
                success:(TSNetworkManagerSuccess)success
                failure:(TSNetworkManagerFailure)failure
 {
+    AssertOnDispatchQueue(NetworkManagerQueue());
     OWSAssertDebug(request);
     OWSAssertDebug(success);
     OWSAssertDebug(failure);
@@ -116,6 +140,20 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
 
 #pragma mark -
 
+// You might be asking: "why use a pool at all? We're only using the session manager
+// on the serial queue, so can't we just have two session managers (1 UD, 1 non-UD)
+// that we use for all requests?"
+//
+// That assumes that the session managers are not stateful in a way where concurrent
+// requests can interfere with each other. I audited the AFNetworking codebase and my
+// reading is that sessions managers are safe to use in that way - that the state of
+// their properties (e.g. header values) is only used when building the request and
+// can be safely changed after performRequest is complete.
+//
+// But I decided that I didn't want to (silently) bake that assumption into the
+// codebase, since the stakes are high. The session managers aren't expensive. IMO
+// better to use a pool and not re-use a session manager until its request succeeds
+// or fails.
 @interface OWSSessionManagerPool : NSObject
 
 @property (nonatomic) NSMutableArray<OWSSessionManager *> *pool;
@@ -140,6 +178,8 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
 
 - (OWSSessionManager *)get
 {
+    AssertOnDispatchQueue(NetworkManagerQueue());
+
     OWSSessionManager *_Nullable sessionManager = [self.pool lastObject];
     if (sessionManager) {
         OWSLogVerbose(@"Cache hit.");
@@ -154,6 +194,8 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
 
 - (void)returnToPool:(OWSSessionManager *)sessionManager
 {
+    AssertOnDispatchQueue(NetworkManagerQueue());
+
     OWSAssertDebug(sessionManager);
     const NSUInteger kMaxPoolSize = 3;
     if (self.pool.count >= kMaxPoolSize) {
@@ -173,8 +215,6 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
 @property (atomic, readonly) OWSSessionManagerPool *udSessionManagerPool;
 @property (atomic, readonly) OWSSessionManagerPool *nonUdSessionManagerPool;
 
-@property (atomic, readonly) dispatch_queue_t serialQueue;
-
 @end
 
 #pragma mark -
@@ -187,10 +227,6 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
 {
     return TSAccountManager.sharedInstance;
 }
-
-#pragma mark -
-
-@synthesize serialQueue = _serialQueue;
 
 #pragma mark - Singleton
 
@@ -210,7 +246,6 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
 
     _udSessionManagerPool = [OWSSessionManagerPool new];
     _nonUdSessionManagerPool = [OWSSessionManagerPool new];
-    _serialQueue = dispatch_queue_create("org.whispersystems.networkManager", DISPATCH_QUEUE_SERIAL);
 
     OWSSingletonAssert();
 
@@ -235,7 +270,7 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
     OWSAssertDebug(success);
     OWSAssertDebug(failure);
 
-    dispatch_async(self.serialQueue, ^{
+    dispatch_async(NetworkManagerQueue(), ^{
         [self makeRequestSync:request completionQueue:completionQueue success:success failure:failure];
     });
 }
@@ -262,7 +297,7 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
     OWSSessionManager *sessionManager = [sessionManagerPool get];
 
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
-        dispatch_async(self.serialQueue, ^{
+        dispatch_async(NetworkManagerQueue(), ^{
             [sessionManagerPool returnToPool:sessionManager];
         });
 
@@ -279,7 +314,7 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
         });
     };
     TSNetworkManagerSuccess failure = ^(NSURLSessionDataTask *task, NSError *error) {
-        dispatch_async(self.serialQueue, ^{
+        dispatch_async(NetworkManagerQueue(), ^{
             [sessionManagerPool returnToPool:sessionManager];
         });
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -11,9 +11,6 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 @class TSAccountManager;
 
 @interface OWSSignalService : NSObject
-
-/// For interacting with the Signal Service
-@property (nonatomic, readonly) AFHTTPSessionManager *signalServiceSessionManager;
 
 /// For uploading avatar assets.
 @property (nonatomic, readonly) AFHTTPSessionManager *CDNSessionManager;
@@ -28,6 +25,9 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 @property (atomic, readonly) BOOL hasCensoredPhoneNumber;
 @property (atomic) BOOL isCensorshipCircumventionManuallyActivated;
 @property (atomic, nullable) NSString *manualCensorshipCircumventionCountryCode;
+
+/// For interacting with the Signal Service
+- (AFHTTPSessionManager *)buildSignalServiceSessionManager;
 
 @end
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSignalService.h"
@@ -147,7 +147,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     }
 }
 
-- (AFHTTPSessionManager *)signalServiceSessionManager
+- (AFHTTPSessionManager *)buildSignalServiceSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
         OWSLogInfo(@"using reflector HTTPSessionManager via: %@", self.censorshipConfiguration.domainFrontBaseURL);
