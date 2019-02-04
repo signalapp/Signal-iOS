@@ -7,6 +7,7 @@
 #import "NSError+messageSending.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSError.h"
+#import "OWSQueues.h"
 #import "OWSSignalService.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
@@ -25,17 +26,198 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
         && error.code == TSNetworkManagerErrorFailedConnection);
 }
 
-@interface TSNetworkManager ()
+dispatch_queue_t NetworkManagerQueue()
+{
+    static dispatch_queue_t serialQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        serialQueue = dispatch_queue_create("org.whispersystems.networkManager", DISPATCH_QUEUE_SERIAL);
+    });
+    return serialQueue;
+}
 
-// This property should only be accessed on udSerialQueue.
-@property (atomic, readonly) AFHTTPSessionManager *udSessionManager;
-@property (atomic, readonly) NSDictionary *udSessionManagerDefaultHeaders;
+#pragma mark -
 
-@property (atomic, readonly) dispatch_queue_t udSerialQueue;
+@interface OWSSessionManager : NSObject
 
-typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
+@property (nonatomic, readonly) AFHTTPSessionManager *sessionManager;
+@property (nonatomic, readonly) NSDictionary *defaultHeaders;
 
 @end
+
+#pragma mark -
+
+@implementation OWSSessionManager
+
+#pragma mark - Dependencies
+
+- (OWSSignalService *)signalService
+{
+    return [OWSSignalService sharedInstance];
+}
+
+#pragma mark -
+
+- (instancetype)init
+{
+    AssertOnDispatchQueue(NetworkManagerQueue());
+
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _sessionManager = [self.signalService buildSignalServiceSessionManager];
+    self.sessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    // NOTE: We could enable HTTPShouldUsePipelining here.
+    // Make a copy of the default headers for this session manager.
+    _defaultHeaders = [self.sessionManager.requestSerializer.HTTPRequestHeaders copy];
+
+    return self;
+}
+
+//  TSNetworkManager.serialQueue
+- (void)performRequest:(TSRequest *)request
+            canUseAuth:(BOOL)canUseAuth
+               success:(TSNetworkManagerSuccess)success
+               failure:(TSNetworkManagerFailure)failure
+{
+    AssertOnDispatchQueue(NetworkManagerQueue());
+    OWSAssertDebug(request);
+    OWSAssertDebug(success);
+    OWSAssertDebug(failure);
+
+    // Clear all headers so that we don't retain headers from previous requests.
+    for (NSString *headerField in self.sessionManager.requestSerializer.HTTPRequestHeaders.allKeys.copy) {
+        [self.sessionManager.requestSerializer setValue:nil forHTTPHeaderField:headerField];
+    }
+
+    // Apply the default headers for this session manager.
+    for (NSString *headerField in self.defaultHeaders) {
+        NSString *headerValue = self.defaultHeaders[headerField];
+        [self.sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
+    }
+
+    if (canUseAuth && request.shouldHaveAuthorizationHeaders) {
+        [self.sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:request.authUsername
+                                                                              password:request.authPassword];
+    }
+
+    // Honor the request's headers.
+    for (NSString *headerField in request.allHTTPHeaderFields) {
+        NSString *headerValue = request.allHTTPHeaderFields[headerField];
+        [self.sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
+    }
+
+    if ([request.HTTPMethod isEqualToString:@"GET"]) {
+        [self.sessionManager GET:request.URL.absoluteString
+                      parameters:request.parameters
+                        progress:nil
+                         success:success
+                         failure:failure];
+    } else if ([request.HTTPMethod isEqualToString:@"POST"]) {
+        [self.sessionManager POST:request.URL.absoluteString
+                       parameters:request.parameters
+                         progress:nil
+                          success:success
+                          failure:failure];
+    } else if ([request.HTTPMethod isEqualToString:@"PUT"]) {
+        [self.sessionManager PUT:request.URL.absoluteString
+                      parameters:request.parameters
+                         success:success
+                         failure:failure];
+    } else if ([request.HTTPMethod isEqualToString:@"DELETE"]) {
+        [self.sessionManager DELETE:request.URL.absoluteString
+                         parameters:request.parameters
+                            success:success
+                            failure:failure];
+    } else {
+        OWSLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
+    }
+}
+
+@end
+
+#pragma mark -
+
+// You might be asking: "why use a pool at all? We're only using the session manager
+// on the serial queue, so can't we just have two session managers (1 UD, 1 non-UD)
+// that we use for all requests?"
+//
+// That assumes that the session managers are not stateful in a way where concurrent
+// requests can interfere with each other. I audited the AFNetworking codebase and my
+// reading is that sessions managers are safe to use in that way - that the state of
+// their properties (e.g. header values) is only used when building the request and
+// can be safely changed after performRequest is complete.
+//
+// But I decided that I didn't want to (silently) bake that assumption into the
+// codebase, since the stakes are high. The session managers aren't expensive. IMO
+// better to use a pool and not re-use a session manager until its request succeeds
+// or fails.
+@interface OWSSessionManagerPool : NSObject
+
+@property (nonatomic) NSMutableArray<OWSSessionManager *> *pool;
+
+@end
+
+#pragma mark -
+
+@implementation OWSSessionManagerPool
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    self.pool = [NSMutableArray new];
+
+    return self;
+}
+
+- (OWSSessionManager *)get
+{
+    AssertOnDispatchQueue(NetworkManagerQueue());
+
+    OWSSessionManager *_Nullable sessionManager = [self.pool lastObject];
+    if (sessionManager) {
+        OWSLogVerbose(@"Cache hit.");
+        [self.pool removeLastObject];
+    } else {
+        OWSLogVerbose(@"Cache miss.");
+        sessionManager = [OWSSessionManager new];
+    }
+    OWSAssertDebug(sessionManager);
+    return sessionManager;
+}
+
+- (void)returnToPool:(OWSSessionManager *)sessionManager
+{
+    AssertOnDispatchQueue(NetworkManagerQueue());
+
+    OWSAssertDebug(sessionManager);
+    const NSUInteger kMaxPoolSize = 3;
+    if (self.pool.count >= kMaxPoolSize) {
+        // Discard
+        return;
+    }
+    [self.pool addObject:sessionManager];
+}
+
+@end
+
+#pragma mark -
+
+@interface TSNetworkManager ()
+
+// These properties should only be accessed on serialQueue.
+@property (atomic, readonly) OWSSessionManagerPool *udSessionManagerPool;
+@property (atomic, readonly) OWSSessionManagerPool *nonUdSessionManagerPool;
+
+@end
+
+#pragma mark -
 
 @implementation TSNetworkManager
 
@@ -45,11 +227,6 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 {
     return TSAccountManager.sharedInstance;
 }
-
-#pragma mark -
-
-@synthesize udSessionManager = _udSessionManager;
-@synthesize udSerialQueue = _udSerialQueue;
 
 #pragma mark - Singleton
 
@@ -67,7 +244,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         return self;
     }
 
-    _udSerialQueue = dispatch_queue_create("org.whispersystems.networkManager.udQueue", DISPATCH_QUEUE_SERIAL);
+    _udSessionManagerPool = [OWSSessionManagerPool new];
+    _nonUdSessionManagerPool = [OWSSessionManagerPool new];
 
     OWSSingletonAssert();
 
@@ -85,155 +263,73 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
 - (void)makeRequest:(TSRequest *)request
     completionQueue:(dispatch_queue_t)completionQueue
-            success:(TSNetworkManagerSuccess)successBlock
-            failure:(TSNetworkManagerFailure)failureBlock
+            success:(TSNetworkManagerSuccess)success
+            failure:(TSNetworkManagerFailure)failure
 {
     OWSAssertDebug(request);
-    OWSAssertDebug(successBlock);
-    OWSAssertDebug(failureBlock);
+    OWSAssertDebug(success);
+    OWSAssertDebug(failure);
 
-    if (request.isUDRequest) {
-        dispatch_async(self.udSerialQueue, ^{
-            [self makeUDRequestSync:request success:successBlock failure:failureBlock];
-        });
-    } else {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self makeRequestSync:request completionQueue:completionQueue success:successBlock failure:failureBlock];
-        });
-    }
+    dispatch_async(NetworkManagerQueue(), ^{
+        [self makeRequestSync:request completionQueue:completionQueue success:success failure:failure];
+    });
 }
 
 - (void)makeRequestSync:(TSRequest *)request
         completionQueue:(dispatch_queue_t)completionQueue
-                success:(TSNetworkManagerSuccess)successBlock
-                failure:(TSNetworkManagerFailure)failureBlock
+                success:(TSNetworkManagerSuccess)successParam
+                failure:(TSNetworkManagerFailure)failureParam
 {
     OWSAssertDebug(request);
-    OWSAssertDebug(successBlock);
-    OWSAssertDebug(failureBlock);
+    OWSAssertDebug(successParam);
+    OWSAssertDebug(failureParam);
 
-    OWSLogInfo(@"Making Non-UD request: %@", request);
-
-    // TODO: Remove this logging when the call connection issues have been resolved.
-    TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
-        OWSLogInfo(@"Non-UD request succeeded : %@", request);
-
-        if (request.shouldHaveAuthorizationHeaders) {
-            [TSNetworkManager.tsAccountManager setIsDeregistered:NO];
-        }
-
-        successBlock(task, responseObject);
-
-        [OutageDetection.sharedManager reportConnectionSuccess];
-    };
-    TSNetworkManagerFailure failure = [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock request:request];
-
-    AFHTTPSessionManager *sessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
-    // [OWSSignalService signalServiceSessionManager] always returns a new instance of
-    // session manager, so its safe to reconfigure it here.
-    sessionManager.completionQueue = completionQueue;
-
-    if (request.shouldHaveAuthorizationHeaders) {
-        [sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:request.authUsername
-                                                                         password:request.authPassword];
+    BOOL isUDRequest = request.isUDRequest;
+    NSString *label = (isUDRequest ? @"UD request" : @"Non-UD request");
+    BOOL canUseAuth = !isUDRequest;
+    if (isUDRequest) {
+        OWSAssert(!request.shouldHaveAuthorizationHeaders);
     }
+    OWSLogInfo(@"Making %@: %@", label, request);
 
-    // Honor the request's headers.
-    for (NSString *headerField in request.allHTTPHeaderFields) {
-        NSString *headerValue = request.allHTTPHeaderFields[headerField];
-        [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
-    }
-
-    [self performRequest:request sessionManager:sessionManager success:success failure:failure];
-}
-
-// This method should only be invoked on udSerialQueue.
-- (AFHTTPSessionManager *)udSessionManager
-{
-    if (!_udSessionManager) {
-        AFHTTPSessionManager *udSessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
-        udSessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        // NOTE: We could enable HTTPShouldUsePipelining here.
-        _udSessionManager = udSessionManager;
-        // Make a copy of the default headers for this session manager.
-        _udSessionManagerDefaultHeaders = [udSessionManager.requestSerializer.HTTPRequestHeaders copy];
-    }
-
-    return _udSessionManager;
-}
-
-- (void)makeUDRequestSync:(TSRequest *)request
-                  success:(TSNetworkManagerSuccess)successBlock
-                  failure:(TSNetworkManagerFailure)failureBlock
-{
-    OWSAssertDebug(request);
-    OWSAssert(!request.shouldHaveAuthorizationHeaders);
-    OWSAssertDebug(successBlock);
-    OWSAssertDebug(failureBlock);
-
-    OWSLogInfo(@"Making UD request: %@", request);
+    OWSSessionManagerPool *sessionManagerPool
+        = (isUDRequest ? self.udSessionManagerPool : self.nonUdSessionManagerPool);
+    OWSSessionManager *sessionManager = [sessionManagerPool get];
 
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
-        OWSLogInfo(@"UD request succeeded : %@", request);
+        dispatch_async(NetworkManagerQueue(), ^{
+            [sessionManagerPool returnToPool:sessionManager];
+        });
 
-        successBlock(task, responseObject);
+        dispatch_async(completionQueue, ^{
+            OWSLogInfo(@"%@ succeeded : %@", label, request);
 
-        [OutageDetection.sharedManager reportConnectionSuccess];
+            if (canUseAuth && request.shouldHaveAuthorizationHeaders) {
+                [TSNetworkManager.tsAccountManager setIsDeregistered:NO];
+            }
+
+            successParam(task, responseObject);
+
+            [OutageDetection.sharedManager reportConnectionSuccess];
+        });
     };
-    TSNetworkManagerFailure failure = [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock request:request];
+    TSNetworkManagerSuccess failure = ^(NSURLSessionDataTask *task, NSError *error) {
+        dispatch_async(NetworkManagerQueue(), ^{
+            [sessionManagerPool returnToPool:sessionManager];
+        });
 
-    AFHTTPSessionManager *sessionManager = self.udSessionManager;
+        [TSNetworkManager
+            handleNetworkFailure:^(NSURLSessionDataTask *task, NSError *error) {
+                dispatch_async(completionQueue, ^{
+                    failureParam(task, error);
+                });
+            }
+                         request:request
+                            task:task
+                           error:error];
+    };
 
-    // Clear all headers so that we don't retain headers from previous requests.
-    for (NSString *headerField in sessionManager.requestSerializer.HTTPRequestHeaders.allKeys.copy) {
-        [sessionManager.requestSerializer setValue:nil forHTTPHeaderField:headerField];
-    }
-    // Apply the default headers for this session manager.
-    for (NSString *headerField in self.udSessionManagerDefaultHeaders) {
-        NSString *headerValue = self.udSessionManagerDefaultHeaders[headerField];
-        [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
-    }
-    // Honor the request's headers.
-    for (NSString *headerField in request.allHTTPHeaderFields) {
-        NSString *headerValue = request.allHTTPHeaderFields[headerField];
-        [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
-    }
-
-    [self performRequest:request sessionManager:sessionManager success:success failure:failure];
-}
-
-- (void)performRequest:(TSRequest *)request
-        sessionManager:(AFHTTPSessionManager *)sessionManager
-               success:(TSNetworkManagerSuccess)success
-               failure:(TSNetworkManagerFailure)failure
-{
-    OWSAssertDebug(request);
-    OWSAssertDebug(sessionManager);
-    OWSAssertDebug(success);
-    OWSAssertDebug(failure);
-
-    if ([request.HTTPMethod isEqualToString:@"GET"]) {
-        [sessionManager GET:request.URL.absoluteString
-                 parameters:request.parameters
-                   progress:nil
-                    success:success
-                    failure:failure];
-    } else if ([request.HTTPMethod isEqualToString:@"POST"]) {
-        [sessionManager POST:request.URL.absoluteString
-                  parameters:request.parameters
-                    progress:nil
-                     success:success
-                     failure:failure];
-    } else if ([request.HTTPMethod isEqualToString:@"PUT"]) {
-        [sessionManager PUT:request.URL.absoluteString parameters:request.parameters success:success failure:failure];
-    } else if ([request.HTTPMethod isEqualToString:@"DELETE"]) {
-        [sessionManager DELETE:request.URL.absoluteString
-                    parameters:request.parameters
-                       success:success
-                       failure:failure];
-    } else {
-        OWSLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
-    }
+    [sessionManager performRequest:request canUseAuth:canUseAuth success:success failure:failure];
 }
 
 #ifdef DEBUG
@@ -276,127 +372,127 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 }
 #endif
 
-+ (failureBlock)errorPrettifyingForFailureBlock:(failureBlock)failureBlock request:(TSRequest *)request
++ (void)handleNetworkFailure:(TSNetworkManagerFailure)failureBlock
+                     request:(TSRequest *)request
+                        task:(NSURLSessionDataTask *)task
+                       error:(NSError *)networkError
 {
     OWSAssertDebug(failureBlock);
     OWSAssertDebug(request);
+    OWSAssertDebug(task);
+    OWSAssertDebug(networkError);
 
-    return ^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull networkError) {
-      NSInteger statusCode = [task statusCode];
+    NSInteger statusCode = [task statusCode];
 
 #ifdef DEBUG
-      [TSNetworkManager logCurlForTask:task];
+    [TSNetworkManager logCurlForTask:task];
 #endif
 
-      [OutageDetection.sharedManager reportConnectionFailure];
+    [OutageDetection.sharedManager reportConnectionFailure];
 
-      NSError *error = [self errorWithHTTPCode:statusCode
-                                   description:nil
-                                 failureReason:nil
-                            recoverySuggestion:nil
-                                 fallbackError:networkError];
+    NSError *error = [self errorWithHTTPCode:statusCode
+                                 description:nil
+                               failureReason:nil
+                          recoverySuggestion:nil
+                               fallbackError:networkError];
 
-      switch (statusCode) {
-          case 0: {
-              NSError *connectivityError =
-                  [self errorWithHTTPCode:TSNetworkManagerErrorFailedConnection
-                              description:NSLocalizedString(@"ERROR_DESCRIPTION_NO_INTERNET",
-                                              @"Generic error used whenever Signal can't contact the server")
-                            failureReason:networkError.localizedFailureReason
-                       recoverySuggestion:NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil)
-                            fallbackError:networkError];
-              connectivityError.isRetryable = YES;
+    switch (statusCode) {
+        case 0: {
+            NSError *connectivityError =
+                [self errorWithHTTPCode:TSNetworkManagerErrorFailedConnection
+                            description:NSLocalizedString(@"ERROR_DESCRIPTION_NO_INTERNET",
+                                            @"Generic error used whenever Signal can't contact the server")
+                          failureReason:networkError.localizedFailureReason
+                     recoverySuggestion:NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil)
+                          fallbackError:networkError];
+            connectivityError.isRetryable = YES;
 
-              OWSLogWarn(@"The network request failed because of a connectivity error: %@", request);
-              failureBlock(task, connectivityError);
-              break;
-          }
-          case 400: {
-              OWSLogError(
-                  @"The request contains an invalid parameter : %@, %@", networkError.debugDescription, request);
+            OWSLogWarn(@"The network request failed because of a connectivity error: %@", request);
+            failureBlock(task, connectivityError);
+            break;
+        }
+        case 400: {
+            OWSLogError(@"The request contains an invalid parameter : %@, %@", networkError.debugDescription, request);
 
-              error.isRetryable = NO;
+            error.isRetryable = NO;
 
-              failureBlock(task, error);
-              break;
-          }
-          case 401: {
-              OWSLogError(@"The server returned an error about the authorization header: %@, %@",
-                  networkError.debugDescription,
-                  request);
-              error.isRetryable = NO;
-              [self deregisterAfterAuthErrorIfNecessary:task request:request statusCode:statusCode];
-              failureBlock(task, error);
-              break;
-          }
-          case 403: {
-              OWSLogError(
-                  @"The server returned an authentication failure: %@, %@", networkError.debugDescription, request);
-              error.isRetryable = NO;
-              [self deregisterAfterAuthErrorIfNecessary:task request:request statusCode:statusCode];
-              failureBlock(task, error);
-              break;
-          }
-          case 404: {
-              OWSLogError(@"The requested resource could not be found: %@, %@", networkError.debugDescription, request);
-              error.isRetryable = NO;
-              failureBlock(task, error);
-              break;
-          }
-          case 411: {
-              OWSLogInfo(
-                  @"Multi-device pairing: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
-              NSError *customError =
-                  [self errorWithHTTPCode:statusCode
-                              description:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_DESC",
-                                              @"alert title: cannot link - reached max linked devices")
-                            failureReason:networkError.localizedFailureReason
-                       recoverySuggestion:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_RECOVERY",
-                                              @"alert body: cannot link - reached max linked devices")
-                            fallbackError:networkError];
-              customError.isRetryable = NO;
-              failureBlock(task, customError);
-              break;
-          }
-          case 413: {
-              OWSLogWarn(@"Rate limit exceeded: %@", request);
-              NSError *customError = [self errorWithHTTPCode:statusCode
-                                                 description:NSLocalizedString(@"REGISTER_RATE_LIMITING_ERROR", nil)
-                                               failureReason:networkError.localizedFailureReason
-                                          recoverySuggestion:NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", nil)
-                                               fallbackError:networkError];
-              customError.isRetryable = NO;
-              failureBlock(task, customError);
-              break;
-          }
-          case 417: {
-              // TODO: Is this response code obsolete?
-              OWSLogWarn(@"The number is already registered on a relay. Please unregister there first: %@", request);
-              NSError *customError = [self errorWithHTTPCode:statusCode
-                                                 description:NSLocalizedString(@"REGISTRATION_ERROR", nil)
-                                               failureReason:networkError.localizedFailureReason
-                                          recoverySuggestion:NSLocalizedString(@"RELAY_REGISTERED_ERROR_RECOVERY", nil)
-                                               fallbackError:networkError];
-              customError.isRetryable = NO;
-              failureBlock(task, customError);
-              break;
-          }
-          case 422: {
-              OWSLogError(@"The registration was requested over an unknown transport: %@, %@",
-                  networkError.debugDescription,
-                  request);
-              error.isRetryable = NO;
-              failureBlock(task, error);
-              break;
-          }
-          default: {
-              OWSLogWarn(@"Unknown error: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
-              error.isRetryable = NO;
-              failureBlock(task, error);
-              break;
-          }
-      }
-    };
+            failureBlock(task, error);
+            break;
+        }
+        case 401: {
+            OWSLogError(@"The server returned an error about the authorization header: %@, %@",
+                networkError.debugDescription,
+                request);
+            error.isRetryable = NO;
+            [self deregisterAfterAuthErrorIfNecessary:task request:request statusCode:statusCode];
+            failureBlock(task, error);
+            break;
+        }
+        case 403: {
+            OWSLogError(
+                @"The server returned an authentication failure: %@, %@", networkError.debugDescription, request);
+            error.isRetryable = NO;
+            [self deregisterAfterAuthErrorIfNecessary:task request:request statusCode:statusCode];
+            failureBlock(task, error);
+            break;
+        }
+        case 404: {
+            OWSLogError(@"The requested resource could not be found: %@, %@", networkError.debugDescription, request);
+            error.isRetryable = NO;
+            failureBlock(task, error);
+            break;
+        }
+        case 411: {
+            OWSLogInfo(@"Multi-device pairing: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
+            NSError *customError = [self errorWithHTTPCode:statusCode
+                                               description:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_DESC",
+                                                               @"alert title: cannot link - reached max linked devices")
+                                             failureReason:networkError.localizedFailureReason
+                                        recoverySuggestion:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_RECOVERY",
+                                                               @"alert body: cannot link - reached max linked devices")
+                                             fallbackError:networkError];
+            customError.isRetryable = NO;
+            failureBlock(task, customError);
+            break;
+        }
+        case 413: {
+            OWSLogWarn(@"Rate limit exceeded: %@", request);
+            NSError *customError = [self errorWithHTTPCode:statusCode
+                                               description:NSLocalizedString(@"REGISTER_RATE_LIMITING_ERROR", nil)
+                                             failureReason:networkError.localizedFailureReason
+                                        recoverySuggestion:NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", nil)
+                                             fallbackError:networkError];
+            customError.isRetryable = NO;
+            failureBlock(task, customError);
+            break;
+        }
+        case 417: {
+            // TODO: Is this response code obsolete?
+            OWSLogWarn(@"The number is already registered on a relay. Please unregister there first: %@", request);
+            NSError *customError = [self errorWithHTTPCode:statusCode
+                                               description:NSLocalizedString(@"REGISTRATION_ERROR", nil)
+                                             failureReason:networkError.localizedFailureReason
+                                        recoverySuggestion:NSLocalizedString(@"RELAY_REGISTERED_ERROR_RECOVERY", nil)
+                                             fallbackError:networkError];
+            customError.isRetryable = NO;
+            failureBlock(task, customError);
+            break;
+        }
+        case 422: {
+            OWSLogError(@"The registration was requested over an unknown transport: %@, %@",
+                networkError.debugDescription,
+                request);
+            error.isRetryable = NO;
+            failureBlock(task, error);
+            break;
+        }
+        default: {
+            OWSLogWarn(@"Unknown error: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
+            error.isRetryable = NO;
+            failureBlock(task, error);
+            break;
+        }
+    }
 }
 
 + (void)deregisterAfterAuthErrorIfNecessary:(NSURLSessionDataTask *)task
