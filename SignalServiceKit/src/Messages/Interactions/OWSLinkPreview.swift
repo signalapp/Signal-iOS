@@ -337,7 +337,8 @@ public class OWSLinkPreview: MTLModel {
         "imgur.com",
 
         // Instagram
-        "cdninstagram.com"
+        "cdninstagram.com",
+        "fbcdn.net"
     ]
 
     private static let protocolWhitelist = [

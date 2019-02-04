@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -54,6 +54,7 @@ public extension UIDevice {
         return isNativeIPad || isCompatabilityModeIPad
     }
 
+    @objc
     public func ows_setOrientation(_ orientation: UIInterfaceOrientation) {
         // XXX - This is not officially supported, but there's no other way to programmatically rotate
         // the interface.

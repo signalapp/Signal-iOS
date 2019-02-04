@@ -12,3 +12,35 @@ public extension UIEdgeInsets {
                   right: CurrentAppContext().isRTL ? leading : trailing)
     }
 }
+
+@objc
+public extension UINavigationController {
+    @objc
+    public func pushViewController(viewController: UIViewController,
+                                   animated: Bool,
+                                   completion: (() -> Void)?) {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(completion)
+        pushViewController(viewController, animated: animated)
+        CATransaction.commit()
+    }
+
+    @objc
+    public func popViewController(animated: Bool,
+                                  completion: (() -> Void)?) {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(completion)
+        popViewController(animated: animated)
+        CATransaction.commit()
+    }
+
+    @objc
+    public func popToViewController(viewController: UIViewController,
+                                    animated: Bool,
+                                    completion: (() -> Void)?) {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(completion)
+        self.popToViewController(viewController, animated: animated)
+        CATransaction.commit()
+    }
+}
