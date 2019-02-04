@@ -132,10 +132,12 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         }
 
         if shouldPresentNotification(category: category, userInfo: userInfo) {
-            if let title = title {
-                content.title = title
+            if let displayableTitle = title?.filterForDisplay {
+                content.title = displayableTitle
             }
-            content.body = body
+            if let displayableBody = body.filterForDisplay {
+                content.body = displayableBody
+            }
         } else {
             // Play sound and vibrate, but without a `body` no banner will show.
             Logger.debug("supressing notification body")

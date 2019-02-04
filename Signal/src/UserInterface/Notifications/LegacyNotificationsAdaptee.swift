@@ -156,6 +156,7 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
         let alertBody: String
         if let title = title {
+            // TODO - Make this a format string for better l10n
             alertBody = title.rtlSafeAppend(":").rtlSafeAppend(" ").rtlSafeAppend(body)
         } else {
             alertBody = body
@@ -163,7 +164,7 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
         let notification = UILocalNotification()
         notification.category = category.identifier
-        notification.alertBody = alertBody
+        notification.alertBody = alertBody.filterForDisplay
         notification.userInfo = userInfo
         notification.soundName = sound?.filename
 
