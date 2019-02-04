@@ -115,8 +115,8 @@ protocol NotificationPresenterAdaptee: class {
 
     func registerNotificationSettings() -> Promise<Void>
 
-    func notify(category: AppNotificationCategory, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?)
-    func notify(category: AppNotificationCategory, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?)
+    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?)
+    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?)
 
     func cancelNotifications(threadId: String)
     func clearAllNotifications()
@@ -210,14 +210,15 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     func presentIncomingCall(_ call: SignalCall, callerName: String) {
-        let alertMessage: String
+
+        let notificationTitle: String?
         switch previewType {
         case .noNameNoPreview:
-            alertMessage = CallStrings.incomingCallWithoutCallerNameNotification
+            notificationTitle = nil
         case .nameNoPreview, .namePreview:
-            alertMessage = String(format: CallStrings.incomingCallNotificationFormat, callerName)
+            notificationTitle = callerName
         }
-        let notificationBody = "☎️".rtlSafeAppend(" ").rtlSafeAppend(alertMessage)
+        let notificationBody = NotificationStrings.incomingCallBody
 
         let remotePhoneNumber = call.remotePhoneNumber
         let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
@@ -234,6 +235,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         DispatchQueue.main.async {
             self.adaptee.notify(category: .incomingCall,
+                                title: notificationTitle,
                                 body: notificationBody,
                                 userInfo: userInfo,
                                 sound: .defaultiOSIncomingRingtone,
@@ -242,13 +244,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     func presentMissedCall(_ call: SignalCall, callerName: String) {
-        let notificationBody: String
+        let notificationTitle: String?
         switch previewType {
         case .noNameNoPreview:
-            notificationBody = CallStrings.missedCallNotificationBodyWithoutCallerName
+            notificationTitle = nil
         case .nameNoPreview, .namePreview:
-            notificationBody = String(format: CallStrings.missedCallNotificationBodyWithCallerName, callerName)
+            notificationTitle = callerName
         }
+        let notificationBody = NotificationStrings.missedCallBody
 
         let remotePhoneNumber = call.remotePhoneNumber
         let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
@@ -266,6 +269,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .missedCall,
+                                title: notificationTitle,
                                 body: notificationBody,
                                 userInfo: userInfo,
                                 sound: sound,
@@ -274,13 +278,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
-        let notificationBody: String
+        let notificationTitle: String?
         switch previewType {
         case .noNameNoPreview:
-            notificationBody = CallStrings.missedCallWithIdentityChangeNotificationBodyWithoutCallerName
+            notificationTitle = nil
         case .nameNoPreview, .namePreview:
-            notificationBody = String(format: CallStrings.missedCallWithIdentityChangeNotificationBodyWithCallerName, callerName)
+            notificationTitle = callerName
         }
+        let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
 
         let remotePhoneNumber = call.remotePhoneNumber
         let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
@@ -296,6 +301,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .missedCallFromNoLongerVerifiedIdentity,
+                                title: notificationTitle,
                                 body: notificationBody,
                                 userInfo: userInfo,
                                 sound: sound,
@@ -304,14 +310,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
-
-        let notificationBody: String
+        let notificationTitle: String?
         switch previewType {
         case .noNameNoPreview:
-            notificationBody = CallStrings.missedCallWithIdentityChangeNotificationBodyWithoutCallerName
+            notificationTitle = nil
         case .nameNoPreview, .namePreview:
-            notificationBody = String(format: CallStrings.missedCallWithIdentityChangeNotificationBodyWithCallerName, callerName)
+            notificationTitle = callerName
         }
+        let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
 
         let remotePhoneNumber = call.remotePhoneNumber
         let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
@@ -329,6 +335,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .missedCall,
+                                title: notificationTitle,
                                 body: notificationBody,
                                 userInfo: userInfo,
                                 sound: sound,
@@ -354,52 +361,42 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let senderName = contactsManager.displayName(forPhoneIdentifier: incomingMessage.authorId)
 
-        let notificationBody: String
-
+        let notificationTitle: String?
         switch previewType {
         case .noNameNoPreview:
-            notificationBody = NSLocalizedString("APN_Message", comment: "")
-        case .nameNoPreview:
+            notificationTitle = nil
+        case .nameNoPreview, .namePreview:
             switch thread {
             case is TSContactThread:
-                // TODO - should this be a format string? seems weird we're hardcoding in a ":"
-                let fromText = NSLocalizedString("APN_MESSAGE_FROM", comment: "")
-                notificationBody = String(format: "%@: %@", fromText, senderName)
+                notificationTitle = senderName
             case is TSGroupThread:
                 var groupName = thread.name()
                 if groupName.count < 1 {
                     groupName = MessageStrings.newGroupDefaultTitle
                 }
-                // TODO - should this be a format string? seems weird we're hardcoding in the quotes
-                let fromText = NSLocalizedString("APN_MESSAGE_IN_GROUP", comment: "")
-                notificationBody = String(format: "%@ \"%@\"", fromText, groupName)
+                notificationTitle = String(format: NotificationStrings.incomingGroupMessageTitleFormat,
+                                           senderName,
+                                           groupName)
             default:
                 owsFailDebug("unexpected thread: \(thread)")
                 return
             }
-        case .namePreview:
-            switch thread {
-            case is TSContactThread:
-                notificationBody = String(format: "%@: %@", senderName, messageText ?? "")
-            case is TSGroupThread:
-                var groupName = thread.name()
-                if groupName.count < 1 {
-                    groupName = MessageStrings.newGroupDefaultTitle
-                }
-                let threadName = String(format: "\"%@\"", groupName)
+        }
 
-                let bodyFormat = NSLocalizedString("APN_MESSAGE_IN_GROUP_DETAILED", comment: "")
-                notificationBody = String(format: bodyFormat, senderName, threadName, messageText ?? "")
-            default:
-                owsFailDebug("unexpected thread: \(thread)")
-                return
-            }
+        let notificationBody: String?
+        switch previewType {
+        case .noNameNoPreview, .nameNoPreview:
+            notificationBody = NotificationStrings.incomingMessageBody
+        case .namePreview:
+            notificationBody = messageText
         }
 
         guard let threadId = thread.uniqueId else {
             owsFailDebug("threadId was unexpectedly nil")
             return
         }
+
+        assert((notificationBody ?? notificationTitle) != nil)
 
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
@@ -417,13 +414,24 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: category, body: notificationBody, userInfo: userInfo, sound: sound)
+            self.adaptee.notify(category: category,
+                                title: notificationTitle,
+                                body: notificationBody ?? "",
+                                userInfo: userInfo,
+                                sound: sound)
         }
     }
 
     public func notifyForFailedSend(inThread thread: TSThread) {
-        let notificationFormat = NSLocalizedString("NOTIFICATION_SEND_FAILED", comment: "subsequent notification body when replying from notification fails")
-        let notificationBody = String(format: notificationFormat, thread.name())
+        let notificationTitle: String?
+        switch previewType {
+        case .noNameNoPreview:
+            notificationTitle = nil
+        case .nameNoPreview, .namePreview:
+            notificationTitle = thread.name()
+        }
+
+        let notificationBody = NotificationStrings.failedToSendBody
 
         guard let threadId = thread.uniqueId else {
             owsFailDebug("threadId was unexpectedly nil")
@@ -436,22 +444,25 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .errorMessage, body: notificationBody, userInfo: userInfo, sound: sound)
+            self.adaptee.notify(category: .errorMessage,
+                                title: notificationTitle,
+                                body: notificationBody,
+                                userInfo: userInfo,
+                                sound: sound)
         }
     }
 
     public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: YapDatabaseReadWriteTransaction) {
-        let messageText = errorMessage.previewText(with: transaction)
-        let authorName = thread.name()
 
-        let notificationBody: String
+        let notificationTitle: String?
         switch self.previewType {
         case .namePreview, .nameNoPreview:
-            // TODO better format string, seems weird to hardcode ":"
-            notificationBody = authorName.rtlSafeAppend(":").rtlSafeAppend(" ").rtlSafeAppend(messageText)
+            notificationTitle = thread.name()
         case .noNameNoPreview:
-            notificationBody = messageText
+            notificationTitle = nil
         }
+
+        let notificationBody = errorMessage.previewText(with: transaction)
 
         guard let threadId = thread.uniqueId else {
             owsFailDebug("threadId was unexpectedly nil")
@@ -464,7 +475,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         transaction.addCompletionQueue(DispatchQueue.main) {
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .errorMessage, body: notificationBody, userInfo: userInfo, sound: sound)
+            self.adaptee.notify(category: .errorMessage,
+                                title: notificationTitle,
+                                body: notificationBody,
+                                userInfo: userInfo,
+                                sound: sound)
         }
     }
 
@@ -473,7 +488,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         transaction.addCompletionQueue(DispatchQueue.main) {
             let sound = self.checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil
-            self.adaptee.notify(category: .threadlessErrorMessage, body: notificationBody, userInfo: [:], sound: sound)
+            self.adaptee.notify(category: .threadlessErrorMessage,
+                                title: nil,
+                                body: notificationBody,
+                                userInfo: [:],
+                                sound: sound)
         }
     }
 

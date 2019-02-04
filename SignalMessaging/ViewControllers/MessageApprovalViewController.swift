@@ -50,8 +50,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
                                                       comment: "Title for the 'message approval' dialog.")
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelPressed))
-        sendButton = UIBarButtonItem(title: NSLocalizedString("SEND_BUTTON_TITLE",
-                                                              comment: "Label for the send button in the conversation view."),
+        sendButton = UIBarButtonItem(title: MessageStrings.sendButton,
                                      style: .plain,
                                      target: self,
                                      action: #selector(sendPressed))
