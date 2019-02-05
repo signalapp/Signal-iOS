@@ -811,7 +811,7 @@
 "EDIT_TXT" = "Редактировать";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Привет!\n\nЯ использую Signal на айфоне для сохранения приватности моих сообщений. Если ты его установишь, доступ к нашей переписке и звонкам будет только у нас.\n\nSignal разрабатывается для айфонов и андроид-устройств. Ссылка для скачивания: %@\n\nSignal, как и другие приложения для переписки, поддерживает отправку картинок и видео, звонки и групповые чаты. Важное отличие – все это будет видно только собеседникам, даже создатели Signal не могут получить доступ к этой информации!\n\nПодробнее о людях из Open Whisper Systems, создающих Signal, тут: %@";
+"EMAIL_INVITE_BODY" = "Привет!\n\nЯ использую Signal на iPhone для сохранения приватности моих сообщений. Если ты его установишь, доступ к нашей переписке и звонкам будет только у нас.\n\nSignal разрабатывается для iPhone и Android-устройств. Ссылка для скачивания: %@\n\nSignal, как и другие приложения для переписки, поддерживает отправку картинок и видео, звонки и групповые чаты. Важное отличие – все это будет видно только собеседникам, даже создатели Signal не могут получить доступ к этой информации!\n\nПодробнее о людях из Open Whisper Systems, создающих Signal, тут: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Переходи на Signal!";
@@ -1024,7 +1024,7 @@
 "GROUP_MANAGEMENT_SECTION" = "Управление группой";
 
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "В группе новый участник — %@";
+"GROUP_MEMBER_JOINED" = "%@ присоединился к группе.";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ покинул группу.";
@@ -1087,7 +1087,7 @@
 "IMAGE_EDITOR_CROP_BUTTON" = "Обрезка";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Поделиться более, чем %@ элементами невозможно.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Поделиться более чем %@ элементами невозможно.";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Не удалось выбрать вложение.";
@@ -1129,7 +1129,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Звонок не был принят, так как код безопасности собеседника изменился.";
 
 /* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Некорректный аудиофайл";
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Некорректный аудиофайл.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Вы можете разрешить доступ к контактам в настройках iOS, чтобы приглашать друзей в Signal.";
@@ -1222,7 +1222,7 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Удалить сообщение";
 
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ на %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ - %@";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -2139,7 +2139,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Тайм-аут блокировки экрана";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Разблокировать Signal, используя Touch ID, Face ID, или кода вашего устройства iOS. Вы также можете отвечать на входящие вызовы и получать уведомления о сообщениях, пока включена блокировка экрана. Настройки уведомлений Signal позволяют настраивать отображаемую информацию.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Разблокировать Signal, используя Touch ID, Face ID или код вашего устройства iOS. Вы также можете отвечать на входящие вызовы и получать уведомления о сообщениях, пока включена блокировка экрана. Настройки уведомлений Signal позволяют настраивать отображаемую информацию.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Блокировка экрана";
@@ -2370,16 +2370,16 @@
 "UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Узнайте больше в настройках приватности. ";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Просто перетащите на Ответ";
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Просто перетащите, чтобы ответить";
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Включить индикаторы ввода";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Optional link previews are now supported for some of the most popular sites on the Internet.";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Для некоторых из самых популярных сайтов в интернете появилась опциональная возможность предварительного просмотра ссылок.";
 
 /* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Вы можете отключить или включить эту функцию в любое время в настройках Signal (Конфиденциальность > Отправлять предварительный просмотр ссылок).";
 
 /* Header for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Предпросмотры ссылок";

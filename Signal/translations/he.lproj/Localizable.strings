@@ -1186,7 +1186,7 @@
 "LINK_NEW_DEVICE_TITLE" = "קשר מכשיר חדש";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "קדם־תצוגה של קישור";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "מכשירים מקושרים";
@@ -2091,13 +2091,13 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "תנאים ומדיניות פרטיות";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "שלח קדם־תצוגות של קישורים";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "קדם־תצוגות נתמכות עבור קישורים של Imgur, Instagram, Reddit ו־YouTube.";
 
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "קדם־תצוגות של קישורים";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "הגדרות";
@@ -2151,7 +2151,7 @@
 "SETTINGS_SCREEN_SECURITY" = "אפשר אבטחת מסך";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "מנע מתצוגות מקדימות של Signal להופיע במחליף היישומים.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "מנע מן קדם־תצוגות של Signal להופיע במחליף היישומים.";
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "מיזוג שיחות iOS מראה שיחות Signal על מסך הנעילה שלך ובהיסטורית השיחות של המערכת שלך. אתה יכול להראות את השם והמספר של איש הקשר שלך. אם iCloud מאופשר, היסטורית שיחות זו תשותף עם Apple.";
@@ -2376,13 +2376,13 @@
 "UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "הפעל מחווני הקלדה";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Optional link previews are now supported for some of the most popular sites on the Internet.";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "קדם־תצוגות רשותיות של קישורים נתמכות כעת עבור כמה מהאתרים הפופולריים ביותר באינטרנט.";
 
 /* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "אתה יכול להשבית או לאפשר מאפיין זה בכל זמן בהגדרות Signal שלך (פרטיות > שלח קדם־תצוגות של קישורים).";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Link Previews";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "קדם־תצוגות של קישורים";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "אתה יכול כעת לבחור צלילי התראה של ברירת מחדל ולפי שיחה, ושיחות יכבדו את הצלצול שבחרת עבור כל איש קשר.";
