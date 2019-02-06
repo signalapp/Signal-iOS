@@ -22,6 +22,11 @@ public struct ImageEditorPinchState {
     }
 }
 
+// This GR:
+//
+// * Tries to fail quickly to avoid conflicts with other GRs, especially pans/swipes.
+// * Captures a bunch of useful "pinch state" that makes using this GR much easier
+//   than UIPinchGestureRecognizer.
 public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
 
     public var pinchStateStart = ImageEditorPinchState.empty()

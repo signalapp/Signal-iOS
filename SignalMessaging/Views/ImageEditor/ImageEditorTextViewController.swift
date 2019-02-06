@@ -171,8 +171,8 @@ class ImageEditorTextViewController: OWSViewController, VAlignTextViewDelegate {
         // We use a white cursor since we use a dark background.
         textView.tintColor = .white
         textView.returnKeyType = .done
-        // TODO:
-        //        textView.delegate = self
+        // TODO: Limit the size of the text.
+        // textView.delegate = self
         textView.isScrollEnabled = true
         textView.scrollsToTop = false
         textView.isUserInteractionEnabled = true

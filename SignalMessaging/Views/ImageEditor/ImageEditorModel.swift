@@ -68,6 +68,8 @@ public class ImageEditorItem: NSObject {
         return ImageEditorItem(itemId: itemId, itemType: itemType)
     }
 
+    // The scale with which to render this item's content
+    // when rendering the "output" image for sending.
     public func outputScale() -> CGFloat {
         return 1.0
     }
@@ -161,6 +163,12 @@ public class ImageEditorTextItem: ImageEditorItem {
     public static let kDefaultUnitWidth: CGFloat = 0.9
 
     // The max width of the text as a fraction of the image width.
+    //
+    // This provides continuity of text layout before/after cropping.
+    //
+    // NOTE: When you scale the text with with a pinch gesture, that
+    // affects _scaling_, not the _unit width_, since we don't want
+    // to change how the text wraps when scaling.
     @objc
     public let unitWidth: CGFloat
 
@@ -176,12 +184,6 @@ public class ImageEditorTextItem: ImageEditorItem {
     @objc
     public let scaling: CGFloat
 
-    // This might be nil while the item is a "draft" item.
-    // Once the item has been "committed" to the model, it
-    // should always be non-nil,
-    @objc
-    public let imagePath: String?
-
     @objc
     public init(color: UIColor,
                 font: UIFont,
@@ -189,8 +191,7 @@ public class ImageEditorTextItem: ImageEditorItem {
                 unitCenter: ImageEditorSample = CGPoint(x: 0.5, y: 0.5),
                 unitWidth: CGFloat = ImageEditorTextItem.kDefaultUnitWidth,
                 rotationRadians: CGFloat = 0.0,
-                scaling: CGFloat = 1.0,
-                imagePath: String? = nil) {
+                scaling: CGFloat = 1.0) {
         self.color = color
         self.font = font
         self.text = text
@@ -198,7 +199,6 @@ public class ImageEditorTextItem: ImageEditorItem {
         self.unitWidth = unitWidth
         self.rotationRadians = rotationRadians
         self.scaling = scaling
-        self.imagePath = imagePath
 
         super.init(itemType: .text)
     }
@@ -210,8 +210,7 @@ public class ImageEditorTextItem: ImageEditorItem {
                 unitCenter: ImageEditorSample,
                 unitWidth: CGFloat,
                 rotationRadians: CGFloat,
-                scaling: CGFloat,
-                imagePath: String?) {
+                scaling: CGFloat) {
         self.color = color
         self.font = font
         self.text = text
@@ -219,7 +218,6 @@ public class ImageEditorTextItem: ImageEditorItem {
         self.unitWidth = unitWidth
         self.rotationRadians = rotationRadians
         self.scaling = scaling
-        self.imagePath = imagePath
 
         super.init(itemId: itemId, itemType: .text)
     }
@@ -239,8 +237,7 @@ public class ImageEditorTextItem: ImageEditorItem {
                                    unitCenter: unitCenter,
                                    unitWidth: unitWidth,
                                    rotationRadians: rotationRadians,
-                                   scaling: scaling,
-                                   imagePath: imagePath)
+                                   scaling: scaling)
     }
 
     @objc
@@ -252,8 +249,7 @@ public class ImageEditorTextItem: ImageEditorItem {
                                    unitCenter: newUnitCenter,
                                    unitWidth: unitWidth,
                                    rotationRadians: rotationRadians,
-                                   scaling: scaling,
-                                   imagePath: imagePath)
+                                   scaling: scaling)
     }
 
     @objc
@@ -267,8 +263,7 @@ public class ImageEditorTextItem: ImageEditorItem {
                                    unitCenter: newUnitCenter,
                                    unitWidth: unitWidth,
                                    rotationRadians: newRotationRadians,
-                                   scaling: newScaling,
-                                   imagePath: imagePath)
+                                   scaling: newScaling)
     }
 
     public override func clone(withImageEditorConversion conversion: ImageEditorConversion) -> ImageEditorItem {
@@ -282,8 +277,7 @@ public class ImageEditorTextItem: ImageEditorItem {
                                    unitCenter: convertedUnitCenter,
                                    unitWidth: convertedUnitWidth,
                                    rotationRadians: rotationRadians,
-                                   scaling: scaling,
-                                   imagePath: imagePath)
+                                   scaling: scaling)
     }
 
     public override func outputScale() -> CGFloat {
