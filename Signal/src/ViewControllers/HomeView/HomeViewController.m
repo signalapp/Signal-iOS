@@ -482,25 +482,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.searchResultsController viewDidAppear:animated];
 
     self.hasEverAppeared = YES;
-
-    [self presentFirstThreadAsync];
 }
-
-#ifdef DEBUG
-
-- (void)presentFirstThreadAsync
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ([self.tableView numberOfRowsInSection:HomeViewControllerSectionConversations] < 1) {
-            return;
-        }
-        TSThread *thread =
-            [self threadForIndexPath:[NSIndexPath indexPathForRow:0 inSection:HomeViewControllerSectionConversations]];
-        [self presentThread:thread action:ConversationViewActionNone animated:YES];
-    });
-}
-
-#endif
 
 - (void)viewDidDisappear:(BOOL)animated
 {
