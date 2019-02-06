@@ -19,11 +19,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)voiceMemoGestureDidStart;
 
-- (void)voiceMemoGestureDidEnd;
+- (void)voiceMemoGestureDidLock;
+
+- (void)voiceMemoGestureDidComplete;
 
 - (void)voiceMemoGestureDidCancel;
 
-- (void)voiceMemoGestureDidChange:(CGFloat)cancelAlpha;
+- (void)voiceMemoGestureDidUpdateCancelWithRatioComplete:(CGFloat)cancelAlpha;
 
 @end
 
@@ -55,10 +57,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateFontSizes;
 
 - (void)updateLayoutWithSafeAreaInsets:(UIEdgeInsets)safeAreaInsets;
+- (void)ensureTextViewHeight;
 
 #pragma mark - Voice Memo
 
-- (void)ensureTextViewHeight;
+- (void)lockVoiceMemoUI;
+
 - (void)showVoiceMemoUI;
 
 - (void)hideVoiceMemoUI:(BOOL)animated;
@@ -66,6 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setVoiceMemoUICancelAlpha:(CGFloat)cancelAlpha;
 
 - (void)cancelVoiceMemoIfNecessary;
+
+#pragma mark -
 
 @property (nonatomic, nullable) OWSQuotedReplyModel *quotedReply;
 

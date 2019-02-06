@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIColor+OWS.h"
@@ -60,6 +60,8 @@ extern NSString *const ThemeDidChangeNotification;
 
 @property (class, readonly, nonatomic) UIColor *toastForegroundColor;
 @property (class, readonly, nonatomic) UIColor *toastBackgroundColor;
+
+@property (class, readonly, nonatomic) UIColor *scrollButtonBackgroundColor;
 
 @end
 

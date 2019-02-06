@@ -20,6 +20,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_CLOSED_ENUM(NSUInteger, VoiceMemoRecordingState){
+    VoiceMemoRecordingState_Idle,
+    VoiceMemoRecordingState_RecordingHeld,
+    VoiceMemoRecordingState_RecordingLocked
+};
+
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 
 const CGFloat kMinTextViewHeight = 36;
@@ -62,11 +68,16 @@ const CGFloat kMaxTextViewHeight = 98;
 #pragma mark - Voice Memo Recording UI
 
 @property (nonatomic, nullable) UIView *voiceMemoUI;
+@property (nonatomic, nullable) VoiceMemoLockView *voiceMemoLockView;
 @property (nonatomic, nullable) UIView *voiceMemoContentView;
 @property (nonatomic) NSDate *voiceMemoStartTime;
 @property (nonatomic, nullable) NSTimer *voiceMemoUpdateTimer;
+@property (nonatomic) UIGestureRecognizer *voiceMemoGestureRecognizer;
+@property (nonatomic, nullable) UILabel *voiceMemoCancelLabel;
+@property (nonatomic, nullable) UIView *voiceMemoRedRecordingCircle;
 @property (nonatomic, nullable) UILabel *recordingLabel;
-@property (nonatomic) BOOL isRecordingVoiceMemo;
+@property (nonatomic, readonly) BOOL isRecordingVoiceMemo;
+@property (nonatomic) VoiceMemoRecordingState voiceMemoRecordingState;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutContraints;
 @property (nonatomic) UIEdgeInsets receivedSafeAreaInsets;
@@ -164,6 +175,7 @@ const CGFloat kMaxTextViewHeight = 98;
     UILongPressGestureRecognizer *longPressGestureRecognizer =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPressGestureRecognizer.minimumPressDuration = 0;
+    self.voiceMemoGestureRecognizer = longPressGestureRecognizer;
     [self.voiceMemoButton addGestureRecognizer:longPressGestureRecognizer];
 
     self.userInteractionEnabled = YES;
@@ -435,18 +447,25 @@ const CGFloat kMaxTextViewHeight = 98;
         case UIGestureRecognizerStateFailed:
             if (self.isRecordingVoiceMemo) {
                 // Cancel voice message if necessary.
-                self.isRecordingVoiceMemo = NO;
+                self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
                 [self.inputToolbarDelegate voiceMemoGestureDidCancel];
             }
             break;
         case UIGestureRecognizerStateBegan:
-            if (self.isRecordingVoiceMemo) {
-                // Cancel voice message if necessary.
-                self.isRecordingVoiceMemo = NO;
-                [self.inputToolbarDelegate voiceMemoGestureDidCancel];
+            switch (self.voiceMemoRecordingState) {
+                case VoiceMemoRecordingState_Idle:
+                    break;
+                case VoiceMemoRecordingState_RecordingHeld:
+                    OWSFailDebug(@"while recording held, shouldn't be possible to restart gesture.");
+                    [self.inputToolbarDelegate voiceMemoGestureDidCancel];
+                    break;
+                case VoiceMemoRecordingState_RecordingLocked:
+                    OWSFailDebug(@"once locked, shouldn't be possible to interact with gesture.");
+                    [self.inputToolbarDelegate voiceMemoGestureDidCancel];
+                    break;
             }
             // Start voice message.
-            self.isRecordingVoiceMemo = YES;
+            self.voiceMemoRecordingState = VoiceMemoRecordingState_RecordingHeld;
             self.voiceMemoGestureStartLocation = [sender locationInView:self];
             [self.inputToolbarDelegate voiceMemoGestureDidStart];
             break;
@@ -457,31 +476,79 @@ const CGFloat kMaxTextViewHeight = 98;
                 // For LTR/RTL, swiping in either direction will cancel.
                 // This is okay because there's only space on screen to perform the
                 // gesture in one direction.
-                CGFloat offset = fabs(self.voiceMemoGestureStartLocation.x - location.x);
+                CGFloat xOffset = fabs(self.voiceMemoGestureStartLocation.x - location.x);
                 // The lower this value, the easier it is to cancel by accident.
                 // The higher this value, the harder it is to cancel.
                 const CGFloat kCancelOffsetPoints = 100.f;
-                CGFloat cancelAlpha = offset / kCancelOffsetPoints;
+                CGFloat cancelAlpha = xOffset / kCancelOffsetPoints;
                 BOOL isCancelled = cancelAlpha >= 1.f;
                 if (isCancelled) {
-                    self.isRecordingVoiceMemo = NO;
+                    self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
                     [self.inputToolbarDelegate voiceMemoGestureDidCancel];
+                    break;
                 } else {
-                    [self.inputToolbarDelegate voiceMemoGestureDidChange:cancelAlpha];
+                    [self.inputToolbarDelegate voiceMemoGestureDidUpdateCancelWithRatioComplete:cancelAlpha];
+                }
+
+                CGFloat yOffset = fabs(self.voiceMemoGestureStartLocation.y - location.y);
+
+                // require a certain threshold before we consider the user to be
+                // interacting with the lock ui, otherwise there's perceptible wobble
+                // of the lock slider even when the user isn't intended to interact with it.
+                const CGFloat kLockThresholdPoints = 20.f;
+                const CGFloat kLockOffsetPoints = 80.f;
+                CGFloat yOffsetBeyondThreshold = MAX(yOffset - kLockThresholdPoints, 0);
+                CGFloat lockAlpha = yOffsetBeyondThreshold / kLockOffsetPoints;
+                BOOL isLocked = lockAlpha >= 1.f;
+                if (isLocked) {
+                    switch (self.voiceMemoRecordingState) {
+                        case VoiceMemoRecordingState_RecordingHeld:
+                            self.voiceMemoRecordingState = VoiceMemoRecordingState_RecordingLocked;
+                            [self.inputToolbarDelegate voiceMemoGestureDidLock];
+                            [self.inputToolbarDelegate voiceMemoGestureDidUpdateCancelWithRatioComplete:0];
+                            break;
+                        case VoiceMemoRecordingState_RecordingLocked:
+                            // already locked
+                            break;
+                        case VoiceMemoRecordingState_Idle:
+                            OWSFailDebug(@"failure: unexpeceted idle state");
+                            [self.inputToolbarDelegate voiceMemoGestureDidCancel];
+                            break;
+                    }
+                } else {
+                    [self.voiceMemoLockView updateWithRatioComplete:lockAlpha];
                 }
             }
             break;
         case UIGestureRecognizerStateEnded:
-            if (self.isRecordingVoiceMemo) {
-                // End voice message.
-                self.isRecordingVoiceMemo = NO;
-                [self.inputToolbarDelegate voiceMemoGestureDidEnd];
+            switch (self.voiceMemoRecordingState) {
+                case VoiceMemoRecordingState_Idle:
+                    break;
+                case VoiceMemoRecordingState_RecordingHeld:
+                    // End voice message.
+                    self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
+                    [self.inputToolbarDelegate voiceMemoGestureDidComplete];
+                    break;
+                case VoiceMemoRecordingState_RecordingLocked:
+                    // Continue recording.
+                    break;
             }
             break;
     }
 }
 
 #pragma mark - Voice Memo
+
+- (BOOL)isRecordingVoiceMemo
+{
+    switch (self.voiceMemoRecordingState) {
+        case VoiceMemoRecordingState_Idle:
+            return NO;
+        case VoiceMemoRecordingState_RecordingHeld:
+        case VoiceMemoRecordingState_RecordingLocked:
+            return YES;
+    }
+}
 
 - (void)showVoiceMemoUI
 {
@@ -490,9 +557,9 @@ const CGFloat kMaxTextViewHeight = 98;
     self.voiceMemoStartTime = [NSDate date];
 
     [self.voiceMemoUI removeFromSuperview];
+    [self.voiceMemoLockView removeFromSuperview];
 
     self.voiceMemoUI = [UIView new];
-    self.voiceMemoUI.userInteractionEnabled = NO;
     self.voiceMemoUI.backgroundColor = Theme.toolbarBackgroundColor;
     [self addSubview:self.voiceMemoUI];
     self.voiceMemoUI.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
@@ -505,6 +572,14 @@ const CGFloat kMaxTextViewHeight = 98;
     self.recordingLabel.textColor = [UIColor ows_destructiveRedColor];
     self.recordingLabel.font = [UIFont ows_mediumFontWithSize:14.f];
     [self.voiceMemoContentView addSubview:self.recordingLabel];
+
+    VoiceMemoLockView *voiceMemoLockView = [VoiceMemoLockView new];
+    self.voiceMemoLockView = voiceMemoLockView;
+    [self addSubview:voiceMemoLockView];
+    [voiceMemoLockView autoPinTrailingToSuperviewMargin];
+    [voiceMemoLockView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.voiceMemoContentView];
+    [voiceMemoLockView setCompressionResistanceHigh];
+
     [self updateVoiceMemo];
 
     UIImage *icon = [UIImage imageNamed:@"voice-memo-button"];
@@ -512,6 +587,7 @@ const CGFloat kMaxTextViewHeight = 98;
     UIImageView *imageView =
         [[UIImageView alloc] initWithImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
     imageView.tintColor = [UIColor ows_destructiveRedColor];
+    [imageView setContentHuggingHigh];
     [self.voiceMemoContentView addSubview:imageView];
 
     NSMutableAttributedString *cancelString = [NSMutableAttributedString new];
@@ -559,11 +635,13 @@ const CGFloat kMaxTextViewHeight = 98;
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     UILabel *cancelLabel = [UILabel new];
+    self.voiceMemoCancelLabel = cancelLabel;
     cancelLabel.attributedText = cancelString;
     [self.voiceMemoContentView addSubview:cancelLabel];
 
     const CGFloat kRedCircleSize = 100.f;
     UIView *redCircleView = [UIView new];
+    self.voiceMemoRedRecordingCircle = redCircleView;
     redCircleView.backgroundColor = [UIColor ows_destructiveRedColor];
     redCircleView.layer.cornerRadius = kRedCircleSize * 0.5f;
     [redCircleView autoSetDimension:ALDimensionWidth toSize:kRedCircleSize];
@@ -593,6 +671,17 @@ const CGFloat kMaxTextViewHeight = 98;
     cancelLabelStartFrame.origin.x
         = (CurrentAppContext().isRTL ? -self.voiceMemoUI.bounds.size.width : self.voiceMemoUI.bounds.size.width);
     cancelLabel.frame = cancelLabelStartFrame;
+
+    voiceMemoLockView.transform = CGAffineTransformMakeScale(0.0, 0.0);
+    [voiceMemoLockView layoutIfNeeded];
+    [UIView animateWithDuration:0.2f
+                          delay:1.f
+                        options:0
+                     animations:^{
+                         voiceMemoLockView.transform = CGAffineTransformIdentity;
+                     }
+                     completion:nil];
+
     [UIView animateWithDuration:0.35f
                           delay:0.f
                         options:UIViewAnimationOptionCurveEaseOut
@@ -636,11 +725,19 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     OWSAssertIsOnMainThread();
 
+    self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
+
     UIView *oldVoiceMemoUI = self.voiceMemoUI;
+    UIView *oldVoiceMemoLockView = self.voiceMemoLockView;
+
     self.voiceMemoUI = nil;
+    self.voiceMemoCancelLabel = nil;
+    self.voiceMemoRedRecordingCircle = nil;
     self.voiceMemoContentView = nil;
+    self.voiceMemoLockView = nil;
     self.recordingLabel = nil;
-    NSTimer *voiceMemoUpdateTimer = self.voiceMemoUpdateTimer;
+
+    [self.voiceMemoUpdateTimer invalidate];
     self.voiceMemoUpdateTimer = nil;
 
     [oldVoiceMemoUI.layer removeAllAnimations];
@@ -649,15 +746,75 @@ const CGFloat kMaxTextViewHeight = 98;
         [UIView animateWithDuration:0.35f
             animations:^{
                 oldVoiceMemoUI.layer.opacity = 0.f;
+                oldVoiceMemoLockView.layer.opacity = 0.f;
             }
             completion:^(BOOL finished) {
                 [oldVoiceMemoUI removeFromSuperview];
-                [voiceMemoUpdateTimer invalidate];
+                [oldVoiceMemoLockView removeFromSuperview];
             }];
     } else {
         [oldVoiceMemoUI removeFromSuperview];
-        [voiceMemoUpdateTimer invalidate];
+        [oldVoiceMemoLockView removeFromSuperview];
     }
+}
+
+- (void)lockVoiceMemoUI
+{
+    __weak __typeof(self) weakSelf = self;
+
+    UIButton *sendVoiceMemoButton = [[OWSButton alloc] initWithBlock:^{
+        [weakSelf.inputToolbarDelegate voiceMemoGestureDidComplete];
+    }];
+    [sendVoiceMemoButton setTitle:MessageStrings.sendButton forState:UIControlStateNormal];
+    [sendVoiceMemoButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
+    sendVoiceMemoButton.alpha = 0;
+    [self.voiceMemoContentView addSubview:sendVoiceMemoButton];
+    [sendVoiceMemoButton autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeLeading];
+    [sendVoiceMemoButton setCompressionResistanceHigh];
+    [sendVoiceMemoButton setContentHuggingHigh];
+
+    UIButton *cancelButton = [[OWSButton alloc] initWithBlock:^{
+        [weakSelf.inputToolbarDelegate voiceMemoGestureDidCancel];
+    }];
+    [cancelButton setTitle:CommonStrings.cancelButton forState:UIControlStateNormal];
+    [cancelButton setTitleColor:UIColor.ows_destructiveRedColor forState:UIControlStateNormal];
+    cancelButton.alpha = 0;
+    cancelButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+
+    [self.voiceMemoContentView addSubview:cancelButton];
+    OWSAssert(self.recordingLabel != nil);
+    [self.recordingLabel setContentHuggingHigh];
+
+    [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
+                         forConstraints:^{
+                             [cancelButton autoHCenterInSuperview];
+                         }];
+    [cancelButton autoPinEdge:ALEdgeLeading
+                       toEdge:ALEdgeTrailing
+                       ofView:self.recordingLabel
+                   withOffset:4
+                     relation:NSLayoutRelationGreaterThanOrEqual];
+    [cancelButton autoPinEdge:ALEdgeTrailing
+                       toEdge:ALEdgeLeading
+                       ofView:sendVoiceMemoButton
+                   withOffset:-4
+                     relation:NSLayoutRelationLessThanOrEqual];
+    [cancelButton autoVCenterInSuperview];
+
+    [self.voiceMemoContentView layoutIfNeeded];
+    [UIView animateWithDuration:0.35
+        animations:^{
+            self.voiceMemoCancelLabel.alpha = 0;
+            self.voiceMemoRedRecordingCircle.alpha = 0;
+            self.voiceMemoLockView.transform = CGAffineTransformMakeScale(0, 0);
+            cancelButton.alpha = 1.0;
+            sendVoiceMemoButton.alpha = 1.0;
+        }
+        completion:^(BOOL finished) {
+            [self.voiceMemoCancelLabel removeFromSuperview];
+            [self.voiceMemoRedRecordingCircle removeFromSuperview];
+            [self.voiceMemoLockView removeFromSuperview];
+        }];
 }
 
 - (void)setVoiceMemoUICancelAlpha:(CGFloat)cancelAlpha
@@ -681,7 +838,7 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)cancelVoiceMemoIfNecessary
 {
     if (self.isRecordingVoiceMemo) {
-        self.isRecordingVoiceMemo = NO;
+        self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
     }
 }
 

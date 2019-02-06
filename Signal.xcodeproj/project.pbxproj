@@ -437,6 +437,7 @@
 		45FBC5C81DF8575700E9B410 /* CallKitCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC59A1DF8575700E9B410 /* CallKitCallManager.swift */; };
 		45FBC5D11DF8592E00E9B410 /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC5D01DF8592E00E9B410 /* SignalCall.swift */; };
 		4AC4EA13C8A444455DAB351F /* Pods_SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */; };
+		4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */; };
 		4C04F58421C860C50090D0BB /* MantlePerfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C04F58321C860C50090D0BB /* MantlePerfTest.swift */; };
 		4C090A1B210FD9C7001FD7F9 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		4C11AA5020FD59C700351FBD /* MessageStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C11AA4F20FD59C700351FBD /* MessageStatusView.swift */; };
@@ -1149,6 +1150,7 @@
 		45F659811E1BE77000444429 /* NonCallKitCallUIAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonCallKitCallUIAdaptee.swift; sourceTree = "<group>"; };
 		45FBC59A1DF8575700E9B410 /* CallKitCallManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallKitCallManager.swift; sourceTree = "<group>"; };
 		45FBC5D01DF8592E00E9B410 /* SignalCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalCall.swift; sourceTree = "<group>"; };
+		4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceNoteLock.swift; sourceTree = "<group>"; };
 		4C04F58321C860C50090D0BB /* MantlePerfTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MantlePerfTest.swift; path = Models/MantlePerfTest.swift; sourceTree = "<group>"; };
 		4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HapticFeedback.swift; path = UserInterface/HapticFeedback.swift; sourceTree = "<group>"; };
 		4C11AA4F20FD59C700351FBD /* MessageStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageStatusView.swift; sourceTree = "<group>"; };
@@ -2330,6 +2332,7 @@
 				450D19111F85236600970622 /* RemoteVideoView.h */,
 				450D19121F85236600970622 /* RemoteVideoView.m */,
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
+				4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */,
 			);
 			name = Views;
 			path = views;
@@ -3394,6 +3397,7 @@
 				34386A52207D0C01009F5D9C /* HomeViewCell.m in Sources */,
 				34DC9BD921543E0C00FDDCEC /* DebugContactsUtils.m in Sources */,
 				34DBF007206C3CB200025978 /* OWSBubbleShapeView.m in Sources */,
+				4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */,
 				34D1F0BA1F8800D90066283D /* OWSAudioMessageView.m in Sources */,
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
 				3496956E21A301A100DCFE74 /* OWSBackupExportJob.m in Sources */,
