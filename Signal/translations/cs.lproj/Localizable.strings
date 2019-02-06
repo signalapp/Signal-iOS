@@ -33,13 +33,13 @@
 "ADD_GROUP_MEMBER_VIEW_TITLE" = "Přidat člena";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Chcete s touto skupinou sdílet svůj profil?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Chtěli byste s touto skupinou sdílet svůj profil?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Chcete přidat tohoto uživatele do vašich kontaktů?";
+"ADD_TO_CONTACTS_OFFER" = "Chtěli byste tohoto uživatele přidat do kontaktů?";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Chcete s tímto uživatelem sdílet svůj profil?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Chtěli byste s tímto uživatelem sdílet svůj profil?";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Zahodit";
@@ -81,10 +81,10 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Nyní ne";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "V App Store je dostupná verze %@.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "V App Storu je nyní dostupná verze %@.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Je dostupná nová verze aplikace Signal.";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Je dostupná nová verze aplikace Signal";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Aktualizovat";
@@ -111,7 +111,7 @@
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Velikost: %@";
 
 /* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Překročen limit zprávy.";
+"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Dosažen limit znaků.";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Odeslat";
@@ -120,7 +120,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Příloha";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Stahování selhalo. Klepnutím zkuste znovu.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Stahování selhalo. Klepnutím to zkuste znovu.";
 
 /* Status label when an attachment is currently downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Stahování…";
@@ -180,7 +180,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Hlasová zpráva";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Reproduktor";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Nahlas";
 
 /* button text for back button */
 "BACK_BUTTON" = "Zpět";
@@ -207,7 +207,7 @@
 "BACKUP_EXPORT_PHASE_UPLOAD" = "Nahrávání zálohy";
 
 /* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Zálohu nelze importovat";
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Zálohu nelze importovat.";
 
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "Konfigurace zálohy";
@@ -231,7 +231,7 @@
 "BACKUP_RESTORE_DECISION_TITLE" = "Je k dispozici záloha";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Obnovování zálohy";
+"BACKUP_RESTORE_DESCRIPTION" = "Obnova zálohy";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Průběh";
@@ -240,10 +240,10 @@
 "BACKUP_RESTORE_STATUS" = "Stav";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Nastala chyba zálohy";
+"BACKUP_UNEXPECTED_ERROR" = "Nastala neočekávaná chyba zálohy";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Již nebudete přijímat zprávy a aktulizace od této skupiny.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Již nebudete přijímat zprávy a aktualizace od této skupiny.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Zablokovat";
@@ -264,10 +264,10 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Odblokovat";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Současní členové mají možnost vás do skupiny opět přidat.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Stávající členové vás budou moci opět přidat do skupiny.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Odblokovat skupinu?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Odblokovat tuto skupinu?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Odblokovat %@?";
@@ -285,7 +285,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Skupina zablokována";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Nemůžete zablokovat sám/sama sebe.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Nemůžete zablokovat sebe.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Chyba";
@@ -2091,10 +2091,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Podmínky & Zásady ochrany osobních údajů";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Odeslat náhledy odkazu";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Náhledy jsou podporovány pro odkazy na Imgur, Instagram, Reddit, a YouTube.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
@@ -2376,7 +2376,7 @@
 "UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Zapnout indikátory psaní";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Optional link previews are now supported for some of the most popular sites on the Internet.";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Volitelné náhledy odkazu jsou nyní podporovány na některých populárních internetových stránkách.";
 
 /* Subtitle for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
