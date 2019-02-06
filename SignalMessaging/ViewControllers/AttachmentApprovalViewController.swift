@@ -1317,6 +1317,8 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
     }
 }
 
+// MARK: -
+
 class BottomToolView: UIView {
     let mediaMessageTextToolbar: MediaMessageTextToolbar
     let galleryRailView: GalleryRailView
