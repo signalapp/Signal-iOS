@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -26,10 +26,7 @@ class ImageEditorTest: SignalBaseTest {
     }
 
     func testImageEditorContents() {
-        let imagePath = writeDummyImage()
-
-        let contents = ImageEditorContents(imagePath: imagePath,
-                                           imageSizePixels: CGSize(width: 1, height: 1))
+        let contents = ImageEditorContents()
         XCTAssertEqual(0, contents.itemMap.count)
 
         let item = ImageEditorItem(itemType: .test)

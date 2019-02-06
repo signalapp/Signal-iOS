@@ -86,4 +86,116 @@ extension UIView {
         view.autoSetDimension(.height, toSize: height)
         return view
     }
+
+    @objc
+    public func applyScaleAspectFitLayout(subview: UIView, aspectRatio: CGFloat) -> [NSLayoutConstraint] {
+        guard subviews.contains(subview) else {
+            owsFailDebug("Not a subview.")
+            return []
+        }
+
+        // This emulates the behavior of contentMode = .scaleAspectFit using
+        // iOS auto layout constraints.
+        //
+        // This allows ConversationInputToolbar to place the "cancel" button
+        // in the upper-right hand corner of the preview content.
+        var constraints = [NSLayoutConstraint]()
+        constraints.append(contentsOf: subview.autoCenterInSuperview())
+        constraints.append(subview.autoPin(toAspectRatio: aspectRatio))
+        constraints.append(subview.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
+        constraints.append(subview.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
+        return constraints
+    }
+}
+
+public extension CGFloat {
+    // Linear interpolation
+    public func lerp(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
+        return CGFloatLerp(minValue, maxValue, self)
+    }
+
+    // Inverse linear interpolation
+    public func inverseLerp(_ minValue: CGFloat, _ maxValue: CGFloat, shouldClamp: Bool = false) -> CGFloat {
+        let value = CGFloatInverseLerp(self, minValue, maxValue)
+        return (shouldClamp ? CGFloatClamp01(value) : value)
+    }
+
+    public static let halfPi: CGFloat = CGFloat.pi * 0.5
+}
+
+public extension CGPoint {
+    public func toUnitCoordinates(viewBounds: CGRect, shouldClamp: Bool) -> CGPoint {
+        return CGPoint(x: (x - viewBounds.origin.x).inverseLerp(0, viewBounds.width, shouldClamp: shouldClamp),
+                       y: (y - viewBounds.origin.y).inverseLerp(0, viewBounds.height, shouldClamp: shouldClamp))
+    }
+
+    public func toUnitCoordinates(viewSize: CGSize, shouldClamp: Bool) -> CGPoint {
+        return toUnitCoordinates(viewBounds: CGRect(origin: .zero, size: viewSize), shouldClamp: shouldClamp)
+    }
+
+    public func fromUnitCoordinates(viewSize: CGSize) -> CGPoint {
+        return CGPoint(x: x.lerp(0, viewSize.width),
+                       y: y.lerp(0, viewSize.height))
+    }
+
+    public func inverse() -> CGPoint {
+        return CGPoint(x: -x, y: -y)
+    }
+
+    public func plus(_ value: CGPoint) -> CGPoint {
+        return CGPointAdd(self, value)
+    }
+
+    public func minus(_ value: CGPoint) -> CGPoint {
+        return CGPointSubtract(self, value)
+    }
+
+    public static let unit: CGPoint = CGPoint(x: 1.0, y: 1.0)
+
+    public static let unitMidpoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
+
+    public func applyingInverse(_ transform: CGAffineTransform) -> CGPoint {
+        return applying(transform.inverted())
+    }
+}
+
+public extension CGRect {
+    public var center: CGPoint {
+        return CGPoint(x: midX, y: midY)
+    }
+
+    public var topLeft: CGPoint {
+        return origin
+    }
+
+    public var bottomRight: CGPoint {
+        return CGPoint(x: maxX, y: maxY)
+    }
+}
+
+public extension CGAffineTransform {
+    public static func translate(_ point: CGPoint) -> CGAffineTransform {
+        return CGAffineTransform(translationX: point.x, y: point.y)
+    }
+
+    public static func scale(_ scaling: CGFloat) -> CGAffineTransform {
+        return CGAffineTransform(scaleX: scaling, y: scaling)
+    }
+
+    public func translate(_ point: CGPoint) -> CGAffineTransform {
+        return translatedBy(x: point.x, y: point.y)
+    }
+
+    public func scale(_ scaling: CGFloat) -> CGAffineTransform {
+        return scaledBy(x: scaling, y: scaling)
+    }
+
+    public func rotate(_ angleRadians: CGFloat) -> CGAffineTransform {
+        return rotated(by: angleRadians)
+    }
+
+//    public func forAnchorPoint(viewSize: CGSize) -> CGAffineTransform {
+//        let viewCenter = CGRect(origin: .zero, size: viewSize).center
+//        return CGAffineTransform.translate(viewCenter.inverse()).concatenating(self).translate(viewCenter)
+//    }
 }

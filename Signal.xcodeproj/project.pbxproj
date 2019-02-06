@@ -234,12 +234,21 @@
 		34B6D27520F664C900765BE2 /* OWSUnreadIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B6D27320F664C800765BE2 /* OWSUnreadIndicator.m */; };
 		34BBC84B220B2CB200857249 /* ImageEditorTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC84A220B2CB200857249 /* ImageEditorTextViewController.swift */; };
 		34BBC84D220B2D0800857249 /* ImageEditorPinchGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC84C220B2D0800857249 /* ImageEditorPinchGestureRecognizer.swift */; };
+		34BBC84F220B8A0100857249 /* ImageEditorCropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC84E220B8A0100857249 /* ImageEditorCropViewController.swift */; };
+		34BBC851220B8EEF00857249 /* ImageEditorCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC850220B8EEF00857249 /* ImageEditorCanvasView.swift */; };
+		34BBC857220C7ADA00857249 /* ImageEditorItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC852220C7AD900857249 /* ImageEditorItem.swift */; };
+		34BBC858220C7ADA00857249 /* ImageEditorContents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC853220C7ADA00857249 /* ImageEditorContents.swift */; };
+		34BBC859220C7ADA00857249 /* ImageEditorStrokeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC854220C7ADA00857249 /* ImageEditorStrokeItem.swift */; };
+		34BBC85A220C7ADA00857249 /* ImageEditorTextItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC855220C7ADA00857249 /* ImageEditorTextItem.swift */; };
+		34BBC85B220C7ADA00857249 /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC856220C7ADA00857249 /* OrderedDictionary.swift */; };
+		34BBC85D220D19D600857249 /* ImageEditorPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85C220D19D600857249 /* ImageEditorPanGestureRecognizer.swift */; };
+		34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85F220E883200857249 /* ImageEditorModelTest.swift */; };
+		34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC860220E883200857249 /* ImageEditorTest.swift */; };
 		34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2A1F74C12700D7438D /* DebugUIStress.m */; };
 		34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */; };
 		34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */; };
 		34BEDB0B21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB0A21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift */; };
 		34BEDB0E21C405B0007B0EAE /* ImageEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB0D21C405B0007B0EAE /* ImageEditorModel.swift */; };
-		34BEDB1121C41E71007B0EAE /* ImageEditorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1021C41E71007B0EAE /* ImageEditorTest.swift */; };
 		34BEDB1321C43F6A007B0EAE /* ImageEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */; };
 		34BEDB1621C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34BEDB1721C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */; };
@@ -914,13 +923,22 @@
 		34B6D27320F664C800765BE2 /* OWSUnreadIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUnreadIndicator.m; sourceTree = "<group>"; };
 		34BBC84A220B2CB200857249 /* ImageEditorTextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTextViewController.swift; sourceTree = "<group>"; };
 		34BBC84C220B2D0800857249 /* ImageEditorPinchGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorPinchGestureRecognizer.swift; sourceTree = "<group>"; };
+		34BBC84E220B8A0100857249 /* ImageEditorCropViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorCropViewController.swift; sourceTree = "<group>"; };
+		34BBC850220B8EEF00857249 /* ImageEditorCanvasView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorCanvasView.swift; sourceTree = "<group>"; };
+		34BBC852220C7AD900857249 /* ImageEditorItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorItem.swift; sourceTree = "<group>"; };
+		34BBC853220C7ADA00857249 /* ImageEditorContents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorContents.swift; sourceTree = "<group>"; };
+		34BBC854220C7ADA00857249 /* ImageEditorStrokeItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorStrokeItem.swift; sourceTree = "<group>"; };
+		34BBC855220C7ADA00857249 /* ImageEditorTextItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTextItem.swift; sourceTree = "<group>"; };
+		34BBC856220C7ADA00857249 /* OrderedDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedDictionary.swift; sourceTree = "<group>"; };
+		34BBC85C220D19D600857249 /* ImageEditorPanGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorPanGestureRecognizer.swift; sourceTree = "<group>"; };
+		34BBC85F220E883200857249 /* ImageEditorModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorModelTest.swift; sourceTree = "<group>"; };
+		34BBC860220E883200857249 /* ImageEditorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTest.swift; sourceTree = "<group>"; };
 		34BECE291F74C12700D7438D /* DebugUIStress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIStress.h; sourceTree = "<group>"; };
 		34BECE2A1F74C12700D7438D /* DebugUIStress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIStress.m; sourceTree = "<group>"; };
 		34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerViewController.swift; sourceTree = "<group>"; };
 		34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerLayout.swift; sourceTree = "<group>"; };
 		34BEDB0A21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS114RemoveDynamicInteractions.swift; sourceTree = "<group>"; };
 		34BEDB0D21C405B0007B0EAE /* ImageEditorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorModel.swift; sourceTree = "<group>"; };
-		34BEDB1021C41E71007B0EAE /* ImageEditorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTest.swift; sourceTree = "<group>"; };
 		34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorView.swift; sourceTree = "<group>"; };
 		34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
@@ -1867,6 +1885,15 @@
 			path = ViewControllers;
 			sourceTree = "<group>";
 		};
+		34BBC85E220E883200857249 /* ImageEditor */ = {
+			isa = PBXGroup;
+			children = (
+				34BBC85F220E883200857249 /* ImageEditorModelTest.swift */,
+				34BBC860220E883200857249 /* ImageEditorTest.swift */,
+			);
+			path = ImageEditor;
+			sourceTree = "<group>";
+		};
 		34BECE2C1F7ABCE000D7438D /* GifPicker */ = {
 			isa = PBXGroup;
 			children = (
@@ -1880,11 +1907,19 @@
 		34BEDB0C21C405B0007B0EAE /* ImageEditor */ = {
 			isa = PBXGroup;
 			children = (
+				34BBC850220B8EEF00857249 /* ImageEditorCanvasView.swift */,
+				34BBC853220C7ADA00857249 /* ImageEditorContents.swift */,
+				34BBC84E220B8A0100857249 /* ImageEditorCropViewController.swift */,
 				34BEDB1821C82AC5007B0EAE /* ImageEditorGestureRecognizer.swift */,
+				34BBC852220C7AD900857249 /* ImageEditorItem.swift */,
 				34BEDB0D21C405B0007B0EAE /* ImageEditorModel.swift */,
+				34BBC85C220D19D600857249 /* ImageEditorPanGestureRecognizer.swift */,
 				34BBC84C220B2D0800857249 /* ImageEditorPinchGestureRecognizer.swift */,
+				34BBC854220C7ADA00857249 /* ImageEditorStrokeItem.swift */,
+				34BBC855220C7ADA00857249 /* ImageEditorTextItem.swift */,
 				34BBC84A220B2CB200857249 /* ImageEditorTextViewController.swift */,
 				34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */,
+				34BBC856220C7ADA00857249 /* OrderedDictionary.swift */,
 			);
 			path = ImageEditor;
 			sourceTree = "<group>";
@@ -1892,7 +1927,7 @@
 		34BEDB0F21C41E71007B0EAE /* views */ = {
 			isa = PBXGroup;
 			children = (
-				34BEDB1021C41E71007B0EAE /* ImageEditorTest.swift */,
+				34BBC85E220E883200857249 /* ImageEditor */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -3305,17 +3340,20 @@
 				4CBBCA6321714B4500EEB37D /* OWS110SortIdMigration.swift in Sources */,
 				342950832124C9750000B063 /* OWSTextView.m in Sources */,
 				452EC6E1205FF5DC000E787C /* Bench.swift in Sources */,
+				34BBC85D220D19D600857249 /* ImageEditorPanGestureRecognizer.swift in Sources */,
 				342950882124CB0A0000B063 /* OWSSearchBar.m in Sources */,
 				342950822124C9750000B063 /* OWSTextField.m in Sources */,
 				34AC0A13211B39EA00997B47 /* DisappearingTimerConfigurationView.swift in Sources */,
 				4CA46F4D219CFDAA0038ABDE /* GalleryRailView.swift in Sources */,
 				34480B621FD0A98800BC14EF /* UIColor+OWS.m in Sources */,
 				4C20B2B720CA0034001BAC90 /* ThreadViewModel.swift in Sources */,
+				34BBC857220C7ADA00857249 /* ImageEditorItem.swift in Sources */,
 				34480B641FD0A98800BC14EF /* UIView+OWS.m in Sources */,
 				34AC0A1C211B39EA00997B47 /* OWSFlatButton.swift in Sources */,
 				34C3C7932040B0DD0000134C /* OWSAudioPlayer.m in Sources */,
 				34AC09E5211B39B100997B47 /* ScreenLockViewController.m in Sources */,
 				34AC09F7211B39B100997B47 /* MediaMessageView.swift in Sources */,
+				34BBC858220C7ADA00857249 /* ImageEditorContents.swift in Sources */,
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
 				34AC09E6211B39B100997B47 /* SelectRecipientViewController.m in Sources */,
 				4C858A52212DC5E1001B45D3 /* UIImage+OWS.swift in Sources */,
@@ -3327,6 +3365,7 @@
 				346129AB1FD1F0EE00532771 /* OWSFormat.m in Sources */,
 				34AC0A12211B39EA00997B47 /* ContactTableViewCell.m in Sources */,
 				451F8A461FD715BA005CB9DA /* OWSGroupAvatarBuilder.m in Sources */,
+				34BBC85B220C7ADA00857249 /* OrderedDictionary.swift in Sources */,
 				346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */,
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
 				34AC09EA211B39B100997B47 /* ModalActivityIndicatorViewController.swift in Sources */,
@@ -3355,6 +3394,7 @@
 				45BC829D1FD9C4B400011CF3 /* ShareViewDelegate.swift in Sources */,
 				3461295B1FD1D74C00532771 /* Environment.m in Sources */,
 				346129D51FD20ADC00532771 /* UIViewController+OWS.m in Sources */,
+				34BBC851220B8EEF00857249 /* ImageEditorCanvasView.swift in Sources */,
 				347850691FD9B78A007B8332 /* AppSetup.m in Sources */,
 				346941A3215D2EE400B5BFAD /* Theme.m in Sources */,
 				4C23A5F2215C4ADE00534937 /* SheetViewController.swift in Sources */,
@@ -3369,6 +3409,7 @@
 				34AC0A1A211B39EA00997B47 /* CommonStrings.swift in Sources */,
 				34AC0A19211B39EA00997B47 /* OWSAlerts.swift in Sources */,
 				34FDB29221FF986600A01202 /* UIView+OWS.swift in Sources */,
+				34BBC859220C7ADA00857249 /* ImageEditorStrokeItem.swift in Sources */,
 				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
 				451F8A481FD715BA005CB9DA /* OWSContactAvatarBuilder.m in Sources */,
 				4503F1C3204711D300CEE724 /* OWS107LegacySounds.m in Sources */,
@@ -3391,6 +3432,7 @@
 				34AC09F0211B39B100997B47 /* AttachmentApprovalViewController.swift in Sources */,
 				451F8A441FD7156B005CB9DA /* BlockListUIUtils.m in Sources */,
 				34AC0A1E211B39EA00997B47 /* ThreadViewHelper.m in Sources */,
+				34BBC85A220C7ADA00857249 /* ImageEditorTextItem.swift in Sources */,
 				34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */,
 				346129721FD1D74C00532771 /* SignalKeyingStorage.m in Sources */,
 				349EA07C2162AEA800F7B17F /* OWS111UDAttributesMigration.swift in Sources */,
@@ -3399,6 +3441,7 @@
 				34ABB2C42090C59700C727A6 /* OWSResaveCollectionDBMigration.m in Sources */,
 				4C948FF72146EB4800349F0D /* BlockListCache.swift in Sources */,
 				4551DB5A205C562300C8AE75 /* Collection+OWS.swift in Sources */,
+				34BBC84F220B8A0100857249 /* ImageEditorCropViewController.swift in Sources */,
 				34AC09ED211B39B100997B47 /* ContactFieldView.swift in Sources */,
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
 				34AC09E3211B39B100997B47 /* OWSViewController.m in Sources */,
@@ -3614,14 +3657,15 @@
 			files = (
 				456F6E2F1E261D1000FD2210 /* PeerConnectionClientTest.swift in Sources */,
 				458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */,
-				34BEDB1121C41E71007B0EAE /* ImageEditorTest.swift in Sources */,
 				3491D9A121022DB7001EF5A1 /* CDSSigningCertificateTest.m in Sources */,
+				34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */,
 				340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */,
 				458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */,
 				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
 				34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */,
 				4C04F58421C860C50090D0BB /* MantlePerfTest.swift in Sources */,
 				45360B901F9527DA00FA666C /* SearcherTest.swift in Sources */,
+				34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */,
 				34DB0BED2011548B007B313F /* OWSDatabaseConverterTest.m in Sources */,
 				34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */,
 				45360B911F952AA900FA666C /* MarqueeLabel.swift in Sources */,

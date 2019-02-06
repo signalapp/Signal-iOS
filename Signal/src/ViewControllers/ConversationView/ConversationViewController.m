@@ -1246,6 +1246,22 @@ typedef enum : NSUInteger {
             OWSFailDebug(@"Missing asset.");
         }
 
+        for (ConversationInteractionViewItem *viewItem in self.conversationViewModel.viewItems
+                 .reverseObjectEnumerator) {
+            if (viewItem.mediaAlbumItems.count < 1) {
+                continue;
+            }
+            ConversationMediaAlbumItem *mediaItem = viewItem.mediaAlbumItems.firstObject;
+            if (mediaItem.attachmentStream == nil) {
+                continue;
+            }
+            if (!mediaItem.attachmentStream.isValidImage) {
+                continue;
+            }
+            filePath = mediaItem.attachmentStream.originalFilePath;
+            break;
+        }
+
         DataSource *_Nullable dataSource =
             [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
         if (!dataSource) {
@@ -1253,10 +1269,12 @@ typedef enum : NSUInteger {
             return;
         }
 
+        NSString *fileExtension = filePath.pathExtension;
+        NSString *dataUTI = [MIMETypeUtil utiTypeForFileExtension:fileExtension];
+
         // "Document picker" attachments _SHOULD NOT_ be resized, if possible.
-        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
-                                                                          dataUTI:(NSString *)kUTTypePNG
-                                                                     imageQuality:TSImageQualityOriginal];
+        SignalAttachment *attachment =
+            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:dataUTI imageQuality:TSImageQualityOriginal];
 
         [self showApprovalDialogForAttachment:attachment];
     });

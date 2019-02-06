@@ -910,8 +910,6 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 {
     OWSAssertIsOnMainThread();
 
-    return NO;
-
     // Don't open socket in app extensions.
     if (!CurrentAppContext().isMainApp) {
         return NO;

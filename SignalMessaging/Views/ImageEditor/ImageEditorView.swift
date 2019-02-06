@@ -4,23 +4,6 @@
 
 import UIKit
 
-private class EditorTextLayer: CATextLayer {
-    let itemId: String
-
-    public init(itemId: String) {
-        self.itemId = itemId
-
-        super.init()
-    }
-
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-}
-
-// MARK: -
-
 @objc
 public protocol ImageEditorViewDelegate: class {
     func imageEditor(presentFullScreenOverlay viewController: UIViewController)
@@ -31,17 +14,18 @@ public protocol ImageEditorViewDelegate: class {
 // A view for editing outgoing image attachments.
 // It can also be used to render the final output.
 @objc
-public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextViewControllerDelegate, UIGestureRecognizerDelegate {
+public class ImageEditorView: UIView {
 
     weak var delegate: ImageEditorViewDelegate?
 
     private let model: ImageEditorModel
 
+    private let canvasView: ImageEditorCanvasView
+
     enum EditorMode: String {
         // This is the default mode.  It is used for interacting with text items.
         case none
         case brush
-        case crop
     }
 
     private var editorMode = EditorMode.none {
@@ -59,10 +43,11 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
     public required init(model: ImageEditorModel, delegate: ImageEditorViewDelegate) {
         self.model = model
         self.delegate = delegate
+        self.canvasView = ImageEditorCanvasView(model: model)
 
         super.init(frame: .zero)
 
-        model.delegate = self
+        model.add(observer: self)
     }
 
     @available(*, unavailable, message: "use other init() instead.")
@@ -72,50 +57,52 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
 
     // MARK: - Views
 
-    private let imageView = UIImageView()
-    private var imageViewConstraints = [NSLayoutConstraint]()
-    private let layersView = OWSLayerView()
-    private var editorGestureRecognizer: ImageEditorGestureRecognizer?
+    private var moveTextGestureRecognizer: ImageEditorPanGestureRecognizer?
+    private var brushGestureRecognizer: ImageEditorPanGestureRecognizer?
     private var tapGestureRecognizer: UITapGestureRecognizer?
     private var pinchGestureRecognizer: ImageEditorPinchGestureRecognizer?
 
     @objc
     public func configureSubviews() -> Bool {
-        self.addSubview(imageView)
-
-        guard updateImageView() else {
+        guard canvasView.configureSubviews() else {
             return false
         }
-
-        layersView.clipsToBounds = true
-        layersView.layoutCallback = { [weak self] (_) in
-            self?.updateAllContent()
-        }
-        self.addSubview(layersView)
-        layersView.autoPin(toEdgesOf: imageView)
+        self.addSubview(canvasView)
+        canvasView.ows_autoPinToSuperviewEdges()
 
         self.isUserInteractionEnabled = true
-        layersView.isUserInteractionEnabled = true
 
-        let editorGestureRecognizer = ImageEditorGestureRecognizer(target: self, action: #selector(handleEditorGesture(_:)))
-        editorGestureRecognizer.canvasView = layersView
-        editorGestureRecognizer.delegate = self
-        self.addGestureRecognizer(editorGestureRecognizer)
-        self.editorGestureRecognizer = editorGestureRecognizer
+        let moveTextGestureRecognizer = ImageEditorPanGestureRecognizer(target: self, action: #selector(handleMoveTextGesture(_:)))
+        moveTextGestureRecognizer.maximumNumberOfTouches = 1
+        moveTextGestureRecognizer.referenceView = canvasView.gestureReferenceView
+        moveTextGestureRecognizer.delegate = self
+        self.addGestureRecognizer(moveTextGestureRecognizer)
+        self.moveTextGestureRecognizer = moveTextGestureRecognizer
+
+        let brushGestureRecognizer = ImageEditorPanGestureRecognizer(target: self, action: #selector(handleBrushGesture(_:)))
+        brushGestureRecognizer.maximumNumberOfTouches = 1
+        brushGestureRecognizer.referenceView = canvasView.gestureReferenceView
+        self.addGestureRecognizer(brushGestureRecognizer)
+        self.brushGestureRecognizer = brushGestureRecognizer
 
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
         self.addGestureRecognizer(tapGestureRecognizer)
         self.tapGestureRecognizer = tapGestureRecognizer
 
         let pinchGestureRecognizer = ImageEditorPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
+        pinchGestureRecognizer.referenceView = canvasView.gestureReferenceView
         self.addGestureRecognizer(pinchGestureRecognizer)
         self.pinchGestureRecognizer = pinchGestureRecognizer
 
         // De-conflict the GRs.
-        editorGestureRecognizer.require(toFail: tapGestureRecognizer)
-        editorGestureRecognizer.require(toFail: pinchGestureRecognizer)
+        //        editorGestureRecognizer.require(toFail: tapGestureRecognizer)
+        //        editorGestureRecognizer.require(toFail: pinchGestureRecognizer)
 
         updateGestureState()
+
+        DispatchQueue.main.async {
+            self.presentCropTool()
+        }
 
         return true
     }
@@ -136,44 +123,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
         } else {
             model.append(item: newItem)
         }
-    }
-
-    @objc
-    public func updateImageView() -> Bool {
-
-        guard let image = UIImage(contentsOfFile: model.currentImagePath) else {
-            owsFailDebug("Could not load image")
-            return false
-        }
-        guard image.size.width > 0 && image.size.height > 0 else {
-            owsFailDebug("Could not load image")
-            return false
-        }
-
-        imageView.image = image
-        imageView.layer.minificationFilter = kCAFilterTrilinear
-        imageView.layer.magnificationFilter = kCAFilterTrilinear
-        let aspectRatio = image.size.width / image.size.height
-        for constraint in imageViewConstraints {
-            constraint.autoRemove()
-        }
-        imageViewConstraints = applyScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
-
-        return true
-    }
-
-    private func applyScaleAspectFitLayout(view: UIView, aspectRatio: CGFloat) -> [NSLayoutConstraint] {
-        // This emulates the behavior of contentMode = .scaleAspectFit using
-        // iOS auto layout constraints.
-        //
-        // This allows ConversationInputToolbar to place the "cancel" button
-        // in the upper-right hand corner of the preview content.
-        var constraints = [NSLayoutConstraint]()
-        constraints.append(contentsOf: view.autoCenterInSuperview())
-        constraints.append(view.autoPin(toAspectRatio: aspectRatio))
-        constraints.append(view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
-        constraints.append(view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
-        return constraints
     }
 
     private let undoButton = UIButton(type: .custom)
@@ -249,7 +198,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
         undoButton.isEnabled = model.canUndo()
         redoButton.isEnabled = model.canRedo()
         brushButton.isSelected = editorMode == .brush
-        cropButton.isSelected = editorMode == .crop
+        cropButton.isSelected = false
         newTextButton.isSelected = false
 
         for button in allButtons {
@@ -286,13 +235,23 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
     @objc func didTapCrop(sender: UIButton) {
         Logger.verbose("")
 
-        toggle(editorMode: .crop)
+        presentCropTool()
     }
 
     @objc func didTapNewText(sender: UIButton) {
         Logger.verbose("")
 
-        let textItem = ImageEditorTextItem.empty(withColor: currentColor)
+        let viewSize = canvasView.gestureReferenceView.bounds.size
+        let imageSize =  model.srcImageSizePixels
+        let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: imageSize,
+                                                          transform: model.currentTransform())
+
+        let textWidthPoints = viewSize.width * ImageEditorTextItem.kDefaultUnitWidth
+        let textWidthUnit = textWidthPoints / imageFrame.size.width
+
+        let textItem = ImageEditorTextItem.empty(withColor: currentColor,
+                                                 unitWidth: textWidthUnit,
+                                                 fontReferenceImageWidth: imageFrame.size.width)
 
         edit(textItem: textItem)
     }
@@ -319,20 +278,14 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
 
         switch editorMode {
         case .none:
-            editorGestureRecognizer?.shouldAllowOutsideView = true
-            editorGestureRecognizer?.isEnabled = true
+            moveTextGestureRecognizer?.isEnabled = true
+            brushGestureRecognizer?.isEnabled = false
             tapGestureRecognizer?.isEnabled = true
             pinchGestureRecognizer?.isEnabled = true
         case .brush:
             // Brush strokes can start and end (and return from) outside the view.
-            editorGestureRecognizer?.shouldAllowOutsideView = true
-            editorGestureRecognizer?.isEnabled = true
-            tapGestureRecognizer?.isEnabled = false
-            pinchGestureRecognizer?.isEnabled = false
-        case .crop:
-            // Crop gestures can start and end (and return from) outside the view.
-            editorGestureRecognizer?.shouldAllowOutsideView = true
-            editorGestureRecognizer?.isEnabled = true
+            moveTextGestureRecognizer?.isEnabled = false
+            brushGestureRecognizer?.isEnabled = true
             tapGestureRecognizer?.isEnabled = false
             pinchGestureRecognizer?.isEnabled = false
         }
@@ -349,7 +302,8 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
             return
         }
 
-        guard let textLayer = textLayer(forGestureRecognizer: gestureRecognizer) else {
+        let location = gestureRecognizer.location(in: canvasView.gestureReferenceView)
+        guard let textLayer = canvasView.textLayer(forLocation: location) else {
             return
         }
 
@@ -359,27 +313,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
         }
 
         edit(textItem: textItem)
-    }
-
-    private var isEditingTextItem = false {
-        didSet {
-            AssertIsOnMainThread()
-
-            updateButtons()
-        }
-    }
-
-    private func edit(textItem: ImageEditorTextItem) {
-        Logger.verbose("")
-
-        toggle(editorMode: .none)
-
-        isEditingTextItem = true
-
-        let maxTextWidthPoints = imageView.width() * ImageEditorTextItem.kDefaultUnitWidth
-
-        let textEditor = ImageEditorTextViewController(delegate: self, textItem: textItem, maxTextWidthPoints: maxTextWidthPoints)
-        self.delegate?.imageEditor(presentFullScreenOverlay: textEditor)
     }
 
     // MARK: - Pinch Gesture
@@ -397,12 +330,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
         switch gestureRecognizer.state {
         case .began:
             let pinchState = gestureRecognizer.pinchStateStart
-            guard let gestureRecognizerView = gestureRecognizer.view else {
-                owsFailDebug("Missing gestureRecognizer.view.")
-                return
-            }
-            let location = gestureRecognizerView.convert(pinchState.centroid, to: unitReferenceView)
-            guard let textLayer = textLayer(forLocation: location) else {
+            guard let textLayer = canvasView.textLayer(forLocation: pinchState.centroid) else {
                 // The pinch needs to start centered on a text item.
                 return
             }
@@ -417,9 +345,13 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
                 return
             }
 
-            let locationDelta = CGPointSubtract(gestureRecognizer.pinchStateLast.centroid,
-                                                gestureRecognizer.pinchStateStart.centroid)
-            let unitLocationDelta = convertToUnit(location: locationDelta, shouldClamp: false)
+            let locationStart = gestureRecognizer.pinchStateStart.centroid
+            let locationUnitStart = locationUnit(forLocationInView: locationStart, transform: model.currentTransform())
+            let locationNow = gestureRecognizer.pinchStateLast.centroid
+            let locationUnitNow = locationUnit(forLocationInView: locationNow, transform: model.currentTransform())
+
+            let unitLocationDelta = CGPointSubtract(locationUnitNow,
+                                                    locationUnitStart)
             let unitCenter = CGPointClamp01(CGPointAdd(textItem.unitCenter, unitLocationDelta))
 
             // NOTE: We use max(1, ...) to avoid divide-by-zero.
@@ -450,41 +382,24 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
 
     // MARK: - Editor Gesture
 
-    @objc
-    public func handleEditorGesture(_ gestureRecognizer: ImageEditorGestureRecognizer) {
-        AssertIsOnMainThread()
-
-        switch editorMode {
-        case .none:
-            handleDefaultGesture(gestureRecognizer)
-            break
-        case .brush:
-            handleBrushGesture(gestureRecognizer)
-        case .crop:
-            handleCropGesture(gestureRecognizer)
-        }
-    }
-
     // These properties are valid while moving a text item.
     private var movingTextItem: ImageEditorTextItem?
-    private var movingTextStartUnitLocation = CGPoint.zero
-    private var movingTextStartUnitCenter = CGPoint.zero
+    private var movingTextStartUnitCenter: CGPoint?
     private var movingTextHasMoved = false
 
     @objc
-    public func handleDefaultGesture(_ gestureRecognizer: ImageEditorGestureRecognizer) {
+    public func handleMoveTextGesture(_ gestureRecognizer: ImageEditorPanGestureRecognizer) {
         AssertIsOnMainThread()
 
         // We could undo an in-progress move if the gesture is cancelled, but it seems gratuitous.
 
         switch gestureRecognizer.state {
         case .began:
-            guard let gestureRecognizerView = gestureRecognizer.view else {
-                owsFailDebug("Missing gestureRecognizer.view.")
+            guard let locationStart = gestureRecognizer.locationStart else {
+                owsFailDebug("Missing locationStart.")
                 return
             }
-            let location = gestureRecognizerView.convert(gestureRecognizer.startLocationInView, to: unitReferenceView)
-            guard let textLayer = textLayer(forLocation: location) else {
+            guard let textLayer = canvasView.textLayer(forLocation: locationStart) else {
                 owsFailDebug("No text layer")
                 return
             }
@@ -492,9 +407,6 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
                 owsFailDebug("Missing or invalid text item.")
                 return
             }
-            movingTextStartUnitLocation = convertToUnit(location: location,
-                                                        shouldClamp: false)
-
             movingTextItem = textItem
             movingTextStartUnitCenter = textItem.unitCenter
             movingTextHasMoved = false
@@ -503,9 +415,20 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
             guard let textItem = movingTextItem else {
                 return
             }
+            guard let locationStart = gestureRecognizer.locationStart else {
+                owsFailDebug("Missing locationStart.")
+                return
+            }
+            guard let movingTextStartUnitCenter = movingTextStartUnitCenter else {
+                owsFailDebug("Missing movingTextStartUnitCenter.")
+                return
+            }
 
-            let unitLocation = unitSampleForGestureLocation(gestureRecognizer, shouldClamp: false)
-            let unitLocationDelta = CGPointSubtract(unitLocation, movingTextStartUnitLocation)
+            let locationUnitStart = canvasView.locationUnit(forLocationInView: locationStart, transform: model.currentTransform())
+            let locationNow = gestureRecognizer.location(in: canvasView.gestureReferenceView)
+            let locationUnitNow = canvasView.locationUnit(forLocationInView: locationNow, transform: model.currentTransform())
+
+            let unitLocationDelta = CGPointSubtract(locationUnitNow, locationUnitStart)
             let unitCenter = CGPointClamp01(CGPointAdd(movingTextStartUnitCenter, unitLocationDelta))
             let newItem = textItem.copy(withUnitCenter: unitCenter)
 
@@ -542,7 +465,7 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
             self.currentStrokeSamples.removeAll()
         }
         let tryToAppendStrokeSample = {
-            let newSample = self.unitSampleForGestureLocation(gestureRecognizer, shouldClamp: false)
+            let newSample = self.locationUnit(forGestureRecognizer: gestureRecognizer, transform: self.model.currentTransform())
             if let prevSample = self.currentStrokeSamples.last,
                 prevSample == newSample {
                 // Ignore duplicate samples.
@@ -590,474 +513,105 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
         }
     }
 
-    private var unitReferenceView: UIView {
-        return layersView
+    // MARK: - Coordinates
+
+    private func locationUnit(forGestureRecognizer gestureRecognizer: UIGestureRecognizer,
+                              transform: ImageEditorTransform) -> CGPoint {
+        return canvasView.locationUnit(forGestureRecognizer: gestureRecognizer, transform: transform)
     }
 
-    private func unitSampleForGestureLocation(_ gestureRecognizer: UIGestureRecognizer,
-                                              shouldClamp: Bool) -> CGPoint {
-        // TODO: Smooth touch samples before converting into stroke samples.
-        let location = gestureRecognizer.location(in: unitReferenceView)
-        return convertToUnit(location: location,
-                             shouldClamp: shouldClamp)
+    private func locationUnit(forLocationInView locationInView: CGPoint,
+                              transform: ImageEditorTransform) -> CGPoint {
+        return canvasView.locationUnit(forLocationInView: locationInView, transform: transform)
     }
 
-    private func convertToUnit(location: CGPoint,
-                               shouldClamp: Bool) -> CGPoint {
-        var x = CGFloatInverseLerp(location.x, 0, unitReferenceView.bounds.width)
-        var y = CGFloatInverseLerp(location.y, 0, unitReferenceView.bounds.height)
-        if shouldClamp {
-            x = CGFloatClamp01(x)
-            y = CGFloatClamp01(y)
-        }
-        return CGPoint(x: x, y: y)
-    }
+    // MARK: - Edit Text Tool
 
-    // MARK: - Crop
+    private var isEditingTextItem = false {
+        didSet {
+            AssertIsOnMainThread()
 
-    private var cropStartUnit = CGPoint.zero
-    private var cropEndUnit = CGPoint.zero
-    private var cropLayer1 = CAShapeLayer()
-    private var cropLayer2 = CAShapeLayer()
-    private var cropLayers: [CAShapeLayer] {
-        return [cropLayer1, cropLayer2]
-    }
-
-    @objc
-    public func handleCropGesture(_ gestureRecognizer: UIGestureRecognizer) {
-        AssertIsOnMainThread()
-
-        let kCropDashLength: CGFloat = 3
-        let cancelCrop = {
-            for cropLayer in self.cropLayers {
-                cropLayer.removeFromSuperlayer()
-                cropLayer.removeAllAnimations()
-            }
-        }
-        let updateCropLayer = { (cropLayer: CAShapeLayer) in
-            cropLayer.fillColor = nil
-            cropLayer.lineWidth = 1.0
-            cropLayer.lineDashPattern = [NSNumber(value: Double(kCropDashLength)), NSNumber(value: Double(kCropDashLength))]
-
-            let viewSize = self.layersView.bounds.size
-            cropLayer.frame = CGRect(origin: .zero, size: viewSize)
-
-            // Find the upper-left and bottom-right corners of the
-            // crop rectangle, in unit coordinates.
-            let unitMin = CGPointMin(self.cropStartUnit, self.cropEndUnit)
-            let unitMax = CGPointMax(self.cropStartUnit, self.cropEndUnit)
-
-            let transformSampleToPoint = { (unitSample: CGPoint) -> CGPoint in
-                return CGPoint(x: viewSize.width * unitSample.x,
-                               y: viewSize.height * unitSample.y)
-            }
-
-            // Convert from unit coordinates to view coordinates.
-            let pointMin = transformSampleToPoint(unitMin)
-            let pointMax = transformSampleToPoint(unitMax)
-            let cropRect = CGRect(x: pointMin.x,
-                                  y: pointMin.y,
-                                  width: pointMax.x - pointMin.x,
-                                  height: pointMax.y - pointMin.y)
-            let bezierPath = UIBezierPath(rect: cropRect)
-            cropLayer.path = bezierPath.cgPath
-        }
-        let updateCrop = {
-            updateCropLayer(self.cropLayer1)
-            updateCropLayer(self.cropLayer2)
-            self.cropLayer1.strokeColor = UIColor.white.cgColor
-            self.cropLayer2.strokeColor = UIColor.black.cgColor
-            self.cropLayer1.lineDashPhase = 0
-            self.cropLayer2.lineDashPhase = self.cropLayer1.lineDashPhase + kCropDashLength
-        }
-        let startCrop = {
-            for cropLayer in self.cropLayers {
-                self.layersView.layer.addSublayer(cropLayer)
-            }
-
-            updateCrop()
-        }
-        let endCrop = {
-            updateCrop()
-
-            for cropLayer in self.cropLayers {
-                cropLayer.removeFromSuperlayer()
-                cropLayer.removeAllAnimations()
-            }
-
-            // Find the upper-left and bottom-right corners of the
-            // crop rectangle, in unit coordinates.
-            let unitMin = CGPointClamp01(CGPointMin(self.cropStartUnit, self.cropEndUnit))
-            let unitMax = CGPointClamp01(CGPointMax(self.cropStartUnit, self.cropEndUnit))
-            let unitCropRect = CGRect(x: unitMin.x,
-                                      y: unitMin.y,
-                                      width: unitMax.x - unitMin.x,
-                                      height: unitMax.y - unitMin.y)
-            self.model.crop(unitCropRect: unitCropRect)
-        }
-
-        let currentUnitSample = {
-            self.unitSampleForGestureLocation(gestureRecognizer, shouldClamp: true)
-        }
-
-        switch gestureRecognizer.state {
-        case .began:
-            let unitSample = currentUnitSample()
-            cropStartUnit = unitSample
-            cropEndUnit = unitSample
-            startCrop()
-
-        case .changed:
-            cropEndUnit = currentUnitSample()
-            updateCrop()
-        case .ended:
-            cropEndUnit = currentUnitSample()
-            endCrop()
-        default:
-            cancelCrop()
+            updateButtons()
         }
     }
 
-    // MARK: - ImageEditorModelDelegate
+    private func edit(textItem: ImageEditorTextItem) {
+        Logger.verbose("")
+
+        toggle(editorMode: .none)
+
+        isEditingTextItem = true
+
+        // TODO:
+        let maxTextWidthPoints = model.srcImageSizePixels.width * ImageEditorTextItem.kDefaultUnitWidth
+        //        let maxTextWidthPoints = canvasView.imageView.width() * ImageEditorTextItem.kDefaultUnitWidth
+
+        let textEditor = ImageEditorTextViewController(delegate: self, textItem: textItem, maxTextWidthPoints: maxTextWidthPoints)
+        self.delegate?.imageEditor(presentFullScreenOverlay: textEditor)
+    }
+
+    // MARK: - Crop Tool
+
+    private func presentCropTool() {
+        Logger.verbose("")
+
+        toggle(editorMode: .none)
+
+        guard let srcImage = canvasView.loadSrcImage() else {
+            owsFailDebug("Couldn't load src image.")
+            return
+        }
+
+        // We want to render a preview image that "flattens" all of the brush strokes, text items,
+        // into the background image without applying the transform (e.g. rotating, etc.), so we
+        // use a default transform.
+        let previewTransform = ImageEditorTransform.defaultTransform(srcImageSizePixels: model.srcImageSizePixels)
+        guard let previewImage = ImageEditorCanvasView.renderForOutput(model: model, transform: previewTransform) else {
+            owsFailDebug("Couldn't generate preview image.")
+            return
+        }
+
+        let cropTool = ImageEditorCropViewController(delegate: self, model: model, srcImage: srcImage, previewImage: previewImage)
+        self.delegate?.imageEditor(presentFullScreenOverlay: cropTool)
+    }}
+
+// MARK: -
+
+extension ImageEditorView: UIGestureRecognizerDelegate {
+
+    @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        guard moveTextGestureRecognizer == gestureRecognizer else {
+            owsFailDebug("Unexpected gesture.")
+            return false
+        }
+        guard editorMode == .none else {
+            // We only filter touches when in default mode.
+            return true
+        }
+
+        let location = touch.location(in: canvasView.gestureReferenceView)
+        let isInTextArea = canvasView.textLayer(forLocation: location) != nil
+        return isInTextArea
+    }
+}
+
+// MARK: -
+
+extension ImageEditorView: ImageEditorModelObserver {
 
     public func imageEditorModelDidChange(before: ImageEditorContents,
                                           after: ImageEditorContents) {
-
-        if before.imagePath != after.imagePath {
-            _ = updateImageView()
-        }
-
-        updateAllContent()
-
         updateButtons()
     }
 
     public func imageEditorModelDidChange(changedItemIds: [String]) {
-        updateContent(changedItemIds: changedItemIds)
-
         updateButtons()
     }
+}
 
-    // MARK: - Accessor Overrides
+// MARK: -
 
-    @objc public override var bounds: CGRect {
-        didSet {
-            if oldValue != bounds {
-                updateAllContent()
-            }
-        }
-    }
-
-    @objc public override var frame: CGRect {
-        didSet {
-            if oldValue != frame {
-                updateAllContent()
-            }
-        }
-    }
-
-    // MARK: - Content
-
-    var contentLayerMap = [String: CALayer]()
-
-    internal func updateAllContent() {
-        AssertIsOnMainThread()
-
-        // Don't animate changes.
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-
-        for layer in contentLayerMap.values {
-            layer.removeFromSuperlayer()
-        }
-        contentLayerMap.removeAll()
-
-        if bounds.width > 0,
-            bounds.height > 0 {
-
-            for item in model.items() {
-                let viewSize = layersView.bounds.size
-                guard let layer = ImageEditorView.layerForItem(item: item,
-                                                               viewSize: viewSize) else {
-                                                                continue
-                }
-
-                layersView.layer.addSublayer(layer)
-                contentLayerMap[item.itemId] = layer
-            }
-        }
-
-        CATransaction.commit()
-    }
-
-    internal func updateContent(changedItemIds: [String]) {
-        AssertIsOnMainThread()
-
-        // Don't animate changes.
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-
-        // Remove all changed items.
-        for itemId in changedItemIds {
-            if let layer = contentLayerMap[itemId] {
-                layer.removeFromSuperlayer()
-            }
-            contentLayerMap.removeValue(forKey: itemId)
-        }
-
-        if bounds.width > 0,
-            bounds.height > 0 {
-
-            // Create layers for inserted and updated items.
-            for itemId in changedItemIds {
-                guard let item = model.item(forId: itemId) else {
-                    // Item was deleted.
-                    continue
-                }
-
-                // Item was inserted or updated.
-                let viewSize = layersView.bounds.size
-                guard let layer = ImageEditorView.layerForItem(item: item,
-                                                               viewSize: viewSize) else {
-                                                                continue
-                }
-
-                layersView.layer.addSublayer(layer)
-                contentLayerMap[item.itemId] = layer
-            }
-        }
-
-        CATransaction.commit()
-    }
-
-    private class func layerForItem(item: ImageEditorItem,
-                                    viewSize: CGSize) -> CALayer? {
-        AssertIsOnMainThread()
-
-        switch item.itemType {
-        case .test:
-            owsFailDebug("Unexpected test item.")
-            return nil
-        case .stroke:
-            guard let strokeItem = item as? ImageEditorStrokeItem else {
-                owsFailDebug("Item has unexpected type: \(type(of: item)).")
-                return nil
-            }
-            return strokeLayerForItem(item: strokeItem, viewSize: viewSize)
-        case .text:
-            guard let textItem = item as? ImageEditorTextItem else {
-                owsFailDebug("Item has unexpected type: \(type(of: item)).")
-                return nil
-            }
-            return textLayerForItem(item: textItem, viewSize: viewSize)
-        }
-    }
-
-    private class func strokeLayerForItem(item: ImageEditorStrokeItem,
-                                          viewSize: CGSize) -> CALayer? {
-        AssertIsOnMainThread()
-
-        let strokeWidth = ImageEditorStrokeItem.strokeWidth(forUnitStrokeWidth: item.unitStrokeWidth,
-                                                            dstSize: viewSize)
-        let unitSamples = item.unitSamples
-        guard unitSamples.count > 0 else {
-            // Not an error; the stroke doesn't have enough samples to render yet.
-            return nil
-        }
-
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.lineWidth = strokeWidth
-        shapeLayer.strokeColor = item.color.cgColor
-        shapeLayer.frame = CGRect(origin: .zero, size: viewSize)
-
-        let transformSampleToPoint = { (unitSample: CGPoint) -> CGPoint in
-            return CGPoint(x: viewSize.width * unitSample.x,
-                           y: viewSize.height * unitSample.y)
-        }
-
-        // TODO: Use bezier curves to smooth stroke.
-        let bezierPath = UIBezierPath()
-
-        let points = applySmoothing(to: unitSamples.map { (unitSample) in
-            transformSampleToPoint(unitSample)
-        })
-        var previousForwardVector = CGPoint.zero
-        for index in 0..<points.count {
-            let point = points[index]
-
-            let forwardVector: CGPoint
-            if points.count <= 1 {
-                // Skip forward vectors.
-                forwardVector = .zero
-            } else if index == 0 {
-                // First sample.
-                let nextPoint = points[index + 1]
-                forwardVector = CGPointSubtract(nextPoint, point)
-            } else if index == points.count - 1 {
-                // Last sample.
-                let previousPoint = points[index - 1]
-                forwardVector = CGPointSubtract(point, previousPoint)
-            } else {
-                // Middle samples.
-                let previousPoint = points[index - 1]
-                let previousPointForwardVector = CGPointSubtract(point, previousPoint)
-                let nextPoint = points[index + 1]
-                let nextPointForwardVector = CGPointSubtract(nextPoint, point)
-                forwardVector = CGPointScale(CGPointAdd(previousPointForwardVector, nextPointForwardVector), 0.5)
-            }
-
-            if index == 0 {
-                // First sample.
-                bezierPath.move(to: point)
-
-                if points.count == 1 {
-                    bezierPath.addLine(to: point)
-                }
-            } else {
-                let previousPoint = points[index - 1]
-                // We apply more than one kind of smoothing.
-                // This smoothing avoids rendering "angled segments"
-                // by drawing the stroke as a series of curves.
-                // We use bezier curves and infer the control points
-                // from the "next" and "prev" points.
-                //
-                // This factor controls how much we're smoothing.
-                //
-                // * 0.0 = No smoothing.
-                //
-                // TODO: Tune this variable once we have stroke input.
-                let controlPointFactor: CGFloat = 0.25
-                let controlPoint1 = CGPointAdd(previousPoint, CGPointScale(previousForwardVector, +controlPointFactor))
-                let controlPoint2 = CGPointAdd(point, CGPointScale(forwardVector, -controlPointFactor))
-                // We're using Cubic curves.
-                bezierPath.addCurve(to: point, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
-            }
-            previousForwardVector = forwardVector
-        }
-
-        shapeLayer.path = bezierPath.cgPath
-        shapeLayer.fillColor = nil
-        shapeLayer.lineCap = kCALineCapRound
-        shapeLayer.lineJoin = kCALineJoinRound
-
-        return shapeLayer
-    }
-
-    private class func textLayerForItem(item: ImageEditorTextItem,
-                                        viewSize: CGSize) -> CALayer? {
-        AssertIsOnMainThread()
-
-        let layer = EditorTextLayer(itemId: item.itemId)
-        layer.string = item.text
-        layer.foregroundColor = item.color.cgColor
-        layer.font = CGFont(item.font.fontName as CFString)
-        layer.fontSize = item.font.pointSize
-        layer.isWrapped = true
-        layer.alignmentMode = kCAAlignmentCenter
-        // I don't think we need to enable allowsFontSubpixelQuantization
-        // or set truncationMode.
-
-        // This text needs to be rendered at a scale that reflects the sceen scaling
-        // AND the item's scaling.
-        layer.contentsScale = UIScreen.main.scale * item.scaling
-
-        // TODO: Min with measured width.
-        let maxWidth = viewSize.width * item.unitWidth
-        let maxSize = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
-        // TODO: Is there a more accurate way to measure text in a CATextLayer?
-        //       CoreText?
-        let textBounds = (item.text as NSString).boundingRect(with: maxSize,
-                                                              options: [
-                                                                .usesLineFragmentOrigin,
-                                                                .usesFontLeading
-            ],
-                                                              attributes: [
-                                                                .font: item.font
-            ],
-                                                              context: nil)
-        let center = CGPoint(x: viewSize.width * item.unitCenter.x,
-                             y: viewSize.height * item.unitCenter.y)
-        let layerSize = CGSizeCeil(textBounds.size)
-        layer.frame = CGRect(origin: CGPoint(x: center.x - layerSize.width * 0.5,
-                                             y: center.y - layerSize.height * 0.5),
-                             size: layerSize)
-
-        let transform = CGAffineTransform.identity.scaledBy(x: item.scaling, y: item.scaling).rotated(by: item.rotationRadians)
-        layer.setAffineTransform(transform)
-
-        return layer
-    }
-
-    // We apply more than one kind of smoothing.
-    //
-    // This (simple) smoothing reduces jitter from the touch sensor.
-    private class func applySmoothing(to points: [CGPoint]) -> [CGPoint] {
-        AssertIsOnMainThread()
-
-        var result = [CGPoint]()
-
-        for index in 0..<points.count {
-            let point = points[index]
-
-            if index == 0 {
-                // First sample.
-                result.append(point)
-            } else if index == points.count - 1 {
-                // Last sample.
-                result.append(point)
-            } else {
-                // Middle samples.
-                let lastPoint = points[index - 1]
-                let nextPoint = points[index + 1]
-                let alpha: CGFloat = 0.1
-                let smoothedPoint = CGPointAdd(CGPointScale(point, 1.0 - 2.0 * alpha),
-                                               CGPointAdd(CGPointScale(lastPoint, alpha),
-                                                          CGPointScale(nextPoint, alpha)))
-                result.append(smoothedPoint)
-            }
-        }
-
-        return result
-    }
-
-    // MARK: - Actions
-
-    // Returns nil on error.
-    @objc
-    public class func renderForOutput(model: ImageEditorModel) -> UIImage? {
-        // TODO: Do we want to render off the main thread?
-        AssertIsOnMainThread()
-
-        // Render output at same size as source image.
-        let dstSizePixels = model.srcImageSizePixels
-        let dstScale: CGFloat = 1.0 // The size is specified in pixels, not in points.
-
-        let hasAlpha = NSData.hasAlpha(forValidImageFilePath: model.currentImagePath)
-
-        guard let srcImage = UIImage(contentsOfFile: model.currentImagePath) else {
-            owsFailDebug("Could not load src image.")
-            return nil
-        }
-
-        // We use an UIImageView + UIView.renderAsImage() instead of a CGGraphicsContext
-        // Because CALayer.renderInContext() doesn't honor CALayer properties like frame,
-        // transform, etc.
-        let imageView = UIImageView(image: srcImage)
-        imageView.frame = CGRect(origin: .zero, size: dstSizePixels)
-        for item in model.items() {
-            guard let layer = layerForItem(item: item,
-                                           viewSize: dstSizePixels) else {
-                                            Logger.error("Couldn't create layer for item.")
-                                            continue
-            }
-            layer.contentsScale = dstScale * item.outputScale()
-            imageView.layer.addSublayer(layer)
-        }
-        let image = imageView.renderAsImage(opaque: !hasAlpha, scale: dstScale)
-        return image
-    }
-
-    // MARK: - ImageEditorTextViewControllerDelegate
+extension ImageEditorView: ImageEditorTextViewControllerDelegate {
 
     public func textEditDidComplete(textItem: ImageEditorTextItem, text: String?) {
         AssertIsOnMainThread()
@@ -1084,49 +638,17 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
     public func textEditDidCancel() {
         isEditingTextItem = false
     }
+}
 
-    // MARK: - UIGestureRecognizerDelegate
+// MARK: -
 
-    @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        guard let editorGestureRecognizer = editorGestureRecognizer else {
-            owsFailDebug("Missing editorGestureRecognizer.")
-            return false
-        }
-        guard editorGestureRecognizer == gestureRecognizer else {
-            owsFailDebug("Unexpected gesture.")
-            return false
-        }
-        guard editorMode == .none else {
-            // We only filter touches when in default mode.
-            return true
-        }
-
-        let isInTextArea = textLayer(forTouch: touch) != nil
-        return isInTextArea
+extension ImageEditorView: ImageEditorCropViewControllerDelegate {
+    public func cropDidComplete(transform: ImageEditorTransform) {
+        // TODO: Ignore no-change updates.
+        model.replace(transform: transform)
     }
 
-    private func textLayer(forTouch touch: UITouch) -> EditorTextLayer? {
-        let point = touch.location(in: layersView)
-        return textLayer(forLocation: point)
-    }
-
-    private func textLayer(forGestureRecognizer gestureRecognizer: UIGestureRecognizer) -> EditorTextLayer? {
-        let point = gestureRecognizer.location(in: layersView)
-        return textLayer(forLocation: point)
-    }
-
-    private func textLayer(forLocation point: CGPoint) -> EditorTextLayer? {
-        guard let sublayers = layersView.layer.sublayers else {
-            return nil
-        }
-        for layer in sublayers {
-            guard let textLayer = layer as? EditorTextLayer else {
-                continue
-            }
-            if textLayer.hitTest(point) != nil {
-                return textLayer
-            }
-        }
-        return nil
+    public func cropDidCancel() {
+        // TODO:
     }
 }

@@ -589,11 +589,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // Image was not edited.
             return attachmentItem.attachment
         }
-        guard imageEditorModel.itemCount() > 0 else {
+        guard imageEditorModel.isDirty() else {
             // Image editor has no changes.
             return attachmentItem.attachment
         }
-        guard let dstImage = ImageEditorView.renderForOutput(model: imageEditorModel) else {
+        guard let dstImage = ImageEditorCanvasView.renderForOutput(model: imageEditorModel, transform: imageEditorModel.currentTransform()) else {
             owsFailDebug("Could not render for output.")
             return attachmentItem.attachment
         }
@@ -945,9 +945,13 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             if imageEditorView.configureSubviews() {
                 mediaMessageView.isHidden = true
 
+                // TODO: Is this necessary?
                 imageMediaView.isUserInteractionEnabled = true
-                mediaMessageView.superview?.addSubview(imageEditorView)
-                imageEditorView.autoPin(toEdgesOf: mediaMessageView)
+
+                contentContainer.addSubview(imageEditorView)
+                imageEditorView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+                autoPinView(toBottomOfViewControllerOrKeyboard: imageEditorView, avoidNotch: true)
+                imageEditorView.autoPinWidthToSuperview()
 
                 imageEditorView.addControls(to: imageEditorView)
             }
