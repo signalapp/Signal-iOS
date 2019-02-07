@@ -53,20 +53,11 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Spara";
 
-/* No comment provided by engineer. */
+/* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Svara";
 
-/* No comment provided by engineer. */
+/* notification body */
 "APN_Message" = "Nytt meddelande!";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_FROM" = "Meddelande från";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP" = "Meddelande i grupp";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP_DETAILED" = "%@ i grupp %@: %@";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kan inte startas. Skicka en felsökningslogg till support@signal.org så att vi kan felsöka problemet.";
@@ -329,8 +320,17 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Åtkomst till mikrofon krävs";
 
+/* notification body */
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Ring";
+
+/* notification body */
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+
+/* notification body */
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Inget svar";
@@ -1113,16 +1113,13 @@
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Du kan aktivera kontaktåtkomst i appen Inställningar för att se kontaktnamn i din Signal konversationslista.";
 
-/* notification body */
+/* info message text in conversation view */
 "INCOMING_CALL" = "Inkommande samtal";
-
-/* notification body */
-"INCOMING_CALL_FROM" = "Inkommande samtal från %@";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "Du avvisade ett samtal";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "INCOMING_INCOMPLETE_CALL" = "Inkommande samtal";
 
 /* info message text shown in conversation view */
@@ -1374,14 +1371,8 @@
 /* Messages that indicates that there are more unseen messages including safety number changes. */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Det finns fler olästa meddelanden (bland annat ändringar av säkerhetsnummer).";
 
-/* notification title */
+/* info message text in conversation view */
 "MISSED_CALL" = "Missat samtal";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Missat samtal från %@ eftersom säkerhetsnumret var ändrat.";
-
-/* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Missade samtalet för att den andra personens säkerhetsnummer har ändrats.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -1396,9 +1387,6 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "För den här funktionen behöver Signal åtkomst till dina foton.";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Missat samtal från %@";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan inte lägga till fler länkade enheter.";
@@ -1451,6 +1439,9 @@
 /* An indicator that a user is a member of the new group. */
 "NEW_GROUP_MEMBER_LABEL" = "Medlem";
 
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Namnge gruppchatten";
 
@@ -1480,9 +1471,6 @@
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Du kan ha fått nya meddelanden medan din %@ startades om.";
-
-/* No comment provided by engineer. */
-"NOTIFICATION_SEND_FAILED" = "Ditt meddelande kunde inte skickas till %@.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "På grund av kända buggar i Apples push-ramverk kommer förhandsvisningar av meddelanden bara att visas om meddelanden hämtas inom 30 sekunder efter att de skickades. Som ett resultat av detta kan applikationens bricka vara felaktig.";
@@ -1520,10 +1508,10 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal har tekniska problem. Vi jobbar intensivt med att få igång tjänsten så snabbt vi kan.";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_CALL" = "Utgående samtal";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_INCOMPLETE_CALL" = "Utgående samtal";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
@@ -1667,10 +1655,10 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Markera som läst";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Svara";
 
 /* Title of alert shown when push tokens sync job succeeds. */
@@ -1814,7 +1802,7 @@
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Inget telefonnummer";
 
-/* No comment provided by engineer. */
+/* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Avvisa";
 
 /* No comment provided by engineer. */
@@ -1922,8 +1910,11 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Skicka igen";
 
-/* Label for the send button in the conversation view. */
+/* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "Skicka";
+
+/* notification body */
+"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Kunde inte skicka inbjudan, vänligen försök senare.";

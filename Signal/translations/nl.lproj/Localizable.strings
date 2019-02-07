@@ -53,20 +53,11 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Opslaan";
 
-/* No comment provided by engineer. */
+/* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Beantwoorden";
 
-/* No comment provided by engineer. */
+/* notification body */
 "APN_Message" = "Nieuw bericht!";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_FROM" = "Bericht van";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP" = "Bericht in groep";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP_DETAILED" = "%@ in groep %@: %@";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kan niet opstarten. Stuur alstublieft een foutopsporingslogboek naar support@signal.org zodat we dit probleem kunnen oplossen.";
@@ -329,8 +320,17 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Toegang vereist tot microfoon";
 
+/* notification body */
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Bellen";
+
+/* notification body */
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+
+/* notification body */
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Niet beantwoord";
@@ -450,7 +450,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Dit zal de app terugzetten door je berichten te verwijderen en je uit te schrijven bij de Signal-server. De app zal afsluiten nadat dit proces is voltooid.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Weet je zeker dat je je account wilt verwijderen?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Weet je zeker dat je je account wilt wissen?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Je zal geen berichten in deze groep meer kunnen verzenden of ontvangen.";
@@ -1113,16 +1113,13 @@
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Je kan toegang geven tot je contacten in de iOS-instellingenapp om contactnamen in je Signal-gesprekkenlijst te zien.";
 
-/* notification body */
+/* info message text in conversation view */
 "INCOMING_CALL" = "Inkomende oproep";
-
-/* notification body */
-"INCOMING_CALL_FROM" = "Inkomende oproep van %@";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "Je hebt een oproep geweigerd";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "INCOMING_INCOMPLETE_CALL" = "Inkomende oproep";
 
 /* info message text shown in conversation view */
@@ -1216,10 +1213,10 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Fotobibliotheek";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "%d berichten verwijderen";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "%d berichten wissen";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Bericht verwijderen";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Bericht wissen";
 
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
 "MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ op %@";
@@ -1240,10 +1237,10 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Berichttekst kopiëren";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Bericht verwijderen";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Bericht wissen";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Het zal alleen worden verwijderd van dit apparaat.";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Het zal alleen worden gewist van dit apparaat.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Meer informatie";
@@ -1374,14 +1371,8 @@
 /* Messages that indicates that there are more unseen messages including safety number changes. */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Er zijn meer ongelezen berichten (inclusief veiligheidsnummerveranderingen).";
 
-/* notification title */
+/* info message text in conversation view */
 "MISSED_CALL" = "Gemiste oproep";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Oproep van %@ gemist wegens veranderd veiligheidsnummer.";
-
-/* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Oproep gemist wegens veranderd veiligheidsnummer van de beller.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -1396,9 +1387,6 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal heeft toegang nodig tot je foto’s voor deze functie.";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Gemiste oproep van %@.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Je kan niet nog meer apparaten koppelen.";
@@ -1451,6 +1439,9 @@
 /* An indicator that a user is a member of the new group. */
 "NEW_GROUP_MEMBER_LABEL" = "Lid";
 
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Geef dit groepsgesprek een naam";
 
@@ -1482,9 +1473,6 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Je hebt misschien berichten ontvangen terwijl je %@ aan het herstarten was.";
 
 /* No comment provided by engineer. */
-"NOTIFICATION_SEND_FAILED" = "Verzenden van bericht aan %@ mislukt.";
-
-/* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Door bekende fouten in Apples push-framework, worden voorvertoningen van berichten alleen getoond wanneer het bericht binnen 30 seconden na verzending is ontvangen. Hierdoor kan de teller bij het app-pictogram onnauwkeurig zijn.";
 
 /* No comment provided by engineer. */
@@ -1506,7 +1494,7 @@
 "NOTIFICATIONS_SHOW" = "Toon";
 
 /* No comment provided by engineer. */
-"OK" = "Oké";
+"OK" = "Begrepen";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Instellingen";
@@ -1520,10 +1508,10 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal ondervindt momenteel technische problemen. We zijn hard aan het werk de dienst zo snel mogelijk te herstellen.";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_CALL" = "Uitgaande oproep";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_INCOMPLETE_CALL" = "Uitgaande oproep";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
@@ -1667,10 +1655,10 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profiel";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Markeren als gelezen";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Antwoord";
 
 /* Title of alert shown when push tokens sync job succeeds. */
@@ -1814,7 +1802,7 @@
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Geen telefoonnummer";
 
-/* No comment provided by engineer. */
+/* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Weigeren";
 
 /* No comment provided by engineer. */
@@ -1922,8 +1910,11 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Opnieuw verzenden";
 
-/* Label for the send button in the conversation view. */
+/* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "Verzend";
+
+/* notification body */
+"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Uitnodiging sturen mislukt, probeer het later opnieuw.";
@@ -2058,13 +2049,13 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\n Gelicentieerd onder de GPLv3";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Verwijder account";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Account wissen";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "Alle gegevens wissen";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Weet je zeker dat je al je geschiedenis (berichten, bijlages, oproepen, etc.) wilt verwijderen? Deze actie kan niet worden teruggedraaid.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Weet je zeker dat je al je geschiedenis (berichten, bijlages, oproepen, etc.) wilt wissen? Deze actie kan niet worden teruggedraaid.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Alles wissen";
@@ -2316,7 +2307,7 @@
 "TXT_CANCEL_TITLE" = "Annuleren";
 
 /* No comment provided by engineer. */
-"TXT_DELETE_TITLE" = "Verwijderen";
+"TXT_DELETE_TITLE" = "Wissen";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "De-archiveer";

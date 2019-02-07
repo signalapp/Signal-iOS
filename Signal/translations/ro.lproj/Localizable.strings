@@ -53,20 +53,11 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Salvează";
 
-/* No comment provided by engineer. */
+/* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Răspunde";
 
-/* No comment provided by engineer. */
+/* notification body */
 "APN_Message" = "Mesaj  nou!";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_FROM" = "Mesaj de la";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP" = "Mesaj în grup";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP_DETAILED" = "%@ în grupul %@: %@";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal nu poate fi lansat. Te rog trimite jurnalul tău de depanare la support@signal.org ca să investigăm problema.";
@@ -329,8 +320,17 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Accesul la microfon este necesar";
 
+/* notification body */
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Sună";
+
+/* notification body */
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+
+/* notification body */
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Nici un răspuns";
@@ -1113,16 +1113,13 @@
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Poți activa accesul la contacte din aplicația iOS Setări pentru a putea vedea numele contactelor în lista de conversații Signal.";
 
-/* notification body */
+/* info message text in conversation view */
 "INCOMING_CALL" = "Apel de intrare";
-
-/* notification body */
-"INCOMING_CALL_FROM" = "Apel de intrare de la %@";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "Ai respins un apel.";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "INCOMING_INCOMPLETE_CALL" = "Apel de intrare";
 
 /* info message text shown in conversation view */
@@ -1374,14 +1371,8 @@
 /* Messages that indicates that there are more unseen messages including safety number changes. */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Există mai multe mesaje necitite (inclusiv modificarea numărului de siguranță).";
 
-/* notification title */
+/* info message text in conversation view */
 "MISSED_CALL" = "Apel ratat.";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Apel ratat de la %@ deoarece numărul lor de siguranță s-a schimbat.";
-
-/* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Apel ratat deoarece numărul de siguranță al apelantului s-a schimbat.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -1396,9 +1387,6 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal are nevoie de acces la pozele tale pentru această funcționalitate.";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Apel ratat de la %@.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Nu mai poți asocia alte dispozitive.";
@@ -1451,6 +1439,9 @@
 /* An indicator that a user is a member of the new group. */
 "NEW_GROUP_MEMBER_LABEL" = "Membru";
 
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Denumește această conversație de grup";
 
@@ -1480,9 +1471,6 @@
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "S-ar putea să fi primit mesaje în timpul repornirii %@.";
-
-/* No comment provided by engineer. */
-"NOTIFICATION_SEND_FAILED" = "Mesajul tău nu a fost transmis către %@.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Din cauza bug-uri cunoscute în Apple push framework, previzualizarea mesajelor va fi afișată numai în cazul în care mesajul este preluat în termen de 30 de secunde după ce a fost trimis. Banerul de notificare a aplicației poate fi inexactă ca rezultat .";
@@ -1520,10 +1508,10 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal întâmpină dificultăți tehnice. Muncim din greu pentru a restabili serviciul cât mai repede posibil.";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_CALL" = "Apel de ieșire";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_INCOMPLETE_CALL" = "Apel de ieșire";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
@@ -1667,10 +1655,10 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Marchează ca citit";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Răspunde";
 
 /* Title of alert shown when push tokens sync job succeeds. */
@@ -1814,7 +1802,7 @@
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Nici un număr de telefon";
 
-/* No comment provided by engineer. */
+/* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Respinge";
 
 /* No comment provided by engineer. */
@@ -1922,8 +1910,11 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Trimite din nou";
 
-/* Label for the send button in the conversation view. */
+/* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "Trimite";
+
+/* notification body */
+"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Invitația trimisă a eșuat, te rog încearcă din nou mai târziu.";

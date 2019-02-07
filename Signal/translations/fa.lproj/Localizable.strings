@@ -53,20 +53,11 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "ذخیره";
 
-/* No comment provided by engineer. */
+/* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "پاسخ دهید";
 
-/* No comment provided by engineer. */
+/* notification body */
 "APN_Message" = "پیام جدید!";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_FROM" = "پیام از طرف";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP" = "پیام از درون گروه";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP_DETAILED" = "%@ از گروه %@: %@";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal قادر به راه‌اندازی نیست. لطفا گزارش اشکال‌زدایی خود را به support@signal.org ارسال کنید تا این مشکل را حل کنیم.";
@@ -329,8 +320,17 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "نیاز به دسترسی به میکروفن";
 
+/* notification body */
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "تماس";
+
+/* notification body */
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+
+/* notification body */
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "بدون جواب";
@@ -1113,16 +1113,13 @@
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Signal conversation list.";
 
-/* notification body */
+/* info message text in conversation view */
 "INCOMING_CALL" = "تماس دریافتی";
-
-/* notification body */
-"INCOMING_CALL_FROM" = "تماس دریافتی از %@";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "تماس را رد کردید";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "INCOMING_INCOMPLETE_CALL" = "تماس دریافتی";
 
 /* info message text shown in conversation view */
@@ -1374,14 +1371,8 @@
 /* Messages that indicates that there are more unseen messages including safety number changes. */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "پیام های ناخوانده بیشتری وجود دارند (شامل تغییرات کد امنیتی)";
 
-/* notification title */
+/* info message text in conversation view */
 "MISSED_CALL" = "تماس بی‌پاسخ";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "تماس از جانب %@ به دلیل تغییر کد امنیتی برقرار نشد.";
-
-/* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "تماس به دلیل تغییر کد امنیتی تماس‌گیرنده برقرار نشد.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -1396,9 +1387,6 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "signal برای این قابلیت نیاز به دسترسی به عکس های شما دارد.";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "تماس بی‌پاسخ از %@.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "شما دستگاه های بیشتری را نمیتوانید لینک کنید.";
@@ -1451,6 +1439,9 @@
 /* An indicator that a user is a member of the new group. */
 "NEW_GROUP_MEMBER_LABEL" = "عضو";
 
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "این گفتگوی گروهی را نام‌گذاری کنید";
 
@@ -1480,9 +1471,6 @@
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "ممکن است شما زمانی که %@ در حال ری استارت بود پیام هایی دریافت کرده باشید.";
-
-/* No comment provided by engineer. */
-"NOTIFICATION_SEND_FAILED" = "خطا در ارسال پیام به %@.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "به دلیل باگ در فریم‌ورک اعلان آنی Apple، پیش‌نمایش پیام‌ها تنها در صورتی نمایش داده خواهند شد که 30 ثانیه پس از ارسال،‌ دریافت شوند. در نتیجه عدد کنار آیکون برنامه دقیق نخواهد بود.";
@@ -1520,10 +1508,10 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal با مشکلات فنی روبروست. به سختی تلاش میکنیم تا سرویس را تا حد ممکن سریعا برگردانیم.";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_CALL" = "تماس گرفته شده";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_INCOMPLETE_CALL" = "تماس خروجی";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
@@ -1667,10 +1655,10 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "نمایه";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "علامت‌گذاری به عنوان خوانده‌شده";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_REPLY" = "پاسخ";
 
 /* Title of alert shown when push tokens sync job succeeds. */
@@ -1814,7 +1802,7 @@
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "شماره تلفن وارد نشده";
 
-/* No comment provided by engineer. */
+/* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "رد تماس";
 
 /* No comment provided by engineer. */
@@ -1922,8 +1910,11 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "ارسال مجدد";
 
-/* Label for the send button in the conversation view. */
+/* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "ارسال";
+
+/* notification body */
+"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "خطا در ارسال دعوتنامه. لطفا دوباره امتحان کنید.";

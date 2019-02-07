@@ -53,20 +53,11 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Kaydet";
 
-/* No comment provided by engineer. */
+/* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Yanıtla";
 
-/* No comment provided by engineer. */
+/* notification body */
 "APN_Message" = "Yeni Mesaj!";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_FROM" = "Şu kişiden mesaj:";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP" = "Grupta mesaj";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP_DETAILED" = "%@, şu grupta %@: %@";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal başlatılamıyor. Lütfen bu sorunu çözmemiz için hata ayıklama günlüğünüzü support@signal.org adresine gönderin.";
@@ -329,8 +320,17 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Mikrofon Erişimi Gerekiyor";
 
+/* notification body */
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Ara";
+
+/* notification body */
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+
+/* notification body */
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Yanıt Yok";
@@ -1113,16 +1113,13 @@
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Signal sohbet listesinde kişilerinizin adını görmek için iOS Ayarlar uygulamasından kişiler erişimini etkinleştirebilirsiniz.";
 
-/* notification body */
+/* info message text in conversation view */
 "INCOMING_CALL" = "Gelen çağrı";
-
-/* notification body */
-"INCOMING_CALL_FROM" = "%@ arıyor";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "Bir aramayı reddettiniz";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "INCOMING_INCOMPLETE_CALL" = "Gelen arama";
 
 /* info message text shown in conversation view */
@@ -1374,14 +1371,8 @@
 /* Messages that indicates that there are more unseen messages including safety number changes. */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Daha fazla okunmamış mesaj var (güvenlik numarası değişimleriyle birlikte).";
 
-/* notification title */
+/* info message text in conversation view */
 "MISSED_CALL" = "Cevapsız arama";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Güvenlik numarası değiştiğinden %@ tarafından gelen cevapsız arama.";
-
-/* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Arayanın güvenlik numarası değiştiğinden arama karşılanmadı.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -1396,9 +1387,6 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Bu özellik için Signal'in fotoğraflarınıza erişmeye ihtiyacı var.";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "%@ tarafından cevapsız arama.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Daha fazla cihaz bağlayamazsınız.";
@@ -1451,6 +1439,9 @@
 /* An indicator that a user is a member of the new group. */
 "NEW_GROUP_MEMBER_LABEL" = "Üye";
 
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Grup sohbetini adlandır";
 
@@ -1480,9 +1471,6 @@
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "%@ cihazınız yeniden başlarken mesaj almış olabilirsiniz.";
-
-/* No comment provided by engineer. */
-"NOTIFICATION_SEND_FAILED" = "Mesajınız %@ kişisine gönderilemedi.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Apple'ın bildirim altyapısındaki bilinen hatalardan dolayı, mesaj önizlemeleri yalnızca mesaj gönderildikten sonraki 30 saniye içinde alınırsa gösterilir. Bunun sonucunda uygulama rozeti düzgün olmayabilir.";
@@ -1520,10 +1508,10 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal teknik sorunlar yaşıyor. Hizmeti olabildiğince çabuk düzeltmek için sıkı çalışıyoruz.";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_CALL" = "Giden çağrı";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_INCOMPLETE_CALL" = "Giden arama ";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
@@ -1667,10 +1655,10 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Okundu olarak işaretle";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Yanıtla";
 
 /* Title of alert shown when push tokens sync job succeeds. */
@@ -1814,7 +1802,7 @@
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Telefon Numarası Yok";
 
-/* No comment provided by engineer. */
+/* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Reddet";
 
 /* No comment provided by engineer. */
@@ -1922,8 +1910,11 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Tekrar Gönder";
 
-/* Label for the send button in the conversation view. */
+/* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "Gönder";
+
+/* notification body */
+"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Davetiye gönderilemedi, lütfen daha sonra tekrar deneyin.";

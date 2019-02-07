@@ -53,20 +53,11 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Įrašyti";
 
-/* No comment provided by engineer. */
+/* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Atsakyti";
 
-/* No comment provided by engineer. */
+/* notification body */
 "APN_Message" = "Nauja žinutė!";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_FROM" = "Žinutė nuo";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP" = "Žinutė grupėje";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP_DETAILED" = "%@, grupėje %@: %@";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Nepavyksta paleisti Signal. Prašome išsiųsti derinimo žurnalą į support@signal.org, kad galėtume pašalinti su šia problema susijusius nesklandumus.";
@@ -329,8 +320,17 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Reikalinga prieiga prie mikrofono";
 
+/* notification body */
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Skambinti";
+
+/* notification body */
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+
+/* notification body */
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Nėra atsakymo";
@@ -1113,16 +1113,13 @@
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Norėdami savo Signal pokalbių sąraše matyti kontaktų vardus, iOS nustatymų programėlėje galite įjungti prieigą prie kontaktų.";
 
-/* notification body */
+/* info message text in conversation view */
 "INCOMING_CALL" = "Gaunamasis skambutis";
-
-/* notification body */
-"INCOMING_CALL_FROM" = "Gaunamasis skambutis nuo %@";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "Jūs atmetėte skambutį";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "INCOMING_INCOMPLETE_CALL" = "Gaunamasis skambutis";
 
 /* info message text shown in conversation view */
@@ -1374,14 +1371,8 @@
 /* Messages that indicates that there are more unseen messages including safety number changes. */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Yra daugiau neskaitytų žinučių (įskaitant saugumo numerio pasikeitimus).";
 
-/* notification title */
+/* info message text in conversation view */
 "MISSED_CALL" = "Praleistas skambutis";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Praleistas skambutis nuo %@ dėl to, kad pasikeitė šio kontakto saugumo numeris.";
-
-/* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Praleistas skambutis dėl to, kad pasikeitė skambintojo saugumo numeris.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -1396,9 +1387,6 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Norint naudoti šią ypatybę, Signal reikia prieigos prie jūsų nuotraukų.";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Praleistas skambutis nuo %@.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Jūs nebegalite susieti daugiau įrenginių.";
@@ -1451,6 +1439,9 @@
 /* An indicator that a user is a member of the new group. */
 "NEW_GROUP_MEMBER_LABEL" = "Dalyvis";
 
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Suteikti šiam grupės pokalbiui pavadinimą";
 
@@ -1480,9 +1471,6 @@
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Gali būti, kad kol jūsų %@ buvo paleidžiamas iš naujo, jūs gavote žinutes.";
-
-/* No comment provided by engineer. */
-"NOTIFICATION_SEND_FAILED" = "Nepavyko išsiųsti jūsų žinutės kontaktui %@.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Dėl žinomų klaidų Apple push karkase, žinučių peržiūros bus rodomos tik tuo atveju, jeigu žinutė yra gaunama 30 sekundžių po to, kai buvo išsiųsta. To pasekoje gali būti netikslumų programėlės ženklelyje.";
@@ -1520,10 +1508,10 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal patiria techninius nesklandumus. Mes sunkiai dirbame, kad kaip įmanoma greičiau atkurtume paslaugą.";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_CALL" = "Išsiunčiamasis skambutis";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_INCOMPLETE_CALL" = "Išsiunčiamasis skambutis";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
@@ -1667,10 +1655,10 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profilis";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Žymėti kaip skaitytą";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Atsakyti";
 
 /* Title of alert shown when push tokens sync job succeeds. */
@@ -1814,7 +1802,7 @@
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Nėra telefono numerio";
 
-/* No comment provided by engineer. */
+/* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Atmesti";
 
 /* No comment provided by engineer. */
@@ -1922,8 +1910,11 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Siųsti dar kartą";
 
-/* Label for the send button in the conversation view. */
+/* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "Siųsti";
+
+/* notification body */
+"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Pakvietimo išsiuntimas nepavyko, prašome vėliau bandyti dar kartą.";

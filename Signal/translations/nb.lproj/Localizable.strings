@@ -53,20 +53,11 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Lagre";
 
-/* No comment provided by engineer. */
+/* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Svar";
 
-/* No comment provided by engineer. */
+/* notification body */
 "APN_Message" = "Ny melding!";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_FROM" = "Melding fra";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP" = "Melding i gruppe";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP_DETAILED" = "%@ i gruppe %@: %@";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal vil ikke starte. Send en debug logg til support@signal.org slik at vi kan feilsøke problemet.";
@@ -312,13 +303,13 @@
 "BUTTON_DONE" = "Ferdig";
 
 /* Label for redo button. */
-"BUTTON_REDO" = "Redo";
+"BUTTON_REDO" = "Gjenopprett";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Velg";
 
 /* Label for undo button. */
-"BUTTON_UNDO" = "Undo";
+"BUTTON_UNDO" = "Angre";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Ring på nytt";
@@ -329,8 +320,17 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Krever tilgang til mikrofon";
 
+/* notification body */
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Ring";
+
+/* notification body */
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+
+/* notification body */
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Ingen svar";
@@ -1081,16 +1081,16 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
+"IMAGE_EDITOR_BRUSH_BUTTON" = "Pensel";
 
 /* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Crop";
+"IMAGE_EDITOR_CROP_BUTTON" = "Beskjær";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Du kan ikke dele mer enn %@ gjenstander.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Klarte ikke å velge vedlegg";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Kobler til…";
@@ -1113,16 +1113,13 @@
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Du kan slå på tilgang til kontakter i iOS-innstillingene for å få opp navn i samtalelisten i Signal.";
 
-/* notification body */
+/* info message text in conversation view */
 "INCOMING_CALL" = "Innkommende anrop";
-
-/* notification body */
-"INCOMING_CALL_FROM" = "Innkommende anrop fra %@";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "Du avviste en oppringning";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "INCOMING_INCOMPLETE_CALL" = "Innkommende samtale";
 
 /* info message text shown in conversation view */
@@ -1186,7 +1183,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Koble ny enhet";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Linkforhåndsvisning";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Koblede enheter";
@@ -1374,14 +1371,8 @@
 /* Messages that indicates that there are more unseen messages including safety number changes. */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Det er flere uleste meldinger (inkludert varsler om endret sikkerhetsnummer).";
 
-/* notification title */
+/* info message text in conversation view */
 "MISSED_CALL" = "Tapt anrop";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Tapt anrop fra %@ fordi sikkerhetsnummeret er endret.";
-
-/* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Tapt anrop fordi kontakten har endret sikkerhetsnummeret sitt.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -1396,9 +1387,6 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal trenger tilgang til bildene dine for denne funksjonen.";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Tapt anrop fra %@.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan ikke koble til flere enheter.";
@@ -1451,6 +1439,9 @@
 /* An indicator that a user is a member of the new group. */
 "NEW_GROUP_MEMBER_LABEL" = "Medlem";
 
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Navngi gruppesamtalen";
 
@@ -1476,13 +1467,10 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Finn kontakter ved å søke på telefonnummer";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Notat til meg selv";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Det kan hende du mottok meldinger mens din %@ restartet.";
-
-/* No comment provided by engineer. */
-"NOTIFICATION_SEND_FAILED" = "Meldingen din kunne ikke sendes til %@.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "På grunn av kjente feil i Apple sitt push rammeverk vil meldingsforhåndsvisning bare skje dersom en melding er hentet innen 30 sekunder etter at den ble sendt. Applikasjonsskiltet kan være unøyaktig som følge av dette.";
@@ -1520,10 +1508,10 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal opplever tekniske problemer. Vi jobber for å løse problemet. ";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_CALL" = "Utgående anrop";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_INCOMPLETE_CALL" = "Utgående samtale";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
@@ -1667,10 +1655,10 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Merk som lest";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Svar";
 
 /* Title of alert shown when push tokens sync job succeeds. */
@@ -1814,7 +1802,7 @@
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Ingen telefonnummer";
 
-/* No comment provided by engineer. */
+/* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Avvis";
 
 /* No comment provided by engineer. */
@@ -1922,8 +1910,11 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Send på nytt";
 
-/* Label for the send button in the conversation view. */
+/* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "Send";
+
+/* notification body */
+"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Sending av invitasjon mislyktes, vennligst prøv igjen senere.";
@@ -2091,13 +2082,13 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Vilkår & personvernerklæring";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Send linkforhåndsvisninger";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Forhåndsvisninger støttes for Imgur, Instagram, Reddit og YouTube-koblinger.";
 
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Linkforhåndsvisninger";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Innstillinger";
@@ -2376,13 +2367,13 @@
 "UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Slå på tasteindikatorer";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Optional link previews are now supported for some of the most popular sites on the Internet.";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Valgfrie linkforhåndsvisninger støttes nå for noen av de mest populære nettstedene på nettet.";
 
 /* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Du kan deaktivere eller aktivere denne funksjonen når som helst i innstillingene for Signal (Personvern > Send linkforhåndsvisninger).";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Link Previews";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Linkforhåndsvisninger";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Du kan nå velge standard varslingslyd og per samtale. Ringetoner vil følge det du har valgt for kontakten på systemet ellers.";
