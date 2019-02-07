@@ -193,9 +193,11 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat paddedheight = baseImage.size.height * paddingFactor;
 
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(paddedWidth, paddedheight), NO, 0.0);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    UIGraphicsPushContext(context);
-
+    CGContextRef _Nullable context = UIGraphicsGetCurrentContext();
+    if (context == nil) {
+        OWSFailDebug(@"failure: context was unexpectedly nil");
+        return nil;
+    }
     [backgroundColor setFill];
     CGContextFillRect(context, CGRectMake(0, 0, paddedWidth, paddedheight));
 
@@ -203,10 +205,11 @@ NS_ASSUME_NONNULL_BEGIN
                                  (paddedheight - baseImage.size.height) / 2.0f);
     [baseImage drawAtPoint:origin];
 
-
-    // Clean up and get the new image.
-    UIGraphicsPopContext();
     UIImage *paddedImage = UIGraphicsGetImageFromCurrentImageContext();
+    if (paddedImage == nil) {
+        OWSFailDebug(@"failure: paddedImage was unexpectedly nil");
+        return nil;
+    }
     UIGraphicsEndImageContext();
 
     return paddedImage;

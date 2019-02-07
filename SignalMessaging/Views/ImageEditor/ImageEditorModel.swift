@@ -648,7 +648,7 @@ public class ImageEditorModel: NSObject {
         defer { UIGraphicsEndImageContext() }
 
         guard let context = UIGraphicsGetCurrentContext() else {
-            owsFailDebug("Could not create output context.")
+            owsFailDebug("context was unexpectedly nil")
             return nil
         }
         context.interpolationQuality = .high
