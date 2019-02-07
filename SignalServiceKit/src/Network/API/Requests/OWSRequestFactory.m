@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRequestFactory.h"
@@ -490,10 +490,18 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)cdsFeedbackRequestWithResult:(NSString *)result
++ (TSRequest *)cdsFeedbackRequestWithStatus:(NSString *)status
+                                     reason:(nullable NSString *)reason
 {
-    NSString *path = [NSString stringWithFormat:@"/v1/directory/feedback/%@", result];
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:@{}];
+
+    NSDictionary<NSString *, NSString *> *parameters;
+    if (reason == nil) {
+        parameters = @{};
+    } else {
+        parameters = @{ @"reason": reason };
+    }
+    NSString *path = [NSString stringWithFormat:@"/v1/directory/feedback-v2/%@", status];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
 }
 
 #pragma mark - UD
