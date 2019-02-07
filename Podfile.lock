@@ -275,7 +275,7 @@ CHECKOUT OPTIONS:
     :commit: 56f28fc3a6e35d548d034ef7d0009f233ca0aa62
     :git: https://github.com/signalapp/SignalMetadataKit
   Starscream:
-    :commit: edfb5964c5375ca55b3b0c517e1b5b7d0ac4519a
+    :commit: b09ea163c3cb305152c65b299cb024610f52e735
     :git: "git@github.com:signalapp/Starscream.git"
   YapDatabase:
     :commit: 8e2b69110efd9499a5b553fda0165d2cea4e818d
