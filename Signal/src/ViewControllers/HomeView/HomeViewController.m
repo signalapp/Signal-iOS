@@ -340,7 +340,6 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self.view addSubview:self.emptyInboxView];
     [self.emptyInboxView autoPinWidthToSuperviewMargins];
     [self.emptyInboxView autoVCenterInSuperview];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _emptyInboxView);
 
     [self createFirstConversationCueView];
     [self.view addSubview:self.firstConversationCueView];
@@ -361,6 +360,13 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
     [self.tableView insertSubview:pullToRefreshView atIndex:0];
+
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _tableView);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _emptyInboxView);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _firstConversationCueView);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _firstConversationLabel);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _searchBar);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _reminderStackView);
 }
 
 - (UIView *)createEmptyInboxView

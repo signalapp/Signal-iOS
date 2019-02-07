@@ -15,12 +15,17 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalMessaging/UIUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+#define SUBVIEW_ACCESSIBILITY_IDENTIFIER(_root_view, _variable_name)                                                   \
+    ([NSString stringWithFormat:@"%@.%@", _root_view.class, _variable_name])
+#define SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(_root_view, _variable_name)                                               \
+    _variable_name.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(_root_view, (@ #_variable_name))
 
 typedef NS_ENUM(NSInteger, ProfileViewMode) {
     ProfileViewMode_AppSettings = 0,
