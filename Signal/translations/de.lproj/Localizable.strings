@@ -321,16 +321,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Zugriff auf Mikrofon erforderlich";
 
 /* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Eingehender Anruf";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Anrufen";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Entgangener Anruf, da sich die Sicherheitsnummer des Anrufers geändert hat.";
 
 /* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Entgangener Anruf";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Keine Antwort";
@@ -1360,7 +1360,7 @@
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mehr als ein Mitglied dieser Gruppe ist nicht mehr als verifiziert markiert. Für Optionen antippen.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Für Einstellungen hier antippen";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Für Optionen antippen";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Neue Nachrichten";
@@ -1440,7 +1440,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "Mitglied";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ an %@";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Gruppenunterhaltung benennen";
@@ -1479,7 +1479,7 @@
 "NOTIFICATIONS_NONE" = "Kein Name oder Inhalt";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Bei geöffneter App wiedergeben";
+"NOTIFICATIONS_SECTION_INAPP" = "Töne bei geöffneter App";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Töne";
@@ -1827,7 +1827,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Dies ist nicht die korrekte PIN.";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Erneut für Push-Mitteilungen registrieren";
+"REREGISTER_FOR_PUSH" = "Push-Registrierung erneuern";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Erneut versuchen";
@@ -1884,7 +1884,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal entsperren";
 
 /* No comment provided by engineer. */
-"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Nach Name oder Rufnummer suchen";
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Name oder Nummer suchen";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "Sonstige Kontakte";
@@ -1914,7 +1914,7 @@
 "SEND_BUTTON_TITLE" = "Senden";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
+"SEND_FAILED_NOTIFICATION_BODY" = "Versand deiner Nachricht gescheitert.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Versenden der Einladung gescheitert. Bitte später erneut versuchen.";
@@ -2460,7 +2460,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Sicherheitsnummern überprüfen";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Zum Abbrechen wischen";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Wischen bricht ab";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Sprachnachricht";

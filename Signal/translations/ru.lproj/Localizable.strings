@@ -609,7 +609,7 @@
 "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Беззвучный режим на 1 неделю";
 
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Беззвучный режим на год";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Беззвучный режим на 1 год";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "до %@";
@@ -1087,7 +1087,7 @@
 "IMAGE_EDITOR_CROP_BUTTON" = "Обрезка";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Поделиться более чем %@ элементами невозможно.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Невозможно поделиться более чем %@ элементами.";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Не удалось выбрать вложение.";
@@ -1357,7 +1357,7 @@
 "MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Поделиться своим профилем с этой группой?";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Больше, чем один участник этой группы больше не отмечен как проверенный. Нажмите для опций.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Более одного участника этой группы больше не отмечены как проверенные. Нажмите для опций.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Нажмите сюда, чтобы открыть настройки";

@@ -321,16 +321,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "須要使用麥克風";
 
 /* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+"CALL_INCOMING_NOTIFICATION_BODY" = "來電";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "撥出";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "未接來電因為來電者的安全碼改變。";
 
 /* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
+"CALL_MISSED_NOTIFICATION_BODY" = "未接來電";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "沒有回應";
@@ -1440,7 +1440,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "組員";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ 傳送至 %@";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "為此群組命名";
@@ -1914,7 +1914,7 @@
 "SEND_BUTTON_TITLE" = "傳送";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
+"SEND_FAILED_NOTIFICATION_BODY" = "你的訊息傳送失敗。";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "邀請寄出失敗，稍後再試一次。";
@@ -2103,7 +2103,7 @@
 "SETTINGS_NOTIFICATIONS" = "通知";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "顯示撥打者的名字與號碼";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "顯示來電者的名字與號碼";
 
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "顯示來電於 iOS 電話中的通話紀錄。";
