@@ -21,6 +21,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#define SUBVIEW_ACCESSIBILITY_IDENTIFIER(_root_view, _variable_name)                                                   \
+    ([NSString stringWithFormat:@"%@.%@", _root_view.class, _variable_name])
+#define SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(_root_view, _variable_name)                                               \
+    _variable_name.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(_root_view, (@ #_variable_name))
+
 typedef NS_ENUM(NSInteger, ProfileViewMode) {
     ProfileViewMode_AppSettings = 0,
     ProfileViewMode_Registration,
@@ -136,6 +141,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     nameTextField.text = [OWSProfileManager.sharedManager localProfileName];
     nameTextField.textAlignment = NSTextAlignmentRight;
     nameTextField.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, nameTextField);
     [nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     [nameRow addSubview:nameTextField];
     [nameTextField autoPinLeadingToTrailingEdgeOfView:nameLabel offset:10.f];
@@ -160,10 +166,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [avatarLabel autoVCenterInSuperview];
 
     self.avatarView = [AvatarImageView new];
+    self.avatarView.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"avatarView");
 
     UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
     self.cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
-
+    
     [avatarRow addSubview:self.avatarView];
     [avatarRow addSubview:self.cameraImageView];
     [self updateAvatarView];
@@ -229,6 +236,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                            backgroundColor:[UIColor ows_signalBrandBlueColor]
                                     target:self
                                   selector:@selector(saveButtonPressed)];
+        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, saveButton);
         self.saveButton = saveButton;
         [buttonRow addSubview:saveButton];
         [saveButton autoPinLeadingAndTrailingToSuperviewMargin];
