@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -490,15 +490,18 @@ import SignalMessaging
         let dstScale: CGFloat = 1.0 // The size is specified in pixels, not in points.
         UIGraphicsBeginImageContextWithOptions(dstSizePixels, !hasAlpha, dstScale)
 
-        let context = UIGraphicsGetCurrentContext()
-        context!.interpolationQuality = .high
+        guard let context = UIGraphicsGetCurrentContext() else {
+            owsFailDebug("could not generate dst image.")
+            return nil
+        }
+        context.interpolationQuality = .high
 
         let imageViewFrame = imageRenderRect(forDstSize: dstSizePixels)
         srcImage.draw(in: imageViewFrame)
 
-        let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
-        if scaledImage == nil {
+        guard let scaledImage = UIGraphicsGetImageFromCurrentImageContext() else {
             owsFailDebug("could not generate dst image.")
+            return nil
         }
         UIGraphicsEndImageContext()
         return scaledImage

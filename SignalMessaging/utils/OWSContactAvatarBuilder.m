@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactAvatarBuilder.h"
@@ -90,6 +90,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
+    if ([self.signalId isEqualToString:TSAccountManager.localNumber]) {
+        NSString *noteToSelfCacheKey = [NSString stringWithFormat:@"%@:note-to-self", self.cacheKey];
+        UIImage *_Nullable cachedAvatar =
+            [OWSContactAvatarBuilder.contactsManager.avatarCache imageForKey:noteToSelfCacheKey
+                                                                    diameter:(CGFloat)self.diameter];
+        if (cachedAvatar) {
+            return cachedAvatar;
+        }
+
+        UIImage *image = [self noteToSelfImageWithConversationColorName:self.colorName];
+        if (!image) {
+            OWSFailDebug(@"Could not generate avatar.");
+            return nil;
+        }
+
+        [OWSContactAvatarBuilder.contactsManager.avatarCache setImage:image
+                                                               forKey:noteToSelfCacheKey
+                                                             diameter:self.diameter];
+        return image;
+    }
+
     return [OWSContactAvatarBuilder.contactsManager imageForPhoneIdentifier:self.signalId];
 }
 
@@ -160,6 +181,38 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSContactAvatarBuilder.contactsManager.avatarCache setImage:image forKey:self.cacheKey diameter:self.diameter];
     return image;
+}
+
+- (nullable UIImage *)noteToSelfImageWithConversationColorName:(ConversationColorName)conversationColorName
+{
+    UIImage *baseImage = [[UIImage imageNamed:@"note-to-self-avatar"] asTintedImageWithColor:UIColor.whiteColor];
+    UIColor *backgroundColor = [OWSConversationColor conversationColorOrDefaultForColorName:conversationColorName].themeColor;
+
+    CGFloat paddingFactor = 1.6;
+    CGFloat paddedWidth = baseImage.size.width * paddingFactor;
+    CGFloat paddedheight = baseImage.size.height * paddingFactor;
+
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(paddedWidth, paddedheight), NO, 0.0);
+    CGContextRef _Nullable context = UIGraphicsGetCurrentContext();
+    if (context == nil) {
+        OWSFailDebug(@"failure: context was unexpectedly nil");
+        return nil;
+    }
+    [backgroundColor setFill];
+    CGContextFillRect(context, CGRectMake(0, 0, paddedWidth, paddedheight));
+
+    CGPoint origin = CGPointMake((paddedWidth - baseImage.size.width) / 2.0f,
+                                 (paddedheight - baseImage.size.height) / 2.0f);
+    [baseImage drawAtPoint:origin];
+
+    UIImage *paddedImage = UIGraphicsGetImageFromCurrentImageContext();
+    if (paddedImage == nil) {
+        OWSFailDebug(@"failure: paddedImage was unexpectedly nil");
+        return nil;
+    }
+    UIGraphicsEndImageContext();
+
+    return paddedImage;
 }
 
 @end
