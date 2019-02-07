@@ -263,7 +263,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId,
-            AppNotificationUserInfoKey.localCallId: call.localId.uuidString
+            AppNotificationUserInfoKey.callBackNumber: remotePhoneNumber
         ]
 
         DispatchQueue.main.async {
