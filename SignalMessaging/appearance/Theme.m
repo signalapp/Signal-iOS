@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "Theme.h"
@@ -192,6 +192,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 + (UIColor *)toastBackgroundColor
 {
     return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray60Color);
+}
+
++ (UIColor *)scrollButtonBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.25f alpha:1.f]
+                                    : [UIColor colorWithWhite:0.95f alpha:1.f];
 }
 
 @end

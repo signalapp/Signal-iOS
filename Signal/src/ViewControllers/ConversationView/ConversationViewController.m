@@ -4033,15 +4033,23 @@ typedef enum : NSUInteger {
     [self requestRecordingVoiceMemo];
 }
 
-- (void)voiceMemoGestureDidEnd
+- (void)voiceMemoGestureDidComplete
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"voiceMemoGestureDidEnd");
+    OWSLogInfo(@"");
 
     [self.inputToolbar hideVoiceMemoUI:YES];
     [self endRecordingVoiceMemo];
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+}
+
+- (void)voiceMemoGestureDidLock
+{
+    OWSAssertIsOnMainThread();
+    OWSLogInfo(@"");
+
+    [self.inputToolbar lockVoiceMemoUI];
 }
 
 - (void)voiceMemoGestureDidCancel
@@ -4055,7 +4063,7 @@ typedef enum : NSUInteger {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }
 
-- (void)voiceMemoGestureDidChange:(CGFloat)cancelAlpha
+- (void)voiceMemoGestureDidUpdateCancelWithRatioComplete:(CGFloat)cancelAlpha
 {
     OWSAssertIsOnMainThread();
 

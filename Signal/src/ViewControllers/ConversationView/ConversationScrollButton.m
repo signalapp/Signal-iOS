@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationScrollButton.h"
@@ -86,12 +86,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.hasUnreadMessages) {
         foregroundColor = UIColor.whiteColor;
         backgroundColor = UIColor.ows_materialBlueColor;
-    } else if (Theme.isDarkThemeEnabled) {
-        foregroundColor = UIColor.ows_materialBlueColor;
-        backgroundColor = [UIColor colorWithWhite:0.25f alpha:1.f];
     } else {
         foregroundColor = UIColor.ows_materialBlueColor;
-        backgroundColor = [UIColor colorWithWhite:0.95f alpha:1.f];
+        backgroundColor = Theme.scrollButtonBackgroundColor;
     }
 
     const CGFloat circleSize = self.class.circleSize;
