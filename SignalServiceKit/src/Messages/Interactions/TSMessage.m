@@ -370,14 +370,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
         [attachment removeWithTransaction:transaction];
     };
-
-    // Updates inbox thread preview
-    [self touchThreadWithTransaction:transaction];
-}
-
-- (void)touchThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [transaction touchObjectForKey:self.uniqueThreadId inCollection:[TSThread collection]];
 }
 
 - (BOOL)isExpiringMessage
@@ -415,15 +407,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 }
 
 #pragma mark - Update With... Methods
-
-- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                           changeBlock:(void (^)(id))changeBlock
-{
-    OWSAssertDebug(transaction);
-
-    [super applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
-    [self touchThreadWithTransaction:transaction];
-}
 
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
