@@ -513,12 +513,14 @@ dispatch_queue_t NetworkManagerQueue()
     // * etc.
     if ([task.originalRequest.URL.absoluteString hasPrefix:textSecureServerURL]
         && request.shouldHaveAuthorizationHeaders) {
-        if (self.tsAccountManager.isRegisteredAndReady) {
-            [self.tsAccountManager setIsDeregistered:YES];
-        } else {
-            OWSFailDebug(
-                @"Ignoring auth failure; not registered and ready: %@.", task.originalRequest.URL.absoluteString);
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.tsAccountManager.isRegisteredAndReady) {
+                [self.tsAccountManager setIsDeregistered:YES];
+            } else {
+                OWSFailDebug(
+                    @"Ignoring auth failure; not registered and ready: %@.", task.originalRequest.URL.absoluteString);
+            }
+        });
     } else {
         OWSLogWarn(@"Ignoring %d for URL: %@", (int)statusCode, task.originalRequest.URL.absoluteString);
     }
