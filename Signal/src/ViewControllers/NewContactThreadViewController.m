@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
     MFMessageComposeViewControllerDelegate>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
-@property (nonatomic, readonly) ConversationSearcher *conversationSearcher;
+@property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
 
 @property (nonatomic, readonly) UIView *noSignalContactsView;
 
@@ -75,9 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dependencies
 
-- (ConversationSearcher *)conversationSearcher
+- (FullTextSearcher *)fullTextSearcher
 {
-    return ConversationSearcher.shared;
+    return FullTextSearcher.shared;
 }
 
 - (YapDatabaseConnection *)uiDatabaseConnection
@@ -903,9 +903,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.uiDatabaseConnection
         asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-            self.searchResults = [self.conversationSearcher searchForComposeScreenWithSearchText:searchText
-                                                                                     transaction:transaction
-                                                                                 contactsManager:self.contactsManager];
+            self.searchResults = [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
+                                                                                 transaction:transaction
+                                                                             contactsManager:self.contactsManager];
         }
         completionBlock:^{
             __typeof(self) strongSelf = weakSelf;

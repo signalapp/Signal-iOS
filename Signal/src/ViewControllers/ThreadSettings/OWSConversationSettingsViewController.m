@@ -321,13 +321,6 @@ const CGFloat kIconViewLength = 24;
     mainSection.customHeaderView = [self mainSectionHeader];
     mainSection.customHeaderHeight = @(100.f);
 
-    [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        return [weakSelf disclosureCellWithName:MediaStrings.allMedia iconName:@"actionsheet_camera_roll_black"];
-    }
-                             actionBlock:^{
-                                 [weakSelf showMediaGallery];
-                             }]];
-
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
         && !self.hasExistingContact) {
         [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
@@ -353,6 +346,28 @@ const CGFloat kIconViewLength = 24;
                                      [strongSelf presentAddToContactViewControllerWithRecipientId:recipientId];
                                  }]];
     }
+
+    [mainSection addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 return [weakSelf disclosureCellWithName:MediaStrings.allMedia
+                                                                iconName:@"actionsheet_camera_roll_black"];
+                             }
+                             actionBlock:^{
+                                 [weakSelf showMediaGallery];
+                             }]];
+
+    // TODO icon
+    [mainSection addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_SEARCH",
+                                     @"Table cell label in conversation settings which returns the user to the "
+                                     @"conversation with 'search mode' activated");
+                                 return
+                                     [weakSelf disclosureCellWithName:title iconName:@"actionsheet_camera_roll_black"];
+                             }
+                             actionBlock:^{
+                                 [weakSelf tappedConversationSearch];
+                             }]];
 
     if (!isNoteToSelf && !self.isGroupThread && self.thread.hasSafetyNumbers) {
         [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
@@ -1329,6 +1344,11 @@ const CGFloat kIconViewLength = 24;
 
     OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
     [mediaGallery pushTileViewFromNavController:(OWSNavigationController *)self.navigationController];
+}
+
+- (void)tappedConversationSearch
+{
+    [self.conversationSettingsViewDelegate conversationSettingsDidRequestConversationSearch:self];
 }
 
 #pragma mark - Notifications

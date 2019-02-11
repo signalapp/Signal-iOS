@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSearchBar.h"
@@ -55,35 +55,40 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ows_applyTheme
 {
+    [self.class applyThemeToSearchBar:self];
+}
+
++ (void)applyThemeToSearchBar:(UISearchBar *)searchBar
+{
     OWSAssertIsOnMainThread();
 
     UIColor *foregroundColor = Theme.placeholderColor;
-    self.barTintColor = Theme.backgroundColor;
-    self.barStyle = Theme.barStyle;
+    searchBar.barTintColor = Theme.backgroundColor;
+    searchBar.barStyle = Theme.barStyle;
 
     // Hide searchBar border.
     // Alternatively we could hide the border by using `UISearchBarStyleMinimal`, but that causes an issue when toggling
     // from light -> dark -> light theme wherein the textField background color appears darker than it should
     // (regardless of our re-setting textfield.backgroundColor below).
-    self.backgroundImage = [UIImage new];
+    searchBar.backgroundImage = [UIImage new];
 
     if (Theme.isDarkThemeEnabled) {
         UIImage *clearImage = [UIImage imageNamed:@"searchbar_clear"];
-        [self setImage:[clearImage asTintedImageWithColor:foregroundColor]
+        [searchBar setImage:[clearImage asTintedImageWithColor:foregroundColor]
             forSearchBarIcon:UISearchBarIconClear
                        state:UIControlStateNormal];
 
         UIImage *searchImage = [UIImage imageNamed:@"searchbar_search"];
-        [self setImage:[searchImage asTintedImageWithColor:foregroundColor]
+        [searchBar setImage:[searchImage asTintedImageWithColor:foregroundColor]
             forSearchBarIcon:UISearchBarIconSearch
                        state:UIControlStateNormal];
     } else {
-        [self setImage:nil forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
+        [searchBar setImage:nil forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
 
-        [self setImage:nil forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
+        [searchBar setImage:nil forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
     }
 
-    [self traverseViewHierarchyWithVisitor:^(UIView *view) {
+    [searchBar traverseViewHierarchyWithVisitor:^(UIView *view) {
         if ([view isKindOfClass:[UITextField class]]) {
             UITextField *textField = (UITextField *)view;
             textField.backgroundColor = Theme.searchFieldBackgroundColor;

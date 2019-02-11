@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     NewNonContactConversationViewControllerDelegate>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
-@property (nonatomic, readonly) ConversationSearcher *conversationSearcher;
+@property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
 @property (nonatomic, readonly) ThreadViewHelper *threadViewHelper;
 @property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
 
@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.view.backgroundColor = Theme.backgroundColor;
 
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
-    _conversationSearcher = ConversationSearcher.shared;
+    _fullTextSearcher = FullTextSearcher.shared;
     _threadViewHelper = [ThreadViewHelper new];
     _threadViewHelper.delegate = self;
 
@@ -341,7 +341,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *searchTerm = [[self.searchBar text] ows_stripped];
 
-    return [self.conversationSearcher filterThreads:self.threadViewHelper.threads withSearchText:searchTerm];
+    return [self.fullTextSearcher filterThreads:self.threadViewHelper.threads withSearchText:searchTerm];
 }
 
 - (NSArray<SignalAccount *> *)filteredSignalAccountsWithSearchText

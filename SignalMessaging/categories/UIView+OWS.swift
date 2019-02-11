@@ -16,7 +16,7 @@ public extension UIEdgeInsets {
 @objc
 public extension UINavigationController {
     @objc
-    public func pushViewController(viewController: UIViewController,
+    public func pushViewController(_ viewController: UIViewController,
                                    animated: Bool,
                                    completion: (() -> Void)?) {
         CATransaction.begin()
@@ -35,7 +35,7 @@ public extension UINavigationController {
     }
 
     @objc
-    public func popToViewController(viewController: UIViewController,
+    public func popToViewController(_ viewController: UIViewController,
                                     animated: Bool,
                                     completion: (() -> Void)?) {
         CATransaction.begin()

@@ -431,7 +431,8 @@ NS_ASSUME_NONNULL_BEGIN
 
                                              [self updateGroup];
 
-                                             [self.conversationSettingsViewDelegate popAllConversationSettingsViews];
+                                             [self.conversationSettingsViewDelegate
+                                                 popAllConversationSettingsViewsWithCompletion:nil];
                                          }]];
     [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
                                                              @"The label for the 'don't save' button in action sheets.")
@@ -448,7 +449,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updateGroup];
 
-    [self.conversationSettingsViewDelegate popAllConversationSettingsViews];
+    [self.conversationSettingsViewDelegate popAllConversationSettingsViewsWithCompletion:nil];
 }
 
 - (void)groupNameDidChange:(id)sender

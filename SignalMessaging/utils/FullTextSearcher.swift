@@ -162,7 +162,57 @@ public class ComposeScreenSearchResultSet: NSObject {
 }
 
 @objc
-public class ConversationSearcher: NSObject {
+public class MessageSearchResult: NSObject, Comparable {
+
+    public let messageId: String
+    public let sortId: UInt64
+
+    init(messageId: String, sortId: UInt64) {
+        self.messageId = messageId
+        self.sortId = sortId
+    }
+
+    // MARK: - Comparable
+
+    public static func < (lhs: MessageSearchResult, rhs: MessageSearchResult) -> Bool {
+        return lhs.sortId < rhs.sortId
+    }
+}
+
+@objc
+public class ConversationScreenSearchResultSet: NSObject {
+
+    @objc
+    public let searchText: String
+
+    @objc
+    public let messages: [MessageSearchResult]
+
+    @objc
+    public lazy var messageSortIds: [UInt64] = {
+        return messages.map { $0.sortId }
+    }()
+
+    // MARK: Static members
+
+    public static let empty: ConversationScreenSearchResultSet = ConversationScreenSearchResultSet(searchText: "", messages: [])
+
+    // MARK: Init
+
+    public init(searchText: String, messages: [MessageSearchResult]) {
+        self.searchText = searchText
+        self.messages = messages
+    }
+
+    // MARK: - CustomDebugStringConvertible
+
+    override public var debugDescription: String {
+        return "ConversationScreenSearchResultSet(searchText: \(searchText), messages: [\(messages.count) matches])"
+    }
+}
+
+@objc
+public class FullTextSearcher: NSObject {
 
     // MARK: - Dependencies
 
@@ -175,7 +225,7 @@ public class ConversationSearcher: NSObject {
     private let finder: FullTextSearchFinder
 
     @objc
-    public static let shared: ConversationSearcher = ConversationSearcher()
+    public static let shared: FullTextSearcher = FullTextSearcher()
     override private init() {
         finder = FullTextSearchFinder()
         super.init()
@@ -277,6 +327,39 @@ public class ConversationSearcher: NSObject {
         otherContacts.sort()
 
         return HomeScreenSearchResultSet(searchText: searchText, conversations: conversations, contacts: otherContacts, messages: messages)
+    }
+
+    public func searchWithinConversation(thread: TSThread,
+                                         searchText: String,
+                                         transaction: YapDatabaseReadTransaction) -> ConversationScreenSearchResultSet {
+
+        var messages: [MessageSearchResult] = []
+
+        guard let threadId = thread.uniqueId else {
+            owsFailDebug("threadId was unexpectedly nil")
+            return ConversationScreenSearchResultSet.empty
+        }
+
+        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
+            if let message = match as? TSMessage {
+                guard message.uniqueThreadId == threadId else {
+                    return
+                }
+
+                guard let messageId = message.uniqueId else {
+                    owsFailDebug("messageId was unexpectedly nil")
+                    return
+                }
+
+                let searchResult = MessageSearchResult(messageId: messageId, sortId: message.sortId)
+                messages.append(searchResult)
+            }
+        }
+
+        // We want most recent first
+        messages.sort(by: >)
+
+        return ConversationScreenSearchResultSet(searchText: searchText, messages: messages)
     }
 
     @objc(filterThreads:withSearchText:)

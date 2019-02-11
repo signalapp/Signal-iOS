@@ -17,10 +17,10 @@ import Foundation
 ///         }
 ///     }
 public func BenchAsync(title: String, block: (@escaping () -> Void) -> Void) {
-    let startTime = CFAbsoluteTimeGetCurrent()
+    let startTime = CACurrentMediaTime()
 
     block {
-        let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
+        let timeElapsed = CACurrentMediaTime() - startTime
         let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
         Logger.debug("[Bench] title: \(title), duration: \(formattedTime)")
     }
@@ -52,19 +52,20 @@ public func Bench(title: String, block: () throws -> Void) throws {
 /// crosses multiple classes, you can use the BenchEvent tools
 ///
 ///     // in one class
-///     let message = getMessage()
 ///     BenchEventStart(title: "message sending", eventId: message.id)
+///     beginTheWork()
 ///
-/// ...
+///     ...
 ///
 ///    // in another class
-///    BenchEventComplete(title: "message sending", eventId: message.id)
+///    doTheLastThing()
+///    BenchEventComplete(eventId: message.id)
 ///
 /// Or in objc
 ///
 ///    [BenchManager startEventWithTitle:"message sending" eventId:message.id]
 ///    ...
-///    [BenchManager startEventWithTitle:"message sending" eventId:message.id]
+///    [BenchManager completeEventWithEventId:eventId:message.id]
 public func BenchEventStart(title: String, eventId: BenchmarkEventId) {
     BenchAsync(title: title) { finish in
         runningEvents[eventId] = Event(title: title, eventId: eventId, completion: finish)

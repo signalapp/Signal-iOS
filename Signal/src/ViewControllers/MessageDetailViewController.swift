@@ -763,6 +763,10 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         UIPasteboard.general.string = messageTimestamp
     }
 
+    var lastSearchedText: String? {
+        return nil
+    }
+
     // MediaGalleryDataSourceDelegate
 
     func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
