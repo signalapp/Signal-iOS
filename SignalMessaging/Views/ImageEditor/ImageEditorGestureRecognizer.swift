@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
 
-class ImageEditorGestureRecognizer: UIGestureRecognizer {
+public class ImageEditorGestureRecognizer: UIGestureRecognizer {
 
     @objc
     public var shouldAllowOutsideView = true
@@ -13,42 +13,56 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
     public weak var canvasView: UIView?
 
     @objc
-    override func canPrevent(_ preventedGestureRecognizer: UIGestureRecognizer) -> Bool {
+    public var startLocationInView: CGPoint = .zero
+
+    @objc
+    public override func canPrevent(_ preventedGestureRecognizer: UIGestureRecognizer) -> Bool {
         return false
     }
 
     @objc
-    override func canBePrevented(by: UIGestureRecognizer) -> Bool {
+    public override func canBePrevented(by: UIGestureRecognizer) -> Bool {
         return false
     }
 
     @objc
-    override func shouldRequireFailure(of: UIGestureRecognizer) -> Bool {
+    public override func shouldRequireFailure(of: UIGestureRecognizer) -> Bool {
         return false
     }
 
     @objc
-    override func shouldBeRequiredToFail(by: UIGestureRecognizer) -> Bool {
+    public override func shouldBeRequiredToFail(by: UIGestureRecognizer) -> Bool {
         return true
     }
 
     // MARK: - Touch Handling
 
     @objc
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesBegan(touches, with: event)
 
         if state == .possible,
             touchType(for: touches, with: event) == .valid {
             // If a gesture starts with a valid touch, begin stroke.
             state = .began
+            startLocationInView = .zero
+
+            guard let view = view else {
+                owsFailDebug("Missing view.")
+                return
+            }
+            guard let touch = touches.randomElement() else {
+                owsFailDebug("Missing touch.")
+                return
+            }
+            startLocationInView = touch.location(in: view)
         } else {
             state = .failed
         }
     }
 
     @objc
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesMoved(touches, with: event)
 
         switch state {
@@ -70,7 +84,7 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
     }
 
     @objc
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesEnded(touches, with: event)
 
         switch state {
@@ -88,7 +102,7 @@ class ImageEditorGestureRecognizer: UIGestureRecognizer {
     }
 
     @objc
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
+    public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesCancelled(touches, with: event)
 
         state = .cancelled

@@ -13,7 +13,27 @@ import UIKit
 public enum ImageEditorItemType: Int {
     case test
     case stroke
+    case text
 }
+
+// MARK: -
+
+// Represented in a "ULO unit" coordinate system
+// for source image.
+//
+// "ULO" coordinate system is "upper-left-origin".
+//
+// "Unit" coordinate system means values are expressed
+// in terms of some other values, in this case the
+// width and height of the source image.
+//
+// * 0.0 = left edge
+// * 1.0 = right edge
+// * 0.0 = top edge
+// * 1.0 = bottom edge
+public typealias ImageEditorSample = CGPoint
+
+public typealias ImageEditorConversion = (ImageEditorSample) -> ImageEditorSample
 
 // MARK: -
 
@@ -44,10 +64,14 @@ public class ImageEditorItem: NSObject {
         super.init()
     }
 
-    public typealias PointConversionFunction = (CGPoint) -> CGPoint
-
-    public func clone(withPointConversionFunction conversion: PointConversionFunction) -> ImageEditorItem {
+    public func clone(withImageEditorConversion conversion: ImageEditorConversion) -> ImageEditorItem {
         return ImageEditorItem(itemId: itemId, itemType: itemType)
+    }
+
+    // The scale with which to render this item's content
+    // when rendering the "output" image for sending.
+    public func outputScale() -> CGFloat {
+        return 1.0
     }
 }
 
@@ -60,20 +84,7 @@ public class ImageEditorStrokeItem: ImageEditorItem {
     @objc
     public let color: UIColor
 
-    // Represented in a "ULO unit" coordinate system
-    // for source image.
-    //
-    // "ULO" coordinate system is "upper-left-origin".
-    //
-    // "Unit" coordinate system means values are expressed
-    // in terms of some other values, in this case the
-    // width and height of the source image.
-    //
-    // * 0.0 = left edge
-    // * 1.0 = right edge
-    // * 0.0 = top edge
-    // * 1.0 = bottom edge
-    public typealias StrokeSample = CGPoint
+    public typealias StrokeSample = ImageEditorSample
 
     @objc
     public let unitSamples: [StrokeSample]
@@ -117,7 +128,7 @@ public class ImageEditorStrokeItem: ImageEditorItem {
         return CGFloatClamp01(unitStrokeWidth) * min(dstSize.width, dstSize.height)
     }
 
-    public override func clone(withPointConversionFunction conversion: PointConversionFunction) -> ImageEditorItem {
+    public override func clone(withImageEditorConversion conversion: ImageEditorConversion) -> ImageEditorItem {
         // TODO: We might want to convert the unitStrokeWidth too.
         let convertedUnitSamples = unitSamples.map { (sample) in
             conversion(sample)
@@ -126,6 +137,149 @@ public class ImageEditorStrokeItem: ImageEditorItem {
                                      color: color,
                                      unitSamples: convertedUnitSamples,
                                      unitStrokeWidth: unitStrokeWidth)
+    }
+}
+
+// MARK: -
+
+@objc
+public class ImageEditorTextItem: ImageEditorItem {
+    @objc
+    public let color: UIColor
+
+    @objc
+    public let font: UIFont
+
+    @objc
+    public let text: String
+
+    @objc
+    public let unitCenter: ImageEditorSample
+
+    // Leave some margins against the edge of the image.
+    @objc
+    public static let kDefaultUnitWidth: CGFloat = 0.9
+
+    // The max width of the text as a fraction of the image width.
+    //
+    // This provides continuity of text layout before/after cropping.
+    //
+    // NOTE: When you scale the text with with a pinch gesture, that
+    // affects _scaling_, not the _unit width_, since we don't want
+    // to change how the text wraps when scaling.
+    @objc
+    public let unitWidth: CGFloat
+
+    // 0 = no rotation.
+    // CGFloat.pi * 0.5 = rotation 90 degrees clockwise.
+    @objc
+    public let rotationRadians: CGFloat
+
+    @objc
+    public static let kMaxScaling: CGFloat = 4.0
+    @objc
+    public static let kMinScaling: CGFloat = 0.5
+    @objc
+    public let scaling: CGFloat
+
+    @objc
+    public init(color: UIColor,
+                font: UIFont,
+                text: String,
+                unitCenter: ImageEditorSample = ImageEditorSample(x: 0.5, y: 0.5),
+                unitWidth: CGFloat = ImageEditorTextItem.kDefaultUnitWidth,
+                rotationRadians: CGFloat = 0.0,
+                scaling: CGFloat = 1.0) {
+        self.color = color
+        self.font = font
+        self.text = text
+        self.unitCenter = unitCenter
+        self.unitWidth = unitWidth
+        self.rotationRadians = rotationRadians
+        self.scaling = scaling
+
+        super.init(itemType: .text)
+    }
+
+    private init(itemId: String,
+                color: UIColor,
+                font: UIFont,
+                text: String,
+                unitCenter: ImageEditorSample,
+                unitWidth: CGFloat,
+                rotationRadians: CGFloat,
+                scaling: CGFloat) {
+        self.color = color
+        self.font = font
+        self.text = text
+        self.unitCenter = unitCenter
+        self.unitWidth = unitWidth
+        self.rotationRadians = rotationRadians
+        self.scaling = scaling
+
+        super.init(itemId: itemId, itemType: .text)
+    }
+
+    @objc
+    public class func empty(withColor color: UIColor) -> ImageEditorTextItem {
+        let font = UIFont.boldSystemFont(ofSize: 30.0)
+        return ImageEditorTextItem(color: color, font: font, text: "")
+    }
+
+    @objc
+    public func copy(withText newText: String) -> ImageEditorTextItem {
+        return ImageEditorTextItem(itemId: itemId,
+                                   color: color,
+                                   font: font,
+                                   text: newText,
+                                   unitCenter: unitCenter,
+                                   unitWidth: unitWidth,
+                                   rotationRadians: rotationRadians,
+                                   scaling: scaling)
+    }
+
+    @objc
+    public func copy(withUnitCenter newUnitCenter: CGPoint) -> ImageEditorTextItem {
+        return ImageEditorTextItem(itemId: itemId,
+                                   color: color,
+                                   font: font,
+                                   text: text,
+                                   unitCenter: newUnitCenter,
+                                   unitWidth: unitWidth,
+                                   rotationRadians: rotationRadians,
+                                   scaling: scaling)
+    }
+
+    @objc
+    public func copy(withUnitCenter newUnitCenter: CGPoint,
+                     scaling newScaling: CGFloat,
+                     rotationRadians newRotationRadians: CGFloat) -> ImageEditorTextItem {
+        return ImageEditorTextItem(itemId: itemId,
+                                   color: color,
+                                   font: font,
+                                   text: text,
+                                   unitCenter: newUnitCenter,
+                                   unitWidth: unitWidth,
+                                   rotationRadians: newRotationRadians,
+                                   scaling: newScaling)
+    }
+
+    public override func clone(withImageEditorConversion conversion: ImageEditorConversion) -> ImageEditorItem {
+        let convertedUnitCenter = conversion(unitCenter)
+        let convertedUnitWidth = conversion(CGPoint(x: unitWidth, y: 0)).x
+
+        return ImageEditorTextItem(itemId: itemId,
+                                   color: color,
+                                   font: font,
+                                   text: text,
+                                   unitCenter: convertedUnitCenter,
+                                   unitWidth: convertedUnitWidth,
+                                   rotationRadians: rotationRadians,
+                                   scaling: scaling)
+    }
+
+    public override func outputScale() -> CGFloat {
+        return scaling
     }
 }
 
@@ -423,6 +577,11 @@ public class ImageEditorModel: NSObject {
     }
 
     @objc
+    public func has(itemForId itemId: String) -> Bool {
+        return item(forId: itemId) != nil
+    }
+
+    @objc
     public func item(forId itemId: String) -> ImageEditorItem? {
         return contents.item(forId: itemId)
     }
@@ -559,7 +718,7 @@ public class ImageEditorModel: NSObject {
         let right = unitCropRect.origin.x + unitCropRect.size.width
         let top = unitCropRect.origin.y
         let bottom = unitCropRect.origin.y + unitCropRect.size.height
-        let conversion: ImageEditorItem.PointConversionFunction = { (point) in
+        let conversion: ImageEditorConversion = { (point) in
             // Convert from the pre-crop unit coordinate system
             // to post-crop unit coordinate system using inverse
             // lerp.
@@ -580,7 +739,7 @@ public class ImageEditorModel: NSObject {
             let newContents = ImageEditorContents(imagePath: croppedImagePath,
                                                   imageSizePixels: croppedImageSizePixels)
             for oldItem in oldContents.items() {
-                let newItem = oldItem.clone(withPointConversionFunction: conversion)
+                let newItem = oldItem.clone(withImageEditorConversion: conversion)
                 newContents.append(item: newItem)
             }
             return newContents
