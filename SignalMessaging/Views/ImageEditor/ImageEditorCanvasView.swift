@@ -43,9 +43,13 @@ public class ImageEditorCanvasView: UIView {
 
     // MARK: - Views
 
-    // TODO: Audit all usage of this view.
+    // contentView is used to host the layers used to render the content.
+    //
+    // The transform for the content is applied to it.
     public let contentView = OWSLayerView()
 
+    // clipView is used to clip the content.  It reflects the actual
+    // visible bounds of the content.
     private let clipView = OWSLayerView()
 
     private var contentViewConstraints = [NSLayoutConstraint]()
@@ -157,8 +161,6 @@ public class ImageEditorCanvasView: UIView {
     internal func updateAllContent() {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
         // Don't animate changes.
         CATransaction.begin()
         CATransaction.setDisableActions(true)
@@ -199,8 +201,6 @@ public class ImageEditorCanvasView: UIView {
 
     internal func updateContent(changedItemIds: [String]) {
         AssertIsOnMainThread()
-
-        Logger.verbose("")
 
         // Don't animate changes.
         CATransaction.begin()
@@ -245,8 +245,6 @@ public class ImageEditorCanvasView: UIView {
     }
 
     private func applyTransform() {
-        Logger.verbose("")
-
         let viewSize = clipView.bounds.size
         contentView.layer.setAffineTransform(model.currentTransform().affineTransform(viewSize: viewSize))
     }
@@ -295,7 +293,6 @@ public class ImageEditorCanvasView: UIView {
                                 width: width,
                                 height: height)
 
-        Logger.verbose("viewSize: \(viewSize), imageFrame: \(imageFrame), ")
         return imageFrame
     }
 
@@ -364,7 +361,7 @@ public class ImageEditorCanvasView: UIView {
                            y: viewSize.height * unitSample.y)
         }
 
-        // TODO: Use bezier curves to smooth stroke.
+        // Use bezier curves to smooth stroke.
         let bezierPath = UIBezierPath()
 
         let points = applySmoothing(to: unitSamples.map { (unitSample) in
@@ -474,7 +471,6 @@ public class ImageEditorCanvasView: UIView {
                                                                 .font: item.font.withSize(fontSize)
             ],
                                                               context: nil)
-        Logger.verbose("---- maxWidth: \(maxWidth), viewSize: \(viewSize), item.unitWidth: \(item.unitWidth), textBounds: \(textBounds)")
         let center = CGPoint(x: viewSize.width * item.unitCenter.x,
                              y: viewSize.height * item.unitCenter.y)
         let layerSize = CGSizeCeil(textBounds.size)
@@ -570,7 +566,6 @@ public class ImageEditorCanvasView: UIView {
         // Render output at same size as source image.
         let dstSizePixels = transform.outputSizePixels
         let dstScale: CGFloat = 1.0 // The size is specified in pixels, not in points.
-        // TODO: Reflect crop rectangle.
         let viewSize = dstSizePixels
 
         let hasAlpha = NSData.hasAlpha(forValidImageFilePath: model.srcImagePath)
@@ -602,7 +597,6 @@ public class ImageEditorCanvasView: UIView {
                                                     owsFailDebug("Could not load src image.")
                                                     return nil
         }
-        // TODO:
         imageLayer.contentsScale = dstScale * transform.scaling
         contentView.layer.addSublayer(imageLayer)
 
@@ -613,7 +607,6 @@ public class ImageEditorCanvasView: UIView {
                                             Logger.error("Couldn't create layer for item.")
                                             continue
             }
-            // TODO: Should we do this for all layers?
             layer.contentsScale = dstScale * transform.scaling * item.outputScale()
             contentView.layer.addSublayer(layer)
         }
