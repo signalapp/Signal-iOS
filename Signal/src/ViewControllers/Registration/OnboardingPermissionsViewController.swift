@@ -6,15 +6,6 @@ import UIKit
 import PromiseKit
 
 @objc
-public class MockOnboardingController: NSObject, OnboardingController {
-    public func onboardingPermissionsWasSkipped(viewController: UIViewController) {}
-
-    public func onboardingPermissionsDidComplete(viewController: UIViewController) {}
-}
-
-// MARK: -
-
-@objc
 public class OnboardingPermissionsViewController: OWSViewController {
     // Unlike a delegate, the OnboardingController we should retain a strong
     // reference to the onboardingController.
