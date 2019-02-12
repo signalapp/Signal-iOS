@@ -7,9 +7,9 @@
 		<key>CarthageVersion</key>
 		<string>0.31.2</string>
 		<key>OSXVersion</key>
-		<string>10.14.3</string>
+		<string>10.14.2</string>
 		<key>WebRTCCommit</key>
-		<string>55de5593cc261fa9368c5ccde98884ed1e278ba0 M72</string>
+		<string>aa8bee9bd6f69e388a9ca7506b8702ef8ab7f195 M71</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>

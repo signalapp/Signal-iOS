@@ -1234,50 +1234,6 @@ typedef enum : NSUInteger {
     self.actionOnOpen = ConversationViewActionNone;
 
     [self updateInputToolbarLayout];
-
-    [self showDebugImageEditorAsync];
-}
-
-- (void)showDebugImageEditorAsync
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSString *_Nullable filePath = [[NSBundle mainBundle] pathForResource:@"qr@2x" ofType:@"png" inDirectory:nil];
-        if (!filePath) {
-            OWSFailDebug(@"Missing asset.");
-        }
-
-        for (ConversationInteractionViewItem *viewItem in self.conversationViewModel.viewItems
-                 .reverseObjectEnumerator) {
-            if (viewItem.mediaAlbumItems.count < 1) {
-                continue;
-            }
-            ConversationMediaAlbumItem *mediaItem = viewItem.mediaAlbumItems.firstObject;
-            if (mediaItem.attachmentStream == nil) {
-                continue;
-            }
-            if (!mediaItem.attachmentStream.isValidImage) {
-                continue;
-            }
-            filePath = mediaItem.attachmentStream.originalFilePath;
-            break;
-        }
-
-        DataSource *_Nullable dataSource =
-            [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
-        if (!dataSource) {
-            OWSFailDebug(@"Invalid asset.");
-            return;
-        }
-
-        NSString *fileExtension = filePath.pathExtension;
-        NSString *dataUTI = [MIMETypeUtil utiTypeForFileExtension:fileExtension];
-
-        // "Document picker" attachments _SHOULD NOT_ be resized, if possible.
-        SignalAttachment *attachment =
-            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:dataUTI imageQuality:TSImageQualityOriginal];
-
-        [self showApprovalDialogForAttachment:attachment];
-    });
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
