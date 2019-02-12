@@ -271,7 +271,10 @@ public class ImageEditorCanvasView: UIView {
             return .zero
         }
 
-        // We want to "fill" the output rect.
+        // The image content's default size (at scaling = 1) is to fill the output/canvas bounds.
+        // This makes it easier to clamp the scaling to safe values.
+        // The downside is that rotation has the side effect of changing the render size of the
+        // image, which complicates the crop view logic.
         //
         // Find the smallest possible image size that will completely fill the output size.
         //

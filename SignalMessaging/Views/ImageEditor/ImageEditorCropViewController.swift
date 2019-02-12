@@ -271,7 +271,6 @@ class ImageEditorCropViewController: OWSViewController {
         Logger.verbose("")
 
         let viewSize = contentView.bounds.size
-//        contentView.layer.anchorPoint = .zero
         contentView.layer.setAffineTransform(transform.affineTransform(viewSize: viewSize))
     }
 
@@ -603,7 +602,6 @@ class ImageEditorCropViewController: OWSViewController {
     }
 
     private func completeAndDismiss() {
-        // TODO:
         self.delegate?.cropDidComplete(transform: transform)
 
         self.dismiss(animated: true) {

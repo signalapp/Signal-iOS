@@ -31,7 +31,6 @@ public class ImageEditorTransform: NSObject {
 
     public func affineTransform(viewSize: CGSize) -> CGAffineTransform {
         let translation = unitTranslation.fromUnitCoordinates(viewSize: viewSize)
-        Logger.verbose("viewSize: \(viewSize), translation: \(translation), unitTranslation: \(unitTranslation), scaling: \(scaling), rotationRadians: \(rotationRadians), ")
         // Order matters.  We need want SRT (scale-rotate-translate) ordering so that the translation
         // is not affected affected by the scaling or rotation, which shoud both be about the "origin"
         // (in this case the center of the content).

@@ -193,9 +193,4 @@ public extension CGAffineTransform {
     public func rotate(_ angleRadians: CGFloat) -> CGAffineTransform {
         return rotated(by: angleRadians)
     }
-
-//    public func forAnchorPoint(viewSize: CGSize) -> CGAffineTransform {
-//        let viewCenter = CGRect(origin: .zero, size: viewSize).center
-//        return CGAffineTransform.translate(viewCenter.inverse()).concatenating(self).translate(viewCenter)
-//    }
 }
