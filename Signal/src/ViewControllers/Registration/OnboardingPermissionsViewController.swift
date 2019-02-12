@@ -104,6 +104,18 @@ public class OnboardingPermissionsViewController: OWSViewController {
         }
     }
 
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        self.navigationController?.isNavigationBarHidden = false
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        self.navigationController?.isNavigationBarHidden = false
+    }
+
     // MARK: Request Access
 
     private func requestAccess() {
@@ -166,6 +178,6 @@ public class OnboardingPermissionsViewController: OWSViewController {
     @objc func notNowPressed() {
         Logger.info("")
 
-        delegate?.onboardingPermissionsWasSkipped(viewController: self)
+        onboardingController.onboardingPermissionsWasSkipped(viewController: self)
     }
 }
