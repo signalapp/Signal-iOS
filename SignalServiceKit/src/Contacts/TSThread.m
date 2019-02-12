@@ -429,6 +429,8 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     if (!self.shouldThreadBeVisible) {
         self.shouldThreadBeVisible = YES;
         [self saveWithTransaction:transaction];
+    } else {
+        [self touchWithTransaction:transaction];
     }
 }
 
