@@ -406,7 +406,7 @@ NSError *ContactDiscoveryServiceErrorMakeWithReason(NSInteger code, NSString *re
     OWSAssertDebug(enclaveId.length > 0);
 
     if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
-        OWSFailDebug(@"unexpected response type.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(ContactDiscoveryServiceErrorAssertionError, @"unexpected response type.");
         return nil;
     }
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;

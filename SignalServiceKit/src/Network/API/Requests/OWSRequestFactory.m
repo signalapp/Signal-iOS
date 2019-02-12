@@ -498,7 +498,15 @@ NS_ASSUME_NONNULL_BEGIN
     if (reason == nil) {
         parameters = @{};
     } else {
-        parameters = @{ @"reason": reason };
+        const NSUInteger kServerReasonLimit = 1000;
+        NSString *limitedReason;
+        if (reason.length < kServerReasonLimit) {
+            limitedReason = reason;
+        } else {
+            OWSFailDebug(@"failure: reason should be under 1000");
+            limitedReason = [reason substringToIndex:kServerReasonLimit - 1];
+        }
+        parameters = @{ @"reason": limitedReason };
     }
     NSString *path = [NSString stringWithFormat:@"/v1/directory/feedback-v2/%@", status];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
