@@ -732,7 +732,7 @@ static NSTimeInterval launchStartedAt;
             OWSLogInfo(@"running post launch block for unregistered user.");
 
             // Unregistered user should have no unread messages. e.g. if you delete your account.
-            [SignalApp clearAllNotifications];
+            [AppEnvironment.shared.notificationPresenter clearAllNotifications];
 
             [self.socketManager requestSocketOpen];
 
@@ -791,6 +791,7 @@ static NSTimeInterval launchStartedAt;
     OWSLogWarn(@"applicationWillResignActive.");
 
     [self updateShouldEnableLandscape];
+    [self clearAllNotificationsAndRestoreBadgeCount];
 
     [DDLog flushLog];
 }
@@ -799,8 +800,8 @@ static NSTimeInterval launchStartedAt;
 {
     OWSAssertIsOnMainThread();
 
-    [SignalApp clearAllNotifications];
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [AppEnvironment.shared.notificationPresenter clearAllNotifications];
         [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
     }];
 }

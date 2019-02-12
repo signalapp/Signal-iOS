@@ -222,6 +222,13 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         for (_, notification) in notifications {
             cancelNotification(notification)
         }
+        // This will cancel all "scheduled" local notifications that haven't
+        // been presented yet.
+        UIApplication.shared.cancelAllLocalNotifications()
+        // To clear all already presented local notifications, we need to
+        // set the app badge number to zero after setting it to a non-zero value.
+        UIApplication.shared.applicationIconBadgeNumber = 1
+        UIApplication.shared.applicationIconBadgeNumber = 0
     }
 }
 
