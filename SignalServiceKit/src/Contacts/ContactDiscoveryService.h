@@ -1,12 +1,13 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSErrorUserInfoKey const ContactDiscoveryServiceErrorKey_Reason;
 extern NSErrorDomain const ContactDiscoveryServiceErrorDomain;
 typedef NS_ERROR_ENUM(ContactDiscoveryServiceErrorDomain, ContactDiscoveryServiceError){
-    ContactDiscoveryServiceErrorAttestationFailed = 100,
+    ContactDiscoveryServiceErrorAttestationFailed = 100, ContactDiscoveryServiceErrorAssertionError = 101
 };
 
 @class ECKeyPair;
