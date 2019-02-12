@@ -13,7 +13,7 @@ public class OnboardingPermissionsViewController: OWSViewController {
 
     @objc
     public init(onboardingController: OnboardingController) {
-        self.delegate = onboardingController
+        self.onboardingController = onboardingController
 
         super.init(nibName: nil, bundle: nil)
     }
