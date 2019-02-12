@@ -4,35 +4,6 @@
 
 import UIKit
 
-extension UIView {
-    public func renderAsImage() -> UIImage? {
-        return renderAsImage(opaque: false, scale: UIScreen.main.scale)
-    }
-
-    public func renderAsImage(opaque: Bool, scale: CGFloat) -> UIImage? {
-        if #available(iOS 10, *) {
-            let format = UIGraphicsImageRendererFormat()
-            format.scale = scale
-            format.opaque = opaque
-            let renderer = UIGraphicsImageRenderer(bounds: self.bounds,
-                                                   format: format)
-            return renderer.image { (context) in
-                self.layer.render(in: context.cgContext)
-            }
-        } else {
-            UIGraphicsBeginImageContextWithOptions(bounds.size, opaque, scale)
-            if let _ = UIGraphicsGetCurrentContext() {
-                drawHierarchy(in: bounds, afterScreenUpdates: true)
-                let image = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                return image
-            }
-            owsFailDebug("Could not create graphics context.")
-            return nil
-        }
-    }
-}
-
 private class EditorTextLayer: CATextLayer {
     let itemId: String
 
@@ -50,10 +21,19 @@ private class EditorTextLayer: CATextLayer {
 
 // MARK: -
 
+@objc
+public protocol ImageEditorViewDelegate: class {
+    func imageEditor(presentFullScreenOverlay viewController: UIViewController)
+}
+
+// MARK: -
+
 // A view for editing outgoing image attachments.
 // It can also be used to render the final output.
 @objc
 public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextViewControllerDelegate, UIGestureRecognizerDelegate {
+
+    weak var delegate: ImageEditorViewDelegate?
 
     private let model: ImageEditorModel
 
@@ -76,8 +56,9 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
     private var currentColor = ImageEditorView.defaultColor
 
     @objc
-    public required init(model: ImageEditorModel) {
+    public required init(model: ImageEditorModel, delegate: ImageEditorViewDelegate) {
         self.model = model
+        self.delegate = delegate
 
         super.init(frame: .zero)
 
@@ -393,21 +374,12 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
 
         toggle(editorMode: .none)
 
-        guard let viewController = self.containingViewController() else {
-            owsFailDebug("Can't find view controller.")
-            return
-        }
-
         isEditingTextItem = true
 
         let maxTextWidthPoints = imageView.width() * ImageEditorTextItem.kDefaultUnitWidth
 
         let textEditor = ImageEditorTextViewController(delegate: self, textItem: textItem, maxTextWidthPoints: maxTextWidthPoints)
-        let navigationController = OWSNavigationController(rootViewController: textEditor)
-        navigationController.modalPresentationStyle = .overFullScreen
-        viewController.present(navigationController, animated: true) {
-            // Do nothing.
-        }
+        self.delegate?.imageEditor(presentFullScreenOverlay: textEditor)
     }
 
     // MARK: - Pinch Gesture
@@ -985,7 +957,8 @@ public class ImageEditorView: UIView, ImageEditorModelDelegate, ImageEditorTextV
         // I don't think we need to enable allowsFontSubpixelQuantization
         // or set truncationMode.
 
-        // This text needs to be rendered at a scale that reflects the scaling.
+        // This text needs to be rendered at a scale that reflects the sceen scaling
+        // AND the item's scaling.
         layer.contentsScale = UIScreen.main.scale * item.scaling
 
         // TODO: Min with measured width.

@@ -17,7 +17,7 @@ public struct ImageEditorPinchState {
         self.angleRadians = angleRadians
     }
 
-    static func empty() -> ImageEditorPinchState {
+    static var empty: ImageEditorPinchState {
         return ImageEditorPinchState(centroid: .zero, distance: 1.0, angleRadians: 0)
     }
 }
@@ -29,9 +29,9 @@ public struct ImageEditorPinchState {
 //   than UIPinchGestureRecognizer.
 public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
 
-    public var pinchStateStart = ImageEditorPinchState.empty()
+    public var pinchStateStart = ImageEditorPinchState.empty
 
-    public var pinchStateLast = ImageEditorPinchState.empty()
+    public var pinchStateLast = ImageEditorPinchState.empty
 
     // MARK: - Touch Handling
 

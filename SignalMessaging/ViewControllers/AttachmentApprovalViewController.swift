@@ -941,7 +941,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         if let imageEditorModel = attachmentItem.imageEditorModel,
             let imageMediaView = mediaMessageView.contentView {
 
-            let imageEditorView = ImageEditorView(model: imageEditorModel)
+            let imageEditorView = ImageEditorView(model: imageEditorModel, delegate: self)
             if imageEditorView.configureSubviews() {
                 mediaMessageView.isHidden = true
 
@@ -1319,6 +1319,19 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
 
 // MARK: -
 
+extension AttachmentPrepViewController: ImageEditorViewDelegate {
+    public func imageEditor(presentFullScreenOverlay viewController: UIViewController) {
+
+        let navigationController = OWSNavigationController(rootViewController: viewController)
+        navigationController.modalPresentationStyle = .overFullScreen
+        self.present(navigationController, animated: true) {
+            // Do nothing.
+        }
+    }
+}
+
+// MARK: -
+
 class BottomToolView: UIView {
     let mediaMessageTextToolbar: MediaMessageTextToolbar
     let galleryRailView: GalleryRailView
@@ -1338,7 +1351,7 @@ class BottomToolView: UIView {
 
         super.init(frame: .zero)
 
-        // Specifying autorsizing mask and an intrinsic content size allows proper
+        // Specifying auto-resizing mask and an intrinsic content size allows proper
         // sizing when used as an input accessory view.
         self.autoresizingMask = .flexibleHeight
         self.translatesAutoresizingMaskIntoConstraints = false

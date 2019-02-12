@@ -153,7 +153,7 @@ class ImageEditorTextViewController: OWSViewController, VAlignTextViewDelegate {
         self.view.addSubview(textView)
         textView.autoPinTopToSuperviewMargin()
         textView.autoHCenterInSuperview()
-        // In order to having text wrapping be as WYSIWYG as possible, we limit the text view
+        // In order to have text wrapping be as WYSIWYG as possible, we limit the text view
         // to the max text width on the image.
         let maxTextWidthPoints = max(self.maxTextWidthPoints, 200)
         textView.autoSetDimension(.width, toSize: maxTextWidthPoints, relation: .lessThanOrEqual)

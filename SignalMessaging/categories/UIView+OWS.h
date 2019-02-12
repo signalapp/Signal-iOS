@@ -117,8 +117,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 + (UIView *)verticalStackWithSubviews:(NSArray<UIView *> *)subviews spacing:(int)spacing;
 
-- (nullable UIViewController *)containingViewController;
-
 #pragma mark - Debugging
 
 - (void)addBorderWithColor:(UIColor *)color;

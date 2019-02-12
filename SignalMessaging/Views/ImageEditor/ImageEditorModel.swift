@@ -144,8 +144,6 @@ public class ImageEditorStrokeItem: ImageEditorItem {
 
 @objc
 public class ImageEditorTextItem: ImageEditorItem {
-    // Until we need to serialize these items,
-    // just use UIColor.
     @objc
     public let color: UIColor
 
@@ -188,7 +186,7 @@ public class ImageEditorTextItem: ImageEditorItem {
     public init(color: UIColor,
                 font: UIFont,
                 text: String,
-                unitCenter: ImageEditorSample = CGPoint(x: 0.5, y: 0.5),
+                unitCenter: ImageEditorSample = ImageEditorSample(x: 0.5, y: 0.5),
                 unitWidth: CGFloat = ImageEditorTextItem.kDefaultUnitWidth,
                 rotationRadians: CGFloat = 0.0,
                 scaling: CGFloat = 1.0) {

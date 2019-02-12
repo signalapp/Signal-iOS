@@ -448,19 +448,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return container;
 }
 
-- (nullable UIViewController *)containingViewController
-{
-    UIResponder *responder = self;
-    while (responder) {
-        if ([responder isKindOfClass:[UIViewController class]]) {
-            UIViewController *viewController = (UIViewController *)responder;
-            return viewController;
-        }
-        responder = responder.nextResponder;
-    }
-    return nil;
-}
-
 #pragma mark - Debugging
 
 - (void)addBorderWithColor:(UIColor *)color
