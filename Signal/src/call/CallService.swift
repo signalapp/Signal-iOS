@@ -107,8 +107,6 @@ protocol SignalCallDataDelegate: class {
 // Gather all per-call state in one place.
 private class SignalCallData: NSObject {
 
-    let startTime: UInt64
-
     fileprivate weak var delegate: SignalCallDataDelegate?
 
     public let call: SignalCall
@@ -157,9 +155,8 @@ private class SignalCallData: NSObject {
         }
     }
 
-    required init(call: SignalCall, startTime: UInt64, delegate: SignalCallDataDelegate) {
+    required init(call: SignalCall, delegate: SignalCallDataDelegate) {
         self.call = call
-        self.startTime = startTime
         self.delegate = delegate
 
         let (callConnectedPromise, callConnectedResolver) = Promise<Void>.pending()
@@ -442,7 +439,8 @@ private class SignalCallData: NSObject {
     func handleOutgoingCall(_ call: SignalCall) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        let startTime = NSDate.ows_millisecondTimeStamp()
+        let callId = call.signalingId
+        BenchEventStart(title: "Outgoing Call Connection", eventId: "call-\(callId)")
 
         guard self.call == nil else {
             let errorDescription = "call was unexpectedly already set."
@@ -452,7 +450,7 @@ private class SignalCallData: NSObject {
             return Promise(error: CallError.assertionError(description: errorDescription))
         }
 
-        let callData = SignalCallData(call: call, startTime: startTime, delegate: self)
+        let callData = SignalCallData(call: call, delegate: self)
         self.callData = callData
 
         // MJK TODO remove this timestamp param
@@ -683,7 +681,7 @@ private class SignalCallData: NSObject {
     public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sessionDescription callerSessionDescription: String) {
         AssertIsOnMainThread()
 
-        let startTime = NSDate.ows_millisecondTimeStamp()
+        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(callId)")
 
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
@@ -755,7 +753,7 @@ private class SignalCallData: NSObject {
 
         Logger.info("starting new call: \(newCall.identifiersForLogs)")
 
-        let callData = SignalCallData(call: newCall, startTime: startTime, delegate: self)
+        let callData = SignalCallData(call: newCall, delegate: self)
         self.callData = callData
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
@@ -988,20 +986,19 @@ private class SignalCallData: NSObject {
             return
         }
         let call = callData.call
+        let callId = call.signalingId
 
         Logger.info("\(call.identifiersForLogs)")
 
         switch call.state {
         case .dialing:
             if call.state != .remoteRinging {
-                let connectedTime = NSDate.ows_millisecondTimeStamp()
-                Logger.info("Connected in: \(connectedTime - callData.startTime)")
+                BenchEventComplete(eventId: "call-\(callId)")
             }
             call.state = .remoteRinging
         case .answering:
             if call.state != .localRinging {
-                let connectedTime = NSDate.ows_millisecondTimeStamp()
-                Logger.info("Connected in: \(connectedTime - callData.startTime)")
+                BenchEventComplete(eventId: "call-\(callId)")
             }
             call.state = .localRinging
             self.callUIAdapter.reportIncomingCall(call, thread: call.thread)
