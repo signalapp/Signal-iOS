@@ -7,8 +7,7 @@ import PromiseKit
 
 @objc
 public class OnboardingPermissionsViewController: OWSViewController {
-    // Unlike a delegate, the OnboardingController we should retain a strong
-    // reference to the onboardingController.
+    // Unlike a delegate, we can and should retain a strong reference to the OnboardingController.
     private var onboardingController: OnboardingController
 
     @objc
@@ -47,8 +46,7 @@ public class OnboardingPermissionsViewController: OWSViewController {
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
         view.addSubview(titleLabel)
-        titleLabel.autoPinWidthToSuperviewMargins()
-        titleLabel.autoPinEdge(toSuperviewMargin: .top)
+        titleLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
 
         let explainerLabel = UILabel()
         // TODO: Finalize copy.
@@ -98,9 +96,9 @@ public class OnboardingPermissionsViewController: OWSViewController {
         stackView.spacing = 40
         view.addSubview(stackView)
         stackView.autoPinWidthToSuperviewMargins()
-        stackView.autoVCenterInSuperview()
+        stackView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 20, relation: .greaterThanOrEqual)
         NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            stackView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 20, relation: .greaterThanOrEqual)
+            stackView.autoVCenterInSuperview()
         }
     }
 
