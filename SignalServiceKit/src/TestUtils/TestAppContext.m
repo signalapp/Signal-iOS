@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TestAppContext.h"
@@ -146,6 +146,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)appSharedDataDirectoryPath
 {
     return self.mockAppSharedDataDirectoryPath;
+}
+
+- (BOOL)isDebugBuild
+{
+#ifdef DEBUG
+    return YES;
+#else
+    return NO;
+#endif
 }
 
 @end

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ShareAppExtensionContext.h"
@@ -232,6 +232,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUserDefaults *)appUserDefaults
 {
     return [[NSUserDefaults alloc] initWithSuiteName:SignalApplicationGroup];
+}
+
+- (BOOL)isDebugBuild
+{
+#ifdef DEBUG
+    return YES;
+#else
+    return NO;
+#endif
 }
 
 @end

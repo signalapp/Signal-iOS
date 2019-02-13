@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -21,6 +21,13 @@ extern NSString *const TappedStatusBarNotification;
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText
                       countryCode:(NSString *)countryCode;
+
+// The same method, but it temporarily adds a prefix during the formatting process.
++ (void)phoneNumberTextField:(UITextField *)textField
+    shouldChangeCharactersInRange:(NSRange)range
+                replacementString:(NSString *)insertionText
+                      countryCode:(NSString *)countryCode
+                           prefix:(nullable NSString *)prefix;
 
 + (void)ows2FAPINTextField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range

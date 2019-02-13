@@ -302,6 +302,9 @@
 /* Label for generic done button. */
 "BUTTON_DONE" = "Done";
 
+/* Label for the 'next' button. */
+"BUTTON_NEXT" = "Next";
+
 /* Label for redo button. */
 "BUTTON_REDO" = "Redo";
 
@@ -1520,6 +1523,9 @@
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "We need access to your contacts and notifications";
 
+/* Title of the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Enter your phone number to get started";
+
 /* Explanation in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_EXPLANATION" = "By continuing, you agree to Signal's terms.";
 
@@ -2353,6 +2359,9 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Unknown Contact";
+
+/* Label for unknown countries. */
+"UNKNOWN_COUNTRY_NAME" = "Unknown Country";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Unknown";

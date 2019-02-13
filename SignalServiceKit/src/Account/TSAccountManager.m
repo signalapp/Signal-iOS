@@ -625,7 +625,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
 }
 
-- (NSString *)reregisterationPhoneNumber
+- (nullable NSString *)reregisterationPhoneNumber
 {
     OWSAssertDebug([self isReregistering]);
 

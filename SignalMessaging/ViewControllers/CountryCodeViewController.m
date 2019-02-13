@@ -11,6 +11,8 @@
 #import "UIView+OWS.h"
 #import <SignalServiceKit/NSString+SSK.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface CountryCodeViewController () <OWSTableViewControllerDelegate, UISearchBarDelegate>
 
 @property (nonatomic, readonly) UISearchBar *searchBar;
@@ -170,3 +172,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
