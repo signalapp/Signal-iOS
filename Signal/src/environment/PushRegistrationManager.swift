@@ -127,7 +127,7 @@ public enum PushRegistrationError: Error {
 
     // User notification settings must be registered *before* AppDelegate will
     // return any requested push tokens.
-    private func registerUserNotificationSettings() -> Promise<Void> {
+    public func registerUserNotificationSettings() -> Promise<Void> {
         AssertIsOnMainThread()
         Logger.info("registering user notification settings")
         return notificationPresenter.registerNotificationSettings()
