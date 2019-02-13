@@ -222,6 +222,10 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         for (_, notification) in notifications {
             cancelNotification(notification)
         }
+        type(of: self).clearExistingNotifications()
+    }
+
+    public class func clearExistingNotifications() {
         // This will cancel all "scheduled" local notifications that haven't
         // been presented yet.
         UIApplication.shared.cancelAllLocalNotifications()
