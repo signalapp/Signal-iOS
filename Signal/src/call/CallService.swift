@@ -106,6 +106,7 @@ protocol SignalCallDataDelegate: class {
 
 // Gather all per-call state in one place.
 private class SignalCallData: NSObject {
+
     fileprivate weak var delegate: SignalCallDataDelegate?
 
     public let call: SignalCall
@@ -438,6 +439,9 @@ private class SignalCallData: NSObject {
     func handleOutgoingCall(_ call: SignalCall) -> Promise<Void> {
         AssertIsOnMainThread()
 
+        let callId = call.signalingId
+        BenchEventStart(title: "Outgoing Call Connection", eventId: "call-\(callId)")
+
         guard self.call == nil else {
             let errorDescription = "call was unexpectedly already set."
             Logger.error(errorDescription)
@@ -676,6 +680,8 @@ private class SignalCallData: NSObject {
      */
     public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sessionDescription callerSessionDescription: String) {
         AssertIsOnMainThread()
+
+        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(callId)")
 
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
@@ -972,20 +978,28 @@ private class SignalCallData: NSObject {
     private func handleIceConnected() {
         AssertIsOnMainThread()
 
-        guard let call = self.call else {
+        guard let callData = self.callData else {
             // This will only be called for the current peerConnectionClient, so
             // fail the current call.
             OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
             handleFailedCurrentCall(error: CallError.assertionError(description: "ignoring \(#function) since there is no current call."))
             return
         }
+        let call = callData.call
+        let callId = call.signalingId
 
-        Logger.info("\(call.identifiersForLogs).")
+        Logger.info("\(call.identifiersForLogs)")
 
         switch call.state {
         case .dialing:
+            if call.state != .remoteRinging {
+                BenchEventComplete(eventId: "call-\(callId)")
+            }
             call.state = .remoteRinging
         case .answering:
+            if call.state != .localRinging {
+                BenchEventComplete(eventId: "call-\(callId)")
+            }
             call.state = .localRinging
             self.callUIAdapter.reportIncomingCall(call, thread: call.thread)
         case .remoteRinging:
