@@ -27,8 +27,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_SPLASH_TITLE", comment: "Title of the 'onboarding splash' view."))
         view.addSubview(titleLabel)
-        titleLabel.autoPinWidthToSuperviewMargins()
-        titleLabel.autoPinEdge(toSuperviewMargin: .top)
+        titleLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
 
         // TODO: Finalize copy.
         let explanationLabel = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_SPLASH_EXPLANATION",
