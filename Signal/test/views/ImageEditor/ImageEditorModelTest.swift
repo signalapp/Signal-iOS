@@ -49,23 +49,34 @@ class ImageEditorModelTest: SignalBaseTest {
     }
 
     func testAffineTransformComposition() {
+        // Documents how classic SRT (scale-rotate-translate) ordering is specified
+        // in _reverse_ order using CGAffineTransform.
+
+        // The transformed origin should reflect ONLY the translation, not scaling or rotation.
         XCTAssertEqual(+20.0, CGPoint.zero.applying(CGAffineTransform.translate(CGPoint(x: 20, y: 30)).scale(5)).x, accuracy: 0.1)
         XCTAssertEqual(+30.0, CGPoint.zero.applying(CGAffineTransform.translate(CGPoint(x: 20, y: 30)).scale(5)).y, accuracy: 0.1)
+        // WRONG: the translation is being scaled.
         XCTAssertEqual(+100.0, CGPoint.zero.applying(CGAffineTransform.scale(5).translate(CGPoint(x: 20, y: 30))).x, accuracy: 0.1)
         XCTAssertEqual(+150.0, CGPoint.zero.applying(CGAffineTransform.scale(5).translate(CGPoint(x: 20, y: 30))).y, accuracy: 0.1)
 
+        // The transformed origin should reflect ONLY the translation, not scaling or rotation.
         XCTAssertEqual(+20.0, CGPoint.zero.applying(CGAffineTransform.translate(CGPoint(x: 20, y: 30)).rotate(CGFloat.halfPi).scale(5)).x, accuracy: 0.1)
         XCTAssertEqual(+30.0, CGPoint.zero.applying(CGAffineTransform.translate(CGPoint(x: 20, y: 30)).rotate(CGFloat.halfPi).scale(5)).y, accuracy: 0.1)
+        // WRONG: the translation is being scaled.
         XCTAssertEqual(-150.0, CGPoint.zero.applying(CGAffineTransform.scale(5).rotate(CGFloat.halfPi).translate(CGPoint(x: 20, y: 30))).x, accuracy: 0.1)
         XCTAssertEqual(+100.0, CGPoint.zero.applying(CGAffineTransform.scale(5).rotate(CGFloat.halfPi).translate(CGPoint(x: 20, y: 30))).y, accuracy: 0.1)
 
+        // An arbitrary point one "unit" away from the origin should be end up scaled (unit x scaling) + translation.
         XCTAssertEqual(+25.0, CGPoint.unit.applying(CGAffineTransform.translate(CGPoint(x: 20, y: 30)).scale(5)).x, accuracy: 0.1)
         XCTAssertEqual(+35.0, CGPoint.unit.applying(CGAffineTransform.translate(CGPoint(x: 20, y: 30)).scale(5)).y, accuracy: 0.1)
+        // WRONG: the translation is being scaled.
         XCTAssertEqual(+105.0, CGPoint.unit.applying(CGAffineTransform.scale(5).translate(CGPoint(x: 20, y: 30))).x, accuracy: 0.1)
         XCTAssertEqual(+155.0, CGPoint.unit.applying(CGAffineTransform.scale(5).translate(CGPoint(x: 20, y: 30))).y, accuracy: 0.1)
 
+        // An arbitrary point one "unit" away from the origin should be end up scaled (unit x scaling ... rotated about the origin) + translation.
         XCTAssertEqual(+15.0, CGPoint.unit.applying(CGAffineTransform.translate(CGPoint(x: 20, y: 30)).rotate(CGFloat.halfPi).scale(5)).x, accuracy: 0.1)
         XCTAssertEqual(+35.0, CGPoint.unit.applying(CGAffineTransform.translate(CGPoint(x: 20, y: 30)).rotate(CGFloat.halfPi).scale(5)).y, accuracy: 0.1)
+        // WRONG: the translation is being scaled.
         XCTAssertEqual(-155.0, CGPoint.unit.applying(CGAffineTransform.scale(5).rotate(CGFloat.halfPi).translate(CGPoint(x: 20, y: 30))).x, accuracy: 0.1)
         XCTAssertEqual(+105.0, CGPoint.unit.applying(CGAffineTransform.scale(5).rotate(CGFloat.halfPi).translate(CGPoint(x: 20, y: 30))).y, accuracy: 0.1)
     }

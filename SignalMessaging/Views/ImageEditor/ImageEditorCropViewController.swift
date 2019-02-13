@@ -296,18 +296,6 @@ class ImageEditorCropViewController: OWSViewController {
         return true
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        _ = self.becomeFirstResponder()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        _ = self.becomeFirstResponder()
-    }
-
     // MARK: - Pinch Gesture
 
     @objc
@@ -368,6 +356,7 @@ class ImageEditorCropViewController: OWSViewController {
 
         // We could undo an in-progress pinch if the gesture is cancelled, but it seems gratuitous.
 
+        // Handle the GR if necessary.
         switch gestureRecognizer.state {
         case .began:
             Logger.verbose("began: \(transform.unitTranslation)")
@@ -385,6 +374,7 @@ class ImageEditorCropViewController: OWSViewController {
             break
         }
 
+        // Reset the GR if necessary.
         switch gestureRecognizer.state {
         case .ended, .failed, .cancelled, .possible:
             if panCropRegion != nil {

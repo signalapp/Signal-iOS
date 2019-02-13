@@ -143,10 +143,12 @@ public class ImageEditorCanvasView: UIView {
             let srcImageUrl = URL(fileURLWithPath: srcImagePath)
             srcImageData = try Data(contentsOf: srcImageUrl)
         } catch {
-            Logger.error("Couldn't parse srcImageUrl")
+            owsFailDebug("Couldn't parse srcImageUrl")
             return nil
         }
         // We use this constructor so that we can specify the scale.
+        //
+        // UIImage(contentsOfFile:) will sometimes use device scale.
         guard let srcImage = UIImage(data: srcImageData, scale: 1.0) else {
             owsFailDebug("Couldn't load background image.")
             return nil
@@ -605,9 +607,9 @@ public class ImageEditorCanvasView: UIView {
 
         for item in model.items() {
             guard let layer = layerForItem(item: item,
-                model: model,
+                                           model: model,
                                            viewSize: viewSize) else {
-                                            Logger.error("Couldn't create layer for item.")
+                                            owsFailDebug("Couldn't create layer for item.")
                                             continue
             }
             layer.contentsScale = dstScale * transform.scaling * item.outputScale()

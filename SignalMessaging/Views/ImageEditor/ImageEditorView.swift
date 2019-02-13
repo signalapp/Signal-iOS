@@ -100,10 +100,6 @@ public class ImageEditorView: UIView {
 
         updateGestureState()
 
-        DispatchQueue.main.async {
-            self.presentCropTool()
-        }
-
         return true
     }
 
