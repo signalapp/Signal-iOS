@@ -50,7 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)resetAppData;
 
-+ (void)clearAllNotifications;
 
 - (void)showHomeView;
 
