@@ -6,6 +6,10 @@ import UIKit
 
 @objc
 public protocol OnboardingController: class {
+    func initialViewController() -> UIViewController
+
+    func onboardingSplashDidComplete(viewController: UIViewController)
+
     func onboardingPermissionsWasSkipped(viewController: UIViewController)
     func onboardingPermissionsDidComplete(viewController: UIViewController)
 }
@@ -13,8 +17,18 @@ public protocol OnboardingController: class {
 // MARK: -
 
 @objc
-public class MockOnboardingController: NSObject, OnboardingController {
+public class OnboardingControllerImpl: NSObject, OnboardingController {
+    public func initialViewController() -> UIViewController {
+        let view = OnboardingSplashViewController(onboardingController: self)
+        return view
+    }
+
+    public func onboardingSplashDidComplete(viewController: UIViewController) {
+        let view = OnboardingPermissionsViewController(onboardingController: self)
+        viewController.navigationController?.pushViewController(view, animated: true)
+    }
+
     public func onboardingPermissionsWasSkipped(viewController: UIViewController) {}
-    
+
     public func onboardingPermissionsDidComplete(viewController: UIViewController) {}
 }

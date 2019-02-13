@@ -72,4 +72,18 @@ extension UIView {
             return nil
         }
     }
+
+    @objc
+    public class func spacer(withWidth width: CGFloat) -> UIView {
+        let view = UIView()
+        view.autoSetDimension(.width, toSize: width)
+        return view
+    }
+
+    @objc
+    public class func spacer(withHeight height: CGFloat) -> UIView {
+        let view = UIView()
+        view.autoSetDimension(.height, toSize: height)
+        return view
+    }
 }

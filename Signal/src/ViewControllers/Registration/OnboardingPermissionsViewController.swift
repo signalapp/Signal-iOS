@@ -6,23 +6,7 @@ import UIKit
 import PromiseKit
 
 @objc
-public class OnboardingPermissionsViewController: OWSViewController {
-    // Unlike a delegate, we can and should retain a strong reference to the OnboardingController.
-    private var onboardingController: OnboardingController
-
-    @objc
-    public init(onboardingController: OnboardingController) {
-        self.onboardingController = onboardingController
-
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
-    // MARK: -
+public class OnboardingPermissionsViewController: OnboardingBaseViewController {
 
     override public func loadView() {
         super.loadView()
@@ -38,46 +22,25 @@ public class OnboardingPermissionsViewController: OWSViewController {
                                                             target: self,
                                                             action: #selector(skipWasPressed))
 
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("ONBOARDING_PERMISSIONS_TITLE", comment: "Title of the 'onboarding permissions' view.")
-        titleLabel.textColor = Theme.primaryColor
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_mediumWeight()
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.textAlignment = .center
+        let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_PERMISSIONS_TITLE", comment: "Title of the 'onboarding permissions' view."))
         view.addSubview(titleLabel)
         titleLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
 
-        let explainerLabel = UILabel()
         // TODO: Finalize copy.
-        explainerLabel.text = NSLocalizedString("ONBOARDING_PERMISSIONS_EXPLANATION", comment: "Explanation in the 'onboarding permissions' view.")
-        explainerLabel.textColor = Theme.secondaryColor
-        explainerLabel.font = UIFont.ows_dynamicTypeCaption1
-        explainerLabel.numberOfLines = 0
-        explainerLabel.textAlignment = .center
-        explainerLabel.lineBreakMode = .byWordWrapping
-        explainerLabel.isUserInteractionEnabled = true
-        explainerLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explainerLabelTapped)))
+        let explanationLabel = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_PERMISSIONS_EXPLANATION",
+                                                                                        comment: "Explanation in the 'onboarding permissions' view."),
+                                                     linkText: NSLocalizedString("ONBOARDING_PERMISSIONS_LEARN_MORE_LINK",
+                                                                                 comment: "Link to the 'learn more' in the 'onboarding permissions' view."),
+                                                     selector: #selector(explanationLabelTapped))
 
         // TODO: Make sure this all fits if dynamic font sizes are maxed out.
-        let buttonHeight: CGFloat = 48
-        let giveAccessButton = OWSFlatButton.button(title: NSLocalizedString("ONBOARDING_PERMISSIONS_GIVE_ACCESS_BUTTON",
-                                                                             comment: "Label for the 'give access' button in the 'onboarding permissions' view."),
-                                                    font: OWSFlatButton.fontForHeight(buttonHeight),
-                                                    titleColor: .white,
-                                                    backgroundColor: .ows_materialBlue,
-                                                    target: self,
-                                                    selector: #selector(giveAccessPressed))
-        giveAccessButton.autoSetDimension(.height, toSize: buttonHeight)
+        let giveAccessButton = self.button(title: NSLocalizedString("ONBOARDING_PERMISSIONS_GIVE_ACCESS_BUTTON",
+                                                                    comment: "Label for the 'give access' button in the 'onboarding permissions' view."),
+                                           selector: #selector(giveAccessPressed))
 
-        let notNowButton = OWSFlatButton.button(title: NSLocalizedString("ONBOARDING_PERMISSIONS_GIVE_ACCESS_BUTTON",
-                                                                             comment: "Label for the 'give access' button in the 'onboarding permissions' view."),
-                                                font: OWSFlatButton.fontForHeight(buttonHeight),
-                                                    titleColor: .white,
-                                                    backgroundColor: .ows_materialBlue,
-                                                    target: self,
-                                                    selector: #selector(notNowPressed))
-        notNowButton.autoSetDimension(.height, toSize: buttonHeight)
+        let notNowButton = self.button(title: NSLocalizedString("ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON",
+                                                                comment: "Label for the 'not now' button in the 'onboarding permissions' view."),
+                                           selector: #selector(notNowPressed))
 
         let buttonStack = UIStackView(arrangedSubviews: [
             giveAccessButton,
@@ -88,7 +51,7 @@ public class OnboardingPermissionsViewController: OWSViewController {
         buttonStack.spacing = 12
 
         let stackView = UIStackView(arrangedSubviews: [
-            explainerLabel,
+            explanationLabel,
             buttonStack
             ])
         stackView.axis = .vertical
@@ -146,12 +109,6 @@ public class OnboardingPermissionsViewController: OWSViewController {
         return promise
     }
 
-    // MARK: Orientation
-
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
-    }
-
      // MARK: - Events
 
     @objc func skipWasPressed() {
@@ -160,7 +117,7 @@ public class OnboardingPermissionsViewController: OWSViewController {
         onboardingController.onboardingPermissionsWasSkipped(viewController: self)
     }
 
-    @objc func explainerLabelTapped(sender: UIGestureRecognizer) {
+    @objc func explanationLabelTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
         }

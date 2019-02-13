@@ -1496,6 +1496,30 @@
 /* No comment provided by engineer. */
 "OK" = "OK";
 
+/* Explanation in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "ONBOARDING_PERMISSIONS_EXPLANATION";
+
+/* Label for the 'give access' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_GIVE_ACCESS_BUTTON" = "Give Access";
+
+/* Link to the 'learn more' in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_LEARN_MORE_LINK" = "Learn More";
+
+/* Label for the 'not now' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Not Now";
+
+/* Title of the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_TITLE" = "We need access to your contacts and notifications";
+
+/* Explanation in the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_EXPLANATION" = "By continuing, you agree to Signal's terms.";
+
+/* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Terms and Privacy Policy";
+
+/* Title of the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TITLE" = "Signal is the private messenger for everybody";
+
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
 
