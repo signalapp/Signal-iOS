@@ -22,13 +22,6 @@ extern NSString *const TappedStatusBarNotification;
                 replacementString:(NSString *)insertionText
                       countryCode:(NSString *)countryCode;
 
-// The same method, but it temporarily adds a prefix during the formatting process.
-+ (void)phoneNumberTextField:(UITextField *)textField
-    shouldChangeCharactersInRange:(NSRange)range
-                replacementString:(NSString *)insertionText
-                      countryCode:(NSString *)countryCode
-                           prefix:(nullable NSString *)prefix;
-
 + (void)ows2FAPINTextField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText;

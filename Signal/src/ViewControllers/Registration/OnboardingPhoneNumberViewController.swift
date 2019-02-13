@@ -21,25 +21,6 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
     private let phoneNumberTextField = UITextField()
     private var nextButton: OWSFlatButton?
 
-    //    - (void)didTapLegalTerms:(UIButton *)sender
-//{
-//    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:kLegalTermsUrlString]];
-//    }
-//#pragma mark - Keyboard notifications
-//
-//- (void)initializeKeyboardHandlers
-//{
-//    UITapGestureRecognizer *outsideTabRecognizer =
-//        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboardFromAppropriateSubView)];
-//    [self.view addGestureRecognizer:outsideTabRecognizer];
-//    }
-//
-//    - (void)dismissKeyboardFromAppropriateSubView
-//        {
-//            [self.view endEditing:NO];
-//}
-//
-
     override public func loadView() {
         super.loadView()
 
@@ -62,8 +43,6 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
         // Country
 
-        // TODO: dynamic
-        let fontSizePoints: CGFloat = ScaleFromIPhone5To7Plus(16, 20)
         let rowHeight: CGFloat = 40
 
         countryNameLabel.textColor = Theme.primaryColor
@@ -74,9 +53,6 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         let countryIcon = UIImage(named: (CurrentAppContext().isRTL
             ? "small_chevron_left"
             : "small_chevron_right"))
-//        NavBarBackRTL
-//        small_chevron_right
-//        system_disclosure_indicator_rtl
         let countryImageView = UIImageView(image: countryIcon?.withRenderingMode(.alwaysTemplate))
         countryImageView.tintColor = Theme.placeholderColor
         countryImageView.setContentHuggingHigh()
@@ -472,11 +448,8 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
 extension OnboardingPhoneNumberViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        var prefix = self.callingCode
-        if prefix.hasPrefix(COUNTRY_CODE_PREFIX) {
-            prefix = prefix.substring(from: COUNTRY_CODE_PREFIX.count)
-        }
-        ViewControllerUtils.phoneNumber(textField, shouldChangeCharactersIn: range, replacementString: string, countryCode: countryCode, prefix: prefix)
+        // TODO: Fix auto-format of phone numbers.
+        ViewControllerUtils.phoneNumber(textField, shouldChangeCharactersIn: range, replacementString: string, countryCode: countryCode)
 
         // Inform our caller that we took care of performing the change.
         return false

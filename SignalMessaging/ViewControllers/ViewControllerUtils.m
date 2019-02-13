@@ -90,11 +90,6 @@ const NSUInteger kMax2FAPinLength = 16;
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
     NSUInteger cursorPositionAfterChange = MIN(left.length + center.length, textAfterChange.length);
 
-    //    if (prefix.length > 0) {
-    //        textAfterChange = [prefix stringByAppendingString:textAfterChange];
-    //        cursorPositionAfterChange += prefix.length;
-    //    }
-
     NSString *textAfterReformat =
         [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange
                                                      withSpecifiedCountryCodeString:countryCode];
@@ -102,22 +97,6 @@ const NSUInteger kMax2FAPinLength = 16;
                                                                                  from:textAfterChange
                                                                                    to:textAfterReformat
                                                                     stickingRightward:isJustDeletion];
-
-    //    if (prefix.length > 0) {
-    //        OWSAssertDebug([textAfterReformat hasPrefix:prefix]);
-    //        if ([textAfterReformat hasPrefix:prefix]) {
-    //            textAfterReformat = [textAfterReformat substringFromIndex:prefix.length];
-    //            cursorPositionAfterReformat -= prefix.length;
-    //
-    //            NSRange trimRange = [textAfterReformat
-    //            rangeOfCharacterFromSet:NSCharacterSet.whitespaceCharacterSet.invertedSet]; if (trimRange.location >
-    //            0) {
-    //                textAfterReformat = [textAfterReformat
-    //                stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-    //                cursorPositionAfterReformat -= trimRange.location;
-    //            }
-    //        }
-    //    }
 
     textField.text = textAfterReformat;
     UITextPosition *pos =

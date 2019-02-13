@@ -80,7 +80,11 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         guard sender.state == .recognized else {
             return
         }
-        // TODO:
+        guard let url = URL(string: kLegalTermsUrlString) else {
+            owsFailDebug("Invalid URL.")
+            return
+        }
+        UIApplication.shared.openURL(url)
     }
 
     @objc func continuePressed() {
