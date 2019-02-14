@@ -22,7 +22,7 @@ CGFloat ScaleFromIPhone5To7Plus(CGFloat iPhone5Value, CGFloat iPhone7PlusValue)
     CGFloat screenShortDimension = ScreenShortDimension();
     return (CGFloat)round(CGFloatLerp(iPhone5Value,
         iPhone7PlusValue,
-        CGFloatInverseLerp(screenShortDimension, kIPhone5ScreenWidth, kIPhone7PlusScreenWidth)));
+        CGFloatClamp01(CGFloatInverseLerp(screenShortDimension, kIPhone5ScreenWidth, kIPhone7PlusScreenWidth))));
 }
 
 CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)

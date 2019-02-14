@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIColor+OWS.h"
@@ -119,6 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
         [otherColor getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
     OWSAssertDebug(result);
 
+    alpha = CGFloatClamp01(alpha);
     return [UIColor colorWithRed:CGFloatLerp(r0, r1, alpha)
                            green:CGFloatLerp(g0, g1, alpha)
                             blue:CGFloatLerp(b0, b1, alpha)

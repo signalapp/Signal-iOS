@@ -29,6 +29,8 @@ public struct ImageEditorPinchState {
 //   than UIPinchGestureRecognizer.
 public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
 
+    public weak var referenceView: UIView?
+
     public var pinchStateStart = ImageEditorPinchState.empty
 
     public var pinchStateLast = ImageEditorPinchState.empty
@@ -144,32 +146,24 @@ public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
         if allTouches.count < 2 {
             return .possible
         }
-        guard let pinchState = pinchState(for: allTouches) else {
+        guard let pinchState = pinchState() else {
             return .invalid
         }
         return .valid(pinchState:pinchState)
     }
 
-    private func pinchState(for touches: Set<UITouch>) -> ImageEditorPinchState? {
-        guard let view = self.view else {
+    private func pinchState() -> ImageEditorPinchState? {
+        guard let referenceView = referenceView else {
             owsFailDebug("Missing view")
             return nil
         }
-        guard touches.count == 2 else {
+        guard numberOfTouches == 2 else {
             return nil
         }
-        let touchList = Array<UITouch>(touches).sorted { (left, right) -> Bool in
-            // TODO: Will timestamp yield stable sort?
-            left.timestamp < right.timestamp
-        }
-        guard let touch0 = touchList.first else {
-            return nil
-        }
-        guard let touch1 = touchList.last else {
-            return nil
-        }
-        let location0 = touch0.location(in: view)
-        let location1 = touch1.location(in: view)
+        // We need the touch locations _with a stable ordering_.
+        // The only way to ensure the ordering is to use location(ofTouch:in:).
+        let location0 = location(ofTouch: 0, in: referenceView)
+        let location1 = location(ofTouch: 1, in: referenceView)
 
         let centroid = CGPointScale(CGPointAdd(location0, location1), 0.5)
         let distance = CGPointDistance(location0, location1)
@@ -178,7 +172,6 @@ public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
         // changes to the angle.
         let delta = CGPointSubtract(location1, location0)
         let angleRadians = atan2(delta.y, delta.x)
-
         return ImageEditorPinchState(centroid: centroid,
                                      distance: distance,
                                      angleRadians: angleRadians)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 @objc class TypingIndicatorView: UIStackView {
@@ -108,9 +108,9 @@
             var animationDuration: CFTimeInterval = 0
 
             let addDotKeyFrame = { (keyFrameTime: CFTimeInterval, progress: CGFloat) in
-                let dotColor = baseColor.withAlphaComponent(CGFloatLerp(0.4, 1.0, progress))
+                let dotColor = baseColor.withAlphaComponent(CGFloatLerp(0.4, 1.0, CGFloatClamp01(progress)))
                 colorValues.append(dotColor.cgColor)
-                let radius = CGFloatLerp(TypingIndicatorView.kMinRadiusPt, TypingIndicatorView.kMaxRadiusPt, progress)
+                let radius = CGFloatLerp(TypingIndicatorView.kMinRadiusPt, TypingIndicatorView.kMaxRadiusPt, CGFloatClamp01(progress))
                 let margin = (TypingIndicatorView.kMaxRadiusPt - radius) * 0.5
                 let bezierPath = UIBezierPath(ovalIn: CGRect(x: margin, y: margin, width: radius, height: radius))
                 pathValues.append(bezierPath.cgPath)

@@ -16,8 +16,6 @@ CG_INLINE CGFloat CGFloatClamp01(CGFloat value)
 
 CG_INLINE CGFloat CGFloatLerp(CGFloat left, CGFloat right, CGFloat alpha)
 {
-    alpha = CGFloatClamp01(alpha);
-
     return (left * (1.f - alpha)) + (right * alpha);
 }
 

@@ -99,7 +99,7 @@ public protocol ImageEditorTextViewControllerDelegate: class {
 // MARK: -
 
 // A view for editing text item in image editor.
-class ImageEditorTextViewController: OWSViewController, VAlignTextViewDelegate {
+public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDelegate {
     private weak var delegate: ImageEditorTextViewControllerDelegate?
 
     private let textItem: ImageEditorTextItem
@@ -127,19 +127,19 @@ class ImageEditorTextViewController: OWSViewController, VAlignTextViewDelegate {
 
     // MARK: - View Lifecycle
 
-    override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         textView.becomeFirstResponder()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
+    public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         textView.becomeFirstResponder()
     }
 
-    override func loadView() {
+    public override func loadView() {
         self.view = UIView()
         self.view.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
 
@@ -155,8 +155,12 @@ class ImageEditorTextViewController: OWSViewController, VAlignTextViewDelegate {
         textView.autoHCenterInSuperview()
         // In order to have text wrapping be as WYSIWYG as possible, we limit the text view
         // to the max text width on the image.
-        let maxTextWidthPoints = max(self.maxTextWidthPoints, 200)
-        textView.autoSetDimension(.width, toSize: maxTextWidthPoints, relation: .lessThanOrEqual)
+//        let maxTextWidthPoints = max(textItem.widthPoints, 200)
+//        textView.autoSetDimension(.width, toSize: maxTextWidthPoints, relation: .lessThanOrEqual)
+//        textView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
+//        textView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
+        textView.autoPinEdge(toSuperviewMargin: .leading)
+        textView.autoPinEdge(toSuperviewMargin: .trailing)
         self.autoPinView(toBottomOfViewControllerOrKeyboard: textView, avoidNotch: true)
     }
 
@@ -207,7 +211,7 @@ class ImageEditorTextViewController: OWSViewController, VAlignTextViewDelegate {
 
     // MARK: - VAlignTextViewDelegate
 
-    func textViewDidComplete() {
+    public func textViewDidComplete() {
         completeAndDismiss()
     }
 }
