@@ -132,16 +132,8 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         strokeView.autoPinEdge(toSuperviewEdge: .bottom)
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        self.navigationController?.isNavigationBarHidden = false
-    }
-
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        self.navigationController?.isNavigationBarHidden = false
 
         phoneNumberTextField.becomeFirstResponder()
 

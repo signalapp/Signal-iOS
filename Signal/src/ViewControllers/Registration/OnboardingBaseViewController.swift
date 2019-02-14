@@ -31,7 +31,7 @@ public class OnboardingBaseViewController: OWSViewController {
         let titleLabel = UILabel()
         titleLabel.text = text
         titleLabel.textColor = Theme.primaryColor
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_mediumWeight()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_mediumWeight()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -75,12 +75,20 @@ public class OnboardingBaseViewController: OWSViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        self.navigationController?.isNavigationBarHidden = true
+
         // TODO: Is there a better way to do this?
         if let navigationController = self.navigationController as? OWSNavigationController {
             SignalApp.shared().signUpFlowNavigationController = navigationController
         } else {
             owsFailDebug("Missing or invalid navigationController")
         }
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        self.navigationController?.isNavigationBarHidden = true
     }
 
     // MARK: - Orientation

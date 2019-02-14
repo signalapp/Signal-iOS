@@ -73,8 +73,6 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.navigationController?.isNavigationBarHidden = false
-
         loadContent()
     }
 
@@ -91,12 +89,6 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         }
         webView.load(URLRequest(url: url))
         webView.scrollView.contentOffset = .zero
-    }
-
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        self.navigationController?.isNavigationBarHidden = false
     }
 
     // MARK: - Notifications
