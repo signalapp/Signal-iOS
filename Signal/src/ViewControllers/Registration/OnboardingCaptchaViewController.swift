@@ -122,12 +122,13 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         }
         onboardingController.update(captchaToken: captchaToken)
 
-        tryToRegister(smsVerification: false)
+        onboardingController.tryToRegister(fromViewController: self, smsVerification: false)
     }
 
     private func parseCaptcha(url: URL) -> String? {
         Logger.info("")
 
+        // Example URL:
         // signalcaptcha://03AF6jDqXgf1PocNNrWRJEENZ9l6RAMIsUoESi2dFKkxTgE2qjdZGVjEW6SZNFQqeRRTgGqOii6zHGG--uLyC1HnhSmRt8wHeKxHcg1hsK4ucTusANIeFXVB8wPPiV7U_0w2jUFVak5clMCvW9_JBfbfzj51_e9sou8DYfwc_R6THuTBTdpSV8Nh0yJalgget-nSukCxh6FPA6hRVbw7lP3r-me1QCykHOfh-V29UVaQ4Fs5upHvwB5rtiViqT_HN8WuGmdIdGcaWxaqy1lQTgFSs2Shdj593wZiXfhJnCWAw9rMn3jSgIZhkFxdXwKOmslQ2E_I8iWkm6
         guard let host = url.host,
             host.count > 0 else {
@@ -158,6 +159,7 @@ extension OnboardingCaptchaViewController: WKNavigationDelegate {
             return
         }
 
+        // Loading the Captcha content involves a series of actions.
         decisionHandler(.allow)
     }
 

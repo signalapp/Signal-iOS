@@ -60,6 +60,14 @@ public class OnboardingPhoneNumber: NSObject {
 @objc
 public class OnboardingController: NSObject {
 
+    // MARK: - Dependencies
+
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
+    // MARK: -
+
     @objc
     public override init() {
         super.init()
@@ -209,7 +217,7 @@ public class OnboardingController: NSObject {
         return debugValue(forKey: kKeychainKey_LastRegisteredCountryCode)
     }
 
-    public class func setLastRegisteredCountryCode(value: String) {
+    private class func setLastRegisteredCountryCode(value: String) {
         setDebugValue(value, forKey: kKeychainKey_LastRegisteredCountryCode)
     }
 
@@ -217,7 +225,65 @@ public class OnboardingController: NSObject {
         return debugValue(forKey: kKeychainKey_LastRegisteredPhoneNumber)
     }
 
-    public class func setLastRegisteredPhoneNumber(value: String) {
+    private class func setLastRegisteredPhoneNumber(value: String) {
         setDebugValue(value, forKey: kKeychainKey_LastRegisteredPhoneNumber)
+    }
+
+    // MARK: - Registration
+
+    public func tryToRegister(fromViewController: UIViewController,
+                              smsVerification: Bool) {
+        guard let phoneNumber = phoneNumber else {
+            owsFailDebug("Missing phoneNumber.")
+            return
+        }
+
+        // We eagerly update this state, regardless of whether or not the
+        // registration request succeeds.
+        OnboardingController.setLastRegisteredCountryCode(value: countryState.countryCode)
+        OnboardingController.setLastRegisteredPhoneNumber(value: phoneNumber.userInput)
+
+        let captchaToken = self.captchaToken
+        ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
+                                                     canCancel: true) { (modal) in
+
+                                                        self.tsAccountManager.register(withPhoneNumber: phoneNumber.e164,
+                                                                                       captchaToken: captchaToken,
+                                                                                       success: {
+                                                                                        DispatchQueue.main.async {
+                                                                                            modal.dismiss(completion: {
+                                                                                                self.registrationSucceeded(viewController: fromViewController)
+                                                                                            })
+                                                                                        }
+                                                        }, failure: { (error) in
+                                                            Logger.error("Error: \(error)")
+
+                                                            DispatchQueue.main.async {
+                                                                modal.dismiss(completion: {
+                                                                    self.registrationFailed(viewController: fromViewController, error: error as NSError)
+                                                                })
+                                                            }
+                                                        }, smsVerification: smsVerification)
+        }
+    }
+
+    private func registrationSucceeded(viewController: UIViewController) {
+        onboardingRegistrationSucceeded(viewController: viewController)
+    }
+
+    private func registrationFailed(viewController: UIViewController, error: NSError) {
+        if error.code == 402 {
+            Logger.info("Captcha requested.")
+
+            onboardingDidRequireCaptcha(viewController: viewController)
+            return
+        } else if error.code == 400 {
+            OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
+                                message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
+
+        } else {
+            OWSAlerts.showAlert(title: error.localizedDescription,
+                                message: error.localizedRecoverySuggestion)
+        }
     }
 }

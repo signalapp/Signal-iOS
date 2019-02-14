@@ -324,10 +324,10 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                                             proceedTitle: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BUTTON",
                                                                              comment: "button text to proceed with registration when on an iPad"),
                                             proceedAction: { (_) in
-                                                self.tryToRegister(smsVerification: false)
+                                                self.onboardingController.tryToRegister(fromViewController: self, smsVerification: false)
             })
         } else {
-            tryToRegister(smsVerification: false)
+            onboardingController.tryToRegister(fromViewController: self, smsVerification: false)
         }
     }
 }
