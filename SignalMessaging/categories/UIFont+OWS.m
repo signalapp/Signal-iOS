@@ -101,6 +101,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)preferredFontForTextStyleClamped:(UIFontTextStyle)fontTextStyle
 {
+    // We clamp the dynamic type sizes at the max size available
+    // without "larger accessibility sizes" enabled.
     static NSDictionary<UIFontTextStyle, NSNumber *> *maxPointSizeMap = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
