@@ -146,7 +146,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 // Returns YES on success.
 - (BOOL)resetForReregistration;
-- (NSString *)reregisterationPhoneNumber;
+- (nullable NSString *)reregisterationPhoneNumber;
 - (BOOL)isReregistering;
 
 #pragma mark - Manual Message Fetch

@@ -1,8 +1,17 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
+
+static inline BOOL OWSIsDebugBuild()
+{
+#ifdef DEBUG
+    return YES;
+#else
+    return NO;
+#endif
+}
 
 // These are fired whenever the corresponding "main app" or "app extension"
 // notification is fired.

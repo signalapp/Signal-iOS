@@ -15,6 +15,8 @@ public class OnboardingBaseViewController: OWSViewController {
         self.onboardingController = onboardingController
 
         super.init(nibName: nil, bundle: nil)
+
+        self.shouldUseTheme = false
     }
 
     @available(*, unavailable, message: "use other init() instead.")
@@ -54,7 +56,7 @@ public class OnboardingBaseViewController: OWSViewController {
         return explanationLabel
     }
 
-    func button(title: String, selector: Selector) -> UIView {
+    func button(title: String, selector: Selector) -> OWSFlatButton {
         // TODO: Make sure this all fits if dynamic font sizes are maxed out.
         let buttonHeight: CGFloat = 48
         let button = OWSFlatButton.button(title: title,
@@ -71,5 +73,9 @@ public class OnboardingBaseViewController: OWSViewController {
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .portrait
+    }
+
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
 }

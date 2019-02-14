@@ -88,6 +88,22 @@ extension UIView {
     }
 
     @objc
+    public class func hStretchingSpacer() -> UIView {
+        let view = UIView()
+        view.setContentHuggingHorizontalLow()
+        view.setCompressionResistanceHorizontalLow()
+        return view
+    }
+
+    @objc
+    public class func vStretchingSpacer() -> UIView {
+        let view = UIView()
+        view.setContentHuggingVerticalLow()
+        view.setCompressionResistanceVerticalLow()
+        return view
+    }
+
+    @objc
     public func applyScaleAspectFitLayout(subview: UIView, aspectRatio: CGFloat) -> [NSLayoutConstraint] {
         guard subviews.contains(subview) else {
             owsFailDebug("Not a subview.")

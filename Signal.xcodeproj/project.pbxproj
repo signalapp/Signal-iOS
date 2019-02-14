@@ -76,6 +76,7 @@
 		3448E15E221333F5004B052E /* OnboardingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E15D221333F5004B052E /* OnboardingController.swift */; };
 		3448E16022134C89004B052E /* OnboardingSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E15F22134C88004B052E /* OnboardingSplashViewController.swift */; };
 		3448E1622213585C004B052E /* OnboardingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E1612213585C004B052E /* OnboardingBaseViewController.swift */; };
+		3448E16422135FFA004B052E /* OnboardingPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */; };
 		344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F248C2007CCD600CFB4F4 /* DisplayableText.swift */; };
 		345BC30C2047030700257B7C /* OWS2FASettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 345BC30B2047030600257B7C /* OWS2FASettingsViewController.m */; };
 		3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461284A1FD0B93F00532771 /* SAELoadViewController.swift */; };
@@ -739,6 +740,7 @@
 		3448E15D221333F5004B052E /* OnboardingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingController.swift; sourceTree = "<group>"; };
 		3448E15F22134C88004B052E /* OnboardingSplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingSplashViewController.swift; sourceTree = "<group>"; };
 		3448E1612213585C004B052E /* OnboardingBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingBaseViewController.swift; sourceTree = "<group>"; };
+		3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		34491FC11FB0F78500B3E5A3 /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = translations/my.lproj/Localizable.strings; sourceTree = "<group>"; };
 		344F248C2007CCD600CFB4F4 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
 		345BC30A2047030600257B7C /* OWS2FASettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS2FASettingsViewController.h; sourceTree = "<group>"; };
@@ -1466,6 +1468,7 @@
 				3448E1612213585C004B052E /* OnboardingBaseViewController.swift */,
 				3448E15D221333F5004B052E /* OnboardingController.swift */,
 				3448E15B22133274004B052E /* OnboardingPermissionsViewController.swift */,
+				3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */,
 				3448E15F22134C88004B052E /* OnboardingSplashViewController.swift */,
 				346E9D5321B040B600562252 /* RegistrationController.swift */,
 				340FC878204DAC8C007AEB0F /* RegistrationViewController.h */,
@@ -3542,6 +3545,7 @@
 				4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */,
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
+				3448E16422135FFA004B052E /* OnboardingPhoneNumberViewController.swift in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				344825C6211390C800DB4BD8 /* OWSOrphanDataCleaner.m in Sources */,
 				45D2AC02204885170033C692 /* OWS2FAReminderViewController.swift in Sources */,

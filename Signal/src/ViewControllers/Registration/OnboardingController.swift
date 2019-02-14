@@ -12,6 +12,8 @@ public protocol OnboardingController: class {
 
     func onboardingPermissionsWasSkipped(viewController: UIViewController)
     func onboardingPermissionsDidComplete(viewController: UIViewController)
+
+    func onboardingPhoneNumberDidComplete(viewController: UIViewController)
 }
 
 // MARK: -
@@ -28,7 +30,21 @@ public class OnboardingControllerImpl: NSObject, OnboardingController {
         viewController.navigationController?.pushViewController(view, animated: true)
     }
 
-    public func onboardingPermissionsWasSkipped(viewController: UIViewController) {}
+    public func onboardingPermissionsWasSkipped(viewController: UIViewController) {
+        pushPhoneNumberView(viewController: viewController)
+    }
 
-    public func onboardingPermissionsDidComplete(viewController: UIViewController) {}
+    public func onboardingPermissionsDidComplete(viewController: UIViewController) {
+        pushPhoneNumberView(viewController: viewController)
+    }
+
+    private func pushPhoneNumberView(viewController: UIViewController) {
+        let view = OnboardingPhoneNumberViewController(onboardingController: self)
+        viewController.navigationController?.pushViewController(view, animated: true)
+    }
+
+    public func onboardingPhoneNumberDidComplete(viewController: UIViewController) {
+        //        CodeVerificationViewController *vc = [CodeVerificationViewController new];
+        //        [weakSelf.navigationController pushViewController:vc animated:YES];
+    }
 }

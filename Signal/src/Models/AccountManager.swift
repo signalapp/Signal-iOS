@@ -19,17 +19,6 @@ public class AccountManager: NSObject {
         return OWSProfileManager.shared()
     }
 
-    // MARK: -
-
-    @objc
-    public override init() {
-        super.init()
-
-        SwiftSingletons.register(self)
-    }
-
-    // MARK: - Dependencies
-
     private var networkManager: TSNetworkManager {
         return SSKEnvironment.shared.networkManager
     }
@@ -40,6 +29,15 @@ public class AccountManager: NSObject {
 
     private var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
+    }
+
+    // MARK: -
+
+    @objc
+    public override init() {
+        super.init()
+
+        SwiftSingletons.register(self)
     }
 
     // MARK: registration
