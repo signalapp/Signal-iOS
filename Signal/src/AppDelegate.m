@@ -1479,7 +1479,7 @@ static NSTimeInterval launchStartedAt;
         }
     } else {
         if (OWSIsDebugBuild()) {
-            rootViewController = [[OnboardingControllerImpl new] initialViewController];
+            rootViewController = [[OnboardingController new] initialViewController];
         } else {
             rootViewController = [RegistrationViewController new];
         }

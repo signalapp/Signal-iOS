@@ -340,8 +340,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [_requestCodeAgainSpinner startAnimating];
     __weak CodeVerificationViewController *weakSelf = self;
-    [self.tsAccountManager
-        rerequestSMSWithSuccess:^{
+    [self.tsAccountManager rerequestSMSWithCaptchaToken:nil
+        success:^{
             OWSLogInfo(@"Successfully requested SMS code");
             [weakSelf enableServerActions:YES];
             [weakSelf.requestCodeAgainSpinner stopAnimating];
@@ -363,8 +363,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [_requestCallSpinner startAnimating];
     __weak CodeVerificationViewController *weakSelf = self;
-    [self.tsAccountManager
-        rerequestVoiceWithSuccess:^{
+    [self.tsAccountManager rerequestVoiceWithCaptchaToken:nil
+        success:^{
             OWSLogInfo(@"Successfully requested voice code");
 
             [weakSelf enableServerActions:YES];
