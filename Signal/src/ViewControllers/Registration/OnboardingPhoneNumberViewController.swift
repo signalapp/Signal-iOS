@@ -29,9 +29,6 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         view.backgroundColor = Theme.backgroundColor
         view.layoutMargins = .zero
 
-        // TODO:
-//        navigationItem.title = NSLocalizedString("SETTINGS_BACKUP", comment: "Label for the backup view in app settings.")
-
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_PHONE_NUMBER_TITLE", comment: "Title of the 'onboarding phone number' view."))
 
         // Country
@@ -115,7 +112,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         stackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.autoPinWidthToSuperviewMargins()
+        stackView.autoPinWidthToSuperview()
         stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
 
@@ -228,6 +225,8 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             lastRegisteredPhoneNumber.count > 0,
             lastRegisteredPhoneNumber.hasPrefix(callingCode) {
             phoneNumberTextField.text = lastRegisteredPhoneNumber.substring(from: callingCode.count)
+        } else if let phoneNumber = onboardingController.phoneNumber {
+            phoneNumberTextField.text = phoneNumber.userInput
         }
 
         updateState()

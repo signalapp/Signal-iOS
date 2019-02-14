@@ -23,6 +23,7 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
 
         let explanationLabel = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_PERMISSIONS_EXPLANATION",
                                                                                   comment: "Explanation in the 'onboarding permissions' view."))
+        explanationLabel.setCompressionResistanceVerticalLow()
 
         // TODO: Make sure this all fits if dynamic font sizes are maxed out.
         let giveAccessButton = self.button(title: NSLocalizedString("ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
