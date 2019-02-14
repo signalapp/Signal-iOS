@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "RegistrationUtils.h"
@@ -59,8 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
         presentFromViewController:fromViewController
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [self.tsAccountManager
-                          registerWithPhoneNumber:self.tsAccountManager.reregisterationPhoneNumber
+                      [self.tsAccountManager registerWithPhoneNumber:self.tsAccountManager.reregisterationPhoneNumber
+                          captchaToken:nil
                           success:^{
                               OWSLogInfo(@"re-registering: send verification code succeeded.");
 

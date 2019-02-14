@@ -322,6 +322,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 }
 
 - (void)registerWithPhoneNumber:(NSString *)phoneNumber
+                   captchaToken:(nullable NSString *)captchaToken
                         success:(void (^)(void))successBlock
                         failure:(void (^)(NSError *error))failureBlock
                 smsVerification:(BOOL)isSMS
@@ -339,6 +340,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
     TSRequest *request =
         [OWSRequestFactory requestVerificationCodeRequestWithPhoneNumber:phoneNumber
+                                                            captchaToken:captchaToken
                                                                transport:(isSMS ? TSVerificationTransportSMS
                                                                                 : TSVerificationTransportVoice)];
     [[TSNetworkManager sharedManager] makeRequest:request
@@ -357,20 +359,33 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }];
 }
 
-- (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
+- (void)rerequestSMSWithCaptchaToken:(nullable NSString *)captchaToken
+                             success:(void (^)(void))successBlock
+                             failure:(void (^)(NSError *error))failureBlock
 {
+    // TODO: Can we remove phoneNumberAwaitingVerification?
     NSString *number          = self.phoneNumberAwaitingVerification;
     OWSAssertDebug(number);
 
-    [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:YES];
+    [self registerWithPhoneNumber:number
+                     captchaToken:captchaToken
+                          success:successBlock
+                          failure:failureBlock
+                  smsVerification:YES];
 }
 
-- (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
+- (void)rerequestVoiceWithCaptchaToken:(nullable NSString *)captchaToken
+                               success:(void (^)(void))successBlock
+                               failure:(void (^)(NSError *error))failureBlock
 {
     NSString *number          = self.phoneNumberAwaitingVerification;
     OWSAssertDebug(number);
 
-    [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:NO];
+    [self registerWithPhoneNumber:number
+                     captchaToken:captchaToken
+                          success:successBlock
+                          failure:failureBlock
+                  smsVerification:NO];
 }
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode

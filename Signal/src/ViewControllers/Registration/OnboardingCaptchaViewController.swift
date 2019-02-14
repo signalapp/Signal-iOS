@@ -14,7 +14,6 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         super.loadView()
 
         view.backgroundColor = Theme.backgroundColor
-        view.backgroundColor = .orange
         view.layoutMargins = .zero
 
         // TODO:
@@ -45,8 +44,8 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         webView.allowsBackForwardNavigationGestures = false
         webView.customUserAgent = "Signal iOS (+https://signal.org/download)"
         webView.allowsLinkPreview = false
-//        webView.scrollView.contentInset = .zero
-//        webView.layoutMargins = .zero
+        webView.scrollView.contentInset = .zero
+        webView.layoutMargins = .zero
 
         let stackView = UIStackView(arrangedSubviews: [
             titleRow,
@@ -108,46 +107,36 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         loadContent()
     }
 
-    // MARK: - Events
+    // MARK: -
 
-    private func didComplete(url: URL) {
+    private func parseCaptchaAndTryToRegister(url: URL) {
+        Logger.info("")
+
+        guard let captchaToken = parseCaptcha(url: url) else {
+            owsFailDebug("Could not parse captcha token: \(url)")
+            // TODO: Alert?
+            //
+            // Reload content so user can try again.
+            loadContent()
+            return
+        }
+        onboardingController.update(captchaToken: captchaToken)
+
+        tryToRegister(smsVerification: false)
+    }
+
+    private func parseCaptcha(url: URL) -> String? {
         Logger.info("")
 
         // signalcaptcha://03AF6jDqXgf1PocNNrWRJEENZ9l6RAMIsUoESi2dFKkxTgE2qjdZGVjEW6SZNFQqeRRTgGqOii6zHGG--uLyC1HnhSmRt8wHeKxHcg1hsK4ucTusANIeFXVB8wPPiV7U_0w2jUFVak5clMCvW9_JBfbfzj51_e9sou8DYfwc_R6THuTBTdpSV8Nh0yJalgget-nSukCxh6FPA6hRVbw7lP3r-me1QCykHOfh-V29UVaQ4Fs5upHvwB5rtiViqT_HN8WuGmdIdGcaWxaqy1lQTgFSs2Shdj593wZiXfhJnCWAw9rMn3jSgIZhkFxdXwKOmslQ2E_I8iWkm6
         guard let host = url.host,
             host.count > 0 else {
                 owsFailDebug("Missing host.")
-                return
+                return nil
         }
 
-        onboardingController.
+        return host
     }
-//
-//    @objc func countryRowTapped(sender: UIGestureRecognizer) {
-//        guard sender.state == .recognized else {
-//            return
-//        }
-//        showCountryPicker()
-//    }
-//
-//    @objc func countryCodeTapped(sender: UIGestureRecognizer) {
-//        guard sender.state == .recognized else {
-//            return
-//        }
-//        showCountryPicker()
-//    }
-//
-//    @objc func nextPressed() {
-//        Logger.info("")
-//
-//        parseAndTryToRegister()
-//    }
-//
-//    // MARK: -
-//
-//    private func registrationSucceeded() {
-//        self.onboardingController.onboardingPhoneNumberDidComplete(viewController: self)
-//    }
 }
 
 // MARK: -
@@ -164,7 +153,7 @@ extension OnboardingCaptchaViewController: WKNavigationDelegate {
         if url.scheme == "signalcaptcha" {
             decisionHandler(.cancel)
             DispatchQueue.main.async {
-                didComplete(url: url)
+                self.parseCaptchaAndTryToRegister(url: url)
             }
             return
         }
@@ -201,8 +190,6 @@ extension OnboardingCaptchaViewController: WKNavigationDelegate {
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         Logger.verbose("navigation: \(String(describing: navigation)), error: \(error)")
     }
-
-//    public func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void)
 
     public func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         Logger.verbose("")

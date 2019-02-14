@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-public class OnboardingState: NSObject {
+public class OnboardingCountryState: NSObject {
     public let countryName: String
     public let callingCode: String
     public let countryCode: String
@@ -19,7 +19,7 @@ public class OnboardingState: NSObject {
         self.countryCode = countryCode
     }
 
-    public static var defaultValue: OnboardingState {
+    public static var defaultValue: OnboardingCountryState {
         AssertIsOnMainThread()
 
         var countryCode: String = PhoneNumber.defaultCountryCode()
@@ -36,12 +36,34 @@ public class OnboardingState: NSObject {
             countryName = countryNameDerived
         }
 
-        return OnboardingState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
+        return OnboardingCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
     }
 }
 
+// MARK: -
+
+@objc
+public class OnboardingPhoneNumber: NSObject {
+    public let e164: String
+    public let userInput: String
+
+    @objc
+    public init(e164: String,
+                userInput: String) {
+        self.e164 = e164
+        self.userInput = userInput
+    }
+}
+
+// MARK: -
+
 @objc
 public class OnboardingController: NSObject {
+
+    @objc
+    public override init() {
+        super.init()
+    }
 
     // MARK: - Factory Methods
 
@@ -58,6 +80,8 @@ public class OnboardingController: NSObject {
     public func onboardingSplashDidComplete(viewController: UIViewController) {
         AssertIsOnMainThread()
 
+        Logger.info("")
+
         let view = OnboardingPermissionsViewController(onboardingController: self)
         viewController.navigationController?.pushViewController(view, animated: true)
     }
@@ -65,11 +89,15 @@ public class OnboardingController: NSObject {
     public func onboardingPermissionsWasSkipped(viewController: UIViewController) {
         AssertIsOnMainThread()
 
+        Logger.info("")
+
         pushPhoneNumberView(viewController: viewController)
     }
 
     public func onboardingPermissionsDidComplete(viewController: UIViewController) {
         AssertIsOnMainThread()
+
+        Logger.info("")
 
         pushPhoneNumberView(viewController: viewController)
     }
@@ -81,53 +109,64 @@ public class OnboardingController: NSObject {
         viewController.navigationController?.pushViewController(view, animated: true)
     }
 
-    public func onboardingPhoneNumberDidComplete(viewController: UIViewController) {
+    public func onboardingRegistrationSucceeded(viewController: UIViewController) {
         AssertIsOnMainThread()
+
+        Logger.info("")
 
         //        CodeVerificationViewController *vc = [CodeVerificationViewController new];
         //        [weakSelf.navigationController pushViewController:vc animated:YES];
     }
 
-    public func onboardingPhoneNumberDidRequireCaptcha(viewController: UIViewController) {
+    public func onboardingDidRequireCaptcha(viewController: UIViewController) {
         AssertIsOnMainThread()
+
+        Logger.info("")
+
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+
+        // The service could demand CAPTCHA from the "phone number" view or later
+        // from the "code verification" view.  The "Captcha" view should always appear
+        // immediately after the "phone number" view.
+        while navigationController.viewControllers.count > 1 &&
+            !(navigationController.topViewController is OnboardingPhoneNumberViewController) {
+                navigationController.popViewController(animated: false)
+        }
 
         let view = OnboardingCaptchaViewController(onboardingController: self)
-        viewController.navigationController?.pushViewController(view, animated: true)
-    }
-
-    public func onboardingCaptchaDidComplete(viewController: UIViewController,
-                                             captchaToken: String) {
-        AssertIsOnMainThread()
-
-        self.captchaToken = captchaToken
-
-//        let view = OnboardingCaptchaViewController(onboardingController: self)
-//        viewController.navigationController?.pushViewController(view, animated: true)
+        navigationController.pushViewController(view, animated: true)
     }
 
     // MARK: - State
 
-    public private(set) var state: OnboardingState = .defaultValue
+    public private(set) var countryState: OnboardingCountryState = .defaultValue
 
-    private var captchaToken: String
+    public private(set) var phoneNumber: OnboardingPhoneNumber?
 
-    public func update(withCountryName countryName: String, callingCode: String, countryCode: String) {
+    public private(set) var captchaToken: String?
+
+    @objc
+    public func update(countryState: OnboardingCountryState) {
         AssertIsOnMainThread()
 
-        guard countryCode.count > 0 else {
-            owsFailDebug("Invalid country code.")
-            return
-        }
-        guard countryName.count > 0 else {
-            owsFailDebug("Invalid country name.")
-            return
-        }
-        guard callingCode.count > 0 else {
-            owsFailDebug("Invalid calling code.")
-            return
-        }
+        self.countryState = countryState
+    }
 
-        state = OnboardingState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
+    @objc
+    public func update(phoneNumber: OnboardingPhoneNumber) {
+        AssertIsOnMainThread()
+
+        self.phoneNumber = phoneNumber
+    }
+
+    @objc
+    public func update(captchaToken: String) {
+        AssertIsOnMainThread()
+
+        self.captchaToken = captchaToken
     }
 
     // MARK: - Debug

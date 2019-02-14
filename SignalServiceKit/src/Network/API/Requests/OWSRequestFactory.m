@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRequestFactory.h"
@@ -235,13 +235,21 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
+                                                captchaToken:(nullable NSString *)captchaToken
                                                    transport:(TSVerificationTransport)transport
 {
     OWSAssertDebug(phoneNumber.length > 0);
-    NSString *path = [NSString stringWithFormat:@"%@/%@/code/%@?client=ios",
+
+    NSString *querystring = @"client=ios";
+    if (captchaToken.length > 0) {
+        querystring = [NSString stringWithFormat:@"%@&captcha=%@", querystring, captchaToken];
+    }
+
+    NSString *path = [NSString stringWithFormat:@"%@/%@/code/%@?%@",
                                textSecureAccountsAPI,
                                [self stringForTransport:transport],
-                               phoneNumber];
+                               phoneNumber,
+                               querystring];
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     request.shouldHaveAuthorizationHeaders = NO;
 

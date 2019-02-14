@@ -448,6 +448,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
     __weak RegistrationViewController *weakSelf = self;
     [self.tsAccountManager registerWithPhoneNumber:parsedPhoneNumber
+        captchaToken:nil
         success:^{
             OWSProdInfo([OWSAnalyticsEvents registrationRegisteredPhoneNumber]);
 

@@ -165,13 +165,13 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             owsFailDebug("Could not resume re-registration; couldn't parse phoneNumberE164.")
             return
         }
-        guard let callingCode = parsedPhoneNumber.getCountryCode() else {
+        guard let callingCodeNumeric = parsedPhoneNumber.getCountryCode() else {
             owsFailDebug("Could not resume re-registration; missing callingCode.")
             return
         }
-        let callingCodeText = "\(COUNTRY_CODE_PREFIX)\(callingCode)"
+        let callingCode = "\(COUNTRY_CODE_PREFIX)\(callingCodeNumeric)"
         let countryCodes: [String] =
-            PhoneNumberUtil.sharedThreadLocal().countryCodes(fromCallingCode: callingCodeText)
+            PhoneNumberUtil.sharedThreadLocal().countryCodes(fromCallingCode: callingCode)
         guard let countryCode = countryCodes.first else {
             owsFailDebug("Could not resume re-registration; unknown countryCode.")
             return
@@ -180,13 +180,28 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             owsFailDebug("Could not resume re-registration; unknown countryName.")
             return
         }
-        if !phoneNumberE164.hasPrefix(callingCodeText) {
+        if !phoneNumberE164.hasPrefix(callingCode) {
             owsFailDebug("Could not resume re-registration; non-matching calling code.")
             return
         }
-        let phoneNumberWithoutCallingCode = phoneNumberE164.substring(from: callingCodeText.count)
+        let phoneNumberWithoutCallingCode = phoneNumberE164.substring(from: callingCode.count)
 
-        onboardingController.update(withCountryName: countryName, callingCode: callingCodeText, countryCode: countryCode)
+        guard countryCode.count > 0 else {
+            owsFailDebug("Invalid country code.")
+            return
+        }
+        guard countryName.count > 0 else {
+            owsFailDebug("Invalid country name.")
+            return
+        }
+        guard callingCode.count > 0 else {
+            owsFailDebug("Invalid calling code.")
+            return
+        }
+
+        let countryState = OnboardingCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
+        onboardingController.update(countryState: countryState)
+
         updateState()
 
         phoneNumberTextField.text = phoneNumberWithoutCallingCode
@@ -198,21 +213,21 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
     private var countryName: String {
         get {
-            return onboardingController.state.countryName
+            return onboardingController.countryState.countryName
         }
     }
     private var callingCode: String {
         get {
             AssertIsOnMainThread()
 
-            return onboardingController.state.callingCode
+            return onboardingController.countryState.callingCode
         }
     }
     private var countryCode: String {
         get {
             AssertIsOnMainThread()
 
-            return onboardingController.state.countryCode
+            return onboardingController.countryState.countryCode
         }
     }
 
@@ -297,10 +312,11 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                                       comment: "Message of alert indicating that users needs to enter a valid phone number to register."))
                 return
         }
-        let parsedPhoneNumber = localNumber.toE164()
+        let e164PhoneNumber = localNumber.toE164()
+
+        onboardingController.update(phoneNumber: OnboardingPhoneNumber(e164: e164PhoneNumber, userInput: phoneNumberText))
 
         if UIDevice.current.isIPad {
-            let countryCode = self.countryCode
             OWSAlerts.showConfirmationAlert(title: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_TITLE",
                                                                       comment: "alert title when registering an iPad"),
                                             message: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BODY",
@@ -308,64 +324,11 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                                             proceedTitle: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BUTTON",
                                                                              comment: "button text to proceed with registration when on an iPad"),
                                             proceedAction: { (_) in
-                                                self.tryToRegister(parsedPhoneNumber: parsedPhoneNumber,
-                                                                   phoneNumberText: phoneNumberText,
-                                                                   countryCode: countryCode)
+                                                self.tryToRegister(smsVerification: false)
             })
         } else {
-            tryToRegister(parsedPhoneNumber: parsedPhoneNumber,
-                          phoneNumberText: phoneNumberText,
-                          countryCode: countryCode)
+            tryToRegister(smsVerification: false)
         }
-    }
-
-    private func tryToRegister(parsedPhoneNumber: String,
-                               phoneNumberText: String,
-                               countryCode: String) {
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: true) { (modal) in
-                                                        OnboardingController.setLastRegisteredCountryCode(value: countryCode)
-                                                        OnboardingController.setLastRegisteredPhoneNumber(value: phoneNumberText)
-
-                                                        self.tsAccountManager.register(withPhoneNumber: parsedPhoneNumber,
-                                                                                       success: {
-                                                                                        DispatchQueue.main.async {
-                                                                                            modal.dismiss(completion: {
-                                                                                                self.registrationSucceeded()
-                                                                                            })
-                                                                                        }
-                                                        }, failure: { (error) in
-                                                            Logger.error("Error: \(error)")
-
-                                                            DispatchQueue.main.async {
-                                                                modal.dismiss(completion: {
-                                                                    self.registrationFailed(error: error as NSError)
-                                                                })
-                                                            }
-                                                        }, smsVerification: true)
-        }
-    }
-
-    private func registrationSucceeded() {
-        self.onboardingController.onboardingPhoneNumberDidComplete(viewController: self)
-    }
-
-    private func registrationFailed(error: NSError) {
-        if error.code == 402 {
-            Logger.info("Captcha requested.")
-
-            self.onboardingController.onboardingPhoneNumberDidRequireCaptcha(viewController: self)
-            return
-        } else if error.code == 400 {
-            OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
-                                message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
-
-        } else {
-            OWSAlerts.showAlert(title: error.localizedDescription,
-                                message: error.localizedRecoverySuggestion)
-        }
-
-        phoneNumberTextField.becomeFirstResponder()
     }
 }
 
@@ -382,7 +345,6 @@ extension OnboardingPhoneNumberViewController: UITextFieldDelegate {
 
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         parseAndTryToRegister()
-        textField.resignFirstResponder()
         return false
     }
 }
@@ -404,7 +366,10 @@ extension OnboardingPhoneNumberViewController: CountryCodeViewControllerDelegate
             return
         }
 
-        onboardingController.update(withCountryName: countryName, callingCode: callingCode, countryCode: countryCode)
+        let countryState = OnboardingCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
+
+        onboardingController.update(countryState: countryState)
+
         updateState()
 
             // Trigger the formatting logic with a no-op edit.
