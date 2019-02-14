@@ -95,9 +95,21 @@ public class OnboardingController: NSObject {
         viewController.navigationController?.pushViewController(view, animated: true)
     }
 
+    public func onboardingCaptchaDidComplete(viewController: UIViewController,
+                                             captchaToken: String) {
+        AssertIsOnMainThread()
+
+        self.captchaToken = captchaToken
+
+//        let view = OnboardingCaptchaViewController(onboardingController: self)
+//        viewController.navigationController?.pushViewController(view, animated: true)
+    }
+
     // MARK: - State
 
     public private(set) var state: OnboardingState = .defaultValue
+
+    private var captchaToken: String
 
     public func update(withCountryName countryName: String, callingCode: String, countryCode: String) {
         AssertIsOnMainThread()

@@ -116,7 +116,6 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.autoPinWidthToSuperviewMargins()
-        stackView.autoPinWidthToSuperviewMargins()
         stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
 

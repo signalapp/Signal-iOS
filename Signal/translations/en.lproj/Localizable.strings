@@ -1092,11 +1092,11 @@
 /* Label for button that resets crop & rotation state. */
 "IMAGE_EDITOR_RESET_BUTTON" = "Reset";
 
-/* Label for button that rotates image 90 degrees. */
-"IMAGE_EDITOR_ROTATE_90_BUTTON" = "Rotate 90°";
+/* Label for button that rotates image 45 degrees. */
+"IMAGE_EDITOR_ROTATE_45_BUTTON" = "Rotate 45°";
 
 /* Label for button that rotates image 90 degrees. */
-"IMAGE_EDITOR_ROTATE_45_BUTTON" = "Rotate 45°";
+"IMAGE_EDITOR_ROTATE_90_BUTTON" = "Rotate 90°";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
@@ -1507,6 +1507,9 @@
 
 /* No comment provided by engineer. */
 "OK" = "OK";
+
+/* Title of the 'onboarding Captcha' view. */
+"ONBOARDING_CAPTCHA_TITLE" = "We need to verify that you're human";
 
 /* Explanation in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_EXPLANATION" = "ONBOARDING_PERMISSIONS_EXPLANATION";
