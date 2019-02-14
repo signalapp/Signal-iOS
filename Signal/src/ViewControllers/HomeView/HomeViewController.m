@@ -482,18 +482,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.searchResultsController viewDidAppear:animated];
 
     self.hasEverAppeared = YES;
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        OnboardingController *onboardingController = [OnboardingController new];
-        [onboardingController
-            updateWithPhoneNumber:[[OnboardingPhoneNumber alloc] initWithE164:@"+13213214321" userInput:@"3213214321"]];
-
-        OnboardingCaptchaViewController *view =
-            [[OnboardingCaptchaViewController alloc] initWithOnboardingController:onboardingController];
-        OWSNavigationController *navigationController =
-            [[OWSNavigationController alloc] initWithRootViewController:view];
-        [self presentViewController:navigationController animated:YES completion:nil];
-    });
 }
 
 - (void)viewDidDisappear:(BOOL)animated
