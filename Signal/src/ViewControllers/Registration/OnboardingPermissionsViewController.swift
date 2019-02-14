@@ -12,10 +12,7 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
         super.loadView()
 
         view.backgroundColor = Theme.backgroundColor
-        view.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
-
-        // TODO:
-//        navigationItem.title = NSLocalizedString("SETTINGS_BACKUP", comment: "Label for the backup view in app settings.")
+        view.layoutMargins = .zero
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("NAVIGATION_ITEM_SKIP_BUTTON", comment: "A button to skip a view."),
                                                             style: .plain,
@@ -23,46 +20,42 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
                                                             action: #selector(skipWasPressed))
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_PERMISSIONS_TITLE", comment: "Title of the 'onboarding permissions' view."))
-        view.addSubview(titleLabel)
-        titleLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
 
-        // TODO: Finalize copy.
         let explanationLabel = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_PERMISSIONS_EXPLANATION",
-                                                                                        comment: "Explanation in the 'onboarding permissions' view."),
-                                                     linkText: NSLocalizedString("ONBOARDING_PERMISSIONS_LEARN_MORE_LINK",
-                                                                                 comment: "Link to the 'learn more' in the 'onboarding permissions' view."),
-                                                     selector: #selector(explanationLabelTapped))
+                                                                                  comment: "Explanation in the 'onboarding permissions' view."))
 
         // TODO: Make sure this all fits if dynamic font sizes are maxed out.
-        let giveAccessButton = self.button(title: NSLocalizedString("ONBOARDING_PERMISSIONS_GIVE_ACCESS_BUTTON",
+        let giveAccessButton = self.button(title: NSLocalizedString("ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
                                                                     comment: "Label for the 'give access' button in the 'onboarding permissions' view."),
                                            selector: #selector(giveAccessPressed))
 
-        let notNowButton = self.button(title: NSLocalizedString("ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON",
-                                                                comment: "Label for the 'not now' button in the 'onboarding permissions' view."),
+        let notNowButton = self.linkButton(title: NSLocalizedString("ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON",
+                                                                    comment: "Label for the 'not now' button in the 'onboarding permissions' view."),
                                            selector: #selector(notNowPressed))
 
-        let buttonStack = UIStackView(arrangedSubviews: [
-            giveAccessButton,
-            notNowButton
-            ])
-        buttonStack.axis = .vertical
-        buttonStack.alignment = .fill
-        buttonStack.spacing = 12
-
+        let topSpacer = UIView.vStretchingSpacer()
+        let bottomSpacer = UIView.vStretchingSpacer()
         let stackView = UIStackView(arrangedSubviews: [
+            titleLabel,
+            UIView.spacer(withHeight: 20),
             explanationLabel,
-            buttonStack
+            topSpacer,
+            giveAccessButton,
+            UIView.spacer(withHeight: 12),
+            notNowButton,
+            bottomSpacer
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.spacing = 40
+        stackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
+        stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.autoPinWidthToSuperviewMargins()
-        stackView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 20, relation: .greaterThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            stackView.autoVCenterInSuperview()
-        }
+        stackView.autoPinWidthToSuperview()
+        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+
+        // Ensure whitespace is balanced, so inputs are vertically centered.
+        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
     }
 
     // MARK: Request Access
@@ -103,13 +96,6 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
         Logger.info("")
 
         onboardingController.onboardingPermissionsWasSkipped(viewController: self)
-    }
-
-    @objc func explanationLabelTapped(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else {
-            return
-        }
-        // TODO:
     }
 
     @objc func giveAccessPressed() {

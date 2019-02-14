@@ -38,22 +38,14 @@ public class OnboardingBaseViewController: OWSViewController {
         return titleLabel
     }
 
-    func explanationLabel(explanationText: String, linkText: String, selector: Selector) -> UILabel {
-        let explanationText = NSAttributedString(string: explanationText)
-            .rtlSafeAppend(NSAttributedString(string: " "))
-            .rtlSafeAppend(linkText,
-                           attributes: [
-                            NSAttributedStringKey.foregroundColor: UIColor.ows_materialBlue
-                ])
+    func explanationLabel(explanationText: String) -> UILabel {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Theme.secondaryColor
         explanationLabel.font = UIFont.ows_dynamicTypeCaption1
-        explanationLabel.attributedText = explanationText
+        explanationLabel.text = explanationText
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.isUserInteractionEnabled = true
-        explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: selector))
         return explanationLabel
     }
 
@@ -64,6 +56,19 @@ public class OnboardingBaseViewController: OWSViewController {
                                           font: OWSFlatButton.fontForHeight(buttonHeight),
                                           titleColor: .white,
                                           backgroundColor: .ows_materialBlue,
+                                          target: self,
+                                          selector: selector)
+        button.autoSetDimension(.height, toSize: buttonHeight)
+        return button
+    }
+
+    func linkButton(title: String, selector: Selector) -> OWSFlatButton {
+        // TODO: Make sure this all fits if dynamic font sizes are maxed out.
+        let buttonHeight: CGFloat = 48
+        let button = OWSFlatButton.button(title: title,
+                                          font: OWSFlatButton.fontForHeight(buttonHeight),
+                                          titleColor: .ows_materialBlue,
+                                          backgroundColor: .white,
                                           target: self,
                                           selector: selector)
         button.autoSetDimension(.height, toSize: buttonHeight)
