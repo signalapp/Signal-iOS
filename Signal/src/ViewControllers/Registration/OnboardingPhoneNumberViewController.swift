@@ -20,6 +20,10 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
     private let callingCodeLabel = UILabel()
     private let phoneNumberTextField = UITextField()
     private var nextButton: OWSFlatButton?
+    private var phoneStrokeNormal: UIView?
+    private var phoneStrokeError: UIView?
+    private let validationWarningLabel = UILabel()
+    private var isPhoneNumberInvalid = false
 
     override public func loadView() {
         super.loadView()
@@ -58,7 +62,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         countryRow.isUserInteractionEnabled = true
         countryRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(countryRowTapped)))
         countryRow.autoSetDimension(.height, toSize: rowHeight)
-        addBottomStroke(countryRow)
+        _ = addBottomStroke(countryRow)
 
         callingCodeLabel.textColor = Theme.primaryColor
         callingCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped
@@ -66,7 +70,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         callingCodeLabel.setCompressionResistanceHorizontalHigh()
         callingCodeLabel.isUserInteractionEnabled = true
         callingCodeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(countryCodeTapped)))
-        addBottomStroke(callingCodeLabel)
+        _ = addBottomStroke(callingCodeLabel)
         callingCodeLabel.autoSetDimension(.width, toSize: rowHeight, relation: .greaterThanOrEqual)
 
         phoneNumberTextField.textAlignment = .left
@@ -77,7 +81,8 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         phoneNumberTextField.setContentHuggingHorizontalLow()
         phoneNumberTextField.setCompressionResistanceHorizontalLow()
 
-        addBottomStroke(phoneNumberTextField)
+        phoneStrokeNormal = addBottomStroke(phoneNumberTextField)
+        phoneStrokeError = addBottomStroke(phoneNumberTextField, color: .ows_destructiveRed, strokeWidth: 2)
 
         let phoneNumberRow = UIStackView(arrangedSubviews: [
             callingCodeLabel,
@@ -88,6 +93,16 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         phoneNumberRow.spacing = 10
         phoneNumberRow.autoSetDimension(.height, toSize: rowHeight)
         callingCodeLabel.autoMatch(.height, to: .height, of: phoneNumberTextField)
+
+        validationWarningLabel.text = NSLocalizedString("ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
+                                                        comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view.")
+        validationWarningLabel.textColor = .ows_destructiveRed
+        validationWarningLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+
+        let validationWarningRow = UIView()
+        validationWarningRow.addSubview(validationWarningLabel)
+        validationWarningLabel.autoPinHeightToSuperview()
+        validationWarningLabel.autoPinEdge(toSuperviewEdge: .trailing)
 
         // TODO: Finalize copy.
 
@@ -104,6 +119,8 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             countryRow,
             UIView.spacer(withHeight: 8),
             phoneNumberRow,
+            UIView.spacer(withHeight: 8),
+            validationWarningRow,
             bottomSpacer,
             nextButton
             ])
@@ -118,15 +135,32 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
         // Ensure whitespace is balanced, so inputs are vertically centered.
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+
+        validationWarningLabel.autoPinEdge(.leading, to: .leading, of: phoneNumberTextField)
     }
 
-    private func addBottomStroke(_ view: UIView) {
+    private func addBottomStroke(_ view: UIView) -> UIView {
+        return addBottomStroke(view, color: Theme.middleGrayColor, strokeWidth: CGHairlineWidth())
+    }
+
+    private func addBottomStroke(_ view: UIView, color: UIColor, strokeWidth: CGFloat) -> UIView {
         let strokeView = UIView()
-        strokeView.backgroundColor = Theme.middleGrayColor
+        strokeView.backgroundColor = color
         view.addSubview(strokeView)
-        strokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
+        strokeView.autoSetDimension(.height, toSize: strokeWidth)
         strokeView.autoPinWidthToSuperview()
         strokeView.autoPinEdge(toSuperviewEdge: .bottom)
+        return strokeView
+    }
+
+    // MARK: - View Lifecycle
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        isPhoneNumberInvalid = false
+
+        updateViewState()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -191,11 +225,12 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         let countryState = OnboardingCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
         onboardingController.update(countryState: countryState)
 
-        updateState()
-
         phoneNumberTextField.text = phoneNumberWithoutCallingCode
+
         // Don't let user edit their phone number while re-registering.
         phoneNumberTextField.isEnabled = false
+
+        updateViewState()
     }
 
     // MARK: -
@@ -229,16 +264,26 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             phoneNumberTextField.text = phoneNumber.userInput
         }
 
-        updateState()
+        updateViewState()
     }
 
-    private func updateState() {
+    private func updateViewState() {
         AssertIsOnMainThread()
 
         countryNameLabel.text = countryName
         callingCodeLabel.text = callingCode
 
         self.phoneNumberTextField.placeholder = ViewControllerUtils.examplePhoneNumber(forCountryCode: countryCode, callingCode: callingCode)
+
+        updateValidationWarnings()
+    }
+
+    private func updateValidationWarnings() {
+        AssertIsOnMainThread()
+
+        phoneStrokeNormal?.isHidden = isPhoneNumberInvalid
+        phoneStrokeError?.isHidden = !isPhoneNumberInvalid
+        validationWarningLabel.isHidden = !isPhoneNumberInvalid
     }
 
      // MARK: - Events
@@ -282,6 +327,10 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
     private func parseAndTryToRegister() {
         guard let phoneNumberText = phoneNumberTextField.text?.ows_stripped(),
             phoneNumberText.count > 0 else {
+
+                isPhoneNumberInvalid = false
+                updateValidationWarnings()
+
                 OWSAlerts.showAlert(title:
                     NSLocalizedString("REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE",
                                       comment: "Title of alert indicating that users needs to enter a phone number to register."),
@@ -295,6 +344,10 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         guard let localNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: phoneNumber),
             localNumber.toE164().count > 0,
             PhoneNumberValidator().isValidForRegistration(phoneNumber: localNumber) else {
+
+                isPhoneNumberInvalid = false
+                updateValidationWarnings()
+
                 OWSAlerts.showAlert(title:
                     NSLocalizedString("REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE",
                                       comment: "Title of alert indicating that users needs to enter a valid phone number to register."),
@@ -330,6 +383,9 @@ extension OnboardingPhoneNumberViewController: UITextFieldDelegate {
         // TODO: Fix auto-format of phone numbers.
         ViewControllerUtils.phoneNumber(textField, shouldChangeCharactersIn: range, replacementString: string, countryCode: countryCode)
 
+        isPhoneNumberInvalid = false
+        updateValidationWarnings()
+
         // Inform our caller that we took care of performing the change.
         return false
     }
@@ -361,7 +417,7 @@ extension OnboardingPhoneNumberViewController: CountryCodeViewControllerDelegate
 
         onboardingController.update(countryState: countryState)
 
-        updateState()
+        updateViewState()
 
             // Trigger the formatting logic with a no-op edit.
         _ = textField(phoneNumberTextField, shouldChangeCharactersIn: NSRange(location: 0, length: 0), replacementString: "")
