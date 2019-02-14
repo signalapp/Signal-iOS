@@ -187,7 +187,8 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         }
         let phoneNumberWithoutCallingCode = phoneNumberE164.substring(from: callingCodeText.count)
 
-        update(withCountryName: countryName, callingCode: callingCodeText, countryCode: countryCode)
+        onboardingController.update(withCountryName: countryName, callingCode: callingCodeText, countryCode: countryCode)
+        updateState()
 
         phoneNumberTextField.text = phoneNumberWithoutCallingCode
         // Don't let user edit their phone number while re-registering.
@@ -196,107 +197,43 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
     // MARK: -
 
-    private var countryName = ""
-    private var callingCode = ""
-    private var countryCode = ""
+    private var countryName: String {
+        get {
+            return onboardingController.state.countryName
+        }
+    }
+    private var callingCode: String {
+        get {
+            AssertIsOnMainThread()
+
+            return onboardingController.state.callingCode
+        }
+    }
+    private var countryCode: String {
+        get {
+            AssertIsOnMainThread()
+
+            return onboardingController.state.countryCode
+        }
+    }
 
     private func populateDefaults() {
-
-        var countryCode: String = PhoneNumber.defaultCountryCode()
-        if let lastRegisteredCountryCode = self.lastRegisteredCountryCode(),
-            lastRegisteredCountryCode.count > 0 {
-            countryCode = lastRegisteredCountryCode
-        }
-
-        let callingCodeNumber: NSNumber = PhoneNumberUtil.sharedThreadLocal().nbPhoneNumberUtil.getCountryCode(forRegion: countryCode)
-        let callingCode = "\(COUNTRY_CODE_PREFIX)\(callingCodeNumber)"
-
-        if let lastRegisteredPhoneNumber = self.lastRegisteredPhoneNumber(),
+        if let lastRegisteredPhoneNumber = OnboardingController.lastRegisteredPhoneNumber(),
             lastRegisteredPhoneNumber.count > 0,
             lastRegisteredPhoneNumber.hasPrefix(callingCode) {
             phoneNumberTextField.text = lastRegisteredPhoneNumber.substring(from: callingCode.count)
         }
 
-        var countryName = NSLocalizedString("UNKNOWN_COUNTRY_NAME", comment: "Label for unknown countries.")
-        if let countryNameDerived = PhoneNumberUtil.countryName(fromCountryCode: countryCode) {
-            countryName = countryNameDerived
-        }
-
-        update(withCountryName: countryName, callingCode: callingCode, countryCode: countryCode)
+        updateState()
     }
 
-    private func update(withCountryName countryName: String, callingCode: String, countryCode: String) {
+    private func updateState() {
         AssertIsOnMainThread()
-
-        guard countryCode.count > 0 else {
-            owsFailDebug("Invalid country code.")
-            return
-        }
-        guard countryName.count > 0 else {
-            owsFailDebug("Invalid country name.")
-            return
-        }
-        guard callingCode.count > 0 else {
-            owsFailDebug("Invalid calling code.")
-            return
-        }
-
-        self.countryName = countryName
-        self.callingCode = callingCode
-        self.countryCode = countryCode
 
         countryNameLabel.text = countryName
         callingCodeLabel.text = callingCode
 
         self.phoneNumberTextField.placeholder = ViewControllerUtils.examplePhoneNumber(forCountryCode: countryCode, callingCode: callingCode)
-    }
-
-    // MARK: - Debug
-
-    private let kKeychainService_LastRegistered = "kKeychainService_LastRegistered"
-    private let kKeychainKey_LastRegisteredCountryCode = "kKeychainKey_LastRegisteredCountryCode"
-    private let kKeychainKey_LastRegisteredPhoneNumber = "kKeychainKey_LastRegisteredPhoneNumber"
-
-    private func debugValue(forKey key: String) -> String? {
-        guard OWSIsDebugBuild() else {
-            return nil
-        }
-
-        do {
-            let value = try CurrentAppContext().keychainStorage().string(forService: kKeychainService_LastRegistered, key: key)
-            return value
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return nil
-        }
-    }
-
-    private func setDebugValue(_ value: String, forKey key: String) {
-        guard OWSIsDebugBuild() else {
-            return
-        }
-
-        do {
-            try CurrentAppContext().keychainStorage().set(string: value, service: kKeychainService_LastRegistered, key: key)
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    private func lastRegisteredCountryCode() -> String? {
-        return debugValue(forKey: kKeychainKey_LastRegisteredCountryCode)
-    }
-
-    private func setLastRegisteredCountryCode(value: String) {
-        setDebugValue(value, forKey: kKeychainKey_LastRegisteredCountryCode)
-    }
-
-    private func lastRegisteredPhoneNumber() -> String? {
-        return debugValue(forKey: kKeychainKey_LastRegisteredPhoneNumber)
-    }
-
-    private func setLastRegisteredPhoneNumber(value: String) {
-        setDebugValue(value, forKey: kKeychainKey_LastRegisteredPhoneNumber)
     }
 
      // MARK: - Events
@@ -388,8 +325,8 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                                countryCode: String) {
         ModalActivityIndicatorViewController.present(fromViewController: self,
                                                      canCancel: true) { (modal) in
-                                                        self.setLastRegisteredCountryCode(value: countryCode)
-                                                        self.setLastRegisteredPhoneNumber(value: phoneNumberText)
+                                                        OnboardingController.setLastRegisteredCountryCode(value: countryCode)
+                                                        OnboardingController.setLastRegisteredPhoneNumber(value: phoneNumberText)
 
                                                         self.tsAccountManager.register(withPhoneNumber: parsedPhoneNumber,
                                                                                        success: {
@@ -468,7 +405,8 @@ extension OnboardingPhoneNumberViewController: CountryCodeViewControllerDelegate
             return
         }
 
-        update(withCountryName: countryName, callingCode: callingCode, countryCode: countryCode)
+        onboardingController.update(withCountryName: countryName, callingCode: callingCode, countryCode: countryCode)
+        updateState()
 
             // Trigger the formatting logic with a no-op edit.
         _ = textField(phoneNumberTextField, shouldChangeCharactersIn: NSRange(location: 0, length: 0), replacementString: "")

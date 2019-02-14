@@ -30,7 +30,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         view.layoutMargins = .zero
 
         // TODO:
-//        navigationItem.title = NSLocalizedString("SETTINGS_BACKUP", comment: "Label for the backup view in app settings.")
+        //        navigationItem.title = NSLocalizedString("SETTINGS_BACKUP", comment: "Label for the backup view in app settings.")
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_PHONE_NUMBER_TITLE", comment: "Title of the 'onboarding phone number' view."))
 
@@ -95,8 +95,8 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         // TODO: Finalize copy.
 
         let nextButton = self.button(title: NSLocalizedString("BUTTON_NEXT",
-                                                                comment: "Label for the 'next' button."),
-                                           selector: #selector(nextPressed))
+                                                              comment: "Label for the 'next' button."),
+                                     selector: #selector(nextPressed))
         self.nextButton = nextButton
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
@@ -187,7 +187,8 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         }
         let phoneNumberWithoutCallingCode = phoneNumberE164.substring(from: callingCodeText.count)
 
-        update(withCountryName: countryName, callingCode: callingCodeText, countryCode: countryCode)
+        onboardingController.update(withCountryName: countryName, callingCode: callingCodeText, countryCode: countryCode)
+        updateState()
 
         phoneNumberTextField.text = phoneNumberWithoutCallingCode
         // Don't let user edit their phone number while re-registering.
@@ -196,54 +197,38 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
 
     // MARK: -
 
-    private var countryName = ""
-    private var callingCode = ""
-    private var countryCode = ""
+    private var countryName: String {
+        get {
+            return onboardingController.state.countryName
+        }
+    }
+    private var callingCode: String {
+        get {
+            AssertIsOnMainThread()
+
+            return onboardingController.state.callingCode
+        }
+    }
+    private var countryCode: String {
+        get {
+            AssertIsOnMainThread()
+
+            return onboardingController.state.countryCode
+        }
+    }
 
     private func populateDefaults() {
-
-        var countryCode: String = PhoneNumber.defaultCountryCode()
-        if let lastRegisteredCountryCode = self.lastRegisteredCountryCode(),
-            lastRegisteredCountryCode.count > 0 {
-            countryCode = lastRegisteredCountryCode
-        }
-
-        let callingCodeNumber: NSNumber = PhoneNumberUtil.sharedThreadLocal().nbPhoneNumberUtil.getCountryCode(forRegion: countryCode)
-        let callingCode = "\(COUNTRY_CODE_PREFIX)\(callingCodeNumber)"
-
-        if let lastRegisteredPhoneNumber = self.lastRegisteredPhoneNumber(),
+        if let lastRegisteredPhoneNumber = OnboardingController.lastRegisteredPhoneNumber(),
             lastRegisteredPhoneNumber.count > 0,
             lastRegisteredPhoneNumber.hasPrefix(callingCode) {
             phoneNumberTextField.text = lastRegisteredPhoneNumber.substring(from: callingCode.count)
         }
 
-        var countryName = NSLocalizedString("UNKNOWN_COUNTRY_NAME", comment: "Label for unknown countries.")
-        if let countryNameDerived = PhoneNumberUtil.countryName(fromCountryCode: countryCode) {
-            countryName = countryNameDerived
-        }
-
-        update(withCountryName: countryName, callingCode: callingCode, countryCode: countryCode)
+        updateState()
     }
 
-    private func update(withCountryName countryName: String, callingCode: String, countryCode: String) {
+    private func updateState() {
         AssertIsOnMainThread()
-
-        guard countryCode.count > 0 else {
-            owsFailDebug("Invalid country code.")
-            return
-        }
-        guard countryName.count > 0 else {
-            owsFailDebug("Invalid country name.")
-            return
-        }
-        guard callingCode.count > 0 else {
-            owsFailDebug("Invalid calling code.")
-            return
-        }
-
-        self.countryName = countryName
-        self.callingCode = callingCode
-        self.countryCode = countryCode
 
         countryNameLabel.text = countryName
         callingCodeLabel.text = callingCode
@@ -251,55 +236,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         self.phoneNumberTextField.placeholder = ViewControllerUtils.examplePhoneNumber(forCountryCode: countryCode, callingCode: callingCode)
     }
 
-    // MARK: - Debug
-
-    private let kKeychainService_LastRegistered = "kKeychainService_LastRegistered"
-    private let kKeychainKey_LastRegisteredCountryCode = "kKeychainKey_LastRegisteredCountryCode"
-    private let kKeychainKey_LastRegisteredPhoneNumber = "kKeychainKey_LastRegisteredPhoneNumber"
-
-    private func debugValue(forKey key: String) -> String? {
-        guard OWSIsDebugBuild() else {
-            return nil
-        }
-
-        do {
-            let value = try CurrentAppContext().keychainStorage().string(forService: kKeychainService_LastRegistered, key: key)
-            return value
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return nil
-        }
-    }
-
-    private func setDebugValue(_ value: String, forKey key: String) {
-        guard OWSIsDebugBuild() else {
-            return
-        }
-
-        do {
-            try CurrentAppContext().keychainStorage().set(string: value, service: kKeychainService_LastRegistered, key: key)
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    private func lastRegisteredCountryCode() -> String? {
-        return debugValue(forKey: kKeychainKey_LastRegisteredCountryCode)
-    }
-
-    private func setLastRegisteredCountryCode(value: String) {
-        setDebugValue(value, forKey: kKeychainKey_LastRegisteredCountryCode)
-    }
-
-    private func lastRegisteredPhoneNumber() -> String? {
-        return debugValue(forKey: kKeychainKey_LastRegisteredPhoneNumber)
-    }
-
-    private func setLastRegisteredPhoneNumber(value: String) {
-        setDebugValue(value, forKey: kKeychainKey_LastRegisteredPhoneNumber)
-    }
-
-     // MARK: - Events
+    // MARK: - Events
 
     @objc func countryRowTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
@@ -343,7 +280,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
                 OWSAlerts.showAlert(title:
                     NSLocalizedString("REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE",
                                       comment: "Title of alert indicating that users needs to enter a phone number to register."),
-                    message:
+                                    message:
                     NSLocalizedString("REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE",
                                       comment: "Message of alert indicating that users needs to enter a phone number to register."))
                 return
@@ -356,7 +293,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
                 OWSAlerts.showAlert(title:
                     NSLocalizedString("REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE",
                                       comment: "Title of alert indicating that users needs to enter a valid phone number to register."),
-                    message:
+                                    message:
                     NSLocalizedString("REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE",
                                       comment: "Message of alert indicating that users needs to enter a valid phone number to register."))
                 return
@@ -366,11 +303,11 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         if UIDevice.current.isIPad {
             let countryCode = self.countryCode
             OWSAlerts.showConfirmationAlert(title: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_TITLE",
-                                                                      comment: "alert title when registering an iPad"),
+                                                                     comment: "alert title when registering an iPad"),
                                             message: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BODY",
-                                                                        comment: "alert body when registering an iPad"),
+                                                                       comment: "alert body when registering an iPad"),
                                             proceedTitle: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BUTTON",
-                                                                             comment: "button text to proceed with registration when on an iPad"),
+                                                                            comment: "button text to proceed with registration when on an iPad"),
                                             proceedAction: { (_) in
                                                 self.tryToRegister(parsedPhoneNumber: parsedPhoneNumber,
                                                                    phoneNumberText: phoneNumberText,
@@ -388,8 +325,8 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
                                countryCode: String) {
         ModalActivityIndicatorViewController.present(fromViewController: self,
                                                      canCancel: true) { (modal) in
-                                                        self.setLastRegisteredCountryCode(value: countryCode)
-                                                        self.setLastRegisteredPhoneNumber(value: phoneNumberText)
+                                                        OnboardingController.setLastRegisteredCountryCode(value: countryCode)
+                                                        OnboardingController.setLastRegisteredPhoneNumber(value: phoneNumberText)
 
                                                         self.tsAccountManager.register(withPhoneNumber: parsedPhoneNumber,
                                                                                        success: {
@@ -415,7 +352,12 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
     }
 
     private func registrationFailed(error: NSError) {
-        if error.code == 400 {
+        if error.code == 402 {
+            Logger.info("Captcha requested.")
+
+            self.onboardingController.onboardingPhoneNumberDidRequireCaptcha(viewController: self)
+            return
+        } else if error.code == 400 {
             OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
                                 message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
 
@@ -430,7 +372,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
 
 // MARK: -
 
-extension OnboardingPhoneNumberViewController: UITextFieldDelegate {
+extension OnboardingCaptchaViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         // TODO: Fix auto-format of phone numbers.
         ViewControllerUtils.phoneNumber(textField, shouldChangeCharactersIn: range, replacementString: string, countryCode: countryCode)
@@ -448,7 +390,7 @@ extension OnboardingPhoneNumberViewController: UITextFieldDelegate {
 
 // MARK: -
 
-extension OnboardingPhoneNumberViewController: CountryCodeViewControllerDelegate {
+extension OnboardingCaptchaViewController: CountryCodeViewControllerDelegate {
     public func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountryCode countryCode: String, countryName: String, callingCode: String) {
         guard countryCode.count > 0 else {
             owsFailDebug("Invalid country code.")
@@ -463,9 +405,10 @@ extension OnboardingPhoneNumberViewController: CountryCodeViewControllerDelegate
             return
         }
 
-        update(withCountryName: countryName, callingCode: callingCode, countryCode: countryCode)
+        onboardingController.update(withCountryName: countryName, callingCode: callingCode, countryCode: countryCode)
+        updateState()
 
-            // Trigger the formatting logic with a no-op edit.
+        // Trigger the formatting logic with a no-op edit.
         _ = textField(phoneNumberTextField, shouldChangeCharactersIn: NSRange(location: 0, length: 0), replacementString: "")
     }
 }
