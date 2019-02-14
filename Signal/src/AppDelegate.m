@@ -1478,7 +1478,11 @@ static NSTimeInterval launchStartedAt;
             rootViewController = [HomeViewController new];
         }
     } else {
-        rootViewController = [RegistrationViewController new];
+        if (OWSIsDebugBuild()) {
+            rootViewController = [[OnboardingControllerImpl new] initialViewController];
+        } else {
+            rootViewController = [RegistrationViewController new];
+        }
         navigationBarHidden = YES;
     }
     OWSAssertDebug(rootViewController);

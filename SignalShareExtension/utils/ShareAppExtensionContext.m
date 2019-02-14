@@ -234,15 +234,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [[NSUserDefaults alloc] initWithSuiteName:SignalApplicationGroup];
 }
 
-- (BOOL)isDebugBuild
-{
-#ifdef DEBUG
-    return YES;
-#else
-    return NO;
-#endif
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

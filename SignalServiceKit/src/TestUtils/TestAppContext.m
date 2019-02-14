@@ -148,15 +148,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self.mockAppSharedDataDirectoryPath;
 }
 
-- (BOOL)isDebugBuild
-{
-#ifdef DEBUG
-    return YES;
-#else
-    return NO;
-#endif
-}
-
 @end
 
 #endif

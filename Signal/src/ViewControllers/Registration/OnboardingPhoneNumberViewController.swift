@@ -144,8 +144,6 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         super.viewWillAppear(animated)
 
         self.navigationController?.isNavigationBarHidden = false
-
-        phoneNumberTextField.becomeFirstResponder()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -267,7 +265,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
     private let kKeychainKey_LastRegisteredPhoneNumber = "kKeychainKey_LastRegisteredPhoneNumber"
 
     private func debugValue(forKey key: String) -> String? {
-        guard CurrentAppContext().isDebugBuild() else {
+        guard OWSIsDebugBuild() else {
             return nil
         }
 
@@ -281,7 +279,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
     }
 
     private func setDebugValue(_ value: String, forKey key: String) {
-        guard CurrentAppContext().isDebugBuild() else {
+        guard OWSIsDebugBuild() else {
             return
         }
 
@@ -310,13 +308,6 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
      // MARK: - Events
 
-    @objc func explanationLabelTapped(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else {
-            return
-        }
-        // TODO:
-    }
-
     @objc func countryRowTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
@@ -334,7 +325,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
     @objc func nextPressed() {
         Logger.info("")
 
-        onboardingController.onboardingPhoneNumberDidComplete(viewController: self)
+        parseAndTryToRegister()
     }
 
     // MARK: - Country Picker
@@ -353,7 +344,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
     // MARK: - Register
 
-    private func didTapRegisterButton() {
+    private func parseAndTryToRegister() {
         guard let phoneNumberText = phoneNumberTextField.text?.ows_stripped(),
             phoneNumberText.count > 0 else {
                 OWSAlerts.showAlert(title:
@@ -388,20 +379,20 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                                             proceedTitle: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BUTTON",
                                                                              comment: "button text to proceed with registration when on an iPad"),
                                             proceedAction: { (_) in
-                                                self.sendCode(parsedPhoneNumber: parsedPhoneNumber,
-                                                              phoneNumberText: phoneNumberText,
-                                                              countryCode: countryCode)
+                                                self.tryToRegister(parsedPhoneNumber: parsedPhoneNumber,
+                                                                   phoneNumberText: phoneNumberText,
+                                                                   countryCode: countryCode)
             })
         } else {
-            sendCode(parsedPhoneNumber: parsedPhoneNumber,
-                     phoneNumberText: phoneNumberText,
-                     countryCode: countryCode)
+            tryToRegister(parsedPhoneNumber: parsedPhoneNumber,
+                          phoneNumberText: phoneNumberText,
+                          countryCode: countryCode)
         }
     }
 
-    private func sendCode(parsedPhoneNumber: String,
-                          phoneNumberText: String,
-                          countryCode: String) {
+    private func tryToRegister(parsedPhoneNumber: String,
+                               phoneNumberText: String,
+                               countryCode: String) {
         ModalActivityIndicatorViewController.present(fromViewController: self,
                                                      canCancel: true) { (modal) in
                                                         self.setLastRegisteredCountryCode(value: countryCode)
@@ -456,7 +447,7 @@ extension OnboardingPhoneNumberViewController: UITextFieldDelegate {
     }
 
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        didTapRegisterButton()
+        parseAndTryToRegister()
         textField.resignFirstResponder()
         return false
     }

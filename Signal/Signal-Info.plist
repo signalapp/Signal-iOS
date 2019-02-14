@@ -6,14 +6,10 @@
 	<dict>
 		<key>CarthageVersion</key>
 		<string>0.31.2</string>
-		<key>DateTime</key>
-		<string>Wed Feb 13 22:13:11 UTC 2019</string>
 		<key>OSXVersion</key>
 		<string>10.14.3</string>
 		<key>WebRTCCommit</key>
 		<string>55de5593cc261fa9368c5ccde98884ed1e278ba0 M72</string>
-		<key>XCodeVersion</key>
-		<string>1000.1010</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
