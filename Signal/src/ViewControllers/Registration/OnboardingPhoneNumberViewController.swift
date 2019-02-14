@@ -36,7 +36,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         let rowHeight: CGFloat = 40
 
         countryNameLabel.textColor = Theme.primaryColor
-        countryNameLabel.font = UIFont.ows_dynamicTypeBody
+        countryNameLabel.font = UIFont.ows_dynamicTypeBodyClamped
         countryNameLabel.setContentHuggingHorizontalLow()
         countryNameLabel.setCompressionResistanceHorizontalLow()
 
@@ -61,7 +61,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         addBottomStroke(countryRow)
 
         callingCodeLabel.textColor = Theme.primaryColor
-        callingCodeLabel.font = UIFont.ows_dynamicTypeBody
+        callingCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped
         callingCodeLabel.setContentHuggingHorizontalHigh()
         callingCodeLabel.setCompressionResistanceHorizontalHigh()
         callingCodeLabel.isUserInteractionEnabled = true
@@ -73,7 +73,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         phoneNumberTextField.delegate = self
         phoneNumberTextField.keyboardType = .numberPad
         phoneNumberTextField.textColor = Theme.primaryColor
-        phoneNumberTextField.font = UIFont.ows_dynamicTypeBody
+        phoneNumberTextField.font = UIFont.ows_dynamicTypeBodyClamped
         phoneNumberTextField.setContentHuggingHorizontalLow()
         phoneNumberTextField.setCompressionResistanceHorizontalLow()
 

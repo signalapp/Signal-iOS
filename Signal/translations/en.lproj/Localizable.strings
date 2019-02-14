@@ -1512,7 +1512,7 @@
 "ONBOARDING_CAPTCHA_TITLE" = "We need to verify that you're human";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing Signal to send you notifications and access your contacts makes it easier to communicate with your friends. Your contact information is always transmitted securely.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Your contact information is always transmitted securely.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Enable Permissions";

@@ -31,7 +31,7 @@ public class OnboardingBaseViewController: OWSViewController {
         let titleLabel = UILabel()
         titleLabel.text = text
         titleLabel.textColor = Theme.primaryColor
-        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_mediumWeight()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_mediumWeight()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -41,7 +41,7 @@ public class OnboardingBaseViewController: OWSViewController {
     func explanationLabel(explanationText: String) -> UILabel {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Theme.secondaryColor
-        explanationLabel.font = UIFont.ows_dynamicTypeCaption1
+        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         explanationLabel.text = explanationText
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
@@ -51,9 +51,11 @@ public class OnboardingBaseViewController: OWSViewController {
 
     func button(title: String, selector: Selector) -> OWSFlatButton {
         // TODO: Make sure this all fits if dynamic font sizes are maxed out.
-        let buttonHeight: CGFloat = 48
+        let font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        // Button height should be 48pt if the font is 17pt.
+        let buttonHeight = font.pointSize * 48 / 17
         let button = OWSFlatButton.button(title: title,
-                                          font: OWSFlatButton.fontForHeight(buttonHeight),
+                                          font: font,
                                           titleColor: .white,
                                           backgroundColor: .ows_materialBlue,
                                           target: self,
@@ -64,9 +66,11 @@ public class OnboardingBaseViewController: OWSViewController {
 
     func linkButton(title: String, selector: Selector) -> OWSFlatButton {
         // TODO: Make sure this all fits if dynamic font sizes are maxed out.
-        let buttonHeight: CGFloat = 48
+        let font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        // Button height should be 48pt if the font is 17pt.
+        let buttonHeight = font.pointSize * 48 / 17
         let button = OWSFlatButton.button(title: title,
-                                          font: OWSFlatButton.fontForHeight(buttonHeight),
+                                          font: font,
                                           titleColor: .ows_materialBlue,
                                           backgroundColor: .white,
                                           target: self,

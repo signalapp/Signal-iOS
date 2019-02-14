@@ -30,7 +30,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         explanationLabel.text = NSLocalizedString("ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
                                                   comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view.")
         explanationLabel.textColor = .ows_materialBlue
-        explanationLabel.font = UIFont.ows_dynamicTypeCaption1
+        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
