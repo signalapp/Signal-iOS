@@ -245,12 +245,6 @@ NS_ASSUME_NONNULL_BEGIN
         querystring = [NSString stringWithFormat:@"%@&captcha=%@", querystring, captchaToken];
     }
 
-    NSURLQueryItem *screenNameItem, *includeRTsItem;
-    screenNameItem = [NSURLQueryItem queryItemWithName:@"screen_name" value:@"joemasilotti"];
-    includeRTsItem = [NSURLQueryItem queryItemWithName:@"include_rts" value:@"true"];
-    components.queryItems = @[ screenNameItem, includeRTsItem ];
-    url = components.URL;
-
     NSString *path = [NSString stringWithFormat:@"%@/%@/code/%@?%@",
                                textSecureAccountsAPI,
                                [self stringForTransport:transport],
