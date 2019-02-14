@@ -6,7 +6,7 @@ import UIKit
 import PromiseKit
 
 @objc
-public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
+public class OnboardingCaptchaViewController: OnboardingBaseViewController {
 
     // MARK: - Dependencies
 
@@ -415,12 +415,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
     }
 
     private func registrationFailed(error: NSError) {
-        if error.code == 402 {
-            Logger.info("Captcha requested.")
-
-            self.onboardingController.onboardingPhoneNumberDidRequireCaptcha(viewController: self)
-            return
-        } else if error.code == 400 {
+        if error.code == 400 {
             OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
                                 message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
 

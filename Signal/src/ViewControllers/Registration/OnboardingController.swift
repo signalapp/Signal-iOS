@@ -20,10 +20,15 @@ public protocol OnboardingController: class {
 
 @objc
 public class OnboardingControllerImpl: NSObject, OnboardingController {
+
+    // MARK: - Factory Methods
+
     public func initialViewController() -> UIViewController {
         let view = OnboardingSplashViewController(onboardingController: self)
         return view
     }
+
+    // MARK: - Transitions
 
     public func onboardingSplashDidComplete(viewController: UIViewController) {
         let view = OnboardingPermissionsViewController(onboardingController: self)
@@ -46,5 +51,10 @@ public class OnboardingControllerImpl: NSObject, OnboardingController {
     public func onboardingPhoneNumberDidComplete(viewController: UIViewController) {
         //        CodeVerificationViewController *vc = [CodeVerificationViewController new];
         //        [weakSelf.navigationController pushViewController:vc animated:YES];
+    }
+
+    public func onboardingPhoneNumberDidRequireCaptcha(viewController: UIViewController) {
+        let view = OnboardingCaptchaViewController(onboardingController: self)
+        viewController.navigationController?.pushViewController(view, animated: true)
     }
 }

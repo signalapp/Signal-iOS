@@ -24,7 +24,7 @@ public class OnboardingBaseViewController: OWSViewController {
         notImplemented()
     }
 
-    // MARK: -
+    // MARK: - Factory Methods
 
     func titleLabel(text: String) -> UILabel {
         let titleLabel = UILabel()
@@ -69,7 +69,20 @@ public class OnboardingBaseViewController: OWSViewController {
         return button
     }
 
-    // MARK: Orientation
+    // MARK: - View Lifecycle
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // TODO: Is there a better way to do this?
+        if let navigationController = self.navigationController as? OWSNavigationController {
+            SignalApp.shared().signUpFlowNavigationController = navigationController
+        } else {
+            owsFailDebug("Missing or invalid navigationController")
+        }
+    }
+
+    // MARK: - Orientation
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .portrait
