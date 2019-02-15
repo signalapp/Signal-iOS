@@ -62,7 +62,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         countryRow.isUserInteractionEnabled = true
         countryRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(countryRowTapped)))
         countryRow.autoSetDimension(.height, toSize: rowHeight)
-        _ = addBottomStroke(countryRow)
+        _ = countryRow.addBottomStroke()
 
         callingCodeLabel.textColor = Theme.primaryColor
         callingCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped
@@ -70,7 +70,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         callingCodeLabel.setCompressionResistanceHorizontalHigh()
         callingCodeLabel.isUserInteractionEnabled = true
         callingCodeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(countryCodeTapped)))
-        _ = addBottomStroke(callingCodeLabel)
+        _ = callingCodeLabel.addBottomStroke()
         callingCodeLabel.autoSetDimension(.width, toSize: rowHeight, relation: .greaterThanOrEqual)
 
         phoneNumberTextField.textAlignment = .left
@@ -81,8 +81,8 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         phoneNumberTextField.setContentHuggingHorizontalLow()
         phoneNumberTextField.setCompressionResistanceHorizontalLow()
 
-        phoneStrokeNormal = addBottomStroke(phoneNumberTextField)
-        phoneStrokeError = addBottomStroke(phoneNumberTextField, color: .ows_destructiveRed, strokeWidth: 2)
+        phoneStrokeNormal = phoneNumberTextField.addBottomStroke()
+        phoneStrokeError = phoneNumberTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
 
         let phoneNumberRow = UIStackView(arrangedSubviews: [
             callingCodeLabel,
@@ -138,20 +138,6 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
 
         validationWarningLabel.autoPinEdge(.leading, to: .leading, of: phoneNumberTextField)
-    }
-
-    private func addBottomStroke(_ view: UIView) -> UIView {
-        return addBottomStroke(view, color: Theme.middleGrayColor, strokeWidth: CGHairlineWidth())
-    }
-
-    private func addBottomStroke(_ view: UIView, color: UIColor, strokeWidth: CGFloat) -> UIView {
-        let strokeView = UIView()
-        strokeView.backgroundColor = color
-        view.addSubview(strokeView)
-        strokeView.autoSetDimension(.height, toSize: strokeWidth)
-        strokeView.autoPinWidthToSuperview()
-        strokeView.autoPinEdge(toSuperviewEdge: .bottom)
-        return strokeView
     }
 
     // MARK: - View Lifecycle

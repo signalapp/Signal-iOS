@@ -450,3 +450,21 @@ public class OnboardingController: NSObject {
         }
     }
 }
+
+// MARK: -
+
+public extension UIView {
+    public func addBottomStroke() -> UIView {
+        return addBottomStroke(color: Theme.middleGrayColor, strokeWidth: CGHairlineWidth())
+    }
+
+    public func addBottomStroke(color: UIColor, strokeWidth: CGFloat) -> UIView {
+        let strokeView = UIView()
+        strokeView.backgroundColor = color
+        addSubview(strokeView)
+        strokeView.autoSetDimension(.height, toSize: strokeWidth)
+        strokeView.autoPinWidthToSuperview()
+        strokeView.autoPinEdge(toSuperviewEdge: .bottom)
+        return strokeView
+    }
+}

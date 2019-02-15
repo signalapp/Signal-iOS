@@ -133,14 +133,8 @@ private class OnboardingCodeView: UIView {
         digitView.addSubview(digitLabel)
         digitLabel.autoCenterInSuperview()
 
-        let strokeView = UIView.container()
-        if hasStroke {
-            strokeView.backgroundColor = Theme.primaryColor
-            digitView.addSubview(strokeView)
-            strokeView.autoPinWidthToSuperview()
-            strokeView.autoPinEdge(toSuperviewEdge: .bottom)
-            strokeView.autoSetDimension(.height, toSize: 1)
-        }
+        let strokeColor = (hasStroke ? Theme.primaryColor : UIColor.clear)
+        let strokeView = digitView.addBottomStroke(color: strokeColor, strokeWidth: 1)
 
         let vMargin: CGFloat = 4
         let cellHeight: CGFloat = digitLabel.font.lineHeight + vMargin * 2
