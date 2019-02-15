@@ -50,29 +50,26 @@ public class OnboardingBaseViewController: OWSViewController {
     }
 
     func button(title: String, selector: Selector) -> OWSFlatButton {
-        // TODO: Make sure this all fits if dynamic font sizes are maxed out.
-        let font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
-        // Button height should be 48pt if the font is 17pt.
-        let buttonHeight = font.pointSize * 48 / 17
-        let button = OWSFlatButton.button(title: title,
-                                          font: font,
-                                          titleColor: .white,
-                                          backgroundColor: .ows_materialBlue,
-                                          target: self,
-                                          selector: selector)
-        button.autoSetDimension(.height, toSize: buttonHeight)
-        return button
+        return button(title: title, selector: selector, titleColor: .white, backgroundColor: .ows_materialBlue)
     }
 
     func linkButton(title: String, selector: Selector) -> OWSFlatButton {
+        return button(title: title, selector: selector, titleColor: .ows_materialBlue, backgroundColor: .white)
+    }
+
+    func disabledLinkButton(title: String, selector: Selector) -> OWSFlatButton {
+        return self.button(title: title, selector: selector, titleColor: Theme.secondaryColor, backgroundColor: .white)
+    }
+
+    private func button(title: String, selector: Selector, titleColor: UIColor, backgroundColor: UIColor) -> OWSFlatButton {
         // TODO: Make sure this all fits if dynamic font sizes are maxed out.
         let font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
         // Button height should be 48pt if the font is 17pt.
         let buttonHeight = font.pointSize * 48 / 17
         let button = OWSFlatButton.button(title: title,
                                           font: font,
-                                          titleColor: .ows_materialBlue,
-                                          backgroundColor: .white,
+                                          titleColor: titleColor,
+                                          backgroundColor: backgroundColor,
                                           target: self,
                                           selector: selector)
         button.autoSetDimension(.height, toSize: buttonHeight)

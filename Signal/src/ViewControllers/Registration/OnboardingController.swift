@@ -122,8 +122,8 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        //        CodeVerificationViewController *vc = [CodeVerificationViewController new];
-        //        [weakSelf.navigationController pushViewController:vc animated:YES];
+        let view = OnboardingVerificationViewController(onboardingController: self)
+        viewController.navigationController?.pushViewController(view, animated: true)
     }
 
     public func onboardingDidRequireCaptcha(viewController: UIViewController) {

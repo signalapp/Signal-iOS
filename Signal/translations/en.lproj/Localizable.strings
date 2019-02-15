@@ -1535,6 +1535,12 @@
 /* Title of the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TITLE" = "Signal is the private messenger for everybody";
 
+/* Label for the link that lets users change their phone number. */
+"ONBOARDING_VERIFICATION_BACK_LINK" = "Wrong number?";
+
+/* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_FORMAT" = "Enter the code we sent to %@";
+
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
 
@@ -1835,11 +1841,23 @@
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Invalid Phone Number";
 
+/* Message of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_VERIFICATION_ALERT_MESSAGE" = "REGISTRATION_VIEW_INVALID_VERIFICATION_ALERT_MESSAGE";
+
+/* Title of alert indicating that users needs to enter a valid phone number to register. */
+"REGISTRATION_VIEW_INVALID_VERIFICATION_ALERT_TITLE" = "REGISTRATION_VIEW_INVALID_VERIFICATION_ALERT_TITLE";
+
 /* Message of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a phone number to register.";
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "No Phone Number";
+
+/* Message of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_VERIFICATION_ALERT_MESSAGE" = "REGISTRATION_VIEW_NO_VERIFICATION_ALERT_MESSAGE";
+
+/* Title of alert indicating that users needs to enter a phone number to register. */
+"REGISTRATION_VIEW_NO_VERIFICATION_ALERT_TITLE" = "REGISTRATION_VIEW_NO_VERIFICATION_ALERT_TITLE";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Reject";
