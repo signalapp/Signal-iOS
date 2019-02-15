@@ -98,6 +98,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                                                         comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view.")
         validationWarningLabel.textColor = .ows_destructiveRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        validationWarningLabel.autoSetDimension(.height, toSize: validationWarningLabel.font.lineHeight)
 
         let validationWarningRow = UIView()
         validationWarningRow.addSubview(validationWarningLabel)

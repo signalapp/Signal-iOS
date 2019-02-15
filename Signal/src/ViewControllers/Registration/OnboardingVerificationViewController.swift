@@ -72,6 +72,7 @@ private class OnboardingCodeView: UIView {
 
     private let digitCount = 6
     private var digitLabels = [UILabel]()
+    private var digitStrokes = [UIView]()
 
     // We use a single text field to edit the "current" digit.
     // The "current" digit is usually the "last"
@@ -99,13 +100,14 @@ private class OnboardingCodeView: UIView {
 
         var digitViews = [UIView]()
         (0..<digitCount).forEach { (_) in
-            let (digitView, digitLabel) = makeCellView(text: "", hasStroke: true)
+            let (digitView, digitLabel, digitStroke) = makeCellView(text: "", hasStroke: true)
 
             digitLabels.append(digitLabel)
+            digitStrokes.append(digitStroke)
             digitViews.append(digitView)
         }
 
-        let (hyphenView, _) = makeCellView(text: "-", hasStroke: false)
+        let (hyphenView, _, _) = makeCellView(text: "-", hasStroke: false)
 
         digitViews.insert(hyphenView, at: 3)
 
@@ -120,7 +122,7 @@ private class OnboardingCodeView: UIView {
         self.addSubview(textfield)
     }
 
-    private func makeCellView(text: String, hasStroke: Bool) -> (UIView, UILabel) {
+    private func makeCellView(text: String, hasStroke: Bool) -> (UIView, UILabel, UIView) {
         let digitView = UIView()
 
         let digitLabel = UILabel()
@@ -131,8 +133,8 @@ private class OnboardingCodeView: UIView {
         digitView.addSubview(digitLabel)
         digitLabel.autoCenterInSuperview()
 
+        let strokeView = UIView.container()
         if hasStroke {
-            let strokeView = UIView.container()
             strokeView.backgroundColor = Theme.primaryColor
             digitView.addSubview(strokeView)
             strokeView.autoPinWidthToSuperview()
@@ -145,7 +147,7 @@ private class OnboardingCodeView: UIView {
         let cellWidth: CGFloat = cellHeight * 2 / 3
         digitView.autoSetDimensions(to: CGSize(width: cellWidth, height: cellHeight))
 
-        return (digitView, digitLabel)
+        return (digitView, digitLabel, strokeView)
     }
 
     private func digit(at index: Int) -> String {
@@ -183,6 +185,13 @@ private class OnboardingCodeView: UIView {
 
     public override func becomeFirstResponder() -> Bool {
         return textfield.becomeFirstResponder()
+    }
+
+    func setHasError(_ hasError: Bool) {
+        let backgroundColor = (hasError ? UIColor.ows_destructiveRed : Theme.primaryColor)
+        for digitStroke in digitStrokes {
+            digitStroke.backgroundColor = backgroundColor
+        }
     }
 }
 
@@ -251,6 +260,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
     private let phoneNumberTextField = UITextField()
     private let onboardingCodeView = OnboardingCodeView()
     private var codeStateLink: OWSFlatButton?
+    private let errorLabel = UILabel()
 
     override public func loadView() {
         super.loadView()
@@ -262,10 +272,22 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         self.titleLabel = titleLabel
 
         let backLink = self.linkButton(title: NSLocalizedString("ONBOARDING_VERIFICATION_BACK_LINK",
-                                                                comment: "Label for the link that lets users change their phone number."),
+                                                                comment: "Label for the link that lets users change their phone number in the onboarding views."),
                                        selector: #selector(backLinkTapped))
 
         onboardingCodeView.delegate = self
+
+        errorLabel.text = NSLocalizedString("ONBOARDING_VERIFICATION_INVALID_CODE",
+                                            comment: "Label indicating that the verification code is incorrect in the 'onboarding verification' view.")
+        errorLabel.textColor = .ows_destructiveRed
+        errorLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        errorLabel.textAlignment = .center
+        errorLabel.autoSetDimension(.height, toSize: errorLabel.font.lineHeight)
+
+        // Wrap the error label in a row so that we can show/hide it without affecting view layout.
+        let errorRow = UIView()
+        errorRow.addSubview(errorLabel)
+        errorLabel.autoPinEdgesToSuperviewEdges()
 
         let codeStateLink = self.linkButton(title: "",
                                              selector: #selector(resendCodeLinkTapped))
@@ -281,6 +303,8 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
             backLink,
             topSpacer,
             onboardingCodeView,
+            UIView.spacer(withHeight: 12),
+            errorRow,
             bottomSpacer,
             codeStateLink
             ])
@@ -299,6 +323,8 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         startCodeCountdown()
 
         updateCodeState()
+
+        setHasInvalidCode(false)
     }
 
      // MARK: - Code State
@@ -459,7 +485,17 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         guard onboardingCodeView.isComplete else {
             return
         }
-        onboardingController.tryToVerify(fromViewController: self, verificationCode: onboardingCodeView.verificationCode, pin: nil)
+
+        setHasInvalidCode(false)
+
+        onboardingController.tryToVerify(fromViewController: self, verificationCode: onboardingCodeView.verificationCode, pin: nil, isInvalidCodeCallback: {
+            self.setHasInvalidCode(true)
+        })
+    }
+
+    private func setHasInvalidCode(_ value: Bool) {
+        onboardingCodeView.setHasError(value)
+        errorLabel.isHidden = !value
     }
 }
 
@@ -468,6 +504,8 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 extension OnboardingVerificationViewController: OnboardingCodeViewDelegate {
     public func codeViewDidChange() {
         AssertIsOnMainThread()
+
+        setHasInvalidCode(false)
 
         tryToVerify()
     }

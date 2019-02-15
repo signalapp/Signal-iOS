@@ -389,7 +389,8 @@ public class OnboardingController: NSObject {
 
     public func tryToVerify(fromViewController: UIViewController,
                             verificationCode: String,
-                            pin: String?) {
+                            pin: String?,
+                            isInvalidCodeCallback : @escaping () -> Void) {
         AssertIsOnMainThread()
 
         guard let phoneNumber = phoneNumber else {
@@ -417,14 +418,19 @@ public class OnboardingController: NSObject {
 
                                                                 DispatchQueue.main.async {
                                                                     modal.dismiss(completion: {
-                                                                        self.verificationFailed(fromViewController: fromViewController, error: error as NSError)
+                                                                        self.verificationFailed(fromViewController: fromViewController,
+                                                                                                error: error as NSError,
+                                                                                                isInvalidCodeCallback: isInvalidCodeCallback)
                                                                     })
                                                                 }
                                                             }).retainUntilComplete()
         }
     }
 
-    private func verificationFailed(fromViewController: UIViewController, error: NSError) {
+    private func verificationFailed(fromViewController: UIViewController, error: NSError,
+                                    isInvalidCodeCallback : @escaping () -> Void) {
+        AssertIsOnMainThread()
+
         if error.domain == OWSSignalServiceKitErrorDomain &&
             error.code == OWSErrorCode.registrationMissing2FAPIN.rawValue {
 
@@ -432,6 +438,12 @@ public class OnboardingController: NSObject {
 
             onboardingDidRequire2FAPin(viewController: fromViewController)
         } else {
+            if error.domain == OWSSignalServiceKitErrorDomain &&
+                error.code == OWSErrorCode.userError.rawValue {
+                isInvalidCodeCallback()
+            }
+
+            Logger.verbose("error: \(error.domain) \(error.code)")
             OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
                                 message: error.localizedDescription,
                                 fromViewController: fromViewController)
