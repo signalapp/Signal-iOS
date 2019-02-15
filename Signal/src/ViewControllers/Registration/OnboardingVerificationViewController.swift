@@ -420,10 +420,6 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         self.navigationController?.popViewController(animated: true)
     }
 
-    @objc func ignoreEvent() {
-        Logger.info("")
-    }
-
     @objc func resendCodeLinkTapped() {
         Logger.info("")
 
