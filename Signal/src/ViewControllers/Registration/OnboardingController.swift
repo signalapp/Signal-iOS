@@ -247,6 +247,24 @@ public class OnboardingController: NSObject {
 //        navigationController.pushViewController(view, animated: true)
     }
 
+    @objc
+    public func profileWasSkipped(fromView view: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        // TODO:
+    }
+
+    @objc
+    public func profileDidComplete(fromView view: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        // TODO:
+    }
+
     // MARK: - State
 
     public private(set) var countryState: OnboardingCountryState = .defaultValue

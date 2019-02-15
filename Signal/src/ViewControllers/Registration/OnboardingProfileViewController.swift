@@ -7,11 +7,14 @@ import UIKit
 @objc
 public class OnboardingProfileViewController: OnboardingBaseViewController {
 
-//    private var titleLabel: UILabel?
-//    private let phoneNumberTextField = UITextField()
-//    private let onboardingCodeView = OnboardingCodeView()
-//    private var codeStateLink: OWSFlatButton?
-//    private let errorLabel = UILabel()
+    // MARK: - Dependencies
+
+    var profileManager: OWSProfileManager {
+        return OWSProfileManager.shared()
+    }
+
+    // MARK: -
+
     private let avatarView = AvatarImageView()
     private let nameTextfield = UITextField()
     private var avatar: UIImage?
@@ -65,7 +68,6 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
         nameTextfield.delegate = self
         nameTextfield.returnKeyType = .done
         nameTextfield.textColor = Theme.primaryColor
-//        nameTextfield.tintColor = UIColor.ows_materialBlue
         nameTextfield.font = UIFont.ows_dynamicTypeBodyClamped
         nameTextfield.placeholder = NSLocalizedString("ONBOARDING_PROFILE_NAME_PLACEHOLDER",
                                                       comment: "Placeholder text for the profile name in the 'onboarding profile' view.")
@@ -131,110 +133,48 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
         cameraCircle.isHidden = false
     }
 
-//     // MARK: - Code State
-//
-//    private let countdownDuration: TimeInterval = 60
-//    private var codeCountdownTimer: Timer?
-//    private var codeCountdownStart: NSDate?
-//
-//    deinit {
-//        if let codeCountdownTimer = codeCountdownTimer {
-//            codeCountdownTimer.invalidate()
-//        }
-//    }
-//
-//    private func startCodeCountdown() {
-//        codeCountdownStart = NSDate()
-//        codeCountdownTimer = Timer.weakScheduledTimer(withTimeInterval: 1, target: self, selector: #selector(codeCountdownTimerFired), userInfo: nil, repeats: true)
-//    }
-//
-//    @objc
-//    public func codeCountdownTimerFired() {
-//        guard let codeCountdownStart = codeCountdownStart else {
-//            owsFailDebug("Missing codeCountdownStart.")
-//            return
-//        }
-//        guard let codeCountdownTimer = codeCountdownTimer else {
-//            owsFailDebug("Missing codeCountdownTimer.")
-//            return
-//        }
-//
-//        let countdownInterval = abs(codeCountdownStart.timeIntervalSinceNow)
-//
-//        guard countdownInterval < countdownDuration else {
-//            // Countdown complete.
-//            codeCountdownTimer.invalidate()
-//            self.codeCountdownTimer = nil
-//
-//            if codeState != .pending {
-//                owsFailDebug("Unexpected codeState: \(codeState)")
-//            }
-//            codeState = .possiblyNotDelivered
-//            updateCodeState()
-//            return
-//        }
-//
-//        // Update the "code state" UI to reflect the countdown.
-//        updateCodeState()
-//    }
-//
-//    private func updateCodeState() {
-//        AssertIsOnMainThread()
-//
-//        guard let codeCountdownStart = codeCountdownStart else {
-//            owsFailDebug("Missing codeCountdownStart.")
-//            return
-//        }
-//        guard let titleLabel = titleLabel else {
-//            owsFailDebug("Missing titleLabel.")
-//            return
-//        }
-//        guard let codeStateLink = codeStateLink else {
-//            owsFailDebug("Missing codeStateLink.")
-//            return
-//        }
-//
-//        var e164PhoneNumber = ""
-//        if let phoneNumber = onboardingController.phoneNumber {
-//            e164PhoneNumber = phoneNumber.e164
-//        }
-//        let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: e164PhoneNumber)
-//
-//        // Update titleLabel
-//        switch codeState {
-//        case .pending, .possiblyNotDelivered:
-//            titleLabel.text = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT",
-//                                                               comment: "Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}."),
-//                                     formattedPhoneNumber)
-//        case .resent:
-//            titleLabel.text = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT",
-//                                                               comment: "Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}."),
-//                                     formattedPhoneNumber)
-//        }
-//
-//        // Update codeStateLink
-//        switch codeState {
-//        case .pending:
-//            let countdownInterval = abs(codeCountdownStart.timeIntervalSinceNow)
-//            let countdownRemaining = max(0, countdownDuration - countdownInterval)
-//            let formattedCountdown = OWSFormat.formatDurationSeconds(Int(round(countdownRemaining)))
-//            let text = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT",
-//                                                        comment: "Format for the label of the 'pending code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}."),
-//                              formattedCountdown)
-//            codeStateLink.setTitle(title: text, font: .ows_dynamicTypeBodyClamped, titleColor: Theme.secondaryColor)
-////            codeStateLink.setBackgroundColors(upColor: Theme.backgroundColor)
-//        case .possiblyNotDelivered:
-//            codeStateLink.setTitle(title: NSLocalizedString("ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK",
-//                                                            comment: "Label for link that can be used when the original code did not arrive."),
-//                                   font: .ows_dynamicTypeBodyClamped,
-//                                   titleColor: .ows_materialBlue)
-//        case .resent:
-//            codeStateLink.setTitle(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK",
-//                                                            comment: "Label for link that can be used when the resent code did not arrive."),
-//                                   font: .ows_dynamicTypeBodyClamped,
-//                                   titleColor: .ows_materialBlue)
-//        }
-//    }
+     // MARK: -
+
+    private func normalizedProfileName() -> String? {
+        return nameTextfield.text?.ows_stripped()
+    }
+
+    private func tryToComplete() {
+
+        let profileName = self.normalizedProfileName()
+        let profileAvatar = self.avatar
+
+        if profileName == nil, profileAvatar == nil {
+            onboardingController.profileWasSkipped(fromView: self)
+            return
+        }
+
+        if let name = profileName,
+            profileManager.isProfileNameTooLong(name) {
+            OWSAlerts.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG",
+                                                                comment: "Error message shown when user tries to update profile with a profile name that is too long."))
+            return
+        }
+
+        ModalActivityIndicatorViewController.present(fromViewController: self,
+                                                     canCancel: true) { (modal) in
+
+                                                        self.profileManager.updateLocalProfileName(profileName, avatarImage: profileAvatar, success: {
+                                                            DispatchQueue.main.async {
+                                                                modal.dismiss(completion: {
+                                                                    self.onboardingController.profileDidComplete(fromView: self)
+                                                                })
+                                                            }
+                                                        }, failure: {
+                                                            DispatchQueue.main.async {
+                                                                modal.dismiss(completion: {
+                                                                    OWSAlerts.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_UPDATE_FAILED",
+                                                                                                                        comment: "Error message shown when a profile update fails."))
+                                                                })
+                                                            }
+                                                        })
+        }
+    }
 
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -254,8 +194,7 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
     @objc func nextPressed() {
         Logger.info("")
 
-        // TODO:
-//        parseAndTryToRegister()
+        tryToComplete()
     }
 
     private func showAvatarActionSheet() {
@@ -264,113 +203,14 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
         Logger.info("")
 
         avatarViewHelper.showChangeAvatarUI()
-
-//        let alert = UIAlertController(title: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_TITLE",
-//                                                               comment: "Title for alert shown when the app failed to check for an existing backup."),
-//                                      message: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_MESSAGE",
-//                                                                 comment: "Message for alert shown when the app failed to check for an existing backup."),
-//                                      preferredStyle: .alert)
-//        alert.addAction(UIAlertAction(title: NSLocalizedString("REGISTER_FAILED_TRY_AGAIN", comment: ""),
-//                                      style: .default) { (_) in
-//                                        self.checkCanImportBackup(fromView: view)
-//        })
-//        alert.addAction(UIAlertAction(title: NSLocalizedString("CHECK_FOR_BACKUP_DO_NOT_RESTORE", comment: "The label for the 'do not restore backup' button."),
-//                                      style: .destructive) { (_) in
-//                                        self.showProfileView(fromView: view)
-//        })
-//        view.present(alert, animated: true)
     }
-
-    //    @objc func backLinkTapped() {
-//        Logger.info("")
-//
-//        self.navigationController?.popViewController(animated: true)
-//    }
-//
-//    @objc func resendCodeLinkTapped() {
-//        Logger.info("")
-//
-//        switch codeState {
-//        case .pending:
-//            // Ignore taps until the countdown expires.
-//            break
-//        case .possiblyNotDelivered, .resent:
-//            showResendActionSheet()
-//        }
-//    }
-//
-//    private func showResendActionSheet() {
-//        Logger.info("")
-//
-//        let actionSheet = UIAlertController(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE",
-//                                                                     comment: "Title for the 'resend code' alert in the 'onboarding verification' view."),
-//                                            message: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE",
-//                                                                       comment: "Message for the 'resend code' alert in the 'onboarding verification' view."),
-//                                            preferredStyle: .actionSheet)
-//
-//        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON",
-//                                                                     comment: "Label for the 'resend code by SMS' button in the 'onboarding verification' view."),
-//                                            style: .default) { _ in
-//                                                self.onboardingController.tryToRegister(fromViewController: self, smsVerification: true)
-//        })
-//        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON",
-//                                                                     comment: "Label for the 'resend code by voice' button in the 'onboarding verification' view."),
-//                                            style: .default) { _ in
-//                                                self.onboardingController.tryToRegister(fromViewController: self, smsVerification: false)
-//        })
-//        actionSheet.addAction(OWSAlerts.cancelAction)
-//
-//        self.present(actionSheet, animated: true)
-//    }
-//
-//    private func tryToVerify() {
-//        Logger.info("")
-//
-//        guard onboardingCodeView.isComplete else {
-//            return
-//        }
-//
-//        setHasInvalidCode(false)
-//
-//        onboardingController.tryToVerify(fromViewController: self, verificationCode: onboardingCodeView.verificationCode, pin: nil, isInvalidCodeCallback: {
-//            self.setHasInvalidCode(true)
-//        })
-//    }
-//
-//    private func setHasInvalidCode(_ value: Bool) {
-//        onboardingCodeView.setHasError(value)
-//        errorLabel.isHidden = !value
-//    }
-//}
-//
-//// MARK: -
-//
-//extension OnboardingProfileViewController: OnboardingCodeViewDelegate {
-//    public func codeViewDidChange() {
-//        AssertIsOnMainThread()
-//
-//        setHasInvalidCode(false)
-//
-//        tryToVerify()
-//    }
 }
 
 // MARK: -
 
 extension OnboardingProfileViewController: UITextFieldDelegate {
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        //        // TODO: Fix auto-format of phone numbers.
-        //        ViewControllerUtils.phoneNumber(textField, shouldChangeCharactersIn: range, replacementString: string, countryCode: countryCode)
-        //
-        //        isPhoneNumberInvalid = false
-        //        updateValidationWarnings()
-
-        // Inform our caller that we took care of performing the change.
-        return true
-    }
-
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        //        parseAndTryToRegister()
+        tryToComplete()
         return false
     }
 }
