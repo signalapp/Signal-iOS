@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dynamic Type Clamped
 
+@property (class, readonly, nonatomic) UIFont *ows_dynamicTypeLargeTitle1ClampedFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeTitle1ClampedFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeTitle2ClampedFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeTitle3ClampedFont;

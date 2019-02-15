@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -166,5 +166,12 @@ public class OWSFlatButton: UIView {
     @objc
     internal func buttonPressed() {
         pressedBlock?()
+    }
+
+    @objc
+    public func enableMultilineLabel() {
+        button.titleLabel?.numberOfLines = 0
+        button.titleLabel?.lineBreakMode = .byWordWrapping
+        button.titleLabel?.textAlignment = .center
     }
 }

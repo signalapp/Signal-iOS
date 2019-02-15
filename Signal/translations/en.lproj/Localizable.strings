@@ -1538,8 +1538,35 @@
 /* Label for the link that lets users change their phone number. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Wrong number?";
 
+/* Format for the label of the 'pending code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "I didn't get a code (available in %@)";
+
+/* Label for link that can be used when the original code did not arrive. */
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "I didn't get a code";
+
+/* Message for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Please ensure that you have cellular service and can receive SMS messages.";
+
+/* Title for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "No code?";
+
+/* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Resend code";
+
+/* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Call me instead";
+
+/* Label for the link that lets users request another verification code. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_LINK" = "ONBOARDING_VERIFICATION_RESEND_CODE_LINK";
+
+/* Label for link that can be used when the resent code did not arrive. */
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Still no code?";
+
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_FORMAT" = "Enter the code we sent to %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Enter the code we sent to %@";
+
+/* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "We just resent a code to %@";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
@@ -1841,23 +1868,11 @@
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Invalid Phone Number";
 
-/* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_VERIFICATION_ALERT_MESSAGE" = "REGISTRATION_VIEW_INVALID_VERIFICATION_ALERT_MESSAGE";
-
-/* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_VERIFICATION_ALERT_TITLE" = "REGISTRATION_VIEW_INVALID_VERIFICATION_ALERT_TITLE";
-
 /* Message of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a phone number to register.";
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "No Phone Number";
-
-/* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_VERIFICATION_ALERT_MESSAGE" = "REGISTRATION_VIEW_NO_VERIFICATION_ALERT_MESSAGE";
-
-/* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_VERIFICATION_ALERT_TITLE" = "REGISTRATION_VIEW_NO_VERIFICATION_ALERT_TITLE";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Reject";

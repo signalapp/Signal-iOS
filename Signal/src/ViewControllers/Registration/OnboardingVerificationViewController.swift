@@ -5,79 +5,264 @@
 import UIKit
 import PromiseKit
 
-private class OnboardingCodeView: UIView {
+private protocol OnboardingCodeViewTextFieldDelegate {
+    func textFieldDidDeletePrevious()
 }
+
+// MARK: -
+
+// Editing a code should feel seamless, as even though
+// the UITextField only lets you edit a single digit at
+// a time.  For deletes to work properly, we need to
+// detect delete events that would affect the _previous_
+// digit.
+private class OnboardingCodeViewTextField: UITextField {
+
+    fileprivate var codeDelegate: OnboardingCodeViewTextFieldDelegate?
+
+    override func deleteBackward() {
+        var isDeletePrevious = false
+        if let selectedTextRange = selectedTextRange {
+            let cursorPosition = offset(from: beginningOfDocument, to: selectedTextRange.start)
+            if cursorPosition == 0 {
+                isDeletePrevious = true
+            }
+        }
+
+        super.deleteBackward()
+
+        if isDeletePrevious {
+            codeDelegate?.textFieldDidDeletePrevious()
+        }
+    }
+
+}
+
+// MARK: -
+
+protocol OnboardingCodeViewDelegate {
+    func codeViewDidChange()
+}
+
+// MARK: -
+
+// The OnboardingCodeView is a special "verification code"
+// editor that should feel like editing a single piece
+// of text (ala UITextField) even though the individual
+// digits of the code are visually separated.
+//
+// We use a separate UILabel for each digit, and move
+// around a single UITextfield to let the user edit the
+// last/next digit.
+private class OnboardingCodeView: UIView {
+
+    var delegate: OnboardingCodeViewDelegate?
+
+    public init() {
+        super.init(frame: .zero)
+
+        createSubviews()
+
+        updateViewState()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private let digitCount = 6
+    private var digitLabels = [UILabel]()
+
+    // We use a single text field to edit the "current" digit.
+    // The "current" digit is usually the "last"
+    fileprivate let textfield = OnboardingCodeViewTextField()
+    private var currentDigitIndex = 0
+    private var textfieldConstraints = [NSLayoutConstraint]()
+
+    // The current complete text - the "model" for this view.
+    private var digitText = ""
+
+    var isComplete: Bool {
+        return digitText.count == digitCount
+    }
+
+    private func createSubviews() {
+        textfield.textAlignment = .left
+        textfield.delegate = self
+        textfield.keyboardType = .numberPad
+        textfield.textColor = Theme.primaryColor
+        textfield.font = UIFont.ows_dynamicTypeLargeTitle1Clamped
+        textfield.codeDelegate = self
+
+        var digitViews = [UIView]()
+        (0..<digitCount).forEach { (_) in
+            let (digitView, digitLabel) = makeCellView(text: "", hasStroke: true)
+
+            digitLabels.append(digitLabel)
+            digitViews.append(digitView)
+        }
+
+        let (hyphenView, _) = makeCellView(text: "-", hasStroke: false)
+
+        digitViews.insert(hyphenView, at: 3)
+
+        let stackView = UIStackView(arrangedSubviews: digitViews)
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 8
+        addSubview(stackView)
+        stackView.autoPinHeightToSuperview()
+        stackView.autoHCenterInSuperview()
+
+        self.addSubview(textfield)
+    }
+
+    private func makeCellView(text: String, hasStroke: Bool) -> (UIView, UILabel) {
+        let digitView = UIView()
+
+        let digitLabel = UILabel()
+        digitLabel.text = text
+        digitLabel.font = UIFont.ows_dynamicTypeLargeTitle1Clamped
+        digitLabel.textColor = Theme.primaryColor
+        digitLabel.textAlignment = .center
+        digitView.addSubview(digitLabel)
+        digitLabel.autoCenterInSuperview()
+
+        if hasStroke {
+            let strokeView = UIView.container()
+            strokeView.backgroundColor = Theme.primaryColor
+            digitView.addSubview(strokeView)
+            strokeView.autoPinWidthToSuperview()
+            strokeView.autoPinEdge(toSuperviewEdge: .bottom)
+            strokeView.autoSetDimension(.height, toSize: 1)
+        }
+
+        let vMargin: CGFloat = 4
+        let cellHeight: CGFloat = digitLabel.font.lineHeight + vMargin * 2
+        let cellWidth: CGFloat = cellHeight * 2 / 3
+        digitView.autoSetDimensions(to: CGSize(width: cellWidth, height: cellHeight))
+
+        return (digitView, digitLabel)
+    }
+
+    private func digit(at index: Int) -> String {
+        guard index < digitText.count else {
+            return ""
+        }
+        return digitText.substring(from: index).trim(after: 1)
+    }
+
+    // Ensure that all labels are displaying the correct
+    // digit (if any) and that the UITextField has replaced
+    // the "current" digit.
+    private func updateViewState() {
+        currentDigitIndex = min(digitCount - 1,
+                                digitText.count)
+
+        (0..<digitCount).forEach { (index) in
+            let digitLabel = digitLabels[index]
+            digitLabel.text = digit(at: index)
+            digitLabel.isHidden = index == currentDigitIndex
+        }
+
+        NSLayoutConstraint.deactivate(textfieldConstraints)
+        textfieldConstraints.removeAll()
+
+        let digitLabelToReplace = digitLabels[currentDigitIndex]
+        textfield.text = digit(at: currentDigitIndex)
+        textfieldConstraints.append(textfield.autoAlignAxis(.horizontal, toSameAxisOf: digitLabelToReplace))
+        textfieldConstraints.append(textfield.autoAlignAxis(.vertical, toSameAxisOf: digitLabelToReplace))
+
+        // Move cursor to end of text.
+        let newPosition = textfield.endOfDocument
+        textfield.selectedTextRange = textfield.textRange(from: newPosition, to: newPosition)
+    }
+
+    public override func becomeFirstResponder() -> Bool {
+        return textfield.becomeFirstResponder()
+    }
+}
+
+// MARK: -
+
+extension OnboardingCodeView: UITextFieldDelegate {
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString newString: String) -> Bool {
+        var oldText = ""
+        if let textFieldText = textField.text {
+            oldText = textFieldText
+        }
+        let left = oldText.substring(to: range.location)
+        let right = oldText.substring(from: range.location + range.length)
+        let unfiltered = left + newString + right
+        let characterSet = CharacterSet(charactersIn: "0123456789")
+        let filtered = unfiltered.components(separatedBy: characterSet.inverted).joined()
+        let filteredAndTrimmed = filtered.trim(after: 1)
+        textField.text = filteredAndTrimmed
+
+        digitText = digitText.trim(after: currentDigitIndex) + filteredAndTrimmed
+
+        updateViewState()
+
+        // Inform our caller that we took care of performing the change.
+        return false
+    }
+
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return false
+    }
+}
+
+// MARK: -
+
+extension OnboardingCodeView: OnboardingCodeViewTextFieldDelegate {
+    public func textFieldDidDeletePrevious() {
+        guard digitText.count > 0 else {
+            return
+        }
+        digitText = digitText.substring(to: currentDigitIndex - 1)
+
+        updateViewState()
+    }
+}
+
+// MARK: -
 
 @objc
 public class OnboardingVerificationViewController: OnboardingBaseViewController {
 
-//    // MARK: - Dependencies
-//
-//    private var tsAccountManager: TSAccountManager {
-//        return TSAccountManager.sharedInstance()
-//    }
+    private enum CodeState {
+        case pending
+        case possiblyNotDelivered
+        case resent
+    }
 
     // MARK: -
 
+    private var codeState = CodeState.pending
+
+    private var titleLabel: UILabel?
     private let phoneNumberTextField = UITextField()
-//    private var nextButton: OWSFlatButton?
-    private var resendCodeLabel: OWSFlatButton?
-    private var resendCodeLink: OWSFlatButton?
+    private let onboardingCodeView = OnboardingCodeView()
+    private var codeStateLink: OWSFlatButton?
 
     override public func loadView() {
         super.loadView()
 
-//        populateDefaults()
-
         view.backgroundColor = Theme.backgroundColor
         view.layoutMargins = .zero
 
-        var e164PhoneNumber = ""
-        if let phoneNumber = onboardingController.phoneNumber {
-            e164PhoneNumber = phoneNumber.e164
-        }
-        let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: e164PhoneNumber)
-        let titleText = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_TITLE_FORMAT",
-                                                        comment: "Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}."),
-                               formattedPhoneNumber)
-        let titleLabel = self.titleLabel(text: titleText)
+        let titleLabel = self.titleLabel(text: "")
+        self.titleLabel = titleLabel
 
         let backLink = self.linkButton(title: NSLocalizedString("ONBOARDING_VERIFICATION_BACK_LINK",
                                                                 comment: "Label for the link that lets users change their phone number."),
                                        selector: #selector(backLinkTapped))
 
-        let onboardingCodeView = OnboardingCodeView()
-        onboardingCodeView.addRedBorder()
-
-//        resendCodeLabel.text = NSLocalizedString("ONBOARDING_VERIFICATION_BACK_LINK",
-//                                                 comment: "Label for the link that lets users change their phone number."),
-//        resendCodeLabel.text = "TODO"
-//        resendCodeLabel.textColor = Theme.secondaryColor
-//        resendCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped
-
-        // TODO: Copy.
-        let resendCodeLabel = disabledLinkButton(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_LINK",
-                                                                      comment: "Label for the link that lets users request another verification code."),
-                                             selector: #selector(ignoreEvent))
-        self.resendCodeLabel = resendCodeLabel
-
-        let resendCodeLink = self.linkButton(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_LINK",
-                                                                      comment: "Label for the link that lets users request another verification code."),
+        let codeStateLink = self.linkButton(title: "",
                                              selector: #selector(resendCodeLinkTapped))
-        self.resendCodeLink = resendCodeLink
+        codeStateLink.enableMultilineLabel()
+        self.codeStateLink = codeStateLink
 
-        let resentCodeWrapper = UIView.container()
-        resentCodeWrapper.addSubview(resendCodeLabel)
-        resentCodeWrapper.addSubview(resendCodeLink)
-        resendCodeLabel.autoPinEdgesToSuperviewEdges()
-        resendCodeLink.autoPinEdgesToSuperviewEdges()
-
-        // TODO: Finalize copy.
-
-//        let nextButton = self.button(title: NSLocalizedString("BUTTON_NEXT",
-//                                                                comment: "Label for the 'next' button."),
-//                                           selector: #selector(nextPressed))
-//        self.nextButton = nextButton
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
 
@@ -87,11 +272,8 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
             backLink,
             topSpacer,
             onboardingCodeView,
-//            countryRow,
-//            UIView.spacer(withHeight: 8),
-//            phoneNumberRow,
             bottomSpacer,
-            resentCodeWrapper
+            codeStateLink
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -104,209 +286,122 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
         // Ensure whitespace is balanced, so inputs are vertically centered.
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+
+        startCodeCountdown()
+
+        updateCodeState()
     }
 
-//    private func addBottomStroke(_ view: UIView) {
-//        let strokeView = UIView()
-//        strokeView.backgroundColor = Theme.middleGrayColor
-//        view.addSubview(strokeView)
-//        strokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
-//        strokeView.autoPinWidthToSuperview()
-//        strokeView.autoPinEdge(toSuperviewEdge: .bottom)
-//    }
-//
-//    public override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//
-//        phoneNumberTextField.becomeFirstResponder()
-//
-//        if tsAccountManager.isReregistering() {
-//            // If re-registering, pre-populate the country (country code, calling code, country name)
-//            // and phone number state.
-//            guard let phoneNumberE164 = tsAccountManager.reregisterationPhoneNumber() else {
-//                owsFailDebug("Could not resume re-registration; missing phone number.")
-//                return
-//            }
-//            tryToReregister(phoneNumberE164: phoneNumberE164)
-//        }
-//    }
-//
-//    private func tryToReregister(phoneNumberE164: String) {
-//        guard phoneNumberE164.count > 0 else {
-//            owsFailDebug("Could not resume re-registration; invalid phoneNumberE164.")
-//            return
-//        }
-//        guard let parsedPhoneNumber = PhoneNumber(fromE164: phoneNumberE164) else {
-//            owsFailDebug("Could not resume re-registration; couldn't parse phoneNumberE164.")
-//            return
-//        }
-//        guard let callingCodeNumeric = parsedPhoneNumber.getCountryCode() else {
-//            owsFailDebug("Could not resume re-registration; missing callingCode.")
-//            return
-//        }
-//        let callingCode = "\(COUNTRY_CODE_PREFIX)\(callingCodeNumeric)"
-//        let countryCodes: [String] =
-//            PhoneNumberUtil.sharedThreadLocal().countryCodes(fromCallingCode: callingCode)
-//        guard let countryCode = countryCodes.first else {
-//            owsFailDebug("Could not resume re-registration; unknown countryCode.")
-//            return
-//        }
-//        guard let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode) else {
-//            owsFailDebug("Could not resume re-registration; unknown countryName.")
-//            return
-//        }
-//        if !phoneNumberE164.hasPrefix(callingCode) {
-//            owsFailDebug("Could not resume re-registration; non-matching calling code.")
-//            return
-//        }
-//        let phoneNumberWithoutCallingCode = phoneNumberE164.substring(from: callingCode.count)
-//
-//        guard countryCode.count > 0 else {
-//            owsFailDebug("Invalid country code.")
-//            return
-//        }
-//        guard countryName.count > 0 else {
-//            owsFailDebug("Invalid country name.")
-//            return
-//        }
-//        guard callingCode.count > 0 else {
-//            owsFailDebug("Invalid calling code.")
-//            return
-//        }
-//
-//        let countryState = OnboardingCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
-//        onboardingController.update(countryState: countryState)
-//
-//        updateState()
-//
-//        phoneNumberTextField.text = phoneNumberWithoutCallingCode
-//        // Don't let user edit their phone number while re-registering.
-//        phoneNumberTextField.isEnabled = false
-//    }
-//
-//    // MARK: -
-//
-//    private var countryName: String {
-//        get {
-//            return onboardingController.countryState.countryName
-//        }
-//    }
-//    private var callingCode: String {
-//        get {
-//            AssertIsOnMainThread()
-//
-//            return onboardingController.countryState.callingCode
-//        }
-//    }
-//    private var countryCode: String {
-//        get {
-//            AssertIsOnMainThread()
-//
-//            return onboardingController.countryState.countryCode
-//        }
-//    }
-//
-//    private func populateDefaults() {
-//        if let lastRegisteredPhoneNumber = OnboardingController.lastRegisteredPhoneNumber(),
-//            lastRegisteredPhoneNumber.count > 0,
-//            lastRegisteredPhoneNumber.hasPrefix(callingCode) {
-//            phoneNumberTextField.text = lastRegisteredPhoneNumber.substring(from: callingCode.count)
-//        } else if let phoneNumber = onboardingController.phoneNumber {
-//            phoneNumberTextField.text = phoneNumber.userInput
-//        }
-//
-//        updateState()
-//    }
-//
-//    private func updateState() {
-//        AssertIsOnMainThread()
-//
-//        countryNameLabel.text = countryName
-//        callingCodeLabel.text = callingCode
-//
-//        self.phoneNumberTextField.placeholder = ViewControllerUtils.examplePhoneNumber(forCountryCode: countryCode, callingCode: callingCode)
-//    }
-//
-//     // MARK: - Events
-//
-//    @objc func countryRowTapped(sender: UIGestureRecognizer) {
-//        guard sender.state == .recognized else {
-//            return
-//        }
-//        showCountryPicker()
-//    }
-//
-//    @objc func countryCodeTapped(sender: UIGestureRecognizer) {
-//        guard sender.state == .recognized else {
-//            return
-//        }
-//        showCountryPicker()
-//    }
-//
-//    @objc func nextPressed() {
-//        Logger.info("")
-//
-//        parseAndTryToRegister()
-//    }
-//
-//    // MARK: - Country Picker
-//
-//    private func showCountryPicker() {
-//        guard !tsAccountManager.isReregistering() else {
-//            return
-//        }
-//
-//        let countryCodeController = CountryCodeViewController()
-//        countryCodeController.countryCodeDelegate = self
-//        countryCodeController.interfaceOrientationMask = .portrait
-//        let navigationController = OWSNavigationController(rootViewController: countryCodeController)
-//        self.present(navigationController, animated: true, completion: nil)
-//    }
-//
-//    // MARK: - Register
-//
-//    private func parseAndTryToRegister() {
-//        guard let phoneNumberText = phoneNumberTextField.text?.ows_stripped(),
-//            phoneNumberText.count > 0 else {
-//                OWSAlerts.showAlert(title:
-//                    NSLocalizedString("REGISTRATION_VIEW_NO_VERIFICATION_ALERT_TITLE",
-//                                      comment: "Title of alert indicating that users needs to enter a phone number to register."),
-//                    message:
-//                    NSLocalizedString("REGISTRATION_VIEW_NO_VERIFICATION_ALERT_MESSAGE",
-//                                      comment: "Message of alert indicating that users needs to enter a phone number to register."))
-//                return
-//        }
-//
-//        let phoneNumber = "\(callingCode)\(phoneNumberText)"
-//        guard let localNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: phoneNumber),
-//            localNumber.toE164().count > 0,
-//            PhoneNumberValidator().isValidForRegistration(phoneNumber: localNumber) else {
-//                OWSAlerts.showAlert(title:
-//                    NSLocalizedString("REGISTRATION_VIEW_INVALID_VERIFICATION_ALERT_TITLE",
-//                                      comment: "Title of alert indicating that users needs to enter a valid phone number to register."),
-//                    message:
-//                    NSLocalizedString("REGISTRATION_VIEW_INVALID_VERIFICATION_ALERT_MESSAGE",
-//                                      comment: "Message of alert indicating that users needs to enter a valid phone number to register."))
-//                return
-//        }
-//        let e164PhoneNumber = localNumber.toE164()
-//
-//        onboardingController.update(phoneNumber: OnboardingPhoneNumber(e164: e164PhoneNumber, userInput: phoneNumberText))
-//
-//        if UIDevice.current.isIPad {
-//            OWSAlerts.showConfirmationAlert(title: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_TITLE",
-//                                                                      comment: "alert title when registering an iPad"),
-//                                            message: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BODY",
-//                                                                        comment: "alert body when registering an iPad"),
-//                                            proceedTitle: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BUTTON",
-//                                                                             comment: "button text to proceed with registration when on an iPad"),
-//                                            proceedAction: { (_) in
-//                                                self.onboardingController.tryToRegister(fromViewController: self, smsVerification: false)
-//            })
-//        } else {
-//            onboardingController.tryToRegister(fromViewController: self, smsVerification: false)
-//        }
-//    }
+     // MARK: - Code State
+
+    private let countdownDuration: TimeInterval = 60
+    private var codeCountdownTimer: Timer?
+    private var codeCountdownStart: NSDate?
+
+    deinit {
+        if let codeCountdownTimer = codeCountdownTimer {
+            codeCountdownTimer.invalidate()
+        }
+    }
+
+    private func startCodeCountdown() {
+        codeCountdownStart = NSDate()
+        codeCountdownTimer = Timer.weakScheduledTimer(withTimeInterval: 1, target: self, selector: #selector(codeCountdownTimerFired), userInfo: nil, repeats: true)
+    }
+
+    @objc
+    public func codeCountdownTimerFired() {
+        guard let codeCountdownStart = codeCountdownStart else {
+            owsFailDebug("Missing codeCountdownStart.")
+            return
+        }
+        guard let codeCountdownTimer = codeCountdownTimer else {
+            owsFailDebug("Missing codeCountdownTimer.")
+            return
+        }
+
+        let countdownInterval = abs(codeCountdownStart.timeIntervalSinceNow)
+
+        guard countdownInterval < countdownDuration else {
+            // Countdown complete.
+            codeCountdownTimer.invalidate()
+            self.codeCountdownTimer = nil
+
+            if codeState != .pending {
+                owsFailDebug("Unexpected codeState: \(codeState)")
+            }
+            codeState = .possiblyNotDelivered
+            updateCodeState()
+            return
+        }
+
+        // Update the "code state" UI to reflect the countdown.
+        updateCodeState()
+    }
+
+    private func updateCodeState() {
+        AssertIsOnMainThread()
+
+        guard let codeCountdownStart = codeCountdownStart else {
+            owsFailDebug("Missing codeCountdownStart.")
+            return
+        }
+        guard let titleLabel = titleLabel else {
+            owsFailDebug("Missing titleLabel.")
+            return
+        }
+        guard let codeStateLink = codeStateLink else {
+            owsFailDebug("Missing codeStateLink.")
+            return
+        }
+
+        var e164PhoneNumber = ""
+        if let phoneNumber = onboardingController.phoneNumber {
+            e164PhoneNumber = phoneNumber.e164
+        }
+        let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: e164PhoneNumber)
+
+        // Update titleLabel
+        switch codeState {
+        case .pending, .possiblyNotDelivered:
+            titleLabel.text = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT",
+                                                               comment: "Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}."),
+                                     formattedPhoneNumber)
+        case .resent:
+            titleLabel.text = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT",
+                                                               comment: "Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}."),
+                                     formattedPhoneNumber)
+        }
+
+        // Update codeStateLink
+        switch codeState {
+        case .pending:
+            let countdownInterval = abs(codeCountdownStart.timeIntervalSinceNow)
+            let countdownRemaining = max(0, countdownDuration - countdownInterval)
+            let formattedCountdown = OWSFormat.formatDurationSeconds(Int(round(countdownRemaining)))
+            let text = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT",
+                                                        comment: "Format for the label of the 'pending code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}."),
+                              formattedCountdown)
+            codeStateLink.setTitle(title: text, font: .ows_dynamicTypeBodyClamped, titleColor: Theme.secondaryColor)
+//            codeStateLink.setBackgroundColors(upColor: Theme.backgroundColor)
+        case .possiblyNotDelivered:
+            codeStateLink.setTitle(title: NSLocalizedString("ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK",
+                                                            comment: "Label for link that can be used when the original code did not arrive."),
+                                   font: .ows_dynamicTypeBodyClamped,
+                                   titleColor: .ows_materialBlue)
+        case .resent:
+            codeStateLink.setTitle(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK",
+                                                            comment: "Label for link that can be used when the resent code did not arrive."),
+                                   font: .ows_dynamicTypeBodyClamped,
+                                   titleColor: .ows_materialBlue)
+        }
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        _ = onboardingCodeView.becomeFirstResponder()
+    }
 
     // MARK: - Events
 
@@ -323,52 +418,44 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
     @objc func resendCodeLinkTapped() {
         Logger.info("")
 
-        // TODO:
-//        self.navigationController?.popViewController(animated: true)
+        switch codeState {
+        case .pending:
+            // Ignore taps until the countdown expires.
+            break
+        case .possiblyNotDelivered, .resent:
+            showResendActionSheet()
+        }
+    }
+
+    private func showResendActionSheet() {
+        Logger.info("")
+
+        let actionSheet = UIAlertController(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE",
+                                                                     comment: "Title for the 'resend code' alert in the 'onboarding verification' view."),
+                                            message: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE",
+                                                                       comment: "Message for the 'resend code' alert in the 'onboarding verification' view."),
+                                            preferredStyle: .actionSheet)
+
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON",
+                                                                     comment: "Label for the 'resend code by SMS' button in the 'onboarding verification' view."),
+                                            style: .default) { _ in
+                                                self.onboardingController.tryToRegister(fromViewController: self, smsVerification: true)
+        })
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON",
+                                                                     comment: "Label for the 'resend code by voice' button in the 'onboarding verification' view."),
+                                            style: .default) { _ in
+                                                self.onboardingController.tryToRegister(fromViewController: self, smsVerification: false)
+        })
+        actionSheet.addAction(OWSAlerts.cancelAction)
+
+        self.present(actionSheet, animated: true)
     }
 }
 
-//// MARK: -
-//
-//extension OnboardingVerificationViewController: UITextFieldDelegate {
-//    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-//        // TODO: Fix auto-format of phone numbers.
-//        ViewControllerUtils.phoneNumber(textField, shouldChangeCharactersIn: range, replacementString: string, countryCode: countryCode)
-//
-//        // Inform our caller that we took care of performing the change.
-//        return false
-//    }
-//
-//    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//        parseAndTryToRegister()
-//        return false
-//    }
-//}
-//
-//// MARK: -
-//
-//extension OnboardingVerificationViewController: CountryCodeViewControllerDelegate {
-//    public func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountryCode countryCode: String, countryName: String, callingCode: String) {
-//        guard countryCode.count > 0 else {
-//            owsFailDebug("Invalid country code.")
-//            return
-//        }
-//        guard countryName.count > 0 else {
-//            owsFailDebug("Invalid country name.")
-//            return
-//        }
-//        guard callingCode.count > 0 else {
-//            owsFailDebug("Invalid calling code.")
-//            return
-//        }
-//
-//        let countryState = OnboardingCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
-//
-//        onboardingController.update(countryState: countryState)
-//
-//        updateState()
-//
-//            // Trigger the formatting logic with a no-op edit.
-//        _ = textField(phoneNumberTextField, shouldChangeCharactersIn: NSRange(location: 0, length: 0), replacementString: "")
-//    }
-//}
+// MARK: -
+
+extension OnboardingVerificationViewController: OnboardingCodeViewDelegate {
+    public func codeViewDidChange() {
+        // TODO:
+    }
+}

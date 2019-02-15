@@ -5,11 +5,25 @@
 import Foundation
 
 public extension String {
+    public var digitsOnly: String {
+        return (self as NSString).digitsOnly()
+    }
+
     func rtlSafeAppend(_ string: String) -> String {
         return (self as NSString).rtlSafeAppend(string)
     }
 
     public func substring(from index: Int) -> String {
         return String(self[self.index(self.startIndex, offsetBy: index)...])
+    }
+
+    public func substring(to index: Int) -> String {
+        return String(self[..<self.index(self.startIndex, offsetBy: index)])
+    }
+
+    // Ensures that the result is <= in length the maxCount.
+    public func trim(after maxCount: Int) -> String {
+        let index = min(maxCount, self.count)
+        return substring(to: index)
     }
 }
