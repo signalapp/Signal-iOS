@@ -277,7 +277,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
-            UIView.spacer(withHeight: 21),
+            UIView.spacer(withHeight: 12),
             backLink,
             topSpacer,
             onboardingCodeView,
