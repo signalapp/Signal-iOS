@@ -14,9 +14,6 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         view.backgroundColor = Theme.backgroundColor
         view.layoutMargins = .zero
 
-        // TODO:
-        //        navigationItem.title = NSLocalizedString("SETTINGS_BACKUP", comment: "Label for the backup view in app settings.")
-
         let heroImage = UIImage(named: "onboarding_splash_hero")
         let heroImageView = UIImageView(image: heroImage)
         heroImageView.contentMode = .scaleAspectFit
@@ -29,12 +26,16 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         view.addSubview(titleLabel)
         titleLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
 
-        // TODO: Finalize copy.
-        let explanationLabel = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_SPLASH_EXPLANATION",
-                                                                                        comment: "Explanation in the 'onboarding splash' view."),
-                                                     linkText: NSLocalizedString("ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
-                                                                                 comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view."),
-                                                     selector: #selector(explanationLabelTapped))
+        let explanationLabel = UILabel()
+        explanationLabel.text = NSLocalizedString("ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
+                                                  comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view.")
+        explanationLabel.textColor = .ows_materialBlue
+        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        explanationLabel.numberOfLines = 0
+        explanationLabel.textAlignment = .center
+        explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.isUserInteractionEnabled = true
+        explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explanationLabelTapped)))
 
         // TODO: Make sure this all fits if dynamic font sizes are maxed out.
         let continueButton = self.button(title: NSLocalizedString("BUTTON_CONTINUE",
@@ -46,9 +47,9 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
             heroImageView,
             UIView.spacer(withHeight: 22),
             titleLabel,
-            UIView.spacer(withHeight: 56),
+            UIView.spacer(withHeight: 92),
             explanationLabel,
-            UIView.spacer(withHeight: 40),
+            UIView.spacer(withHeight: 24),
             continueButton
             ])
         stackView.axis = .vertical
@@ -56,21 +57,9 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         stackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.autoPinWidthToSuperviewMargins()
+        stackView.autoPinWidthToSuperview()
         stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-    }
-
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        self.navigationController?.isNavigationBarHidden = true
-    }
-
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        self.navigationController?.isNavigationBarHidden = true
     }
 
      // MARK: - Events

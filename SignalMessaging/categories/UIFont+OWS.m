@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIFont+OWS.h"
@@ -95,6 +95,86 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIFont *)ows_dynamicTypeCaption2Font
 {
     return [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+}
+
+#pragma mark - Dynamic Type Clamped
+
++ (UIFont *)preferredFontForTextStyleClamped:(UIFontTextStyle)fontTextStyle
+{
+    // We clamp the dynamic type sizes at the max size available
+    // without "larger accessibility sizes" enabled.
+    static NSDictionary<UIFontTextStyle, NSNumber *> *maxPointSizeMap = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        maxPointSizeMap = @{
+            UIFontTextStyleTitle1 : @(34.0),
+            UIFontTextStyleTitle2 : @(28.0),
+            UIFontTextStyleTitle3 : @(26.0),
+            UIFontTextStyleHeadline : @(23.0),
+            UIFontTextStyleBody : @(23.0),
+            UIFontTextStyleSubheadline : @(21.0),
+            UIFontTextStyleFootnote : @(19.0),
+            UIFontTextStyleCaption1 : @(18.0),
+            UIFontTextStyleCaption2 : @(17.0),
+        };
+    });
+
+    UIFont *font = [UIFont preferredFontForTextStyle:fontTextStyle];
+    NSNumber *_Nullable maxPointSize = maxPointSizeMap[fontTextStyle];
+    if (maxPointSize) {
+        if (maxPointSize.floatValue < font.pointSize) {
+            return [font fontWithSize:maxPointSize.floatValue];
+        }
+    } else {
+        OWSFailDebug(@"Missing max point size for style: %@", fontTextStyle);
+    }
+
+    return font;
+}
+
++ (UIFont *)ows_dynamicTypeTitle1ClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleTitle1];
+}
+
++ (UIFont *)ows_dynamicTypeTitle2ClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleTitle2];
+}
+
++ (UIFont *)ows_dynamicTypeTitle3ClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleTitle3];
+}
+
++ (UIFont *)ows_dynamicTypeHeadlineClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleHeadline];
+}
+
++ (UIFont *)ows_dynamicTypeBodyClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleBody];
+}
+
++ (UIFont *)ows_dynamicTypeSubheadlineClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleSubheadline];
+}
+
++ (UIFont *)ows_dynamicTypeFootnoteClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleFootnote];
+}
+
++ (UIFont *)ows_dynamicTypeCaption1ClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleCaption1];
+}
+
++ (UIFont *)ows_dynamicTypeCaption2ClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleCaption2];
 }
 
 #pragma mark - Styles

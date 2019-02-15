@@ -31,39 +31,48 @@ public class OnboardingBaseViewController: OWSViewController {
         let titleLabel = UILabel()
         titleLabel.text = text
         titleLabel.textColor = Theme.primaryColor
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_mediumWeight()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_mediumWeight()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
         return titleLabel
     }
 
-    func explanationLabel(explanationText: String, linkText: String, selector: Selector) -> UILabel {
-        let explanationText = NSAttributedString(string: explanationText)
-            .rtlSafeAppend(NSAttributedString(string: " "))
-            .rtlSafeAppend(linkText,
-                           attributes: [
-                            NSAttributedStringKey.foregroundColor: UIColor.ows_materialBlue
-                ])
+    func explanationLabel(explanationText: String) -> UILabel {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Theme.secondaryColor
-        explanationLabel.font = UIFont.ows_dynamicTypeCaption1
-        explanationLabel.attributedText = explanationText
+        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        explanationLabel.text = explanationText
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.isUserInteractionEnabled = true
-        explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: selector))
         return explanationLabel
     }
 
     func button(title: String, selector: Selector) -> OWSFlatButton {
         // TODO: Make sure this all fits if dynamic font sizes are maxed out.
-        let buttonHeight: CGFloat = 48
+        let font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        // Button height should be 48pt if the font is 17pt.
+        let buttonHeight = font.pointSize * 48 / 17
         let button = OWSFlatButton.button(title: title,
-                                          font: OWSFlatButton.fontForHeight(buttonHeight),
+                                          font: font,
                                           titleColor: .white,
                                           backgroundColor: .ows_materialBlue,
+                                          target: self,
+                                          selector: selector)
+        button.autoSetDimension(.height, toSize: buttonHeight)
+        return button
+    }
+
+    func linkButton(title: String, selector: Selector) -> OWSFlatButton {
+        // TODO: Make sure this all fits if dynamic font sizes are maxed out.
+        let font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        // Button height should be 48pt if the font is 17pt.
+        let buttonHeight = font.pointSize * 48 / 17
+        let button = OWSFlatButton.button(title: title,
+                                          font: font,
+                                          titleColor: .ows_materialBlue,
+                                          backgroundColor: .white,
                                           target: self,
                                           selector: selector)
         button.autoSetDimension(.height, toSize: buttonHeight)
@@ -75,12 +84,20 @@ public class OnboardingBaseViewController: OWSViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        self.navigationController?.isNavigationBarHidden = true
+
         // TODO: Is there a better way to do this?
         if let navigationController = self.navigationController as? OWSNavigationController {
             SignalApp.shared().signUpFlowNavigationController = navigationController
         } else {
             owsFailDebug("Missing or invalid navigationController")
         }
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        self.navigationController?.isNavigationBarHidden = true
     }
 
     // MARK: - Orientation
