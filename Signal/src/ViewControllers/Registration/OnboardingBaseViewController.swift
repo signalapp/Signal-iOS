@@ -57,10 +57,6 @@ public class OnboardingBaseViewController: OWSViewController {
         return button(title: title, selector: selector, titleColor: .ows_materialBlue, backgroundColor: .white)
     }
 
-    func disabledLinkButton(title: String, selector: Selector) -> OWSFlatButton {
-        return self.button(title: title, selector: selector, titleColor: Theme.secondaryColor, backgroundColor: .white)
-    }
-
     private func button(title: String, selector: Selector, titleColor: UIColor, backgroundColor: UIColor) -> OWSFlatButton {
         // TODO: Make sure this all fits if dynamic font sizes are maxed out.
         let font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()

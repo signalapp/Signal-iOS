@@ -1556,9 +1556,6 @@
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Call me instead";
 
-/* Label for the link that lets users request another verification code. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_LINK" = "ONBOARDING_VERIFICATION_RESEND_CODE_LINK";
-
 /* Label for link that can be used when the resent code did not arrive. */
 "ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Still no code?";
 
