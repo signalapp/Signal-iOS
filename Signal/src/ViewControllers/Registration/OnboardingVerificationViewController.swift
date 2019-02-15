@@ -85,6 +85,9 @@ private class OnboardingCodeView: UIView {
     var isComplete: Bool {
         return digitText.count == digitCount
     }
+    var verificationCode: String {
+        return digitText
+    }
 
     private func createSubviews() {
         textfield.textAlignment = .left
@@ -203,11 +206,15 @@ extension OnboardingCodeView: UITextFieldDelegate {
 
         updateViewState()
 
+        self.delegate?.codeViewDidChange()
+
         // Inform our caller that we took care of performing the change.
         return false
     }
 
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.delegate?.codeViewDidChange()
+
         return false
     }
 }
@@ -257,6 +264,8 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         let backLink = self.linkButton(title: NSLocalizedString("ONBOARDING_VERIFICATION_BACK_LINK",
                                                                 comment: "Label for the link that lets users change their phone number."),
                                        selector: #selector(backLinkTapped))
+
+        onboardingCodeView.delegate = self
 
         let codeStateLink = self.linkButton(title: "",
                                              selector: #selector(resendCodeLinkTapped))
@@ -450,12 +459,23 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
         self.present(actionSheet, animated: true)
     }
+
+    private func tryToVerify() {
+        Logger.info("")
+
+        guard onboardingCodeView.isComplete else {
+            return
+        }
+        onboardingController.tryToVerify(fromViewController: self, verificationCode: onboardingCodeView.verificationCode, pin: nil)
+    }
 }
 
 // MARK: -
 
 extension OnboardingVerificationViewController: OnboardingCodeViewDelegate {
     public func codeViewDidChange() {
-        // TODO:
+        AssertIsOnMainThread()
+
+        tryToVerify()
     }
 }

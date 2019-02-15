@@ -82,6 +82,8 @@ public class OnboardingBaseViewController: OWSViewController {
         super.viewWillAppear(animated)
 
         self.navigationController?.isNavigationBarHidden = true
+        // Disable "back" gesture.
+        self.navigationController?.navigationItem.backBarButtonItem?.isEnabled = false
 
         // TODO: Is there a better way to do this?
         if let navigationController = self.navigationController as? OWSNavigationController {
@@ -95,6 +97,8 @@ public class OnboardingBaseViewController: OWSViewController {
         super.viewDidAppear(animated)
 
         self.navigationController?.isNavigationBarHidden = true
+        // Disable "back" gesture.
+        self.navigationController?.navigationItem.backBarButtonItem?.isEnabled = false
     }
 
     // MARK: - Orientation
