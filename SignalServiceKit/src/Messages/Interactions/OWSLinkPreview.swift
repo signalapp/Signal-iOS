@@ -429,7 +429,7 @@ public class OWSLinkPreview: MTLModel {
     // MARK: - Text Parsing
 
     // This cache should only be accessed on main thread.
-    private static var previewUrlCache: NSCache<AnyObject, AnyObject> = NSCache()
+    private static var previewUrlCache: NSCache<NSString, NSString> = NSCache()
 
     @objc
     public class func previewUrl(forRawBodyText body: String?, selectedRange: NSRange) -> String? {
@@ -453,7 +453,7 @@ public class OWSLinkPreview: MTLModel {
             return nil
         }
 
-        if let cachedUrl = previewUrlCache.object(forKey: body as AnyObject) as? String {
+        if let cachedUrl = previewUrlCache.object(forKey: body as NSString) as String? {
             Logger.verbose("URL parsing cache hit.")
             guard cachedUrl.count > 0 else {
                 return nil
@@ -463,7 +463,7 @@ public class OWSLinkPreview: MTLModel {
         let previewUrlMatches = allPreviewUrlMatches(forMessageBodyText: body)
         guard let urlMatch = previewUrlMatches.first else {
             // Use empty string to indicate "no preview URL" in the cache.
-            previewUrlCache.setObject("" as AnyObject, forKey: body as AnyObject)
+            previewUrlCache.setObject("", forKey: body as NSString)
             return nil
         }
 
@@ -479,7 +479,7 @@ public class OWSLinkPreview: MTLModel {
             Logger.debug("considering URL, since the user is not currently editing it.")
         }
 
-        previewUrlCache.setObject(urlMatch.urlString as AnyObject, forKey: body as AnyObject)
+        previewUrlCache.setObject(urlMatch.urlString as NSString, forKey: body as NSString)
         return urlMatch.urlString
     }
 
@@ -527,12 +527,12 @@ public class OWSLinkPreview: MTLModel {
     // MARK: - Preview Construction
 
     // This cache should only be accessed on serialQueue.
-    private static var linkPreviewDraftCache: NSCache<AnyObject, OWSLinkPreviewDraft> = NSCache()
+    private static var linkPreviewDraftCache: NSCache<NSString, OWSLinkPreviewDraft> = NSCache()
 
     private class func cachedLinkPreview(forPreviewUrl previewUrl: String) -> OWSLinkPreviewDraft? {
         var result: OWSLinkPreviewDraft?
         serialQueue.sync {
-            result = linkPreviewDraftCache.object(forKey: previewUrl as AnyObject)
+            result = linkPreviewDraftCache.object(forKey: previewUrl as NSString)
         }
         return result
     }
@@ -550,7 +550,7 @@ public class OWSLinkPreview: MTLModel {
         }
 
         serialQueue.sync {
-            previewUrlCache.setObject(linkPreviewDraft, forKey: previewUrl as AnyObject)
+            linkPreviewDraftCache.setObject(linkPreviewDraft, forKey: previewUrl as NSString)
         }
     }
 
