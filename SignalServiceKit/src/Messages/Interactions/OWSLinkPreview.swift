@@ -432,7 +432,11 @@ public class OWSLinkPreview: MTLModel {
     private static var previewUrlCache: NSCache<AnyObject, AnyObject> = NSCache()
 
     @objc
-    public class func previewUrl(forMessageBodyText body: String?) -> String? {
+    public class func previewUrl(forRawBodyText body: String?, selectedRange: NSRange) -> String? {
+        return previewUrl(forMessageBodyText: body, selectedRange: selectedRange)
+    }
+
+    public class func previewUrl(forMessageBodyText body: String?, selectedRange: NSRange?) -> String? {
         AssertIsOnMainThread()
 
         // Exit early if link previews are not enabled in order to avoid
@@ -440,7 +444,12 @@ public class OWSLinkPreview: MTLModel {
         guard OWSLinkPreview.featureEnabled else {
             return nil
         }
+
         guard SSKPreferences.areLinkPreviewsEnabled() else {
+            return nil
+        }
+
+        guard let body = body else {
             return nil
         }
 
@@ -451,25 +460,43 @@ public class OWSLinkPreview: MTLModel {
             }
             return cachedUrl
         }
-        let previewUrls = allPreviewUrls(forMessageBodyText: body)
-        guard let previewUrl = previewUrls.first else {
+        let previewUrlMatches = allPreviewUrlMatches(forMessageBodyText: body)
+        guard let urlMatch = previewUrlMatches.first else {
             // Use empty string to indicate "no preview URL" in the cache.
             previewUrlCache.setObject("" as AnyObject, forKey: body as AnyObject)
             return nil
         }
 
-        previewUrlCache.setObject(previewUrl as AnyObject, forKey: body as AnyObject)
-        return previewUrl
+        if let selectedRange = selectedRange {
+            Logger.verbose("match: urlString: \(urlMatch.urlString) range: \(urlMatch.matchRange) selectedRange: \(selectedRange)")
+            if selectedRange.location != body.count,
+                urlMatch.matchRange.intersection(selectedRange) != nil {
+                Logger.debug("ignoring URL, since the user is currently editing it.")
+                // we don't want to cache the result here, as we want to fetch the link preview
+                // if the user moves the cursor.
+                return nil
+            }
+            Logger.debug("considering URL, since the user is not currently editing it.")
+        }
+
+        previewUrlCache.setObject(urlMatch.urlString as AnyObject, forKey: body as AnyObject)
+        return urlMatch.urlString
     }
 
-    class func allPreviewUrls(forMessageBodyText body: String?) -> [String] {
+    struct URLMatchResult {
+        let urlString: String
+        let matchRange: NSRange
+    }
+
+    class func allPreviewUrls(forMessageBodyText body: String) -> [String] {
+        return allPreviewUrlMatches(forMessageBodyText: body).map { $0.urlString }
+    }
+
+    class func allPreviewUrlMatches(forMessageBodyText body: String) -> [URLMatchResult] {
         guard OWSLinkPreview.featureEnabled else {
             return []
         }
         guard SSKPreferences.areLinkPreviewsEnabled() else {
-            return []
-        }
-        guard let body = body else {
             return []
         }
 
@@ -481,7 +508,7 @@ public class OWSLinkPreview: MTLModel {
             return []
         }
 
-        var previewUrls = [String]()
+        var urlMatches: [URLMatchResult] = []
         let matches = detector.matches(in: body, options: [], range: NSRange(location: 0, length: body.count))
         for match in matches {
             guard let matchURL = match.url else {
@@ -490,10 +517,11 @@ public class OWSLinkPreview: MTLModel {
             }
             let urlString = matchURL.absoluteString
             if isValidLinkUrl(urlString) {
-                previewUrls.append(urlString)
+                let matchResult = URLMatchResult(urlString: urlString, matchRange: match.range)
+                urlMatches.append(matchResult)
             }
         }
-        return previewUrls
+        return urlMatches
     }
 
     // MARK: - Preview Construction

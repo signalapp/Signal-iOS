@@ -189,6 +189,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.textViewToolbarDelegate textViewDidChange:self];
 }
 
+- (void)textViewDidChangeSelection:(UITextView *)textView
+{
+    [self.textViewToolbarDelegate textViewDidChangeSelection:self];
+}
+
 #pragma mark - Key Commands
 
 - (nullable NSArray<UIKeyCommand *> *)keyCommands
