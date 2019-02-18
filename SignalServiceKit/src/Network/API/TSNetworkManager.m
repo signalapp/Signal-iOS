@@ -517,7 +517,7 @@ dispatch_queue_t NetworkManagerQueue()
             if (self.tsAccountManager.isRegisteredAndReady) {
                 [self.tsAccountManager setIsDeregistered:YES];
             } else {
-                OWSFailDebug(
+                OWSLogWarn(
                     @"Ignoring auth failure; not registered and ready: %@.", task.originalRequest.URL.absoluteString);
             }
         });

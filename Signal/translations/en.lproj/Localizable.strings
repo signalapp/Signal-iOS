@@ -1535,11 +1535,14 @@
 /* Title of the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TITLE" = "Signal is the private messenger for everybody";
 
-/* Label for the link that lets users change their phone number. */
+/* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Wrong number?";
 
 /* Format for the label of the 'pending code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
 "ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "I didn't get a code (available in %@)";
+
+/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "This code is incorrect";
 
 /* Label for link that can be used when the original code did not arrive. */
 "ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "I didn't get a code";
