@@ -152,7 +152,7 @@ private class OnboardingCodeView: UIView {
         guard index < digitText.count else {
             return ""
         }
-        return digitText.substring(from: index).trim(after: 1)
+        return digitText.substring(from: index).substring(to: 1)
     }
 
     // Ensure that all labels are displaying the correct
@@ -199,10 +199,10 @@ extension OnboardingCodeView: UITextFieldDelegate {
         let unfiltered = left + newString + right
         let characterSet = CharacterSet(charactersIn: "0123456789")
         let filtered = unfiltered.components(separatedBy: characterSet.inverted).joined()
-        let filteredAndTrimmed = filtered.trim(after: 1)
+        let filteredAndTrimmed = filtered.substring(to: 1)
         textField.text = filteredAndTrimmed
 
-        digitText = digitText.trim(after: currentDigitIndex) + filteredAndTrimmed
+        digitText = digitText.substring(to: currentDigitIndex) + filteredAndTrimmed
 
         updateViewState()
 
@@ -238,14 +238,14 @@ extension OnboardingCodeView: OnboardingCodeViewTextFieldDelegate {
 public class OnboardingVerificationViewController: OnboardingBaseViewController {
 
     private enum CodeState {
-        case pending
-        case possiblyNotDelivered
+        case sent
+        case readyForResend
         case resent
     }
 
     // MARK: -
 
-    private var codeState = CodeState.pending
+    private var codeState = CodeState.sent
 
     private var titleLabel: UILabel?
     private let phoneNumberTextField = UITextField()
@@ -308,14 +308,12 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
     private var codeCountdownStart: NSDate?
 
     deinit {
-        if let codeCountdownTimer = codeCountdownTimer {
-            codeCountdownTimer.invalidate()
-        }
+        codeCountdownTimer?.invalidate()
     }
 
     private func startCodeCountdown() {
         codeCountdownStart = NSDate()
-        codeCountdownTimer = Timer.weakScheduledTimer(withTimeInterval: 1, target: self, selector: #selector(codeCountdownTimerFired), userInfo: nil, repeats: true)
+        codeCountdownTimer = Timer.weakScheduledTimer(withTimeInterval: 0.25, target: self, selector: #selector(codeCountdownTimerFired), userInfo: nil, repeats: true)
     }
 
     @objc
@@ -336,10 +334,10 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
             codeCountdownTimer.invalidate()
             self.codeCountdownTimer = nil
 
-            if codeState != .pending {
+            if codeState != .sent {
                 owsFailDebug("Unexpected codeState: \(codeState)")
             }
-            codeState = .possiblyNotDelivered
+            codeState = .readyForResend
             updateCodeState()
             return
         }
@@ -372,7 +370,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
         // Update titleLabel
         switch codeState {
-        case .pending, .possiblyNotDelivered:
+        case .sent, .readyForResend:
             titleLabel.text = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT",
                                                                comment: "Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}."),
                                      formattedPhoneNumber)
@@ -384,16 +382,15 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
         // Update codeStateLink
         switch codeState {
-        case .pending:
+        case .sent:
             let countdownInterval = abs(codeCountdownStart.timeIntervalSinceNow)
             let countdownRemaining = max(0, countdownDuration - countdownInterval)
             let formattedCountdown = OWSFormat.formatDurationSeconds(Int(round(countdownRemaining)))
             let text = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT",
-                                                        comment: "Format for the label of the 'pending code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}."),
+                                                        comment: "Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}."),
                               formattedCountdown)
             codeStateLink.setTitle(title: text, font: .ows_dynamicTypeBodyClamped, titleColor: Theme.secondaryColor)
-//            codeStateLink.setBackgroundColors(upColor: Theme.backgroundColor)
-        case .possiblyNotDelivered:
+        case .readyForResend:
             codeStateLink.setTitle(title: NSLocalizedString("ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK",
                                                             comment: "Label for link that can be used when the original code did not arrive."),
                                    font: .ows_dynamicTypeBodyClamped,
@@ -424,10 +421,10 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         Logger.info("")
 
         switch codeState {
-        case .pending:
+        case .sent:
             // Ignore taps until the countdown expires.
             break
-        case .possiblyNotDelivered, .resent:
+        case .readyForResend, .resent:
             showResendActionSheet()
         }
     }

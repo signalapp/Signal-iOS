@@ -201,7 +201,7 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        self.backup.checkCanImport({ (canImport) in
+        backup.checkCanImport({ (canImport) in
             Logger.info("canImport: \(canImport)")
 
             if (canImport) {
@@ -211,9 +211,9 @@ public class OnboardingController: NSObject {
             } else {
                 self.showProfileView(fromView: view)
             }
-        }) { (_) in
+        }, failure: { (_) in
             self.showBackupCheckFailedAlert(fromView: view)
-        }
+        })
     }
 
     private func showBackupCheckFailedAlert(fromView view: UIViewController) {

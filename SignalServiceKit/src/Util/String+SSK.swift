@@ -18,12 +18,6 @@ public extension String {
     }
 
     public func substring(to index: Int) -> String {
-        return String(self[..<self.index(self.startIndex, offsetBy: index)])
-    }
-
-    // Ensures that the result is <= in length the maxCount.
-    public func trim(after maxCount: Int) -> String {
-        let index = min(maxCount, self.count)
-        return substring(to: index)
+        return String(prefix(index))
     }
 }
