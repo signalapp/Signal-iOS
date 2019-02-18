@@ -71,6 +71,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UIView *emptyInboxView;
+@property (nonatomic) UIView *firstConversationCueView;
 
 @property (nonatomic) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
@@ -330,6 +331,28 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
 
+    self.emptyInboxView = [self createEmptyInboxView];
+    [self.view addSubview:self.emptyInboxView];
+    [self.emptyInboxView autoPinWidthToSuperviewMargins];
+    [self.emptyInboxView autoVCenterInSuperview];
+
+    self.firstConversationCueView = [self createFirstConversationCueView];
+    [self.view addSubview:self.firstConversationCueView];
+    [self.firstConversationCueView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.firstConversationCueView autoPinEdgeToSuperviewMargin:ALEdgeTrailing];
+    [self.emptyInboxView autoPinWidthToSuperviewMargins];
+    [self.emptyInboxView autoVCenterInSuperview];
+
+    UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
+    pullToRefreshView.tintColor = [UIColor grayColor];
+    [pullToRefreshView addTarget:self
+                          action:@selector(pullToRefreshPerformed:)
+                forControlEvents:UIControlEventValueChanged];
+    [self.tableView insertSubview:pullToRefreshView atIndex:0];
+}
+
+- (UIView *)createEmptyInboxView
+{
     NSArray<NSString *> *emptyInboxImageNames = @[
                                                   @"home_empty_splash_1",
                                                   @"home_empty_splash_2",
@@ -362,17 +385,44 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     emptyInboxStack.spacing = 12;
     emptyInboxStack.layoutMargins = UIEdgeInsetsMake(50, 50, 50, 50);
     emptyInboxStack.layoutMarginsRelativeArrangement = YES;
-    self.emptyInboxView = emptyInboxStack;
-    [self.view addSubview:emptyInboxStack];
-    [emptyInboxStack autoPinWidthToSuperviewMargins];
-    [emptyInboxStack autoVCenterInSuperview];
+    return emptyInboxStack;
+}
 
-    UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
-    pullToRefreshView.tintColor = [UIColor grayColor];
-    [pullToRefreshView addTarget:self
-                          action:@selector(pullToRefreshPerformed:)
-                forControlEvents:UIControlEventValueChanged];
-    [self.tableView insertSubview:pullToRefreshView atIndex:0];
+- (UIView *)createFirstConversationCueView
+{
+    NSArray<NSString *> *emptyInboxImageNames = @[
+        @"home_empty_splash_1",
+        @"home_empty_splash_2",
+        @"home_empty_splash_3",
+        @"home_empty_splash_4",
+        @"home_empty_splash_5",
+    ];
+    NSString *emptyInboxImageName = emptyInboxImageNames[arc4random_uniform((uint32_t)emptyInboxImageNames.count)];
+    UIImageView *emptyInboxImageView = [UIImageView new];
+    emptyInboxImageView.image = [UIImage imageNamed:emptyInboxImageName];
+    emptyInboxImageView.layer.minificationFilter = kCAFilterTrilinear;
+    emptyInboxImageView.layer.magnificationFilter = kCAFilterTrilinear;
+    [emptyInboxImageView autoPinToAspectRatioWithSize:emptyInboxImageView.image.size];
+
+    UILabel *emptyInboxLabel = [UILabel new];
+    emptyInboxLabel.text
+        = NSLocalizedString(@"INBOX_VIEW_EMPTY_INBOX", @"Message shown in the home view when the inbox is empty.");
+    emptyInboxLabel.font = UIFont.ows_dynamicTypeBodyFont;
+    emptyInboxLabel.textColor = Theme.secondaryColor;
+    emptyInboxLabel.textAlignment = NSTextAlignmentCenter;
+    emptyInboxLabel.numberOfLines = 0;
+    emptyInboxLabel.lineBreakMode = NSLineBreakByWordWrapping;
+
+    UIStackView *emptyInboxStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+        emptyInboxImageView,
+        emptyInboxLabel,
+    ]];
+    emptyInboxStack.axis = UILayoutConstraintAxisVertical;
+    emptyInboxStack.alignment = UIStackViewAlignmentCenter;
+    emptyInboxStack.spacing = 12;
+    emptyInboxStack.layoutMargins = UIEdgeInsetsMake(50, 50, 50, 50);
+    emptyInboxStack.layoutMarginsRelativeArrangement = YES;
+    return emptyInboxStack;
 }
 
 - (void)updateReminderViews
@@ -408,7 +458,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self uiDatabaseConnection];
 
     [self updateMappings];
-    [self checkIfEmptyView];
+    [self updateViewState];
     [self updateReminderViews];
     [self observeNotifications];
 
@@ -664,7 +714,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         }
     }
 
-    [self checkIfEmptyView];
+    [self updateViewState];
     [self applyDefaultBackButton];
     if ([self updateHasArchivedThreadsRow]) {
         [self.tableView reloadData];
@@ -734,7 +784,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self updateHasArchivedThreadsRow];
     [self reloadTableViewData];
 
-    [self checkIfEmptyView];
+    [self updateViewState];
 
     // If the user hasn't already granted contact access
     // we don't want to request until they receive a message.
@@ -749,7 +799,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
-    [self checkIfEmptyView];
+    [self updateViewState];
 }
 
 - (BOOL)hasAnyMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -1176,7 +1226,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [thread removeWithTransaction:transaction];
     }];
 
-    [self checkIfEmptyView];
+    [self updateViewState];
 }
 
 - (void)archiveIndexPath:(NSIndexPath *)indexPath
@@ -1198,7 +1248,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                 break;
         }
     }];
-    [self checkIfEmptyView];
+    [self updateViewState];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -1303,7 +1353,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self resetMappings];
 
     [self reloadTableViewData];
-    [self checkIfEmptyView];
+    [self updateViewState];
     [self updateReminderViews];
 }
 
@@ -1354,7 +1404,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.threadMappings updateWithTransaction:transaction];
         }];
-        [self checkIfEmptyView];
+        [self updateViewState];
 
         return;
     }
@@ -1379,7 +1429,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     // We want this regardless of if we're currently viewing the archive.
     // So we run it before the early return
-    [self checkIfEmptyView];
+    [self updateViewState];
 
     if ([sectionChanges count] == 0 && [rowChanges count] == 0) {
         return;
@@ -1466,7 +1516,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     return [self numberOfThreadsInGroup:TSArchiveGroup];
 }
 
-- (void)checkIfEmptyView
+- (void)updateViewState
 {
     NSUInteger inboxCount = self.numberOfInboxThreads;
     NSUInteger archiveCount = self.numberOfArchivedThreads;
