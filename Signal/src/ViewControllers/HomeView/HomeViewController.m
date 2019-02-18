@@ -7,6 +7,7 @@
 #import "AppSettingsViewController.h"
 #import "HomeViewCell.h"
 #import "NewContactThreadViewController.h"
+#import "OWS2FARegistrationViewController.h"
 #import "OWSNavigationController.h"
 #import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"
@@ -24,6 +25,7 @@
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalMessaging/Theme.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
@@ -68,7 +70,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSBlockListCacheDelegate>
 
 @property (nonatomic) UITableView *tableView;
-@property (nonatomic) UILabel *emptyBoxLabel;
+@property (nonatomic) UIView *emptyInboxView;
 
 @property (nonatomic) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
@@ -328,17 +330,42 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
 
-    UILabel *emptyBoxLabel = [UILabel new];
-    self.emptyBoxLabel = emptyBoxLabel;
-    [self.view addSubview:emptyBoxLabel];
-
-    //  Let the label use as many lines as needed. It will very rarely be more than 2 but may happen for verbose locs.
-    [emptyBoxLabel setNumberOfLines:0];
-    emptyBoxLabel.lineBreakMode = NSLineBreakByWordWrapping;
-
-    [emptyBoxLabel autoPinLeadingToSuperviewMargin];
-    [emptyBoxLabel autoPinTrailingToSuperviewMargin];
-    [emptyBoxLabel autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
+    NSArray<NSString *> *emptyInboxImageNames = @[
+                                                  @"home_empty_splash_1",
+                                                  @"home_empty_splash_2",
+                                                  @"home_empty_splash_3",
+                                                  @"home_empty_splash_4",
+                                                  @"home_empty_splash_5",
+                                                  ];
+    NSString *emptyInboxImageName = emptyInboxImageNames[arc4random_uniform((uint32_t) emptyInboxImageNames.count)];
+    UIImageView *emptyInboxImageView = [UIImageView new];
+    emptyInboxImageView.image = [UIImage imageNamed:emptyInboxImageName];
+    emptyInboxImageView.layer.minificationFilter = kCAFilterTrilinear;
+    emptyInboxImageView.layer.magnificationFilter = kCAFilterTrilinear;
+    [emptyInboxImageView autoPinToAspectRatioWithSize:emptyInboxImageView.image.size];
+    
+    UILabel *emptyInboxLabel = [UILabel new];
+    emptyInboxLabel.text = NSLocalizedString(@"INBOX_VIEW_EMPTY_INBOX",
+                                             @"Message shown in the home view when the inbox is empty.");
+    emptyInboxLabel.font = UIFont.ows_dynamicTypeBodyFont;
+    emptyInboxLabel.textColor = Theme.secondaryColor;
+    emptyInboxLabel.textAlignment = NSTextAlignmentCenter;
+    emptyInboxLabel.numberOfLines = 0;
+    emptyInboxLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    
+    UIStackView *emptyInboxStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+                                                                                   emptyInboxImageView,
+                                                                                   emptyInboxLabel,
+                                                                                   ]];
+    emptyInboxStack.axis = UILayoutConstraintAxisVertical;
+    emptyInboxStack.alignment = UIStackViewAlignmentCenter;
+    emptyInboxStack.spacing = 12;
+    emptyInboxStack.layoutMargins = UIEdgeInsetsMake(50, 50, 50, 50);
+    emptyInboxStack.layoutMarginsRelativeArrangement = YES;
+    self.emptyInboxView = emptyInboxStack;
+    [self.view addSubview:emptyInboxStack];
+    [emptyInboxStack autoPinWidthToSuperviewMargins];
+    [emptyInboxStack autoVCenterInSuperview];
 
     UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
     pullToRefreshView.tintColor = [UIColor grayColor];
@@ -1445,65 +1472,12 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     NSUInteger archiveCount = self.numberOfArchivedThreads;
 
     if (self.homeViewMode == HomeViewMode_Inbox && inboxCount == 0 && archiveCount == 0) {
-        [self updateEmptyBoxText];
         [_tableView setHidden:YES];
-        [_emptyBoxLabel setHidden:NO];
-    } else if (self.homeViewMode == HomeViewMode_Archive && archiveCount == 0) {
-        [self updateEmptyBoxText];
-        [_tableView setHidden:YES];
-        [_emptyBoxLabel setHidden:NO];
+        [self.emptyInboxView setHidden:NO];
     } else {
-        [_emptyBoxLabel setHidden:YES];
         [_tableView setHidden:NO];
+        [self.emptyInboxView setHidden:YES];
     }
-}
-
-- (void)updateEmptyBoxText
-{
-    // TODO: Theme, review with design.
-    _emptyBoxLabel.textColor = [UIColor grayColor];
-    _emptyBoxLabel.font = [UIFont ows_regularFontWithSize:18.f];
-    _emptyBoxLabel.textAlignment = NSTextAlignmentCenter;
-
-    NSString *firstLine = @"";
-    NSString *secondLine = @"";
-
-    if (self.homeViewMode == HomeViewMode_Inbox) {
-        if ([Environment.shared.preferences hasSentAMessage]) {
-            firstLine = NSLocalizedString(
-                @"EMPTY_INBOX_TITLE", @"Header text an existing user sees when viewing an empty inbox");
-            secondLine = NSLocalizedString(
-                @"EMPTY_INBOX_TEXT", @"Body text an existing user sees when viewing an empty inbox");
-        } else {
-            firstLine = NSLocalizedString(
-                @"EMPTY_INBOX_NEW_USER_TITLE", @"Header text a new user sees when viewing an empty inbox");
-            secondLine = NSLocalizedString(
-                @"EMPTY_INBOX_NEW_USER_TEXT", @"Body text a new user sees when viewing an empty inbox");
-        }
-    } else {
-        OWSAssertDebug(self.homeViewMode == HomeViewMode_Archive);
-        firstLine = NSLocalizedString(
-            @"EMPTY_ARCHIVE_TITLE", @"Header text an existing user sees when viewing an empty archive");
-        secondLine = NSLocalizedString(
-            @"EMPTY_ARCHIVE_TEXT", @"Body text an existing user sees when viewing an empty archive");
-    }
-    NSMutableAttributedString *fullLabelString =
-        [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\n%@", firstLine, secondLine]];
-
-    [fullLabelString addAttribute:NSFontAttributeName
-                            value:[UIFont ows_boldFontWithSize:15.f]
-                            range:NSMakeRange(0, firstLine.length)];
-    [fullLabelString addAttribute:NSFontAttributeName
-                            value:[UIFont ows_regularFontWithSize:14.f]
-                            range:NSMakeRange(firstLine.length + 1, secondLine.length)];
-    [fullLabelString addAttribute:NSForegroundColorAttributeName
-                            value:Theme.primaryColor
-                            range:NSMakeRange(0, firstLine.length)];
-    // TODO: Theme, Review with design.
-    [fullLabelString addAttribute:NSForegroundColorAttributeName
-                            value:Theme.secondaryColor
-                            range:NSMakeRange(firstLine.length + 1, secondLine.length)];
-    _emptyBoxLabel.attributedText = fullLabelString;
 }
 
 // We want to delay asking for a review until an opportune time.

@@ -142,6 +142,10 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return [self autoPinToAspectRatio:1.0];
 }
 
+- (NSLayoutConstraint *)autoPinToAspectRatioWithSize:(CGSize)size {
+    return [self autoPinToAspectRatio:size.width / size.height];
+}
+
 - (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio
 {
     // Clamp to ensure view has reasonable aspect ratio.
