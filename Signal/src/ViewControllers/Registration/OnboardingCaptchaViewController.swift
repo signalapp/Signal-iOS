@@ -114,7 +114,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         }
         onboardingController.update(captchaToken: captchaToken)
 
-        onboardingController.tryToRegister(fromViewController: self, smsVerification: false)
+        onboardingController.tryToRegister(fromViewController: self, smsVerification: true)
     }
 
     private func parseCaptcha(url: URL) -> String? {

@@ -107,6 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         maxPointSizeMap = @{
+            UIFontTextStyleLargeTitle : @(40.0),
             UIFontTextStyleTitle1 : @(34.0),
             UIFontTextStyleTitle2 : @(28.0),
             UIFontTextStyleTitle3 : @(26.0),
@@ -130,6 +131,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return font;
+}
+
++ (UIFont *)ows_dynamicTypeLargeTitle1ClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleLargeTitle];
 }
 
 + (UIFont *)ows_dynamicTypeTitle1ClampedFont

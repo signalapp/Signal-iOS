@@ -66,6 +66,14 @@ public class OnboardingController: NSObject {
         return TSAccountManager.sharedInstance()
     }
 
+    private var accountManager: AccountManager {
+        return AppEnvironment.shared.accountManager
+    }
+
+    private var backup: OWSBackup {
+        return AppEnvironment.shared.backup
+    }
+
     // MARK: -
 
     @objc
@@ -122,8 +130,8 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        //        CodeVerificationViewController *vc = [CodeVerificationViewController new];
-        //        [weakSelf.navigationController pushViewController:vc animated:YES];
+        let view = OnboardingVerificationViewController(onboardingController: self)
+        viewController.navigationController?.pushViewController(view, animated: true)
     }
 
     public func onboardingDidRequireCaptcha(viewController: UIViewController) {
@@ -146,6 +154,97 @@ public class OnboardingController: NSObject {
 
         let view = OnboardingCaptchaViewController(onboardingController: self)
         navigationController.pushViewController(view, animated: true)
+    }
+
+    @objc
+    public func verificationDidComplete(fromView view: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        if tsAccountManager.isReregistering() {
+            showProfileView(fromView: view)
+        } else {
+            checkCanImportBackup(fromView: view)
+        }
+    }
+
+    private func showProfileView(fromView view: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        guard let navigationController = view.navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        ProfileViewController.present(forRegistration: navigationController)
+    }
+
+    private func showBackupRestoreView(fromView view: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        guard let navigationController = view.navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        let restoreView = BackupRestoreViewController()
+        navigationController.setViewControllers([restoreView], animated: true)
+    }
+
+    private func checkCanImportBackup(fromView view: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        backup.checkCanImport({ (canImport) in
+            Logger.info("canImport: \(canImport)")
+
+            if (canImport) {
+                self.backup.setHasPendingRestoreDecision(true)
+
+                self.showBackupRestoreView(fromView: view)
+            } else {
+                self.showProfileView(fromView: view)
+            }
+        }, failure: { (_) in
+            self.showBackupCheckFailedAlert(fromView: view)
+        })
+    }
+
+    private func showBackupCheckFailedAlert(fromView view: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        let alert = UIAlertController(title: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_TITLE",
+                                                               comment: "Title for alert shown when the app failed to check for an existing backup."),
+                                      message: NSLocalizedString("CHECK_FOR_BACKUP_FAILED_MESSAGE",
+                                                                 comment: "Message for alert shown when the app failed to check for an existing backup."),
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("REGISTER_FAILED_TRY_AGAIN", comment: ""),
+                                      style: .default) { (_) in
+                                        self.checkCanImportBackup(fromView: view)
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("CHECK_FOR_BACKUP_DO_NOT_RESTORE", comment: "The label for the 'do not restore backup' button."),
+                                      style: .destructive) { (_) in
+                                        self.showProfileView(fromView: view)
+        })
+        view.present(alert, animated: true)
+    }
+
+    public func onboardingDidRequire2FAPin(viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        // TODO:
+//        let view = OnboardingCaptchaViewController(onboardingController: self)
+//        navigationController.pushViewController(view, animated: true)
     }
 
     // MARK: - State
@@ -276,7 +375,6 @@ public class OnboardingController: NSObject {
             Logger.info("Captcha requested.")
 
             onboardingDidRequireCaptcha(viewController: viewController)
-            return
         } else if error.code == 400 {
             OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
                                 message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
@@ -284,6 +382,59 @@ public class OnboardingController: NSObject {
         } else {
             OWSAlerts.showAlert(title: error.localizedDescription,
                                 message: error.localizedRecoverySuggestion)
+        }
+    }
+
+    // MARK: - Verification
+
+    public func tryToVerify(fromViewController: UIViewController,
+                            verificationCode: String,
+                            pin: String?) {
+        AssertIsOnMainThread()
+
+        guard let phoneNumber = phoneNumber else {
+            owsFailDebug("Missing phoneNumber.")
+            return
+        }
+
+        // Ensure the account manager state is up-to-date.
+        //
+        // TODO: We could skip this in production.
+        tsAccountManager.phoneNumberAwaitingVerification = phoneNumber.e164
+
+        ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
+                                                     canCancel: true) { (modal) in
+
+                                                        self.accountManager.register(verificationCode: verificationCode, pin: pin)
+                                                            .done { (_) in
+                                                                DispatchQueue.main.async {
+                                                                    modal.dismiss(completion: {
+                                                                        self.verificationDidComplete(fromView: fromViewController)
+                                                                    })
+                                                                }
+                                                            }.catch({ (error) in
+                                                                Logger.error("Error: \(error)")
+
+                                                                DispatchQueue.main.async {
+                                                                    modal.dismiss(completion: {
+                                                                        self.verificationFailed(fromViewController: fromViewController, error: error as NSError)
+                                                                    })
+                                                                }
+                                                            }).retainUntilComplete()
+        }
+    }
+
+    private func verificationFailed(fromViewController: UIViewController, error: NSError) {
+        if error.domain == OWSSignalServiceKitErrorDomain &&
+            error.code == OWSErrorCode.registrationMissing2FAPIN.rawValue {
+
+            Logger.info("Missing 2FA PIN.")
+
+            onboardingDidRequire2FAPin(viewController: fromViewController)
+        } else {
+            OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
+                                message: error.localizedDescription,
+                                fromViewController: fromViewController)
         }
     }
 }

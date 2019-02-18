@@ -32,6 +32,8 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
 #endif
 
+- (void)setPhoneNumberAwaitingVerification:(NSString *_Nullable)phoneNumberAwaitingVerification;
+
 #pragma mark - Initializers
 
 - (instancetype)init NS_UNAVAILABLE;
