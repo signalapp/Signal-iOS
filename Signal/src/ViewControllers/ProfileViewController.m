@@ -573,7 +573,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 #pragma mark - AvatarViewHelperDelegate
 
-- (NSString *)avatarActionSheetTitle
+- (nullable NSString *)avatarActionSheetTitle
 {
     return NSLocalizedString(
         @"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE", @"Action Sheet title prompting the user for a profile avatar");

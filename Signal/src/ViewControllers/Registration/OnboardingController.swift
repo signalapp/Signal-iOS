@@ -247,6 +247,24 @@ public class OnboardingController: NSObject {
 //        navigationController.pushViewController(view, animated: true)
     }
 
+    @objc
+    public func profileWasSkipped(fromView view: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        // TODO:
+    }
+
+    @objc
+    public func profileDidComplete(fromView view: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        // TODO:
+    }
+
     // MARK: - State
 
     public private(set) var countryState: OnboardingCountryState = .defaultValue
@@ -448,5 +466,23 @@ public class OnboardingController: NSObject {
                                 message: error.localizedDescription,
                                 fromViewController: fromViewController)
         }
+    }
+}
+
+// MARK: -
+
+public extension UIView {
+    public func addBottomStroke() -> UIView {
+        return addBottomStroke(color: Theme.middleGrayColor, strokeWidth: CGHairlineWidth())
+    }
+
+    public func addBottomStroke(color: UIColor, strokeWidth: CGFloat) -> UIView {
+        let strokeView = UIView()
+        strokeView.backgroundColor = color
+        addSubview(strokeView)
+        strokeView.autoSetDimension(.height, toSize: strokeWidth)
+        strokeView.autoPinWidthToSuperview()
+        strokeView.autoPinEdge(toSuperviewEdge: .bottom)
+        return strokeView
     }
 }
