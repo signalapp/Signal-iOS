@@ -461,14 +461,14 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         formatString = NSLocalizedString(@"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT",
             @"Format string for a label offering to start a new conversation with your contacts, if you have at least "
             @"3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}.");
-    } else if (signalAccounts.count >= 2) {
+    } else if (signalAccounts.count == 2) {
         [contactNames addObject:[self.contactsManager displayNameForSignalAccount:signalAccounts[0]]];
         [contactNames addObject:[self.contactsManager displayNameForSignalAccount:signalAccounts[1]]];
 
         formatString = NSLocalizedString(@"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT",
             @"Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal "
             @"contacts.  Embeds {{The names of 2 of your Signal contacts}}.");
-    } else if (signalAccounts.count >= 3) {
+    } else if (signalAccounts.count == 1) {
         [contactNames addObject:[self.contactsManager displayNameForSignalAccount:signalAccounts[0]]];
 
         formatString = NSLocalizedString(@"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT",
