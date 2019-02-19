@@ -45,6 +45,21 @@ NS_ASSUME_NONNULL_BEGIN
     self.unreadIndicator = nil;
 }
 
+- (BOOL)isEqual:(id)object
+{
+    if (self == object) {
+        return YES;
+    }
+
+    if (![object isKindOfClass:[ThreadDynamicInteractions class]]) {
+        return NO;
+    }
+
+    ThreadDynamicInteractions *other = (ThreadDynamicInteractions *)object;
+    return ([NSObject isNullableObject:self.focusMessagePosition equalTo:other.focusMessagePosition] &&
+        [NSObject isNullableObject:self.unreadIndicator equalTo:other.unreadIndicator]);
+}
+
 @end
 
 #pragma mark -
