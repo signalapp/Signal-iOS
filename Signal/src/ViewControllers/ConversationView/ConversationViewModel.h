@@ -96,7 +96,7 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
           focusMessageIdOnOpen:(nullable NSString *)focusMessageIdOnOpen
                       delegate:(id<ConversationViewModelDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
-- (void)ensureDynamicInteractions;
+- (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary;
 
 - (void)clearUnreadMessagesIndicator;
 

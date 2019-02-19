@@ -273,7 +273,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 {
     OWSAssertIsOnMainThread();
 
-    [self ensureDynamicInteractions];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary:YES];
 }
 
 - (void)profileWhitelistDidChange:(NSNotification *)notification
@@ -308,7 +308,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractions];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
     [self.primaryStorage updateUIDatabaseConnectionToLatest];
 
     [self createNewMessageMapping];
@@ -464,21 +464,32 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     self.collapseCutoffDate = [NSDate new];
 }
 
-- (void)ensureDynamicInteractions
+- (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary
 {
     OWSAssertIsOnMainThread();
 
     const int currentMaxRangeSize = (int)self.messageMapping.desiredLength;
     const int maxRangeSize = MAX(kConversationInitialMaxRangeSize, currentMaxRangeSize);
 
-    self.dynamicInteractions = [ThreadUtil ensureDynamicInteractionsForThread:self.thread
-                                                              contactsManager:self.contactsManager
-                                                              blockingManager:self.blockingManager
-                                                                 dbConnection:self.editingDatabaseConnection
-                                                  hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
-                                                          lastUnreadIndicator:self.dynamicInteractions.unreadIndicator
-                                                               focusMessageId:self.focusMessageIdOnOpen
-                                                                 maxRangeSize:maxRangeSize];
+    ThreadDynamicInteractions *dynamicInteractions =
+        [ThreadUtil ensureDynamicInteractionsForThread:self.thread
+                                       contactsManager:self.contactsManager
+                                       blockingManager:self.blockingManager
+                                          dbConnection:self.editingDatabaseConnection
+                           hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
+                                   lastUnreadIndicator:self.dynamicInteractions.unreadIndicator
+                                        focusMessageId:self.focusMessageIdOnOpen
+                                          maxRangeSize:maxRangeSize];
+    BOOL didChange = ![NSObject isNullableObject:self.dynamicInteractions equalTo:dynamicInteractions];
+    self.dynamicInteractions = dynamicInteractions;
+
+    if (didChange && updateIfNecessary) {
+        if (![self reloadViewItems]) {
+            OWSFailDebug(@"Failed to reload view items.");
+        }
+
+        [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
+    }
 }
 
 - (nullable id<ConversationViewItem>)viewItemForUnreadMessagesIndicator
@@ -519,7 +530,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     if (self.dynamicInteractions.unreadIndicator) {
         // If we've just cleared the "unread messages" indicator,
         // update the dynamic interactions.
-        [self ensureDynamicInteractions];
+        [self ensureDynamicInteractionsAndUpdateIfNecessary:YES];
     }
 }
 
@@ -968,7 +979,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractions];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
 
     if (![self reloadViewItems]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");
@@ -1590,7 +1601,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractions];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
 
     if (![self reloadViewItems]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");
