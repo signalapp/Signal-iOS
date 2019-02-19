@@ -7,6 +7,7 @@
 #import "AppSettingsViewController.h"
 #import "HomeViewCell.h"
 #import "NewContactThreadViewController.h"
+#import "OWS2FARegistrationViewController.h"
 #import "OWSNavigationController.h"
 #import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"
@@ -24,6 +25,7 @@
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalMessaging/Theme.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
@@ -68,7 +70,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSBlockListCacheDelegate>
 
 @property (nonatomic) UITableView *tableView;
-@property (nonatomic) UILabel *emptyBoxLabel;
+@property (nonatomic) UIView *emptyInboxView;
+
+@property (nonatomic) UIView *firstConversationCueView;
+@property (nonatomic) UILabel *firstConversationLabel;
 
 @property (nonatomic) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
@@ -215,6 +220,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSAssertIsOnMainThread();
 
     [self reloadTableViewData];
+
+    if (!self.firstConversationCueView.isHidden) {
+        [self updateFirstConversationLabel];
+    }
 }
 
 - (void)registrationStateDidChange:(id)notification
@@ -328,17 +337,20 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
 
-    UILabel *emptyBoxLabel = [UILabel new];
-    self.emptyBoxLabel = emptyBoxLabel;
-    [self.view addSubview:emptyBoxLabel];
+    self.emptyInboxView = [self createEmptyInboxView];
+    [self.view addSubview:self.emptyInboxView];
+    [self.emptyInboxView autoPinWidthToSuperviewMargins];
+    [self.emptyInboxView autoVCenterInSuperview];
 
-    //  Let the label use as many lines as needed. It will very rarely be more than 2 but may happen for verbose locs.
-    [emptyBoxLabel setNumberOfLines:0];
-    emptyBoxLabel.lineBreakMode = NSLineBreakByWordWrapping;
-
-    [emptyBoxLabel autoPinLeadingToSuperviewMargin];
-    [emptyBoxLabel autoPinTrailingToSuperviewMargin];
-    [emptyBoxLabel autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
+    [self createFirstConversationCueView];
+    [self.view addSubview:self.firstConversationCueView];
+    [self.firstConversationCueView autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
+    [self.firstConversationCueView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:10];
+    [self.firstConversationCueView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                                    withInset:10
+                                                     relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.firstConversationCueView autoPinEdgeToSuperviewMargin:ALEdgeBottom
+                                                       relation:NSLayoutRelationGreaterThanOrEqual];
 
     UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
     pullToRefreshView.tintColor = [UIColor grayColor];
@@ -346,6 +358,167 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
     [self.tableView insertSubview:pullToRefreshView atIndex:0];
+}
+
+- (UIView *)createEmptyInboxView
+{
+    NSArray<NSString *> *emptyInboxImageNames = @[
+                                                  @"home_empty_splash_1",
+                                                  @"home_empty_splash_2",
+                                                  @"home_empty_splash_3",
+                                                  @"home_empty_splash_4",
+                                                  @"home_empty_splash_5",
+                                                  ];
+    NSString *emptyInboxImageName = emptyInboxImageNames[arc4random_uniform((uint32_t) emptyInboxImageNames.count)];
+    UIImageView *emptyInboxImageView = [UIImageView new];
+    emptyInboxImageView.image = [UIImage imageNamed:emptyInboxImageName];
+    emptyInboxImageView.layer.minificationFilter = kCAFilterTrilinear;
+    emptyInboxImageView.layer.magnificationFilter = kCAFilterTrilinear;
+    [emptyInboxImageView autoPinToAspectRatioWithSize:emptyInboxImageView.image.size];
+    
+    UILabel *emptyInboxLabel = [UILabel new];
+    emptyInboxLabel.text = NSLocalizedString(@"INBOX_VIEW_EMPTY_INBOX",
+                                             @"Message shown in the home view when the inbox is empty.");
+    emptyInboxLabel.font = UIFont.ows_dynamicTypeBodyClampedFont;
+    emptyInboxLabel.textColor = Theme.secondaryColor;
+    emptyInboxLabel.textAlignment = NSTextAlignmentCenter;
+    emptyInboxLabel.numberOfLines = 0;
+    emptyInboxLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    
+    UIStackView *emptyInboxStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+                                                                                   emptyInboxImageView,
+                                                                                   emptyInboxLabel,
+                                                                                   ]];
+    emptyInboxStack.axis = UILayoutConstraintAxisVertical;
+    emptyInboxStack.alignment = UIStackViewAlignmentCenter;
+    emptyInboxStack.spacing = 12;
+    emptyInboxStack.layoutMargins = UIEdgeInsetsMake(50, 50, 50, 50);
+    emptyInboxStack.layoutMarginsRelativeArrangement = YES;
+    return emptyInboxStack;
+}
+
+- (void)createFirstConversationCueView
+{
+    const CGFloat kTailWidth = 16.f;
+    const CGFloat kTailHeight = 8.f;
+    const CGFloat kTailHMargin = 12.f;
+
+    UILabel *label = [UILabel new];
+    label.textColor = UIColor.ows_whiteColor;
+    label.font = UIFont.ows_dynamicTypeBodyClampedFont;
+    label.numberOfLines = 0;
+    label.lineBreakMode = NSLineBreakByWordWrapping;
+
+    OWSLayerView *layerView = [OWSLayerView new];
+    layerView.layoutMargins = UIEdgeInsetsMake(11 + kTailHeight, 16, 7, 16);
+    CAShapeLayer *shapeLayer = [CAShapeLayer new];
+    shapeLayer.fillColor = [OWSConversationColor ows_wintergreenColor].CGColor;
+    [layerView.layer addSublayer:shapeLayer];
+    layerView.layoutCallback = ^(UIView *view) {
+        UIBezierPath *bezierPath = [UIBezierPath new];
+
+        // Bubble
+        CGRect bubbleBounds = view.bounds;
+        bubbleBounds.origin.y += kTailHeight;
+        bubbleBounds.size.height -= kTailHeight;
+        [bezierPath appendPath:[UIBezierPath bezierPathWithRoundedRect:bubbleBounds cornerRadius:8]];
+
+        // Tail
+        CGPoint tailTop = CGPointMake(kTailHMargin + kTailWidth * 0.5f, 0.f);
+        CGPoint tailLeft = CGPointMake(kTailHMargin, kTailHeight);
+        CGPoint tailRight = CGPointMake(kTailHMargin + kTailWidth, kTailHeight);
+        if (!CurrentAppContext().isRTL) {
+            tailTop.x = view.width - tailTop.x;
+            tailLeft.x = view.width - tailLeft.x;
+            tailRight.x = view.width - tailRight.x;
+        }
+        [bezierPath moveToPoint:tailTop];
+        [bezierPath addLineToPoint:tailLeft];
+        [bezierPath addLineToPoint:tailRight];
+        [bezierPath addLineToPoint:tailTop];
+        shapeLayer.path = bezierPath.CGPath;
+        shapeLayer.frame = view.bounds;
+    };
+
+    [layerView addSubview:label];
+    [label ows_autoPinToSuperviewMargins];
+
+    self.firstConversationCueView = layerView;
+    self.firstConversationLabel = label;
+}
+
+- (void)updateFirstConversationLabel
+{
+    NSArray<SignalAccount *> *signalAccounts = self.contactsManager.signalAccounts;
+
+    NSString *formatString = @"";
+    NSMutableArray<NSString *> *contactNames = [NSMutableArray new];
+    if (signalAccounts.count >= 3) {
+        [contactNames addObject:[self.contactsManager displayNameForSignalAccount:signalAccounts[0]]];
+        [contactNames addObject:[self.contactsManager displayNameForSignalAccount:signalAccounts[1]]];
+        [contactNames addObject:[self.contactsManager displayNameForSignalAccount:signalAccounts[2]]];
+
+        formatString = NSLocalizedString(@"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT",
+            @"Format string for a label offering to start a new conversation with your contacts, if you have at least "
+            @"3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}.");
+    } else if (signalAccounts.count == 2) {
+        [contactNames addObject:[self.contactsManager displayNameForSignalAccount:signalAccounts[0]]];
+        [contactNames addObject:[self.contactsManager displayNameForSignalAccount:signalAccounts[1]]];
+
+        formatString = NSLocalizedString(@"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT",
+            @"Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal "
+            @"contacts.  Embeds {{The names of 2 of your Signal contacts}}.");
+    } else if (signalAccounts.count == 1) {
+        [contactNames addObject:[self.contactsManager displayNameForSignalAccount:signalAccounts[0]]];
+
+        formatString = NSLocalizedString(@"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT",
+            @"Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal "
+            @"contact.  Embeds {{The name of 1 of your Signal contacts}}.");
+    }
+
+    NSString *embedToken = @"%@";
+    NSArray<NSString *> *formatSplits = [formatString componentsSeparatedByString:embedToken];
+    // We need to use a complicated format string that possibly embeds multiple contact names.
+    // Translator error could easily lead to an invalid format string.
+    // We need to verify that it was translated properly.
+    BOOL isValidFormatString = (contactNames.count > 0 && formatSplits.count == contactNames.count + 1);
+    for (NSString *contactName in contactNames) {
+        if ([contactName containsString:embedToken]) {
+            isValidFormatString = NO;
+        }
+    }
+
+    NSMutableAttributedString *_Nullable attributedString = nil;
+    if (isValidFormatString) {
+        attributedString = [[NSMutableAttributedString alloc] initWithString:formatString];
+        while (contactNames.count > 0) {
+            NSString *contactName = contactNames.firstObject;
+            [contactNames removeObjectAtIndex:0];
+
+            NSRange range = [attributedString.string rangeOfString:embedToken];
+            if (range.location == NSNotFound) {
+                // Error
+                attributedString = nil;
+                break;
+            }
+
+            NSAttributedString *formattedName = [[NSAttributedString alloc]
+                initWithString:contactName
+                    attributes:@{
+                        NSFontAttributeName : self.firstConversationLabel.font.ows_mediumWeight,
+                    }];
+            [attributedString replaceCharactersInRange:range withAttributedString:formattedName];
+        }
+    }
+
+    if (!attributedString) {
+        // The default case handles the no-contacts scenario and all error cases.
+        NSString *defaultText = NSLocalizedString(@"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS",
+            @"A label offering to start a new conversation with your contacts, if you have no Signal contacts.");
+        attributedString = [[NSMutableAttributedString alloc] initWithString:defaultText];
+    }
+
+    self.firstConversationLabel.attributedText = [attributedString copy];
 }
 
 - (void)updateReminderViews
@@ -381,7 +554,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self uiDatabaseConnection];
 
     [self updateMappings];
-    [self checkIfEmptyView];
+    [self updateViewState];
     [self updateReminderViews];
     [self observeNotifications];
 
@@ -637,7 +810,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         }
     }
 
-    [self checkIfEmptyView];
+    [self updateViewState];
     [self applyDefaultBackButton];
     if ([self updateHasArchivedThreadsRow]) {
         [self.tableView reloadData];
@@ -707,7 +880,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self updateHasArchivedThreadsRow];
     [self reloadTableViewData];
 
-    [self checkIfEmptyView];
+    [self updateViewState];
 
     // If the user hasn't already granted contact access
     // we don't want to request until they receive a message.
@@ -722,7 +895,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
-    [self checkIfEmptyView];
+    [self updateViewState];
 }
 
 - (BOOL)hasAnyMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -1149,7 +1322,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [thread removeWithTransaction:transaction];
     }];
 
-    [self checkIfEmptyView];
+    [self updateViewState];
 }
 
 - (void)archiveIndexPath:(NSIndexPath *)indexPath
@@ -1171,7 +1344,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                 break;
         }
     }];
-    [self checkIfEmptyView];
+    [self updateViewState];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -1276,7 +1449,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self resetMappings];
 
     [self reloadTableViewData];
-    [self checkIfEmptyView];
+    [self updateViewState];
     [self updateReminderViews];
 }
 
@@ -1327,7 +1500,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.threadMappings updateWithTransaction:transaction];
         }];
-        [self checkIfEmptyView];
+        [self updateViewState];
 
         return;
     }
@@ -1352,7 +1525,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     // We want this regardless of if we're currently viewing the archive.
     // So we run it before the early return
-    [self checkIfEmptyView];
+    [self updateViewState];
 
     if ([sectionChanges count] == 0 && [rowChanges count] == 0) {
         return;
@@ -1439,71 +1612,19 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     return [self numberOfThreadsInGroup:TSArchiveGroup];
 }
 
-- (void)checkIfEmptyView
+- (void)updateViewState
 {
     NSUInteger inboxCount = self.numberOfInboxThreads;
     NSUInteger archiveCount = self.numberOfArchivedThreads;
 
     if (self.homeViewMode == HomeViewMode_Inbox && inboxCount == 0 && archiveCount == 0) {
-        [self updateEmptyBoxText];
         [_tableView setHidden:YES];
-        [_emptyBoxLabel setHidden:NO];
-    } else if (self.homeViewMode == HomeViewMode_Archive && archiveCount == 0) {
-        [self updateEmptyBoxText];
-        [_tableView setHidden:YES];
-        [_emptyBoxLabel setHidden:NO];
+        [self.emptyInboxView setHidden:NO];
+        [self updateFirstConversationLabel];
     } else {
-        [_emptyBoxLabel setHidden:YES];
         [_tableView setHidden:NO];
+        [self.emptyInboxView setHidden:YES];
     }
-}
-
-- (void)updateEmptyBoxText
-{
-    // TODO: Theme, review with design.
-    _emptyBoxLabel.textColor = [UIColor grayColor];
-    _emptyBoxLabel.font = [UIFont ows_regularFontWithSize:18.f];
-    _emptyBoxLabel.textAlignment = NSTextAlignmentCenter;
-
-    NSString *firstLine = @"";
-    NSString *secondLine = @"";
-
-    if (self.homeViewMode == HomeViewMode_Inbox) {
-        if ([Environment.shared.preferences hasSentAMessage]) {
-            firstLine = NSLocalizedString(
-                @"EMPTY_INBOX_TITLE", @"Header text an existing user sees when viewing an empty inbox");
-            secondLine = NSLocalizedString(
-                @"EMPTY_INBOX_TEXT", @"Body text an existing user sees when viewing an empty inbox");
-        } else {
-            firstLine = NSLocalizedString(
-                @"EMPTY_INBOX_NEW_USER_TITLE", @"Header text a new user sees when viewing an empty inbox");
-            secondLine = NSLocalizedString(
-                @"EMPTY_INBOX_NEW_USER_TEXT", @"Body text a new user sees when viewing an empty inbox");
-        }
-    } else {
-        OWSAssertDebug(self.homeViewMode == HomeViewMode_Archive);
-        firstLine = NSLocalizedString(
-            @"EMPTY_ARCHIVE_TITLE", @"Header text an existing user sees when viewing an empty archive");
-        secondLine = NSLocalizedString(
-            @"EMPTY_ARCHIVE_TEXT", @"Body text an existing user sees when viewing an empty archive");
-    }
-    NSMutableAttributedString *fullLabelString =
-        [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\n%@", firstLine, secondLine]];
-
-    [fullLabelString addAttribute:NSFontAttributeName
-                            value:[UIFont ows_boldFontWithSize:15.f]
-                            range:NSMakeRange(0, firstLine.length)];
-    [fullLabelString addAttribute:NSFontAttributeName
-                            value:[UIFont ows_regularFontWithSize:14.f]
-                            range:NSMakeRange(firstLine.length + 1, secondLine.length)];
-    [fullLabelString addAttribute:NSForegroundColorAttributeName
-                            value:Theme.primaryColor
-                            range:NSMakeRange(0, firstLine.length)];
-    // TODO: Theme, Review with design.
-    [fullLabelString addAttribute:NSForegroundColorAttributeName
-                            value:Theme.secondaryColor
-                            range:NSMakeRange(firstLine.length + 1, secondLine.length)];
-    _emptyBoxLabel.attributedText = fullLabelString;
 }
 
 // We want to delay asking for a review until an opportune time.

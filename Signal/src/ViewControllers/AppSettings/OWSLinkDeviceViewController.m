@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.qrScanningController.view autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     [self.qrScanningController.view autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
     [self.qrScanningController.view autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
-    [self.qrScanningController.view autoPinToAspectRatio:1.f];
+    [self.qrScanningController.view autoPinToSquareAspectRatio];
 
     UIView *bottomView = [UIView new];
     [self.view addSubview:bottomView];
