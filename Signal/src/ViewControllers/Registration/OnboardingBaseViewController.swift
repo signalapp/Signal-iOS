@@ -58,7 +58,6 @@ public class OnboardingBaseViewController: OWSViewController {
     }
 
     private func button(title: String, selector: Selector, titleColor: UIColor, backgroundColor: UIColor) -> OWSFlatButton {
-        // TODO: Make sure this all fits if dynamic font sizes are maxed out.
         let font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
         // Button height should be 48pt if the font is 17pt.
         let buttonHeight = font.pointSize * 48 / 17

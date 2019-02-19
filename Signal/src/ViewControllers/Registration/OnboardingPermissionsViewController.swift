@@ -24,7 +24,6 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
         let explanationLabel = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_PERMISSIONS_EXPLANATION",
                                                                                   comment: "Explanation in the 'onboarding permissions' view."))
 
-        // TODO: Make sure this all fits if dynamic font sizes are maxed out.
         let giveAccessButton = self.button(title: NSLocalizedString("ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
                                                                     comment: "Label for the 'give access' button in the 'onboarding permissions' view."),
                                            selector: #selector(giveAccessPressed))
@@ -63,7 +62,6 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
     private func requestAccess() {
         Logger.info("")
 
-        // TODO: We need to defer app's request notification permissions until onboarding is complete.
         requestContactsAccess().then { _ in
             return PushRegistrationManager.shared.registerUserNotificationSettings()
         }.done { [weak self] in

@@ -105,8 +105,6 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         validationWarningLabel.autoPinHeightToSuperview()
         validationWarningLabel.autoPinEdge(toSuperviewEdge: .leading)
 
-        // TODO: Finalize copy.
-
         let nextButton = self.button(title: NSLocalizedString("BUTTON_NEXT",
                                                                 comment: "Label for the 'next' button."),
                                            selector: #selector(nextPressed))

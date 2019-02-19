@@ -242,9 +242,13 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        // TODO:
-//        let view = OnboardingCaptchaViewController(onboardingController: self)
-//        navigationController.pushViewController(view, animated: true)
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        let view = Onboarding2FAViewController(onboardingController: self)
+        navigationController.pushViewController(view, animated: true)
     }
 
     @objc
@@ -253,7 +257,7 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        // TODO:
+        showHomeView(view: view)
     }
 
     @objc
@@ -262,7 +266,27 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        // TODO:
+        showHomeView(view: view)
+    }
+
+    private func showHomeView(view: UIViewController) {
+        AssertIsOnMainThread()
+
+        guard let navigationController = view.navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        // In production, this view will never be presented in a modal.
+        // During testing (debug UI, etc.), it may be a modal.
+        let isModal = navigationController.presentingViewController != nil
+        if isModal {
+            view.dismiss(animated: true, completion: {
+                SignalApp.shared().showHomeView()
+            })
+        } else {
+            SignalApp.shared().showHomeView()
+        }
     }
 
     // MARK: - State

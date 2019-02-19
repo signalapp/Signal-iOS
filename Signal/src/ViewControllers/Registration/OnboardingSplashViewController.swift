@@ -37,7 +37,6 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         explanationLabel.isUserInteractionEnabled = true
         explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explanationLabelTapped)))
 
-        // TODO: Make sure this all fits if dynamic font sizes are maxed out.
         let continueButton = self.button(title: NSLocalizedString("BUTTON_CONTINUE",
                                                                  comment: "Label for 'continue' button."),
                                                     selector: #selector(continuePressed))
