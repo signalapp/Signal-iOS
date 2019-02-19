@@ -423,7 +423,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     [ViewControllerUtils phoneNumberTextField:textField
                 shouldChangeCharactersInRange:range
                             replacementString:insertionText
-                                  countryCode:_callingCode];
+                                  callingCode:_callingCode];
 
     [self updatePhoneNumberButtonEnabling];
 

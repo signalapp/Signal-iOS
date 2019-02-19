@@ -552,7 +552,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [ViewControllerUtils phoneNumberTextField:textField
                 shouldChangeCharactersInRange:range
                             replacementString:insertionText
-                                  countryCode:_callingCode];
+                                  callingCode:_callingCode];
 
     return NO; // inform our caller that we took care of performing the change
 }

@@ -21,20 +21,7 @@ const NSUInteger kMax2FAPinLength = 16;
 + (void)phoneNumberTextField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText
-                      countryCode:(NSString *)countryCode
-{
-    return [self phoneNumberTextField:textField
-        shouldChangeCharactersInRange:range
-                    replacementString:insertionText
-                          countryCode:countryCode
-                               prefix:nil];
-}
-
-+ (void)phoneNumberTextField:(UITextField *)textField
-    shouldChangeCharactersInRange:(NSRange)range
-                replacementString:(NSString *)insertionText
-                      countryCode:(NSString *)countryCode
-                           prefix:(nullable NSString *)prefix
+                      callingCode:(NSString *)callingCode
 {
     // Phone numbers takes many forms.
     //
@@ -90,15 +77,15 @@ const NSUInteger kMax2FAPinLength = 16;
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
     NSUInteger cursorPositionAfterChange = MIN(left.length + center.length, textAfterChange.length);
 
-    NSString *textAfterReformat =
-        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange
-                                                     withSpecifiedCountryCodeString:countryCode];
+    NSString *textToFormat = textAfterChange;
+    NSString *formattedText = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textToFormat
+                                                                           withSpecifiedCountryCodeString:callingCode];
     NSUInteger cursorPositionAfterReformat = [PhoneNumberUtil translateCursorPosition:cursorPositionAfterChange
-                                                                                 from:textAfterChange
-                                                                                   to:textAfterReformat
+                                                                                 from:textToFormat
+                                                                                   to:formattedText
                                                                     stickingRightward:isJustDeletion];
 
-    textField.text = textAfterReformat;
+    textField.text = formattedText;
     UITextPosition *pos =
         [textField positionFromPosition:textField.beginningOfDocument offset:(NSInteger)cursorPositionAfterReformat];
     [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
