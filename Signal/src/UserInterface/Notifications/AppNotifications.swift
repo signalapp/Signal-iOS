@@ -137,7 +137,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     @objc
     public override init() {
-        let userNotificationsFeatureEnabled = false
+        let userNotificationsFeatureEnabled = true
         if userNotificationsFeatureEnabled, #available(iOS 10, *) {
             self.adaptee = UserNotificationPresenterAdaptee()
         } else {
