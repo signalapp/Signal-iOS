@@ -371,7 +371,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
 extension OnboardingPhoneNumberViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        ViewControllerUtils.phoneNumber(textField, shouldChangeCharactersIn: range, replacementString: string, countryCode: countryCode, prefix: callingCode)
+        ViewControllerUtils.phoneNumber(textField, shouldChangeCharactersIn: range, replacementString: string, callingCode: callingCode)
 
         isPhoneNumberInvalid = false
         updateValidationWarnings()
