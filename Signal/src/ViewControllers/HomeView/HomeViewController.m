@@ -38,6 +38,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversationsReuseIdentifier";
+
 typedef NS_ENUM(NSInteger, HomeViewMode) {
     HomeViewMode_Archive,
     HomeViewMode_Inbox,
@@ -59,8 +61,6 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     HomeViewControllerSectionConversations,
     HomeViewControllerSectionArchiveButton,
 };
-
-NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversationsReuseIdentifier";
 
 @interface HomeViewController () <UITableViewDelegate,
     UITableViewDataSource,
@@ -341,6 +341,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.view addSubview:self.emptyInboxView];
     [self.emptyInboxView autoPinWidthToSuperviewMargins];
     [self.emptyInboxView autoVCenterInSuperview];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _emptyInboxView);
 
     [self createFirstConversationCueView];
     [self.view addSubview:self.firstConversationCueView];
