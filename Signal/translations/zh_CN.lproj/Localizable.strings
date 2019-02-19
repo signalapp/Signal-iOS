@@ -321,16 +321,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "请求访问麦克风";
 
 /* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+"CALL_INCOMING_NOTIFICATION_BODY" = "来电";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "打电话";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "未接来电，因为对方的安全码发生了变化。";
 
 /* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
+"CALL_MISSED_NOTIFICATION_BODY" = "未接来电";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "无应答";
@@ -1440,7 +1440,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "成员";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@至%@";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "为此群组命名";
@@ -1914,7 +1914,7 @@
 "SEND_BUTTON_TITLE" = "发送";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
+"SEND_FAILED_NOTIFICATION_BODY" = "您的信息发送失败。";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "发送邀请失败, 请稍候再试.";

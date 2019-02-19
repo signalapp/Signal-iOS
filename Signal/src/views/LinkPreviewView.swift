@@ -211,7 +211,8 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
             return nil
         }
         guard let image = UIImage(contentsOfFile: imageFilepath) else {
-            owsFail("Could not load image: \(imageFilepath)")
+            owsFailDebug("Could not load image: \(imageFilepath)")
+            return nil
         }
         return image
     }

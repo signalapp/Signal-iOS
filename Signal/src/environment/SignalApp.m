@@ -138,24 +138,10 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSStorage resetAllStorage];
     [OWSUserProfile resetProfileStorage];
     [Environment.shared.preferences clear];
-
-    [self clearAllNotifications];
+    [AppEnvironment.shared.notificationPresenter clearAllNotifications];
 
     [DebugLogger.sharedLogger wipeLogs];
     exit(0);
-}
-
-+ (void)clearAllNotifications
-{
-    OWSLogInfo(@"clearAllNotifications.");
-
-    // This will cancel all "scheduled" local notifications that haven't
-    // been presented yet.
-    [UIApplication.sharedApplication cancelAllLocalNotifications];
-    // To clear all already presented local notifications, we need to
-    // set the app badge number to zero after setting it to a non-zero value.
-    [UIApplication sharedApplication].applicationIconBadgeNumber = 1;
-    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
 - (void)showHomeView

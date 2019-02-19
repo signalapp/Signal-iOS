@@ -8,7 +8,7 @@
 "ACTION_AUDIO_CALL" = "Hovor Signal";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Pozvat do aplikace Signal";
+"ACTION_INVITE" = "Pozvat do Signalu";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
@@ -60,7 +60,7 @@
 "APN_Message" = "Nová zpráva!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Aplikaci Signal nelze spustit. Odešlete prosím debug log na support@signal.org, pokusíme se problém opravit.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal nelze spustit. Odešlete prosím debug log na support@signal.org, pokusíme se problém opravit.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Chyba";
@@ -75,7 +75,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "V App Storu je nyní dostupná verze %@.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Je dostupná nová verze aplikace Signal";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Je dostupná nová verze Signalu";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Aktualizovat";
@@ -294,7 +294,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Zablokovat %@?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Zablokovaní uživatelé vám nebudou moci zavolat nebo vám posílat zprávy.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Zablokovaní uživatelé vám nebudou moci zavolat nebo posílat zprávy.";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Pokračovat";
@@ -321,16 +321,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Vyžadován přístup k mikrofonu";
 
 /* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Příchozí hovor";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Zavolat";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Zmeškaný hovor. Změnilo se bezpečnostní číslo volajícího.";
 
 /* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Zmeškaný hovor";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Žádná odpověď";
@@ -363,10 +363,10 @@
 "CALL_VIEW_MUTE_LABEL" = "Ztlumit";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Můžete povolit integraci s iOS hovory v nastavení soukromí aplikace Signal, abyste mohli přijímat příchozí hovory ze zamčené obrazovky.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Můžete povolit integraci s iOS hovory v nastavení soukromí Signalu, abyste mohli přijímat příchozí hovory ze zamčené obrazovky.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Můžete povolit integraci s iOS hovory v nastavení soukromí aplikace Signal, abyste mohli vidět jméno a telefonní číslo pro příchozí hovory.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Můžete povolit integraci s iOS hovory v nastavení soukromí Signalu, abyste uviděli jméno a telefonní číslo příchozích hovorů.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Nyní ne";
@@ -375,13 +375,13 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Zobrazit nastavení soukromí";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Přepnout kameru";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Převrátit kameru";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Přepnout na audio hovor";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Přepnout na video hovor";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Přepnout na videohovor";
 
 /* Label for the 'return to call' banner. */
 "CALL_WINDOW_RETURN_TO_CALL" = "Klepněte pro návrat k hovoru";
@@ -390,7 +390,7 @@
 "CALLBACK_BUTTON_TITLE" = "Zavolat zpět";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Uživatel aplikace Signal";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Uživatel Signalu";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Tento uživatel nemůže být ověřen, dokud neodešlete zprávu.";
@@ -414,13 +414,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Obnovení";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Nebylo možné zjistit stav účtu iCloud. Přihlašte se do svého účtu iCloud v nastavení iOS pro zálohování dat v Signalu.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Nebylo možné zjistit stav účtu iCloud. Přihlašte se do svého účtu iCloud v nastavení iOS pro zálohování dat Signalu.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Žádný účet iCloud. Přihlašte se do svého účtu iCloud v nastavení iOS pro zálohování dat v Signalu.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Žádný účet iCloud. Přihlašte se do svého účtu iCloud v nastavení iOS pro zálohování dat Signalu.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signalu byl odepřen přístup k účtu iCloud pro vytvoření zálohy. Povolte Signalu přístup k vašemu účtu iCloud v nastavení iOS pro zálohování dat.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signalu byl odepřen přístup k účtu iCloud pro vytvoření zálohy. Pro zálohování dat povolte Signalu přístup k vašemu účtu iCloud v nastavení iOS.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Vyberte barvu odchozích zpráv v této konverzaci.";
@@ -486,7 +486,7 @@
 "CONTACT_EDIT_NAME_BUTTON" = "Upravit";
 
 /* Label for a contact's email address. */
-"CONTACT_EMAIL" = "Email";
+"CONTACT_EMAIL" = "E-mail";
 
 /* Label for the 'city' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_CITY" = "Město";
@@ -516,13 +516,13 @@
 "CONTACT_FIELD_GIVEN_NAME" = "Křestní jméno";
 
 /* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Prostřední jméno";
+"CONTACT_FIELD_MIDDLE_NAME" = "Druhé jméno";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Titul před jménem";
+"CONTACT_FIELD_NAME_PREFIX" = "Před jménem";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Titul za jménem";
+"CONTACT_FIELD_NAME_SUFFIX" = "Za jménem";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Organizace";
@@ -552,7 +552,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Nebylo vybráno žádné pole kontaktu.";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Otevřít v mapách";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Otevřít v Mapách";
 
 /* Label for 'open email in email app' button in contact view. */
 "CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Poslat email";
@@ -570,7 +570,7 @@
 "CONVERSATION_SETTINGS" = "Nastavení konverzace";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Přidat k existujícímu kontaktu";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Přidat ke kontaktu";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Zablokovat tuto skupinu";
@@ -594,7 +594,7 @@
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Ztlumit";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Neztlumen";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Není ztlumeno";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Ztlumit na den";
@@ -672,7 +672,7 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Toto může pár minut trvat.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Optimalizuji databázi";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Optimalizace databáze";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
 "DATE_HOURS_AGO_FORMAT" = "před %@h";
@@ -739,7 +739,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Znovu zaregistrovat toto telefonní číslo";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Zařízení již není registrováno. Vaše telefonní číslo může být registrováno v aplikaci Signal na jiném zařízení. Klepněte pro opětovnou registraci.";
+"DEREGISTRATION_WARNING" = "Zařízení již není registrováno. Je možné, že je vaše telefonní číslo registrováno v aplikaci Signal na jiném zařízení. Klepněte pro opětovnou registraci.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Naposledy aktivní: %@";
@@ -757,7 +757,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Zprávy v konverzaci zmizí za %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Pokud je povoleno, odeslané a přiaté zprávy v této konverzaci zmizí, jakmile budou viděny.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Pokud je povoleno, odeslané a přijaté zprávy v této konverzaci zmizí, jakmile budou zobrazeny.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Nyní zprávy zmizí po %@";
@@ -775,7 +775,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Můžete povolit přístup v nastavení iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Aplikace Signal pro úpravu informací kontaktu vyžaduje přístup ke kontaktům.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal pro úpravu informací o kontaktu vyžaduje přístup ke kontaktům.";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Upravit skupinu";
@@ -799,7 +799,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Aktualizovat";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Chcete uložit změny vykonané na této skupině?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Změnil(a) jste tuto skupinu. Chcete tyto změny uložit?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Neuložené změny";
@@ -823,7 +823,7 @@
 "EMPTY_ARCHIVE_TITLE" = "Vyčistit váš seznam konverzací.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Žádný z vašich kontaktů nemá aplikaci Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Žádný z vašich kontaktů nemá Signal.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Proč někoho nepozvete?";
@@ -832,13 +832,13 @@
 "EMPTY_INBOX_NEW_USER_TEXT" = "Klepněte na tlačítko vytvořit.";
 
 /* Header text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TITLE" = "Zahajte vaši první konverzaci Signal!";
+"EMPTY_INBOX_NEW_USER_TITLE" = "Začněte vaši první konverzaci na Signalu!";
 
 /* Body text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TEXT" = "Nula nula nic.";
 
 /* Header text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TITLE" = "Schránka prázdná, nikde nic.";
+"EMPTY_INBOX_TITLE" = "Schránka prázdná, velký kulový.";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Potvrďte Váš PIN.";
@@ -862,13 +862,13 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Zadaný PIN nesouhlasí.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Zadejte PIN registrace. Při změně přístroje s tímto telefonním číslem budete na tento PIN dotázán.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Zadejte PIN zámku registrace. Při příští registraci pod tímto telefonním číslem budete na PIN dotázán(a).";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Pro zvýšení bezpečnosti zapněte registrační PIN, který bude vyžadován při změně přístroje s tímto telefonním číslem v aplikaci Signal.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Pro zvýšení bezpečnosti povolte PIN zámku registrace, který bude v aplikaci Signal vyžadován při příští registraci pod tímto telefonním číslem.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registrační zámek je povolen. Budete požádán(a) o zadání PINu při změně přístroje s tímto telefonním číslem v aplikaci Signal.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Zámek registrace je povolen. Budete požádán(a) o zadání PINu při příští registraci pod tímto telefonním číslem.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Zámek registrace";
@@ -880,7 +880,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Hovor selhal.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Nelze přistoupit ke kontaktům";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Nelze přistoupit ke kontaktům.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Nepodařilo se odeslat zprávu.";
@@ -898,7 +898,7 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal se nemohl připojit k internetu. Prosím zkuste to znovu.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Poslání zprávy selhalo z důvodu platných příjemců.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Odesílání zprávy selhalo z důvodu neplatných příjemců.";
 
 /* Error indicating that a socket request failed. */
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Síťová žádost selhala.";
@@ -919,10 +919,10 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Došlo k neznámé chybě.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt není uživatelem aplikace Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt není uživatelem Signalu.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Chyba přílohy: Odesílatel musí aktualizovat aplikaci Signal a odeslat zprávu znovu.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Chyba přílohy: Požádejte odesílatele, aby aktualizoval(a) Signal a odeslal(a) zprávu znovu.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Přijata duplikovaná zpráva.";
@@ -1084,13 +1084,13 @@
 "IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
 
 /* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Crop";
+"IMAGE_EDITOR_CROP_BUTTON" = "Oříznout";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Nemůžete sdílet více než %@ položek.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Nepodařilo se odeslat přílohu.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Připojování…";
@@ -1135,7 +1135,7 @@
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Povolit přístup ke kontaktům";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pozvat přátele do aplikace Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pozvat přátele do Signalu";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Hledat";
@@ -1162,7 +1162,7 @@
 "LINK_DEVICE_INVALID_CODE_BODY" = "Tento QR kód je neplatný. Ujistěte se prosím, že snímáte QR kód ze zařízení, které chcete připojit.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Propojení zařízení selhalo";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Připojení zařízení selhalo";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Toto zařízení uvidí vaše skupiny a kontakty, bude mít přístup k vaším konverzacím a bude moct posílat zprávy ve vašem jménu.";
@@ -1174,7 +1174,7 @@
 "LINK_DEVICE_RESTART" = "Zkusit znovu";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Pro připojení naskenujte QR kód zobrazený na zařízení, které chcete připojit.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Naskenujte QR kód zobrazený na zařízení, které chcete připojit.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Naskenovat QR kód";
@@ -1183,13 +1183,13 @@
 "LINK_NEW_DEVICE_TITLE" = "Připojit nové zařízení";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Náhled odkazu";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Připojená zařízení";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Propojení zařízení selhalo";
+"LINKING_DEVICE_FAILED_TITLE" = "Připojení zařízení selhalo";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Členové skupiny";
@@ -1240,7 +1240,7 @@
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Smazat tuto zprávu";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Bude pouze smazána na tomto zařízení.";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Bude smazána pouze na tomto zařízení.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Více informací";
@@ -1380,7 +1380,7 @@
 
 /* Alert title
    Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Aplikace Signal vyžaduje přístup k vašemu fotoaparátu.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal vyžaduje přístup k vašemu fotoaparátu.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Tento souhlas můžete udělit v nastavení iOS.";
@@ -1389,10 +1389,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Tato funkce Signalu vyžaduje přístup k fotografiím.";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "Nemůžete propojit další zařízení.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Nemůžete připojit žádné další zařízení.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Dosáhl(a) jste limitu počtu zařízení, které můžete připojit k vašemu účtu. Prosím odstraňte některé ze zařízení a zkuste to znovu.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Dosáhl(a) jste maximálního počtu zařízení, které můžete připojit k vašemu účtu. Prosím odstraňte některé ze zařízení a zkuste to znovu.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Pro ztlumené konverzace nebudete dostávat oznámení.";
@@ -1440,10 +1440,10 @@
 "NEW_GROUP_MEMBER_LABEL" = "Člen";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ v %@";
 
 /* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Pojmenujte tento skupinový chat";
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Pojmenujte tuto skupinu";
 
 /* a title for the non-contacts section of the 'new group' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Ostatní uživatelé";
@@ -1467,7 +1467,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Najít kontakty pomocí telefonního čísla";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Poznámka sobě";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Je možné, že byly přijaty nové zprávy zatímco váš %@ byl restartován.";
@@ -1500,13 +1500,13 @@
 "OPEN_SETTINGS_BUTTON" = "Nastavení";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ zakázal mizející zprávy.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ zakázal(a) mizející zprávy.";
 
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ nastavil čas mizejících zpráv na %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ nastavil(a) čas mizejících zpráv na %@.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Aplikace Signal se potýká s technickými problémy. Úsilovně pracujeme na co nejrychlejším obnovení služby.";
+"OUTAGE_WARNING" = "Signal se potýká s technickými problémy. Usilovně pracujeme na co nejrychlejším obnovení služby.";
 
 /* info message text in conversation view */
 "OUTGOING_CALL" = "Odchozí hovor";
@@ -1590,22 +1590,22 @@
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Číslo ve vaší schránce nevypadá jako správné bezpečnostní číslo této konverzace.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Aplikace Signal nemohla ve vaší schránce nalézt žádné bezpečnostní číslo. Zkopírovali jste ho správně?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal nemohl ve vaší schránce nalézt žádné bezpečnostní číslo. Zkopíroval(a) jste ho správně?";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Každá dvojice uživatelů Signalu sdílí odlišné bezpečnostní číslo. Ověřte, že %@ zobrazuje *vaše* bezpečnostní číslo.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Používáte starou verzi aplikace Signal, před ověřením ji musíte aktualizovat.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Používáte starou verzi Signalu, před ověřením ji musíte aktualizovat.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Váš kontakt používá starou verzi Signalu a musí ji aktualizovat, než bude možné ověření.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Naskenovaný kód nevypadá jako bezpečnostní číslo. Používate oba aktuální verzi aplikace Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Naskenovaný kód nevypadá jako bezpečnostní číslo. Používate oba aktuální verzi Signalu?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Pokud chcete ověřit bezpečnost koncového šifrování s %@, porovnete čísla výše s čísli na druhém zařízení..\n\nNebo můžete naskenovat kód z druhého telefonu, nebo on může naskenovat ten váš.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Pokud chcete ověřit bezpečnost koncového šifrování s %@, porovnete čísla výše s čísli na druhém zařízení.\n\nTaké můžete naskenovat kód z jejich telefonu, nebo je požádat o naskenování vašeho kódu.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Ověření bezpečnostního čísla";
@@ -1671,7 +1671,7 @@
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Odpověď na %@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Odpověď uživateli %@";
 
 /* message header label when someone else is quoting you */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Odpověď vám";
@@ -1707,10 +1707,10 @@
 "REGISTER_2FA_FORGOT_PIN" = "Zapoměl jsem PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registrace tohoto telefonního čísla bude možná bez zámku registrace po uplynutí 7 dní po poslední aktivitě čísla v aplikaci Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registrace tohoto telefonního čísla bude možná bez PINu zámku registrace po uplynutí 7 dní od poslední aktivity telefonního čísla na Signalu.";
 
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "Toto telefonní číslo má povolený zámek registrace. Prosím zadejte registrační PIN.\n\nVáš registrační PIN se liší od automatického kódu, který byl zadán na Váš přístroj při posledním kroku.";
+"REGISTER_2FA_INSTRUCTIONS" = "Toto telefonní číslo má povolený zámek registrace. Prosím zadejte PIN zámku registrace.\n\nPIN zámku registrace se liší od ověřovacího kódu, který vám byl odeslán při předchozím kroku.";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
 "REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registrace neúspěšná";
@@ -1785,7 +1785,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Čísla, která jste zadal(a) neodpovídají tomu, co jsme poslali. Nechcete to zkontrolovat?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Neplatný registrační PIN.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Neplatný PIN zámku registrace.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Zaregistrovat se";
@@ -1809,16 +1809,16 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonní číslo, které se snažíte zaregistrovat, je již zaregistrováno na jiném serveru. Zrušte jeho registraci z tohoto serveru a zkuste to znovu.";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Registrační zámek je na Vašem telefonním čísle povolen. Aby Vám pomohla zapamatovat si kód, Vás bude aplikace Signal pravidelně žádat o jeho zadávání.";
+"REMINDER_2FA_BODY" = "Registrační zámek je povolen pro vaše telefonní číslo. Signal vás bude pravidelně žádat o zadání kódu, aby vám pomohl si ho zapamatovat.";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Připomenutí:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registračná zámek pomáhá zabezpečit Vaše telefonní číslo před neautorizovanými pokusy o registraci. Tato funkce může být kdykoliv vypnuta v nastavení soukromí v aplikaci Signal.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Zámek registrace pomáhá zabezpečit vaše telefonní číslo před neoprávněnými pokusy o registraci. Tato funkce může být kdykoliv zakázána v nastavení soukromí Signalu.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Zadejte Váš registrační PIN.";
+"REMINDER_2FA_NAV_TITLE" = "Zadejte váš PIN zámku registrace";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Nový PIN můžete nastavit v nastavení soukromí.";
@@ -1842,7 +1842,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Přesto odeslat";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Naše bezpečnostní číslo v aplikaci Signal:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Naše bezpečnostní číslo v Signalu:\n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Vaše bezpečnostní číslo s %@ se změnilo. Možná ho chcete ověřit.";
@@ -1866,13 +1866,13 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Příliš mnoho pokusů o autentifikaci. Prosím zkuste později.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Musíte nejdříve povolit zámek v iOS aplikaci Nastavení, před povolením aplikace zámek displeje.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Pokud chcete používat zámek displeje, nejprve zapněte kódový zámek v nastavení iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Musíte nejdříve povolit zámek v iOS aplikaci Nastavení, před povolením aplikace zámek displeje.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Pokud chcete používat zámek displeje, nejprve zapněte kódový zámek v nastavení iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Musíte nejdříve povolit zámek v iOS aplikaci Nastavení, před povolením aplikace zámek displeje.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Pokud chcete používat zámek displeje, nejprve zapněte kódový zámek v nastavení iOS.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autentifikovat pro otevření Signalu.";
@@ -1914,7 +1914,7 @@
 "SEND_BUTTON_TITLE" = "Zaslat";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
+"SEND_FAILED_NOTIFICATION_BODY" = "Vaše zpráva nemohla být odeslána.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Odeslání pozvánky selhalo, zkuste to později.";
@@ -1929,7 +1929,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "Pozvat kamaráda přes zabezpečenou SMS?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Chcete pozvat toto číslo do aplikace Signal:";
+"SEND_SMS_INVITE_TITLE" = "Chcete pozvat následující číslo do Signalu:";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "O aplikaci";
@@ -2028,7 +2028,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Přidat zablokovaného uživatele";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "V aplikaci Signal nemáte žádné kontakty.";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Nemáte žádné kontakty v Signalu.";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Žádné výsledky vyhledávání";
@@ -2037,7 +2037,7 @@
 "SETTINGS_BLOCK_LIST_TITLE" = "Blokovaní";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Vždy přeposílat hovory";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Vždy přenášet hovory";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Přenášet všechna volání přes server Signal, aby nedošlo k odhalení vaší IP adresy volanému. Povolením dojde ke zhoršení kvality hovoru.";
@@ -2055,7 +2055,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Smazat veškerá data";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Opravdu chcete smazat celou historii (zprávy, přílohy, volání atd.)? Tuto akci nelze vzít zpět.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Opravdu chcete smazat veškerou historii (zprávy, přílohy, volání atd.)? Tuto akci nelze vzít zpět.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Smazat vše";
@@ -2082,13 +2082,13 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Podmínky & Zásady ochrany osobních údajů";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Odeslat náhledy odkazu";
+"SETTINGS_LINK_PREVIEWS" = "Odeslat náhledy odkazů";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Náhledy jsou podporovány pro odkazy na Imgur, Instagram, Reddit, a YouTube.";
 
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Náhledy odkazů";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Nastavení";
@@ -2106,7 +2106,7 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Zobrazit jméno & číslo volajícího";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Zobrazit hovory v \"Poslední volané\" v aplikaci Telefon";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Zobrazit hovory v historii v aplikaci Telefon.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Zobrazit hovory v \"Poslední volané\"";
@@ -2217,13 +2217,13 @@
 "SHARE_EXTENSION_LOADING" = "Načítání...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Spustit aplikaci Signal pro registraci.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Otevřete Signal pro registraci.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Není registrováno";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Spustit aplikaci Signal pro registraci nebo aktualizaci.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Otevřete Signal pro registraci nebo aktualizaci.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Nepřipraveno";
@@ -2247,7 +2247,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Zobrazit konverzaci";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Pozval jsem tě do aplikace Signal! Zde je odkaz:";
+"SMS_INVITE_BODY" = "Zvu tě do aplikace Signal! Tady je odkaz:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Žádné";
@@ -2328,13 +2328,13 @@
 "UNLINK_ACTION" = "Odpojit";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Pokud bude toto zařízení odpojeno, nebude možné dále odesílat a přijímat zprávy.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Pokud bude zařízení odpojeno, nebude možné dále odesílat nebo přijímat zprávy.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Odpojit \"%@\"?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Aplikaci Signal se nepodařilo odpojit vaše zařízení.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signalu se nepodařilo odpojit vaše zařízení.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Nepojmenované zařízení";
@@ -2367,13 +2367,13 @@
 "UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Zapnout indikátory psaní";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Volitelné náhledy odkazu jsou nyní podporovány na některých populárních internetových stránkách.";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Volitelné náhledy odkazů jsou nyní podporovány na některých populárních internetových stránkách.";
 
 /* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Tuto funkci můžete kdykoliv zakázat nebo povolit v nastavení soukromí Signalu (Soukromí > Odeslat náhledy odkazů).";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Link Previews";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Náhledy odkazů";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Nyní můžete zvolit výchozí zvuky chatů, či zvuky pro každou konverzaci zvlášť. Zvuky u hovorů budou stejné, jako byly zvoleny u každého systémového kontaktu zvlášť.";
@@ -2388,7 +2388,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Nastavit váš profil";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Nyní můžete s vašimi přáteli v aplikaci Signal sdílet profilovou fotku a jméno.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Nyní můžete s vašimi přáteli na Signalu sdílet profilovou fotku a jméno.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Připraveni?";
@@ -2409,7 +2409,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Představujeme indikátory psaní";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Aplikace Signal nyní podporuje bezpečné video hovory. Začněte hovor jako obvykle, klepněte na tlačítko kamery a zamávejte na pozdrav.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal nyní podporuje bezpečné video hovory. Začněte hovor jako obvykle, klepněte na tlačítko kamery a zamávejte na pozdrav.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Ahoj, bezpečné videohovory!";

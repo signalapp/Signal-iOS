@@ -291,7 +291,9 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
         var collections = [PhotoCollection]()
         var collectionIds = Set<String>()
 
-        let processPHCollection: (PHCollection) -> Void = { (collection) in
+        let processPHCollection: ((collection: PHCollection, hideIfEmpty: Bool)) -> Void = { arg in
+            let (collection, hideIfEmpty) = arg
+
             // De-duplicate by id.
             let collectionId = collection.localIdentifier
             guard !collectionIds.contains(collectionId) else {
@@ -304,15 +306,14 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
                 return
             }
             let photoCollection = PhotoCollection(collection: assetCollection)
-            // Hide empty collections.
-            guard photoCollection.contents().assetCount > 0 else {
+            guard !hideIfEmpty || photoCollection.contents().assetCount > 0 else {
                 return
             }
 
             collections.append(photoCollection)
         }
-        let processPHAssetCollections: (PHFetchResult<PHAssetCollection>) -> Void = { (fetchResult) in
-            // undocumented constant
+        let processPHAssetCollections: ((fetchResult: PHFetchResult<PHAssetCollection>, hideIfEmpty: Bool)) -> Void = { arg in
+            let (fetchResult, hideIfEmpty) = arg
 
             fetchResult.enumerateObjects { (assetCollection, _, _) in
                 // We're already sorting albums by last-updated. "Recently Added" is mostly redundant
@@ -320,33 +321,40 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
                     return
                 }
 
+                // undocumented constant
                 let kRecentlyDeletedAlbumSubtype = PHAssetCollectionSubtype(rawValue: 1000000201)
                 guard assetCollection.assetCollectionSubtype != kRecentlyDeletedAlbumSubtype else {
                     return
                 }
 
-                processPHCollection(assetCollection)
+                processPHCollection((collection: assetCollection, hideIfEmpty: hideIfEmpty))
             }
         }
-        let processPHCollections: (PHFetchResult<PHCollection>) -> Void = { (fetchResult) in
+        let processPHCollections: ((fetchResult: PHFetchResult<PHCollection>, hideIfEmpty: Bool)) -> Void = { arg in
+            let (fetchResult, hideIfEmpty) = arg
+
             for index in 0..<fetchResult.count {
-                processPHCollection(fetchResult.object(at: index))
+                processPHCollection((collection: fetchResult.object(at: index), hideIfEmpty: hideIfEmpty))
             }
         }
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "endDate", ascending: true)]
 
         // Try to add "Camera Roll" first.
-        processPHAssetCollections(PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: fetchOptions))
+        processPHAssetCollections((fetchResult: PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: fetchOptions),
+                                   hideIfEmpty: false))
 
         // Favorites
-        processPHAssetCollections(PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: fetchOptions))
+        processPHAssetCollections((fetchResult: PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: fetchOptions),
+                                   hideIfEmpty: true))
 
         // Smart albums.
-        processPHAssetCollections(PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: fetchOptions))
+        processPHAssetCollections((fetchResult: PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: fetchOptions),
+                                   hideIfEmpty: true))
 
         // User-created albums.
-        processPHCollections(PHAssetCollection.fetchTopLevelUserCollections(with: fetchOptions))
+        processPHCollections((fetchResult: PHAssetCollection.fetchTopLevelUserCollections(with: fetchOptions),
+                              hideIfEmpty: true))
 
         return collections
     }

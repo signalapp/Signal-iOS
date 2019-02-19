@@ -18,7 +18,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSErrorUserInfoKey const ContactDiscoveryServiceErrorKey_Reason = @"ContactDiscoveryServiceErrorKey_Reason";
 NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.ContactDiscoveryService";
+
+NSError *ContactDiscoveryServiceErrorMakeWithReason(NSInteger code, NSString *reason)
+{
+    return [NSError errorWithDomain:ContactDiscoveryServiceErrorDomain
+                               code:code
+                           userInfo:@{ ContactDiscoveryServiceErrorKey_Reason : reason }];
+}
 
 @interface RemoteAttestationAuth ()
 
@@ -53,17 +61,21 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
 + (nullable RemoteAttestationKeys *)keysForKeyPair:(ECKeyPair *)keyPair
                              serverEphemeralPublic:(NSData *)serverEphemeralPublic
                                 serverStaticPublic:(NSData *)serverStaticPublic
+                                             error:(NSError **)error
 {
     if (!keyPair) {
-        OWSFailDebug(@"Missing keyPair");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"Missing keyPair");
         return nil;
     }
     if (serverEphemeralPublic.length < 1) {
-        OWSFailDebug(@"Invalid serverEphemeralPublic");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"Invalid serverEphemeralPublic");
         return nil;
     }
     if (serverStaticPublic.length < 1) {
-        OWSFailDebug(@"Invalid serverStaticPublic");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"Invalid serverStaticPublic");
         return nil;
     }
     RemoteAttestationKeys *keys = [RemoteAttestationKeys new];
@@ -71,6 +83,8 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
     keys.serverEphemeralPublic = serverEphemeralPublic;
     keys.serverStaticPublic = serverStaticPublic;
     if (![keys deriveKeys]) {
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"failed to derive keys");
         return nil;
     }
     return keys;
@@ -350,16 +364,22 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseJson) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSError *_Nullable error;
                 RemoteAttestation *_Nullable attestation = [self parseAttestationResponseJson:responseJson
                                                                                      response:task.response
                                                                                       keyPair:keyPair
                                                                                     enclaveId:enclaveId
-                                                                                         auth:auth];
+                                                                                         auth:auth
+                                                                                        error:&error];
 
                 if (!attestation) {
-                    NSError *error = [NSError errorWithDomain:ContactDiscoveryServiceErrorDomain
-                                                         code:ContactDiscoveryServiceErrorAttestationFailed
-                                                     userInfo:nil];
+                    if (!error) {
+                        OWSFailDebug(@"error was unexpectedly nil");
+                        error = ContactDiscoveryServiceErrorMakeWithReason(ContactDiscoveryServiceErrorAssertionError,
+                            @"failure when parsing attestation - no reason given");
+                    } else {
+                        OWSFailDebug(@"error with attestation: %@", error);
+                    }
                     error.isRetryable = NO;
                     failureHandler(error);
                     return;
@@ -378,6 +398,7 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
                                                      keyPair:(ECKeyPair *)keyPair
                                                    enclaveId:(NSString *)enclaveId
                                                         auth:(RemoteAttestationAuth *)auth
+                                                       error:(NSError **)error
 {
     OWSAssertDebug(responseJson);
     OWSAssertDebug(response);
@@ -385,78 +406,96 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
     OWSAssertDebug(enclaveId.length > 0);
 
     if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
-        OWSFailDebug(@"unexpected response type.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(ContactDiscoveryServiceErrorAssertionError, @"unexpected response type.");
         return nil;
     }
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     NSArray<NSHTTPCookie *> *cookies =
         [NSHTTPCookie cookiesWithResponseHeaderFields:httpResponse.allHeaderFields forURL:httpResponse.URL];
     if (cookies.count < 1) {
-        OWSFailDebug(@"couldn't parse cookie.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"couldn't parse cookie.");
         return nil;
     }
 
     if (![responseJson isKindOfClass:[NSDictionary class]]) {
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"invalid json response");
         return nil;
     }
     NSDictionary *responseDict = responseJson;
     NSData *_Nullable serverEphemeralPublic =
         [responseDict base64DataForKey:@"serverEphemeralPublic" expectedLength:32];
     if (!serverEphemeralPublic) {
-        OWSFailDebug(@"couldn't parse serverEphemeralPublic.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"couldn't parse serverEphemeralPublic.");
         return nil;
     }
     NSData *_Nullable serverStaticPublic = [responseDict base64DataForKey:@"serverStaticPublic" expectedLength:32];
     if (!serverStaticPublic) {
-        OWSFailDebug(@"couldn't parse serverStaticPublic.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"couldn't parse serverStaticPublic.");
         return nil;
     }
     NSData *_Nullable encryptedRequestId = [responseDict base64DataForKey:@"ciphertext"];
     if (!encryptedRequestId) {
-        OWSFailDebug(@"couldn't parse encryptedRequestId.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"couldn't parse encryptedRequestId.");
         return nil;
     }
     NSData *_Nullable encryptedRequestIv = [responseDict base64DataForKey:@"iv" expectedLength:12];
     if (!encryptedRequestIv) {
-        OWSFailDebug(@"couldn't parse encryptedRequestIv.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"couldn't parse encryptedRequestIv.");
         return nil;
     }
     NSData *_Nullable encryptedRequestTag = [responseDict base64DataForKey:@"tag" expectedLength:16];
     if (!encryptedRequestTag) {
-        OWSFailDebug(@"couldn't parse encryptedRequestTag.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"couldn't parse encryptedRequestTag.");
         return nil;
     }
     NSData *_Nullable quoteData = [responseDict base64DataForKey:@"quote"];
     if (!quoteData) {
-        OWSFailDebug(@"couldn't parse quote data.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"couldn't parse quote data.");
         return nil;
     }
     NSString *_Nullable signatureBody = [responseDict stringForKey:@"signatureBody"];
     if (![signatureBody isKindOfClass:[NSString class]]) {
-        OWSFailDebug(@"couldn't parse signatureBody.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"couldn't parse signatureBody.");
         return nil;
     }
     NSData *_Nullable signature = [responseDict base64DataForKey:@"signature"];
     if (!signature) {
-        OWSFailDebug(@"couldn't parse signature.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"couldn't parse signature.");
         return nil;
     }
     NSString *_Nullable encodedCertificates = [responseDict stringForKey:@"certificates"];
     if (![encodedCertificates isKindOfClass:[NSString class]]) {
-        OWSFailDebug(@"couldn't parse encodedCertificates.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"couldn't parse encodedCertificates.");
         return nil;
     }
     NSString *_Nullable certificates = [encodedCertificates stringByRemovingPercentEncoding];
     if (!certificates) {
-        OWSFailDebug(@"couldn't parse certificates.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"couldn't parse certificates.");
         return nil;
     }
 
     RemoteAttestationKeys *_Nullable keys = [RemoteAttestationKeys keysForKeyPair:keyPair
                                                             serverEphemeralPublic:serverEphemeralPublic
-                                                               serverStaticPublic:serverStaticPublic];
-    if (!keys) {
-        OWSFailDebug(@"couldn't derive keys.");
+                                                               serverStaticPublic:serverStaticPublic
+                                                                            error:error];
+    if (!keys || *error != nil) {
+        if (*error == nil) {
+            OWSFailDebug(@"missing error specifics");
+            *error = ContactDiscoveryServiceErrorMakeWithReason(
+                ContactDiscoveryServiceErrorAssertionError, @"Couldn't derive keys. No reason given");
+        }
         return nil;
     }
 
@@ -470,20 +509,28 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
                                      encryptedRequestTag:encryptedRequestTag
                                                     keys:keys];
     if (!requestId) {
-        OWSFailDebug(@"couldn't decrypt request id.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"couldn't decrypt request id.");
         return nil;
     }
 
     if (![self verifyServerQuote:quote keys:keys enclaveId:enclaveId]) {
-        OWSFailDebug(@"couldn't verify quote.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAttestationFailed, @"couldn't verify quote.");
         return nil;
     }
 
     if (![self verifyIasSignatureWithCertificates:certificates
                                     signatureBody:signatureBody
                                         signature:signature
-                                        quoteData:quoteData]) {
-        OWSFailDebug(@"couldn't verify ias signature.");
+                                        quoteData:quoteData
+                                            error:error]) {
+
+        if (*error == nil) {
+            OWSFailDebug(@"missing error specifics");
+            *error = ContactDiscoveryServiceErrorMakeWithReason(ContactDiscoveryServiceErrorAssertionError,
+                @"verifyIasSignatureWithCertificates failed. No reason given");
+        }
         return nil;
     }
 
@@ -503,61 +550,71 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
                              signatureBody:(NSString *)signatureBody
                                  signature:(NSData *)signature
                                  quoteData:(NSData *)quoteData
+                                     error:(NSError **)error
 {
     OWSAssertDebug(certificates.length > 0);
     OWSAssertDebug(signatureBody.length > 0);
     OWSAssertDebug(signature.length > 0);
     OWSAssertDebug(quoteData);
 
-    NSError *error;
+    NSError *signingError;
     CDSSigningCertificate *_Nullable certificate =
-        [CDSSigningCertificate parseCertificateFromPem:certificates error:&error];
-    if (error) {
-        OWSFailDebug(@"error when parsing signing certificate. %@", error.localizedDescription);
+        [CDSSigningCertificate parseCertificateFromPem:certificates error:&signingError];
+    if (signingError) {
+        *error = signingError;
         return NO;
     }
 
     if (!certificate) {
-        OWSFailDebug(@"could not parse signing certificate.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"could not parse signing certificate.");
         return NO;
     }
     if (![certificate verifySignatureOfBody:signatureBody signature:signature]) {
-        OWSFailDebug(@"could not verify signature.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAttestationFailed, @"could not verify signature.");
         return NO;
     }
 
     SignatureBodyEntity *_Nullable signatureBodyEntity = [self parseSignatureBodyEntity:signatureBody];
     if (!signatureBodyEntity) {
-        OWSFailDebug(@"could not parse signature body.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"could not parse signature body.");
         return NO;
     }
 
     // Compare the first N bytes of the quote data with the signed quote body.
     const NSUInteger kQuoteBodyComparisonLength = 432;
     if (signatureBodyEntity.isvEnclaveQuoteBody.length < kQuoteBodyComparisonLength) {
-        OWSFailDebug(@"isvEnclaveQuoteBody has unexpected length.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"isvEnclaveQuoteBody has unexpected length.");
         return NO;
     }
     // NOTE: This version is separate from and does _NOT_ match the CDS quote version.
     const NSUInteger kSignatureBodyVersion = 3;
     if (![signatureBodyEntity.version isEqual:@(kSignatureBodyVersion)]) {
-        OWSFailDebug(@"signatureBodyEntity has unexpected version.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"signatureBodyEntity has unexpected version.");
         return NO;
     }
     if (quoteData.length < kQuoteBodyComparisonLength) {
-        OWSFailDebug(@"quoteData has unexpected length.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"quoteData has unexpected length.");
         return NO;
     }
     NSData *isvEnclaveQuoteBodyForComparison =
         [signatureBodyEntity.isvEnclaveQuoteBody subdataWithRange:NSMakeRange(0, kQuoteBodyComparisonLength)];
     NSData *quoteDataForComparison = [quoteData subdataWithRange:NSMakeRange(0, kQuoteBodyComparisonLength)];
     if (![isvEnclaveQuoteBodyForComparison ows_constantTimeIsEqualToData:quoteDataForComparison]) {
-        OWSFailDebug(@"isvEnclaveQuoteBody and quoteData do not match.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAttestationFailed, @"isvEnclaveQuoteBody and quoteData do not match.");
         return NO;
     }
 
     if (![@"OK" isEqualToString:signatureBodyEntity.isvEnclaveQuoteStatus]) {
-        OWSFailDebug(@"invalid isvEnclaveQuoteStatus: %@.", signatureBodyEntity.isvEnclaveQuoteStatus);
+        NSString *reason =
+            [NSString stringWithFormat:@"invalid isvEnclaveQuoteStatus: %@", signatureBodyEntity.isvEnclaveQuoteStatus];
+        *error = ContactDiscoveryServiceErrorMakeWithReason(ContactDiscoveryServiceErrorAttestationFailed, reason);
         return NO;
     }
 
@@ -567,7 +624,8 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
     [dateFormatter setDateFormat:@"yyy-MM-dd'T'HH:mm:ss.SSSSSS"];
     NSDate *timestampDate = [dateFormatter dateFromString:signatureBodyEntity.timestamp];
     if (!timestampDate) {
-        OWSFailDebug(@"could not parse signature body timestamp.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAssertionError, @"could not parse signature body timestamp.");
         return NO;
     }
 
@@ -581,7 +639,8 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
     BOOL isExpired = [now isAfterDate:timestampDatePlus1Day];
 
     if (isExpired) {
-        OWSFailDebug(@"Signature is expired.");
+        *error = ContactDiscoveryServiceErrorMakeWithReason(
+            ContactDiscoveryServiceErrorAttestationFailed, @"Signature is expired.");
         return NO;
     }
 

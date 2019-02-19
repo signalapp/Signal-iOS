@@ -321,16 +321,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Adgang til mikrofonen er påkrævet";
 
 /* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Indkommende opkald";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Ring op";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Ubesvaret opkald, fordi opkalderens sikkerhedsnummer er ændret.";
 
 /* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Ubesvaret opkald";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Intet svar";
@@ -1395,7 +1395,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nået det maksimale antal enheder, du i øjeblikket kan tilkoble til din konto. Fjern en enhed, og prøv igen.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "Du modtager ikke underretninger for dæmpede samtaler.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Du modtager ikke meddelelser for dæmpede samtaler.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Spring over";
@@ -1440,7 +1440,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "Medlem";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ til %@";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Navngiv gruppesamtalen";
@@ -1662,7 +1662,7 @@
 "PUSH_MANAGER_REPLY" = "Svar";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Genregistreret til push-notifikationer.";
+"PUSH_REGISTER_SUCCESS" = "Genregistreret til push-meddelelser.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "Push meddelelser";
@@ -1731,7 +1731,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Du har forsøgt for ofte. Vent venligst et minut.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Kunne ikke genregistrere til push-notifikationer.";
+"REGISTRATION_BODY" = "Kunne ikke genregistrere til push-meddelelser.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landekode";
@@ -1914,7 +1914,7 @@
 "SEND_BUTTON_TITLE" = "Send";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
+"SEND_FAILED_NOTIFICATION_BODY" = "Din besked kunne ikke sendes.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Kunne ikke sende invitation. Prøv igen senere.";
@@ -2094,10 +2094,10 @@
 "SETTINGS_NAV_BAR_TITLE" = "Indstillinger";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Opkalds- og meddelelsesnotifikationer kan vises, mens telefonen er låst. Du vil muligvis begrænse, hvad der vises i disse notifikationer.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Opkalds- og besked-meddelelser kan vises, mens telefonen er låst. Du vil muligvis begrænse, hvad der vises i disse meddelelser.";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notifikations Indhold ";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Meddelelses indhold";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Meddelelser";
@@ -2130,7 +2130,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Skærmlås timeout";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lås op Signals skærmen ved hjælp af Touch ID, Face ID eller din iOS-enhedens adgangskode. Du kan stadig svare på indgående opkald og modtage meddelelsesnotifikationer, mens Skærmlås er aktiveret. Signal's underretningsindstillinger giver dig mulighed for at tilpasse de oplysninger, der vises.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lås op Signals skærm ved hjælp af Touch ID, Face ID eller din iOS-enhedens adgangskode. Du kan stadig svare på indgående opkald og modtage besked-meddelelser, mens Skærmlås er aktiveret. Signals meddelelsesindstillinger giver dig mulighed for at tilpasse de oplysninger, der vises.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Skærmlås";
@@ -2148,7 +2148,7 @@
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS opkaldsintegration viser Signal-opkald på din låseskærm og i systemets opkaldshistorik. Du kan eventuelt vise din kontaktpersons navn og nummer. Hvis iCloud er aktiveret, deles denne opkaldshistorik med Apple.";
 
 /* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "Notifikationer";
+"SETTINGS_SECTION_NOTIFICATIONS" = "Meddelelser";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Lyde";
@@ -2379,7 +2379,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Du kan nu vælge standard og samtale-specifikke meddelelseslyde, og opkald vil respektere den ringetone, du har valgt for hver systemkontakt.";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Gennemse notifikationsindstillinger";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Gennemse meddelelsesindstillinger";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Opdater opkalds- og beskedlyde";

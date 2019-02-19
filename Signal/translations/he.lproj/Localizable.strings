@@ -321,16 +321,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "נדרשת גישה למיקרופון";
 
 /* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ שיחה נכנסת";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "חייג";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ שיחה לא נענתה מאחר שמספר הביטחון של המתקשר השתנה.";
 
 /* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ שיחה שלא נענתה";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "אין מענה";
@@ -1440,7 +1440,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "חבר קבוצה";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ אל %@";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "תן שם לשיחת קבוצה זו";
@@ -1914,7 +1914,7 @@
 "SEND_BUTTON_TITLE" = "שלח";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
+"SEND_FAILED_NOTIFICATION_BODY" = "ההודעה שלך נכשלה להישלח.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "שליחת ההזמנה נכשלה, אנא נסה שוב מאוחר יותר.";

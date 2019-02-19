@@ -137,7 +137,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     @objc
     public override init() {
-        if #available(iOS 10, *) {
+        let userNotificationsFeatureEnabled = false
+        if userNotificationsFeatureEnabled, #available(iOS 10, *) {
             self.adaptee = UserNotificationPresenterAdaptee()
         } else {
             self.adaptee = LegacyNotificationPresenterAdaptee()
@@ -613,15 +614,7 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
 
-        return Promise { resolver in
-            self.dbConnection.asyncReadWrite({ transaction in
-                thread.markAllAsRead(with: transaction)
-            },
-                                        completionBlock: {
-                                            self.notificationPresenter.cancelNotifications(threadId: threadId)
-                                            resolver.fulfill(())
-            })
-        }
+        return markAsRead(thread: thread)
     }
 
     func reply(userInfo: [AnyHashable: Any], replyText: String) throws -> Promise<Void> {
@@ -633,12 +626,16 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
 
-        return ThreadUtil.sendMessageNonDurably(text: replyText,
-                                                thread: thread,
-                                                quotedReplyModel: nil,
-                                                messageSender: messageSender).recover { error in
-                                                    Logger.warn("Failed to send reply message from notification with error: \(error)")
-                                                    self.notificationPresenter.notifyForFailedSend(inThread: thread)
+        return markAsRead(thread: thread).then { () -> Promise<Void> in
+            let sendPromise = ThreadUtil.sendMessageNonDurably(text: replyText,
+                                                               thread: thread,
+                                                               quotedReplyModel: nil,
+                                                               messageSender: self.messageSender)
+
+            return sendPromise.recover { error in
+                Logger.warn("Failed to send reply message from notification with error: \(error)")
+                self.notificationPresenter.notifyForFailedSend(inThread: thread)
+            }
         }
     }
 
@@ -653,6 +650,12 @@ class NotificationActionHandler {
         let shouldAnimate = UIApplication.shared.applicationState == .active
         signalApp.presentConversation(forThreadId: threadId, animated: shouldAnimate)
         return Promise.value(())
+    }
+
+    private func markAsRead(thread: TSThread) -> Promise<Void> {
+        return dbConnection.readWritePromise { transaction in
+            thread.markAllAsRead(with: transaction)
+        }
     }
 }
 
