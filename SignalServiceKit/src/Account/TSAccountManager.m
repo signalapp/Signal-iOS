@@ -46,11 +46,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 @property (atomic, readonly) BOOL isRegistered;
 
-// This property is exposed publicly for testing purposes only.
-#ifndef DEBUG
-@property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
-#endif
-
 @property (nonatomic, nullable) NSString *cachedLocalNumber;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 

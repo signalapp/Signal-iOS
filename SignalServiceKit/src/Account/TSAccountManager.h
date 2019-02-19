@@ -27,12 +27,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 @interface TSAccountManager : NSObject
 
-// This property is exposed for testing purposes only.
-#ifdef DEBUG
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
-#endif
-
-- (void)setPhoneNumberAwaitingVerification:(NSString *_Nullable)phoneNumberAwaitingVerification;
 
 #pragma mark - Initializers
 
