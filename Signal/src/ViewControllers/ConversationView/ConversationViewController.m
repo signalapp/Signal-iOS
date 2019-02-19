@@ -108,6 +108,25 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
+// We use snapshots to ensure that the view has a consistent
+// representation of view model state which is not updated
+// when the view is not observing view model changes.
+@interface ConversationSnapshot : NSObject
+
+@property (nonatomic) NSArray<id<ConversationViewItem>> *viewItems;
+@property (nonatomic) ThreadDynamicInteractions *dynamicInteractions;
+@property (nonatomic) BOOL canLoadMoreItems;
+
+@end
+
+#pragma mark -
+
+@implementation ConversationSnapshot
+
+@end
+
+#pragma mark -
+
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
     ContactShareApprovalViewControllerDelegate,
     AVAudioPlayerDelegate,
@@ -141,6 +160,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
+@property (nonatomic, readonly) ConversationSnapshot *conversationSnapshot;
 
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
 @property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
@@ -486,6 +506,8 @@ typedef enum : NSUInteger {
     _conversationViewModel =
         [[ConversationViewModel alloc] initWithThread:thread focusMessageIdOnOpen:focusMessageId delegate:self];
 
+    [self updateConversationSnapshot];
+
     [self updateShouldObserveVMUpdates];
 
     self.reloadTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
@@ -753,12 +775,12 @@ typedef enum : NSUInteger {
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
 {
-    return self.conversationViewModel.viewItems;
+    return self.conversationSnapshot.viewItems;
 }
 
 - (ThreadDynamicInteractions *)dynamicInteractions
 {
-    return self.conversationViewModel.dynamicInteractions;
+    return self.conversationSnapshot.dynamicInteractions;
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
@@ -1697,7 +1719,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertDebug(self.conversationViewModel);
 
-    self.showLoadMoreHeader = self.conversationViewModel.canLoadMoreItems;
+    self.showLoadMoreHeader = self.conversationSnapshot.canLoadMoreItems;
 }
 
 - (void)setShowLoadMoreHeader:(BOOL)showLoadMoreHeader
@@ -4138,6 +4160,7 @@ typedef enum : NSUInteger {
     if (self.shouldObserveVMUpdates) {
         OWSLogVerbose(@"resume observation of view model.");
 
+        [self updateConversationSnapshot];
         [self resetContentAndLayout];
         [self updateBackButtonUnreadCount];
         [self updateNavigationBarSubtitleLabel];
@@ -4612,6 +4635,7 @@ typedef enum : NSUInteger {
         return;
     }
 
+    [self updateConversationSnapshot];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
 
@@ -4907,6 +4931,17 @@ typedef enum : NSUInteger {
         safeAreaInsets = self.view.safeAreaInsets;
     }
     [self.inputToolbar updateLayoutWithSafeAreaInsets:safeAreaInsets];
+}
+
+#pragma mark - Conversation Snapshot
+
+- (void)updateConversationSnapshot
+{
+    ConversationSnapshot *conversationSnapshot = [ConversationSnapshot new];
+    conversationSnapshot.viewItems = self.conversationViewModel.viewItems;
+    conversationSnapshot.dynamicInteractions = self.conversationViewModel.dynamicInteractions;
+    conversationSnapshot.canLoadMoreItems = self.conversationViewModel.canLoadMoreItems;
+    _conversationSnapshot = conversationSnapshot;
 }
 
 @end
