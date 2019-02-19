@@ -273,6 +273,10 @@ public class OnboardingController: NSObject {
 
     public private(set) var captchaToken: String?
 
+    public private(set) var verificationCode: String?
+
+    public private(set) var twoFAPin: String?
+
     @objc
     public func update(countryState: OnboardingCountryState) {
         AssertIsOnMainThread()
@@ -292,6 +296,20 @@ public class OnboardingController: NSObject {
         AssertIsOnMainThread()
 
         self.captchaToken = captchaToken
+    }
+
+    @objc
+    public func update(verificationCode: String) {
+        AssertIsOnMainThread()
+
+        self.verificationCode = verificationCode
+    }
+
+    @objc
+    public func update(twoFAPin: String) {
+        AssertIsOnMainThread()
+
+        self.twoFAPin = twoFAPin
     }
 
     // MARK: - Debug
@@ -405,14 +423,22 @@ public class OnboardingController: NSObject {
 
     // MARK: - Verification
 
+    public enum VerificationOutcome {
+        case success
+        case invalidVerificationCode
+        case invalid2FAPin
+    }
+
     public func tryToVerify(fromViewController: UIViewController,
-                            verificationCode: String,
-                            pin: String?,
-                            isInvalidCodeCallback : @escaping () -> Void) {
+                            completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
         guard let phoneNumber = phoneNumber else {
             owsFailDebug("Missing phoneNumber.")
+            return
+        }
+        guard let verificationCode = verificationCode else {
+            completion(.invalidVerificationCode)
             return
         }
 
@@ -421,10 +447,11 @@ public class OnboardingController: NSObject {
         // TODO: We could skip this in production.
         tsAccountManager.phoneNumberAwaitingVerification = phoneNumber.e164
 
+        let twoFAPin = self.twoFAPin
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: true) { (modal) in
 
-                                                        self.accountManager.register(verificationCode: verificationCode, pin: pin)
+                                                        self.accountManager.register(verificationCode: verificationCode, pin: twoFAPin)
                                                             .done { (_) in
                                                                 DispatchQueue.main.async {
                                                                     modal.dismiss(completion: {
@@ -438,7 +465,7 @@ public class OnboardingController: NSObject {
                                                                     modal.dismiss(completion: {
                                                                         self.verificationFailed(fromViewController: fromViewController,
                                                                                                 error: error as NSError,
-                                                                                                isInvalidCodeCallback: isInvalidCodeCallback)
+                                                                                                completion: completion)
                                                                     })
                                                                 }
                                                             }).retainUntilComplete()
@@ -446,7 +473,7 @@ public class OnboardingController: NSObject {
     }
 
     private func verificationFailed(fromViewController: UIViewController, error: NSError,
-                                    isInvalidCodeCallback : @escaping () -> Void) {
+                                    completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
         if error.domain == OWSSignalServiceKitErrorDomain &&
@@ -454,11 +481,13 @@ public class OnboardingController: NSObject {
 
             Logger.info("Missing 2FA PIN.")
 
+            completion(.invalid2FAPin)
+
             onboardingDidRequire2FAPin(viewController: fromViewController)
         } else {
             if error.domain == OWSSignalServiceKitErrorDomain &&
                 error.code == OWSErrorCode.userError.rawValue {
-                isInvalidCodeCallback()
+                completion(.invalidVerificationCode)
             }
 
             Logger.verbose("error: \(error.domain) \(error.code)")

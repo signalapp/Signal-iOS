@@ -103,7 +103,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         let validationWarningRow = UIView()
         validationWarningRow.addSubview(validationWarningLabel)
         validationWarningLabel.autoPinHeightToSuperview()
-        validationWarningLabel.autoPinEdge(toSuperviewEdge: .trailing)
+        validationWarningLabel.autoPinEdge(toSuperviewEdge: .leading)
 
         // TODO: Finalize copy.
 

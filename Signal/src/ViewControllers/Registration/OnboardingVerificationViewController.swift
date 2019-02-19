@@ -251,7 +251,6 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
     private var codeState = CodeState.sent
 
     private var titleLabel: UILabel?
-    private let phoneNumberTextField = UITextField()
     private let onboardingCodeView = OnboardingCodeView()
     private var codeStateLink: OWSFlatButton?
     private let errorLabel = UILabel()
@@ -477,13 +476,18 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         Logger.info("")
 
         guard onboardingCodeView.isComplete else {
+            self.setHasInvalidCode(true)
             return
         }
 
         setHasInvalidCode(false)
 
-        onboardingController.tryToVerify(fromViewController: self, verificationCode: onboardingCodeView.verificationCode, pin: nil, isInvalidCodeCallback: {
-            self.setHasInvalidCode(true)
+        onboardingController.update(verificationCode: onboardingCodeView.verificationCode)
+
+        onboardingController.tryToVerify(fromViewController: self, completion: { (outcome) in
+            if outcome == .invalidVerificationCode {
+                self.setHasInvalidCode(true)
+            }
         })
     }
 
