@@ -90,18 +90,79 @@ const NSUInteger kMax2FAPinLength = 16;
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
     NSUInteger cursorPositionAfterChange = MIN(left.length + center.length, textAfterChange.length);
 
-    NSString *textAfterReformat =
-        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange
-                                                     withSpecifiedCountryCodeString:countryCode];
+    NSString *textToFormat = textAfterChange;
+    NSString *formattedText = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textToFormat
+                                                                           withSpecifiedCountryCodeString:countryCode];
     NSUInteger cursorPositionAfterReformat = [PhoneNumberUtil translateCursorPosition:cursorPositionAfterChange
-                                                                                 from:textAfterChange
-                                                                                   to:textAfterReformat
+                                                                                 from:textToFormat
+                                                                                   to:formattedText
                                                                     stickingRightward:isJustDeletion];
 
-    textField.text = textAfterReformat;
+    // PhoneNumber's formatting logic requires a calling code.
+    //
+    // If we want to edit the phone number separately from the calling code
+    // (e.g. in the new onboarding views), we need to temporarily prepend the
+    // calling code during formatting, then remove it afterward.  This is
+    // non-trivial since the calling code itself can be affected by the
+    // formatting.  Additionally, we need to ensure that this prepend/remove
+    // doesn't affect the cursor position.
+    BOOL hasPrefix = prefix.length > 0;
+    if (hasPrefix) {
+        // Prepend the prefix.
+        NSString *textToFormatWithPrefix = [prefix stringByAppendingString:textAfterChange];
+        // Format with the prefix.
+        NSString *formattedTextWithPrefix =
+            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textToFormatWithPrefix
+                                                         withSpecifiedCountryCodeString:countryCode];
+        // Determine the new cursor position with the prefix.
+        NSUInteger cursorPositionWithPrefix = [PhoneNumberUtil translateCursorPosition:cursorPositionAfterChange
+                                                                                  from:textToFormat
+                                                                                    to:formattedTextWithPrefix
+                                                                     stickingRightward:isJustDeletion];
+        // Try to determine how much of the formatted text is derived
+        // from the prefix.
+        NSString *_Nullable formattedPrefix =
+            [self findFormattedPrefixForPrefix:prefix formattedText:formattedTextWithPrefix];
+        if (formattedPrefix && cursorPositionWithPrefix >= formattedPrefix.length) {
+            // Remove the prefix from the formatted text.
+            formattedText = [formattedTextWithPrefix substringFromIndex:formattedPrefix.length];
+            // Adjust the cursor position accordingly.
+            cursorPositionAfterReformat = cursorPositionWithPrefix - formattedPrefix.length;
+        }
+    }
+
+    textField.text = formattedText;
     UITextPosition *pos =
         [textField positionFromPosition:textField.beginningOfDocument offset:(NSInteger)cursorPositionAfterReformat];
     [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];
+}
+
++ (nullable NSString *)findFormattedPrefixForPrefix:(NSString *)prefix formattedText:(NSString *)formattedText
+{
+    NSCharacterSet *characterSet = [[NSCharacterSet characterSetWithCharactersInString:@"+0123456789"] invertedSet];
+    NSString *filteredPrefix =
+        [[prefix componentsSeparatedByCharactersInSet:characterSet] componentsJoinedByString:@""];
+    NSString *filteredText =
+        [[formattedText componentsSeparatedByCharactersInSet:characterSet] componentsJoinedByString:@""];
+    if (filteredPrefix.length < 1 || filteredText.length < 1 || ![filteredText hasPrefix:filteredPrefix]) {
+        OWSFailDebug(@"Invalid prefix: '%@' for formatted text: '%@'", prefix, formattedText);
+        return nil;
+    }
+    NSString *filteredTextWithoutPrefix = [filteredText substringFromIndex:filteredPrefix.length];
+    // To find the "formatted prefix", try to find the shortest "tail" of formattedText
+    // which after being filtered is equivalent to the "filtered text" - "filter prefix".
+    // The "formatted prefix" is the "head" that corresponds to that "tail".
+    for (NSUInteger substringLength = 1; substringLength < formattedText.length - 1; substringLength++) {
+        NSUInteger pivot = formattedText.length - substringLength;
+        NSString *head = [formattedText substringToIndex:pivot];
+        NSString *tail = [formattedText substringFromIndex:pivot];
+        NSString *filteredTail =
+            [[tail componentsSeparatedByCharactersInSet:characterSet] componentsJoinedByString:@""];
+        if ([filteredTail isEqualToString:filteredTextWithoutPrefix]) {
+            return head;
+        }
+    }
+    return nil;
 }
 
 + (void)ows2FAPINTextField:(UITextField *)textField

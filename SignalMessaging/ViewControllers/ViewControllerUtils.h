@@ -22,6 +22,14 @@ extern NSString *const TappedStatusBarNotification;
                 replacementString:(NSString *)insertionText
                       countryCode:(NSString *)countryCode;
 
+// If non-null, the prefix should represent the calling code
+// prefix for the number, e.g. +1.
++ (void)phoneNumberTextField:(UITextField *)textField
+    shouldChangeCharactersInRange:(NSRange)range
+                replacementString:(NSString *)insertionText
+                      countryCode:(NSString *)countryCode
+                           prefix:(nullable NSString *)prefix;
+
 + (void)ows2FAPINTextField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText;

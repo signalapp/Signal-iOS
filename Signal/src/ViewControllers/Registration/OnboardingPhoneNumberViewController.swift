@@ -103,7 +103,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         let validationWarningRow = UIView()
         validationWarningRow.addSubview(validationWarningLabel)
         validationWarningLabel.autoPinHeightToSuperview()
-        validationWarningLabel.autoPinEdge(toSuperviewEdge: .leading)
+        validationWarningLabel.autoPinEdge(toSuperviewEdge: .trailing)
 
         let nextButton = self.button(title: NSLocalizedString("BUTTON_NEXT",
                                                                 comment: "Label for the 'next' button."),
@@ -216,6 +216,9 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         phoneNumberTextField.isEnabled = false
 
         updateViewState()
+
+        // Trigger the formatting logic with a no-op edit.
+        _ = textField(phoneNumberTextField, shouldChangeCharactersIn: NSRange(location: 0, length: 0), replacementString: "")
     }
 
     // MARK: -
@@ -250,6 +253,9 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         }
 
         updateViewState()
+
+        // Trigger the formatting logic with a no-op edit.
+        _ = textField(phoneNumberTextField, shouldChangeCharactersIn: NSRange(location: 0, length: 0), replacementString: "")
     }
 
     private func updateViewState() {
@@ -365,8 +371,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
 extension OnboardingPhoneNumberViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        // TODO: Fix auto-format of phone numbers.
-        ViewControllerUtils.phoneNumber(textField, shouldChangeCharactersIn: range, replacementString: string, countryCode: countryCode)
+        ViewControllerUtils.phoneNumber(textField, shouldChangeCharactersIn: range, replacementString: string, countryCode: countryCode, prefix: callingCode)
 
         isPhoneNumberInvalid = false
         updateValidationWarnings()
