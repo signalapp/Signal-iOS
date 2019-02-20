@@ -178,27 +178,6 @@ public class ProxiedContentAssetRequest: NSObject {
         super.init()
     }
 
-    static let k1MB: UInt = 1024 * 1024
-    static let k500KB: UInt = 500 * 1024
-    static let k100KB: UInt = 100 * 1024
-    static let k50KB: UInt = 50 * 1024
-    static let k10KB: UInt = 10 * 1024
-    static let k1KB: UInt = 1 * 1024
-
-    // Returns the possible segment sizes in
-    // largest-to-smallest order.
-    private static var possibleSegmentSizes: [UInt] {
-        AssertIsOnMainThread()
-
-        return [k1MB, k500KB, k100KB, k50KB, k10KB, k1KB ]
-    }
-
-    fileprivate static var smallestPossibleSegmentSize: UInt {
-        AssertIsOnMainThread()
-
-        return k1KB
-    }
-
     private func segmentSize() -> UInt {
         AssertIsOnMainThread()
 
@@ -209,7 +188,13 @@ public class ProxiedContentAssetRequest: NSObject {
             return 0
         }
 
-        for segmentSize in ProxiedContentAssetRequest.possibleSegmentSizes {
+        let k1MB: UInt = 1024 * 1024
+        let k500KB: UInt = 500 * 1024
+        let k100KB: UInt = 100 * 1024
+        let k50KB: UInt = 50 * 1024
+        let k10KB: UInt = 10 * 1024
+        let k1KB: UInt = 1 * 1024
+        for segmentSize in [k1MB, k500KB, k100KB, k50KB, k10KB, k1KB ] {
             if contentLength >= segmentSize {
                 return segmentSize
             }
