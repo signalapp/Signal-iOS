@@ -16,24 +16,60 @@ NSString *const ThemeDidChangeNotification = @"ThemeDidChangeNotification";
 NSString *const ThemeCollection = @"ThemeCollection";
 NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
+
+@interface Theme ()
+
+@property (nonatomic) NSNumber *isDarkThemeEnabledNumber;
+
+@end
+
 @implementation Theme
+
++ (instancetype)sharedInstance
+{
+    static dispatch_once_t onceToken;
+    static Theme *instance;
+    dispatch_once(&onceToken, ^{
+        instance = [Theme new];
+    });
+
+    return instance;
+}
 
 + (BOOL)isDarkThemeEnabled
 {
+    return [self.sharedInstance isDarkThemeEnabled];
+}
+
+- (BOOL)isDarkThemeEnabled
+{
+    OWSAssertIsOnMainThread();
+
     if (!CurrentAppContext().isMainApp) {
         // Ignore theme in app extensions.
         return NO;
     }
 
-    return [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:ThemeKeyThemeEnabled
-                                                           inCollection:ThemeCollection
-                                                           defaultValue:NO];
+    if (self.isDarkThemeEnabledNumber == nil) {
+        BOOL isDarkThemeEnabled = [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:ThemeKeyThemeEnabled
+                                                                                  inCollection:ThemeCollection
+                                                                                  defaultValue:NO];
+        self.isDarkThemeEnabledNumber = @(isDarkThemeEnabled);
+    }
+
+    return self.isDarkThemeEnabledNumber.boolValue;
 }
 
 + (void)setIsDarkThemeEnabled:(BOOL)value
 {
+    return [self.sharedInstance setIsDarkThemeEnabled:value];
+}
+
+- (void)setIsDarkThemeEnabled:(BOOL)value
+{
     OWSAssertIsOnMainThread();
 
+    self.isDarkThemeEnabledNumber = @(value);
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection setBool:value
                                                             forKey:ThemeKeyThemeEnabled
                                                       inCollection:ThemeCollection];
