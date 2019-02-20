@@ -76,8 +76,6 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 
 - (void)conversationViewModelDidDeleteMostRecentMenuActionsViewItem;
 
-- (BOOL)isObservingVMUpdates;
-
 - (ConversationStyle *)conversationStyle;
 
 @end
