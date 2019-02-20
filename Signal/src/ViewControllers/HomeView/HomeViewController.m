@@ -7,7 +7,6 @@
 #import "AppSettingsViewController.h"
 #import "HomeViewCell.h"
 #import "NewContactThreadViewController.h"
-#import "OWS2FARegistrationViewController.h"
 #import "OWSNavigationController.h"
 #import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"

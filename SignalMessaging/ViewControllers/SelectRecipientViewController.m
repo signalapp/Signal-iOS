@@ -414,8 +414,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 #pragma mark - UITextFieldDelegate
 
-// TODO: This logic resides in both RegistrationViewController and here.
-//       We should refactor it out into a utility function.
 - (BOOL)textField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText

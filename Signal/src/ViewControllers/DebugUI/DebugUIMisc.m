@@ -7,7 +7,6 @@
 #import "OWSBackup.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
-#import "RegistrationViewController.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AxolotlKit/PreKeyBundle.h>
@@ -168,7 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [Environment.shared.preferences unsetRecordedAPNSTokens];
 
-    RegistrationViewController *viewController = [RegistrationViewController new];
+    UIViewController *viewController = [[OnboardingController new] initialViewController];
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:viewController];
     navigationController.navigationBarHidden = YES;

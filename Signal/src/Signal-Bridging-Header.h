@@ -41,7 +41,6 @@
 #import "PinEntryView.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
-#import "RegistrationViewController.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"
 #import "UIViewController+Permissions.h"
