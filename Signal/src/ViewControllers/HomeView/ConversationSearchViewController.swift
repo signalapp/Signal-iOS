@@ -73,8 +73,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier())
 
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(yapDatabaseModified),
-                                               name: NSNotification.Name.YapDatabaseModified,
+                                               selector: #selector(uiDatabaseModified),
+                                               name: .OWSUIDatabaseConnectionDidUpdate,
                                                object: OWSPrimaryStorage.shared().dbNotificationObject)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
@@ -101,7 +101,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         NotificationCenter.default.removeObserver(self)
     }
 
-    @objc internal func yapDatabaseModified(notification: NSNotification) {
+    @objc internal func uiDatabaseModified(notification: NSNotification) {
         AssertIsOnMainThread()
 
         refreshSearchResults()

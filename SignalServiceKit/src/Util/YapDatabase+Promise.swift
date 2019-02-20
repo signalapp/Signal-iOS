@@ -17,4 +17,36 @@ public extension YapDatabaseConnection {
             self.asyncReadWrite(block, completionBlock: resolver.fulfill)
         }
     }
+
+    func read(_ block: @escaping (YapDatabaseReadTransaction) throws -> Void) throws {
+        var errorToRaise: Error? = nil
+
+        read { transaction in
+            do {
+                try block(transaction)
+            } catch {
+                errorToRaise = error
+            }
+        }
+
+        if let errorToRaise = errorToRaise {
+            throw errorToRaise
+        }
+    }
+
+    func readWrite(_ block: @escaping (YapDatabaseReadWriteTransaction) throws -> Void) throws {
+        var errorToRaise: Error? = nil
+
+        readWrite { transaction in
+            do {
+                try block(transaction)
+            } catch {
+                errorToRaise = error
+            }
+        }
+
+        if let errorToRaise = errorToRaise {
+            throw errorToRaise
+        }
+    }
 }

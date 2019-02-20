@@ -229,11 +229,11 @@ protocol MediaGalleryDataSource: class {
     func showAllMedia(focusedItem: MediaGalleryItem)
     func dismissMediaDetailViewController(_ mediaDetailViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?)
 
-    func delete(items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate)
+    func delete(items: [MediaGalleryItem], initiatedBy: AnyObject)
 }
 
 protocol MediaGalleryDataSourceDelegate: class {
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate)
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject)
     func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath])
 }
 
@@ -318,7 +318,10 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
     private var pageViewController: MediaPageViewController?
 
-    private let uiDatabaseConnection: YapDatabaseConnection
+    private var uiDatabaseConnection: YapDatabaseConnection {
+        return OWSPrimaryStorage.shared().uiDatabaseConnection
+    }
+
     private let editingDatabaseConnection: YapDatabaseConnection
     private let mediaGalleryFinder: OWSMediaGalleryFinder
 
@@ -334,16 +337,19 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     }
 
     @objc
-    init(thread: TSThread, uiDatabaseConnection: YapDatabaseConnection, options: MediaGalleryOption = []) {
+    init(thread: TSThread, options: MediaGalleryOption = []) {
         self.thread = thread
-        assert(uiDatabaseConnection.isInLongLivedReadTransaction())
-        self.uiDatabaseConnection = uiDatabaseConnection
 
         self.editingDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
 
         self.options = options
         self.mediaGalleryFinder = OWSMediaGalleryFinder(thread: thread)
         super.init()
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(uiDatabaseDidUpdate),
+                                               name: .OWSUIDatabaseConnectionDidUpdate,
+                                               object: OWSPrimaryStorage.shared().dbNotificationObject)
     }
 
     // MARK: Present/Dismiss
@@ -709,7 +715,70 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         ]
     }
 
-    // MARK: MediaGalleryDataSource
+    // MARK: - Database Notifications
+
+    @objc
+    func uiDatabaseDidUpdate(notification: Notification) {
+        guard let notifications = notification.userInfo?[OWSUIDatabaseConnectionNotificationsKey] as? [Notification] else {
+            owsFailDebug("notifications was unexpectedly nil")
+            return
+        }
+
+        guard mediaGalleryFinder.hasMediaChanges(in: notifications, dbConnection: uiDatabaseConnection) else {
+            Logger.verbose("no changes for thread: \(thread)")
+            return
+        }
+
+        let rowChanges = extractRowChanges(notifications: notifications)
+        assert(rowChanges.count > 0)
+
+        process(rowChanges: rowChanges)
+    }
+
+    func extractRowChanges(notifications: [Notification]) -> [YapDatabaseViewRowChange] {
+        return notifications.flatMap { notification -> [YapDatabaseViewRowChange] in
+            guard let userInfo = notification.userInfo else {
+                owsFailDebug("userInfo was unexpectedly nil")
+                return []
+            }
+
+            guard let extensionChanges = userInfo["extensions"] as? [AnyHashable: Any] else {
+                owsFailDebug("extensionChanges was unexpectedly nil")
+                return []
+            }
+
+            guard let galleryData = extensionChanges[OWSMediaGalleryFinder.databaseExtensionName()] as? [AnyHashable: Any] else {
+                owsFailDebug("galleryData was unexpectedly nil")
+                return []
+            }
+
+            guard let galleryChanges = galleryData["changes"] as? [Any] else {
+                owsFailDebug("gallerlyChanges was unexpectedly nil")
+                return []
+            }
+
+            return galleryChanges.compactMap { $0 as? YapDatabaseViewRowChange }
+        }
+    }
+
+    func process(rowChanges: [YapDatabaseViewRowChange]) {
+        let deleteChanges = rowChanges.filter { $0.type == .delete }
+
+        let deletedItems: [MediaGalleryItem] = deleteChanges.compactMap { (deleteChange: YapDatabaseViewRowChange) -> MediaGalleryItem? in
+            guard let deletedItem = self.galleryItems.first(where: { galleryItem in
+                galleryItem.attachmentStream.uniqueId == deleteChange.collectionKey.key
+            }) else {
+                Logger.debug("deletedItem was never loaded - no need to remove.")
+                return nil
+            }
+
+            return deletedItem
+        }
+
+        self.delete(items: deletedItems, initiatedBy: self)
+    }
+
+    // MARK: - MediaGalleryDataSource
 
     lazy var mediaTileViewController: MediaTileViewController = {
         let vc = MediaTileViewController(mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection)
@@ -777,6 +846,10 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         }
     }
 
+    enum MediaGalleryError: Error {
+        case itemNoLongerExists
+    }
+
     func ensureGalleryItemsLoaded(_ direction: GalleryDirection, item: MediaGalleryItem, amount: UInt, completion: ((IndexSet, [IndexPath]) -> Void)? = nil ) {
 
         var galleryItems: [MediaGalleryItem] = self.galleryItems
@@ -786,92 +859,102 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         var newGalleryItems: [MediaGalleryItem] = []
         var newDates: [GalleryDate] = []
 
-        Bench(title: "fetching gallery items") {
-            self.uiDatabaseConnection.read { transaction in
+        do {
+            try Bench(title: "fetching gallery items") {
+                try self.uiDatabaseConnection.read { transaction in
+                    guard let index = self.mediaGalleryFinder.mediaIndex(attachment: item.attachmentStream, transaction: transaction) else {
+                        throw MediaGalleryError.itemNoLongerExists
+                    }
+                    let initialIndex: Int = index.intValue
+                    let mediaCount: Int = Int(self.mediaGalleryFinder.mediaCount(transaction: transaction))
 
-                let initialIndex: Int = Int(self.mediaGalleryFinder.mediaIndex(attachment: item.attachmentStream, transaction: transaction))
-                let mediaCount: Int = Int(self.mediaGalleryFinder.mediaCount(transaction: transaction))
+                    let requestRange: Range<Int> = { () -> Range<Int> in
+                        let range: Range<Int> = { () -> Range<Int> in
+                            switch direction {
+                            case .around:
+                                // To keep it simple, this isn't exactly *amount* sized if `message` window overlaps the end or
+                                // beginning of the view. Still, we have sufficient buffer to fetch more as the user swipes.
+                                let start: Int = initialIndex - Int(amount) / 2
+                                let end: Int = initialIndex + Int(amount) / 2
 
-                let requestRange: Range<Int> = { () -> Range<Int> in
-                    let range: Range<Int> = { () -> Range<Int> in
-                        switch direction {
-                        case .around:
-                            // To keep it simple, this isn't exactly *amount* sized if `message` window overlaps the end or
-                            // beginning of the view. Still, we have sufficient buffer to fetch more as the user swipes.
-                            let start: Int = initialIndex - Int(amount) / 2
-                            let end: Int = initialIndex + Int(amount) / 2
+                                return start..<end
+                            case .before:
+                                let start: Int = initialIndex - Int(amount)
+                                let end: Int = initialIndex
 
-                            return start..<end
-                        case .before:
-                            let start: Int = initialIndex - Int(amount)
-                            let end: Int = initialIndex
+                                return start..<end
+                            case  .after:
+                                let start: Int = initialIndex
+                                let end: Int = initialIndex  + Int(amount)
 
-                            return start..<end
-                        case  .after:
-                            let start: Int = initialIndex
-                            let end: Int = initialIndex  + Int(amount)
+                                return start..<end
+                            }
+                        }()
 
-                            return start..<end
-                        }
+                        return range.clamped(to: 0..<mediaCount)
                     }()
 
-                    return range.clamped(to: 0..<mediaCount)
-                }()
-
-                let requestSet = IndexSet(integersIn: requestRange)
-                guard !self.fetchedIndexSet.contains(integersIn: requestSet) else {
-                    Logger.debug("all requested messages have already been loaded.")
-                    return
-                }
-
-                let unfetchedSet = requestSet.subtracting(self.fetchedIndexSet)
-
-                // For perf we only want to fetch a substantially full batch...
-                let isSubstantialRequest = unfetchedSet.count > (requestSet.count / 2)
-                // ...but we always fulfill even small requests if we're getting just the tail end of a gallery.
-                let isFetchingEdgeOfGallery = (self.fetchedIndexSet.count - unfetchedSet.count) < requestSet.count
-
-                guard isSubstantialRequest || isFetchingEdgeOfGallery else {
-                    Logger.debug("ignoring small fetch request: \(unfetchedSet.count)")
-                    return
-                }
-
-                Logger.debug("fetching set: \(unfetchedSet)")
-                let nsRange: NSRange = NSRange(location: unfetchedSet.min()!, length: unfetchedSet.count)
-                self.mediaGalleryFinder.enumerateMediaAttachments(range: nsRange, transaction: transaction) { (attachment: TSAttachment) in
-
-                    guard !self.deletedAttachments.contains(attachment) else {
-                        Logger.debug("skipping \(attachment) which has been deleted.")
+                    let requestSet = IndexSet(integersIn: requestRange)
+                    guard !self.fetchedIndexSet.contains(integersIn: requestSet) else {
+                        Logger.debug("all requested messages have already been loaded.")
                         return
                     }
 
-                    guard let item: MediaGalleryItem = self.buildGalleryItem(attachment: attachment, transaction: transaction) else {
-                        owsFailDebug("unexpectedly failed to buildGalleryItem")
+                    let unfetchedSet = requestSet.subtracting(self.fetchedIndexSet)
+
+                    // For perf we only want to fetch a substantially full batch...
+                    let isSubstantialRequest = unfetchedSet.count > (requestSet.count / 2)
+                    // ...but we always fulfill even small requests if we're getting just the tail end of a gallery.
+                    let isFetchingEdgeOfGallery = (self.fetchedIndexSet.count - unfetchedSet.count) < requestSet.count
+
+                    guard isSubstantialRequest || isFetchingEdgeOfGallery else {
+                        Logger.debug("ignoring small fetch request: \(unfetchedSet.count)")
                         return
                     }
 
-                    let date = item.galleryDate
+                    Logger.debug("fetching set: \(unfetchedSet)")
+                    let nsRange: NSRange = NSRange(location: unfetchedSet.min()!, length: unfetchedSet.count)
+                    self.mediaGalleryFinder.enumerateMediaAttachments(range: nsRange, transaction: transaction) { (attachment: TSAttachment) in
 
-                    galleryItems.append(item)
-                    if sections[date] != nil {
-                        sections[date]!.append(item)
+                        guard !self.deletedAttachments.contains(attachment) else {
+                            Logger.debug("skipping \(attachment) which has been deleted.")
+                            return
+                        }
 
-                        // so we can update collectionView
-                        newGalleryItems.append(item)
-                    } else {
-                        sectionDates.append(date)
-                        sections[date] = [item]
+                        guard let item: MediaGalleryItem = self.buildGalleryItem(attachment: attachment, transaction: transaction) else {
+                            owsFailDebug("unexpectedly failed to buildGalleryItem")
+                            return
+                        }
 
-                        // so we can update collectionView
-                        newDates.append(date)
-                        newGalleryItems.append(item)
+                        let date = item.galleryDate
+
+                        galleryItems.append(item)
+                        if sections[date] != nil {
+                            sections[date]!.append(item)
+
+                            // so we can update collectionView
+                            newGalleryItems.append(item)
+                        } else {
+                            sectionDates.append(date)
+                            sections[date] = [item]
+
+                            // so we can update collectionView
+                            newDates.append(date)
+                            newGalleryItems.append(item)
+                        }
                     }
-                }
 
-                self.fetchedIndexSet = self.fetchedIndexSet.union(unfetchedSet)
-                self.hasFetchedOldest = self.fetchedIndexSet.min() == 0
-                self.hasFetchedMostRecent = self.fetchedIndexSet.max() == mediaCount - 1
+                    self.fetchedIndexSet = self.fetchedIndexSet.union(unfetchedSet)
+                    self.hasFetchedOldest = self.fetchedIndexSet.min() == 0
+                    self.hasFetchedMostRecent = self.fetchedIndexSet.max() == mediaCount - 1
+                }
             }
+        } catch MediaGalleryError.itemNoLongerExists {
+            Logger.debug("Ignoring reload, since item no longer exists.")
+            return
+        } catch {
+            owsFailDebug("unexpected error: \(error)")
+            return
         }
 
         // TODO only sort if changed
@@ -919,7 +1002,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         dataSourceDelegates.append(Weak(value: dataSourceDelegate))
     }
 
-    func delete(items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
+    func delete(items: [MediaGalleryItem], initiatedBy: AnyObject) {
         AssertIsOnMainThread()
 
         Logger.info("with items: \(items.map { ($0.attachmentStream, $0.message.timestamp) })")

@@ -1318,7 +1318,6 @@ const CGFloat kIconViewLength = 24;
     OWSLogDebug(@"");
 
     MediaGallery *mediaGallery = [[MediaGallery alloc] initWithThread:self.thread
-                                                 uiDatabaseConnection:self.uiDatabaseConnection
                                                               options:MediaGalleryOptionSliderEnabled];
 
     self.mediaGallery = mediaGallery;

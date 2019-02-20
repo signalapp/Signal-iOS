@@ -401,11 +401,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: MediaGalleryDataSourceDelegate
 
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
         Logger.debug("")
 
         guard let currentItem = self.currentItem else {
-              owsFailDebug("currentItem was unexpectedly nil")
+            owsFailDebug("currentItem was unexpectedly nil")
             return
         }
 

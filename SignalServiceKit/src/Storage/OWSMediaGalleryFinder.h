@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -7,7 +7,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSStorage;
 @class TSAttachment;
 @class TSThread;
+@class YapDatabaseAutoViewTransaction;
+@class YapDatabaseConnection;
 @class YapDatabaseReadTransaction;
+@class YapDatabaseViewRowChange;
 
 @interface OWSMediaGalleryFinder : NSObject
 
@@ -19,8 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)mediaCountWithTransaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(mediaCount(transaction:));
 
 // The ordinal position of an attachment within a thread's media gallery
-- (NSUInteger)mediaIndexForAttachment:(TSAttachment *)attachment
-                          transaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSNumber *)mediaIndexForAttachment:(TSAttachment *)attachment
+                                   transaction:(YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(mediaIndex(attachment:transaction:));
 
 - (nullable TSAttachment *)oldestMediaAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -33,8 +36,14 @@ NS_ASSUME_NONNULL_BEGIN
                                      block:(void (^)(TSAttachment *))attachmentBlock
     NS_SWIFT_NAME(enumerateMediaAttachments(range:transaction:block:));
 
+- (BOOL)hasMediaChangesInNotifications:(NSArray<NSNotification *> *)notifications
+                          dbConnection:(YapDatabaseConnection *)dbConnection;
+
 #pragma mark - Extension registration
 
+@property (nonatomic, readonly) NSString *mediaGroup;
+- (YapDatabaseAutoViewTransaction *)galleryExtensionWithTransaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(galleryExtension(transaction:));
 + (NSString *)databaseExtensionName;
 + (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage;
 
