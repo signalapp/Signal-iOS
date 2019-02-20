@@ -219,6 +219,26 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return [attachments copy];
 }
 
+- (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+                                            contentType:(NSString *)contentType
+{
+    NSArray<TSAttachment *> *attachments = [self attachmentsWithTransaction:transaction];
+    return [attachments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(TSAttachment *evaluatedObject,
+                                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+        return [evaluatedObject.contentType isEqualToString:contentType];
+    }]];
+}
+
+- (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+                                      exceptContentType:(NSString *)contentType
+{
+    NSArray<TSAttachment *> *attachments = [self attachmentsWithTransaction:transaction];
+    return [attachments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(TSAttachment *evaluatedObject,
+                                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+        return ![evaluatedObject.contentType isEqualToString:contentType];
+    }]];
+}
+
 - (void)removeAttachment:(TSAttachment *)attachment transaction:(YapDatabaseReadWriteTransaction *)transaction;
 {
     OWSAssertDebug([self.attachmentIds containsObject:attachment.uniqueId]);
@@ -257,15 +277,24 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
+- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [self attachmentsWithTransaction:transaction contentType:OWSMimeTypeOversizeTextMessage].firstObject;
+}
+
+- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [self attachmentsWithTransaction:transaction exceptContentType:OWSMimeTypeOversizeTextMessage];
+}
+
 - (nullable NSString *)oversizeTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    if (self.attachmentIds.count != 1) {
+    TSAttachment *_Nullable attachment = [self oversizeTextAttachmentWithTransaction:transaction];
+    if (!attachment) {
         return nil;
     }
 
-    TSAttachment *_Nullable attachment = [self attachmentsWithTransaction:transaction].firstObject;
-    if (![OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType]
-        || ![attachment isKindOfClass:TSAttachmentStream.class]) {
+    if (![attachment isKindOfClass:TSAttachmentStream.class]) {
         return nil;
     }
 

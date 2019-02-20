@@ -592,10 +592,26 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
     }
 
-    NSArray<TSAttachment *> *attachments = [message attachmentsWithTransaction:transaction];
+    NSString *_Nullable bodyText = [message bodyTextWithTransaction:transaction];
+    if (bodyText) {
+        self.displayableBodyText = [self displayableBodyTextForText:bodyText interactionId:message.uniqueId];
+    }
+
+    // Even though displayableBodyText could have already been assigned from the oversized text
+    // attachment, it's also possible that for new messages we'd first cached the truncated body
+    // text. So if an AttachmentStream now exists we explicitly use the text from the attachment.
+    TSAttachment *_Nullable oversizeTextAttachment = [message oversizeTextAttachmentWithTransaction:transaction];
+    if (oversizeTextAttachment != nil && [oversizeTextAttachment isKindOfClass:[TSAttachmentStream class]]) {
+        TSAttachmentStream *oversizeTextAttachmentStream = (TSAttachmentStream *)oversizeTextAttachment;
+        self.messageCellType = OWSMessageCellType_OversizeTextMessage;
+        self.displayableBodyText = [self displayableBodyTextForOversizeTextAttachment:oversizeTextAttachmentStream
+                                                                        interactionId:message.uniqueId];
+    }
+
+    NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction];
     if ([message isMediaAlbumWithTransaction:transaction]) {
-        OWSAssertDebug(attachments.count > 0);
-        NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems = [self mediaAlbumItemsForAttachments:attachments];
+        OWSAssertDebug(mediaAttachments.count > 0);
+        NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems = [self mediaAlbumItemsForAttachments:mediaAttachments];
 
         if (mediaAlbumItems.count == 1) {
             ConversationMediaAlbumItem *mediaAlbumItem = mediaAlbumItems.firstObject;
@@ -608,30 +624,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
         self.mediaAlbumItems = mediaAlbumItems;
         self.messageCellType = OWSMessageCellType_MediaAlbum;
-        NSString *_Nullable albumTitle = [message bodyTextWithTransaction:transaction];
-        if (!albumTitle && mediaAlbumItems.count == 1) {
-            // If the album contains only one option, use its caption as the
-            // the album title.
-            albumTitle = mediaAlbumItems.firstObject.caption;
-        }
-        if (albumTitle) {
-            self.displayableBodyText = [self displayableBodyTextForText:albumTitle interactionId:message.uniqueId];
-        }
         return;
     }
+
     // Only media galleries should have more than one attachment.
-    OWSAssertDebug(attachments.count <= 1);
-
-    TSAttachment *_Nullable attachment = attachments.firstObject;
-    if (attachment) {
-        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-            self.attachmentStream = (TSAttachmentStream *)attachment;
-
-            if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
-                self.messageCellType = OWSMessageCellType_OversizeTextMessage;
-                self.displayableBodyText = [self displayableBodyTextForOversizeTextAttachment:self.attachmentStream
-                                                                                interactionId:message.uniqueId];
-            } else if ([self.attachmentStream isAudio]) {
+    OWSAssertDebug(mediaAttachments.count <= 1);
+    TSAttachment *_Nullable mediaAttachment = mediaAttachments.firstObject;
+    if (mediaAttachment) {
+        if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
+            self.attachmentStream = (TSAttachmentStream *)mediaAttachment;
+            if ([self.attachmentStream isAudio]) {
                 CGFloat audioDurationSeconds = [self.attachmentStream audioDurationSeconds];
                 if (audioDurationSeconds > 0) {
                     self.audioDurationSeconds = audioDurationSeconds;
@@ -639,34 +641,28 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 } else {
                     self.messageCellType = OWSMessageCellType_GenericAttachment;
                 }
-            } else {
+            } else if (self.messageCellType == OWSMessageCellType_Unknown) {
                 self.messageCellType = OWSMessageCellType_GenericAttachment;
             }
-        } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
+        } else if ([mediaAttachment isKindOfClass:[TSAttachmentPointer class]]) {
             self.messageCellType = OWSMessageCellType_DownloadingAttachment;
-            self.attachmentPointer = (TSAttachmentPointer *)attachment;
+            self.attachmentPointer = (TSAttachmentPointer *)mediaAttachment;
         } else {
             OWSFailDebug(@"Unknown attachment type");
         }
     }
 
-    // Ignore message body for oversize text attachments.
-    if (message.body.length > 0) {
-        if (self.hasBodyText) {
-            OWSFailDebug(@"oversize text message has unexpected caption.");
-        }
-
+    if (self.hasBodyText) {
         // If we haven't already assigned an attachment type at this point, message.body isn't a caption,
         // it's a stand-alone text message.
         if (self.messageCellType == OWSMessageCellType_Unknown) {
             OWSAssertDebug(message.attachmentIds.count == 0);
             self.messageCellType = OWSMessageCellType_TextMessage;
         }
-        self.displayableBodyText = [self displayableBodyTextForText:message.body interactionId:message.uniqueId];
         OWSAssertDebug(self.displayableBodyText);
     }
 
-    if (self.hasBodyText && attachment == nil && message.linkPreview) {
+    if (self.hasBodyText && message.linkPreview) {
         self.linkPreview = message.linkPreview;
         if (message.linkPreview.imageAttachmentId.length > 0) {
             TSAttachment *_Nullable linkPreviewAttachment =

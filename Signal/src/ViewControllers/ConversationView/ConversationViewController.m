@@ -3604,10 +3604,16 @@ typedef enum : NSUInteger {
         }
 
         BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-        TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithAttachments:attachments
-                                                                   messageBody:messageText
-                                                                      inThread:self.thread
-                                                              quotedReplyModel:self.inputToolbar.quotedReply];
+
+        __block TSOutgoingMessage *message;
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+            message = [ThreadUtil enqueueMessageWithText:messageText
+                                        mediaAttachments:attachments
+                                                inThread:self.thread
+                                        quotedReplyModel:self.inputToolbar.quotedReply
+                                        linkPreviewDraft:nil
+                                             transaction:transaction];
+        }];
 
         [self messageWasSent:message];
 
