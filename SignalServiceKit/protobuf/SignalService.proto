@@ -269,6 +269,7 @@ message SyncMessage {
 
   message SentUpdate {
       message UnidentifiedDeliveryStatus {
+		  // @required
           optional string destination = 1;
           optional bool unidentified = 2;
       }

@@ -1649,6 +1649,7 @@ struct SignalServiceProtos_SyncMessage {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
+      /// @required
       var destination: String {
         get {return _destination ?? String()}
         set {_destination = newValue}

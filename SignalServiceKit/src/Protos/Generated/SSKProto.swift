@@ -3740,16 +3740,13 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
 
     // MARK: - SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder
 
-    @objc public class func builder() -> SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder {
-        return SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder()
+    @objc public class func builder(destination: String) -> SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder {
+        return SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder(destination: destination)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder {
-        let builder = SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder()
-        if let _value = destination {
-            builder.setDestination(_value)
-        }
+        let builder = SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder(destination: destination)
         if hasUnidentified {
             builder.setUnidentified(unidentified)
         }
@@ -3761,6 +3758,12 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
         private var proto = SignalServiceProtos_SyncMessage.SentUpdate.UnidentifiedDeliveryStatus()
 
         @objc fileprivate override init() {}
+
+        @objc fileprivate init(destination: String) {
+            super.init()
+
+            setDestination(destination)
+        }
 
         @objc public func setDestination(_ valueParam: String) {
             proto.destination = valueParam
@@ -3781,15 +3784,7 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.SentUpdate.UnidentifiedDeliveryStatus
 
-    @objc public var destination: String? {
-        guard proto.hasDestination else {
-            return nil
-        }
-        return proto.destination
-    }
-    @objc public var hasDestination: Bool {
-        return proto.hasDestination
-    }
+    @objc public let destination: String
 
     @objc public var unidentified: Bool {
         return proto.unidentified
@@ -3798,8 +3793,10 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
         return proto.hasUnidentified
     }
 
-    private init(proto: SignalServiceProtos_SyncMessage.SentUpdate.UnidentifiedDeliveryStatus) {
+    private init(proto: SignalServiceProtos_SyncMessage.SentUpdate.UnidentifiedDeliveryStatus,
+                 destination: String) {
         self.proto = proto
+        self.destination = destination
     }
 
     @objc
@@ -3813,11 +3810,17 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.SentUpdate.UnidentifiedDeliveryStatus) throws -> SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus {
+        guard proto.hasDestination else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: destination")
+        }
+        let destination = proto.destination
+
         // MARK: - Begin Validation Logic for SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus -
 
         // MARK: - End Validation Logic for SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus -
 
-        let result = SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus(proto: proto)
+        let result = SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus(proto: proto,
+                                                                             destination: destination)
         return result
     }
 
