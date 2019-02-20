@@ -162,8 +162,6 @@ public class ProxiedContentAssetRequest: NSObject {
             AssertIsOnMainThread()
             assert(oldValue == 0)
             assert(contentLength > 0)
-
-            createSegments()
         }
     }
     public weak var contentLengthTask: URLSessionDataTask?
@@ -219,7 +217,7 @@ public class ProxiedContentAssetRequest: NSObject {
         return contentLength
     }
 
-    private func createSegments() {
+    fileprivate func createSegments(withInitialData initialData: Data) {
         AssertIsOnMainThread()
 
         let segmentLength = segmentSize()
@@ -228,8 +226,20 @@ public class ProxiedContentAssetRequest: NSObject {
         }
         let contentLength = UInt(self.contentLength)
 
-        var nextSegmentStart: UInt = 0
-        var index: UInt = 0
+        // Make the initial segment.
+        let assetSegment = ProxiedContentAssetSegment(index: 0,
+                                                      segmentStart: 0,
+                                                      segmentLength: UInt(initialData.count),
+                                                      redundantLength: 0)
+        // "Download" the initial segment using the initialData.
+        assetSegment.state = .downloading
+        assetSegment.append(data: initialData)
+        // Mark the initial segment as complete.
+        assetSegment.state = .complete
+        segments.append(assetSegment)
+
+        var nextSegmentStart = UInt(initialData.count)
+        var index: UInt = 1
         while nextSegmentStart < contentLength {
             var segmentStart: UInt = nextSegmentStart
             var redundantLength: UInt = 0
@@ -549,31 +559,40 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         DispatchQueue.main.async {
             assetSegment.state = .complete
 
-            if assetRequest.areAllSegmentsComplete() {
-                // If the asset request has completed all of its segments,
-                // try to write the asset to file.
-                assetRequest.state = .complete
-
-                // Move write off main thread.
-                DispatchQueue.global().async {
-                    guard let downloadFolderPath = self.downloadFolderPath else {
-                        owsFailDebug("Missing downloadFolderPath")
-                        return
-                    }
-                    guard let asset = assetRequest.writeAssetToFile(downloadFolderPath: downloadFolderPath) else {
-                        self.segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
-                        return
-                    }
-                    self.assetRequestDidSucceed(assetRequest: assetRequest, asset: asset)
-                }
-            } else {
+            if !self.tryToCompleteRequest(assetRequest: assetRequest) {
                 self.processRequestQueueSync()
             }
         }
     }
 
-    private func assetRequestDidSucceed(assetRequest: ProxiedContentAssetRequest, asset: ProxiedContentAsset) {
+    // Returns true if the request is completed.
+    private func tryToCompleteRequest(assetRequest: ProxiedContentAssetRequest) -> Bool {
+        AssertIsOnMainThread()
 
+        guard assetRequest.areAllSegmentsComplete() else {
+            return false
+        }
+
+        // If the asset request has completed all of its segments,
+        // try to write the asset to file.
+        assetRequest.state = .complete
+
+        // Move write off main thread.
+        DispatchQueue.global().async {
+            guard let downloadFolderPath = self.downloadFolderPath else {
+                owsFailDebug("Missing downloadFolderPath")
+                return
+            }
+            guard let asset = assetRequest.writeAssetToFile(downloadFolderPath: downloadFolderPath) else {
+                self.segmentRequestDidFail(assetRequest: assetRequest)
+                return
+            }
+            self.assetRequestDidSucceed(assetRequest: assetRequest, asset: asset)
+        }
+        return true
+    }
+
+    private func assetRequestDidSucceed(assetRequest: ProxiedContentAssetRequest, asset: ProxiedContentAsset) {
         DispatchQueue.main.async {
             self.assetMap.set(key: assetRequest.assetDescription.url, value: asset)
             self.removeAssetRequestFromQueue(assetRequest: assetRequest)
@@ -581,11 +600,14 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         }
     }
 
-    // TODO: If we wanted to implement segment retry, we'll need to add
-    //       a segmentRequestDidFail() method.
-    private func segmentRequestDidFail(assetRequest: ProxiedContentAssetRequest, assetSegment: ProxiedContentAssetSegment) {
+    private func segmentRequestDidFail(assetRequest: ProxiedContentAssetRequest, assetSegment: ProxiedContentAssetSegment? = nil) {
         DispatchQueue.main.async {
-            assetSegment.state = .failed
+            if let assetSegment = assetSegment {
+                assetSegment.state = .failed
+
+                // TODO: If we wanted to implement segment retry, we'd do so here.
+                //       For now, we just fail the entire asset request.
+            }
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
         }
@@ -652,17 +674,18 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
 
         if assetRequest.state == .waiting {
             // If asset request hasn't yet determined the resource size,
-            // try to do so now.
+            // try to do so now, by requesting a small initial segment.
             assetRequest.state = .requestingSize
 
             let segmentStart: UInt = 0
-            let segmentLength: UInt = ProxiedContentAssetRequest.smallestPossibleSegmentSize
+            // Vary the initial segment size to obscure the length of the response headers.
+            let segmentLength: UInt = 1024 + UInt(arc4random_uniform(1024))
             var request = URLRequest(url: assetRequest.assetDescription.url as URL)
             request.httpShouldUsePipelining = true
             let rangeHeaderValue = "bytes=\(segmentStart)-\(segmentStart + segmentLength - 1)"
             request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
-            let task = downloadSession.dataTask(with: request, completionHandler: { _, response, error -> Void in
-                self.handleAssetSizeResponse(assetRequest: assetRequest, response: response, error: error)
+            let task = downloadSession.dataTask(with: request, completionHandler: { data, response, error -> Void in
+                self.handleAssetSizeResponse(assetRequest: assetRequest, data: data, response: response, error: error)
             })
 
             assetRequest.contentLengthTask = task
@@ -691,8 +714,15 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         processRequestQueueSync()
     }
 
-    private func handleAssetSizeResponse(assetRequest: ProxiedContentAssetRequest, response: URLResponse?, error: Error?) {
+    private func handleAssetSizeResponse(assetRequest: ProxiedContentAssetRequest, data: Data?, response: URLResponse?, error: Error?) {
         guard error == nil else {
+            assetRequest.state = .failed
+            self.assetRequestDidFail(assetRequest: assetRequest)
+            return
+        }
+        guard let data = data,
+        data.count > 0 else {
+            owsFailDebug("Asset size response missing data.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
@@ -744,8 +774,12 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
 
         DispatchQueue.main.async {
             assetRequest.contentLength = contentLength
+            assetRequest.createSegments(withInitialData: data)
             assetRequest.state = .active
-            self.processRequestQueueSync()
+
+            if !self.tryToCompleteRequest(assetRequest: assetRequest) {
+                self.processRequestQueueSync()
+            }
         }
     }
 
