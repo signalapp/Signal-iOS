@@ -52,6 +52,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 @property (atomic) BOOL areAsyncRegistrationsComplete;
 @property (atomic) BOOL areSyncRegistrationsComplete;
+@property (nonatomic, readonly) YapDatabaseConnectionPool *dbReadPool;
 
 @end
 
@@ -75,10 +76,10 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     if (self) {
         [self loadDatabase];
 
-        _dbReadConnection = [self newDatabaseConnection];
+        _dbReadPool = [[YapDatabaseConnectionPool alloc] initWithDatabase:self.database];
         _dbReadWriteConnection = [self newDatabaseConnection];
         _uiDatabaseConnection = [self newDatabaseConnection];
-        
+
         // Increase object cache limit. Default is 250.
         _uiDatabaseConnection.objectCacheLimit = 500;
         [_uiDatabaseConnection beginLongLivedReadTransaction];
@@ -156,7 +157,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 - (void)resetStorage
 {
-    _dbReadConnection = nil;
+    _dbReadPool = nil;
+    _uiDatabaseConnection = nil;
     _dbReadWriteConnection = nil;
 
     [super resetStorage];
@@ -424,6 +426,11 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 + (YapDatabaseConnection *)dbReadConnection
 {
     return OWSPrimaryStorage.sharedManager.dbReadConnection;
+}
+
+- (YapDatabaseConnection *)dbReadConnection
+{
+    return self.dbReadPool.connection;
 }
 
 + (YapDatabaseConnection *)dbReadWriteConnection
