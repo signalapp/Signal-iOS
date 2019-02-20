@@ -6,6 +6,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// Feature flag.
+//
+// TODO: Remove.
+BOOL AreSentUpdatesEnabled(void);
+
 typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
     // The message is either:
     // a) Enqueued for sending.

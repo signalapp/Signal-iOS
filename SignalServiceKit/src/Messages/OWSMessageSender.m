@@ -18,6 +18,7 @@
 #import "OWSMessageServiceParams.h"
 #import "OWSOperation.h"
 #import "OWSOutgoingSentMessageTranscript.h"
+#import "OWSOutgoingSentUpdateMessageTranscript.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSPrimaryStorage+PreKeyStore.h"
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
@@ -1391,20 +1392,27 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return success();
     }
 
-    [self
-        sendSyncTranscriptForMessage:message
-                             success:^{
-                                 // TODO: We might send to a recipient, then to another recipient on retry.
-                                 //       To ensure desktop receives all "delivery status" info, we might
-                                 //       want to send a transcript after every send that reaches _any_
-                                 //       new recipients.
-                                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                     [message updateWithHasSyncedTranscript:YES transaction:transaction];
-                                 }];
+    if (message.hasSyncedTranscript) {
+        if (!AreSentUpdatesEnabled()) {
+            return success();
+        }
+        [self sendSyncUpdateTranscriptForMessage:message
+                                         success:^{
+                                             success();
+                                         }
+                                         failure:failure];
+    } else {
+        [self sendSyncTranscriptForMessage:message
+                                   success:^{
+                                       [self.dbConnection
+                                           readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                               [message updateWithHasSyncedTranscript:YES transaction:transaction];
+                                           }];
 
-                                 success();
-                             }
-                             failure:failure];
+                                       success();
+                                   }
+                                   failure:failure];
+    }
 }
 
 - (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message
@@ -1433,6 +1441,50 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         failure:^(NSError *error) {
             OWSLogInfo(@"Failed to send sync transcript: %@ (isRetryable: %d)", error, [error isRetryable]);
+
+            failure(error);
+        }];
+    [self sendMessageToRecipient:messageSend];
+}
+
+- (void)sendSyncUpdateTranscriptForMessage:(TSOutgoingMessage *)message
+                                   success:(void (^)(void))success
+                                   failure:(RetryableFailureHandler)failure
+{
+    NSString *recipientId = self.tsAccountManager.localNumber;
+
+    __block OWSOutgoingSentUpdateMessageTranscript *transcript;
+    __block BOOL isGroupThread = NO;
+    __block SignalRecipient *recipient;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        isGroupThread = message.thread.isGroupThread;
+
+        if (isGroupThread) {
+            recipient = [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
+            transcript = [[OWSOutgoingSentUpdateMessageTranscript alloc] initWithOutgoingMessage:message
+                                                                                     transaction:transaction];
+        }
+    }];
+
+    if (!isGroupThread) {
+        // We only send "sent update" transcripts for group messages.
+        return success();
+    }
+
+    OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:transcript
+        thread:message.thread
+        recipient:recipient
+        senderCertificate:nil
+        udAccess:nil
+        localNumber:self.tsAccountManager.localNumber
+        success:^{
+            OWSLogInfo(@"Successfully sent 'sent update' sync transcript.");
+
+            success();
+        }
+        failure:^(NSError *error) {
+            OWSLogInfo(
+                @"Failed to send 'sent update' sync transcript: %@ (isRetryable: %d)", error, [error isRetryable]);
 
             failure(error);
         }];

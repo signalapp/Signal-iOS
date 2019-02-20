@@ -23,6 +23,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+BOOL AreSentUpdatesEnabled(void)
+{
+    return NO;
+}
+
 NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRecipientAll";
 
 NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value)
@@ -1104,7 +1109,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (BOOL)shouldSyncTranscript
 {
-    return !self.hasSyncedTranscript;
+    return YES;
 }
 
 - (NSString *)statusDescription

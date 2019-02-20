@@ -67,13 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(transcript);
     OWSAssertDebug(transaction);
 
-    if (self.dataMessage.group) {
-        _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
-    } else {
-        _thread = [TSContactThread getOrCreateThreadWithContactId:_recipientId transaction:transaction];
-    }
-
-
     OWSLogInfo(@"Recording transcript in thread: %@ timestamp: %llu", transcript.thread.uniqueId, transcript.timestamp);
 
     if (transcript.isEndSessionMessage) {
@@ -183,18 +176,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-+ (BOOL)areSentUpdatesEnabled
-{
-    return NO;
-}
-
 + (void)processSentUpdateTranscript:(SSKProtoSyncMessageSentUpdate *)sentUpdate
                         transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(sentUpdate);
     OWSAssertDebug(transaction);
 
-    if (!self.areSentUpdatesEnabled) {
+    if (!AreSentUpdatesEnabled()) {
         OWSFailDebug(@"Ignoring 'sent update' transcript; disabled.");
         return;
     }
