@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSIncomingSentMessageTranscript;
+@class SSKProtoSyncMessageSentUpdate;
 @class TSAttachmentStream;
 @class YapDatabaseReadWriteTransaction;
 
@@ -17,6 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
                            attachmentHandler:(void (^)(
                                                  NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
++ (BOOL)areSentUpdatesEnabled;
+
++ (void)processSentUpdateTranscript:(SSKProtoSyncMessageSentUpdate *)sentUpdate
+                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

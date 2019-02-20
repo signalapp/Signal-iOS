@@ -860,8 +860,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (syncMessage.sent) {
         OWSIncomingSentMessageTranscript *transcript =
-            [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent
-                                                        transaction:transaction];
+            [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent transaction:transaction];
 
         SSKProtoDataMessage *_Nullable dataMessage = syncMessage.sent.message;
         if (!dataMessage) {
@@ -909,6 +908,8 @@ NS_ASSUME_NONNULL_BEGIN
                                    }
                                          transaction:transaction];
         }
+    } else if (syncMessage.sentUpdate) {
+        [OWSRecordTranscriptJob processSentUpdateTranscript:syncMessage.sentUpdate transaction:transaction];
     } else if (syncMessage.request) {
         if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeContacts) {
             // We respond asynchronously because populating the sync message will

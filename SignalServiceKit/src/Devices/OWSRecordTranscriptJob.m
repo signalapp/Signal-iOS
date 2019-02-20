@@ -10,11 +10,13 @@
 #import "OWSReadReceiptManager.h"
 #import "SSKEnvironment.h"
 #import "TSAttachmentPointer.h"
+#import "TSGroupThread.h"
 #import "TSInfoMessage.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -64,6 +66,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(transcript);
     OWSAssertDebug(transaction);
+
+    if (self.dataMessage.group) {
+        _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
+    } else {
+        _thread = [TSContactThread getOrCreateThreadWithContactId:_recipientId transaction:transaction];
+    }
+
 
     OWSLogInfo(@"Recording transcript in thread: %@ timestamp: %llu", transcript.thread.uniqueId, transcript.timestamp);
 
@@ -168,6 +177,93 @@ NS_ASSUME_NONNULL_BEGIN
                                       OWSLogError(
                                           @"failed to fetch transcripts attachments for message: %@", outgoingMessage);
                                   }];
+    }
+}
+
+#pragma mark -
+
++ (BOOL)areSentUpdatesEnabled
+{
+    return NO;
+}
+
++ (void)processSentUpdateTranscript:(SSKProtoSyncMessageSentUpdate *)sentUpdate
+                        transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssertDebug(sentUpdate);
+    OWSAssertDebug(transaction);
+
+    if (!self.areSentUpdatesEnabled) {
+        OWSFailDebug(@"Ignoring 'sent update' transcript; disabled.");
+        return;
+    }
+
+    uint64_t timestamp = sentUpdate.timestamp;
+    if (timestamp < 1) {
+        OWSFailDebug(@"'Sent update' transcript has invalid timestamp.");
+        return;
+    }
+
+    NSData *groupId = sentUpdate.groupID;
+    if (groupId.length < 1) {
+        OWSFailDebug(@"'Sent update' transcript has invalid groupId.");
+        return;
+    }
+
+    NSArray<SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus *> *statusProtos = sentUpdate.unidentifiedStatus;
+    if (statusProtos.count < 1) {
+        OWSFailDebug(@"'Sent update' transcript is missing statusProtos.");
+        return;
+    }
+
+    NSMutableArray<NSString *> *nonUdRecipientIds = [NSMutableArray new];
+    NSMutableArray<NSString *> *udRecipientIds = [NSMutableArray new];
+    for (SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus *statusProto in statusProtos) {
+        NSString *recipientId = statusProto.destination;
+        if (statusProto.unidentified) {
+            [udRecipientIds addObject:recipientId];
+        } else {
+            [nonUdRecipientIds addObject:recipientId];
+        }
+    }
+
+    NSArray<TSOutgoingMessage *> *messages
+        = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:timestamp
+                                                                           ofClass:[TSOutgoingMessage class]
+                                                                   withTransaction:transaction];
+    if (messages.count < 1) {
+        // This message may have disappeared.
+        OWSLogError(@"No matching message with timestamp: %llu.", timestamp);
+        return;
+    }
+
+    BOOL messageFound = NO;
+    for (TSOutgoingMessage *message in messages) {
+        TSThread *thread = [message threadWithTransaction:transaction];
+        if (!thread.isGroupThread) {
+            continue;
+        }
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        if (![groupThread.groupModel.groupId isEqual:groupId]) {
+            continue;
+        }
+
+        OWSLogInfo(@"Processing 'sent update' transcript in thread: %@, timestamp: %llu, nonUdRecipientIds: %d, "
+                   @"udRecipientIds: %d.",
+            thread.uniqueId,
+            timestamp,
+            (int)nonUdRecipientIds.count,
+            (int)udRecipientIds.count);
+
+        [message updateWithWasSentFromLinkedDeviceWithUDRecipientIds:udRecipientIds
+                                                   nonUdRecipientIds:nonUdRecipientIds
+                                                         transaction:transaction];
+        messageFound = YES;
+    }
+
+    if (!messageFound) {
+        // This message may have disappeared.
+        OWSLogError(@"No matching message with timestamp: %llu.", timestamp);
     }
 }
 
