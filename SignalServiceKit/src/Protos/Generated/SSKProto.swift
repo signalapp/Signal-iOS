@@ -3734,6 +3734,241 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus
+
+@objc public class SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus: NSObject {
+
+    // MARK: - SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder
+
+    @objc public class func builder() -> SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder {
+        return SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder {
+        let builder = SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder()
+        if let _value = destination {
+            builder.setDestination(_value)
+        }
+        if hasUnidentified {
+            builder.setUnidentified(unidentified)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.SentUpdate.UnidentifiedDeliveryStatus()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setDestination(_ valueParam: String) {
+            proto.destination = valueParam
+        }
+
+        @objc public func setUnidentified(_ valueParam: Bool) {
+            proto.unidentified = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus {
+            return try SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.SentUpdate.UnidentifiedDeliveryStatus
+
+    @objc public var destination: String? {
+        guard proto.hasDestination else {
+            return nil
+        }
+        return proto.destination
+    }
+    @objc public var hasDestination: Bool {
+        return proto.hasDestination
+    }
+
+    @objc public var unidentified: Bool {
+        return proto.unidentified
+    }
+    @objc public var hasUnidentified: Bool {
+        return proto.hasUnidentified
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.SentUpdate.UnidentifiedDeliveryStatus) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus {
+        let proto = try SignalServiceProtos_SyncMessage.SentUpdate.UnidentifiedDeliveryStatus(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.SentUpdate.UnidentifiedDeliveryStatus) throws -> SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus {
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus -
+
+        let result = SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus.SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatusBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoSyncMessageSentUpdate
+
+@objc public class SSKProtoSyncMessageSentUpdate: NSObject {
+
+    // MARK: - SSKProtoSyncMessageSentUpdateBuilder
+
+    @objc public class func builder() -> SSKProtoSyncMessageSentUpdateBuilder {
+        return SSKProtoSyncMessageSentUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoSyncMessageSentUpdateBuilder {
+        let builder = SSKProtoSyncMessageSentUpdateBuilder()
+        if let _value = destination {
+            builder.setDestination(_value)
+        }
+        if hasTimestamp {
+            builder.setTimestamp(timestamp)
+        }
+        builder.setUnidentifiedStatus(unidentifiedStatus)
+        return builder
+    }
+
+    @objc public class SSKProtoSyncMessageSentUpdateBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.SentUpdate()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setDestination(_ valueParam: String) {
+            proto.destination = valueParam
+        }
+
+        @objc public func setTimestamp(_ valueParam: UInt64) {
+            proto.timestamp = valueParam
+        }
+
+        @objc public func addUnidentifiedStatus(_ valueParam: SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus) {
+            var items = proto.unidentifiedStatus
+            items.append(valueParam.proto)
+            proto.unidentifiedStatus = items
+        }
+
+        @objc public func setUnidentifiedStatus(_ wrappedItems: [SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus]) {
+            proto.unidentifiedStatus = wrappedItems.map { $0.proto }
+        }
+
+        @objc public func build() throws -> SSKProtoSyncMessageSentUpdate {
+            return try SSKProtoSyncMessageSentUpdate.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageSentUpdate.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.SentUpdate
+
+    @objc public let unidentifiedStatus: [SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus]
+
+    @objc public var destination: String? {
+        guard proto.hasDestination else {
+            return nil
+        }
+        return proto.destination
+    }
+    @objc public var hasDestination: Bool {
+        return proto.hasDestination
+    }
+
+    @objc public var timestamp: UInt64 {
+        return proto.timestamp
+    }
+    @objc public var hasTimestamp: Bool {
+        return proto.hasTimestamp
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.SentUpdate,
+                 unidentifiedStatus: [SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus]) {
+        self.proto = proto
+        self.unidentifiedStatus = unidentifiedStatus
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageSentUpdate {
+        let proto = try SignalServiceProtos_SyncMessage.SentUpdate(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.SentUpdate) throws -> SSKProtoSyncMessageSentUpdate {
+        var unidentifiedStatus: [SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus] = []
+        unidentifiedStatus = try proto.unidentifiedStatus.map { try SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus.parseProto($0) }
+
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageSentUpdate -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessageSentUpdate -
+
+        let result = SSKProtoSyncMessageSentUpdate(proto: proto,
+                                                   unidentifiedStatus: unidentifiedStatus)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessageSentUpdate {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageSentUpdate.SSKProtoSyncMessageSentUpdateBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageSentUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessageContacts
 
 @objc public class SSKProtoSyncMessageContacts: NSObject {
@@ -4434,6 +4669,9 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
         if let _value = sent {
             builder.setSent(_value)
         }
+        if let _value = sentUpdate {
+            builder.setSentUpdate(_value)
+        }
         if let _value = contacts {
             builder.setContacts(_value)
         }
@@ -4467,6 +4705,10 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
 
         @objc public func setSent(_ valueParam: SSKProtoSyncMessageSent) {
             proto.sent = valueParam.proto
+        }
+
+        @objc public func setSentUpdate(_ valueParam: SSKProtoSyncMessageSentUpdate) {
+            proto.sentUpdate = valueParam.proto
         }
 
         @objc public func setContacts(_ valueParam: SSKProtoSyncMessageContacts) {
@@ -4520,6 +4762,8 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
 
     @objc public let sent: SSKProtoSyncMessageSent?
 
+    @objc public let sentUpdate: SSKProtoSyncMessageSentUpdate?
+
     @objc public let contacts: SSKProtoSyncMessageContacts?
 
     @objc public let groups: SSKProtoSyncMessageGroups?
@@ -4546,6 +4790,7 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
 
     private init(proto: SignalServiceProtos_SyncMessage,
                  sent: SSKProtoSyncMessageSent?,
+                 sentUpdate: SSKProtoSyncMessageSentUpdate?,
                  contacts: SSKProtoSyncMessageContacts?,
                  groups: SSKProtoSyncMessageGroups?,
                  request: SSKProtoSyncMessageRequest?,
@@ -4555,6 +4800,7 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
                  configuration: SSKProtoSyncMessageConfiguration?) {
         self.proto = proto
         self.sent = sent
+        self.sentUpdate = sentUpdate
         self.contacts = contacts
         self.groups = groups
         self.request = request
@@ -4578,6 +4824,11 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
         var sent: SSKProtoSyncMessageSent? = nil
         if proto.hasSent {
             sent = try SSKProtoSyncMessageSent.parseProto(proto.sent)
+        }
+
+        var sentUpdate: SSKProtoSyncMessageSentUpdate? = nil
+        if proto.hasSentUpdate {
+            sentUpdate = try SSKProtoSyncMessageSentUpdate.parseProto(proto.sentUpdate)
         }
 
         var contacts: SSKProtoSyncMessageContacts? = nil
@@ -4619,6 +4870,7 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
 
         let result = SSKProtoSyncMessage(proto: proto,
                                          sent: sent,
+                                         sentUpdate: sentUpdate,
                                          contacts: contacts,
                                          groups: groups,
                                          request: request,

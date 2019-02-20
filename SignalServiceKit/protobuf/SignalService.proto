@@ -267,6 +267,16 @@ message SyncMessage {
     repeated UnidentifiedDeliveryStatus unidentifiedStatus       = 5;
   }
 
+  message SentUpdate {
+      message UnidentifiedDeliveryStatus {
+          optional string destination = 1;
+          optional bool unidentified = 2;
+      }
+      optional string destination = 1;
+      optional uint64 timestamp = 2;
+      repeated UnidentifiedDeliveryStatus unidentifiedStatus = 3;
+  }
+
   message Contacts {
     // @required
     optional AttachmentPointer blob       = 1;
@@ -310,15 +320,16 @@ message SyncMessage {
       optional bool linkPreviews                   = 4;
   }
 
-  optional Sent          sent          = 1;
-  optional Contacts      contacts      = 2;
-  optional Groups        groups        = 3;
-  optional Request       request       = 4;
-  repeated Read          read          = 5;
-  optional Blocked       blocked       = 6;
-  optional Verified      verified      = 7;
-  optional Configuration configuration = 9;
-  optional bytes         padding       = 8;
+  optional Sent          sent          =  1;
+  optional SentUpdate    sentUpdate    = 10;
+  optional Contacts      contacts      =  2;
+  optional Groups        groups        =  3;
+  optional Request       request       =  4;
+  repeated Read          read          =  5;
+  optional Blocked       blocked       =  6;
+  optional Verified      verified      =  7;
+  optional Configuration configuration =  9;
+  optional bytes         padding       =  8;
 }
 
 message AttachmentPointer {
