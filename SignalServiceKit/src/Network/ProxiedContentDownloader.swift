@@ -180,6 +180,27 @@ public class ProxiedContentAssetRequest: NSObject {
         super.init()
     }
 
+    static let k1MB: UInt = 1024 * 1024
+    static let k500KB: UInt = 500 * 1024
+    static let k100KB: UInt = 100 * 1024
+    static let k50KB: UInt = 50 * 1024
+    static let k10KB: UInt = 10 * 1024
+    static let k1KB: UInt = 1 * 1024
+
+    // Returns the possible segment sizes in
+    // largest-to-smallest order.
+    private static var possibleSegmentSizes: [UInt] {
+        AssertIsOnMainThread()
+
+        return [k1MB, k500KB, k100KB, k50KB, k10KB, k1KB ]
+    }
+
+    fileprivate static var smallestPossibleSegmentSize: UInt {
+        AssertIsOnMainThread()
+
+        return k1KB
+    }
+
     private func segmentSize() -> UInt {
         AssertIsOnMainThread()
 
@@ -190,13 +211,7 @@ public class ProxiedContentAssetRequest: NSObject {
             return 0
         }
 
-        let k1MB: UInt = 1024 * 1024
-        let k500KB: UInt = 500 * 1024
-        let k100KB: UInt = 100 * 1024
-        let k50KB: UInt = 50 * 1024
-        let k10KB: UInt = 10 * 1024
-        let k1KB: UInt = 1 * 1024
-        for segmentSize in [k1MB, k500KB, k100KB, k50KB, k10KB, k1KB ] {
+        for segmentSize in ProxiedContentAssetRequest.possibleSegmentSizes {
             if contentLength >= segmentSize {
                 return segmentSize
             }
@@ -640,18 +655,16 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             // try to do so now.
             assetRequest.state = .requestingSize
 
+            let segmentStart: UInt = 0
+            let segmentLength: UInt = ProxiedContentAssetRequest.smallestPossibleSegmentSize
             var request = URLRequest(url: assetRequest.assetDescription.url as URL)
-            request.httpMethod = "HEAD"
             request.httpShouldUsePipelining = true
-            // Some services like Reddit will severely rate-limit requests without a user agent.
-            request.addValue("Signal iOS (+https://signal.org/download)", forHTTPHeaderField: "User-Agent")
-
-            let task = downloadSession.dataTask(with: request, completionHandler: { data, response, error -> Void in
-                if let data = data, data.count > 0 {
-                    owsFailDebug("HEAD request has unexpected body: \(data.count).")
-                }
+            let rangeHeaderValue = "bytes=\(segmentStart)-\(segmentStart + segmentLength - 1)"
+            request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
+            let task = downloadSession.dataTask(with: request, completionHandler: { _, response, error -> Void in
                 self.handleAssetSizeResponse(assetRequest: assetRequest, response: response, error: error)
             })
+
             assetRequest.contentLengthTask = task
             task.resume()
         } else {
@@ -690,13 +703,33 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
-        guard let contentLengthString = httpResponse.allHeaderFields["Content-Length"] as? String else {
-            owsFailDebug("Asset size response is missing content length.")
+        var firstContentRangeString: String?
+        for header in httpResponse.allHeaderFields.keys {
+            guard let headerString = header as? String else {
+                owsFailDebug("Invalid header: \(header)")
+                continue
+            }
+            if headerString.lowercased() == "content-range" {
+                firstContentRangeString = httpResponse.allHeaderFields[header] as? String
+            }
+        }
+        guard let contentRangeString = firstContentRangeString else {
+            owsFailDebug("Asset size response is missing content range.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
-        guard let contentLength = Int(contentLengthString) else {
+
+        // Example: content-range: bytes 0-1023/7630
+        guard let contentLengthString = NSRegularExpression.parseFirstMatch(pattern: "^bytes \\d+\\-\\d+/(\\d+)$",
+                                                              text: contentRangeString) else {
+                                                                owsFailDebug("Asset size response has invalid content range.")
+                                                                assetRequest.state = .failed
+                                                                self.assetRequestDidFail(assetRequest: assetRequest)
+                                                                return
+        }
+        guard contentLengthString.count > 0,
+            let contentLength = Int(contentLengthString) else {
             owsFailDebug("Asset size response has unparsable content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
