@@ -753,7 +753,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)updateWithWasSentFromLinkedDeviceWithUDRecipientIds:(nullable NSArray<NSString *> *)udRecipientIds
                                           nonUdRecipientIds:(nullable NSArray<NSString *> *)nonUdRecipientIds
-                                                transaction:(YapDatabaseReadWriteTransaction *)transaction {
+                                               isSentUpdate:(BOOL)isSentUpdate
+                                                transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
     OWSAssertDebug(transaction);
 
     [self
@@ -788,6 +790,19 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                        recipientState.wasSentByUD = NO;
                                        recipientStateMap[recipientId] = recipientState;
                                    }
+
+                                   if (isSentUpdate) {
+                                       // If this is a "sent update", make sure that:
+                                       //
+                                       // a) "Sent updates" should never remove any recipients.  We end up with the
+                                       //    union of the existing and new recipients.
+                                       // b) "Sent updates" should never downgrade the "recipient state" for any
+                                       //    recipients.  Prefer existing "recipient state"; "sent updates" only
+                                       //    add new recipients at the "sent" state.
+                                       [recipientStateMap removeObjectsForKeys:self.recipientStateMap.allKeys];
+                                       [recipientStateMap addEntriesFromDictionary:self.recipientStateMap];
+                                   }
+
                                    [message setRecipientStateMap:recipientStateMap];
                                } else {
                                    // Otherwise assume this is a legacy message before UD was introduced, and mark

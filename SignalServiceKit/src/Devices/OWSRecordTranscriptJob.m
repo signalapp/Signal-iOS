@@ -161,6 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
     [outgoingMessage saveWithTransaction:transaction];
     [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipientIds:transcript.udRecipientIds
                                                        nonUdRecipientIds:transcript.nonUdRecipientIds
+                                                            isSentUpdate:NO
                                                              transaction:transaction];
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:outgoingMessage
                                                      expirationStartedAt:transcript.expirationStartedAt
@@ -239,6 +240,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     BOOL messageFound = NO;
     for (TSOutgoingMessage *message in messages) {
+        if (!message.isFromLinkedDevice) {
+            // isFromLinkedDevice isn't always set for very old linked messages, but:
+            //
+            // a) We should never receive a "sent update" for a very old message.
+            // b) It's safe to discard suspicious "sent updates."
+            continue;
+        }
         TSThread *thread = [message threadWithTransaction:transaction];
         if (!thread.isGroupThread) {
             continue;
@@ -257,6 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [message updateWithWasSentFromLinkedDeviceWithUDRecipientIds:udRecipientIds
                                                    nonUdRecipientIds:nonUdRecipientIds
+                                                        isSentUpdate:YES
                                                          transaction:transaction];
         messageFound = YES;
     }
