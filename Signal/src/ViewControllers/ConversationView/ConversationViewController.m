@@ -108,25 +108,6 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
-// We use snapshots to ensure that the view has a consistent
-// representation of view model state which is not updated
-// when the view is not observing view model changes.
-@interface ConversationSnapshot : NSObject
-
-@property (nonatomic) NSArray<id<ConversationViewItem>> *viewItems;
-@property (nonatomic) ThreadDynamicInteractions *dynamicInteractions;
-@property (nonatomic) BOOL canLoadMoreItems;
-
-@end
-
-#pragma mark -
-
-@implementation ConversationSnapshot
-
-@end
-
-#pragma mark -
-
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
     ContactShareApprovalViewControllerDelegate,
     AVAudioPlayerDelegate,
@@ -163,7 +144,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
-@property (nonatomic, readonly) ConversationSnapshot *conversationSnapshot;
 
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
 @property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
@@ -214,14 +194,10 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) BOOL isViewCompletelyAppeared;
 @property (nonatomic) BOOL isViewVisible;
-@property (nonatomic) BOOL shouldObserveVMUpdates;
 @property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL hasUnreadMessages;
 @property (nonatomic) BOOL isPickingMediaAsDocument;
-@property (nonatomic, nullable) NSNumber *previousLastTimestamp;
-@property (nonatomic, nullable) NSNumber *previousViewItemCount;
-@property (nonatomic, nullable) NSNumber *previousViewTopToContentBottom;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
 @property (nonatomic) NSTimer *reloadTimer;
@@ -516,12 +492,8 @@ typedef enum : NSUInteger {
     _conversationViewModel =
         [[ConversationViewModel alloc] initWithThread:thread focusMessageIdOnOpen:focusMessageId delegate:self];
 
-    [self updateConversationSnapshot];
-
     _searchController = [[ConversationSearchController alloc] initWithThread:thread];
     _searchController.delegate = self;
-
-    [self updateShouldObserveVMUpdates];
 
     self.reloadTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
                                                             target:self
@@ -540,8 +512,9 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    if (self.isUserScrolling || !self.isViewCompletelyAppeared || !self.isViewVisible || !self.shouldObserveVMUpdates
-        || !self.viewHasEverAppeared) {
+    if (self.isUserScrolling || !self.isViewCompletelyAppeared || !self.isViewVisible
+        || !CurrentAppContext().isAppForegroundAndActive || !self.viewHasEverAppeared
+        || OWSWindowManager.sharedManager.isPresentingMenuActions) {
         return;
     }
 
@@ -710,7 +683,6 @@ typedef enum : NSUInteger {
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
-    [self updateShouldObserveVMUpdates];
     [self cancelVoiceMemo];
     self.isUserScrolling = NO;
     [self saveDraft];
@@ -722,7 +694,6 @@ typedef enum : NSUInteger {
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    [self updateShouldObserveVMUpdates];
     [self startReadTimer];
 }
 
@@ -788,12 +759,12 @@ typedef enum : NSUInteger {
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
 {
-    return self.conversationSnapshot.viewItems;
+    return self.conversationViewModel.viewItems;
 }
 
 - (ThreadDynamicInteractions *)dynamicInteractions
 {
-    return self.conversationSnapshot.dynamicInteractions;
+    return self.conversationViewModel.dynamicInteractions;
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
@@ -882,7 +853,6 @@ typedef enum : NSUInteger {
     // Avoid layout corrupt issues and out-of-date message subtitles.
     self.lastReloadDate = [NSDate new];
     [self.conversationViewModel viewDidResetContentAndLayout];
-    [self tryToUpdateConversationSnapshot];
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
 
@@ -1749,7 +1719,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertDebug(self.conversationViewModel);
 
-    self.showLoadMoreHeader = self.conversationSnapshot.canLoadMoreItems;
+    self.showLoadMoreHeader = self.conversationViewModel.canLoadMoreItems;
 }
 
 - (void)setShowLoadMoreHeader:(BOOL)showLoadMoreHeader
@@ -1998,8 +1968,6 @@ typedef enum : NSUInteger {
 - (void)menuActionsDidHide:(MenuActionsViewController *)menuActionsViewController
 {
     [[OWSWindowManager sharedManager] hideMenuActionsWindow];
-
-    [self updateShouldObserveVMUpdates];
 }
 
 - (void)menuActions:(MenuActionsViewController *)menuActionsViewController
@@ -2106,8 +2074,6 @@ typedef enum : NSUInteger {
 
     self.conversationViewModel.mostRecentMenuActionsViewItem = cell.viewItem;
     [[OWSWindowManager sharedManager] showMenuActionsWindow:menuActionsViewController];
-
-    [self updateShouldObserveVMUpdates];
 }
 
 - (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
@@ -4308,7 +4274,6 @@ typedef enum : NSUInteger {
 {
     _isViewVisible = isViewVisible;
 
-    [self updateShouldObserveVMUpdates];
     [self updateCellsVisible];
 }
 
@@ -4321,134 +4286,8 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)updateShouldObserveVMUpdates
-{
-    if (!CurrentAppContext().isAppForegroundAndActive) {
-        self.shouldObserveVMUpdates = NO;
-        return;
-    }
-
-    if (!self.isViewVisible) {
-        self.shouldObserveVMUpdates = NO;
-        return;
-    }
-
-    if (OWSWindowManager.sharedManager.isPresentingMenuActions) {
-        self.shouldObserveVMUpdates = NO;
-        return;
-    }
-
-    self.shouldObserveVMUpdates = YES;
-}
-
-- (void)setShouldObserveVMUpdates:(BOOL)shouldObserveVMUpdates
-{
-    if (_shouldObserveVMUpdates == shouldObserveVMUpdates) {
-        return;
-    }
-
-    _shouldObserveVMUpdates = shouldObserveVMUpdates;
-
-    if (self.shouldObserveVMUpdates) {
-        OWSLogVerbose(@"resume observation of view model.");
-
-        [self updateConversationSnapshot];
-        [self resetContentAndLayout];
-        [self updateBackButtonUnreadCount];
-        [self updateNavigationBarSubtitleLabel];
-        [self updateDisappearingMessagesConfiguration];
-
-        // Detect changes in the mapping's "window" size.
-        if (self.previousViewTopToContentBottom && self.previousViewItemCount
-            && self.previousViewItemCount.unsignedIntegerValue != self.viewItems.count) {
-            CGFloat newContentHeight = self.safeContentHeight;
-            CGPoint newContentOffset
-                = CGPointMake(0, MAX(0, newContentHeight - self.previousViewTopToContentBottom.floatValue));
-            [self.collectionView setContentOffset:newContentOffset animated:NO];
-        }
-
-        // When we resume observing database changes, we want to scroll to show the user
-        // any new items inserted while we were not observing.  We therefore find the
-        // first item at or after the "view horizon".  See the comments below which explain
-        // the "view horizon".
-        id<ConversationViewItem> _Nullable lastViewItem = self.viewItems.lastObject;
-        BOOL hasAddedNewItems = (lastViewItem && self.previousLastTimestamp
-            && lastViewItem.interaction.timestamp > self.previousLastTimestamp.unsignedLongLongValue);
-
-        OWSLogInfo(@"hasAddedNewItems: %d", hasAddedNewItems);
-        if (hasAddedNewItems) {
-            NSIndexPath *_Nullable indexPathToShow = [self firstIndexPathAtViewHorizonTimestamp];
-            if (indexPathToShow) {
-                // The goal is to show _both_ the last item before the "view horizon" and the
-                // first item after the "view horizon".  We can't do "top on first item after"
-                // or "bottom on last item before" or we won't see the other. Unfortunately,
-                // this gets tricky if either is huge.  The largest cells are oversize text,
-                // which should be rare.  Other cells are considerably smaller than a screenful.
-                [self.collectionView scrollToItemAtIndexPath:indexPathToShow
-                                            atScrollPosition:UICollectionViewScrollPositionCenteredVertically
-                                                    animated:NO];
-            }
-        }
-        self.viewHorizonTimestamp = nil;
-        OWSLogVerbose(@"resumed observation of view model.");
-    } else {
-        OWSLogVerbose(@"pausing observation of view model.");
-        // When stopping observation, try to record the timestamp of the "view horizon".
-        // The "view horizon" is where we'll want to focus the users when we resume
-        // observation if any changes have happened while we weren't observing.
-        // Ideally, we'll focus on those changes.  But we can't skip over unread
-        // interactions, so we prioritize those, if any.
-        //
-        // We'll use this later to update the view to reflect any changes made while
-        // we were not observing the database.  See extendRangeToIncludeUnobservedItems
-        // and the logic above.
-        id<ConversationViewItem> _Nullable lastViewItem = self.viewItems.lastObject;
-        if (lastViewItem) {
-            self.previousLastTimestamp = @(lastViewItem.interaction.timestamp);
-            self.previousViewItemCount = @(self.viewItems.count);
-        } else {
-            self.previousLastTimestamp = nil;
-            self.previousViewItemCount = nil;
-        }
-
-        __block TSInteraction *_Nullable firstUnseenInteraction = nil;
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            firstUnseenInteraction =
-            [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:self.thread.uniqueId];
-        }];
-        if (firstUnseenInteraction) {
-            // If there are any unread interactions, focus on the first one.
-            self.viewHorizonTimestamp = @(firstUnseenInteraction.timestamp);
-        } else if (lastViewItem) {
-            // Otherwise, focus _just after_ the last interaction.
-            self.viewHorizonTimestamp = @(lastViewItem.interaction.timestamp + 1);
-        } else {
-            self.viewHorizonTimestamp = nil;
-        }
-
-        // Snapshot the scroll state by measuring the "distance from top of view to
-        // bottom of content"; if the mapping's "window" size grows, it will grow
-        // _upward_.
-        OWSAssertDebug([self.collectionView.collectionViewLayout isKindOfClass:[ConversationViewLayout class]]);
-        ConversationViewLayout *conversationViewLayout
-            = (ConversationViewLayout *)self.collectionView.collectionViewLayout;
-        // To avoid laying out the collection view during initial view
-        // presentation, don't trigger layout here (via safeContentHeight)
-        // until layout has been done at least once.
-        if (conversationViewLayout.hasEverHadLayout) {
-            self.previousViewTopToContentBottom = @(self.safeContentHeight - self.collectionView.contentOffset.y);
-        } else {
-            self.previousViewTopToContentBottom = nil;
-        }
-
-        OWSLogVerbose(@"paused observation of view model.");
-    }
-}
-
 - (nullable NSIndexPath *)firstIndexPathAtViewHorizonTimestamp
 {
-    OWSAssertDebug(self.shouldObserveVMUpdates);
-
     if (!self.viewHorizonTimestamp) {
         return nil;
     }
@@ -4795,11 +4634,6 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationViewModelDelegate
 
-- (BOOL)isObservingVMUpdates
-{
-    return self.shouldObserveVMUpdates;
-}
-
 - (void)conversationViewModelWillUpdate
 {
     OWSAssertIsOnMainThread();
@@ -4823,11 +4657,6 @@ typedef enum : NSUInteger {
     OWSAssertDebug(conversationUpdate);
     OWSAssertDebug(self.conversationViewModel);
 
-    if (!self.shouldObserveVMUpdates) {
-        return;
-    }
-
-    [self updateConversationSnapshot];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
 
@@ -5135,26 +4964,6 @@ typedef enum : NSUInteger {
 
     // Scroll button layout depends on input toolbar size.
     [self updateScrollDownButtonLayout];
-}
-
-#pragma mark - Conversation Snapshot
-
-- (void)tryToUpdateConversationSnapshot
-{
-    if (!self.isObservingVMUpdates) {
-        return;
-    }
-
-    [self updateConversationSnapshot];
-}
-
-- (void)updateConversationSnapshot
-{
-    ConversationSnapshot *conversationSnapshot = [ConversationSnapshot new];
-    conversationSnapshot.viewItems = self.conversationViewModel.viewItems;
-    conversationSnapshot.dynamicInteractions = self.conversationViewModel.dynamicInteractions;
-    conversationSnapshot.canLoadMoreItems = self.conversationViewModel.canLoadMoreItems;
-    _conversationSnapshot = conversationSnapshot;
 }
 
 @end
