@@ -268,16 +268,16 @@ message SyncMessage {
   }
 
   message SentUpdate {
-      message UnidentifiedDeliveryStatus {
-		  // @required
-          optional string destination = 1;
-          optional bool unidentified = 2;
-      }
-	  // @required
-	  optional bytes groupId = 1;
-	  // @required
-      optional uint64 timestamp = 2;
-      repeated UnidentifiedDeliveryStatus unidentifiedStatus = 3;
+    message UnidentifiedDeliveryStatus {
+      // @required
+      optional string destination = 1;
+      optional bool unidentified = 2;
+    }
+    // @required
+    optional bytes groupId = 1;
+    // @required
+    optional uint64 timestamp = 2;
+    repeated UnidentifiedDeliveryStatus unidentifiedStatus = 3;
   }
 
   message Contacts {
