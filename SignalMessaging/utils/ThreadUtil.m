@@ -71,6 +71,22 @@ NS_ASSUME_NONNULL_BEGIN
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
                                   transaction:(YapDatabaseReadTransaction *)transaction
 {
+
+    NSString *truncatedText;
+    SignalAttachment *_Nullable oversizeTextAttachment;
+
+    if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+        truncatedText = [text truncatedToByteCount:kOversizeTextMessageSizeThreshold];
+        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
+        if (dataSource) {
+            oversizeTextAttachment =
+                [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
+        }
+    } else {
+        truncatedText = text;
+        oversizeTextAttachment = nil;
+    }
+
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId transaction:transaction];
 
