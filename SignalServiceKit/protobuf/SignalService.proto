@@ -272,7 +272,9 @@ message SyncMessage {
           optional string destination = 1;
           optional bool unidentified = 2;
       }
-      optional string destination = 1;
+	  // @required
+	  optional bytes groupId = 1;
+	  // @required
       optional uint64 timestamp = 2;
       repeated UnidentifiedDeliveryStatus unidentifiedStatus = 3;
   }

@@ -1620,15 +1620,17 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var destination: String {
-      get {return _destination ?? String()}
-      set {_destination = newValue}
+    /// @required
+    var groupID: Data {
+      get {return _groupID ?? SwiftProtobuf.Internal.emptyData}
+      set {_groupID = newValue}
     }
-    /// Returns true if `destination` has been explicitly set.
-    var hasDestination: Bool {return self._destination != nil}
-    /// Clears the value of `destination`. Subsequent reads from it will return its default value.
-    mutating func clearDestination() {self._destination = nil}
+    /// Returns true if `groupID` has been explicitly set.
+    var hasGroupID: Bool {return self._groupID != nil}
+    /// Clears the value of `groupID`. Subsequent reads from it will return its default value.
+    mutating func clearGroupID() {self._groupID = nil}
 
+    /// @required
     var timestamp: UInt64 {
       get {return _timestamp ?? 0}
       set {_timestamp = newValue}
@@ -1675,7 +1677,7 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _destination: String? = nil
+    fileprivate var _groupID: Data? = nil
     fileprivate var _timestamp: UInt64? = nil
   }
 
@@ -4048,7 +4050,7 @@ extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: Swift
 extension SignalServiceProtos_SyncMessage.SentUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".SentUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "destination"),
+    1: .same(proto: "groupId"),
     2: .same(proto: "timestamp"),
     3: .same(proto: "unidentifiedStatus"),
   ]
@@ -4056,7 +4058,7 @@ extension SignalServiceProtos_SyncMessage.SentUpdate: SwiftProtobuf.Message, Swi
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._destination)
+      case 1: try decoder.decodeSingularBytesField(value: &self._groupID)
       case 2: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
       case 3: try decoder.decodeRepeatedMessageField(value: &self.unidentifiedStatus)
       default: break
@@ -4065,8 +4067,8 @@ extension SignalServiceProtos_SyncMessage.SentUpdate: SwiftProtobuf.Message, Swi
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._destination {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    if let v = self._groupID {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
     }
     if let v = self._timestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
@@ -4078,7 +4080,7 @@ extension SignalServiceProtos_SyncMessage.SentUpdate: SwiftProtobuf.Message, Swi
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.SentUpdate, rhs: SignalServiceProtos_SyncMessage.SentUpdate) -> Bool {
-    if lhs._destination != rhs._destination {return false}
+    if lhs._groupID != rhs._groupID {return false}
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs.unidentifiedStatus != rhs.unidentifiedStatus {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

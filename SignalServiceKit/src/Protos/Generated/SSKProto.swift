@@ -3848,19 +3848,13 @@ extension SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus.SSKProtoSyncMe
 
     // MARK: - SSKProtoSyncMessageSentUpdateBuilder
 
-    @objc public class func builder() -> SSKProtoSyncMessageSentUpdateBuilder {
-        return SSKProtoSyncMessageSentUpdateBuilder()
+    @objc public class func builder(groupID: Data, timestamp: UInt64) -> SSKProtoSyncMessageSentUpdateBuilder {
+        return SSKProtoSyncMessageSentUpdateBuilder(groupID: groupID, timestamp: timestamp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoSyncMessageSentUpdateBuilder {
-        let builder = SSKProtoSyncMessageSentUpdateBuilder()
-        if let _value = destination {
-            builder.setDestination(_value)
-        }
-        if hasTimestamp {
-            builder.setTimestamp(timestamp)
-        }
+        let builder = SSKProtoSyncMessageSentUpdateBuilder(groupID: groupID, timestamp: timestamp)
         builder.setUnidentifiedStatus(unidentifiedStatus)
         return builder
     }
@@ -3871,8 +3865,15 @@ extension SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus.SSKProtoSyncMe
 
         @objc fileprivate override init() {}
 
-        @objc public func setDestination(_ valueParam: String) {
-            proto.destination = valueParam
+        @objc fileprivate init(groupID: Data, timestamp: UInt64) {
+            super.init()
+
+            setGroupID(groupID)
+            setTimestamp(timestamp)
+        }
+
+        @objc public func setGroupID(_ valueParam: Data) {
+            proto.groupID = valueParam
         }
 
         @objc public func setTimestamp(_ valueParam: UInt64) {
@@ -3900,28 +3901,19 @@ extension SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus.SSKProtoSyncMe
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.SentUpdate
 
+    @objc public let groupID: Data
+
+    @objc public let timestamp: UInt64
+
     @objc public let unidentifiedStatus: [SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus]
 
-    @objc public var destination: String? {
-        guard proto.hasDestination else {
-            return nil
-        }
-        return proto.destination
-    }
-    @objc public var hasDestination: Bool {
-        return proto.hasDestination
-    }
-
-    @objc public var timestamp: UInt64 {
-        return proto.timestamp
-    }
-    @objc public var hasTimestamp: Bool {
-        return proto.hasTimestamp
-    }
-
     private init(proto: SignalServiceProtos_SyncMessage.SentUpdate,
+                 groupID: Data,
+                 timestamp: UInt64,
                  unidentifiedStatus: [SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus]) {
         self.proto = proto
+        self.groupID = groupID
+        self.timestamp = timestamp
         self.unidentifiedStatus = unidentifiedStatus
     }
 
@@ -3936,6 +3928,16 @@ extension SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus.SSKProtoSyncMe
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.SentUpdate) throws -> SSKProtoSyncMessageSentUpdate {
+        guard proto.hasGroupID else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: groupID")
+        }
+        let groupID = proto.groupID
+
+        guard proto.hasTimestamp else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
+        }
+        let timestamp = proto.timestamp
+
         var unidentifiedStatus: [SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus] = []
         unidentifiedStatus = try proto.unidentifiedStatus.map { try SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus.parseProto($0) }
 
@@ -3944,6 +3946,8 @@ extension SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus.SSKProtoSyncMe
         // MARK: - End Validation Logic for SSKProtoSyncMessageSentUpdate -
 
         let result = SSKProtoSyncMessageSentUpdate(proto: proto,
+                                                   groupID: groupID,
+                                                   timestamp: timestamp,
                                                    unidentifiedStatus: unidentifiedStatus)
         return result
     }
