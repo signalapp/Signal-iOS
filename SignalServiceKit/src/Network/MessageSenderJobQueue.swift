@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -81,7 +81,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     public typealias DurableOperationType = MessageSenderOperation
     public static let jobRecordLabel: String = "MessageSender"
-    public static let maxRetries: UInt = 10
+    public static let maxRetries: UInt = 30
     public let requiresInternet: Bool = true
     public var runningOperations: [MessageSenderOperation] = []
 
@@ -211,7 +211,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         // ...
         // try 11 delay: 61.31s
         let backoffFactor = 1.9
-        let maxBackoff = kHourInterval
+        let maxBackoff = 15 * kMinuteInterval
 
         let seconds = 0.1 * min(maxBackoff, pow(backoffFactor, Double(self.jobRecord.failureCount)))
         return seconds
