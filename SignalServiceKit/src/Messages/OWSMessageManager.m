@@ -863,9 +863,6 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent
                                                         transaction:transaction];
 
-        OWSRecordTranscriptJob *recordJob =
-            [[OWSRecordTranscriptJob alloc] initWithIncomingSentMessageTranscript:transcript];
-
         SSKProtoDataMessage *_Nullable dataMessage = syncMessage.sent.message;
         if (!dataMessage) {
             OWSFailDebug(@"Missing dataMessage.");
@@ -883,29 +880,34 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message]) {
-            [recordJob
-                runWithAttachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                    OWSAssertDebug(attachmentStreams.count == 1);
-                    TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        TSGroupThread *_Nullable groupThread =
-                            [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
-                        if (!groupThread) {
-                            OWSFailDebug(@"ignoring sync group avatar update for unknown group.");
-                            return;
-                        }
+            [OWSRecordTranscriptJob
+                processIncomingSentMessageTranscript:transcript
+                                   attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                                       OWSAssertDebug(attachmentStreams.count == 1);
+                                       TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
+                                       [self.dbConnection readWriteWithBlock:^(
+                                           YapDatabaseReadWriteTransaction *transaction) {
+                                           TSGroupThread *_Nullable groupThread =
+                                               [TSGroupThread threadWithGroupId:dataMessage.group.id
+                                                                    transaction:transaction];
+                                           if (!groupThread) {
+                                               OWSFailDebug(@"ignoring sync group avatar update for unknown group.");
+                                               return;
+                                           }
 
-                        [groupThread updateAvatarWithAttachmentStream:attachmentStream transaction:transaction];
-                    }];
-                }
-                             transaction:transaction];
+                                           [groupThread updateAvatarWithAttachmentStream:attachmentStream
+                                                                             transaction:transaction];
+                                       }];
+                                   }
+                                         transaction:transaction];
         } else {
-            [recordJob
-                runWithAttachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                    OWSLogDebug(
-                        @"successfully fetched transcript attachments: %lu", (unsigned long)attachmentStreams.count);
-                }
-                             transaction:transaction];
+            [OWSRecordTranscriptJob
+                processIncomingSentMessageTranscript:transcript
+                                   attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                                       OWSLogDebug(@"successfully fetched transcript attachments: %lu",
+                                           (unsigned long)attachmentStreams.count);
+                                   }
+                                         transaction:transaction];
         }
     } else if (syncMessage.request) {
         if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeContacts) {

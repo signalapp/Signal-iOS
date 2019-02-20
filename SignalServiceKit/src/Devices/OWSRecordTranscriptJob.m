@@ -18,71 +18,53 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSRecordTranscriptJob ()
-
-@property (nonatomic, readonly) OWSIncomingSentMessageTranscript *incomingSentMessageTranscript;
-
-@end
-
-#pragma mark -
-
 @implementation OWSRecordTranscriptJob
-
-- (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _incomingSentMessageTranscript = incomingSentMessageTranscript;
-
-    return self;
-}
 
 #pragma mark - Dependencies
 
-- (OWSPrimaryStorage *)primaryStorage
++ (OWSPrimaryStorage *)primaryStorage
 {
     OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
 
     return SSKEnvironment.shared.primaryStorage;
 }
 
-- (TSNetworkManager *)networkManager
++ (TSNetworkManager *)networkManager
 {
     OWSAssertDebug(SSKEnvironment.shared.networkManager);
 
     return SSKEnvironment.shared.networkManager;
 }
 
-- (OWSReadReceiptManager *)readReceiptManager
++ (OWSReadReceiptManager *)readReceiptManager
 {
     OWSAssert(SSKEnvironment.shared.readReceiptManager);
 
     return SSKEnvironment.shared.readReceiptManager;
 }
 
-- (id<ContactsManagerProtocol>)contactsManager
++ (id<ContactsManagerProtocol>)contactsManager
 {
     OWSAssertDebug(SSKEnvironment.shared.contactsManager);
 
     return SSKEnvironment.shared.contactsManager;
 }
 
-- (OWSAttachmentDownloads *)attachmentDownloads
++ (OWSAttachmentDownloads *)attachmentDownloads
 {
     return SSKEnvironment.shared.attachmentDownloads;
 }
 
 #pragma mark -
 
-- (void)runWithAttachmentHandler:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
-                     transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)transcript
+                           attachmentHandler:(void (^)(
+                                                 NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
+                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssertDebug(transcript);
     OWSAssertDebug(transaction);
 
-    OWSIncomingSentMessageTranscript *transcript = self.incomingSentMessageTranscript;
     OWSLogInfo(@"Recording transcript in thread: %@ timestamp: %llu", transcript.thread.uniqueId, transcript.timestamp);
 
     if (transcript.isEndSessionMessage) {
