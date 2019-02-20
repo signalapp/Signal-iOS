@@ -869,6 +869,11 @@ const CGFloat kMaxTextViewHeight = 98;
     [self updateInputLinkPreview];
 }
 
+- (void)textViewDidChangeSelection:(UITextView *)textView
+{
+    [self updateInputLinkPreview];
+}
+
 - (void)updateHeightWithTextView:(UITextView *)textView
 {
     // compute new height assuming width is unchanged
@@ -922,7 +927,10 @@ const CGFloat kMaxTextViewHeight = 98;
         return;
     }
 
-    NSString *_Nullable previewUrl = [OWSLinkPreview previewUrlForMessageBodyText:body];
+    // It's key that we use the *raw/unstripped* text, so we can reconcile cursor position with the
+    // selectedRange.
+    NSString *_Nullable previewUrl = [OWSLinkPreview previewUrlForRawBodyText:self.inputTextView.text
+                                                                selectedRange:self.inputTextView.selectedRange];
     if (previewUrl.length < 1) {
         [self clearLinkPreviewStateAndView];
         return;
