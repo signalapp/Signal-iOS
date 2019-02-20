@@ -542,12 +542,19 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     OWSLogVerbose(@"");
 
+    if (!self.delegate.isObservingVMUpdates) {
+        return;
+    }
+
     // External database modifications (e.g. changes from another process such as the SAE)
     // are "flushed" using touchDbAsync when the app re-enters the foreground.
 }
 
 - (void)uiDatabaseWillUpdate:(NSNotification *)notification
 {
+    if (!self.delegate.isObservingVMUpdates) {
+        return;
+    }
     [self.delegate conversationViewModelWillUpdate];
 }
 
@@ -697,6 +704,13 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                      updatedItemSet:(NSSet<NSString *> *)updatedItemSetParam {
     OWSAssertDebug(oldItemIdList);
     OWSAssertDebug(updatedItemSetParam);
+
+    if (!self.delegate.isObservingVMUpdates) {
+        OWSLogVerbose(@"Skipping VM update.");
+        // We fire this event, but it will be ignored.
+        [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate];
+        return;
+    }
 
     if (oldItemIdList.count != [NSSet setWithArray:oldItemIdList].count) {
         OWSFailDebug(@"Old view item list has duplicates.");
