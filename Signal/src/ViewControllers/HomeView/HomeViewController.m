@@ -1621,10 +1621,12 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     if (self.homeViewMode == HomeViewMode_Inbox && inboxCount == 0 && archiveCount == 0) {
         [_tableView setHidden:YES];
         [self.emptyInboxView setHidden:NO];
+        [self.firstConversationCueView setHidden:NO];
         [self updateFirstConversationLabel];
     } else {
         [_tableView setHidden:NO];
         [self.emptyInboxView setHidden:YES];
+        [self.firstConversationCueView setHidden:YES];
     }
 }
 
