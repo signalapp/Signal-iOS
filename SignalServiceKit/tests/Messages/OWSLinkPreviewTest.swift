@@ -169,19 +169,20 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     }
 
     func testPreviewUrlForMessageBodyText() {
-        XCTAssertNil(OWSLinkPreview.previewUrl(forMessageBodyText: ""))
-        XCTAssertNil(OWSLinkPreview.previewUrl(forMessageBodyText: "alice bob jim"))
-        XCTAssertNil(OWSLinkPreview.previewUrl(forMessageBodyText: "alice bob jim http://"))
-        XCTAssertNil(OWSLinkPreview.previewUrl(forMessageBodyText: "alice bob jim http://a.com"))
+        Assert(bodyText: "", extractsLink: nil)
+        Assert(bodyText: "alice bob jim", extractsLink: nil)
+        Assert(bodyText: "alice bob jim http://", extractsLink: nil)
+        Assert(bodyText: "alice bob jim http://a.com", extractsLink: nil)
 
-        XCTAssertEqual(OWSLinkPreview.previewUrl(forMessageBodyText: "https://www.youtube.com/watch?v=tP-Ipsat90c"),
-                       "https://www.youtube.com/watch?v=tP-Ipsat90c")
-        XCTAssertEqual(OWSLinkPreview.previewUrl(forMessageBodyText: "alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim"),
-                       "https://www.youtube.com/watch?v=tP-Ipsat90c")
+        Assert(bodyText: "https://www.youtube.com/watch?v=tP-Ipsat90c",
+               extractsLink: "https://www.youtube.com/watch?v=tP-Ipsat90c")
+
+        Assert(bodyText: "alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim",
+               extractsLink: "https://www.youtube.com/watch?v=tP-Ipsat90c")
 
         // If there are more than one, take the first.
-        XCTAssertEqual(OWSLinkPreview.previewUrl(forMessageBodyText: "alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim https://www.youtube.com/watch?v=other-url carol"),
-                       "https://www.youtube.com/watch?v=tP-Ipsat90c")
+        Assert(bodyText: "alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim https://www.youtube.com/watch?v=other-url carol",
+               extractsLink: "https://www.youtube.com/watch?v=tP-Ipsat90c")
     }
 
     func testUtils() {
@@ -453,5 +454,88 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertNotNil(regex.firstMatch(in: text,
                                          options: [],
                                          range: NSRange(location: 0, length: text.utf16.count)))
+    }
+
+    func testCursorPositions() {
+        // sanity check
+        Assert(bodyText: "https://www.youtube.com/watch?v=testCursorPositionsa",
+               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsa",
+               selectedRange: nil)
+
+        // Don't extract link if cursor is touching text
+        let text2 = "https://www.youtube.com/watch?v=testCursorPositionsb"
+        XCTAssertEqual(text2.count, 52)
+        Assert(bodyText: text2,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 51, length: 0))
+
+        Assert(bodyText: text2,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 51, length: 10))
+
+        Assert(bodyText: text2,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 0, length: 0))
+
+        // Unless the cursor is at the end of the text
+        Assert(bodyText: text2,
+               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsb",
+               selectedRange: NSRange(location: 52, length: 0))
+
+        // Once extracted, keep the existing link preview, even if the cursor moves back.
+        Assert(bodyText: text2,
+               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsb",
+               selectedRange: NSRange(location: 51, length: 0))
+
+        let text3 = "foo https://www.youtube.com/watch?v=testCursorPositionsc bar"
+        XCTAssertEqual(text3.count, 60)
+
+        // front edge
+        Assert(bodyText: text3,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 4, length: 0))
+
+        // middle
+        Assert(bodyText: text3,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 4, length: 0))
+
+        // rear edge
+        Assert(bodyText: text3,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 56, length: 0))
+
+        // extract link if selecting after link
+        Assert(bodyText: text3,
+               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsc",
+               selectedRange: NSRange(location: 57, length: 0))
+
+        let text4 = "bar https://www.youtube.com/watch?v=testCursorPositionsd foo"
+        XCTAssertEqual(text4.count, 60)
+
+        // front edge
+        Assert(bodyText: text4,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 4, length: 0))
+
+        // middle
+        Assert(bodyText: text4,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 20, length: 0))
+
+        // rear edge
+        Assert(bodyText: text4,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 56, length: 0))
+
+        // extract link if selecting before link
+        Assert(bodyText: text4,
+               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsd",
+               selectedRange: NSRange(location: 3, length: 0))
+    }
+
+    private func Assert(bodyText: String, extractsLink link: String?, selectedRange: NSRange? = nil, file: StaticString = #file, line: UInt = #line) {
+        let actual = OWSLinkPreview.previewUrl(forMessageBodyText: bodyText, selectedRange: selectedRange)
+        XCTAssertEqual(actual, link, file: file, line: line)
     }
 }

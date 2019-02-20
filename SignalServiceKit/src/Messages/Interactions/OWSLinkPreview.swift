@@ -469,8 +469,9 @@ public class OWSLinkPreview: MTLModel {
 
         if let selectedRange = selectedRange {
             Logger.verbose("match: urlString: \(urlMatch.urlString) range: \(urlMatch.matchRange) selectedRange: \(selectedRange)")
+            let cursorAtEndOfMatch = urlMatch.matchRange.location + urlMatch.matchRange.length == selectedRange.location
             if selectedRange.location != body.count,
-                urlMatch.matchRange.intersection(selectedRange) != nil {
+                (urlMatch.matchRange.intersection(selectedRange) != nil || cursorAtEndOfMatch) {
                 Logger.debug("ignoring URL, since the user is currently editing it.")
                 // we don't want to cache the result here, as we want to fetch the link preview
                 // if the user moves the cursor.
