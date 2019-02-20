@@ -23,7 +23,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
             ])
         titleRow.axis = .vertical
         titleRow.alignment = .fill
-        titleRow.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 0, right: 16)
+        titleRow.layoutMargins = UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
         titleRow.isLayoutMarginsRelativeArrangement = true
 
         // We want the CAPTCHA web content to "fill the screen (honoring margins)".
@@ -71,6 +71,14 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         super.viewWillAppear(animated)
 
         loadContent()
+
+        webView?.scrollView.contentOffset = .zero
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        webView?.scrollView.contentOffset = .zero
     }
 
     fileprivate let contentUrl = "https://signalcaptchas.org/registration/generate.html"

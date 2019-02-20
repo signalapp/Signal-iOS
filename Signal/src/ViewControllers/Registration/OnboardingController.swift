@@ -353,7 +353,7 @@ public class OnboardingController: NSObject {
             let value = try CurrentAppContext().keychainStorage().string(forService: kKeychainService_LastRegistered, key: key)
             return value
         } catch {
-            owsFailDebug("Error: \(error)")
+            // The value may not be present in the keychain.
             return nil
         }
     }
