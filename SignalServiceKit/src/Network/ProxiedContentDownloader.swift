@@ -753,6 +753,9 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         } else {
             owsFailDebug("Request has no headers.")
         }
+        if let httpBody = request.httpBody {
+            result += httpBody.count
+        }
         return UInt(result)
     }
 
