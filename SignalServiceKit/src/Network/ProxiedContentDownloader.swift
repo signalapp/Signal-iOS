@@ -669,6 +669,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             request.httpShouldUsePipelining = true
             let rangeHeaderValue = "bytes=\(segmentStart)-\(segmentStart + segmentLength - 1)"
             request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
+            padRequestSize(request: &request)
             let task = downloadSession.dataTask(with: request, completionHandler: { data, response, error -> Void in
                 self.handleAssetSizeResponse(assetRequest: assetRequest, data: data, response: response, error: error)
             })
@@ -688,6 +689,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             request.httpShouldUsePipelining = true
             let rangeHeaderValue = "bytes=\(assetSegment.segmentStart)-\(assetSegment.segmentStart + assetSegment.segmentLength - 1)"
             request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
+            padRequestSize(request: &request)
             let task: URLSessionDataTask = downloadSession.dataTask(with: request)
             task.assetRequest = assetRequest
             task.assetSegment = assetSegment
@@ -697,6 +699,64 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
 
         // Recurse; we may be able to start multiple downloads.
         processRequestQueueSync()
+    }
+
+    private func padRequestSize(request: inout URLRequest) {
+        guard let sizeEstimate: UInt = estimateRequestSize(request: request) else {
+            owsFailDebug("Could not estimate request size.")
+            return
+        }
+        // We pad the estimated size to an even multiple of paddingQuantum (plus the
+        // extra ": " and "\r\n").  The exact size doesn't matter so long as the
+        // padding is consistent.
+        let paddingQuantum: UInt = 1024
+        let paddingSize = paddingQuantum - (sizeEstimate % paddingQuantum)
+        let padding = String(repeating: ".", count: Int(paddingSize))
+        request.addValue(padding, forHTTPHeaderField: "SignalPadding")
+    }
+
+    private func estimateRequestSize(request: URLRequest) -> UInt? {
+        // iOS doesn't offer an exact way to measure request sizes on the wire,
+        // but we can reliably estimate request sizes using the "knowns", e.g.
+        // HTTP method, path, querystring, headers.  The "unknowns" should be
+        // consistent between requests.
+
+        guard let url = request.url?.absoluteString else {
+            owsFailDebug("Request missing URL.")
+            return nil
+        }
+        guard let components = URLComponents(string: url) else {
+            owsFailDebug("Request has invalid URL.")
+            return nil
+        }
+
+        var result: Int = 0
+
+        if let httpMethod = request.httpMethod {
+            result += httpMethod.count
+        }
+        result += components.percentEncodedPath.count
+        if let percentEncodedQuery = components.percentEncodedQuery {
+            result += percentEncodedQuery.count
+        }
+        if let allHTTPHeaderFields = request.allHTTPHeaderFields {
+            if allHTTPHeaderFields.count != 1 {
+                owsFailDebug("Request has unexpected number of headers.")
+            }
+            for (key, value) in allHTTPHeaderFields {
+                // Each header has 4 extra bytes:
+                //
+                // * Two for the key/value separator ": "
+                // * Two for "\r\n", the line break in the HTTP protocol spec.
+                result += key.count + value.count + 4
+            }
+        } else {
+            owsFailDebug("Request has no headers.")
+        }
+        if let httpBody = request.httpBody {
+            result += httpBody.count
+        }
+        return UInt(result)
     }
 
     private func handleAssetSizeResponse(assetRequest: ProxiedContentAssetRequest, data: Data?, response: URLResponse?, error: Error?) {
