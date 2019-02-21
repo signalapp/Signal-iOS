@@ -657,6 +657,8 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             return
         }
 
+        let userAgent = "Signal iOS (+https://signal.org/download)"
+
         if assetRequest.state == .waiting {
             // If asset request hasn't yet determined the resource size,
             // try to do so now, by requesting a small initial segment.
@@ -669,6 +671,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             request.httpShouldUsePipelining = true
             let rangeHeaderValue = "bytes=\(segmentStart)-\(segmentStart + segmentLength - 1)"
             request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
+            request.addValue(userAgent, forHTTPHeaderField: "User-Agent")
             padRequestSize(request: &request)
             let task = downloadSession.dataTask(with: request, completionHandler: { data, response, error -> Void in
                 self.handleAssetSizeResponse(assetRequest: assetRequest, data: data, response: response, error: error)
@@ -689,6 +692,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             request.httpShouldUsePipelining = true
             let rangeHeaderValue = "bytes=\(assetSegment.segmentStart)-\(assetSegment.segmentStart + assetSegment.segmentLength - 1)"
             request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
+            request.addValue(userAgent, forHTTPHeaderField: "User-Agent")
             padRequestSize(request: &request)
             let task: URLSessionDataTask = downloadSession.dataTask(with: request)
             task.assetRequest = assetRequest
@@ -740,7 +744,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             result += percentEncodedQuery.count
         }
         if let allHTTPHeaderFields = request.allHTTPHeaderFields {
-            if allHTTPHeaderFields.count != 1 {
+            if allHTTPHeaderFields.count != 2 {
                 owsFailDebug("Request has unexpected number of headers.")
             }
             for (key, value) in allHTTPHeaderFields {
