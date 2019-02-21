@@ -804,7 +804,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                        // b) "Sent updates" should never downgrade the "recipient state" for any
                                        //    recipients.  Prefer existing "recipient state"; "sent updates" only
                                        //    add new recipients at the "sent" state.
-                                       [recipientStateMap removeObjectsForKeys:self.recipientStateMap.allKeys];
+                                       //
+                                       // Therefore we retain all existing entries in the recipient state map.
                                        [recipientStateMap addEntriesFromDictionary:self.recipientStateMap];
                                    }
 

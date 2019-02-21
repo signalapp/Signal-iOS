@@ -1391,19 +1391,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return success();
     }
 
-    BOOL shouldSendTranscript = NO;
-    BOOL isRecipientUpdate = NO;
-    if (message.hasSyncedTranscript) {
-        shouldSendTranscript = YES;
-    } else if (AreRecipientUpdatesEnabled()) {
-        shouldSendTranscript = YES;
-        isRecipientUpdate = YES;
-    }
-
+    BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript);
     if (!shouldSendTranscript) {
         return success();
     }
 
+    BOOL isRecipientUpdate = message.hasSyncedTranscript;
     [self
         sendSyncTranscriptForMessage:message
                    isRecipientUpdate:isRecipientUpdate
