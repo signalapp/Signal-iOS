@@ -244,6 +244,11 @@ NS_ASSUME_NONNULL_BEGIN
             continue;
         }
 
+        if (!message.isFromLinkedDevice) {
+            OWSFailDebug(@"Ignoring 'recipient update' for message which was sent locally.");
+            continue;
+        }
+
         OWSLogInfo(@"Processing 'recipient update' transcript in thread: %@, timestamp: %llu, nonUdRecipientIds: %d, "
                    @"udRecipientIds: %d.",
             thread.uniqueId,
