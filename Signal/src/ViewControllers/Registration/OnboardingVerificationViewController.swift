@@ -187,6 +187,14 @@ private class OnboardingCodeView: UIView {
             digitStroke.backgroundColor = backgroundColor
         }
     }
+
+    fileprivate func set(verificationCode: String) {
+        digitText = verificationCode
+
+        updateViewState()
+
+        self.delegate?.codeViewDidChange()
+    }
 }
 
 // MARK: -
@@ -251,9 +259,15 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
     private var codeState = CodeState.sent
 
     private var titleLabel: UILabel?
+    private var backLink: UIView?
     private let onboardingCodeView = OnboardingCodeView()
     private var codeStateLink: OWSFlatButton?
     private let errorLabel = UILabel()
+
+    @objc
+    public func hideBackLink() {
+        backLink?.isHidden = true
+    }
 
     override public func loadView() {
         super.loadView()
@@ -267,6 +281,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         let backLink = self.linkButton(title: NSLocalizedString("ONBOARDING_VERIFICATION_BACK_LINK",
                                                                 comment: "Label for the link that lets users change their phone number in the onboarding views."),
                                        selector: #selector(backLinkTapped))
+        self.backLink = backLink
 
         onboardingCodeView.delegate = self
 
@@ -494,6 +509,19 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
     private func setHasInvalidCode(_ value: Bool) {
         onboardingCodeView.setHasError(value)
         errorLabel.isHidden = !value
+    }
+
+    @objc
+    public func setVerificationCodeAndTryToVerify(_ verificationCode: String) {
+        AssertIsOnMainThread()
+
+        let filteredCode = verificationCode.digitsOnly
+        guard filteredCode.count > 0 else {
+            owsFailDebug("Invalid code: \(verificationCode)")
+            return
+        }
+
+        onboardingCodeView.set(verificationCode: filteredCode)
     }
 }
 
