@@ -1391,13 +1391,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return success();
     }
 
+    BOOL shouldSendTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript);
+    if (!shouldSendTranscript) {
+        return success();
+    }
+
+    BOOL isRecipientUpdate = message.hasSyncedTranscript;
     [self
         sendSyncTranscriptForMessage:message
+                   isRecipientUpdate:isRecipientUpdate
                              success:^{
-                                 // TODO: We might send to a recipient, then to another recipient on retry.
-                                 //       To ensure desktop receives all "delivery status" info, we might
-                                 //       want to send a transcript after every send that reaches _any_
-                                 //       new recipients.
                                  [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                      [message updateWithHasSyncedTranscript:YES transaction:transaction];
                                  }];
@@ -1408,11 +1411,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message
+                   isRecipientUpdate:(BOOL)isRecipientUpdate
                              success:(void (^)(void))success
                              failure:(RetryableFailureHandler)failure
 {
     OWSOutgoingSentMessageTranscript *sentMessageTranscript =
-        [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message];
+        [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message isRecipientUpdate:isRecipientUpdate];
 
     NSString *recipientId = self.tsAccountManager.localNumber;
     __block SignalRecipient *recipient;

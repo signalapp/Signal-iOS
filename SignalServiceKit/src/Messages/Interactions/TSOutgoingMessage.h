@@ -6,6 +6,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// Feature flag.
+//
+// TODO: Remove.
+BOOL AreRecipientUpdatesEnabled(void);
+
 typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
     // The message is either:
     // a) Enqueued for sending.
@@ -220,6 +225,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 - (void)updateWithWasSentFromLinkedDeviceWithUDRecipientIds:(nullable NSArray<NSString *> *)udRecipientIds
                                           nonUdRecipientIds:(nullable NSArray<NSString *> *)nonUdRecipientIds
+                                               isSentUpdate:(BOOL)isSentUpdate
                                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This method is used to rewrite the recipient list with a single recipient.

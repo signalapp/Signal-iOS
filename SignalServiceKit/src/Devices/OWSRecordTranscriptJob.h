@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSIncomingSentMessageTranscript;
+@class SSKProtoSyncMessageSentUpdate;
 @class TSAttachmentStream;
 @class YapDatabaseReadWriteTransaction;
 
@@ -12,11 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSRecordTranscriptJob : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
-    NS_DESIGNATED_INITIALIZER;
 
-- (void)runWithAttachmentHandler:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
-                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
+                           attachmentHandler:(void (^)(
+                                                 NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
+                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

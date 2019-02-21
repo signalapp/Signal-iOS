@@ -10,79 +10,70 @@
 #import "OWSReadReceiptManager.h"
 #import "SSKEnvironment.h"
 #import "TSAttachmentPointer.h"
+#import "TSGroupThread.h"
 #import "TSInfoMessage.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSRecordTranscriptJob ()
-
-@property (nonatomic, readonly) OWSIncomingSentMessageTranscript *incomingSentMessageTranscript;
-
-@end
-
-#pragma mark -
-
 @implementation OWSRecordTranscriptJob
-
-- (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _incomingSentMessageTranscript = incomingSentMessageTranscript;
-
-    return self;
-}
 
 #pragma mark - Dependencies
 
-- (OWSPrimaryStorage *)primaryStorage
++ (OWSPrimaryStorage *)primaryStorage
 {
     OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
 
     return SSKEnvironment.shared.primaryStorage;
 }
 
-- (TSNetworkManager *)networkManager
++ (TSNetworkManager *)networkManager
 {
     OWSAssertDebug(SSKEnvironment.shared.networkManager);
 
     return SSKEnvironment.shared.networkManager;
 }
 
-- (OWSReadReceiptManager *)readReceiptManager
++ (OWSReadReceiptManager *)readReceiptManager
 {
     OWSAssert(SSKEnvironment.shared.readReceiptManager);
 
     return SSKEnvironment.shared.readReceiptManager;
 }
 
-- (id<ContactsManagerProtocol>)contactsManager
++ (id<ContactsManagerProtocol>)contactsManager
 {
     OWSAssertDebug(SSKEnvironment.shared.contactsManager);
 
     return SSKEnvironment.shared.contactsManager;
 }
 
-- (OWSAttachmentDownloads *)attachmentDownloads
++ (OWSAttachmentDownloads *)attachmentDownloads
 {
     return SSKEnvironment.shared.attachmentDownloads;
 }
 
 #pragma mark -
 
-- (void)runWithAttachmentHandler:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
-                     transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)transcript
+                           attachmentHandler:(void (^)(
+                                                 NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
+                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssertDebug(transcript);
     OWSAssertDebug(transaction);
 
-    OWSIncomingSentMessageTranscript *transcript = self.incomingSentMessageTranscript;
+    if (transcript.isRecipientUpdate) {
+        // "Recipient updates" are processed completely separately in order
+        // to avoid resurrecting threads or messages.
+        [self processRecipientUpdateWithTranscript:transcript transaction:transaction];
+        return;
+    }
+
     OWSLogInfo(@"Recording transcript in thread: %@ timestamp: %llu", transcript.thread.uniqueId, transcript.timestamp);
 
     if (transcript.isEndSessionMessage) {
@@ -170,6 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
     [outgoingMessage saveWithTransaction:transaction];
     [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipientIds:transcript.udRecipientIds
                                                        nonUdRecipientIds:transcript.nonUdRecipientIds
+                                                            isSentUpdate:NO
                                                              transaction:transaction];
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:outgoingMessage
                                                      expirationStartedAt:transcript.expirationStartedAt
@@ -186,6 +178,95 @@ NS_ASSUME_NONNULL_BEGIN
                                       OWSLogError(
                                           @"failed to fetch transcripts attachments for message: %@", outgoingMessage);
                                   }];
+    }
+}
+
+#pragma mark -
+
++ (void)processRecipientUpdateWithTranscript:(OWSIncomingSentMessageTranscript *)transcript
+                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssertDebug(transcript);
+    OWSAssertDebug(transaction);
+
+    if (!AreRecipientUpdatesEnabled()) {
+        OWSFailDebug(@"Ignoring 'recipient update' transcript; disabled.");
+        return;
+    }
+
+    if (transcript.udRecipientIds.count < 1 && transcript.nonUdRecipientIds.count < 1) {
+        OWSFailDebug(@"Ignoring empty 'recipient update' transcript.");
+        return;
+    }
+
+    uint64_t timestamp = transcript.timestamp;
+    if (timestamp < 1) {
+        OWSFailDebug(@"'recipient update' transcript has invalid timestamp.");
+        return;
+    }
+
+    if (!transcript.thread.isGroupThread) {
+        OWSFailDebug(@"'recipient update' has missing or invalid thread.");
+        return;
+    }
+    TSGroupThread *groupThread = (TSGroupThread *)transcript.thread;
+    NSData *groupId = groupThread.groupModel.groupId;
+    if (groupId.length < 1) {
+        OWSFailDebug(@"'recipient update' transcript has invalid groupId.");
+        return;
+    }
+
+    NSArray<TSOutgoingMessage *> *messages
+        = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:timestamp
+                                                                           ofClass:[TSOutgoingMessage class]
+                                                                   withTransaction:transaction];
+    if (messages.count < 1) {
+        // This message may have disappeared.
+        OWSLogError(@"No matching message with timestamp: %llu.", timestamp);
+        return;
+    }
+
+    BOOL messageFound = NO;
+    for (TSOutgoingMessage *message in messages) {
+        if (!message.isFromLinkedDevice) {
+            // isFromLinkedDevice isn't always set for very old linked messages, but:
+            //
+            // a) We should never receive a "sent update" for a very old message.
+            // b) It's safe to discard suspicious "sent updates."
+            continue;
+        }
+        TSThread *thread = [message threadWithTransaction:transaction];
+        if (!thread.isGroupThread) {
+            continue;
+        }
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        if (![groupThread.groupModel.groupId isEqual:groupId]) {
+            continue;
+        }
+
+        if (!message.isFromLinkedDevice) {
+            OWSFailDebug(@"Ignoring 'recipient update' for message which was sent locally.");
+            continue;
+        }
+
+        OWSLogInfo(@"Processing 'recipient update' transcript in thread: %@, timestamp: %llu, nonUdRecipientIds: %d, "
+                   @"udRecipientIds: %d.",
+            thread.uniqueId,
+            timestamp,
+            (int)transcript.nonUdRecipientIds.count,
+            (int)transcript.udRecipientIds.count);
+
+        [message updateWithWasSentFromLinkedDeviceWithUDRecipientIds:transcript.udRecipientIds
+                                                   nonUdRecipientIds:transcript.nonUdRecipientIds
+                                                        isSentUpdate:YES
+                                                         transaction:transaction];
+
+        messageFound = YES;
+    }
+
+    if (!messageFound) {
+        // This message may have disappeared.
+        OWSLogError(@"No matching message with timestamp: %llu.", timestamp);
     }
 }
 

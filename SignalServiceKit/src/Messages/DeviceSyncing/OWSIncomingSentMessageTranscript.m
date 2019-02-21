@@ -36,23 +36,35 @@ NS_ASSUME_NONNULL_BEGIN
     _isGroupUpdate = _dataMessage.group != nil && (_dataMessage.group.type == SSKProtoGroupContextTypeUpdate);
     _isExpirationTimerUpdate = (_dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0;
     _isEndSessionMessage = (_dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0;
+    _isRecipientUpdate = sentProto.isRecipientUpdate;
 
-    if (self.dataMessage.group) {
-        _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
+    if (self.isRecipientUpdate) {
+        // Fetch, don't create.  We don't want recipient updates to resurrect messages or threads.
+        if (self.dataMessage.group) {
+            _thread = [TSGroupThread threadWithGroupId:_dataMessage.group.id transaction:transaction];
+        } else {
+            OWSFailDebug(@"We should never receive a 'recipient update' for messages in contact threads.");
+        }
+        // Skip the other processing for recipient updates.
     } else {
-        _thread = [TSContactThread getOrCreateThreadWithContactId:_recipientId transaction:transaction];
-    }
+        if (self.dataMessage.group) {
+            _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
+        } else {
+            _thread = [TSContactThread getOrCreateThreadWithContactId:_recipientId transaction:transaction];
+        }
 
-    _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
-    _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
+        _quotedMessage =
+            [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
+        _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
 
-    NSError *linkPreviewError;
-    _linkPreview = [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:_dataMessage
-                                                                       body:_body
-                                                                transaction:transaction
-                                                                      error:&linkPreviewError];
-    if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
-        OWSLogError(@"linkPreviewError: %@", linkPreviewError);
+        NSError *linkPreviewError;
+        _linkPreview = [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:_dataMessage
+                                                                           body:_body
+                                                                    transaction:transaction
+                                                                          error:&linkPreviewError];
+        if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
+            OWSLogError(@"linkPreviewError: %@", linkPreviewError);
+        }
     }
 
     if (sentProto.unidentifiedStatus.count > 0) {
