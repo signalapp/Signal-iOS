@@ -173,6 +173,7 @@ public class ImageEditorCanvasView: UIView {
         contentLayerMap.removeAll()
 
         let viewSize = clipView.bounds.size
+        let transform = model.currentTransform()
         if viewSize.width > 0,
             viewSize.height > 0 {
 
@@ -183,6 +184,7 @@ public class ImageEditorCanvasView: UIView {
             for item in model.items() {
                 guard let layer = ImageEditorCanvasView.layerForItem(item: item,
                                                                      model: model,
+                                                                     transform: transform,
                                                                      viewSize: viewSize) else {
                                                                         continue
                 }
@@ -217,6 +219,7 @@ public class ImageEditorCanvasView: UIView {
         }
 
         let viewSize = clipView.bounds.size
+        let transform = model.currentTransform()
         if viewSize.width > 0,
             viewSize.height > 0 {
 
@@ -234,6 +237,7 @@ public class ImageEditorCanvasView: UIView {
                 // Item was inserted or updated.
                 guard let layer = ImageEditorCanvasView.layerForItem(item: item,
                                                                      model: model,
+                                                                     transform: transform,
                                                                      viewSize: viewSize) else {
                                                                         continue
                 }
@@ -320,6 +324,7 @@ public class ImageEditorCanvasView: UIView {
 
     private class func layerForItem(item: ImageEditorItem,
                                     model: ImageEditorModel,
+                                    transform: ImageEditorTransform,
                                     viewSize: CGSize) -> CALayer? {
         AssertIsOnMainThread()
 
@@ -332,7 +337,10 @@ public class ImageEditorCanvasView: UIView {
                 owsFailDebug("Item has unexpected type: \(type(of: item)).")
                 return nil
             }
-            return strokeLayerForItem(item: strokeItem, viewSize: viewSize)
+            return strokeLayerForItem(item: strokeItem,
+                                      model: model,
+                                      transform: transform,
+                                      viewSize: viewSize)
         case .text:
             guard let textItem = item as? ImageEditorTextItem else {
                 owsFailDebug("Item has unexpected type: \(type(of: item)).")
@@ -340,11 +348,14 @@ public class ImageEditorCanvasView: UIView {
             }
             return textLayerForItem(item: textItem,
                                     model: model,
+                                    transform: transform,
                                     viewSize: viewSize)
         }
     }
 
     private class func strokeLayerForItem(item: ImageEditorStrokeItem,
+                                          model: ImageEditorModel,
+                                          transform: ImageEditorTransform,
                                           viewSize: CGSize) -> CALayer? {
         AssertIsOnMainThread()
 
@@ -361,9 +372,9 @@ public class ImageEditorCanvasView: UIView {
         shapeLayer.strokeColor = item.color.cgColor
         shapeLayer.frame = CGRect(origin: .zero, size: viewSize)
 
+        let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: model.srcImageSizePixels, transform: transform)
         let transformSampleToPoint = { (unitSample: CGPoint) -> CGPoint in
-            return CGPoint(x: viewSize.width * unitSample.x,
-                           y: viewSize.height * unitSample.y)
+            return unitSample.fromUnitCoordinates(viewBounds: imageFrame)
         }
 
         // Use bezier curves to smooth stroke.
@@ -436,11 +447,11 @@ public class ImageEditorCanvasView: UIView {
 
     private class func textLayerForItem(item: ImageEditorTextItem,
                                         model: ImageEditorModel,
+                                        transform: ImageEditorTransform,
                                         viewSize: CGSize) -> CALayer? {
         AssertIsOnMainThread()
 
-        let imageFrame = self.imageFrame(forViewSize: viewSize, imageSize: model.srcImageSizePixels,
-                                         transform: model.currentTransform())
+        let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: model.srcImageSizePixels, transform: transform)
 
         // We need to adjust the font size to reflect the current output scale,
         // using the image width as reference.
@@ -476,8 +487,7 @@ public class ImageEditorCanvasView: UIView {
                                                                 .font: item.font.withSize(fontSize)
             ],
                                                               context: nil)
-        let center = CGPoint(x: viewSize.width * item.unitCenter.x,
-                             y: viewSize.height * item.unitCenter.y)
+        let center = item.unitCenter.fromUnitCoordinates(viewBounds: imageFrame)
         let layerSize = CGSizeCeil(textBounds.size)
         layer.frame = CGRect(origin: CGPoint(x: center.x - layerSize.width * 0.5,
                                              y: center.y - layerSize.height * 0.5),
@@ -535,24 +545,24 @@ public class ImageEditorCanvasView: UIView {
                                    transform: ImageEditorTransform) -> CGPoint {
         let locationInView = gestureRecognizer.location(in: view)
         return locationUnit(forLocationInView: locationInView,
-                            viewSize: view.bounds.size,
+                            viewBounds: view.bounds,
                             transform: transform)
     }
 
     public func locationUnit(forLocationInView locationInView: CGPoint,
                              transform: ImageEditorTransform) -> CGPoint {
-        let viewSize = self.clipView.bounds.size
+        let viewBounds = self.clipView.bounds
         return ImageEditorCanvasView.locationUnit(forLocationInView: locationInView,
-                                                  viewSize: viewSize,
+                                                  viewBounds: viewBounds,
                                                   transform: transform)
     }
 
     public class func locationUnit(forLocationInView locationInView: CGPoint,
-                                   viewSize: CGSize,
+                                   viewBounds: CGRect,
                                    transform: ImageEditorTransform) -> CGPoint {
-        let affineTransformStart = transform.affineTransform(viewSize: viewSize)
-        let locationInContent = locationInView.applyingInverse(affineTransformStart)
-        let locationUnit = locationInContent.toUnitCoordinates(viewSize: viewSize, shouldClamp: false)
+        let affineTransformStart = transform.affineTransform(viewSize: viewBounds.size)
+        let locationInContent = locationInView.minus(viewBounds.center).applyingInverse(affineTransformStart).plus(viewBounds.center)
+        let locationUnit = locationInContent.toUnitCoordinates(viewSize: viewBounds.size, shouldClamp: false)
         return locationUnit
     }
 
@@ -608,6 +618,7 @@ public class ImageEditorCanvasView: UIView {
         for item in model.items() {
             guard let layer = layerForItem(item: item,
                                            model: model,
+                                           transform: transform,
                                            viewSize: viewSize) else {
                                             owsFailDebug("Couldn't create layer for item.")
                                             continue

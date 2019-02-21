@@ -149,9 +149,13 @@ public extension CGPoint {
         return toUnitCoordinates(viewBounds: CGRect(origin: .zero, size: viewSize), shouldClamp: shouldClamp)
     }
 
+    public func fromUnitCoordinates(viewBounds: CGRect) -> CGPoint {
+        return CGPoint(x: viewBounds.origin.x + x.lerp(0, viewBounds.size.width),
+                       y: viewBounds.origin.y + y.lerp(0, viewBounds.size.height))
+    }
+
     public func fromUnitCoordinates(viewSize: CGSize) -> CGPoint {
-        return CGPoint(x: x.lerp(0, viewSize.width),
-                       y: y.lerp(0, viewSize.height))
+        return fromUnitCoordinates(viewBounds: CGRect(origin: .zero, size: viewSize))
     }
 
     public func inverse() -> CGPoint {
