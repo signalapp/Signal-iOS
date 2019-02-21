@@ -2044,6 +2044,7 @@ typedef enum : NSUInteger {
 
     menuActionsViewController.delegate = self;
 
+    self.conversationViewModel.mostRecentMenuActionsViewItem = cell.viewItem;
     [[OWSWindowManager sharedManager] showMenuActionsWindow:menuActionsViewController];
 
     [self updateShouldObserveVMUpdates];
@@ -4818,6 +4819,12 @@ typedef enum : NSUInteger {
 
     // Scroll to bottom to get view back to a known good state.
     [self scrollToBottomAnimated:NO];
+}
+
+- (void)conversationViewModelDidDeleteMostRecentMenuActionsViewItem
+{
+    OWSAssertIsOnMainThread();
+    [[OWSWindowManager sharedManager] hideMenuActionsWindow];
 }
 
 #pragma mark - Orientation
