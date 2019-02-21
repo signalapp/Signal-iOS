@@ -1396,14 +1396,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (message.hasSyncedTranscript) {
         shouldSendTranscript = YES;
     } else if (AreRecipientUpdatesEnabled()) {
-        __block BOOL isGroupThread = NO;
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            isGroupThread = [message threadWithTransaction:transaction].isGroupThread;
-        }];
-        if (isGroupThread) {
-            shouldSendTranscript = YES;
-            isRecipientUpdate = YES;
-        }
+        shouldSendTranscript = YES;
+        isRecipientUpdate = YES;
     }
 
     if (!shouldSendTranscript) {
