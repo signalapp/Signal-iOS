@@ -296,6 +296,23 @@ class ImageEditorCropViewController: OWSViewController {
         return true
     }
 
+    // MARK: - Gestures
+
+    private class func unitTranslation(oldLocationView: CGPoint,
+                                       newLocationView: CGPoint,
+                                       viewBounds: CGRect,
+                                       oldTransform: ImageEditorTransform) -> CGPoint {
+
+        // The beauty of using an SRT (scale-rotate-translation) tranform ordering
+        // is that the translation is applied last, so it's trivial to convert
+        // translations from view coordinates to transform translation.
+        // Our (view bounds == canvas bounds) so no need to convert.
+        let translation = newLocationView.minus(oldLocationView)
+        let translationUnit = translation.toUnitCoordinates(viewSize: viewBounds.size, shouldClamp: false)
+        let newUnitTranslation = oldTransform.unitTranslation.plus(translationUnit)
+        return newUnitTranslation
+    }
+
     // MARK: - Pinch Gesture
 
     @objc
@@ -315,12 +332,10 @@ class ImageEditorCropViewController: OWSViewController {
                 return
             }
 
-            let locationUnitStart = self.locationUnit(forLocationInView: gestureRecognizer.pinchStateStart.centroid,
-                                                      transform: gestureStartTransform)
-            let locationUnitLast = self.locationUnit(forLocationInView: gestureRecognizer.pinchStateLast.centroid,
-                                                     transform: gestureStartTransform)
-            let locationUnitDelta = CGPointSubtract(locationUnitLast, locationUnitStart)
-            let newUnitTranslation = CGPointAdd(gestureStartTransform.unitTranslation, locationUnitDelta)
+            let newUnitTranslation = ImageEditorCropViewController.unitTranslation(oldLocationView: gestureRecognizer.pinchStateStart.centroid,
+                                                                                   newLocationView: gestureRecognizer.pinchStateLast.centroid,
+                                                                                   viewBounds: clipView.bounds,
+                                                                                   oldTransform: gestureStartTransform)
 
             let newRotationRadians = gestureStartTransform.rotationRadians + gestureRecognizer.pinchStateLast.angleRadians - gestureRecognizer.pinchStateStart.angleRadians
 
@@ -521,15 +536,11 @@ class ImageEditorCropViewController: OWSViewController {
             return
         }
 
-        // The beauty of using an SRT (scale-rotate-translation) tranform ordering
-        // is that the translation is applied last, so it's trivial to convert
-        // translations from view coordinates to transform translation.
-        let viewBounds = clipView.bounds
         let newLocationView = gestureRecognizer.location(in: self.clipView)
-        // Our (view bounds == canvas bounds) so no need to convert.
-        let translation = newLocationView.minus(oldLocationView)
-        let translationUnit = translation.toUnitCoordinates(viewSize: viewBounds.size, shouldClamp: false)
-        let newUnitTranslation = gestureStartTransform.unitTranslation.plus(translationUnit)
+        let newUnitTranslation = ImageEditorCropViewController.unitTranslation(oldLocationView: oldLocationView,
+                                                                               newLocationView: newLocationView,
+                                                                               viewBounds: clipView.bounds,
+                                                                               oldTransform: gestureStartTransform)
 
         updateTransform(ImageEditorTransform(outputSizePixels: gestureStartTransform.outputSizePixels,
                                          unitTranslation: newUnitTranslation,
