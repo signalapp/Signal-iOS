@@ -5,10 +5,10 @@
 import Foundation
 
 @objc(OWSLegacyContactDiscoveryOperation)
-class LegacyContactDiscoveryBatchOperation: OWSOperation {
+public class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
     @objc
-    var registeredRecipientIds: Set<String>
+    public var registeredRecipientIds: Set<String>
 
     private let recipientIdsToLookup: [String]
     private var networkManager: TSNetworkManager {
@@ -18,7 +18,7 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
     // MARK: Initializers
 
     @objc
-    required init(recipientIdsToLookup: [String]) {
+    public required init(recipientIdsToLookup: [String]) {
         self.recipientIdsToLookup = recipientIdsToLookup
         self.registeredRecipientIds = Set()
 
@@ -30,7 +30,7 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
     // MARK: OWSOperation Overrides
 
     // Called every retry, this is where the bulk of the operation's work should go.
-    override func run() {
+    override public func run() {
         Logger.debug("")
 
         guard !isCancelled else {
@@ -82,7 +82,7 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
     }
 
     // Called at most one time.
-    override func didSucceed() {
+    override public func didSucceed() {
         // Compare against new CDS service
         let modernCDSOperation = CDSOperation(recipientIdsToLookup: self.recipientIdsToLookup)
         let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredRecipientIds: self.registeredRecipientIds)

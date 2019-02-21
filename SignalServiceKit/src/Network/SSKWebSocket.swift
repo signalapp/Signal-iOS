@@ -32,7 +32,7 @@ public class SSKWebSocketError: NSObject, CustomNSError {
     // MARK: -
 
     @objc
-    static let kStatusCodeKey = "SSKWebSocketErrorStatusCode"
+    public static let kStatusCodeKey = "SSKWebSocketErrorStatusCode"
 
     let underlyingError: Starscream.WSError
 }
