@@ -299,7 +299,7 @@ public class ImageEditorView: UIView {
         }
 
         let location = gestureRecognizer.location(in: canvasView.gestureReferenceView)
-        guard let textLayer = canvasView.textLayer(forLocation: location) else {
+        guard let textLayer = self.textLayer(forLocation: location) else {
             return
         }
 
@@ -326,7 +326,7 @@ public class ImageEditorView: UIView {
         switch gestureRecognizer.state {
         case .began:
             let pinchState = gestureRecognizer.pinchStateStart
-            guard let textLayer = canvasView.textLayer(forLocation: pinchState.centroid) else {
+            guard let textLayer = self.textLayer(forLocation: pinchState.centroid) else {
                 // The pinch needs to start centered on a text item.
                 return
             }
@@ -341,14 +341,20 @@ public class ImageEditorView: UIView {
                 return
             }
 
+            let view = self.canvasView.gestureReferenceView
+            let viewBounds = view.bounds
             let locationStart = gestureRecognizer.pinchStateStart.centroid
-            let locationUnitStart = locationUnit(forLocationInView: locationStart, transform: model.currentTransform())
             let locationNow = gestureRecognizer.pinchStateLast.centroid
-            let locationUnitNow = locationUnit(forLocationInView: locationNow, transform: model.currentTransform())
-
-            let unitLocationDelta = CGPointSubtract(locationUnitNow,
-                                                    locationUnitStart)
-            let unitCenter = CGPointClamp01(CGPointAdd(textItem.unitCenter, unitLocationDelta))
+            let gestureStartImageUnit = ImageEditorView.locationImageUnit(forLocationInView: locationStart,
+                                                                          viewBounds: viewBounds,
+                                                                          model: self.model,
+                                                                          transform: self.model.currentTransform())
+            let gestureNowImageUnit = ImageEditorView.locationImageUnit(forLocationInView: locationNow,
+                                                                        viewBounds: viewBounds,
+                                                                        model: self.model,
+                                                                        transform: self.model.currentTransform())
+            let gestureDeltaImageUnit = gestureNowImageUnit.minus(gestureStartImageUnit)
+            let unitCenter = CGPointClamp01(textItem.unitCenter.plus(gestureDeltaImageUnit))
 
             // NOTE: We use max(1, ...) to avoid divide-by-zero.
             let newScaling = CGFloatClamp(textItem.scaling * gestureRecognizer.pinchStateLast.distance / max(1.0, gestureRecognizer.pinchStateStart.distance),
@@ -383,6 +389,13 @@ public class ImageEditorView: UIView {
     private var movingTextStartUnitCenter: CGPoint?
     private var movingTextHasMoved = false
 
+    private func textLayer(forLocation locationInView: CGPoint) -> EditorTextLayer? {
+        let viewBounds = self.canvasView.gestureReferenceView.bounds
+        let affineTransform = self.model.currentTransform().affineTransform(viewSize: viewBounds.size)
+        let locationInCanvas = locationInView.minus(viewBounds.center).applyingInverse(affineTransform).plus(viewBounds.center)
+        return canvasView.textLayer(forLocation: locationInCanvas)
+    }
+
     @objc
     public func handleMoveTextGesture(_ gestureRecognizer: ImageEditorPanGestureRecognizer) {
         AssertIsOnMainThread()
@@ -395,7 +408,7 @@ public class ImageEditorView: UIView {
                 owsFailDebug("Missing locationStart.")
                 return
             }
-            guard let textLayer = canvasView.textLayer(forLocation: locationStart) else {
+            guard let textLayer = self.textLayer(forLocation: locationStart) else {
                 owsFailDebug("No text layer")
                 return
             }
@@ -420,12 +433,19 @@ public class ImageEditorView: UIView {
                 return
             }
 
-            let locationUnitStart = canvasView.locationUnit(forLocationInView: locationStart, transform: model.currentTransform())
-            let locationNow = gestureRecognizer.location(in: canvasView.gestureReferenceView)
-            let locationUnitNow = canvasView.locationUnit(forLocationInView: locationNow, transform: model.currentTransform())
-
-            let unitLocationDelta = CGPointSubtract(locationUnitNow, locationUnitStart)
-            let unitCenter = CGPointClamp01(CGPointAdd(movingTextStartUnitCenter, unitLocationDelta))
+            let view = self.canvasView.gestureReferenceView
+            let viewBounds = view.bounds
+            let locationInView = gestureRecognizer.location(in: view)
+            let gestureStartImageUnit = ImageEditorView.locationImageUnit(forLocationInView: locationStart,
+                                                                          viewBounds: viewBounds,
+                                                                          model: self.model,
+                                                                          transform: self.model.currentTransform())
+            let gestureNowImageUnit = ImageEditorView.locationImageUnit(forLocationInView: locationInView,
+                                                                        viewBounds: viewBounds,
+                                                                        model: self.model,
+                                                                        transform: self.model.currentTransform())
+            let gestureDeltaImageUnit = gestureNowImageUnit.minus(gestureStartImageUnit)
+            let unitCenter = CGPointClamp01(movingTextStartUnitCenter.plus(gestureDeltaImageUnit))
             let newItem = textItem.copy(withUnitCenter: unitCenter)
 
             if movingTextHasMoved {
@@ -461,7 +481,14 @@ public class ImageEditorView: UIView {
             self.currentStrokeSamples.removeAll()
         }
         let tryToAppendStrokeSample = {
-            let newSample = self.locationUnit(forGestureRecognizer: gestureRecognizer, transform: self.model.currentTransform())
+            let view = self.canvasView.gestureReferenceView
+            let viewBounds = view.bounds
+            let locationInView = gestureRecognizer.location(in: view)
+            let newSample = ImageEditorView.locationImageUnit(forLocationInView: locationInView,
+                                                              viewBounds: viewBounds,
+                                                              model: self.model,
+                                                              transform: self.model.currentTransform())
+
             if let prevSample = self.currentStrokeSamples.last,
                 prevSample == newSample {
                 // Ignore duplicate samples.
@@ -511,14 +538,15 @@ public class ImageEditorView: UIView {
 
     // MARK: - Coordinates
 
-    private func locationUnit(forGestureRecognizer gestureRecognizer: UIGestureRecognizer,
-                              transform: ImageEditorTransform) -> CGPoint {
-        return canvasView.locationUnit(forGestureRecognizer: gestureRecognizer, transform: transform)
-    }
-
-    private func locationUnit(forLocationInView locationInView: CGPoint,
-                              transform: ImageEditorTransform) -> CGPoint {
-        return canvasView.locationUnit(forLocationInView: locationInView, transform: transform)
+    private class func locationImageUnit(forLocationInView locationInView: CGPoint,
+                                         viewBounds: CGRect,
+                                         model: ImageEditorModel,
+                                         transform: ImageEditorTransform) -> CGPoint {
+        let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewBounds.size, imageSize: model.srcImageSizePixels, transform: transform)
+        let affineTransformStart = transform.affineTransform(viewSize: viewBounds.size)
+        let locationInContent = locationInView.minus(viewBounds.center).applyingInverse(affineTransformStart).plus(viewBounds.center)
+        let locationImageUnit = locationInContent.toUnitCoordinates(viewBounds: imageFrame, shouldClamp: false)
+        return locationImageUnit
     }
 
     // MARK: - Edit Text Tool
@@ -586,7 +614,7 @@ extension ImageEditorView: UIGestureRecognizerDelegate {
         }
 
         let location = touch.location(in: canvasView.gestureReferenceView)
-        let isInTextArea = canvasView.textLayer(forLocation: location) != nil
+        let isInTextArea = self.textLayer(forLocation: location) != nil
         return isInTextArea
     }
 }

@@ -588,18 +588,6 @@ class ImageEditorCropViewController: OWSViewController {
         }
     }
 
-    // MARK: - Coordinates
-
-    private func locationUnit(forGestureRecognizer gestureRecognizer: UIGestureRecognizer,
-                              transform: ImageEditorTransform) -> CGPoint {
-        return ImageEditorCanvasView.locationUnit(forGestureRecognizer: gestureRecognizer, view: clipView, transform: transform)
-    }
-
-    private func locationUnit(forLocationInView locationInView: CGPoint,
-                              transform: ImageEditorTransform) -> CGPoint {
-        return ImageEditorCanvasView.locationUnit(forLocationInView: locationInView, viewSize: clipView.bounds.size, transform: transform)
-    }
-
     // MARK: - Events
 
     @objc public func didTapBackButton() {

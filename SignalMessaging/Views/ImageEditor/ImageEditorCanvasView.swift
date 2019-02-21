@@ -531,41 +531,6 @@ public class ImageEditorCanvasView: UIView {
         return result
     }
 
-    // MARK: - Coordinates
-
-    public func locationUnit(forGestureRecognizer gestureRecognizer: UIGestureRecognizer,
-                             transform: ImageEditorTransform) -> CGPoint {
-        return ImageEditorCanvasView.locationUnit(forGestureRecognizer: gestureRecognizer,
-                                                  view: self.clipView,
-                                                  transform: transform)
-    }
-
-    public class func locationUnit(forGestureRecognizer gestureRecognizer: UIGestureRecognizer,
-                                   view: UIView,
-                                   transform: ImageEditorTransform) -> CGPoint {
-        let locationInView = gestureRecognizer.location(in: view)
-        return locationUnit(forLocationInView: locationInView,
-                            viewBounds: view.bounds,
-                            transform: transform)
-    }
-
-    public func locationUnit(forLocationInView locationInView: CGPoint,
-                             transform: ImageEditorTransform) -> CGPoint {
-        let viewBounds = self.clipView.bounds
-        return ImageEditorCanvasView.locationUnit(forLocationInView: locationInView,
-                                                  viewBounds: viewBounds,
-                                                  transform: transform)
-    }
-
-    public class func locationUnit(forLocationInView locationInView: CGPoint,
-                                   viewBounds: CGRect,
-                                   transform: ImageEditorTransform) -> CGPoint {
-        let affineTransformStart = transform.affineTransform(viewSize: viewBounds.size)
-        let locationInContent = locationInView.minus(viewBounds.center).applyingInverse(affineTransformStart).plus(viewBounds.center)
-        let locationUnit = locationInContent.toUnitCoordinates(viewSize: viewBounds.size, shouldClamp: false)
-        return locationUnit
-    }
-
     // MARK: - Actions
 
     // Returns nil on error.
