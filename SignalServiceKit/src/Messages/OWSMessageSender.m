@@ -18,7 +18,6 @@
 #import "OWSMessageServiceParams.h"
 #import "OWSOperation.h"
 #import "OWSOutgoingSentMessageTranscript.h"
-#import "OWSOutgoingSentUpdateMessageTranscript.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSPrimaryStorage+PreKeyStore.h"
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
@@ -1392,35 +1391,45 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return success();
     }
 
+    BOOL shouldSendTranscript = NO;
+    BOOL isRecipientUpdate = NO;
     if (message.hasSyncedTranscript) {
-        if (!AreSentUpdatesEnabled()) {
-            return success();
+        shouldSendTranscript = YES;
+    } else if (AreRecipientUpdatesEnabled()) {
+        __block BOOL isGroupThread = NO;
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            isGroupThread = [message threadWithTransaction:transaction].isGroupThread;
+        }];
+        if (isGroupThread) {
+            shouldSendTranscript = YES;
+            isRecipientUpdate = YES;
         }
-        [self sendSyncUpdateTranscriptForMessage:message
-                                         success:^{
-                                             success();
-                                         }
-                                         failure:failure];
-    } else {
-        [self sendSyncTranscriptForMessage:message
-                                   success:^{
-                                       [self.dbConnection
-                                           readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                               [message updateWithHasSyncedTranscript:YES transaction:transaction];
-                                           }];
-
-                                       success();
-                                   }
-                                   failure:failure];
     }
+
+    if (!shouldSendTranscript) {
+        return success();
+    }
+
+    [self
+        sendSyncTranscriptForMessage:message
+                   isRecipientUpdate:isRecipientUpdate
+                             success:^{
+                                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                     [message updateWithHasSyncedTranscript:YES transaction:transaction];
+                                 }];
+
+                                 success();
+                             }
+                             failure:failure];
 }
 
 - (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message
+                   isRecipientUpdate:(BOOL)isRecipientUpdate
                              success:(void (^)(void))success
                              failure:(RetryableFailureHandler)failure
 {
     OWSOutgoingSentMessageTranscript *sentMessageTranscript =
-        [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message];
+        [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message isRecipientUpdate:isRecipientUpdate];
 
     NSString *recipientId = self.tsAccountManager.localNumber;
     __block SignalRecipient *recipient;
@@ -1441,50 +1450,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         failure:^(NSError *error) {
             OWSLogInfo(@"Failed to send sync transcript: %@ (isRetryable: %d)", error, [error isRetryable]);
-
-            failure(error);
-        }];
-    [self sendMessageToRecipient:messageSend];
-}
-
-- (void)sendSyncUpdateTranscriptForMessage:(TSOutgoingMessage *)message
-                                   success:(void (^)(void))success
-                                   failure:(RetryableFailureHandler)failure
-{
-    NSString *recipientId = self.tsAccountManager.localNumber;
-
-    __block OWSOutgoingSentUpdateMessageTranscript *transcript;
-    __block BOOL isGroupThread = NO;
-    __block SignalRecipient *recipient;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        isGroupThread = message.thread.isGroupThread;
-
-        if (isGroupThread) {
-            recipient = [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
-            transcript = [[OWSOutgoingSentUpdateMessageTranscript alloc] initWithOutgoingMessage:message
-                                                                                     transaction:transaction];
-        }
-    }];
-
-    if (!isGroupThread) {
-        // We only send "sent update" transcripts for group messages.
-        return success();
-    }
-
-    OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:transcript
-        thread:message.thread
-        recipient:recipient
-        senderCertificate:nil
-        udAccess:nil
-        localNumber:self.tsAccountManager.localNumber
-        success:^{
-            OWSLogInfo(@"Successfully sent 'sent update' sync transcript.");
-
-            success();
-        }
-        failure:^(NSError *error) {
-            OWSLogInfo(
-                @"Failed to send 'sent update' sync transcript: %@ (isRetryable: %d)", error, [error isRetryable]);
 
             failure(error);
         }];

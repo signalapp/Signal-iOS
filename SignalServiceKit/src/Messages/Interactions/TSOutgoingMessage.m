@@ -23,7 +23,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-BOOL AreSentUpdatesEnabled(void)
+BOOL AreRecipientUpdatesEnabled(void)
 {
     return NO;
 }
@@ -820,7 +820,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                        }
                                    }
                                }
-                               [message setIsFromLinkedDevice:YES];
+
+                               if (!isSentUpdate) {
+                                   [message setIsFromLinkedDevice:YES];
+                               }
                            }];
 }
 

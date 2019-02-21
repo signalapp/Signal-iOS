@@ -67,6 +67,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(transcript);
     OWSAssertDebug(transaction);
 
+    if (transcript.isRecipientUpdate) {
+        // "Recipient updates" are processed completely separately in order
+        // to avoid resurrecting threads or messages.
+        [self processRecipientUpdateWithTranscript:transcript transaction:transaction];
+        return;
+    }
+
     OWSLogInfo(@"Recording transcript in thread: %@ timestamp: %llu", transcript.thread.uniqueId, transcript.timestamp);
 
     if (transcript.isEndSessionMessage) {
@@ -176,44 +183,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-+ (void)processSentUpdateTranscript:(SSKProtoSyncMessageSentUpdate *)sentUpdate
-                        transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (void)processRecipientUpdateWithTranscript:(OWSIncomingSentMessageTranscript *)transcript
+                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssertDebug(sentUpdate);
+    OWSAssertDebug(transcript);
     OWSAssertDebug(transaction);
 
-    if (!AreSentUpdatesEnabled()) {
-        OWSFailDebug(@"Ignoring 'sent update' transcript; disabled.");
+    if (!AreRecipientUpdatesEnabled()) {
+        OWSFailDebug(@"Ignoring 'recipient update' transcript; disabled.");
         return;
     }
 
-    uint64_t timestamp = sentUpdate.timestamp;
+    if (transcript.udRecipientIds.count < 1 && transcript.nonUdRecipientIds.count < 1) {
+        OWSFailDebug(@"Ignoring empty 'recipient update' transcript.");
+        return;
+    }
+
+    uint64_t timestamp = transcript.timestamp;
     if (timestamp < 1) {
-        OWSFailDebug(@"'Sent update' transcript has invalid timestamp.");
+        OWSFailDebug(@"'recipient update' transcript has invalid timestamp.");
         return;
     }
 
-    NSData *groupId = sentUpdate.groupID;
+    if (!transcript.thread.isGroupThread) {
+        OWSFailDebug(@"'recipient update' has missing or invalid thread.");
+        return;
+    }
+    TSGroupThread *groupThread = (TSGroupThread *)transcript.thread;
+    NSData *groupId = groupThread.groupModel.groupId;
     if (groupId.length < 1) {
-        OWSFailDebug(@"'Sent update' transcript has invalid groupId.");
+        OWSFailDebug(@"'recipient update' transcript has invalid groupId.");
         return;
-    }
-
-    NSArray<SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus *> *statusProtos = sentUpdate.unidentifiedStatus;
-    if (statusProtos.count < 1) {
-        OWSFailDebug(@"'Sent update' transcript is missing statusProtos.");
-        return;
-    }
-
-    NSMutableArray<NSString *> *nonUdRecipientIds = [NSMutableArray new];
-    NSMutableArray<NSString *> *udRecipientIds = [NSMutableArray new];
-    for (SSKProtoSyncMessageSentUpdateUnidentifiedDeliveryStatus *statusProto in statusProtos) {
-        NSString *recipientId = statusProto.destination;
-        if (statusProto.unidentified) {
-            [udRecipientIds addObject:recipientId];
-        } else {
-            [nonUdRecipientIds addObject:recipientId];
-        }
     }
 
     NSArray<TSOutgoingMessage *> *messages
@@ -244,17 +244,18 @@ NS_ASSUME_NONNULL_BEGIN
             continue;
         }
 
-        OWSLogInfo(@"Processing 'sent update' transcript in thread: %@, timestamp: %llu, nonUdRecipientIds: %d, "
+        OWSLogInfo(@"Processing 'recipient update' transcript in thread: %@, timestamp: %llu, nonUdRecipientIds: %d, "
                    @"udRecipientIds: %d.",
             thread.uniqueId,
             timestamp,
-            (int)nonUdRecipientIds.count,
-            (int)udRecipientIds.count);
+            (int)transcript.nonUdRecipientIds.count,
+            (int)transcript.udRecipientIds.count);
 
-        [message updateWithWasSentFromLinkedDeviceWithUDRecipientIds:udRecipientIds
-                                                   nonUdRecipientIds:nonUdRecipientIds
+        [message updateWithWasSentFromLinkedDeviceWithUDRecipientIds:transcript.udRecipientIds
+                                                   nonUdRecipientIds:transcript.nonUdRecipientIds
                                                         isSentUpdate:YES
                                                          transaction:transaction];
+
         messageFound = YES;
     }
 

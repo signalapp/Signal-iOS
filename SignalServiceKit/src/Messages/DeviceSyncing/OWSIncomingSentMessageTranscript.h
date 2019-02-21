@@ -33,10 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSData *groupId;
 @property (nonatomic, readonly) NSString *body;
 @property (nonatomic, readonly) NSArray<SSKProtoAttachmentPointer *> *attachmentPointerProtos;
-@property (nonatomic, readonly) TSThread *thread;
+@property (nonatomic, readonly, nullable) TSThread *thread;
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contact;
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
+@property (nonatomic, readonly) BOOL isRecipientUpdate;
 
 // If either nonUdRecipientIds or udRecipientIds is nil,
 // this is either a legacy transcript or it reflects a legacy sync message.

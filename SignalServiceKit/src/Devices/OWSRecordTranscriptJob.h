@@ -19,9 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                  NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (void)processSentUpdateTranscript:(SSKProtoSyncMessageSentUpdate *)sentUpdate
-                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END

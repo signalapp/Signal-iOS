@@ -878,7 +878,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message]) {
+        if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message] && !syncMessage.sent.isRecipientUpdate) {
             [OWSRecordTranscriptJob
                 processIncomingSentMessageTranscript:transcript
                                    attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
@@ -908,8 +908,6 @@ NS_ASSUME_NONNULL_BEGIN
                                    }
                                          transaction:transaction];
         }
-    } else if (syncMessage.sentUpdate) {
-        [OWSRecordTranscriptJob processSentUpdateTranscript:syncMessage.sentUpdate transaction:transaction];
     } else if (syncMessage.request) {
         if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeContacts) {
             // We respond asynchronously because populating the sync message will
