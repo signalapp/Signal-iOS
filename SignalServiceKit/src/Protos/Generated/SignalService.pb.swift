@@ -1568,14 +1568,14 @@ struct SignalServiceProtos_SyncMessage {
       set {_uniqueStorage()._unidentifiedStatus = newValue}
     }
 
-    var isUpdate: Bool {
-      get {return _storage._isUpdate ?? false}
-      set {_uniqueStorage()._isUpdate = newValue}
+    var isRecipientUpdate: Bool {
+      get {return _storage._isRecipientUpdate ?? false}
+      set {_uniqueStorage()._isRecipientUpdate = newValue}
     }
-    /// Returns true if `isUpdate` has been explicitly set.
-    var hasIsUpdate: Bool {return _storage._isUpdate != nil}
-    /// Clears the value of `isUpdate`. Subsequent reads from it will return its default value.
-    mutating func clearIsUpdate() {_uniqueStorage()._isUpdate = nil}
+    /// Returns true if `isRecipientUpdate` has been explicitly set.
+    var hasIsRecipientUpdate: Bool {return _storage._isRecipientUpdate != nil}
+    /// Clears the value of `isRecipientUpdate`. Subsequent reads from it will return its default value.
+    mutating func clearIsRecipientUpdate() {_uniqueStorage()._isRecipientUpdate = nil}
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -3853,7 +3853,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     3: .same(proto: "message"),
     4: .same(proto: "expirationStartTimestamp"),
     5: .same(proto: "unidentifiedStatus"),
-    6: .same(proto: "isUpdate"),
+    6: .same(proto: "isRecipientUpdate"),
   ]
 
   fileprivate class _StorageClass {
@@ -3862,7 +3862,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     var _message: SignalServiceProtos_DataMessage? = nil
     var _expirationStartTimestamp: UInt64? = nil
     var _unidentifiedStatus: [SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus] = []
-    var _isUpdate: Bool? = nil
+    var _isRecipientUpdate: Bool? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -3874,7 +3874,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
       _message = source._message
       _expirationStartTimestamp = source._expirationStartTimestamp
       _unidentifiedStatus = source._unidentifiedStatus
-      _isUpdate = source._isUpdate
+      _isRecipientUpdate = source._isRecipientUpdate
     }
   }
 
@@ -3895,7 +3895,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
         case 3: try decoder.decodeSingularMessageField(value: &_storage._message)
         case 4: try decoder.decodeSingularUInt64Field(value: &_storage._expirationStartTimestamp)
         case 5: try decoder.decodeRepeatedMessageField(value: &_storage._unidentifiedStatus)
-        case 6: try decoder.decodeSingularBoolField(value: &_storage._isUpdate)
+        case 6: try decoder.decodeSingularBoolField(value: &_storage._isRecipientUpdate)
         default: break
         }
       }
@@ -3919,7 +3919,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
       if !_storage._unidentifiedStatus.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._unidentifiedStatus, fieldNumber: 5)
       }
-      if let v = _storage._isUpdate {
+      if let v = _storage._isRecipientUpdate {
         try visitor.visitSingularBoolField(value: v, fieldNumber: 6)
       }
     }
@@ -3936,7 +3936,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
         if _storage._message != rhs_storage._message {return false}
         if _storage._expirationStartTimestamp != rhs_storage._expirationStartTimestamp {return false}
         if _storage._unidentifiedStatus != rhs_storage._unidentifiedStatus {return false}
-        if _storage._isUpdate != rhs_storage._isUpdate {return false}
+        if _storage._isRecipientUpdate != rhs_storage._isRecipientUpdate {return false}
         return true
       }
       if !storagesAreEqual {return false}
