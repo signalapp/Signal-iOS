@@ -12,7 +12,16 @@ enum MessageMetadataViewMode: UInt {
     case focusOnMetadata
 }
 
+@objc
+protocol MessageDetailViewDelegate: AnyObject {
+    func detailViewMessageWasDeleted(_ messageDetailViewController: MessageDetailViewController)
+}
+
+@objc
 class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDelegate, OWSMessageBubbleViewDelegate, ContactShareViewHelperDelegate {
+
+    @objc
+    weak var delegate: MessageDetailViewDelegate?
 
     // MARK: Properties
 
@@ -67,7 +76,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.viewItem = viewItem
         self.message = message
         self.mode = mode
-        self.uiDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
+        self.uiDatabaseConnection = OWSPrimaryStorage.shared().uiDatabaseConnection
         self.conversationStyle = ConversationStyle(thread: thread)
 
         super.init(nibName: nil, bundle: nil)
@@ -80,8 +89,13 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager)
         contactShareViewHelper.delegate = self
 
-        self.uiDatabaseConnection.beginLongLivedReadTransaction()
-        updateDBConnectionAndMessageToLatest()
+        do {
+            try updateDBConnectionAndMessageToLatest()
+        } catch DetailViewError.messageWasDeleted {
+            self.delegate?.detailViewMessageWasDeleted(self)
+        } catch {
+            owsFailDebug("unexpected error")
+        }
 
         self.conversationStyle.viewWidth = view.width()
 
@@ -93,8 +107,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.view.layoutIfNeeded()
 
         NotificationCenter.default.addObserver(self,
-            selector: #selector(yapDatabaseModified),
-            name: NSNotification.Name.YapDatabaseModified,
+            selector: #selector(uiDatabaseDidUpdate),
+            name: .OWSUIDatabaseConnectionDidUpdate,
             object: OWSPrimaryStorage.shared().dbNotificationObject)
     }
 
@@ -524,19 +538,23 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     // MARK: - Actions
 
+    enum DetailViewError: Error {
+        case messageWasDeleted
+    }
+
     // This method should be called after self.databaseConnection.beginLongLivedReadTransaction().
-    private func updateDBConnectionAndMessageToLatest() {
+    private func updateDBConnectionAndMessageToLatest() throws {
 
         AssertIsOnMainThread()
 
-        self.uiDatabaseConnection.read { transaction in
+        try self.uiDatabaseConnection.read { transaction in
             guard let uniqueId = self.message.uniqueId else {
                 Logger.error("Message is missing uniqueId.")
                 return
             }
             guard let newMessage = TSInteraction.fetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
-                Logger.error("Couldn't reload message.")
-                return
+                Logger.error("Message was deleted")
+                throw DetailViewError.messageWasDeleted
             }
             self.message = newMessage
             self.attachment = self.fetchAttachment(transaction: transaction)
@@ -544,20 +562,25 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         }
     }
 
-    @objc internal func yapDatabaseModified(notification: NSNotification) {
+    @objc internal func uiDatabaseDidUpdate(notification: NSNotification) {
         AssertIsOnMainThread()
 
         guard !wasDeleted else {
-            // Item was deleted. Don't bother re-rendering, it will fail and we'll soon be dismissed.
+            // Item was deleted in the tile view gallery.
+            // Don't bother re-rendering, it will fail and we'll soon be dismissed.
             return
         }
 
-        let notifications = self.uiDatabaseConnection.beginLongLivedReadTransaction()
+        guard let notifications = notification.userInfo?[OWSUIDatabaseConnectionNotificationsKey] as? [Notification] else {
+            owsFailDebug("notifications was unexpectedly nil")
+            return
+        }
 
         guard let uniqueId = self.message.uniqueId else {
             Logger.error("Message is missing uniqueId.")
             return
         }
+
         guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
                                                  inCollection: TSInteraction.collection(),
                                                  in: notifications) else {
@@ -565,7 +588,16 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                                                     return
         }
 
-        updateDBConnectionAndMessageToLatest()
+        do {
+            try updateDBConnectionAndMessageToLatest()
+        } catch DetailViewError.messageWasDeleted {
+            DispatchQueue.main.async {
+                self.delegate?.detailViewMessageWasDeleted(self)
+            }
+            return
+        } catch {
+            owsFailDebug("unexpected error: \(error)")
+        }
         updateContent()
     }
 
@@ -616,14 +648,14 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     // MARK: OWSMessageBubbleViewDelegate
 
     func didTapImageViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
-        let mediaGallery = MediaGallery(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
+        let mediaGallery = MediaGallery(thread: self.thread)
 
         mediaGallery.addDataSourceDelegate(self)
         mediaGallery.presentDetailView(fromViewController: self, mediaAttachment: attachmentStream, replacingView: imageView)
     }
 
     func didTapVideoViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
-        let mediaGallery = MediaGallery(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
+        let mediaGallery = MediaGallery(thread: self.thread)
 
         mediaGallery.addDataSourceDelegate(self)
         mediaGallery.presentDetailView(fromViewController: self, mediaAttachment: attachmentStream, replacingView: imageView)
@@ -732,7 +764,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     // MediaGalleryDataSourceDelegate
 
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
         Logger.info("")
 
         guard (items.map({ $0.message }) == [self.message]) else {

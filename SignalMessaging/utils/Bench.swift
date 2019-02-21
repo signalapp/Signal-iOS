@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,7 +9,10 @@ import Foundation
 ///
 ///     BenchAsync(title: "my benchmark") { completeBenchmark in
 ///         foo {
+///             // consider benchmarking of "foo" complete
 ///             completeBenchmark()
+///
+///             // call any completion handler foo might have
 ///             fooCompletion()
 ///         }
 ///     }
@@ -27,6 +30,21 @@ public func Bench(title: String, block: () -> Void) {
     BenchAsync(title: title) { finish in
         block()
         finish()
+    }
+}
+
+public func Bench(title: String, block: () throws -> Void) throws {
+    var thrownError: Error?
+    BenchAsync(title: title) { finish in
+        do {
+            try block()
+        } catch {
+            thrownError = error
+        }
+        finish()
+    }
+    if let errorToRethrow = thrownError {
+        throw errorToRethrow
     }
 }
 

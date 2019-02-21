@@ -123,6 +123,7 @@ typedef enum : NSUInteger {
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
     MessageActionsDelegate,
+    MessageDetailViewDelegate,
     MenuActionsViewControllerDelegate,
     OWSMessageBubbleViewDelegate,
     UICollectionViewDelegate,
@@ -1924,6 +1925,14 @@ typedef enum : NSUInteger {
     [self populateReplyForViewItem:conversationViewItem];
 }
 
+#pragma mark - MessageDetailViewDelegate
+
+- (void)detailViewMessageWasDeleted:(MessageDetailViewController *)messageDetailViewController
+{
+    OWSLogInfo(@"");
+    [self.navigationController popToViewController:self animated:YES];
+}
+
 #pragma mark - MenuActionsViewControllerDelegate
 
 - (void)menuActionsDidHide:(MenuActionsViewController *)menuActionsViewController
@@ -2158,7 +2167,6 @@ typedef enum : NSUInteger {
 
     MediaGallery *mediaGallery =
         [[MediaGallery alloc] initWithThread:self.thread
-                        uiDatabaseConnection:self.uiDatabaseConnection
                                      options:MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton];
 
     [mediaGallery presentDetailViewFromViewController:self mediaAttachment:attachmentStream replacingView:imageView];
@@ -2181,7 +2189,6 @@ typedef enum : NSUInteger {
 
     MediaGallery *mediaGallery =
         [[MediaGallery alloc] initWithThread:self.thread
-                        uiDatabaseConnection:self.uiDatabaseConnection
                                      options:MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton];
 
     [mediaGallery presentDetailViewFromViewController:self mediaAttachment:attachmentStream replacingView:imageView];
@@ -2358,12 +2365,13 @@ typedef enum : NSUInteger {
     OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
     TSMessage *message = (TSMessage *)conversationItem.interaction;
-    MessageDetailViewController *view =
+    MessageDetailViewController *detailVC =
         [[MessageDetailViewController alloc] initWithViewItem:conversationItem
                                                       message:message
                                                        thread:self.thread
                                                          mode:MessageMetadataViewModeFocusOnMetadata];
-    [self.navigationController pushViewController:view animated:YES];
+    detailVC.delegate = self;
+    [self.navigationController pushViewController:detailVC animated:YES];
 }
 
 - (void)populateReplyForViewItem:(id<ConversationViewItem>)conversationItem
