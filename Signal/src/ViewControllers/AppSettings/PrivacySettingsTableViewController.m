@@ -433,7 +433,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 - (void)didToggleLinkPreviewsEnabled:(UISwitch *)sender
 {
     OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [SSKPreferences setAreLinkPreviewsEnabledWithValue:sender.isOn];
+    SSKPreferences.areLinkPreviewsEnabled = sender.isOn;
 }
 
 - (void)show2FASettings

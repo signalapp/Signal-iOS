@@ -100,9 +100,8 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
             profileRow,
             UIView.spacer(withHeight: 25),
             explanationLabel,
-            UIView.spacer(withHeight: 20),
-            nextButton,
-            bottomSpacer
+            bottomSpacer,
+            nextButton
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
