@@ -716,7 +716,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         let paddingQuantum: UInt = 1024
         let paddingSize = paddingQuantum - (sizeEstimate % paddingQuantum)
         let padding = String(repeating: ".", count: Int(paddingSize))
-        request.addValue(padding, forHTTPHeaderField: "SignalPadding")
+        request.addValue(padding, forHTTPHeaderField: "X-SignalPadding")
     }
 
     private func estimateRequestSize(request: URLRequest) -> UInt? {
