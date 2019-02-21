@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "YapDatabaseTransaction+OWS.h"
@@ -148,6 +148,20 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 #endif
+
+- (void)setBool:(BOOL)value forKey:(NSString *)key inCollection:(NSString *)collection
+{
+    OWSAssertDebug(key.length > 0);
+    OWSAssertDebug(collection.length > 0);
+
+    NSNumber *_Nullable oldValue = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
+    if (oldValue && [@(value) isEqual:oldValue]) {
+        // Skip redundant writes.
+        return;
+    }
+
+    [self setObject:@(value) forKey:key inCollection:collection];
+}
 
 - (void)setDate:(NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection
 {

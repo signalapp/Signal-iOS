@@ -195,7 +195,7 @@ public class OWSLinkPreview: MTLModel {
         guard OWSLinkPreview.featureEnabled else {
             throw LinkPreviewError.noPreview
         }
-        guard SSKPreferences.areLinkPreviewsEnabled() else {
+        guard SSKPreferences.areLinkPreviewsEnabled else {
             throw LinkPreviewError.noPreview
         }
         let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(inputFilePath: info.imageFilePath,
@@ -445,7 +445,7 @@ public class OWSLinkPreview: MTLModel {
             return nil
         }
 
-        guard SSKPreferences.areLinkPreviewsEnabled() else {
+        guard SSKPreferences.areLinkPreviewsEnabled else {
             return nil
         }
 
@@ -497,7 +497,7 @@ public class OWSLinkPreview: MTLModel {
         guard OWSLinkPreview.featureEnabled else {
             return []
         }
-        guard SSKPreferences.areLinkPreviewsEnabled() else {
+        guard SSKPreferences.areLinkPreviewsEnabled else {
             return []
         }
 
@@ -546,7 +546,7 @@ public class OWSLinkPreview: MTLModel {
         guard OWSLinkPreview.featureEnabled else {
             return
         }
-        guard SSKPreferences.areLinkPreviewsEnabled() else {
+        guard SSKPreferences.areLinkPreviewsEnabled else {
             return
         }
 
@@ -565,7 +565,7 @@ public class OWSLinkPreview: MTLModel {
         guard OWSLinkPreview.featureEnabled else {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
-        guard SSKPreferences.areLinkPreviewsEnabled() else {
+        guard SSKPreferences.areLinkPreviewsEnabled else {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
         guard let previewUrl = previewUrl else {

@@ -3,6 +3,7 @@
 //
 
 #import "UIFont+OWS.h"
+#import <SignalCoreKit/iOSVersions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -106,8 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
     static NSDictionary<UIFontTextStyle, NSNumber *> *maxPointSizeMap = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        maxPointSizeMap = @{
-            UIFontTextStyleLargeTitle : @(40.0),
+        NSMutableDictionary<UIFontTextStyle, NSNumber *> *map = [@{
             UIFontTextStyleTitle1 : @(34.0),
             UIFontTextStyleTitle2 : @(28.0),
             UIFontTextStyleTitle3 : @(26.0),
@@ -117,7 +117,11 @@ NS_ASSUME_NONNULL_BEGIN
             UIFontTextStyleFootnote : @(19.0),
             UIFontTextStyleCaption1 : @(18.0),
             UIFontTextStyleCaption2 : @(17.0),
-        };
+        } mutableCopy];
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
+            map[UIFontTextStyleLargeTitle] = @(40.0);
+        }
+        maxPointSizeMap = map;
     });
 
     UIFont *font = [UIFont preferredFontForTextStyle:fontTextStyle];
@@ -135,7 +139,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)ows_dynamicTypeLargeTitle1ClampedFont
 {
-    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleLargeTitle];
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
+        return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleLargeTitle];
+    } else {
+        return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleTitle1];
+    }
 }
 
 + (UIFont *)ows_dynamicTypeTitle1ClampedFont

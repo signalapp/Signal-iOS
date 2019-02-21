@@ -32,17 +32,14 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
                                                                     comment: "Label for the 'not now' button in the 'onboarding permissions' view."),
                                            selector: #selector(notNowPressed))
 
-        let topSpacer = UIView.vStretchingSpacer()
-        let bottomSpacer = UIView.vStretchingSpacer()
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             UIView.spacer(withHeight: 20),
             explanationLabel,
-            topSpacer,
-            giveAccessButton,
-            UIView.spacer(withHeight: 12),
+            UIView.vStretchingSpacer(),
             notNowButton,
-            bottomSpacer
+            UIView.spacer(withHeight: 12),
+            giveAccessButton
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -52,9 +49,6 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
         stackView.autoPinWidthToSuperview()
         stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-
-        // Ensure whitespace is balanced, so inputs are vertically centered.
-        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
     }
 
     // MARK: Request Access

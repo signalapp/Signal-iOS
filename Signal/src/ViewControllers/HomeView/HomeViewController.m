@@ -345,7 +345,10 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self createFirstConversationCueView];
     [self.view addSubview:self.firstConversationCueView];
     [self.firstConversationCueView autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
-    [self.firstConversationCueView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:10];
+    // This inset bakes in assumptions about UINavigationBar layout, but I'm not sure
+    // there's a better way to do it, since it isn't safe to use iOS auto layout with
+    // UINavigationBar contents.
+    [self.firstConversationCueView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:6.f];
     [self.firstConversationCueView autoPinEdgeToSuperviewEdge:ALEdgeLeading
                                                     withInset:10
                                                      relation:NSLayoutRelationGreaterThanOrEqual];
@@ -410,9 +413,9 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     label.lineBreakMode = NSLineBreakByWordWrapping;
 
     OWSLayerView *layerView = [OWSLayerView new];
-    layerView.layoutMargins = UIEdgeInsetsMake(11 + kTailHeight, 16, 7, 16);
+    layerView.layoutMargins = UIEdgeInsetsMake(11 + kTailHeight, 16, 11, 16);
     CAShapeLayer *shapeLayer = [CAShapeLayer new];
-    shapeLayer.fillColor = [OWSConversationColor ows_wintergreenColor].CGColor;
+    shapeLayer.fillColor = UIColor.ows_signalBlueColor.CGColor;
     [layerView.layer addSublayer:shapeLayer];
     layerView.layoutCallback = ^(UIView *view) {
         UIBezierPath *bezierPath = [UIBezierPath new];
@@ -443,8 +446,22 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [layerView addSubview:label];
     [label ows_autoPinToSuperviewMargins];
 
+    layerView.userInteractionEnabled = YES;
+    [layerView
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                     action:@selector(firstConversationCueWasTapped:)]];
+
     self.firstConversationCueView = layerView;
     self.firstConversationLabel = label;
+}
+
+- (void)firstConversationCueWasTapped:(UITapGestureRecognizer *)gestureRecognizer
+{
+    OWSLogInfo(@"");
+
+    AppPreferences.hasDimissedFirstConversationCue = YES;
+
+    [self updateViewState];
 }
 
 - (void)updateFirstConversationLabel
@@ -1453,7 +1470,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self updateReminderViews];
 }
 
-#pragma mark Database delegates
+#pragma mark - Database delegates
 
 - (YapDatabaseConnection *)uiDatabaseConnection
 {
@@ -1614,10 +1631,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (void)updateViewState
 {
-    NSUInteger inboxCount = self.numberOfInboxThreads;
-    NSUInteger archiveCount = self.numberOfArchivedThreads;
-
-    if (self.homeViewMode == HomeViewMode_Inbox && inboxCount == 0 && archiveCount == 0) {
+    if (self.shouldShowFirstConversationCue) {
         [_tableView setHidden:YES];
         [self.emptyInboxView setHidden:NO];
         [self.firstConversationCueView setHidden:NO];
@@ -1627,6 +1641,13 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
         [self.emptyInboxView setHidden:YES];
         [self.firstConversationCueView setHidden:YES];
     }
+}
+
+- (BOOL)shouldShowFirstConversationCue
+{
+    return (self.homeViewMode == HomeViewMode_Inbox && self.numberOfInboxThreads == 0
+        && self.numberOfArchivedThreads == 0 && !AppPreferences.hasDimissedFirstConversationCue
+        && !SSKPreferences.hasSavedThread);
 }
 
 // We want to delay asking for a review until an opportune time.
