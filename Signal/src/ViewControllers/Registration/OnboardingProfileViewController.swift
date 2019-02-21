@@ -42,7 +42,8 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
         avatarView.autoSetDimensions(to: CGSize(width: CGFloat(avatarSize), height: CGFloat(avatarSize)))
 
         let cameraImageView = UIImageView()
-        cameraImageView.image = UIImage(named: "settings-avatar-camera")
+        cameraImageView.image = UIImage(named: "settings-avatar-camera-2")?.withRenderingMode(.alwaysTemplate)
+        cameraImageView.tintColor = Theme.secondaryColor
         cameraCircle.backgroundColor = Theme.backgroundColor
         cameraCircle.addSubview(cameraImageView)
         let cameraCircleDiameter: CGFloat = 40
