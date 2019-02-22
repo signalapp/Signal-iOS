@@ -202,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.topViewController) {
         return self.topViewController.supportedInterfaceOrientations;
     } else {
-        return UIInterfaceOrientationMaskPortrait;
+        return UIInterfaceOrientationMaskAllButUpsideDown;
     }
 }
 

@@ -64,35 +64,6 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
 
-// Signal iOS uses multiple "key" windows, e.g. the screen lock window.
-// We usually switch "key" windows while becoming active.  At the same
-// time, we often change the state of our orientation mask.
-//
-// For reasons unknown, this confuses iOS and leads to very strange
-// behavior, e.g.:
-//
-// * Multiple activation of the app returning from the background, e.g.
-//   transitions from "background, inactive" -> "foreground, inactive"
-//   -> "foreground, active"  -> "foreground, inactive"  ->
-//   "foreground, active".
-// * Multiple (sometimes incomplete) orientation changes while becoming
-//   active.
-// * The side effects of orientation changes (e.g. safe area insets)
-//   being left in a bad state.
-//
-// The solution:
-//
-// * Lock app in portrait unless "foreground, active".
-// * Don't "unlock" until the app has been "foreground, active"
-//   for a short duration (to allow activation process to safely complete).
-// * After unlocking, try to rotate to the current device orientation.
-//
-// The user experience is reasonable: if the user activates the app
-// while in landscape, the user sees a rotation animation.
-@property (nonatomic) BOOL isLandscapeEnabled;
-@property (nonatomic) BOOL shouldEnableLandscape;
-@property (nonatomic, nullable) NSTimer *landscapeTimer;
-
 @end
 
 #pragma mark -
@@ -189,28 +160,26 @@ static NSTimeInterval launchStartedAt;
 
 #pragma mark -
 
-- (void)applicationDidEnterBackground:(UIApplication *)application {
-    OWSLogWarn(@"applicationDidEnterBackground.");
-
-    [self updateShouldEnableLandscape];
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    OWSLogInfo(@"applicationDidEnterBackground.");
 
     [DDLog flushLog];
 }
 
-- (void)applicationWillEnterForeground:(UIApplication *)application {
-    OWSLogWarn(@"applicationWillEnterForeground.");
-
-    [self updateShouldEnableLandscape];
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    OWSLogInfo(@"applicationWillEnterForeground.");
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
 {
-    OWSLogWarn(@"applicationDidReceiveMemoryWarning.");
+    OWSLogInfo(@"applicationDidReceiveMemoryWarning.");
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    OWSLogWarn(@"applicationWillTerminate.");
+    OWSLogInfo(@"applicationWillTerminate.");
 
     [DDLog flushLog];
 }
@@ -328,14 +297,6 @@ static NSTimeInterval launchStartedAt;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationLockDidChange:)
                                                  name:NSNotificationName_2FAStateDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(isScreenBlockActiveDidChange:)
-                                                 name:IsScreenBlockActiveDidChangeNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(reportedApplicationStateDidChange:)
-                                                 name:ReportedApplicationStateDidChangeNotification
                                                object:nil];
 
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
@@ -675,8 +636,6 @@ static NSTimeInterval launchStartedAt;
     // be called _before_ we become active.
     [self clearAllNotificationsAndRestoreBadgeCount];
 
-    [self updateShouldEnableLandscape];
-
     OWSLogInfo(@"applicationDidBecomeActive completed.");
 }
 
@@ -779,7 +738,8 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"handleActivation completed.");
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application {
+- (void)applicationWillResignActive:(UIApplication *)application
+{
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
@@ -789,7 +749,6 @@ static NSTimeInterval launchStartedAt;
 
     OWSLogWarn(@"applicationWillResignActive.");
 
-    [self updateShouldEnableLandscape];
     [self clearAllNotificationsAndRestoreBadgeCount];
 
     [DDLog flushLog];
@@ -1008,109 +967,13 @@ static NSTimeInterval launchStartedAt;
 - (UIInterfaceOrientationMask)application:(UIApplication *)application
     supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
 {
-    // See comments on isLandscapeEnabled property.
-    if (!self.isLandscapeEnabled) {
-        return UIInterfaceOrientationMaskPortrait;
-    }
-    // We use isAppForegroundAndActive which depends on "reportedApplicationState"
-    // and therefore is more conservative about being active.
-    if (!CurrentAppContext().isAppForegroundAndActive) {
-        return UIInterfaceOrientationMaskPortrait;
-    }
-    // This clause shouldn't be necessary, but it's nice to
-    // be explicit about our invariants.
-    if (!self.hasInitialRootViewController) {
-        return UIInterfaceOrientationMaskPortrait;
-    }
-
     if (self.windowManager.hasCall) {
+        OWSLogInfo(@"has call");
         // The call-banner window is only suitable for portrait display
-        return UIInterfaceOrientationMaskPortrait;
-    }
-    
-    if (!window) {
-        // If `window` is nil, be permissive.  Otherwise orientation
-        // gets messed up during presentation of windows.
-        return UIInterfaceOrientationMaskAllButUpsideDown;
-    }
-
-    if (![self.windowManager isAppWindow:window]) {
-        // iOS uses various windows for animations, transitions, etc.
-        // e.g. _UIInteractiveHighlightEffectWindow,
-        //      UITextEffectsWindow.
-        //
-        // We should be permissive with these windows.
-        return UIInterfaceOrientationMaskAllButUpsideDown;
-    }
-
-    if (window == self.windowManager.menuActionsWindow) {
-        return UIInterfaceOrientationMaskAllButUpsideDown;
-    }
-
-    if (self.windowManager.rootWindow != window) {
         return UIInterfaceOrientationMaskPortrait;
     }
 
     return UIInterfaceOrientationMaskAllButUpsideDown;
-}
-
-// See comments on isLandscapeEnabled property.
-- (void)updateShouldEnableLandscape
-{
-    OWSAssertIsOnMainThread();
-
-    // We use isAppForegroundAndActive which depends on "reportedApplicationState"
-    // and therefore is more conservative about being active.
-    self.shouldEnableLandscape = (CurrentAppContext().isAppForegroundAndActive && [AppReadiness isAppReady]
-        && ![OWSWindowManager sharedManager].isScreenBlockActive);
-}
-
-// See comments on isLandscapeEnabled property.
-- (void)setShouldEnableLandscape:(BOOL)shouldEnableLandscape
-{
-    if (_shouldEnableLandscape == shouldEnableLandscape) {
-        return;
-    }
-
-    _shouldEnableLandscape = shouldEnableLandscape;
-
-    void (^disableLandscape)(void) = ^{
-        BOOL wasEnabled = self.isLandscapeEnabled;
-        self.isLandscapeEnabled = NO;
-        [self.landscapeTimer invalidate];
-        self.landscapeTimer = nil;
-
-        if (wasEnabled) {
-            [UIViewController attemptRotationToDeviceOrientation];
-        }
-    };
-
-    if (shouldEnableLandscape) {
-        disableLandscape();
-
-        // Enable Async
-        NSTimeInterval delay = 0.35f;
-        self.landscapeTimer = [NSTimer weakScheduledTimerWithTimeInterval:delay
-                                                                   target:self
-                                                                 selector:@selector(enableLandscape)
-                                                                 userInfo:nil
-                                                                  repeats:NO];
-    } else {
-        // Disable.
-        disableLandscape();
-    }
-}
-
-// See comments on isLandscapeEnabled property.
-- (void)enableLandscape
-{
-    OWSAssertIsOnMainThread();
-
-    self.isLandscapeEnabled = YES;
-    [self.landscapeTimer invalidate];
-    self.landscapeTimer = nil;
-
-    [UIViewController attemptRotationToDeviceOrientation];
 }
 
 #pragma mark Push Notifications Delegate Methods
@@ -1381,8 +1244,6 @@ static NSTimeInterval launchStartedAt;
 
     [self.primaryStorage touchDbAsync];
 
-    [self updateShouldEnableLandscape];
-
     // Every time the user upgrades to a new version:
     //
     // * Update account attributes.
@@ -1443,16 +1304,6 @@ static NSTimeInterval launchStartedAt;
 - (void)registrationLockDidChange:(NSNotification *)notification
 {
     [self enableBackgroundRefreshIfNecessary];
-}
-
-- (void)isScreenBlockActiveDidChange:(NSNotification *)notification
-{
-    [self updateShouldEnableLandscape];
-}
-
-- (void)reportedApplicationStateDidChange:(NSNotification *)notification
-{
-    [self updateShouldEnableLandscape];
 }
 
 - (void)ensureRootViewController
