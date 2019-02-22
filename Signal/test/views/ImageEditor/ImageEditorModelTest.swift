@@ -40,12 +40,12 @@ class ImageEditorModelTest: SignalBaseTest {
         let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: imageSizePixels, transform: transform)
         let affineTransform = transform.affineTransform(viewSize: viewSize)
 
-        XCTAssertEqual(0.0, imageFrame.topLeft.applying(affineTransform).x, accuracy: 0.1)
-        XCTAssertEqual(0.0, imageFrame.topLeft.applying(affineTransform).y, accuracy: 0.1)
-        XCTAssertEqual(100.0, imageFrame.center.applying(affineTransform).x, accuracy: 0.1)
-        XCTAssertEqual(150.0, imageFrame.center.applying(affineTransform).y, accuracy: 0.1)
-        XCTAssertEqual(200.0, imageFrame.bottomRight.applying(affineTransform).x, accuracy: 0.1)
-        XCTAssertEqual(300.0, imageFrame.bottomRight.applying(affineTransform).y, accuracy: 0.1)
+        XCTAssertEqual(+167.5, imageFrame.topLeft.applying(affineTransform).x, accuracy: 0.1)
+        XCTAssertEqual(-298.0, imageFrame.topLeft.applying(affineTransform).y, accuracy: 0.1)
+        XCTAssertEqual(+502.5, imageFrame.center.applying(affineTransform).x, accuracy: 0.1)
+        XCTAssertEqual(+297.5, imageFrame.center.applying(affineTransform).y, accuracy: 0.1)
+        XCTAssertEqual(+837.5, imageFrame.bottomRight.applying(affineTransform).x, accuracy: 0.1)
+        XCTAssertEqual(+893.0, imageFrame.bottomRight.applying(affineTransform).y, accuracy: 0.1)
     }
 
     func testAffineTransformComposition() {
