@@ -101,7 +101,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskPortrait;
+    return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 @end
@@ -120,7 +120,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskPortrait;
+    return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 @end
@@ -374,7 +374,9 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     [self.callNavigationController popToRootViewControllerAnimated:NO];
     [self.callNavigationController pushViewController:callViewController animated:NO];
     self.shouldShowCallView = YES;
-
+    // CallViewController only supports portrait, but if we're _already_ landscape it won't
+    // automatically switch.
+    [UIDevice.currentDevice ows_setOrientation:UIInterfaceOrientationPortrait];
     [self ensureWindowState];
 }
 

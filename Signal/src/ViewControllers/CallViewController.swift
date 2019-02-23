@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -224,6 +224,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                                                selector: #selector(didBecomeActive),
                                                name: NSNotification.Name.OWSApplicationDidBecomeActive,
                                                object: nil)
+    }
+
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
     }
 
     // MARK: - Create Views
