@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_Unknown,
     OWSMessageCellType_TextMessage,
-    OWSMessageCellType_OversizeTextMessage,
     OWSMessageCellType_Audio,
     OWSMessageCellType_GenericAttachment,
     OWSMessageCellType_DownloadingAttachment,

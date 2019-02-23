@@ -55,8 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
 // quoted reply thumbnails, contact share avatars, link preview images, etc.
 - (NSArray<NSString *> *)allAttachmentIds;
 
-- (BOOL)isMediaAlbumWithTransaction:(YapDatabaseReadTransaction *)transaction;
-
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
 - (nullable NSString *)oversizeTextWithTransaction:(YapDatabaseReadTransaction *)transaction;

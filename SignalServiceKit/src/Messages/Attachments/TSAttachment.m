@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachment.h"
@@ -271,6 +271,11 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 - (BOOL)isVisualMedia
 {
     return [MIMETypeUtil isVisualMedia:self.contentType];
+}
+
+- (BOOL)isOversizeText
+{
+    return [self.contentType isEqualToString:OWSMimeTypeOversizeTextMessage];
 }
 
 - (nullable NSString *)sourceFilename

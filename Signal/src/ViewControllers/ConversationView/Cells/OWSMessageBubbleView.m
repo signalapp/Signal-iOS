@@ -217,28 +217,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     return self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage;
 }
 
-#pragma mark -
-
-- (BOOL)hasBodyTextContent
-{
-    switch (self.cellType) {
-        case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage:
-            return YES;
-        case OWSMessageCellType_GenericAttachment:
-        case OWSMessageCellType_DownloadingAttachment:
-        case OWSMessageCellType_Audio:
-            // Is there a caption?
-            return self.hasBodyText;
-        case OWSMessageCellType_ContactShare:
-            return NO;
-        case OWSMessageCellType_MediaAlbum:
-            // Is there an album title?
-            return self.hasBodyText;
-    }
-}
-
 #pragma mark - Load
 
 - (void)configureViews
@@ -296,7 +274,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage:
             break;
         case OWSMessageCellType_Audio:
             OWSAssertDebug(self.viewItem.attachmentStream);
@@ -593,7 +570,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage:
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
         case OWSMessageCellType_DownloadingAttachment:
@@ -608,7 +584,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage:
             return NO;
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
@@ -1000,8 +975,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     CGSize result = CGSizeZero;
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage: {
+        case OWSMessageCellType_TextMessage: {
             return nil;
         }
         case OWSMessageCellType_Audio:
@@ -1397,7 +1371,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage:
             break;
         case OWSMessageCellType_Audio:
             OWSAssertDebug(self.viewItem.attachmentStream);

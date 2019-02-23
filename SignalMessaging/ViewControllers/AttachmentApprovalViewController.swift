@@ -1866,7 +1866,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
             let proposedText: String = (existingText as NSString).replacingCharacters(in: range, with: text)
 
             // Don't complicate things by mixing media attachments with oversize text attachments
-            guard proposedText.utf8.count <= kOversizeTextMessageSizeThreshold else {
+            guard proposedText.utf8.count < kOversizeTextMessageSizeThreshold else {
                 Logger.debug("long text was truncated")
                 self.lengthLimitLabel.isHidden = false
 
@@ -1887,7 +1887,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
             self.lengthLimitLabel.isHidden = true
 
             // After verifying the byte-length is sufficiently small, verify the character count is within bounds.
-            guard proposedText.count <= kMaxMessageBodyCharacterCount else {
+            guard proposedText.count < kMaxMessageBodyCharacterCount else {
                 Logger.debug("hit attachment message body character count limit")
 
                 self.lengthLimitLabel.isHidden = false

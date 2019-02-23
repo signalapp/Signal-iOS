@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *truncatedText;
     NSArray<SignalAttachment *> *attachments = attachmentsParam;
-    if ([fullMessageText lengthOfBytesUsingEncoding:NSUTF8StringEncoding] < kOversizeTextMessageSizeThreshold) {
+    if ([fullMessageText lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
         truncatedText = fullMessageText;
     } else {
         if (SSKFeatureFlags.sendingMediaWithOversizeText) {

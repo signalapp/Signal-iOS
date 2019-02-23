@@ -249,20 +249,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self saveWithTransaction:transaction];
 }
 
-- (BOOL)isMediaAlbumWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    NSArray<TSAttachment *> *attachments = [self attachmentsWithTransaction:transaction];
-    if (attachments.count < 1) {
-        return NO;
-    }
-    for (TSAttachment *attachment in attachments) {
-        if (!attachment.isVisualMedia) {
-            return NO;
-        }
-    }
-    return YES;
-}
-
 - (NSString *)debugDescription
 {
     if ([self hasAttachments] && self.body.length > 0) {

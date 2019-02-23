@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSYapDatabaseObject.h"
@@ -93,6 +93,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 @property (nonatomic, readonly) BOOL isAudio;
 @property (nonatomic, readonly) BOOL isVoiceMessage;
 @property (nonatomic, readonly) BOOL isVisualMedia;
+@property (nonatomic, readonly) BOOL isOversizeText;
 
 + (NSString *)emojiForMimeType:(NSString *)contentType;
 
