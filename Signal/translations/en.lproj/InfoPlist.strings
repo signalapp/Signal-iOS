@@ -1,0 +1,7 @@
+NSAppleMusicUsageDescription = "Signal needs to use Apple Music to play media attachments.";
+NSCameraUsageDescription = "Signal uses your camera to take photos and for video calls.";
+NSContactsUsageDescription = "Signal uses your contacts to find users you know. We do not store your contacts on the server.";
+NSFaceIDUsageDescription = "Signal's Screen Lock uses Face ID.";
+NSMicrophoneUsageDescription = "Signal needs access to your microphone to make and receive phone calls and record voice messages.";
+NSPhotoLibraryAddUsageDescription = "Signal will save photos to your library.";
+NSPhotoLibraryUsageDescription = "Signal will let you choose which photos from your library to send.";

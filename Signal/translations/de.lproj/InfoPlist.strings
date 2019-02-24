@@ -1,0 +1,7 @@
+NSAppleMusicUsageDescription = "Signal benötigt Zugriff auf Apple Music um Medienanhänge wiederzugeben.";
+NSCameraUsageDescription = "Signal greift für Bildaufnahmen und Videoanrufe auf Ihre Kamera zu.";
+NSContactsUsageDescription = "Signal nutzt Ihre Kontaktdaten um Ihnen bekannte Benutzer zu finden. Ihre Kontaktdaten werden nicht auf dem Server gespeichert.";
+NSMicrophoneUsageDescription = "Signal benötigt Zugriff auf Ihr Mikrofon um Anrufe zu tätigen und zu empfangen und um Sprachnachrichten aufzunehmen.";
+NSPhotoLibraryAddUsageDescription = "Signal speichert Fotos in Ihrer Fotogallerie.";
+NSPhotoLibraryUsageDescription = "Signal lässt Sie die Fotos aus Ihrer Fotogallerie wählen, die Sie versenden möchten.";
+NSFaceIDUsageDescription = "Signal's Bildschirmsperre benutzt Face ID.";
