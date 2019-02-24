@@ -1347,8 +1347,6 @@
 		835C9C2322226DA700C5ED0C /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = translations/id.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		835C9C2422226DB800C5ED0C /* km */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = km; path = translations/km.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		835C9C2522226DCB00C5ED0C /* lv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lv; path = translations/lv.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83AEC8BA221E315F009672C6 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = translations/de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83AEC8BC221E3B6D009672C6 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = translations/de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83AEC8BD221E3C16009672C6 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = translations/fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83AEC8BE221E3C30009672C6 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = translations/fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83AEC8BF221E3C6F009672C6 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = translations/ca.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1363,6 +1361,8 @@
 		83AEC8CA221E3CDE009672C6 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = translations/sv.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83AEC8CB221E3CE2009672C6 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = translations/cs.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83AEC8CC221E3D30009672C6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = translations/ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		83C803D82222963600D89EF8 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = translations/es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		83D51F9B2222956100EDA0A6 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = translations/de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8811CF832295D8DA00FF6549 /* VolumeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeButtons.swift; sourceTree = "<group>"; };
 		8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.test.xcconfig"; sourceTree = "<group>"; };
 		8EEE74B0753448C085B48721 /* Pods-SignalMessaging.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.app store release.xcconfig"; sourceTree = "<group>"; };
