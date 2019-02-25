@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(thread);
 
-    NSString *truncatedText;
+    NSString *_Nullable truncatedText;
     NSArray<SignalAttachment *> *attachments = attachmentsParam;
     if ([fullMessageText lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
         truncatedText = fullMessageText;
