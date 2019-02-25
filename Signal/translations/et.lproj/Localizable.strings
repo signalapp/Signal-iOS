@@ -321,16 +321,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Ligipääs mikrofonile on vajalik";
 
 /* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+"CALL_INCOMING_NOTIFICATION_BODY" = "Sissetulev kõne";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Helista";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "Vastamata kõne, sest helistaja turvanumber on muutunud.";
 
 /* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
+"CALL_MISSED_NOTIFICATION_BODY" = "Vastamata kõne";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Vastust pole";
@@ -1081,16 +1081,16 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
+"IMAGE_EDITOR_BRUSH_BUTTON" = "Pihusti";
 
 /* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Crop";
+"IMAGE_EDITOR_CROP_BUTTON" = "Kärbi";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Sa ei saa jagada rohkem kui %@ üksust.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Manuse laadimine ei õnnestunud.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Ühendumine...";
@@ -1183,7 +1183,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Ühenda uus seade";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Lingi eelvaade";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Ühendatud seadmed";
@@ -1440,7 +1440,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "Liige";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ grupile %@";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Lisa grupivestlusele nimi";
@@ -1467,7 +1467,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Leia kontaktid numbri järgi";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Märkus endale";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Sa võisid %@'i taaskäivitamise ajal saada sõnumeid.";
@@ -1914,7 +1914,7 @@
 "SEND_BUTTON_TITLE" = "Saada";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
+"SEND_FAILED_NOTIFICATION_BODY" = "Sinu sõnumi saatmine ei õnnestunud.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Kutse saatmine ei õnnestunud, palun proovi hiljem uuesti.";
@@ -2082,13 +2082,13 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Tingimused ja privaatsuspoliitika";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Saada linkide eelvaateid";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Eelvaated on toetatud Imgur, Instagram, Reddit ja YouTube linkide puhul";
 
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Linkide eelvaated";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Sätted";
@@ -2370,10 +2370,10 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Valikulised linkide eelvaated on nüüd toetatud populaarseimate saitide puhul.";
 
 /* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Seda funktsiooni on võimalik igal ajal keelata või lubada Signali sätetes (Privaatsus > Saada linkide eelvaateid).";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Link Previews";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Linkide eelvaated";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Nüüd saad valida nii vaikimisi helina kui ka igale vestlusele eraldi. Kõned kasutavad seda helinat, mille oled valinud kontaktide jaoks telefonis.";

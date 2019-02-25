@@ -1183,7 +1183,7 @@
 "LINK_NEW_DEVICE_TITLE" = "新しい端末を追加";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "リンクのプレビュー";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "リンクプレビュー";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "追加される端末";
@@ -2088,7 +2088,7 @@
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "リンクプレビューは、次のサービスに対応しています: Imgur, Instagram, Reddit, YouTube";
 
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "リンクのプレビュー";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "リンクプレビュー";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "設定";
@@ -2373,7 +2373,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "この機能は、Signalの設定（プライバシー > リンクプレビューを送る）で有効化できます。";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "リンクのプレビュー";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "リンクプレビュー";
 
 /* Description for notification audio customization */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "通知音を相手ごとに設定できるようになりました。";

@@ -180,7 +180,7 @@
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Sicherungsdaten konnten nicht exportiert werden.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Ungültige Serverantwort";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Ungültige Dienstantwort";
 
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "Sicherung wird bereinigt";
@@ -447,7 +447,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kannst den Zugriff auf deine Kontakte in der iOS-App »Einstellungen« aktivieren, um zu sehen, welche deiner Kontakte Signal verwenden.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Dies setzt die App in ihren Ursprungszustand zurück. Dabei werden alle deine Nachrichten und dein Benutzerkonto auf dem Server gelöscht. Nach Abschluss des Vorgangs beendet sich die App automatisch.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Dies setzt die App in ihren Ursprungszustand zurück. Dabei werden alle deine Nachrichten und dein Benutzerkonto vom Server gelöscht. Nach Abschluss des Vorgangs beendet sich die App automatisch.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Möchtest du dein Benutzerkonto wirklich löschen?";
@@ -480,7 +480,7 @@
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Nicht verifiziert";
 
 /* No comment provided by engineer. */
-"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Nicht registrierte Rufnummer";
+"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Unregistrierte Rufnummer";
 
 /* Label for the 'edit name' button in the contact share approval view. */
 "CONTACT_EDIT_NAME_BUTTON" = "Bearbeiten";
@@ -627,7 +627,7 @@
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Diese Gruppe kann dein Profil sehen.";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Dieser Benutzer kann dein Profil sehen.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Benutzer kann dein Profil sehen.";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Profil teilen";
@@ -1240,7 +1240,7 @@
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Diese Nachricht löschen";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Sie wird nur auf diesem Gerät gelöscht";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Wird nur auf diesem Gerät gelöscht.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Mehr Details";
@@ -1288,7 +1288,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Wird hochgeladen";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Nachricht hat keinen Inhalt oder Anhang.";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Nachricht hat weder Inhalt noch Anhang.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Empfangen";
@@ -2340,7 +2340,7 @@
 "UNNAMED_DEVICE" = "Unbenanntes Gerät";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Löschen des Benutzerkontos gescheitert.";
+"UNREGISTER_SIGNAL_FAIL" = "Deregistrieren gescheitert.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Nicht unterstützten Anhangstyp erhalten.";
