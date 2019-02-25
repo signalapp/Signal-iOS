@@ -17,7 +17,7 @@ public class ContentProxy: NSObject {
         let proxyHost = "contentproxy.signal.org"
         let proxyPort = 443
         configuration.connectionProxyDictionary = [
-            "HTTPEnable": 1,
+            "HTTPEnable": 0,
             "HTTPProxy": proxyHost,
             "HTTPPort": proxyPort,
             "HTTPSEnable": 1,
