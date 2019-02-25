@@ -170,6 +170,22 @@ public extension CGPoint {
         return CGPointSubtract(self, value)
     }
 
+    public func times(_ value: CGFloat) -> CGPoint {
+        return CGPoint(x: x * value, y: y * value)
+    }
+
+    public func min(_ value: CGPoint) -> CGPoint {
+        // We use "Swift" to disambiguate the global function min() from this method.
+        return CGPoint(x: Swift.min(x, value.x),
+                       y: Swift.min(y, value.y))
+    }
+
+    public func max(_ value: CGPoint) -> CGPoint {
+        // We use "Swift" to disambiguate the global function max() from this method.
+        return CGPoint(x: Swift.max(x, value.x),
+                       y: Swift.max(y, value.y))
+    }
+
     public static let unit: CGPoint = CGPoint(x: 1.0, y: 1.0)
 
     public static let unitMidpoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
@@ -186,6 +202,14 @@ public extension CGRect {
 
     public var topLeft: CGPoint {
         return origin
+    }
+
+    public var topRight: CGPoint {
+        return CGPoint(x: maxX, y: 0)
+    }
+
+    public var bottomLeft: CGPoint {
+        return CGPoint(x: 0, y: maxY)
     }
 
     public var bottomRight: CGPoint {
