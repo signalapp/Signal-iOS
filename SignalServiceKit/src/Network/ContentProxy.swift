@@ -17,7 +17,7 @@ public class ContentProxy: NSObject {
         let proxyHost = "contentproxy.signal.org"
         let proxyPort = 443
         configuration.connectionProxyDictionary = [
-            "HTTPEnable": 0,
+            "HTTPEnable": 1,
             "HTTPProxy": proxyHost,
             "HTTPPort": proxyPort,
             "HTTPSEnable": 1,
@@ -67,6 +67,11 @@ public class ContentProxy: NSObject {
         return true
     }
 
+    // This mutates the session manager state, so its the caller's obligation to avoid conflicts by:
+    //
+    // * Using a new session manager for each request.
+    // * Pooling session managers.
+    // * Using a single session manager on a single queue.
     @objc
     public class func configureSessionManager(sessionManager: AFHTTPSessionManager,
                                               forUrl urlString: String) -> Bool {
