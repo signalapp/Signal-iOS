@@ -6,6 +6,11 @@ import Foundation
 @testable import SignalServiceKit
 import XCTest
 
+func XCTAssertMatch(expectedPattern: String, actualText: String, file: StaticString = #file, line: UInt = #line) {
+    let regex = try! NSRegularExpression(pattern: expectedPattern, options: [])
+    XCTAssert(regex.hasMatch(input: actualText), "\(actualText) did not match pattern \(expectedPattern)", file: file, line: line)
+}
+
 class OWSLinkPreviewTest: SSKBaseTestSwift {
 
     override func setUp() {
@@ -382,7 +387,13 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 XCTAssertNotNil(content)
 
                 XCTAssertEqual(content.title, "Walter \"MFPallytime\" on Instagram: “Lol gg”")
-                XCTAssertEqual(content.imageUrl, "https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com")
+                // Actual URL can change based on network response
+                //     https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com
+                // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
+                // to remove it or stub the network response
+                XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/47690175_2275988962411653_1145978227188801192_n.jpg\\?.*$",
+                               actualText: content.imageUrl!)
+//                XCTAssertEqual(content.imageUrl, "https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com")
 
                 expectation.fulfill()
             }.catch { (error) in
@@ -403,7 +414,12 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 XCTAssertNotNil(content)
 
                 XCTAssertEqual(content.title, "Walter \"MFPallytime\" on Instagram: “Lol gg”")
-                XCTAssertEqual(content.imageUrl, "https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com")
+                // Actual URL can change based on network response
+                //     https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com
+                // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
+                // to remove it or stub the network response
+                XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/47690175_2275988962411653_1145978227188801192_n.jpg\\?.*$",
+                               actualText: content.imageUrl!)
 
                 expectation.fulfill()
             }.catch { (error) in
