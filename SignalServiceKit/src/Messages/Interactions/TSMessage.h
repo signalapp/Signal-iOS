@@ -45,14 +45,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasAttachments;
 - (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
 - (void)removeAttachment:(TSAttachment *)attachment
              transaction:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(removeAttachment(_:transaction:));
 
 // Returns ids for all attachments, including message ("body") attachments,
 // quoted reply thumbnails, contact share avatars, link preview images, etc.
 - (NSArray<NSString *> *)allAttachmentIds;
-
-- (BOOL)isMediaAlbumWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
 

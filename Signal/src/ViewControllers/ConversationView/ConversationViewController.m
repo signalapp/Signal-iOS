@@ -3604,10 +3604,16 @@ typedef enum : NSUInteger {
         }
 
         BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-        TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithAttachments:attachments
-                                                                   messageBody:messageText
-                                                                      inThread:self.thread
-                                                              quotedReplyModel:self.inputToolbar.quotedReply];
+
+        __block TSOutgoingMessage *message;
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+            message = [ThreadUtil enqueueMessageWithText:messageText
+                                        mediaAttachments:attachments
+                                                inThread:self.thread
+                                        quotedReplyModel:self.inputToolbar.quotedReply
+                                        linkPreviewDraft:nil
+                                             transaction:transaction];
+        }];
 
         [self messageWasSent:message];
 
@@ -3975,26 +3981,13 @@ typedef enum : NSUInteger {
     // which are presented as normal text messages.
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     __block TSOutgoingMessage *message;
-
-    if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
-        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
-        SignalAttachment *attachment =
-            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
-        // TODO we should redundantly send the first n chars in the body field so it can be viewed
-        // on clients that don't support oversized text messgaes, (and potentially generate a preview
-        // before the attachment is downloaded)
-        message = [ThreadUtil enqueueMessageWithAttachment:attachment
-                                                  inThread:self.thread
-                                          quotedReplyModel:self.inputToolbar.quotedReply];
-    } else {
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-            message = [ThreadUtil enqueueMessageWithText:text
-                                                inThread:self.thread
-                                        quotedReplyModel:self.inputToolbar.quotedReply
-                                        linkPreviewDraft:self.inputToolbar.linkPreviewDraft
-                                             transaction:transaction];
-        }];
-    }
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        message = [ThreadUtil enqueueMessageWithText:text
+                                            inThread:self.thread
+                                    quotedReplyModel:self.inputToolbar.quotedReply
+                                    linkPreviewDraft:self.inputToolbar.linkPreviewDraft
+                                         transaction:transaction];
+    }];
     [self.conversationViewModel appendUnsavedOutgoingTextMessage:message];
 
     [self messageWasSent:message];
