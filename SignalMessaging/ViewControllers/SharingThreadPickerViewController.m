@@ -30,7 +30,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly, weak) id<ShareViewDelegate> shareViewDelegate;
 @property (nonatomic, readonly) UIProgressView *progressView;
-@property (nonatomic, readonly) YapDatabaseConnection *editingDBConnection;
 @property (atomic, nullable) TSOutgoingMessage *outgoingMessage;
 
 @end
@@ -46,12 +45,25 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         return self;
     }
 
-    _editingDBConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
     _shareViewDelegate = shareViewDelegate;
     self.selectThreadViewDelegate = self;
 
     return self;
 }
+
+#pragma mark - Dependencies
+
+- (YapDatabaseConnection *)dbReadWriteConnection
+{
+    return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
+}
+
+- (YapDatabaseConnection *)dbReadConnection
+{
+    return OWSPrimaryStorage.sharedManager.dbReadConnection;
+}
+
+#pragma mark - UIViewController overrides
 
 - (void)loadView
 {
@@ -274,14 +286,18 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
             // SAE runs as long as it needs.
             // TODO ALBUMS - send album via SAE
-            outgoingMessage = [ThreadUtil sendMessageNonDurablyWithAttachments:attachments
-                                                                      inThread:self.thread
-                                                                   messageBody:messageText
-                                                              quotedReplyModel:nil
-                                                                 messageSender:self.messageSender
-                                                                    completion:^(NSError *_Nullable error) {
-                                                                        sendCompletion(error, outgoingMessage);
-                                                                    }];
+
+            [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+                outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
+                                                           mediaAttachments:attachments
+                                                                   inThread:self.thread
+                                                           quotedReplyModel:nil
+                                                                transaction:transaction
+                                                              messageSender:self.messageSender
+                                                                 completion:^(NSError *_Nullable error) {
+                                                                     sendCompletion(error, outgoingMessage);
+                                                                 }];
+            }];
 
             // This is necessary to show progress.
             self.outgoingMessage = outgoingMessage;
@@ -310,19 +326,22 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         // DURABLE CLEANUP - SAE uses non-durable sending to make sure the app is running long enough to complete
         // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
         // SAE runs as long as it needs.
-        outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
-            inThread:self.thread
-            quotedReplyModel:nil
-            messageSender:self.messageSender
-            success:^{
-                sendCompletion(nil, outgoingMessage);
-            }
-            failure:^(NSError *_Nonnull error) {
-                sendCompletion(error, outgoingMessage);
-            }];
-
-        // This is necessary to show progress.
-        self.outgoingMessage = outgoingMessage;
+        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+            outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
+                                                               inThread:self.thread
+                                                       quotedReplyModel:nil
+                                                            transaction:transaction
+                                                          messageSender:self.messageSender
+                                                             completion:^(NSError *_Nullable error) {
+                                                                 if (error) {
+                                                                     sendCompletion(error, outgoingMessage);
+                                                                 } else {
+                                                                     sendCompletion(nil, outgoingMessage);
+                                                                 }
+                                                             }];
+            // This is necessary to show progress.
+            self.outgoingMessage = outgoingMessage;
+        }];
     }
                  fromViewController:approvalViewController];
 }
@@ -344,11 +363,12 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         OWSAssertIsOnMainThread();
         // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
         // preparation rather than duplicated here and in the SAE
-        [self.editingDBConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            if (contactShare.avatarImage) {
-                [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
+        [self.dbReadWriteConnection
+            asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                if (contactShare.avatarImage) {
+                    [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
+                }
             }
-        }
             completionBlock:^{
                 __block TSOutgoingMessage *outgoingMessage = nil;
                 outgoingMessage = [ThreadUtil sendMessageNonDurablyWithContactShare:contactShare.dbRecord
@@ -521,8 +541,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     OWSLogDebug(@"Confirming identity for recipient: %@", recipientId);
 
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection asyncReadWriteWithBlock:^(
-        YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         OWSVerificationState verificationState =
             [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId transaction:transaction];
         switch (verificationState) {
