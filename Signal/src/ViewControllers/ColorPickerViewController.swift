@@ -325,7 +325,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var lastAudioMessageView: OWSAudioMessageView?
     var audioDurationSeconds: CGFloat = 0
     var audioProgressSeconds: CGFloat = 0
-    var messageCellType: OWSMessageCellType = .textMessage
+    var messageCellType: OWSMessageCellType = .textOnlyMessage
     var displayableBodyText: DisplayableText?
     var attachmentStream: TSAttachmentStream?
     var attachmentPointer: TSAttachmentPointer?

@@ -20,8 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     switch (cellType) {
-        case OWSMessageCellType_TextMessage:
-            return @"OWSMessageCellType_TextMessage";
+        case OWSMessageCellType_TextOnlyMessage:
+            return @"OWSMessageCellType_TextOnlyMessage";
         case OWSMessageCellType_Audio:
             return @"OWSMessageCellType_Audio";
         case OWSMessageCellType_GenericAttachment:
@@ -32,8 +32,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return @"OWSMessageCellType_Unknown";
         case OWSMessageCellType_ContactShare:
             return @"OWSMessageCellType_ContactShare";
-        case OWSMessageCellType_MediaAlbum:
-            return @"OWSMessageCellType_MediaAlbum";
+        case OWSMessageCellType_MediaMessage:
+            return @"OWSMessageCellType_MediaMessage";
     }
 }
 
@@ -615,7 +615,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
 
         self.mediaAlbumItems = mediaAlbumItems;
-        self.messageCellType = OWSMessageCellType_MediaAlbum;
+        self.messageCellType = OWSMessageCellType_MediaMessage;
         return;
     }
 
@@ -650,7 +650,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSAssertDebug(message.attachmentIds.count == 0
                 || (message.attachmentIds.count == 1 &&
                        [message oversizeTextAttachmentWithTransaction:transaction] != nil));
-            self.messageCellType = OWSMessageCellType_TextMessage;
+            self.messageCellType = OWSMessageCellType_TextOnlyMessage;
         }
         OWSAssertDebug(self.displayableBodyText);
     }
@@ -681,7 +681,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         // Messages of unknown type (including messages with missing attachments)
         // are rendered like empty text messages, but without any interactivity.
         OWSLogWarn(@"Treating unknown message as empty text message: %@ %llu", message.class, message.timestamp);
-        self.messageCellType = OWSMessageCellType_TextMessage;
+        self.messageCellType = OWSMessageCellType_TextOnlyMessage;
         self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }
 }
@@ -843,9 +843,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (void)copyTextAction
 {
     switch (self.messageCellType) {
-        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_Audio:
-        case OWSMessageCellType_MediaAlbum:
+        case OWSMessageCellType_MediaMessage:
         case OWSMessageCellType_GenericAttachment: {
             OWSAssertDebug(self.displayableBodyText);
             [UIPasteboard.generalPasteboard setString:self.displayableBodyText.fullText];
@@ -871,7 +871,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_ContactShare: {
             OWSFailDebug(@"No media to copy");
             break;
@@ -885,7 +885,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFailDebug(@"Can't copy not-yet-downloaded attachment");
             break;
         }
-        case OWSMessageCellType_MediaAlbum: {
+        case OWSMessageCellType_MediaMessage: {
             if (self.mediaAlbumItems.count == 1) {
                 ConversationMediaAlbumItem *mediaAlbumItem = self.mediaAlbumItems.firstObject;
                 if (mediaAlbumItem.attachmentStream && mediaAlbumItem.attachmentStream.isValidVisualMedia) {
@@ -921,7 +921,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_ContactShare:
             OWSFailDebug(@"No media to share.");
             break;
@@ -933,7 +933,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFailDebug(@"Can't share not-yet-downloaded attachment");
             break;
         }
-        case OWSMessageCellType_MediaAlbum: {
+        case OWSMessageCellType_MediaMessage: {
             // TODO: We need a "canShareMediaAction" method.
             OWSAssertDebug(self.mediaAlbumItems);
             NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
@@ -956,14 +956,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_ContactShare:
             return NO;
         case OWSMessageCellType_Audio:
             return NO;
         case OWSMessageCellType_GenericAttachment:
         case OWSMessageCellType_DownloadingAttachment:
-        case OWSMessageCellType_MediaAlbum: {
+        case OWSMessageCellType_MediaMessage: {
             if (self.mediaAlbumItems.count == 1) {
                 ConversationMediaAlbumItem *mediaAlbumItem = self.mediaAlbumItems.firstObject;
                 if (mediaAlbumItem.attachmentStream && mediaAlbumItem.attachmentStream.isValidVisualMedia) {
@@ -979,7 +979,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_ContactShare:
             return NO;
         case OWSMessageCellType_Audio:
@@ -987,7 +987,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_GenericAttachment:
         case OWSMessageCellType_DownloadingAttachment:
             return NO;
-        case OWSMessageCellType_MediaAlbum: {
+        case OWSMessageCellType_MediaMessage: {
             for (ConversationMediaAlbumItem *mediaAlbumItem in self.mediaAlbumItems) {
                 if (!mediaAlbumItem.attachmentStream) {
                     continue;
@@ -1014,7 +1014,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_ContactShare:
             OWSFailDebug(@"Cannot save text data.");
             break;
@@ -1028,7 +1028,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFailDebug(@"Can't save not-yet-downloaded attachment");
             break;
         }
-        case OWSMessageCellType_MediaAlbum: {
+        case OWSMessageCellType_MediaMessage: {
             [self saveMediaAlbumItems];
             break;
         }
@@ -1096,7 +1096,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_ContactShare:
             return NO;
         case OWSMessageCellType_Audio:
@@ -1105,14 +1105,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_DownloadingAttachment: {
             return NO;
         }
-        case OWSMessageCellType_MediaAlbum:
+        case OWSMessageCellType_MediaMessage:
             return self.firstValidAlbumAttachment != nil;
     }
 }
 
 - (BOOL)mediaAlbumHasFailedAttachment
 {
-    OWSAssertDebug(self.messageCellType == OWSMessageCellType_MediaAlbum);
+    OWSAssertDebug(self.messageCellType == OWSMessageCellType_MediaMessage);
     OWSAssertDebug(self.mediaAlbumItems.count > 0);
 
     for (ConversationMediaAlbumItem *mediaAlbumItem in self.mediaAlbumItems) {
