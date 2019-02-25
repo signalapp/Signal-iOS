@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "NotificationSettingsViewController.h"
@@ -56,7 +56,9 @@
         @"Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the "
         @"foreground.");
     [soundsSection addItem:[OWSTableItem switchItemWithText:inAppSoundsLabelText
-                                                       isOn:[prefs soundInForeground]
+                                                  isOnBlock:^{
+                                                      return [prefs soundInForeground];
+                                                  }
                                                      target:weakSelf
                                                    selector:@selector(didToggleSoundNotificationsSwitch:)]];
     [contents addSection:soundsSection];

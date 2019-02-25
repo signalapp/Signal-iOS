@@ -366,14 +366,23 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return item;
 }
 
-+ (OWSTableItem *)switchItemWithText:(NSString *)text isOn:(BOOL)isOn target:(id)target selector:(SEL)selector
++ (OWSTableItem *)switchItemWithText:(NSString *)text
+                           isOnBlock:(OWSTableSwitchBlock)isOnBlock
+                              target:(id)target
+                            selector:(SEL)selector
 {
-    return [self switchItemWithText:text isOn:isOn isEnabled:YES target:target selector:selector];
+    return [self switchItemWithText:text
+                          isOnBlock:(OWSTableSwitchBlock)isOnBlock
+                     isEnabledBlock:^{
+                         return YES;
+                     }
+                             target:target
+                           selector:selector];
 }
 
 + (OWSTableItem *)switchItemWithText:(NSString *)text
-                                isOn:(BOOL)isOn
-                           isEnabled:(BOOL)isEnabled
+                           isOnBlock:(OWSTableSwitchBlock)isOnBlock
+                      isEnabledBlock:(OWSTableSwitchBlock)isEnabledBlock
                               target:(id)target
                             selector:(SEL)selector
 {
@@ -389,9 +398,9 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
         UISwitch *cellSwitch = [UISwitch new];
         cell.accessoryView = cellSwitch;
-        [cellSwitch setOn:isOn];
+        [cellSwitch setOn:isOnBlock()];
         [cellSwitch addTarget:weakTarget action:selector forControlEvents:UIControlEventValueChanged];
-        cellSwitch.enabled = isEnabled;
+        cellSwitch.enabled = isEnabledBlock();
 
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
