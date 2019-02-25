@@ -92,6 +92,8 @@ public class ImageEditorTransform: NSObject {
         return transform
     }
 
+    // This method normalizes a "proposed" transform (self) into
+    // one that is guaranteed to be valid.
     public func normalize(srcImageSizePixels: CGSize) -> ImageEditorTransform {
         // Normalize scaling.
         // The "src/background" image is rendered at a size that will fill
@@ -127,7 +129,7 @@ public class ImageEditorTransform: NSObject {
         var naiveViewportMinCanvas = CGPoint.zero
         var naiveViewportMaxCanvas = CGPoint.zero
         // Find the "naive" bounding box of the viewport on the canvas
-        // by projects its corners from view coordinates to canvas
+        // by projecting its corners from view coordinates to canvas
         // coordinates.
         //
         // Due to symmetry, it should be sufficient to project 2 corners
@@ -163,13 +165,14 @@ public class ImageEditorTransform: NSObject {
         // from the last step.
         //
         // This is subtle.  We want to clamp in canvas coordinates
-        // since the translation is specified in "unit canvas"
-        // coordinates.  However, because the translation is
-        // applied in SRT order (scale-rotate-transform), it
-        // effectively operates in view coordinates since it is
+        // since the min/max translation is specified by a bounding
+        // box in "unit canvas" coordinates.  However, because the
+        // translation is applied in SRT order (scale-rotate-transform),
+        // it effectively operates in view coordinates since it is
         // applied last.  So we project it from view coordinates
         // to canvas coordinates, clamp it, then project it back
-        // into unit view coordinates.
+        // into unit view coordinates using the "naive" (no translation)
+        // transform.
         let translationInView = self.unitTranslation.fromUnitCoordinates(viewBounds: viewBounds)
         let translationInCanvas = translationInView.applyingInverse(naiveAffineTransform)
         // Clamp the translation to +/- maxTranslationCanvasUnit.
