@@ -74,6 +74,8 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 // to prod the view to reset its scroll state, etc.
 - (void)conversationViewModelDidReset;
 
+- (void)conversationViewModelDidDeleteMostRecentMenuActionsViewItem;
+
 - (BOOL)isObservingVMUpdates;
 
 - (ConversationStyle *)conversationStyle;
@@ -87,6 +89,7 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 @property (nonatomic, readonly) NSArray<id<ConversationViewItem>> *viewItems;
 @property (nonatomic, nullable) NSString *focusMessageIdOnOpen;
 @property (nonatomic, readonly, nullable) ThreadDynamicInteractions *dynamicInteractions;
+@property (nonatomic, nullable) id<ConversationViewItem> mostRecentMenuActionsViewItem;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithThread:(TSThread *)thread
