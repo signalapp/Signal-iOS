@@ -310,6 +310,12 @@ extension GiphyError: LocalizedError {
         }
         let urlString = "/v1/gifs/search?api_key=\(kGiphyApiKey)&offset=\(kGiphyPageOffset)&limit=\(kGiphyPageSize)&q=\(queryEncoded)"
 
+        guard ContentProxy.configureSessionManager(sessionManager: sessionManager, forUrl: urlString) else {
+            owsFailDebug("Could not configure query: \(query).")
+            failure(nil)
+            return
+        }
+
         sessionManager.get(urlString,
                            parameters: [String: AnyObject](),
                            progress: nil,
