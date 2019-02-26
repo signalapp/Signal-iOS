@@ -101,6 +101,9 @@ class ImageEditorCropViewController: OWSViewController {
         let zoom2xButton = OWSButton(title: "Zoom 2x") { [weak self] in
             self?.zoom2xButtonPressed()
         }
+        let flipButton = OWSButton(title: "Flip") { [weak self] in
+            self?.flipButtonPressed()
+        }
 
         // MARK: - Header
 
@@ -149,6 +152,7 @@ class ImageEditorCropViewController: OWSViewController {
         // MARK: - Footer
 
         let footer = UIStackView(arrangedSubviews: [
+            flipButton,
             rotate90Button,
             rotate45Button,
             UIView.hStretchingSpacer(),
@@ -418,7 +422,8 @@ class ImageEditorCropViewController: OWSViewController {
             updateTransform(ImageEditorTransform(outputSizePixels: gestureStartTransform.outputSizePixels,
                                              unitTranslation: newUnitTranslation,
                                              rotationRadians: newRotationRadians,
-                                             scaling: newScaling).normalize(srcImageSizePixels: model.srcImageSizePixels))
+                                             scaling: newScaling,
+                                             isFlipped: gestureStartTransform.isFlipped).normalize(srcImageSizePixels: model.srcImageSizePixels))
         default:
             break
         }
@@ -552,7 +557,8 @@ class ImageEditorCropViewController: OWSViewController {
         let naiveTransform = ImageEditorTransform(outputSizePixels: croppedOutputSizePixels,
                                                   unitTranslation: transform.unitTranslation,
                                                   rotationRadians: transform.rotationRadians,
-                                                  scaling: transform.scaling)
+                                                  scaling: transform.scaling,
+                                                  isFlipped: transform.isFlipped)
         let naiveImageFrameOld = ImageEditorCanvasView.imageFrame(forViewSize: transform.outputSizePixels, imageSize: model.srcImageSizePixels, transform: naiveTransform)
         let naiveImageFrameNew = ImageEditorCanvasView.imageFrame(forViewSize: croppedOutputSizePixels, imageSize: model.srcImageSizePixels, transform: naiveTransform)
         let scalingDeltaX = naiveImageFrameNew.width / naiveImageFrameOld.width
@@ -590,7 +596,8 @@ class ImageEditorCropViewController: OWSViewController {
         updateTransform(ImageEditorTransform(outputSizePixels: croppedOutputSizePixels,
                                               unitTranslation: unitTranslation,
                                               rotationRadians: transform.rotationRadians,
-                                              scaling: scaling).normalize(srcImageSizePixels: model.srcImageSizePixels))
+                                              scaling: scaling,
+                                              isFlipped: transform.isFlipped).normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     private func handleNormalPanGesture(_ gestureRecognizer: ImageEditorPanGestureRecognizer) {
@@ -614,7 +621,8 @@ class ImageEditorCropViewController: OWSViewController {
         updateTransform(ImageEditorTransform(outputSizePixels: gestureStartTransform.outputSizePixels,
                                          unitTranslation: newUnitTranslation,
                                          rotationRadians: gestureStartTransform.rotationRadians,
-                                         scaling: gestureStartTransform.scaling).normalize(srcImageSizePixels: model.srcImageSizePixels))
+                                         scaling: gestureStartTransform.scaling,
+                                         isFlipped: gestureStartTransform.isFlipped).normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     private func cropRegion(forGestureRecognizer gestureRecognizer: ImageEditorPanGestureRecognizer) -> CropRegion? {
@@ -691,7 +699,8 @@ class ImageEditorCropViewController: OWSViewController {
         updateTransform(ImageEditorTransform(outputSizePixels: outputSizePixels,
                                          unitTranslation: unitTranslation,
                                          rotationRadians: rotationRadians,
-                                         scaling: scaling).normalize(srcImageSizePixels: model.srcImageSizePixels))
+                                         scaling: scaling,
+                                         isFlipped: transform.isFlipped).normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     @objc public func zoom2xButtonPressed() {
@@ -700,9 +709,18 @@ class ImageEditorCropViewController: OWSViewController {
         let rotationRadians = transform.rotationRadians
         let scaling = transform.scaling * 2.0
         updateTransform(ImageEditorTransform(outputSizePixels: outputSizePixels,
-                                         unitTranslation: unitTranslation,
-                                         rotationRadians: rotationRadians,
-                                         scaling: scaling).normalize(srcImageSizePixels: model.srcImageSizePixels))
+                                             unitTranslation: unitTranslation,
+                                             rotationRadians: rotationRadians,
+                                             scaling: scaling,
+                                             isFlipped: transform.isFlipped).normalize(srcImageSizePixels: model.srcImageSizePixels))
+    }
+
+    @objc public func flipButtonPressed() {
+        updateTransform(ImageEditorTransform(outputSizePixels: transform.outputSizePixels,
+                                             unitTranslation: transform.unitTranslation,
+                                             rotationRadians: transform.rotationRadians,
+                                             scaling: transform.scaling,
+                                             isFlipped: !transform.isFlipped).normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     @objc public func resetButtonPressed() {
