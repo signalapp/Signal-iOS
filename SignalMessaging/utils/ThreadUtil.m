@@ -65,6 +65,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMessage,
+    NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos,
+    YapDatabaseReadWriteTransaction *writeTransaction);
+
 @implementation ThreadUtil
 
 #pragma mark - Dependencies
@@ -95,26 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
                             transaction:transaction];
 }
 
-+ (nullable OWSLinkPreview *)linkPreviewForLinkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                                transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    if (!linkPreviewDraft) {
-        return nil;
-    }
-    NSError *linkPreviewError;
-    OWSLinkPreview *_Nullable linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft
-                                                                                  transaction:transaction
-                                                                                        error:&linkPreviewError];
-    if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
-        OWSLogError(@"linkPreviewError: %@", linkPreviewError);
-    }
-    return linkPreview;
-}
-
 + (TSOutgoingMessage *)enqueueMessageWithText:(nullable NSString *)fullMessageText
-                             mediaAttachments:(NSArray<SignalAttachment *> *)attachmentsParam
+                             mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
@@ -123,8 +109,36 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(thread);
 
+    return [self
+        buildOutgoingMessageWithText:fullMessageText
+                    mediaAttachments:mediaAttachments
+                              thread:thread
+                    quotedReplyModel:quotedReplyModel
+                    linkPreviewDraft:linkPreviewDraft
+                         transaction:transaction
+                          completion:^(TSOutgoingMessage *savedMessage,
+                              NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos,
+                              YapDatabaseReadWriteTransaction *writeTransaction) {
+                              if (attachmentInfos.count == 0) {
+                                  [self.messageSenderJobQueue addMessage:savedMessage transaction:writeTransaction];
+                              } else {
+                                  [self.messageSenderJobQueue addMediaMessage:savedMessage
+                                                              attachmentInfos:attachmentInfos
+                                                        isTemporaryAttachment:NO];
+                              }
+                          }];
+}
+
++ (TSOutgoingMessage *)buildOutgoingMessageWithText:(nullable NSString *)fullMessageText
+                                   mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
+                                             thread:(TSThread *)thread
+                                   quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                   linkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
+                                        transaction:(YapDatabaseReadTransaction *)transaction
+                                         completion:(BuildOutgoingMessageCompletionBlock)completionBlock;
+{
     NSString *_Nullable truncatedText;
-    NSArray<SignalAttachment *> *attachments = attachmentsParam;
+    NSArray<SignalAttachment *> *attachments = mediaAttachments;
     if ([fullMessageText lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
         truncatedText = fullMessageText;
     } else {
@@ -141,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (dataSource) {
             SignalAttachment *oversizeTextAttachment =
                 [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
-            attachments = [attachmentsParam arrayByAddingObject:oversizeTextAttachment];
+            attachments = [mediaAttachments arrayByAddingObject:oversizeTextAttachment];
         } else {
             OWSFailDebug(@"dataSource was unexpectedly nil");
         }
@@ -188,21 +202,13 @@ NS_ASSUME_NONNULL_BEGIN
                                       [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
                                   }
 
-                                  if (attachments.count == 0) {
-                                      [self.messageSenderJobQueue addMessage:message transaction:writeTransaction];
-                                  } else {
-                                      NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos =
-                                          [NSMutableArray new];
-                                      for (SignalAttachment *attachment in attachments) {
-                                          OWSOutgoingAttachmentInfo *attachmentInfo =
-                                              [attachment buildOutgoingAttachmentInfoWithMessage:message];
-                                          [attachmentInfos addObject:attachmentInfo];
-                                      }
-
-                                      [self.messageSenderJobQueue addMediaMessage:message
-                                                                  attachmentInfos:attachmentInfos
-                                                            isTemporaryAttachment:NO];
+                                  NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
+                                  for (SignalAttachment *attachment in attachments) {
+                                      OWSOutgoingAttachmentInfo *attachmentInfo =
+                                          [attachment buildOutgoingAttachmentInfoWithMessage:message];
+                                      [attachmentInfos addObject:attachmentInfo];
                                   }
+                                  completionBlock(message, attachmentInfos, writeTransaction);
                               }
                                       completionBlock:benchmarkCompletion];
                       }];
@@ -257,104 +263,86 @@ NS_ASSUME_NONNULL_BEGIN
 // MARK: Non-Durable Sending
 
 // We might want to generate a link preview here.
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)text
++ (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)fullMessageText
                                             inThread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                         transaction:(YapDatabaseReadTransaction *)transaction
                                        messageSender:(OWSMessageSender *)messageSender
-                                             success:(void (^)(void))successHandler
-                                             failure:(void (^)(NSError *error))failureHandler
+                                          completion:(void (^)(NSError *_Nullable error))completion
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(text.length > 0);
-    OWSAssertDebug(thread);
-    OWSAssertDebug(messageSender);
+    OWSAssertDebug(completion);
 
-    OWSDisappearingMessagesConfiguration *configuration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
-    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-    TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:thread
-                                       messageBody:text
-                                      attachmentId:nil
-                                  expiresInSeconds:expiresInSeconds
-                                     quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
-                                       linkPreview:nil];
-
-    [messageSender sendMessage:message success:successHandler failure:failureHandler];
-
-    return message;
+    return [self sendMessageNonDurablyWithText:fullMessageText
+                              mediaAttachments:@[]
+                                      inThread:thread
+                              quotedReplyModel:quotedReplyModel
+                                   transaction:transaction
+                                 messageSender:messageSender
+                                    completion:completion];
 }
 
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithAttachments:(NSArray<SignalAttachment *> *)attachments
-                                                   inThread:(TSThread *)thread
-                                                messageBody:(nullable NSString *)messageBody
-                                           quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                              messageSender:(OWSMessageSender *)messageSender
-                                                 completion:(void (^_Nullable)(NSError *_Nullable error))completion
++ (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)fullMessageText
+                                    mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
+                                            inThread:(TSThread *)thread
+                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                         transaction:(YapDatabaseReadTransaction *)transaction
+                                       messageSender:(OWSMessageSender *)messageSender
+                                          completion:(void (^)(NSError *_Nullable error))completion
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(attachments.count > 0);
     OWSAssertDebug(thread);
-    OWSAssertDebug(messageSender);
+    OWSAssertDebug(completion);
 
-    OWSDisappearingMessagesConfiguration *configuration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
-
-    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-    BOOL isVoiceMessage = (attachments.count == 1 && attachments.firstObject.isVoiceMessage);
-    // MJK TODO - remove senderTimestamp
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                        messageBody:messageBody
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:expiresInSeconds
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:isVoiceMessage
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
-                                                       contactShare:nil
-                                                        linkPreview:nil];
-
-    NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
-    for (SignalAttachment *attachment in attachments) {
-        OWSAssertDebug([attachment mimeType].length > 0);
-
-        [attachmentInfos addObject:[attachment buildOutgoingAttachmentInfoWithMessage:message]];
-    }
-
-    [messageSender sendAttachments:attachmentInfos
-        inMessage:message
-        success:^{
-            OWSLogDebug(@"Successfully sent message attachment.");
-            if (completion) {
-                dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    completion(nil);
-                });
-            }
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"Failed to send message attachment with error: %@", error);
-            if (completion) {
-                dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    completion(error);
-                });
-            }
-        }];
-
-    return message;
+    return
+        [self buildOutgoingMessageWithText:fullMessageText
+                          mediaAttachments:mediaAttachments
+                                    thread:thread
+                          quotedReplyModel:quotedReplyModel
+                          linkPreviewDraft:nil
+                               transaction:transaction
+                                completion:^(TSOutgoingMessage *_Nonnull savedMessage,
+                                    NSMutableArray<OWSOutgoingAttachmentInfo *> *_Nonnull attachmentInfos,
+                                    YapDatabaseReadWriteTransaction *_Nonnull writeTransaction) {
+                                    if (attachmentInfos.count == 0) {
+                                        [messageSender sendMessage:savedMessage
+                                            success:^{
+                                                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                                    completion(nil);
+                                                });
+                                            }
+                                            failure:^(NSError *error) {
+                                                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                                    completion(error);
+                                                });
+                                            }];
+                                    } else {
+                                        [messageSender sendAttachments:attachmentInfos
+                                            inMessage:savedMessage
+                                            success:^{
+                                                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                                    completion(nil);
+                                                });
+                                            }
+                                            failure:^(NSError *error) {
+                                                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                                    completion(error);
+                                                });
+                                            }];
+                                    }
+                                }];
 }
 
 + (TSOutgoingMessage *)sendMessageNonDurablyWithContactShare:(OWSContact *)contactShare
                                                     inThread:(TSThread *)thread
                                                messageSender:(OWSMessageSender *)messageSender
-                                                  completion:(void (^_Nullable)(NSError *_Nullable error))completion
+                                                  completion:(void (^)(NSError *_Nullable error))completion
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(contactShare);
     OWSAssertDebug(contactShare.ows_isValid);
     OWSAssertDebug(thread);
     OWSAssertDebug(messageSender);
+    OWSAssertDebug(completion);
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
@@ -377,22 +365,36 @@ NS_ASSUME_NONNULL_BEGIN
     [messageSender sendMessage:message
         success:^{
             OWSLogDebug(@"Successfully sent contact share.");
-            if (completion) {
-                dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    completion(nil);
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                completion(nil);
+            });
         }
         failure:^(NSError *error) {
             OWSLogError(@"Failed to send contact share with error: %@", error);
-            if (completion) {
-                dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    completion(error);
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                completion(error);
+            });
         }];
 
     return message;
+}
+
++ (nullable OWSLinkPreview *)linkPreviewForLinkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
+                                                transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    if (!linkPreviewDraft) {
+        return nil;
+    }
+    NSError *linkPreviewError;
+    OWSLinkPreview *_Nullable linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft
+                                                                                  transaction:transaction
+                                                                                        error:&linkPreviewError];
+    if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
+        OWSLogError(@"linkPreviewError: %@", linkPreviewError);
+    }
+    return linkPreview;
 }
 
 #pragma mark - Dynamic Interactions
