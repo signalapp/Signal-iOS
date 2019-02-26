@@ -78,7 +78,7 @@ public class ImageEditorTransform: NSObject {
         return ImageEditorTransform(outputSizePixels: srcImageSizePixels,
                                     unitTranslation: .zero,
                                     rotationRadians: 0.0,
-                                    scaling: 1.0).normalize()
+                                    scaling: 1.0).normalize(srcImageSizePixels: srcImageSizePixels)
     }
 
     public func affineTransform(viewSize: CGSize) -> CGAffineTransform {
@@ -92,15 +92,102 @@ public class ImageEditorTransform: NSObject {
         return transform
     }
 
-    public func normalize() -> ImageEditorTransform {
-        // TODO: Normalize translation.
-//        public let unitTranslation: CGPoint
-
-        // We need to ensure that 
+    // This method normalizes a "proposed" transform (self) into
+    // one that is guaranteed to be valid.
+    public func normalize(srcImageSizePixels: CGSize) -> ImageEditorTransform {
+        // Normalize scaling.
+        // The "src/background" image is rendered at a size that will fill
+        // the canvas bounds if scaling = 1.0 and translation = .zero.
+        // Therefore, any scaling >= 1.0 is valid.
         let minScaling: CGFloat = 1.0
         let scaling = max(minScaling, self.scaling)
 
         // We don't need to normalize rotation.
+
+        // Normalize translation.
+        //
+        // This is decidedly non-trivial because of the way that
+        // scaling, rotation and translation combine.  We need to
+        // guarantee that the image _always_ fills the canvas
+        // bounds.  So want to clamp the translation such that the
+        // image can be moved _exactly_ to the edge of the canvas
+        // and no further in a way that reflects the current
+        // crop, scaling and rotation.
+        //
+        // We need to clamp the translation to the valid "translation
+        // region" which is a rectangle centered on the origin.
+        // However, this rectangle is axis-aligned in canvas
+        // coordinates, not view coordinates.  e.g. if you have
+        // a long image and a square output size, you could "slide"
+        // the crop region along the image's contents.  That
+        // movement would appear diagonal to the user in the view
+        // but would be vertical on the canvas.
+
+        // Normalize translation, Step 1:
+        //
+        // We project the viewport onto the canvas to determine
+        // its bounding box.
+        let viewBounds = CGRect(origin: .zero, size: self.outputSizePixels)
+        // This "naive" transform represents the proposed transform
+        // with no translation.
+        let naiveTransform = ImageEditorTransform(outputSizePixels: outputSizePixels,
+                                                  unitTranslation: .zero,
+                                                  rotationRadians: rotationRadians,
+                                                  scaling: scaling)
+        let naiveAffineTransform = naiveTransform.affineTransform(viewSize: viewBounds.size)
+        var naiveViewportMinCanvas = CGPoint.zero
+        var naiveViewportMaxCanvas = CGPoint.zero
+        // Find the "naive" bounding box of the viewport on the canvas
+        // by projecting its corners from view coordinates to canvas
+        // coordinates.
+        //
+        // Due to symmetry, it should be sufficient to project 2 corners
+        // but we do all four corners for safety.
+        for viewCorner in [
+            viewBounds.topLeft,
+            viewBounds.topRight,
+            viewBounds.bottomLeft,
+            viewBounds.bottomRight
+            ] {
+                let naiveViewCornerInCanvas = viewCorner.minus(viewBounds.center).applyingInverse(naiveAffineTransform).plus(viewBounds.center)
+                naiveViewportMinCanvas = naiveViewportMinCanvas.min(naiveViewCornerInCanvas)
+                naiveViewportMaxCanvas = naiveViewportMaxCanvas.max(naiveViewCornerInCanvas)
+        }
+        let naiveViewportSizeCanvas: CGPoint = naiveViewportMaxCanvas.minus(naiveViewportMinCanvas)
+
+        // Normalize translation, Step 2:
+        //
+        // Now determine the "naive" image frame on the canvas.
+        let naiveImageFrameCanvas = ImageEditorCanvasView.imageFrame(forViewSize: viewBounds.size, imageSize: srcImageSizePixels, transform: naiveTransform)
+        let naiveImageSizeCanvas = CGPoint(x: naiveImageFrameCanvas.width, y: naiveImageFrameCanvas.height)
+
+        // Normalize translation, Step 3:
+        //
+        // The min/max translation can now by computed by diffing
+        // the size of the bounding box of the naive viewport and
+        // the size of the image on canvas.
+        let maxTranslationCanvas = naiveImageSizeCanvas.minus(naiveViewportSizeCanvas).times(0.5).max(.zero)
+
+        // Normalize translation, Step 4:
+        //
+        // Clamp the proposed translation to the "max translation"
+        // from the last step.
+        //
+        // This is subtle.  We want to clamp in canvas coordinates
+        // since the min/max translation is specified by a bounding
+        // box in "unit canvas" coordinates.  However, because the
+        // translation is applied in SRT order (scale-rotate-transform),
+        // it effectively operates in view coordinates since it is
+        // applied last.  So we project it from view coordinates
+        // to canvas coordinates, clamp it, then project it back
+        // into unit view coordinates using the "naive" (no translation)
+        // transform.
+        let translationInView = self.unitTranslation.fromUnitCoordinates(viewBounds: viewBounds)
+        let translationInCanvas = translationInView.applyingInverse(naiveAffineTransform)
+        // Clamp the translation to +/- maxTranslationCanvasUnit.
+        let clampedTranslationInCanvas = translationInCanvas.min(maxTranslationCanvas).max(maxTranslationCanvas.inverse())
+        let clampedTranslationInView = clampedTranslationInCanvas.applying(naiveAffineTransform)
+        let unitTranslation = clampedTranslationInView.toUnitCoordinates(viewBounds: viewBounds, shouldClamp: false)
 
         return ImageEditorTransform(outputSizePixels: outputSizePixels,
                                     unitTranslation: unitTranslation,

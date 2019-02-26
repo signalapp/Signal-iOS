@@ -284,11 +284,13 @@ class ImageEditorCropViewController: OWSViewController {
 
         let pinchGestureRecognizer = ImageEditorPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         pinchGestureRecognizer.referenceView = self.clipView
+        pinchGestureRecognizer.delegate = self
         view.addGestureRecognizer(pinchGestureRecognizer)
 
         let panGestureRecognizer = ImageEditorPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
         panGestureRecognizer.maximumNumberOfTouches = 1
         panGestureRecognizer.referenceView = self.clipView
+        panGestureRecognizer.delegate = self
         view.addGestureRecognizer(panGestureRecognizer)
     }
 
@@ -349,7 +351,7 @@ class ImageEditorCropViewController: OWSViewController {
             updateTransform(ImageEditorTransform(outputSizePixels: gestureStartTransform.outputSizePixels,
                                              unitTranslation: newUnitTranslation,
                                              rotationRadians: newRotationRadians,
-                                             scaling: newScaling).normalize())
+                                             scaling: newScaling).normalize(srcImageSizePixels: model.srcImageSizePixels))
         default:
             break
         }
@@ -521,7 +523,7 @@ class ImageEditorCropViewController: OWSViewController {
         updateTransform(ImageEditorTransform(outputSizePixels: croppedOutputSizePixels,
                                               unitTranslation: unitTranslation,
                                               rotationRadians: transform.rotationRadians,
-                                              scaling: scaling).normalize())
+                                              scaling: scaling).normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     private func handleNormalPanGesture(_ gestureRecognizer: ImageEditorPanGestureRecognizer) {
@@ -545,7 +547,7 @@ class ImageEditorCropViewController: OWSViewController {
         updateTransform(ImageEditorTransform(outputSizePixels: gestureStartTransform.outputSizePixels,
                                          unitTranslation: newUnitTranslation,
                                          rotationRadians: gestureStartTransform.rotationRadians,
-                                         scaling: gestureStartTransform.scaling).normalize())
+                                         scaling: gestureStartTransform.scaling).normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     private func cropRegion(forGestureRecognizer gestureRecognizer: ImageEditorPanGestureRecognizer) -> CropRegion? {
@@ -622,7 +624,7 @@ class ImageEditorCropViewController: OWSViewController {
         updateTransform(ImageEditorTransform(outputSizePixels: outputSizePixels,
                                          unitTranslation: unitTranslation,
                                          rotationRadians: rotationRadians,
-                                         scaling: scaling).normalize())
+                                         scaling: scaling).normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     @objc public func zoom2xButtonPressed() {
@@ -633,10 +635,24 @@ class ImageEditorCropViewController: OWSViewController {
         updateTransform(ImageEditorTransform(outputSizePixels: outputSizePixels,
                                          unitTranslation: unitTranslation,
                                          rotationRadians: rotationRadians,
-                                         scaling: scaling).normalize())
+                                         scaling: scaling).normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     @objc public func resetButtonPressed() {
         updateTransform(ImageEditorTransform.defaultTransform(srcImageSizePixels: model.srcImageSizePixels))
+    }
+}
+
+// MARK: -
+
+extension ImageEditorCropViewController: UIGestureRecognizerDelegate {
+
+    @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        // Until the GR recognizes, it should only see touches that start within the content.
+        guard gestureRecognizer.state == .possible else {
+            return true
+        }
+        let location = touch.location(in: clipView)
+        return clipView.bounds.contains(location)
     }
 }
