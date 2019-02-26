@@ -69,7 +69,7 @@ public class ImageEditorView: UIView {
             return false
         }
         self.addSubview(canvasView)
-        canvasView.ows_autoPinToSuperviewEdges()
+        canvasView.autoPinEdgesToSuperviewEdges()
 
         self.isUserInteractionEnabled = true
 

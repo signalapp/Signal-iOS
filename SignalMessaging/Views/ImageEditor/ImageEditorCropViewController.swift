@@ -144,7 +144,7 @@ class ImageEditorCropViewController: OWSViewController {
             strongSelf.updateContent()
         }
         clipView.addSubview(contentView)
-        contentView.ows_autoPinToSuperviewEdges()
+        contentView.autoPinEdgesToSuperviewEdges()
 
         // MARK: - Footer
 
@@ -170,7 +170,7 @@ class ImageEditorCropViewController: OWSViewController {
         stackView.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
         stackView.isLayoutMarginsRelativeArrangement = true
         self.view.addSubview(stackView)
-        stackView.ows_autoPinToSuperviewEdges()
+        stackView.autoPinEdgesToSuperviewEdges()
 
         // MARK: - Crop View
 
