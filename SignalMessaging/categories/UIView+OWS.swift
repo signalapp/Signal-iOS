@@ -205,11 +205,11 @@ public extension CGRect {
     }
 
     public var topRight: CGPoint {
-        return CGPoint(x: maxX, y: 0)
+        return CGPoint(x: maxX, y: minY)
     }
 
     public var bottomLeft: CGPoint {
-        return CGPoint(x: 0, y: maxY)
+        return CGPoint(x: minX, y: maxY)
     }
 
     public var bottomRight: CGPoint {
