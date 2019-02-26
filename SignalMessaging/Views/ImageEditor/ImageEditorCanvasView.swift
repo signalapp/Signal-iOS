@@ -372,6 +372,10 @@ public class ImageEditorCanvasView: UIView {
         shapeLayer.strokeColor = item.color.cgColor
         shapeLayer.frame = CGRect(origin: .zero, size: viewSize)
 
+        // Stroke samples are specified in "image unit" coordinates, but
+        // need to be rendered in "canvas" coordinates.  The imageFrame
+        // is the bounds of the image specified in "canvas" coordinates,
+        // so to transform we can simply convert from image frame units.
         let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: model.srcImageSizePixels, transform: transform)
         let transformSampleToPoint = { (unitSample: CGPoint) -> CGPoint in
             return unitSample.fromUnitCoordinates(viewBounds: imageFrame)
@@ -487,10 +491,14 @@ public class ImageEditorCanvasView: UIView {
                                                                 .font: item.font.withSize(fontSize)
             ],
                                                               context: nil)
-        let center = item.unitCenter.fromUnitCoordinates(viewBounds: imageFrame)
+        // The text item's center is specified in "image unit" coordinates, but
+        // needs to be rendered in "canvas" coordinates.  The imageFrame
+        // is the bounds of the image specified in "canvas" coordinates,
+        // so to transform we can simply convert from image frame units.
+        let centerInCanvas = item.unitCenter.fromUnitCoordinates(viewBounds: imageFrame)
         let layerSize = CGSizeCeil(textBounds.size)
-        layer.frame = CGRect(origin: CGPoint(x: center.x - layerSize.width * 0.5,
-                                             y: center.y - layerSize.height * 0.5),
+        layer.frame = CGRect(origin: CGPoint(x: centerInCanvas.x - layerSize.width * 0.5,
+                                             y: centerInCanvas.y - layerSize.height * 0.5),
                              size: layerSize)
 
         let transform = CGAffineTransform.identity.scaledBy(x: item.scaling, y: item.scaling).rotated(by: item.rotationRadians)
