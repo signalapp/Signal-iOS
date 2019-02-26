@@ -81,17 +81,7 @@ class ImageEditorCropViewController: OWSViewController {
     override func loadView() {
         self.view = UIView()
 
-        if (UIAccessibilityIsReduceTransparencyEnabled()) {
-            self.view.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
-        } else {
-            let alpha = OWSNavigationBar.backgroundBlurMutingFactor
-            self.view.backgroundColor = UIColor(white: 0.5, alpha: alpha)
-
-            let blurEffectView = UIVisualEffectView(effect: Theme.barBlurEffect)
-            blurEffectView.layer.zPosition = -1
-            self.view.addSubview(blurEffectView)
-            blurEffectView.autoPinEdgesToSuperviewEdges()
-        }
+        self.view.backgroundColor = .black
 
         let stackView = UIStackView()
         stackView.axis = .vertical
