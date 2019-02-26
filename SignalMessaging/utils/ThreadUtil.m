@@ -268,8 +268,10 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                          transaction:(YapDatabaseReadTransaction *)transaction
                                        messageSender:(OWSMessageSender *)messageSender
-                                          completion:(void (^_Nullable)(NSError *_Nullable error))completion
+                                          completion:(void (^)(NSError *_Nullable error))completion
 {
+    OWSAssertDebug(completion);
+
     return [self sendMessageNonDurablyWithText:fullMessageText
                               mediaAttachments:@[]
                                       inThread:thread
@@ -285,10 +287,11 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                          transaction:(YapDatabaseReadTransaction *)transaction
                                        messageSender:(OWSMessageSender *)messageSender
-                                          completion:(void (^_Nullable)(NSError *_Nullable error))completion
+                                          completion:(void (^)(NSError *_Nullable error))completion
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(thread);
+    OWSAssertDebug(completion);
 
     return
         [self buildOutgoingMessageWithText:fullMessageText
@@ -303,39 +306,27 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                     if (attachmentInfos.count == 0) {
                                         [messageSender sendMessage:savedMessage
                                             success:^{
-                                                OWSLogDebug(@"Successfully sent message attachment.");
-                                                if (completion) {
-                                                    dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                                        completion(nil);
-                                                    });
-                                                }
+                                                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                                    completion(nil);
+                                                });
                                             }
                                             failure:^(NSError *error) {
-                                                OWSLogError(@"Failed to send message attachment with error: %@", error);
-                                                if (completion) {
-                                                    dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                                        completion(error);
-                                                    });
-                                                }
+                                                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                                    completion(error);
+                                                });
                                             }];
                                     } else {
                                         [messageSender sendAttachments:attachmentInfos
                                             inMessage:savedMessage
                                             success:^{
-                                                OWSLogDebug(@"Successfully sent message attachment.");
-                                                if (completion) {
-                                                    dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                                        completion(nil);
-                                                    });
-                                                }
+                                                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                                    completion(nil);
+                                                });
                                             }
                                             failure:^(NSError *error) {
-                                                OWSLogError(@"Failed to send message attachment with error: %@", error);
-                                                if (completion) {
-                                                    dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                                        completion(error);
-                                                    });
-                                                }
+                                                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                                    completion(error);
+                                                });
                                             }];
                                     }
                                 }];
@@ -344,13 +335,14 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 + (TSOutgoingMessage *)sendMessageNonDurablyWithContactShare:(OWSContact *)contactShare
                                                     inThread:(TSThread *)thread
                                                messageSender:(OWSMessageSender *)messageSender
-                                                  completion:(void (^_Nullable)(NSError *_Nullable error))completion
+                                                  completion:(void (^)(NSError *_Nullable error))completion
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(contactShare);
     OWSAssertDebug(contactShare.ows_isValid);
     OWSAssertDebug(thread);
     OWSAssertDebug(messageSender);
+    OWSAssertDebug(completion);
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
@@ -373,19 +365,15 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     [messageSender sendMessage:message
         success:^{
             OWSLogDebug(@"Successfully sent contact share.");
-            if (completion) {
-                dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    completion(nil);
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                completion(nil);
+            });
         }
         failure:^(NSError *error) {
             OWSLogError(@"Failed to send contact share with error: %@", error);
-            if (completion) {
-                dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    completion(error);
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                completion(error);
+            });
         }];
 
     return message;

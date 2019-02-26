@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                          transaction:(YapDatabaseReadTransaction *)transaction
                                        messageSender:(OWSMessageSender *)messageSender
-                                          completion:(void (^_Nullable)(NSError *_Nullable error))completion;
+                                          completion:(void (^)(NSError *_Nullable error))completion;
 
 // Used by SAE, otherwise we should use the durable `enqueue` counterpart
 + (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)fullMessageText
@@ -77,13 +77,13 @@ NS_ASSUME_NONNULL_BEGIN
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                          transaction:(YapDatabaseReadTransaction *)transaction
                                        messageSender:(OWSMessageSender *)messageSender
-                                          completion:(void (^_Nullable)(NSError *_Nullable error))completion;
+                                          completion:(void (^)(NSError *_Nullable error))completion;
 
 // Used by SAE, otherwise we should use the durable `enqueue` counterpart
 + (TSOutgoingMessage *)sendMessageNonDurablyWithContactShare:(OWSContact *)contactShare
                                                     inThread:(TSThread *)thread
                                                messageSender:(OWSMessageSender *)messageSender
-                                                  completion:(void (^_Nullable)(NSError *_Nullable error))completion;
+                                                  completion:(void (^)(NSError *_Nullable error))completion;
 
 
 #pragma mark - dynamic interactions

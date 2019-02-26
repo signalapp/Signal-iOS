@@ -234,7 +234,7 @@ void AssertIsOnSendingQueue()
 
 - (void)didFailWithError:(NSError *)error
 {
-    OWSLogDebug(@"failed with error: %@", error);
+    OWSLogError(@"failed with error: %@", error);
     self.failureHandler(error);
 }
 
