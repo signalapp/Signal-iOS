@@ -62,15 +62,19 @@ public class ImageEditorTransform: NSObject {
     public let rotationRadians: CGFloat
     // x >= 1.0.
     public let scaling: CGFloat
+    // Flipping is horizontal.
+    public let isFlipped: Bool
 
     public init(outputSizePixels: CGSize,
                 unitTranslation: CGPoint,
                 rotationRadians: CGFloat,
-                scaling: CGFloat) {
+                scaling: CGFloat,
+                isFlipped: Bool) {
         self.outputSizePixels = outputSizePixels
         self.unitTranslation = unitTranslation
         self.rotationRadians = rotationRadians
         self.scaling = scaling
+        self.isFlipped = isFlipped
     }
 
     public class func defaultTransform(srcImageSizePixels: CGSize) -> ImageEditorTransform {
@@ -78,7 +82,8 @@ public class ImageEditorTransform: NSObject {
         return ImageEditorTransform(outputSizePixels: srcImageSizePixels,
                                     unitTranslation: .zero,
                                     rotationRadians: 0.0,
-                                    scaling: 1.0).normalize(srcImageSizePixels: srcImageSizePixels)
+                                    scaling: 1.0,
+                                    isFlipped: false).normalize(srcImageSizePixels: srcImageSizePixels)
     }
 
     public func affineTransform(viewSize: CGSize) -> CGAffineTransform {
@@ -133,7 +138,8 @@ public class ImageEditorTransform: NSObject {
         let naiveTransform = ImageEditorTransform(outputSizePixels: outputSizePixels,
                                                   unitTranslation: .zero,
                                                   rotationRadians: rotationRadians,
-                                                  scaling: scaling)
+                                                  scaling: scaling,
+                                                  isFlipped: self.isFlipped)
         let naiveAffineTransform = naiveTransform.affineTransform(viewSize: viewBounds.size)
         var naiveViewportMinCanvas = CGPoint.zero
         var naiveViewportMaxCanvas = CGPoint.zero
@@ -192,7 +198,8 @@ public class ImageEditorTransform: NSObject {
         return ImageEditorTransform(outputSizePixels: outputSizePixels,
                                     unitTranslation: unitTranslation,
                                     rotationRadians: rotationRadians,
-                                    scaling: scaling)
+                                    scaling: scaling,
+                                    isFlipped: self.isFlipped)
     }
 
     public override func isEqual(_ object: Any?) -> Bool {
@@ -202,7 +209,8 @@ public class ImageEditorTransform: NSObject {
         return (outputSizePixels == other.outputSizePixels &&
             unitTranslation == other.unitTranslation &&
             rotationRadians == other.rotationRadians &&
-            scaling == other.scaling)
+            scaling == other.scaling &&
+            isFlipped == other.isFlipped)
     }
 
     public override var hash: Int {
@@ -211,11 +219,12 @@ public class ImageEditorTransform: NSObject {
             unitTranslation.x.hashValue ^
             unitTranslation.y.hashValue ^
             rotationRadians.hashValue ^
-            scaling.hashValue)
+            scaling.hashValue ^
+            isFlipped.hashValue)
     }
 
     open override var description: String {
-        return "[outputSizePixels: \(outputSizePixels), unitTranslation: \(unitTranslation), rotationRadians: \(rotationRadians), scaling: \(scaling)]"
+        return "[outputSizePixels: \(outputSizePixels), unitTranslation: \(unitTranslation), rotationRadians: \(rotationRadians), scaling: \(scaling), isFlipped: \(isFlipped)]"
     }
 }
 

@@ -265,6 +265,15 @@ public class ImageEditorCanvasView: UIView {
 
     public class func updateImageLayer(imageLayer: CALayer, viewSize: CGSize, imageSize: CGSize, transform: ImageEditorTransform) {
         imageLayer.frame = imageFrame(forViewSize: viewSize, imageSize: imageSize, transform: transform)
+
+        // This is the only place the isFlipped flag is consulted.
+        // We deliberately do _not_ use it in the affine transforms, etc.
+        // so that:
+        //
+        // * It doesn't affect text content & brush strokes.
+        // * To not complicate the other "coordinate system math".
+        let transform = CGAffineTransform.identity.scaledBy(x: transform.isFlipped ? -1 : +1, y: 1)
+        imageLayer.setAffineTransform(transform)
     }
 
     public class func imageFrame(forViewSize viewSize: CGSize, imageSize: CGSize, transform: ImageEditorTransform) -> CGRect {
