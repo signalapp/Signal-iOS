@@ -589,10 +589,10 @@ public class OWSLinkPreview: MTLModel {
         }
     }
 
-    class func downloadLink(url: String,
+    class func downloadLink(url urlString: String,
                             remainingRetries: UInt = 3) -> Promise<Data> {
 
-        Logger.verbose("url: \(url)")
+        Logger.verbose("url: \(urlString)")
 
         let sessionConfiguration = ContentProxy.sessionConfiguration()
 
@@ -605,13 +605,13 @@ public class OWSLinkPreview: MTLModel {
         sessionManager.requestSerializer = AFHTTPRequestSerializer()
         sessionManager.responseSerializer = AFHTTPResponseSerializer()
 
-        // Remove all headers from the request.
-        for headerField in sessionManager.requestSerializer.httpRequestHeaders.keys {
-            sessionManager.requestSerializer.setValue(nil, forHTTPHeaderField: headerField)
+        guard ContentProxy.configureSessionManager(sessionManager: sessionManager, forUrl: urlString) else {
+            owsFailDebug("Could not configure url: \(urlString).")
+            return Promise(error: LinkPreviewError.assertionFailure)
         }
 
         let (promise, resolver) = Promise<Data>.pending()
-        sessionManager.get(url,
+        sessionManager.get(urlString,
                            parameters: [String: AnyObject](),
                            progress: nil,
                            success: { task, value in
@@ -654,7 +654,7 @@ public class OWSLinkPreview: MTLModel {
                                 resolver.reject(LinkPreviewError.couldNotDownload)
                                 return
                             }
-                            OWSLinkPreview.downloadLink(url: url, remainingRetries: remainingRetries - 1)
+                            OWSLinkPreview.downloadLink(url: urlString, remainingRetries: remainingRetries - 1)
                             .done(on: DispatchQueue.global()) { (data) in
                                 resolver.fulfill(data)
                             }.catch(on: DispatchQueue.global()) { (error) in
