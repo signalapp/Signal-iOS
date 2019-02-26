@@ -296,6 +296,23 @@ class ImageEditorCropViewController: OWSViewController {
         return true
     }
 
+    // MARK: - Gestures
+
+    private class func unitTranslation(oldLocationView: CGPoint,
+                                       newLocationView: CGPoint,
+                                       viewBounds: CGRect,
+                                       oldTransform: ImageEditorTransform) -> CGPoint {
+
+        // The beauty of using an SRT (scale-rotate-translation) tranform ordering
+        // is that the translation is applied last, so it's trivial to convert
+        // translations from view coordinates to transform translation.
+        // Our (view bounds == canvas bounds) so no need to convert.
+        let translation = newLocationView.minus(oldLocationView)
+        let translationUnit = translation.toUnitCoordinates(viewSize: viewBounds.size, shouldClamp: false)
+        let newUnitTranslation = oldTransform.unitTranslation.plus(translationUnit)
+        return newUnitTranslation
+    }
+
     // MARK: - Pinch Gesture
 
     @objc
@@ -315,12 +332,10 @@ class ImageEditorCropViewController: OWSViewController {
                 return
             }
 
-            let locationUnitStart = self.locationUnit(forLocationInView: gestureRecognizer.pinchStateStart.centroid,
-                                                      transform: gestureStartTransform)
-            let locationUnitLast = self.locationUnit(forLocationInView: gestureRecognizer.pinchStateLast.centroid,
-                                                     transform: gestureStartTransform)
-            let locationUnitDelta = CGPointSubtract(locationUnitLast, locationUnitStart)
-            let newUnitTranslation = CGPointAdd(gestureStartTransform.unitTranslation, locationUnitDelta)
+            let newUnitTranslation = ImageEditorCropViewController.unitTranslation(oldLocationView: gestureRecognizer.pinchStateStart.centroid,
+                                                                                   newLocationView: gestureRecognizer.pinchStateLast.centroid,
+                                                                                   viewBounds: clipView.bounds,
+                                                                                   oldTransform: gestureStartTransform)
 
             let newRotationRadians = gestureStartTransform.rotationRadians + gestureRecognizer.pinchStateLast.angleRadians - gestureRecognizer.pinchStateStart.angleRadians
 
@@ -516,16 +531,16 @@ class ImageEditorCropViewController: OWSViewController {
             owsFailDebug("Missing pinchTransform.")
             return
         }
-        guard let locationStart = gestureRecognizer.locationStart else {
+        guard let oldLocationView = gestureRecognizer.locationStart else {
             owsFailDebug("Missing locationStart.")
             return
         }
-        let locationNow = gestureRecognizer.location(in: self.clipView)
 
-        let locationUnitStart = self.locationUnit(forLocationInView: locationStart, transform: gestureStartTransform)
-        let locationUnitNow = self.locationUnit(forLocationInView: locationNow, transform: gestureStartTransform)
-        let locationUnitDelta = CGPointSubtract(locationUnitNow, locationUnitStart)
-        let newUnitTranslation = CGPointAdd(gestureStartTransform.unitTranslation, locationUnitDelta)
+        let newLocationView = gestureRecognizer.location(in: self.clipView)
+        let newUnitTranslation = ImageEditorCropViewController.unitTranslation(oldLocationView: oldLocationView,
+                                                                               newLocationView: newLocationView,
+                                                                               viewBounds: clipView.bounds,
+                                                                               oldTransform: gestureStartTransform)
 
         updateTransform(ImageEditorTransform(outputSizePixels: gestureStartTransform.outputSizePixels,
                                          unitTranslation: newUnitTranslation,
@@ -573,18 +588,6 @@ class ImageEditorCropViewController: OWSViewController {
         }
     }
 
-    // MARK: - Coordinates
-
-    private func locationUnit(forGestureRecognizer gestureRecognizer: UIGestureRecognizer,
-                              transform: ImageEditorTransform) -> CGPoint {
-        return ImageEditorCanvasView.locationUnit(forGestureRecognizer: gestureRecognizer, view: clipView, transform: transform)
-    }
-
-    private func locationUnit(forLocationInView locationInView: CGPoint,
-                              transform: ImageEditorTransform) -> CGPoint {
-        return ImageEditorCanvasView.locationUnit(forLocationInView: locationInView, viewSize: clipView.bounds.size, transform: transform)
-    }
-
     // MARK: - Events
 
     @objc public func didTapBackButton() {
@@ -600,17 +603,19 @@ class ImageEditorCropViewController: OWSViewController {
     }
 
     @objc public func rotate90ButtonPressed() {
-        rotateButtonPressed(angleRadians: CGFloat.pi * 0.5)
+        rotateButtonPressed(angleRadians: CGFloat.pi * 0.5, rotateCanvas: true)
     }
 
     @objc public func rotate45ButtonPressed() {
-        rotateButtonPressed(angleRadians: CGFloat.pi * 0.25)
+        rotateButtonPressed(angleRadians: CGFloat.pi * 0.25, rotateCanvas: false)
     }
 
-    private func rotateButtonPressed(angleRadians: CGFloat) {
-        // Invert width and height.
-        let outputSizePixels = CGSize(width: transform.outputSizePixels.height,
-                                      height: transform.outputSizePixels.width)
+    private func rotateButtonPressed(angleRadians: CGFloat, rotateCanvas: Bool) {
+        let outputSizePixels = (rotateCanvas
+            // Invert width and height.
+            ? CGSize(width: transform.outputSizePixels.height,
+            height: transform.outputSizePixels.width)
+        : transform.outputSizePixels)
         let unitTranslation = transform.unitTranslation
         let rotationRadians = transform.rotationRadians + angleRadians
         let scaling = transform.scaling

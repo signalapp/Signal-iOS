@@ -4,11 +4,63 @@
 
 import UIKit
 
+// The image editor uses multiple coordinate systems.
+//
+// * Image unit coordinates.  Brush stroke and text content should be pegged to
+//   image content, so they are specified relative to the bounds of the image.
+// * Canvas coordinates.  We render the image, strokes and text into the "canvas",
+//   a viewport that has the aspect ratio of the view.  Rendering is transformed, so
+//   this is pre-tranform.
+// * View coordinates.  The coordinates of the actual view (or rendered output).
+//   Bounded by the view's bounds / viewport.
+//
+// Sometimes we use unit coordinates.  This facilitates a number of operations such
+// as clamping to 0-1, etc.  So in practice almost all values will be in one of six
+// coordinate systems:
+//
+// * unit image coordinates
+// * image coordinates
+// * unit canvas coordinates
+// * canvas coordinates
+// * unit view coordinates
+// * view coordinates
+//
+// For simplicity, the canvas bounds are always identical to view bounds.
+// If we wanted to manipulate output quality, we would use the layer's "scale".
+// But canvas values are pre-transform and view values are post-transform so they
+// are only identical if the transform has no scaling, rotation or translation.
+//
+// The "ImageEditorTransform" can be used to generate an CGAffineTransform
+// for the layers used to render the content.  In practice, the affine transform
+// is applied to a superlayer of the sublayers used to render content.
+//
+// CALayers apply their transform relative to the layer's anchorPoint, which
+// by default is the center of the layer's bounds.  E.g. rotation occurs
+// around the center of the layer.  Therefore when projecting absolute
+// (but not relative) coordinates between the "view" and "canvas" coordinate
+// systems, it's necessary to project them relative to the center of the
+// view/canvas.
+//
+// To simplify our representation & operations, the default size of the image
+// content is "exactly large enough to fill the canvas if rotation
+// but not scaling or translation were applied".  This might seem unusual,
+// but we have a key invariant: we always want the image to fill the canvas.
+// It's far easier to ensure this if the transform is always (just barely)
+// valid when scaling = 1 and translation = .zero.  The image size that
+// fulfills this criteria is calculated using
+// ImageEditorCanvasView.imageFrame(forViewSize:...).  Transforming between
+// the "image" and "canvas" coordinate systems is done with that image frame.
 @objc
 public class ImageEditorTransform: NSObject {
+    // The outputSizePixels is used to specify the aspect ratio and size of the
+    // output.
     public let outputSizePixels: CGSize
+    // The unit translation of the content, relative to the
+    // canvas viewport.
     public let unitTranslation: CGPoint
+    // Rotation about the center of the content.
     public let rotationRadians: CGFloat
+    // x >= 1.0.
     public let scaling: CGFloat
 
     public init(outputSizePixels: CGSize,
