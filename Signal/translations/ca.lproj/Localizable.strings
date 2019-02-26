@@ -2,20 +2,20 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ara no";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Accepta el nou número de seguretat";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Accepta el número de seguretat nou";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Trucada d'audio";
+"ACTION_AUDIO_CALL" = "Trucada Signal";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Convida a Signal";
+"ACTION_INVITE" = "Convida al Signal";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "Envia missatge";
+"ACTION_SEND_MESSAGE" = "Envia-li un missatge";
 
 /* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Comparteix contacte";
+"ACTION_SHARE_CONTACT" = "Comparteix el contacte";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Trucada de video";
@@ -33,7 +33,7 @@
 "ADD_GROUP_MEMBER_VIEW_TITLE" = "Afegeix un membre";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Vols compartir el teu perfil amb aquest grup?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Voleu compartir el perfil amb aquest grup?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "Vols afegir aquest usuari als teus contactes?";
@@ -1479,7 +1479,7 @@
 "NOTIFICATIONS_NONE" = "Sense nom ni contingut";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Jugueu mentre l'aplicació estigui oberta";
+"NOTIFICATIONS_SECTION_INAPP" = "Sona si l'aplicació està oberta";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Sons";
@@ -1896,7 +1896,7 @@
 "SEARCH_SECTION_MESSAGES" = "Missatges";
 
 /* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "La sessió segura a estat reiniciada.";
+"SECURE_SESSION_RESET" = "La sessió segura ha estat reiniciada.";
 
 /* Label for 'select GIF to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";

@@ -1122,6 +1122,7 @@ const CGFloat kIconViewLength = 24;
 
     BOOL isCurrentlyBlocked = [self.blockingManager isThreadBlocked:self.thread];
 
+    __weak OWSConversationSettingsViewController *weakSelf = self;
     if (blockConversationSwitch.isOn) {
         OWSAssertDebug(!isCurrentlyBlocked);
         if (isCurrentlyBlocked) {
@@ -1135,6 +1136,8 @@ const CGFloat kIconViewLength = 24;
                                      completionBlock:^(BOOL isBlocked) {
                                          // Update switch state if user cancels action.
                                          blockConversationSwitch.on = isBlocked;
+
+                                         [weakSelf updateTableContents];
                                      }];
 
     } else {
@@ -1149,6 +1152,8 @@ const CGFloat kIconViewLength = 24;
                                        completionBlock:^(BOOL isBlocked) {
                                            // Update switch state if user cancels action.
                                            blockConversationSwitch.on = isBlocked;
+
+                                           [weakSelf updateTableContents];
                                        }];
     }
 }

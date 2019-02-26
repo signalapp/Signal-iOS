@@ -89,7 +89,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *loggingSection = [OWSTableSection new];
     loggingSection.headerTitle = NSLocalizedString(@"LOGGING_SECTION", nil);
     [loggingSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_DEBUGLOG", @"")
-                                                        isOn:[OWSPreferences isLoggingEnabled]
+                                                   isOnBlock:^{
+                                                       return [OWSPreferences isLoggingEnabled];
+                                                   }
                                                       target:weakSelf
                                                     selector:@selector(didToggleEnableLogSwitch:)]];
 
@@ -160,21 +162,26 @@ NS_ASSUME_NONNULL_BEGIN
     // * ...The internet is not reachable, since we don't want to let users to activate
     //      censorship circumvention unnecessarily, e.g. if they just don't have a valid
     //      internet connection.
-    BOOL isManualCensorshipCircumventionOnEnabled
-        = (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated
+    OWSTableSwitchBlock isCensorshipCircumventionOnBlock = ^{
+        if (OWSSignalService.sharedInstance.hasCensoredPhoneNumber) {
+            return YES;
+        } else {
+            return OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated;
+        }
+    };
+    Reachability *reachability = self.reachability;
+    OWSTableSwitchBlock isManualCensorshipCircumventionOnEnabledBlock = ^{
+        BOOL isAnySocketOpen = TSSocketManager.shared.highestSocketState == OWSWebSocketStateOpen;
+        BOOL value = (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated
             || (!OWSSignalService.sharedInstance.hasCensoredPhoneNumber && !isAnySocketOpen
-                   && weakSelf.reachability.isReachable));
-    BOOL isCensorshipCircumventionOn = NO;
-    if (OWSSignalService.sharedInstance.hasCensoredPhoneNumber) {
-        isCensorshipCircumventionOn = YES;
-    } else {
-        isCensorshipCircumventionOn = OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated;
-    }
+                   && reachability.isReachable));
+        return value;
+    };
     [censorshipSection
         addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION",
                                                      @"Label for the  'manual censorship circumvention' switch.")
-                                            isOn:isCensorshipCircumventionOn
-                                       isEnabled:isManualCensorshipCircumventionOnEnabled
+                                       isOnBlock:isCensorshipCircumventionOnBlock
+                                  isEnabledBlock:isManualCensorshipCircumventionOnEnabledBlock
                                           target:weakSelf
                                         selector:@selector(didToggleEnableCensorshipCircumventionSwitch:)]];
 

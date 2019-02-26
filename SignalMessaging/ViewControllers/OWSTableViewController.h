@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
@@ -47,6 +47,7 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 typedef void (^OWSTableActionBlock)(void);
 typedef void (^OWSTableSubPageBlock)(UIViewController *viewController);
 typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
+typedef BOOL (^OWSTableSwitchBlock)(void);
 
 @interface OWSTableItem : NSObject
 
@@ -103,11 +104,14 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 
 + (OWSTableItem *)longDisclosureItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
-+ (OWSTableItem *)switchItemWithText:(NSString *)text isOn:(BOOL)isOn target:(id)target selector:(SEL)selector;
++ (OWSTableItem *)switchItemWithText:(NSString *)text
+                           isOnBlock:(OWSTableSwitchBlock)isOnBlock
+                              target:(id)target
+                            selector:(SEL)selector;
 
 + (OWSTableItem *)switchItemWithText:(NSString *)text
-                                isOn:(BOOL)isOn
-                           isEnabled:(BOOL)isEnabled
+                           isOnBlock:(OWSTableSwitchBlock)isOnBlock
+                      isEnabledBlock:(OWSTableSwitchBlock)isEnabledBlock
                               target:(id)target
                             selector:(SEL)selector;
 
