@@ -36,12 +36,12 @@ class ImageEditorCropViewController: OWSViewController {
         case topLeft, topRight, bottomLeft, bottomRight
     }
 
-    private class CropCornerView: UIView {
+    private class CropCornerView: OWSLayerView {
         let cropRegion: CropRegion
 
         init(cropRegion: CropRegion) {
             self.cropRegion = cropRegion
-            super.init(frame: .zero)
+            super.init()
         }
 
         @available(*, unavailable, message: "use other init() instead.")
@@ -196,12 +196,14 @@ class ImageEditorCropViewController: OWSViewController {
         footer.isOpaque = false
         stackView.addArrangedSubview(footer)
 
+        setCropViewAppearance()
+
         updateClipViewLayout()
 
         configureGestures()
     }
 
-    private static let desiredCornerSize: CGFloat = 30
+    private static let desiredCornerSize: CGFloat = 24
     private static let minCropSize: CGFloat = desiredCornerSize * 2
     private var cornerSize = CGSize.zero
 
@@ -219,6 +221,72 @@ class ImageEditorCropViewController: OWSViewController {
 
     private var cropViewConstraints = [NSLayoutConstraint]()
 
+    private func setCropViewAppearance() {
+
+        // TODO: Tune the size.
+        let cornerSize = CGSize(width: min(clipView.width() * 0.5, ImageEditorCropViewController.desiredCornerSize),
+                                height: min(clipView.height() * 0.5, ImageEditorCropViewController.desiredCornerSize))
+        self.cornerSize = cornerSize
+        for cropCornerView in cropCornerViews {
+            let cornerThickness: CGFloat = 2
+
+            let shapeLayer = CAShapeLayer()
+            cropCornerView.layer.addSublayer(shapeLayer)
+            shapeLayer.fillColor = UIColor.white.cgColor
+            shapeLayer.strokeColor = nil
+            cropCornerView.layoutCallback = { (view) in
+                let shapeFrame = view.bounds.insetBy(dx: -cornerThickness, dy: -cornerThickness)
+                shapeLayer.frame = shapeFrame
+
+                let bezierPath = UIBezierPath()
+
+                switch cropCornerView.cropRegion {
+                case .topLeft:
+                    bezierPath.addRegion(withPoints: [
+                        CGPoint.zero,
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: 0),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: cornerThickness),
+                        CGPoint(x: cornerThickness, y: cornerThickness),
+                        CGPoint(x: cornerThickness, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: 0, y: shapeFrame.height - cornerThickness)
+                        ])
+                case .topRight:
+                    bezierPath.addRegion(withPoints: [
+                        CGPoint(x: shapeFrame.width, y: 0),
+                        CGPoint(x: shapeFrame.width, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: cornerThickness),
+                        CGPoint(x: cornerThickness, y: cornerThickness),
+                        CGPoint(x: cornerThickness, y: 0)
+                        ])
+                case .bottomLeft:
+                    bezierPath.addRegion(withPoints: [
+                        CGPoint(x: 0, y: shapeFrame.height),
+                        CGPoint(x: 0, y: cornerThickness),
+                        CGPoint(x: cornerThickness, y: cornerThickness),
+                        CGPoint(x: cornerThickness, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: shapeFrame.height)
+                        ])
+                case .bottomRight:
+                    bezierPath.addRegion(withPoints: [
+                        CGPoint(x: shapeFrame.width, y: shapeFrame.height),
+                        CGPoint(x: cornerThickness, y: shapeFrame.height),
+                        CGPoint(x: cornerThickness, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: cornerThickness),
+                        CGPoint(x: shapeFrame.width, y: cornerThickness)
+                        ])
+                default:
+                    owsFailDebug("Invalid crop region: \(cropCornerView.cropRegion)")
+                }
+
+                shapeLayer.path = bezierPath.cgPath
+            }
+        }
+        cropView.addBorder(with: .white)
+    }
+
     private func updateCropViewLayout() {
         NSLayoutConstraint.deactivate(cropViewConstraints)
         cropViewConstraints.removeAll()
@@ -229,9 +297,6 @@ class ImageEditorCropViewController: OWSViewController {
         self.cornerSize = cornerSize
         for cropCornerView in cropCornerViews {
             cropViewConstraints.append(contentsOf: cropCornerView.autoSetDimensions(to: cornerSize))
-
-            cropCornerView.addRedBorder()
-            cropView.addRedBorder()
         }
 
         if !isCropGestureActive {
@@ -268,8 +333,6 @@ class ImageEditorCropViewController: OWSViewController {
     }
 
     private func applyTransform() {
-        Logger.verbose("")
-
         let viewSize = contentView.bounds.size
         contentView.layer.setAffineTransform(transform.affineTransform(viewSize: viewSize))
     }
