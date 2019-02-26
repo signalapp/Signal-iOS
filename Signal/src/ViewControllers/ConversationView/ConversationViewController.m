@@ -108,6 +108,25 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
+// We use snapshots to ensure that the view has a consistent
+// representation of view model state which is not updated
+// when the view is not observing view model changes.
+@interface ConversationSnapshot : NSObject
+
+@property (nonatomic) NSArray<id<ConversationViewItem>> *viewItems;
+@property (nonatomic) ThreadDynamicInteractions *dynamicInteractions;
+@property (nonatomic) BOOL canLoadMoreItems;
+
+@end
+
+#pragma mark -
+
+@implementation ConversationSnapshot
+
+@end
+
+#pragma mark -
+
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
     ContactShareApprovalViewControllerDelegate,
     AVAudioPlayerDelegate,
@@ -141,6 +160,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
+@property (nonatomic, readonly) ConversationSnapshot *conversationSnapshot;
 
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
 @property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
@@ -431,11 +451,11 @@ typedef enum : NSUInteger {
     NSString *_Nullable recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
     if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
-        [self.conversationViewModel ensureDynamicInteractions];
+        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
     } else if (groupId.length > 0 && self.thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
         if ([groupThread.groupModel.groupId isEqualToData:groupId]) {
-            [self.conversationViewModel ensureDynamicInteractions];
+            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
             [self ensureBannerState];
         }
     }
@@ -485,6 +505,8 @@ typedef enum : NSUInteger {
 
     _conversationViewModel =
         [[ConversationViewModel alloc] initWithThread:thread focusMessageIdOnOpen:focusMessageId delegate:self];
+
+    [self updateConversationSnapshot];
 
     [self updateShouldObserveVMUpdates];
 
@@ -753,12 +775,12 @@ typedef enum : NSUInteger {
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
 {
-    return self.conversationViewModel.viewItems;
+    return self.conversationSnapshot.viewItems;
 }
 
 - (ThreadDynamicInteractions *)dynamicInteractions
 {
-    return self.conversationViewModel.dynamicInteractions;
+    return self.conversationSnapshot.dynamicInteractions;
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
@@ -847,6 +869,7 @@ typedef enum : NSUInteger {
     // Avoid layout corrupt issues and out-of-date message subtitles.
     self.lastReloadDate = [NSDate new];
     [self.conversationViewModel viewDidResetContentAndLayout];
+    [self tryToUpdateConversationSnapshot];
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
 
@@ -1697,7 +1720,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertDebug(self.conversationViewModel);
 
-    self.showLoadMoreHeader = self.conversationViewModel.canLoadMoreItems;
+    self.showLoadMoreHeader = self.conversationSnapshot.canLoadMoreItems;
 }
 
 - (void)setShowLoadMoreHeader:(BOOL)showLoadMoreHeader
@@ -2424,7 +2447,7 @@ typedef enum : NSUInteger {
 
 - (void)contactsViewHelperDidUpdateContacts
 {
-    [self.conversationViewModel ensureDynamicInteractions];
+    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
 }
 
 - (void)createConversationScrollButtons
@@ -2462,7 +2485,7 @@ typedef enum : NSUInteger {
     _hasUnreadMessages = hasUnreadMessages;
 
     self.scrollDownButton.hasUnreadMessages = hasUnreadMessages;
-    [self.conversationViewModel ensureDynamicInteractions];
+    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
 }
 
 - (void)scrollDownButtonTapped
@@ -2607,7 +2630,7 @@ typedef enum : NSUInteger {
     [self showApprovalDialogForAttachment:attachment];
 
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    [self.conversationViewModel ensureDynamicInteractions];
+    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
 }
 
 - (void)messageWasSent:(TSOutgoingMessage *)message
@@ -2967,7 +2990,7 @@ typedef enum : NSUInteger {
             [self messageWasSent:message];
 
             if (didAddToProfileWhitelist) {
-                [self.conversationViewModel ensureDynamicInteractions];
+                [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
             }
         }];
 }
@@ -3619,7 +3642,7 @@ typedef enum : NSUInteger {
         [self messageWasSent:message];
 
         if (didAddToProfileWhitelist) {
-            [self.conversationViewModel ensureDynamicInteractions];
+            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
         }
     });
 }
@@ -4009,7 +4032,7 @@ typedef enum : NSUInteger {
 
     [self clearDraft];
     if (didAddToProfileWhitelist) {
-        [self.conversationViewModel ensureDynamicInteractions];
+        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
     }
 }
 
@@ -4138,6 +4161,7 @@ typedef enum : NSUInteger {
     if (self.shouldObserveVMUpdates) {
         OWSLogVerbose(@"resume observation of view model.");
 
+        [self updateConversationSnapshot];
         [self resetContentAndLayout];
         [self updateBackButtonUnreadCount];
         [self updateNavigationBarSubtitleLabel];
@@ -4612,6 +4636,7 @@ typedef enum : NSUInteger {
         return;
     }
 
+    [self updateConversationSnapshot];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
 
@@ -4907,6 +4932,26 @@ typedef enum : NSUInteger {
         safeAreaInsets = self.view.safeAreaInsets;
     }
     [self.inputToolbar updateLayoutWithSafeAreaInsets:safeAreaInsets];
+}
+
+#pragma mark - Conversation Snapshot
+
+- (void)tryToUpdateConversationSnapshot
+{
+    if (!self.isObservingVMUpdates) {
+        return;
+    }
+
+    [self updateConversationSnapshot];
+}
+
+- (void)updateConversationSnapshot
+{
+    ConversationSnapshot *conversationSnapshot = [ConversationSnapshot new];
+    conversationSnapshot.viewItems = self.conversationViewModel.viewItems;
+    conversationSnapshot.dynamicInteractions = self.conversationViewModel.dynamicInteractions;
+    conversationSnapshot.canLoadMoreItems = self.conversationViewModel.canLoadMoreItems;
+    _conversationSnapshot = conversationSnapshot;
 }
 
 @end
