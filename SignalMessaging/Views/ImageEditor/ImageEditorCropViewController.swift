@@ -83,23 +83,42 @@ class ImageEditorCropViewController: OWSViewController {
 
         self.view.backgroundColor = .black
 
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.spacing = 16
-        stackView.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
-        stackView.isLayoutMarginsRelativeArrangement = true
-        self.view.addSubview(stackView)
-        stackView.ows_autoPinToSuperviewEdges()
+        // MARK: - Buttons
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop,
-                                                           target: self,
-                                                           action: #selector(didTapBackButton))
+        // TODO: Apply icons.
+        let doneButton = OWSButton(title: "Done") { [weak self] in
+            self?.didTapBackButton()
+        }
+        let rotate90Button = OWSButton(title: "Rotate 90°") { [weak self] in
+            self?.rotate90ButtonPressed()
+        }
+        let rotate45Button = OWSButton(title: "Rotate 45°") { [weak self] in
+            self?.rotate45ButtonPressed()
+        }
+        let resetButton = OWSButton(title: "Reset") { [weak self] in
+            self?.resetButtonPressed()
+        }
+        let zoom2xButton = OWSButton(title: "Zoom 2x") { [weak self] in
+            self?.zoom2xButtonPressed()
+        }
+
+        // MARK: - Header
+
+        let header = UIStackView(arrangedSubviews: [
+            UIView.hStretchingSpacer(),
+            resetButton,
+            doneButton
+            ])
+        header.axis = .horizontal
+        header.spacing = 16
+        header.backgroundColor = .clear
+        header.isOpaque = false
+
+        // MARK: - Canvas & Wrapper
 
         let wrapperView = UIView.container()
         wrapperView.backgroundColor = .clear
         wrapperView.isOpaque = false
-        stackView.addArrangedSubview(wrapperView)
 
         // TODO: We could mask the clipped region with a semi-transparent overlay like WA.
         clipView.clipsToBounds = true
@@ -127,33 +146,35 @@ class ImageEditorCropViewController: OWSViewController {
         clipView.addSubview(contentView)
         contentView.ows_autoPinToSuperviewEdges()
 
-        let rotate90Button = OWSButton()
-        rotate90Button.setTitle(NSLocalizedString("IMAGE_EDITOR_ROTATE_90_BUTTON", comment: "Label for button that rotates image 90 degrees."),
-                                for: .normal)
-        rotate90Button.block = { [weak self] in
-            self?.rotate90ButtonPressed()
-        }
+        // MARK: - Footer
 
-        let rotate45Button = OWSButton()
-        rotate45Button.setTitle(NSLocalizedString("IMAGE_EDITOR_ROTATE_45_BUTTON", comment: "Label for button that rotates image 45 degrees."),
-                                for: .normal)
-        rotate45Button.block = { [weak self] in
-            self?.rotate45ButtonPressed()
-        }
+        let footer = UIStackView(arrangedSubviews: [
+            rotate90Button,
+            rotate45Button,
+            UIView.hStretchingSpacer(),
+            zoom2xButton
+            ])
+        footer.axis = .horizontal
+        footer.spacing = 16
+        footer.backgroundColor = .clear
+        footer.isOpaque = false
 
-        let resetButton = OWSButton()
-        resetButton.setTitle(NSLocalizedString("IMAGE_EDITOR_RESET_BUTTON", comment: "Label for button that resets crop & rotation state."),
-                             for: .normal)
-        resetButton.block = { [weak self] in
-            self?.resetButtonPressed()
-        }
+        let stackView = UIStackView(arrangedSubviews: [
+            header,
+            wrapperView,
+            footer
+            ])
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.spacing = 24
+        stackView.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        self.view.addSubview(stackView)
+        stackView.ows_autoPinToSuperviewEdges()
 
-        let zoom2xButton = OWSButton()
-        zoom2xButton.setTitle("Zoom 2x",
-                             for: .normal)
-        zoom2xButton.block = { [weak self] in
-            self?.zoom2xButtonPressed()
-        }
+        // MARK: - Crop View
+
+        // Add crop view last so that it appears in front of the content.
 
         cropView.setContentHuggingLow()
         cropView.setCompressionResistanceLow()
@@ -166,8 +187,8 @@ class ImageEditorCropViewController: OWSViewController {
                 cropCornerView.autoPinEdge(toSuperviewEdge: .left)
             case .topRight, .bottomRight:
                 cropCornerView.autoPinEdge(toSuperviewEdge: .right)
-                default:
-                    owsFailDebug("Invalid crop region: \(cropRegion)")
+            default:
+                owsFailDebug("Invalid crop region: \(cropRegion)")
             }
             switch cropCornerView.cropRegion {
             case .topLeft, .topRight:
@@ -178,13 +199,6 @@ class ImageEditorCropViewController: OWSViewController {
                 owsFailDebug("Invalid crop region: \(cropRegion)")
             }
         }
-
-        let footer = UIStackView(arrangedSubviews: [rotate90Button, rotate45Button, resetButton, zoom2xButton])
-        footer.axis = .horizontal
-        footer.spacing = 16
-        footer.backgroundColor = .clear
-        footer.isOpaque = false
-        stackView.addArrangedSubview(footer)
 
         setCropViewAppearance()
 
