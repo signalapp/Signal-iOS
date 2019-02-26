@@ -36,12 +36,12 @@ class ImageEditorCropViewController: OWSViewController {
         case topLeft, topRight, bottomLeft, bottomRight
     }
 
-    private class CropCornerView: UIView {
+    private class CropCornerView: OWSLayerView {
         let cropRegion: CropRegion
 
         init(cropRegion: CropRegion) {
             self.cropRegion = cropRegion
-            super.init(frame: .zero)
+            super.init()
         }
 
         @available(*, unavailable, message: "use other init() instead.")
@@ -81,35 +81,44 @@ class ImageEditorCropViewController: OWSViewController {
     override func loadView() {
         self.view = UIView()
 
-        if (UIAccessibilityIsReduceTransparencyEnabled()) {
-            self.view.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
-        } else {
-            let alpha = OWSNavigationBar.backgroundBlurMutingFactor
-            self.view.backgroundColor = UIColor(white: 0.5, alpha: alpha)
+        self.view.backgroundColor = .black
 
-            let blurEffectView = UIVisualEffectView(effect: Theme.barBlurEffect)
-            blurEffectView.layer.zPosition = -1
-            self.view.addSubview(blurEffectView)
-            blurEffectView.autoPinEdgesToSuperviewEdges()
+        // MARK: - Buttons
+
+        // TODO: Apply icons.
+        let doneButton = OWSButton(title: "Done") { [weak self] in
+            self?.didTapBackButton()
+        }
+        let rotate90Button = OWSButton(title: "Rotate 90°") { [weak self] in
+            self?.rotate90ButtonPressed()
+        }
+        let rotate45Button = OWSButton(title: "Rotate 45°") { [weak self] in
+            self?.rotate45ButtonPressed()
+        }
+        let resetButton = OWSButton(title: "Reset") { [weak self] in
+            self?.resetButtonPressed()
+        }
+        let zoom2xButton = OWSButton(title: "Zoom 2x") { [weak self] in
+            self?.zoom2xButtonPressed()
         }
 
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.spacing = 16
-        stackView.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
-        stackView.isLayoutMarginsRelativeArrangement = true
-        self.view.addSubview(stackView)
-        stackView.ows_autoPinToSuperviewEdges()
+        // MARK: - Header
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop,
-                                                           target: self,
-                                                           action: #selector(didTapBackButton))
+        let header = UIStackView(arrangedSubviews: [
+            UIView.hStretchingSpacer(),
+            resetButton,
+            doneButton
+            ])
+        header.axis = .horizontal
+        header.spacing = 16
+        header.backgroundColor = .clear
+        header.isOpaque = false
+
+        // MARK: - Canvas & Wrapper
 
         let wrapperView = UIView.container()
         wrapperView.backgroundColor = .clear
         wrapperView.isOpaque = false
-        stackView.addArrangedSubview(wrapperView)
 
         // TODO: We could mask the clipped region with a semi-transparent overlay like WA.
         clipView.clipsToBounds = true
@@ -135,35 +144,37 @@ class ImageEditorCropViewController: OWSViewController {
             strongSelf.updateContent()
         }
         clipView.addSubview(contentView)
-        contentView.ows_autoPinToSuperviewEdges()
+        contentView.autoPinEdgesToSuperviewEdges()
 
-        let rotate90Button = OWSButton()
-        rotate90Button.setTitle(NSLocalizedString("IMAGE_EDITOR_ROTATE_90_BUTTON", comment: "Label for button that rotates image 90 degrees."),
-                                for: .normal)
-        rotate90Button.block = { [weak self] in
-            self?.rotate90ButtonPressed()
-        }
+        // MARK: - Footer
 
-        let rotate45Button = OWSButton()
-        rotate45Button.setTitle(NSLocalizedString("IMAGE_EDITOR_ROTATE_45_BUTTON", comment: "Label for button that rotates image 45 degrees."),
-                                for: .normal)
-        rotate45Button.block = { [weak self] in
-            self?.rotate45ButtonPressed()
-        }
+        let footer = UIStackView(arrangedSubviews: [
+            rotate90Button,
+            rotate45Button,
+            UIView.hStretchingSpacer(),
+            zoom2xButton
+            ])
+        footer.axis = .horizontal
+        footer.spacing = 16
+        footer.backgroundColor = .clear
+        footer.isOpaque = false
 
-        let resetButton = OWSButton()
-        resetButton.setTitle(NSLocalizedString("IMAGE_EDITOR_RESET_BUTTON", comment: "Label for button that resets crop & rotation state."),
-                             for: .normal)
-        resetButton.block = { [weak self] in
-            self?.resetButtonPressed()
-        }
+        let stackView = UIStackView(arrangedSubviews: [
+            header,
+            wrapperView,
+            footer
+            ])
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.spacing = 24
+        stackView.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        self.view.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewEdges()
 
-        let zoom2xButton = OWSButton()
-        zoom2xButton.setTitle("Zoom 2x",
-                             for: .normal)
-        zoom2xButton.block = { [weak self] in
-            self?.zoom2xButtonPressed()
-        }
+        // MARK: - Crop View
+
+        // Add crop view last so that it appears in front of the content.
 
         cropView.setContentHuggingLow()
         cropView.setCompressionResistanceLow()
@@ -176,8 +187,8 @@ class ImageEditorCropViewController: OWSViewController {
                 cropCornerView.autoPinEdge(toSuperviewEdge: .left)
             case .topRight, .bottomRight:
                 cropCornerView.autoPinEdge(toSuperviewEdge: .right)
-                default:
-                    owsFailDebug("Invalid crop region: \(cropRegion)")
+            default:
+                owsFailDebug("Invalid crop region: \(cropRegion)")
             }
             switch cropCornerView.cropRegion {
             case .topLeft, .topRight:
@@ -189,19 +200,14 @@ class ImageEditorCropViewController: OWSViewController {
             }
         }
 
-        let footer = UIStackView(arrangedSubviews: [rotate90Button, rotate45Button, resetButton, zoom2xButton])
-        footer.axis = .horizontal
-        footer.spacing = 16
-        footer.backgroundColor = .clear
-        footer.isOpaque = false
-        stackView.addArrangedSubview(footer)
+        setCropViewAppearance()
 
         updateClipViewLayout()
 
         configureGestures()
     }
 
-    private static let desiredCornerSize: CGFloat = 30
+    private static let desiredCornerSize: CGFloat = 24
     private static let minCropSize: CGFloat = desiredCornerSize * 2
     private var cornerSize = CGSize.zero
 
@@ -219,6 +225,72 @@ class ImageEditorCropViewController: OWSViewController {
 
     private var cropViewConstraints = [NSLayoutConstraint]()
 
+    private func setCropViewAppearance() {
+
+        // TODO: Tune the size.
+        let cornerSize = CGSize(width: min(clipView.width() * 0.5, ImageEditorCropViewController.desiredCornerSize),
+                                height: min(clipView.height() * 0.5, ImageEditorCropViewController.desiredCornerSize))
+        self.cornerSize = cornerSize
+        for cropCornerView in cropCornerViews {
+            let cornerThickness: CGFloat = 2
+
+            let shapeLayer = CAShapeLayer()
+            cropCornerView.layer.addSublayer(shapeLayer)
+            shapeLayer.fillColor = UIColor.white.cgColor
+            shapeLayer.strokeColor = nil
+            cropCornerView.layoutCallback = { (view) in
+                let shapeFrame = view.bounds.insetBy(dx: -cornerThickness, dy: -cornerThickness)
+                shapeLayer.frame = shapeFrame
+
+                let bezierPath = UIBezierPath()
+
+                switch cropCornerView.cropRegion {
+                case .topLeft:
+                    bezierPath.addRegion(withPoints: [
+                        CGPoint.zero,
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: 0),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: cornerThickness),
+                        CGPoint(x: cornerThickness, y: cornerThickness),
+                        CGPoint(x: cornerThickness, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: 0, y: shapeFrame.height - cornerThickness)
+                        ])
+                case .topRight:
+                    bezierPath.addRegion(withPoints: [
+                        CGPoint(x: shapeFrame.width, y: 0),
+                        CGPoint(x: shapeFrame.width, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: cornerThickness),
+                        CGPoint(x: cornerThickness, y: cornerThickness),
+                        CGPoint(x: cornerThickness, y: 0)
+                        ])
+                case .bottomLeft:
+                    bezierPath.addRegion(withPoints: [
+                        CGPoint(x: 0, y: shapeFrame.height),
+                        CGPoint(x: 0, y: cornerThickness),
+                        CGPoint(x: cornerThickness, y: cornerThickness),
+                        CGPoint(x: cornerThickness, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: shapeFrame.height)
+                        ])
+                case .bottomRight:
+                    bezierPath.addRegion(withPoints: [
+                        CGPoint(x: shapeFrame.width, y: shapeFrame.height),
+                        CGPoint(x: cornerThickness, y: shapeFrame.height),
+                        CGPoint(x: cornerThickness, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: shapeFrame.height - cornerThickness),
+                        CGPoint(x: shapeFrame.width - cornerThickness, y: cornerThickness),
+                        CGPoint(x: shapeFrame.width, y: cornerThickness)
+                        ])
+                default:
+                    owsFailDebug("Invalid crop region: \(cropCornerView.cropRegion)")
+                }
+
+                shapeLayer.path = bezierPath.cgPath
+            }
+        }
+        cropView.addBorder(with: .white)
+    }
+
     private func updateCropViewLayout() {
         NSLayoutConstraint.deactivate(cropViewConstraints)
         cropViewConstraints.removeAll()
@@ -229,9 +301,6 @@ class ImageEditorCropViewController: OWSViewController {
         self.cornerSize = cornerSize
         for cropCornerView in cropCornerViews {
             cropViewConstraints.append(contentsOf: cropCornerView.autoSetDimensions(to: cornerSize))
-
-            cropCornerView.addRedBorder()
-            cropView.addRedBorder()
         }
 
         if !isCropGestureActive {
@@ -268,8 +337,6 @@ class ImageEditorCropViewController: OWSViewController {
     }
 
     private func applyTransform() {
-        Logger.verbose("")
-
         let viewSize = contentView.bounds.size
         contentView.layer.setAffineTransform(transform.affineTransform(viewSize: viewSize))
     }

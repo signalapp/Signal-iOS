@@ -1324,12 +1324,19 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
 // MARK: -
 
 extension AttachmentPrepViewController: ImageEditorViewDelegate {
-    public func imageEditor(presentFullScreenOverlay viewController: UIViewController) {
+    public func imageEditor(presentFullScreenOverlay viewController: UIViewController,
+                            withNavigation: Bool) {
 
-        let navigationController = OWSNavigationController(rootViewController: viewController)
-        navigationController.modalPresentationStyle = .overFullScreen
-        self.present(navigationController, animated: true) {
-            // Do nothing.
+        if withNavigation {
+            let navigationController = OWSNavigationController(rootViewController: viewController)
+            navigationController.modalPresentationStyle = .overFullScreen
+            self.present(navigationController, animated: true) {
+                // Do nothing.
+            }
+        } else {
+            self.present(viewController, animated: true) {
+                // Do nothing.
+            }
         }
     }
 }

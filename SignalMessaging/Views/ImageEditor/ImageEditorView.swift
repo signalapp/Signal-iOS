@@ -6,7 +6,8 @@ import UIKit
 
 @objc
 public protocol ImageEditorViewDelegate: class {
-    func imageEditor(presentFullScreenOverlay viewController: UIViewController)
+    func imageEditor(presentFullScreenOverlay viewController: UIViewController,
+                     withNavigation: Bool)
 }
 
 // MARK: -
@@ -68,7 +69,7 @@ public class ImageEditorView: UIView {
             return false
         }
         self.addSubview(canvasView)
-        canvasView.ows_autoPinToSuperviewEdges()
+        canvasView.autoPinEdgesToSuperviewEdges()
 
         self.isUserInteractionEnabled = true
 
@@ -571,7 +572,8 @@ public class ImageEditorView: UIView {
         //        let maxTextWidthPoints = canvasView.imageView.width() * ImageEditorTextItem.kDefaultUnitWidth
 
         let textEditor = ImageEditorTextViewController(delegate: self, textItem: textItem, maxTextWidthPoints: maxTextWidthPoints)
-        self.delegate?.imageEditor(presentFullScreenOverlay: textEditor)
+        self.delegate?.imageEditor(presentFullScreenOverlay: textEditor,
+                                   withNavigation: true)
     }
 
     // MARK: - Crop Tool
@@ -596,7 +598,8 @@ public class ImageEditorView: UIView {
         }
 
         let cropTool = ImageEditorCropViewController(delegate: self, model: model, srcImage: srcImage, previewImage: previewImage)
-        self.delegate?.imageEditor(presentFullScreenOverlay: cropTool)
+        self.delegate?.imageEditor(presentFullScreenOverlay: cropTool,
+                                   withNavigation: false)
     }}
 
 // MARK: -

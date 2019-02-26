@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -15,8 +15,18 @@ public class OWSButton: UIButton {
     @objc
     init(block: @escaping () -> Void = { }) {
         super.init(frame: .zero)
+
         self.block = block
-        self.addTarget(self, action: #selector(didTap), for: .touchUpInside)
+        addTarget(self, action: #selector(didTap), for: .touchUpInside)
+    }
+
+    @objc
+    init(title: String, block: @escaping () -> Void = { }) {
+        super.init(frame: .zero)
+
+        self.block = block
+        addTarget(self, action: #selector(didTap), for: .touchUpInside)
+        setTitle(title, for: .normal)
     }
 
     public required init?(coder aDecoder: NSCoder) {

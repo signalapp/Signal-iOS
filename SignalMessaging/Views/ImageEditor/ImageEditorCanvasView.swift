@@ -91,7 +91,7 @@ public class ImageEditorCanvasView: UIView {
             strongSelf.updateAllContent()
         }
         clipView.addSubview(contentView)
-        contentView.ows_autoPinToSuperviewEdges()
+        contentView.autoPinEdgesToSuperviewEdges()
 
         updateLayout()
 
