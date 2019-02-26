@@ -113,6 +113,15 @@ public class ImageEditorTransform: NSObject {
         // image can be moved _exactly_ to the edge of the canvas
         // and no further in a way that reflects the current
         // crop, scaling and rotation.
+        //
+        // We need to clamp the translation to the valid "translation
+        // region" which is a rectangle centered on the origin.
+        // However, this rectangle is axis-aligned in canvas
+        // coordinates, not view coordinates.  e.g. if you have
+        // a long image and a square output size, you could "slide"
+        // the crop region along the image's contents.  That
+        // movement would appear diagonal to the user in the view
+        // but would be vertical on the canvas.
 
         // Normalize translation, Step 1:
         //
