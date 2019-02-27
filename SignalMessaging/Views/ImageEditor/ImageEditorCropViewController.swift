@@ -78,6 +78,9 @@ class ImageEditorCropViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
+    private var isCropLocked = false
+    private var cropLockButton: OWSButton?
+
     override func loadView() {
         self.view = UIView()
 
@@ -95,21 +98,20 @@ class ImageEditorCropViewController: OWSViewController {
                                        tintColor: UIColor.white) { [weak self] in
             self?.rotate90ButtonPressed()
         }
-        let rotate45Button = OWSButton(title: "Rotate 45°") { [weak self] in
-            self?.rotate45ButtonPressed()
-        }
         // TODO: Myles may change this asset.
         let resetButton = OWSButton(imageName: "image_editor_undo",
                                     tintColor: UIColor.white) { [weak self] in
             self?.resetButtonPressed()
         }
-        let zoom2xButton = OWSButton(title: "Zoom 2x") { [weak self] in
-            self?.zoom2xButtonPressed()
-        }
         let flipButton = OWSButton(imageName: "image_editor_flip",
                                    tintColor: UIColor.white) { [weak self] in
-            self?.flipButtonPressed()
+                                    self?.flipButtonPressed()
         }
+        let cropLockButton = OWSButton(imageName: "image_editor_crop_unlock",
+                                   tintColor: UIColor.white) { [weak self] in
+                                    self?.cropLockButtonPressed()
+        }
+        self.cropLockButton = cropLockButton
 
         // MARK: - Header
 
@@ -158,17 +160,17 @@ class ImageEditorCropViewController: OWSViewController {
         // MARK: - Footer
 
         let footer = UIStackView(arrangedSubviews: [
-            flipButton,
             rotate90Button,
-            rotate45Button,
+            flipButton,
             UIView.hStretchingSpacer(),
-            zoom2xButton
+            cropLockButton
             ])
         footer.axis = .horizontal
         footer.spacing = 16
         footer.backgroundColor = .clear
         footer.isOpaque = false
 
+        let imageMargin: CGFloat = 20
         let stackView = UIStackView(arrangedSubviews: [
             header,
             wrapperView,
@@ -176,8 +178,8 @@ class ImageEditorCropViewController: OWSViewController {
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.spacing = 24
-        stackView.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
+        stackView.spacing = imageMargin
+        stackView.layoutMargins = UIEdgeInsets(top: 8, left: imageMargin, bottom: 8, right: imageMargin)
         stackView.isLayoutMarginsRelativeArrangement = true
         self.view.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
@@ -215,6 +217,16 @@ class ImageEditorCropViewController: OWSViewController {
         updateClipViewLayout()
 
         configureGestures()
+    }
+
+    private func updateCropLockButton() {
+        guard let cropLockButton = cropLockButton else {
+            owsFailDebug("Missing cropLockButton")
+            return
+        }
+        cropLockButton.setImage(imageName: (isCropLocked
+            ? "image_editor_crop_lock"
+            : "image_editor_crop_unlock"))
     }
 
     private static let desiredCornerSize: CGFloat = 24
@@ -506,6 +518,14 @@ class ImageEditorCropViewController: OWSViewController {
         let cropRectangleStart = clipView.bounds
         var cropRectangleNow = cropRectangleStart
 
+        // Derive the new crop rectangle.
+
+        // We limit the crop rectangle's minimum size for two reasons.
+        //
+        // * To ensure that the crop rectangles "corner handles"
+        //   can always be safely drawn.
+        // * To avoid awkward interactions when the crop rectangle
+        //   is very small.  Users can always crop multiple times.
         let maxDeltaX = cropRectangleNow.size.width - cornerSize.width * 2
         let maxDeltaY = cropRectangleNow.size.height - cornerSize.height * 2
 
@@ -531,6 +551,44 @@ class ImageEditorCropViewController: OWSViewController {
             cropRectangleNow.size.height -= delta
         default:
             break
+        }
+
+        // If crop is locked, update the crop rectangle
+        // to retain the original aspect ratio.
+        if (isCropLocked) {
+            let scaleX = cropRectangleNow.width / cropRectangleStart.width
+            let scaleY = cropRectangleNow.height / cropRectangleStart.height
+            var cropRectangleLocked = cropRectangleStart
+            // Find a new crop rectangle size with the correct aspect
+            // ratio which is always larger than the "naive" crop rectangle.
+            // We always expand and never shrink the crop rectangle to
+            // fix its aspect ratio, to ensure the "max deltas" enforced
+            // above still are honored.
+            if scaleX > scaleY {
+                cropRectangleLocked.size.width = cropRectangleNow.width
+                cropRectangleLocked.size.height = cropRectangleNow.width * cropRectangleStart.height / cropRectangleStart.width
+            } else {
+                cropRectangleLocked.size.height = cropRectangleNow.height
+                cropRectangleLocked.size.width = cropRectangleNow.height * cropRectangleStart.width / cropRectangleStart.height
+            }
+
+            // Pin the crop rectangle to the sides that aren't being manipulated.
+            switch panCropRegion {
+            case .left, .topLeft, .bottomLeft:
+                cropRectangleLocked.origin.x = cropRectangleStart.maxX - cropRectangleLocked.width
+            default:
+                // Bias towards aligning left.
+                cropRectangleLocked.origin.x = cropRectangleStart.minX
+            }
+            switch panCropRegion {
+            case .top, .topLeft, .topRight:
+                cropRectangleLocked.origin.y = cropRectangleStart.maxY - cropRectangleLocked.height
+            default:
+            // Bias towards aligning top.
+                cropRectangleLocked.origin.y = cropRectangleStart.minY
+            }
+
+            cropRectangleNow = cropRectangleLocked
         }
 
         cropView.frame = view.convert(cropRectangleNow, from: clipView)
@@ -689,10 +747,6 @@ class ImageEditorCropViewController: OWSViewController {
         rotateButtonPressed(angleRadians: CGFloat.pi * 0.5, rotateCanvas: true)
     }
 
-    @objc public func rotate45ButtonPressed() {
-        rotateButtonPressed(angleRadians: CGFloat.pi * 0.25, rotateCanvas: false)
-    }
-
     private func rotateButtonPressed(angleRadians: CGFloat, rotateCanvas: Bool) {
         let outputSizePixels = (rotateCanvas
             // Invert width and height.
@@ -709,18 +763,6 @@ class ImageEditorCropViewController: OWSViewController {
                                          isFlipped: transform.isFlipped).normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
-    @objc public func zoom2xButtonPressed() {
-        let outputSizePixels = transform.outputSizePixels
-        let unitTranslation = transform.unitTranslation
-        let rotationRadians = transform.rotationRadians
-        let scaling = transform.scaling * 2.0
-        updateTransform(ImageEditorTransform(outputSizePixels: outputSizePixels,
-                                             unitTranslation: unitTranslation,
-                                             rotationRadians: rotationRadians,
-                                             scaling: scaling,
-                                             isFlipped: transform.isFlipped).normalize(srcImageSizePixels: model.srcImageSizePixels))
-    }
-
     @objc public func flipButtonPressed() {
         updateTransform(ImageEditorTransform(outputSizePixels: transform.outputSizePixels,
                                              unitTranslation: transform.unitTranslation,
@@ -731,6 +773,11 @@ class ImageEditorCropViewController: OWSViewController {
 
     @objc public func resetButtonPressed() {
         updateTransform(ImageEditorTransform.defaultTransform(srcImageSizePixels: model.srcImageSizePixels))
+    }
+
+    @objc public func cropLockButtonPressed() {
+        isCropLocked = !isCropLocked
+        updateCropLockButton()
     }
 }
 

@@ -38,12 +38,17 @@ public class OWSButton: UIButton {
         self.block = block
         addTarget(self, action: #selector(didTap), for: .touchUpInside)
 
+        setImage(imageName: imageName)
+        self.tintColor = tintColor
+    }
+
+    @objc
+    public func setImage(imageName: String) {
         if let image = UIImage(named: imageName) {
             setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
         } else {
             owsFailDebug("Missing asset: \(imageName)")
         }
-        self.tintColor = tintColor
     }
 
     public required init?(coder aDecoder: NSCoder) {
