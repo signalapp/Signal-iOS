@@ -82,26 +82,32 @@ class ImageEditorCropViewController: OWSViewController {
         self.view = UIView()
 
         self.view.backgroundColor = .black
+        self.view.layoutMargins = .zero
 
         // MARK: - Buttons
 
         // TODO: Apply icons.
-        let doneButton = OWSButton(title: "Done") { [weak self] in
+        let doneButton = OWSButton(imageName: "image_editor_checkmark_full",
+                                   tintColor: UIColor.white) { [weak self] in
             self?.didTapBackButton()
         }
-        let rotate90Button = OWSButton(title: "Rotate 90°") { [weak self] in
+        let rotate90Button = OWSButton(imageName: "image_editor_rotate",
+                                       tintColor: UIColor.white) { [weak self] in
             self?.rotate90ButtonPressed()
         }
         let rotate45Button = OWSButton(title: "Rotate 45°") { [weak self] in
             self?.rotate45ButtonPressed()
         }
-        let resetButton = OWSButton(title: "Reset") { [weak self] in
+        // TODO: Myles may change this asset.
+        let resetButton = OWSButton(imageName: "image_editor_undo",
+                                    tintColor: UIColor.white) { [weak self] in
             self?.resetButtonPressed()
         }
         let zoom2xButton = OWSButton(title: "Zoom 2x") { [weak self] in
             self?.zoom2xButtonPressed()
         }
-        let flipButton = OWSButton(title: "Flip") { [weak self] in
+        let flipButton = OWSButton(imageName: "image_editor_flip",
+                                   tintColor: UIColor.white) { [weak self] in
             self?.flipButtonPressed()
         }
 
@@ -171,7 +177,7 @@ class ImageEditorCropViewController: OWSViewController {
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.spacing = 24
-        stackView.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
+        stackView.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
         stackView.isLayoutMarginsRelativeArrangement = true
         self.view.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()

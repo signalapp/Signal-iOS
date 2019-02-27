@@ -129,8 +129,8 @@ public class ImageEditorView: UIView {
         }
     }
 
+    // The model supports redo if we ever want to add it.
     private let undoButton = UIButton(type: .custom)
-    private let redoButton = UIButton(type: .custom)
     private let brushButton = UIButton(type: .custom)
     private let cropButton = UIButton(type: .custom)
     private let newTextButton = UIButton(type: .custom)
@@ -140,26 +140,22 @@ public class ImageEditorView: UIView {
     @objc
     public func addControls(to containerView: UIView) {
         configure(button: undoButton,
-                  label: NSLocalizedString("BUTTON_UNDO", comment: "Label for undo button."),
+                  imageName: "image_editor_undo",
                   selector: #selector(didTapUndo(sender:)))
 
-        configure(button: redoButton,
-                  label: NSLocalizedString("BUTTON_REDO", comment: "Label for redo button."),
-                  selector: #selector(didTapRedo(sender:)))
-
         configure(button: brushButton,
-                  label: NSLocalizedString("IMAGE_EDITOR_BRUSH_BUTTON", comment: "Label for brush button in image editor."),
+                  imageName: "image_editor_brush",
                   selector: #selector(didTapBrush(sender:)))
 
         configure(button: cropButton,
-                  label: NSLocalizedString("IMAGE_EDITOR_CROP_BUTTON", comment: "Label for crop button in image editor."),
+                  imageName: "image_editor_crop",
                   selector: #selector(didTapCrop(sender:)))
 
         configure(button: newTextButton,
-                  label: "Text",
+                  imageName: "image_editor_text",
                   selector: #selector(didTapNewText(sender:)))
 
-        allButtons = [brushButton, cropButton, undoButton, redoButton, newTextButton]
+        allButtons = [brushButton, cropButton, undoButton, newTextButton]
 
         let stackView = UIStackView(arrangedSubviews: allButtons)
         stackView.axis = .vertical
@@ -178,19 +174,26 @@ public class ImageEditorView: UIView {
     }
 
     private func configure(button: UIButton,
-                           label: String,
+                           imageName: String,
                            selector: Selector) {
-        button.setTitle(label, for: .normal)
+        if let image = UIImage(named: imageName) {
+            button.setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
+        } else {
+            owsFailDebug("Missing asset: \(imageName)")
+        }
+        button.tintColor = .white
         button.setTitleColor(.white, for: .normal)
         button.setTitleColor(.gray, for: .disabled)
         button.setTitleColor(UIColor.ows_materialBlue, for: .selected)
         button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         button.addTarget(self, action: selector, for: .touchUpInside)
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowRadius = 4
+        button.layer.shadowOpacity = 0.66
     }
 
     private func updateButtons() {
         undoButton.isEnabled = model.canUndo()
-        redoButton.isEnabled = model.canRedo()
         brushButton.isSelected = editorMode == .brush
         cropButton.isSelected = false
         newTextButton.isSelected = false
@@ -209,15 +212,6 @@ public class ImageEditorView: UIView {
             return
         }
         model.undo()
-    }
-
-    @objc func didTapRedo(sender: UIButton) {
-        Logger.verbose("")
-        guard model.canRedo() else {
-            owsFailDebug("Can't redo.")
-            return
-        }
-        model.redo()
     }
 
     @objc func didTapBrush(sender: UIButton) {
