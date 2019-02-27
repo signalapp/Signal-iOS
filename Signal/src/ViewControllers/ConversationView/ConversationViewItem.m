@@ -603,7 +603,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction];
-    NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems = [self mediaAlbumItemsForAttachments:mediaAttachments];
+    NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems = [self albumItemsForMediaAttachments:mediaAttachments];
     if (mediaAlbumItems.count > 0) {
         if (mediaAlbumItems.count == 1) {
             ConversationMediaAlbumItem *mediaAlbumItem = mediaAlbumItems.firstObject;
@@ -686,12 +686,19 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
-- (NSArray<ConversationMediaAlbumItem *> *)mediaAlbumItemsForAttachments:(NSArray<TSAttachment *> *)attachments
+- (NSArray<ConversationMediaAlbumItem *> *)albumItemsForMediaAttachments:(NSArray<TSAttachment *> *)attachments
 {
     OWSAssertIsOnMainThread();
 
     NSMutableArray<ConversationMediaAlbumItem *> *mediaAlbumItems = [NSMutableArray new];
     for (TSAttachment *attachment in attachments) {
+        if (!attachment.isVisualMedia) {
+            // Well behaving clients should not send a mix of visual media (like JPG) and non-visual media (like PDF's)
+            // Since we're not coped to handle a mix of media, return @[]
+            OWSAssertDebug(mediaAlbumItems.count == 0);
+            return @[];
+        }
+
         NSString *_Nullable caption = (attachment.caption
                 ? [self displayableCaptionForText:attachment.caption attachmentId:attachment.uniqueId].displayText
                 : nil);
