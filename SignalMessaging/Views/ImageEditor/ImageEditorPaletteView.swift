@@ -140,6 +140,7 @@ public class ImageEditorPaletteView: UIView {
         let gradientLayer = CAGradientLayer()
         gradientView.layer.addSublayer(gradientLayer)
         gradientLayer.frame = gradientBounds
+        // See: https://github.com/signalapp/Signal-Android/blob/master/res/values/arrays.xml#L267
         gradientLayer.colors = [
             UIColor(rgbHex: 0xffffff).cgColor,
             UIColor(rgbHex: 0xff0000).cgColor,
