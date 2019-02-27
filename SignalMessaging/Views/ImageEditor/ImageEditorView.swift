@@ -23,6 +23,8 @@ public class ImageEditorView: UIView {
 
     private let canvasView: ImageEditorCanvasView
 
+    private let paletteView = ImageEditorPaletteView()
+
     enum EditorMode: String {
         // This is the default mode.  It is used for interacting with text items.
         case none
@@ -37,8 +39,11 @@ public class ImageEditorView: UIView {
         }
     }
 
-    private static let defaultColor = UIColor.white
-    private var currentColor = ImageEditorView.defaultColor
+    private var currentColor: UIColor {
+        get {
+            return paletteView.selectedColor
+        }
+    }
 
     @objc
     public required init(model: ImageEditorModel, delegate: ImageEditorViewDelegate) {
@@ -70,6 +75,8 @@ public class ImageEditorView: UIView {
         }
         self.addSubview(canvasView)
         canvasView.autoPinEdgesToSuperviewEdges()
+
+        paletteView.delegate = self
 
         self.isUserInteractionEnabled = true
 
@@ -129,6 +136,7 @@ public class ImageEditorView: UIView {
     private let newTextButton = UIButton(type: .custom)
     private var allButtons = [UIButton]()
 
+    // TODO: Should this method be private?
     @objc
     public func addControls(to containerView: UIView) {
         configure(button: undoButton,
@@ -151,11 +159,7 @@ public class ImageEditorView: UIView {
                   label: "Text",
                   selector: #selector(didTapNewText(sender:)))
 
-        let redButton = colorButton(color: UIColor.red)
-        let whiteButton = colorButton(color: UIColor.white)
-        let blackButton = colorButton(color: UIColor.black)
-
-        allButtons = [brushButton, cropButton, undoButton, redoButton, newTextButton, redButton, whiteButton, blackButton]
+        allButtons = [brushButton, cropButton, undoButton, redoButton, newTextButton]
 
         let stackView = UIStackView(arrangedSubviews: allButtons)
         stackView.axis = .vertical
@@ -165,6 +169,10 @@ public class ImageEditorView: UIView {
         containerView.addSubview(stackView)
         stackView.autoAlignAxis(toSuperviewAxis: .horizontal)
         stackView.autoPinTrailingToSuperviewMargin(withInset: 10)
+
+        containerView.addSubview(paletteView)
+        paletteView.autoVCenterInSuperview()
+        paletteView.autoPinLeadingToSuperviewMargin(withInset: 10)
 
         updateButtons()
     }
@@ -178,17 +186,6 @@ public class ImageEditorView: UIView {
         button.setTitleColor(UIColor.ows_materialBlue, for: .selected)
         button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         button.addTarget(self, action: selector, for: .touchUpInside)
-    }
-
-    private func colorButton(color: UIColor) -> UIButton {
-        let button = OWSButton { [weak self] in
-            self?.didSelectColor(color)
-        }
-        let size: CGFloat = 20
-        let swatch = UIImage(color: color, size: CGSize(width: size, height: size))
-        button.setImage(swatch, for: .normal)
-        button.addBorder(with: UIColor.white)
-        return button
     }
 
     private func updateButtons() {
@@ -260,12 +257,6 @@ public class ImageEditorView: UIView {
             self.editorMode = editorMode
         }
         updateButtons()
-    }
-
-    @objc func didSelectColor(_ color: UIColor) {
-        Logger.verbose("")
-
-        currentColor = color
     }
 
     // MARK: - Gestures
@@ -676,6 +667,14 @@ extension ImageEditorView: ImageEditorCropViewControllerDelegate {
     }
 
     public func cropDidCancel() {
+        // TODO:
+    }
+}
+
+// MARK: -
+
+extension ImageEditorView: ImageEditorPaletteViewDelegate {
+    public func selectedColorDidChange() {
         // TODO:
     }
 }
