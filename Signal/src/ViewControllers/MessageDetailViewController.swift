@@ -90,7 +90,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         contactShareViewHelper.delegate = self
 
         do {
-            try updateDBConnectionAndMessageToLatest()
+            try updateMessageToLatest()
         } catch DetailViewError.messageWasDeleted {
             self.delegate?.detailViewMessageWasDeleted(self)
         } catch {
@@ -543,7 +543,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     }
 
     // This method should be called after self.databaseConnection.beginLongLivedReadTransaction().
-    private func updateDBConnectionAndMessageToLatest() throws {
+    private func updateMessageToLatest() throws {
 
         AssertIsOnMainThread()
 
@@ -589,7 +589,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         }
 
         do {
-            try updateDBConnectionAndMessageToLatest()
+            try updateMessageToLatest()
         } catch DetailViewError.messageWasDeleted {
             DispatchQueue.main.async {
                 self.delegate?.detailViewMessageWasDeleted(self)
@@ -723,6 +723,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         }
 
         let viewController = LongTextViewController(viewItem: viewItem)
+        viewController.delegate = self
         navigationController.pushViewController(viewController, animated: true)
     }
 
@@ -787,5 +788,11 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     public func didCreateOrEditContact() {
         updateContent()
         self.dismiss(animated: true)
+    }
+}
+
+extension MessageDetailViewController: LongTextViewDelegate {
+    func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController) {
+        self.delegate?.detailViewMessageWasDeleted(self)
     }
 }
