@@ -141,6 +141,7 @@ typedef enum : NSUInteger {
     ConversationViewLayoutDelegate,
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
+    LongTextViewDelegate,
     MessageActionsDelegate,
     MessageDetailViewDelegate,
     MenuActionsViewControllerDelegate,
@@ -1956,6 +1957,14 @@ typedef enum : NSUInteger {
     [self.navigationController popToViewController:self animated:YES];
 }
 
+#pragma mark - LongTextViewDelegate
+
+- (void)longTextViewMessageWasDeleted:(LongTextViewController *)longTextViewController
+{
+    OWSLogInfo(@"");
+    [self.navigationController popToViewController:self animated:YES];
+}
+
 #pragma mark - MenuActionsViewControllerDelegate
 
 - (void)menuActionsDidHide:(MenuActionsViewController *)menuActionsViewController
@@ -2256,8 +2265,9 @@ typedef enum : NSUInteger {
     OWSAssertDebug(conversationItem);
     OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
-    LongTextViewController *view = [[LongTextViewController alloc] initWithViewItem:conversationItem];
-    [self.navigationController pushViewController:view animated:YES];
+    LongTextViewController *viewController = [[LongTextViewController alloc] initWithViewItem:conversationItem];
+    viewController.delegate = self;
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 - (void)didTapContactShareViewItem:(id<ConversationViewItem>)conversationItem
