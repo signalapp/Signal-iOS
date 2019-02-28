@@ -183,10 +183,9 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         textView.autoHCenterInSuperview()
         self.autoPinView(toBottomOfViewControllerOrKeyboard: textView, avoidNotch: true)
 
-        // TODO: Honor old color state.
         paletteView.delegate = self
         self.view.addSubview(paletteView)
-        paletteView.autoVCenterInSuperview()
+        paletteView.autoAlignAxis(.horizontal, toSameAxisOf: textView)
         paletteView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 20)
         // This will determine the text view's size.
         paletteView.autoPinEdge(.leading, to: .trailing, of: textView, withOffset: 8)
@@ -205,7 +204,7 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         // We use a white cursor since we use a dark background.
         textView.tintColor = .white
         textView.returnKeyType = .done
-        // TODO: Limit the size of the text.
+        // TODO: Limit the size of the text?
         // textView.delegate = self
         textView.isScrollEnabled = true
         textView.scrollsToTop = false
@@ -231,7 +230,6 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
     @objc func didTapUndo(sender: UIButton) {
         Logger.verbose("")
 
-        // TODO: Honor color state.
         self.delegate?.textEditDidCancel()
 
         self.dismiss(animated: false) {

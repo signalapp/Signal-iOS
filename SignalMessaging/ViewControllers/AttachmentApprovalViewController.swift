@@ -210,13 +210,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         self.navigationItem.title = nil
 
-        if mode != .sharedNavigation {
-            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                               target: self, action: #selector(cancelPressed))
-            cancelButton.tintColor = .white
-            self.navigationItem.leftBarButtonItem = cancelButton
-        }
-
         guard let firstItem = attachmentItems.first else {
             owsFailDebug("firstItem was unexpectedly nil")
             return
@@ -273,13 +266,33 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     public func updateNavigationBar() {
         var navigationBarItems = [UIView]()
+        var isShowingCaptionView = false
 
         if let viewControllers = viewControllers,
             viewControllers.count == 1,
             let firstViewController = viewControllers.first as? AttachmentPrepViewController {
             navigationBarItems = firstViewController.navigationBarItems()
+            isShowingCaptionView = firstViewController.isShowingCaptionView
         }
+
+        guard !isShowingCaptionView else {
+            // Hide all navigation bar items while the caption view is open.
+            self.navigationItem.leftBarButtonItem = nil
+            self.navigationItem.rightBarButtonItem = nil
+            return
+        }
+
         updateNavigationBar(navigationBarItems: navigationBarItems)
+
+        let hasCancel = (mode != .sharedNavigation)
+        if hasCancel {
+            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel,
+                                               target: self, action: #selector(cancelPressed))
+            cancelButton.tintColor = .white
+            self.navigationItem.leftBarButtonItem = cancelButton
+        } else {
+            self.navigationItem.leftBarButtonItem = nil
+        }
     }
 
     // MARK: - View Helpers
@@ -684,6 +697,12 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     private(set) var playVideoButton: UIView?
     private var imageEditorView: ImageEditorView?
 
+    fileprivate var isShowingCaptionView = false {
+        didSet {
+            prepDelegate?.prepViewControllerUpdateNavigationBar()
+        }
+    }
+
     // MARK: - Initializers
 
     init(attachmentItem: SignalAttachmentItem) {
@@ -1033,6 +1052,12 @@ extension AttachmentPrepViewController: AttachmentCaptionDelegate {
         let attachment = attachmentItem.attachment
         attachment.captionText = captionText
         prepDelegate?.prepViewController(self, didUpdateCaptionForAttachmentItem: attachmentItem)
+
+        isShowingCaptionView = false
+    }
+
+    func captionViewDidCancel() {
+        isShowingCaptionView = false
     }
 }
 
@@ -1133,6 +1158,8 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
     public func imageEditorPresentCaptionView() {
         let view = AttachmentCaptionViewController(delegate: self, attachmentItem: attachmentItem)
         self.imageEditor(presentFullScreenOverlay: view, withNavigation: true)
+
+        isShowingCaptionView = true
     }
 
     public func imageEditorUpdateNavigationBar() {

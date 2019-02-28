@@ -6,6 +6,7 @@ import UIKit
 
 protocol AttachmentCaptionDelegate: class {
     func captionView(_ captionView: AttachmentCaptionViewController, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem)
+    func captionViewDidCancel()
 }
 
 class AttachmentCaptionViewController: OWSViewController {
@@ -151,7 +152,7 @@ class AttachmentCaptionViewController: OWSViewController {
 
     private func completeAndDismiss(didCancel: Bool) {
         if didCancel {
-            self.delegate?.captionView(self, didChangeCaptionText: originalCaptionText, attachmentItem: attachmentItem)
+            self.delegate?.captionViewDidCancel()
         } else {
             self.delegate?.captionView(self, didChangeCaptionText: self.textView.text, attachmentItem: attachmentItem)
         }
