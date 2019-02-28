@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -135,7 +135,7 @@ public class ConversationMediaView: UIView {
         } else if attachmentStream.isVideo {
             configureForVideo(attachmentStream: attachmentStream)
         } else {
-            owsFailDebug("Attachment has unexpected type.")
+//            owsFailDebug("Attachment has unexpected type.")
             configure(forError: .invalid)
         }
     }

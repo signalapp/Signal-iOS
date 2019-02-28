@@ -1269,34 +1269,6 @@ typedef enum : NSUInteger {
     self.actionOnOpen = ConversationViewActionNone;
 
     [self updateInputToolbarLayout];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        ConversationMediaAlbumItem *_Nullable firstMediaAlbumItem;
-        for (id<ConversationViewItem> item in self.viewItems) {
-            if (item.mediaAlbumItems.count < 1) {
-                continue;
-            }
-            ConversationMediaAlbumItem *mediaAlbumItem = item.mediaAlbumItems[0];
-            if (mediaAlbumItem.attachmentStream && mediaAlbumItem.attachmentStream.isImage) {
-                firstMediaAlbumItem = mediaAlbumItem;
-                break;
-            }
-        }
-        if (!firstMediaAlbumItem) {
-            return;
-        }
-        DataSource *_Nullable dataSource =
-            [DataSourcePath dataSourceWithURL:firstMediaAlbumItem.attachmentStream.originalMediaURL
-                   shouldDeleteOnDeallocation:NO];
-        if (!dataSource) {
-            OWSFailDebug(@"attachment data was unexpectedly empty for picked document");
-            return;
-        }
-        NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:firstMediaAlbumItem.attachmentStream.contentType];
-        SignalAttachment *attachment =
-            [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
-        [self showApprovalDialogForAttachment:attachment];
-    });
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,

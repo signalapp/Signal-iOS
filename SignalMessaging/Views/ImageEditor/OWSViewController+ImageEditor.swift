@@ -12,9 +12,9 @@ public extension NSObject {
         button.setImage(imageName: imageName)
         button.tintColor = .white
         button.addTarget(self, action: selector, for: .touchUpInside)
-        //        button.layer.shadowColor = UIColor.black.cgColor
-        //        button.layer.shadowRadius = 4
-        //        button.layer.shadowOpacity = 0.66
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowRadius = 2
+        button.layer.shadowOpacity = 0.66
         return button
     }
 }
