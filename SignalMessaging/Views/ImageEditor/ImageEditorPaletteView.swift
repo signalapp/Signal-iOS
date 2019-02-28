@@ -39,8 +39,10 @@ public class ImageEditorPaletteView: UIView {
         self.backgroundColor = .clear
         self.isOpaque = false
 
-        if let image = UIImage(named: "image_editor_palette") {
+        if let image = ImageEditorPaletteView.buildPaletteGradientImage() {
             imageView.image = image
+            imageView.layer.cornerRadius = image.size.width * 0.5
+            imageView.clipsToBounds = true
         } else {
             owsFailDebug("Missing image.")
         }
@@ -48,8 +50,6 @@ public class ImageEditorPaletteView: UIView {
         // We use an invisible margin to expand the hot area of
         // this control.
         let margin: CGFloat = 8
-        // TODO: Review sizing when there's an asset.
-        imageView.autoSetDimensions(to: CGSize(width: 8, height: 200))
         imageView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: margin, left: margin, bottom: margin, right: margin))
 
         selectionWrapper.layoutCallback = { [weak self] (view) in
@@ -58,8 +58,8 @@ public class ImageEditorPaletteView: UIView {
             }
             strongSelf.updateState()
         }
-        imageView.addSubview(selectionWrapper)
-        selectionWrapper.autoPinEdgesToSuperviewEdges()
+        self.addSubview(selectionWrapper)
+        selectionWrapper.autoPin(toEdgesOf: imageView)
 
         selectionView.addBorder(with: .white)
         selectionView.layer.cornerRadius = selectionSize / 2
@@ -95,9 +95,8 @@ public class ImageEditorPaletteView: UIView {
 
     private func updateState() {
         var selectedColor = UIColor.white
-        if let image = imageView.image,
-            let cgImage = image.cgImage {
-            if let imageColor = image.color(atLocation: CGPoint(x: CGFloat(cgImage.width) * 0.5, y: CGFloat(cgImage.height) * selectionAlpha)) {
+        if let image = imageView.image {
+            if let imageColor = image.color(atLocation: CGPoint(x: CGFloat(image.size.width) * 0.5, y: CGFloat(image.size.height) * selectionAlpha)) {
                 selectedColor = imageColor
             } else {
                 owsFailDebug("Couldn't determine image color.")
@@ -132,6 +131,32 @@ public class ImageEditorPaletteView: UIView {
         let location = gesture.location(in: imageView)
         selectColor(atLocationY: location.y)
     }
+
+    private static func buildPaletteGradientImage() -> UIImage? {
+        let gradientSize = CGSize(width: 8, height: 200)
+        let gradientBounds = CGRect(origin: .zero, size: gradientSize)
+        let gradientView = UIView()
+        gradientView.frame = gradientBounds
+        let gradientLayer = CAGradientLayer()
+        gradientView.layer.addSublayer(gradientLayer)
+        gradientLayer.frame = gradientBounds
+        // See: https://github.com/signalapp/Signal-Android/blob/master/res/values/arrays.xml#L267
+        gradientLayer.colors = [
+            UIColor(rgbHex: 0xffffff).cgColor,
+            UIColor(rgbHex: 0xff0000).cgColor,
+            UIColor(rgbHex: 0xff00ff).cgColor,
+            UIColor(rgbHex: 0x0000ff).cgColor,
+            UIColor(rgbHex: 0x00ffff).cgColor,
+            UIColor(rgbHex: 0x00ff00).cgColor,
+            UIColor(rgbHex: 0xffff00).cgColor,
+            UIColor(rgbHex: 0xff5500).cgColor,
+            UIColor(rgbHex: 0x000000).cgColor
+        ]
+        gradientLayer.startPoint = CGPoint.zero
+        gradientLayer.endPoint = CGPoint(x: 0, y: gradientSize.height)
+        gradientLayer.endPoint = CGPoint(x: 0, y: 1.0)
+        return gradientView.renderAsImage(opaque: true, scale: UIScreen.main.scale)
+    }
 }
 
 // MARK: -
@@ -162,6 +187,9 @@ extension UIImage {
                 owsFailDebug("Invalid image size.")
                 return nil
         }
+
+        Logger.verbose("scale: \(self.scale)")
+
         // Convert the location from points to pixels and clamp to the image bounds.
         let xPixels: Int = Int(round(locationPoints.x * self.scale)).clamp(0, imageWidth - 1)
         let yPixels: Int = Int(round(locationPoints.y * self.scale)).clamp(0, imageHeight - 1)

@@ -953,7 +953,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
                 autoPinView(toBottomOfViewControllerOrKeyboard: imageEditorView, avoidNotch: true)
                 imageEditorView.autoPinWidthToSuperview()
 
-                imageEditorView.addControls(to: imageEditorView)
+                imageEditorView.addControls(to: imageEditorView,
+                                            viewController: self)
             }
         }
         #endif

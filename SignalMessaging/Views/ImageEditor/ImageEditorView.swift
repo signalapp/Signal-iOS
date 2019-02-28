@@ -29,12 +29,14 @@ public class ImageEditorView: UIView {
         // This is the default mode.  It is used for interacting with text items.
         case none
         case brush
+        case text
     }
 
     private var editorMode = EditorMode.none {
         didSet {
             AssertIsOnMainThread()
 
+            updateButtons()
             updateGestureState()
         }
     }
@@ -129,46 +131,50 @@ public class ImageEditorView: UIView {
         }
     }
 
-    private let undoButton = UIButton(type: .custom)
-    private let redoButton = UIButton(type: .custom)
-    private let brushButton = UIButton(type: .custom)
-    private let cropButton = UIButton(type: .custom)
-    private let newTextButton = UIButton(type: .custom)
-    private var allButtons = [UIButton]()
+    // The model supports redo if we ever want to add it.
+    private let undoButton = OWSButton()
+    private let brushButton = OWSButton()
+    private let cropButton = OWSButton()
+    private let newTextButton = OWSButton()
+    private let captionButton = OWSButton()
+    private let doneButton = OWSButton()
+    private let buttonStackView = UIStackView()
 
     // TODO: Should this method be private?
     @objc
-    public func addControls(to containerView: UIView) {
+    public func addControls(to containerView: UIView,
+                            viewController: UIViewController) {
         configure(button: undoButton,
-                  label: NSLocalizedString("BUTTON_UNDO", comment: "Label for undo button."),
+                  imageName: "image_editor_undo",
                   selector: #selector(didTapUndo(sender:)))
 
-        configure(button: redoButton,
-                  label: NSLocalizedString("BUTTON_REDO", comment: "Label for redo button."),
-                  selector: #selector(didTapRedo(sender:)))
-
         configure(button: brushButton,
-                  label: NSLocalizedString("IMAGE_EDITOR_BRUSH_BUTTON", comment: "Label for brush button in image editor."),
+                  imageName: "image_editor_brush",
                   selector: #selector(didTapBrush(sender:)))
 
         configure(button: cropButton,
-                  label: NSLocalizedString("IMAGE_EDITOR_CROP_BUTTON", comment: "Label for crop button in image editor."),
+                  imageName: "image_editor_crop",
                   selector: #selector(didTapCrop(sender:)))
 
         configure(button: newTextButton,
-                  label: "Text",
+                  imageName: "image_editor_text",
                   selector: #selector(didTapNewText(sender:)))
 
-        allButtons = [brushButton, cropButton, undoButton, redoButton, newTextButton]
+        configure(button: captionButton,
+                  imageName: "image_editor_caption",
+                  selector: #selector(didTapCaption(sender:)))
 
-        let stackView = UIStackView(arrangedSubviews: allButtons)
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.spacing = 10
+        configure(button: doneButton,
+                  imageName: "image_editor_checkmark_full",
+                  selector: #selector(didTapDone(sender:)))
 
-        containerView.addSubview(stackView)
-        stackView.autoAlignAxis(toSuperviewAxis: .horizontal)
-        stackView.autoPinTrailingToSuperviewMargin(withInset: 10)
+        buttonStackView.axis = .horizontal
+        buttonStackView.alignment = .center
+        buttonStackView.spacing = 20
+
+        containerView.addSubview(buttonStackView)
+        buttonStackView.autoPin(toTopLayoutGuideOf: viewController, withInset: 0)
+        buttonStackView.autoPinTrailingToSuperviewMargin(withInset: 18)
 
         containerView.addSubview(paletteView)
         paletteView.autoVCenterInSuperview()
@@ -178,26 +184,54 @@ public class ImageEditorView: UIView {
     }
 
     private func configure(button: UIButton,
-                           label: String,
+                           imageName: String,
                            selector: Selector) {
-        button.setTitle(label, for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.setTitleColor(.gray, for: .disabled)
-        button.setTitleColor(UIColor.ows_materialBlue, for: .selected)
-        button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        if let image = UIImage(named: imageName) {
+            button.setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
+        } else {
+            owsFailDebug("Missing asset: \(imageName)")
+        }
+        button.tintColor = .white
         button.addTarget(self, action: selector, for: .touchUpInside)
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowRadius = 4
+        button.layer.shadowOpacity = 0.66
     }
 
     private func updateButtons() {
-        undoButton.isEnabled = model.canUndo()
-        redoButton.isEnabled = model.canRedo()
-        brushButton.isSelected = editorMode == .brush
-        cropButton.isSelected = false
-        newTextButton.isSelected = false
+        var buttons = [OWSButton]()
 
-        for button in allButtons {
-            button.isHidden = isEditingTextItem
+        var hasPalette = false
+        switch editorMode {
+        case .text:
+            // TODO:
+            hasPalette = true
+            break
+        case .brush:
+            hasPalette = true
+
+            if model.canUndo() {
+                buttons =  [undoButton, doneButton]
+            } else {
+                buttons =  [doneButton]
+            }
+        case .none:
+            if model.canUndo() {
+                buttons =  [undoButton, newTextButton, brushButton, cropButton, captionButton]
+            } else {
+                buttons =  [newTextButton, brushButton, cropButton, captionButton]
+            }
         }
+
+        for subview in buttonStackView.subviews {
+            subview.removeFromSuperview()
+        }
+        buttonStackView.addArrangedSubview(UIView.hStretchingSpacer())
+        for button in buttons {
+            buttonStackView.addArrangedSubview(button)
+        }
+
+        paletteView.isHidden = !hasPalette
     }
 
     // MARK: - Actions
@@ -211,19 +245,10 @@ public class ImageEditorView: UIView {
         model.undo()
     }
 
-    @objc func didTapRedo(sender: UIButton) {
-        Logger.verbose("")
-        guard model.canRedo() else {
-            owsFailDebug("Can't redo.")
-            return
-        }
-        model.redo()
-    }
-
     @objc func didTapBrush(sender: UIButton) {
         Logger.verbose("")
 
-        toggle(editorMode: .brush)
+        self.editorMode = .brush
     }
 
     @objc func didTapCrop(sender: UIButton) {
@@ -250,13 +275,16 @@ public class ImageEditorView: UIView {
         edit(textItem: textItem)
     }
 
-    func toggle(editorMode: EditorMode) {
-        if self.editorMode == editorMode {
-            self.editorMode = .none
-        } else {
-            self.editorMode = editorMode
-        }
-        updateButtons()
+    @objc func didTapCaption(sender: UIButton) {
+        Logger.verbose("")
+
+        // TODO:
+    }
+
+    @objc func didTapDone(sender: UIButton) {
+        Logger.verbose("")
+
+        self.editorMode = .none
     }
 
     // MARK: - Gestures
@@ -274,6 +302,11 @@ public class ImageEditorView: UIView {
             // Brush strokes can start and end (and return from) outside the view.
             moveTextGestureRecognizer?.isEnabled = false
             brushGestureRecognizer?.isEnabled = true
+            tapGestureRecognizer?.isEnabled = false
+            pinchGestureRecognizer?.isEnabled = false
+        case .text:
+            moveTextGestureRecognizer?.isEnabled = false
+            brushGestureRecognizer?.isEnabled = false
             tapGestureRecognizer?.isEnabled = false
             pinchGestureRecognizer?.isEnabled = false
         }
@@ -543,20 +576,10 @@ public class ImageEditorView: UIView {
 
     // MARK: - Edit Text Tool
 
-    private var isEditingTextItem = false {
-        didSet {
-            AssertIsOnMainThread()
-
-            updateButtons()
-        }
-    }
-
     private func edit(textItem: ImageEditorTextItem) {
         Logger.verbose("")
 
-        toggle(editorMode: .none)
-
-        isEditingTextItem = true
+       self.editorMode = .text
 
         // TODO:
         let maxTextWidthPoints = model.srcImageSizePixels.width * ImageEditorTextItem.kDefaultUnitWidth
@@ -572,7 +595,7 @@ public class ImageEditorView: UIView {
     private func presentCropTool() {
         Logger.verbose("")
 
-        toggle(editorMode: .none)
+        self.editorMode = .none
 
         guard let srcImage = canvasView.loadSrcImage() else {
             owsFailDebug("Couldn't load src image.")
@@ -634,7 +657,7 @@ extension ImageEditorView: ImageEditorTextViewControllerDelegate {
     public func textEditDidComplete(textItem: ImageEditorTextItem, text: String?) {
         AssertIsOnMainThread()
 
-        isEditingTextItem = false
+        self.editorMode = .none
 
         guard let text = text?.ows_stripped(),
             text.count > 0 else {
@@ -654,7 +677,7 @@ extension ImageEditorView: ImageEditorTextViewControllerDelegate {
     }
 
     public func textEditDidCancel() {
-        isEditingTextItem = false
+        self.editorMode = .none
     }
 }
 
