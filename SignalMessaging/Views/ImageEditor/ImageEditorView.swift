@@ -75,9 +75,7 @@ public class ImageEditorView: UIView {
 
     @objc
     public func configureSubviews() -> Bool {
-        guard canvasView.configureSubviews() else {
-            return false
-        }
+        canvasView.configureSubviews()
         self.addSubview(canvasView)
         canvasView.autoPinEdgesToSuperviewEdges()
 
@@ -241,18 +239,6 @@ public class ImageEditorView: UIView {
 
     // MARK: - Navigation Bar
 
-    private func navigationBarButton(imageName: String,
-                                     selector: Selector) -> UIView {
-        let button = OWSButton()
-        button.setImage(imageName: imageName)
-        button.tintColor = .white
-        button.addTarget(self, action: selector, for: .touchUpInside)
-//        button.layer.shadowColor = UIColor.black.cgColor
-//        button.layer.shadowRadius = 4
-//        button.layer.shadowOpacity = 0.66
-        return button
-    }
-
     public func navigationBarItems() -> [UIView] {
         let undoButton = navigationBarButton(imageName: "image_editor_undo",
                                              selector: #selector(didTapUndo(sender:)))
@@ -294,6 +280,10 @@ public class ImageEditorView: UIView {
         Logger.verbose("")
 
         self.editorMode = .brush
+
+        let brushView = ImageEditorBrushViewController(delegate: self, model: model)
+        self.delegate?.imageEditor(presentFullScreenOverlay: brushView,
+                                   withNavigation: true)
     }
 
     @objc func didTapCrop(sender: UIButton) {
@@ -425,11 +415,11 @@ public class ImageEditorView: UIView {
             let viewBounds = view.bounds
             let locationStart = gestureRecognizer.pinchStateStart.centroid
             let locationNow = gestureRecognizer.pinchStateLast.centroid
-            let gestureStartImageUnit = ImageEditorView.locationImageUnit(forLocationInView: locationStart,
+            let gestureStartImageUnit = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationStart,
                                                                           viewBounds: viewBounds,
                                                                           model: self.model,
                                                                           transform: self.model.currentTransform())
-            let gestureNowImageUnit = ImageEditorView.locationImageUnit(forLocationInView: locationNow,
+            let gestureNowImageUnit = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationNow,
                                                                         viewBounds: viewBounds,
                                                                         model: self.model,
                                                                         transform: self.model.currentTransform())
@@ -516,11 +506,11 @@ public class ImageEditorView: UIView {
             let view = self.canvasView.gestureReferenceView
             let viewBounds = view.bounds
             let locationInView = gestureRecognizer.location(in: view)
-            let gestureStartImageUnit = ImageEditorView.locationImageUnit(forLocationInView: locationStart,
+            let gestureStartImageUnit = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationStart,
                                                                           viewBounds: viewBounds,
                                                                           model: self.model,
                                                                           transform: self.model.currentTransform())
-            let gestureNowImageUnit = ImageEditorView.locationImageUnit(forLocationInView: locationInView,
+            let gestureNowImageUnit = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationInView,
                                                                         viewBounds: viewBounds,
                                                                         model: self.model,
                                                                         transform: self.model.currentTransform())
@@ -564,7 +554,7 @@ public class ImageEditorView: UIView {
             let view = self.canvasView.gestureReferenceView
             let viewBounds = view.bounds
             let locationInView = gestureRecognizer.location(in: view)
-            let newSample = ImageEditorView.locationImageUnit(forLocationInView: locationInView,
+            let newSample = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationInView,
                                                               viewBounds: viewBounds,
                                                               model: self.model,
                                                               transform: self.model.currentTransform())
@@ -614,19 +604,6 @@ public class ImageEditorView: UIView {
         default:
             removeCurrentStroke()
         }
-    }
-
-    // MARK: - Coordinates
-
-    private class func locationImageUnit(forLocationInView locationInView: CGPoint,
-                                         viewBounds: CGRect,
-                                         model: ImageEditorModel,
-                                         transform: ImageEditorTransform) -> CGPoint {
-        let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewBounds.size, imageSize: model.srcImageSizePixels, transform: transform)
-        let affineTransformStart = transform.affineTransform(viewSize: viewBounds.size)
-        let locationInContent = locationInView.minus(viewBounds.center).applyingInverse(affineTransformStart).plus(viewBounds.center)
-        let locationImageUnit = locationInContent.toUnitCoordinates(viewBounds: imageFrame, shouldClamp: false)
-        return locationImageUnit
     }
 
     // MARK: - Edit Text Tool
@@ -758,5 +735,13 @@ extension ImageEditorView: ImageEditorCropViewControllerDelegate {
 extension ImageEditorView: ImageEditorPaletteViewDelegate {
     public func selectedColorDidChange() {
         // TODO:
+    }
+}
+
+// MARK: -
+
+extension ImageEditorView: ImageEditorBrushViewControllerDelegate {
+    public func brushDidComplete() {
+        self.editorMode = .none
     }
 }

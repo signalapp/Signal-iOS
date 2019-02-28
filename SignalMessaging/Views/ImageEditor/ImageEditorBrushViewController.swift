@@ -1,0 +1,231 @@
+//
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//
+
+import UIKit
+
+//@objc
+//public protocol ImageEditorViewDelegate: class {
+//    func imageEditor(presentFullScreenOverlay viewController: UIViewController,
+//                     withNavigation: Bool)
+//    func imageEditorPresentCaptionView()
+//    func imageEditorUpdateNavigationBar()
+//}
+
+// MARK: -
+
+@objc
+public protocol ImageEditorBrushViewControllerDelegate: class {
+    func brushDidComplete()
+}
+
+// MARK: -
+
+// A view for editing text item in image editor.
+public class ImageEditorBrushViewController: OWSViewController {
+
+    private weak var delegate: ImageEditorBrushViewControllerDelegate?
+
+    private let model: ImageEditorModel
+
+    private let canvasView: ImageEditorCanvasView
+
+    private let paletteView = ImageEditorPaletteView()
+
+    private var brushGestureRecognizer: ImageEditorPanGestureRecognizer?
+
+    init(delegate: ImageEditorBrushViewControllerDelegate,
+         model: ImageEditorModel) {
+        self.delegate = delegate
+        self.model = model
+        self.canvasView = ImageEditorCanvasView(model: model)
+
+        super.init(nibName: nil, bundle: nil)
+
+        model.add(observer: self)
+    }
+
+    @available(*, unavailable, message: "use other init() instead.")
+    required public init?(coder aDecoder: NSCoder) {
+        notImplemented()
+    }
+
+    // MARK: - View Lifecycle
+
+    public override func loadView() {
+        self.view = UIView()
+        self.view.backgroundColor = .black
+
+        canvasView.configureSubviews()
+        self.view.addSubview(canvasView)
+        canvasView.autoPinEdgesToSuperviewEdges()
+
+        paletteView.delegate = self
+        self.view.addSubview(paletteView)
+        paletteView.autoVCenterInSuperview()
+        paletteView.autoPinEdge(toSuperviewEdge: .leading, withInset: 20)
+
+        self.view.isUserInteractionEnabled = true
+
+        let brushGestureRecognizer = ImageEditorPanGestureRecognizer(target: self, action: #selector(handleBrushGesture(_:)))
+        brushGestureRecognizer.maximumNumberOfTouches = 1
+        brushGestureRecognizer.referenceView = canvasView.gestureReferenceView
+        self.view.addGestureRecognizer(brushGestureRecognizer)
+        self.brushGestureRecognizer = brushGestureRecognizer
+
+        updateNavigationBar()
+    }
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        self.view.layoutSubviews()
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        self.view.layoutSubviews()
+    }
+
+    public func updateNavigationBar() {
+        let undoButton = navigationBarButton(imageName: "image_editor_undo",
+                                             selector: #selector(didTapUndo(sender:)))
+        let doneButton = navigationBarButton(imageName: "image_editor_checkmark_full",
+                                                selector: #selector(didTapDone(sender:)))
+
+        var navigationBarItems = [UIView]()
+        if model.canUndo() {
+            navigationBarItems = [undoButton, doneButton]
+        } else {
+            navigationBarItems = [doneButton]
+        }
+        updateNavigationBar(navigationBarItems: navigationBarItems)
+    }
+
+    private var currentColor: UIColor {
+        get {
+            return paletteView.selectedColor
+        }
+    }
+
+    // MARK: - Actions
+
+    @objc func didTapUndo(sender: UIButton) {
+        Logger.verbose("")
+        guard model.canUndo() else {
+            owsFailDebug("Can't undo.")
+            return
+        }
+        model.undo()
+    }
+
+    @objc func didTapDone(sender: UIButton) {
+        Logger.verbose("")
+
+        completeAndDismiss()
+    }
+
+    private func completeAndDismiss() {
+        self.delegate?.brushDidComplete()
+
+        self.dismiss(animated: false) {
+            // Do nothing.
+        }
+    }
+
+    // MARK: - Brush
+
+    // These properties are non-empty while drawing a stroke.
+    private var currentStroke: ImageEditorStrokeItem?
+    private var currentStrokeSamples = [ImageEditorStrokeItem.StrokeSample]()
+
+    @objc
+    public func handleBrushGesture(_ gestureRecognizer: UIGestureRecognizer) {
+        AssertIsOnMainThread()
+
+        let removeCurrentStroke = {
+            if let stroke = self.currentStroke {
+                self.model.remove(item: stroke)
+            }
+            self.currentStroke = nil
+            self.currentStrokeSamples.removeAll()
+        }
+        let tryToAppendStrokeSample = {
+            let view = self.canvasView.gestureReferenceView
+            let viewBounds = view.bounds
+            let locationInView = gestureRecognizer.location(in: view)
+            let newSample = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationInView,
+                                                              viewBounds: viewBounds,
+                                                              model: self.model,
+                                                              transform: self.model.currentTransform())
+
+            if let prevSample = self.currentStrokeSamples.last,
+                prevSample == newSample {
+                // Ignore duplicate samples.
+                return
+            }
+            self.currentStrokeSamples.append(newSample)
+        }
+
+        let strokeColor = currentColor
+        // TODO: Tune stroke width.
+        let unitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth()
+
+        switch gestureRecognizer.state {
+        case .began:
+            removeCurrentStroke()
+
+            tryToAppendStrokeSample()
+
+            let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
+            model.append(item: stroke)
+            currentStroke = stroke
+
+        case .changed, .ended:
+            tryToAppendStrokeSample()
+
+            guard let lastStroke = self.currentStroke else {
+                owsFailDebug("Missing last stroke.")
+                removeCurrentStroke()
+                return
+            }
+
+            // Model items are immutable; we _replace_ the
+            // stroke item rather than modify it.
+            let stroke = ImageEditorStrokeItem(itemId: lastStroke.itemId, color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
+            model.replace(item: stroke, suppressUndo: true)
+
+            if gestureRecognizer.state == .ended {
+                currentStroke = nil
+                currentStrokeSamples.removeAll()
+            } else {
+                currentStroke = stroke
+            }
+        default:
+            removeCurrentStroke()
+        }
+    }
+}
+
+// MARK: -
+
+extension ImageEditorBrushViewController: ImageEditorModelObserver {
+
+    public func imageEditorModelDidChange(before: ImageEditorContents,
+                                          after: ImageEditorContents) {
+        updateNavigationBar()
+    }
+
+    public func imageEditorModelDidChange(changedItemIds: [String]) {
+        updateNavigationBar()
+    }
+}
+
+// MARK: -
+
+extension ImageEditorBrushViewController: ImageEditorPaletteViewDelegate {
+    public func selectedColorDidChange() {
+        // TODO:
+    }
+}

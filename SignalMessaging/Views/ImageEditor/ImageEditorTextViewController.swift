@@ -204,7 +204,7 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
         self.delegate?.textEditDidComplete(textItem: textItem, text: textView.text)
 
-        self.dismiss(animated: true) {
+        self.dismiss(animated: false) {
             // Do nothing.
         }
     }

@@ -279,17 +279,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             let firstViewController = viewControllers.first as? AttachmentPrepViewController {
             navigationBarItems = firstViewController.navigationBarItems()
         }
-        guard navigationBarItems.count > 0 else {
-            self.navigationItem.rightBarButtonItems = []
-            return
-        }
-
-        let stackView = UIStackView(arrangedSubviews: navigationBarItems)
-        stackView.axis = .horizontal
-        stackView.spacing = 8
-        stackView.alignment = .center
-
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
+        updateNavigationBar(navigationBarItems: navigationBarItems)
     }
 
     // MARK: - View Helpers

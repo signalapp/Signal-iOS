@@ -38,6 +38,7 @@ public class ImageEditorPaletteView: UIView {
     private func createContents() {
         self.backgroundColor = .clear
         self.isOpaque = false
+        self.layoutMargins = .zero
 
         if let image = ImageEditorPaletteView.buildPaletteGradientImage() {
             imageView.image = image

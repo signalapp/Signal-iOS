@@ -738,7 +738,7 @@ class ImageEditorCropViewController: OWSViewController {
     private func completeAndDismiss() {
         self.delegate?.cropDidComplete(transform: transform)
 
-        self.dismiss(animated: true) {
+        self.dismiss(animated: false) {
             // Do nothing.
         }
     }
