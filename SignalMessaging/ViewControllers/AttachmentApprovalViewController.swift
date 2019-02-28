@@ -48,6 +48,10 @@ class AttachmentItemCollection {
     func remove(item: SignalAttachmentItem) {
         attachmentItems = attachmentItems.filter { $0 != item }
     }
+
+    func count() -> Int {
+        return attachmentItems.count
+    }
 }
 
 // MARK: -
@@ -618,6 +622,10 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     func prepViewControllerUpdateNavigationBar() {
         self.updateNavigationBar()
     }
+
+    func prepViewControllerAttachmentCount() -> Int {
+        return attachmentItemCollection.count()
+    }
 }
 
 // MARK: GalleryRail
@@ -671,6 +679,8 @@ protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem)
 
     func prepViewControllerUpdateNavigationBar()
+
+    func prepViewControllerAttachmentCount() -> Int
 }
 
 public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
@@ -884,9 +894,23 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     public func navigationBarItems() -> [UIView] {
         guard let imageEditorView = imageEditorView else {
+            // Show the "add caption" button for non-image attachments if
+            // there is more than one attachment.
+            if let prepDelegate = prepDelegate,
+                prepDelegate.prepViewControllerAttachmentCount() > 1 {
+                let captionButton = navigationBarButton(imageName: "image_editor_caption",
+                                                        selector: #selector(didTapCaption(sender:)))
+                return [captionButton]
+            }
             return []
         }
         return imageEditorView.navigationBarItems()
+    }
+
+    @objc func didTapCaption(sender: UIButton) {
+        Logger.verbose("")
+
+        imageEditorPresentCaptionView()
     }
 
     // MARK: - Event Handlers
@@ -1164,6 +1188,14 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
 
     public func imageEditorUpdateNavigationBar() {
         prepDelegate?.prepViewControllerUpdateNavigationBar()
+    }
+
+    public func imageEditorAttachmentCount() -> Int {
+        guard let prepDelegate = prepDelegate else {
+            owsFailDebug("Missing prepDelegate.")
+            return 0
+        }
+        return prepDelegate.prepViewControllerAttachmentCount()
     }
 }
 

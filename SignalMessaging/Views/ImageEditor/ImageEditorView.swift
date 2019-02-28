@@ -10,6 +10,7 @@ public protocol ImageEditorViewDelegate: class {
                      withNavigation: Bool)
     func imageEditorPresentCaptionView()
     func imageEditorUpdateNavigationBar()
+    func imageEditorAttachmentCount() -> Int
 }
 
 // MARK: -
@@ -102,11 +103,20 @@ public class ImageEditorView: UIView {
         let captionButton = navigationBarButton(imageName: "image_editor_caption",
                                              selector: #selector(didTapCaption(sender:)))
 
+        var buttons: [UIView]
         if model.canUndo() {
-            return [undoButton, newTextButton, brushButton, cropButton, captionButton]
+            buttons = [undoButton, newTextButton, brushButton, cropButton]
         } else {
-            return [newTextButton, brushButton, cropButton, captionButton]
+            buttons = [newTextButton, brushButton, cropButton]
         }
+
+        // Show the "add caption" button for non-image attachments if
+        // there is more than one attachment.
+        if let delegate = delegate,
+            delegate.imageEditorAttachmentCount() > 1 {
+            buttons.append(captionButton)
+        }
+        return buttons
     }
 
     // MARK: - Actions
