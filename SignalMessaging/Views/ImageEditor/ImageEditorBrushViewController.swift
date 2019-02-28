@@ -23,6 +23,11 @@ public class ImageEditorBrushViewController: OWSViewController {
 
     private var brushGestureRecognizer: ImageEditorPanGestureRecognizer?
 
+    // We only want to let users undo changes made in this view.
+    // So we snapshot any older "operation id" and prevent
+    // users from undoing it.
+    private let firstUndoOperationId: String?
+
     init(delegate: ImageEditorBrushViewControllerDelegate,
          model: ImageEditorModel,
          currentColor: ImageEditorColor) {
@@ -30,6 +35,7 @@ public class ImageEditorBrushViewController: OWSViewController {
         self.model = model
         self.canvasView = ImageEditorCanvasView(model: model)
         self.paletteView = ImageEditorPaletteView(currentColor: currentColor)
+        self.firstUndoOperationId = model.currentUndoOperationId()
 
         super.init(nibName: nil, bundle: nil)
 
@@ -86,8 +92,10 @@ public class ImageEditorBrushViewController: OWSViewController {
         let doneButton = navigationBarButton(imageName: "image_editor_checkmark_full",
                                                 selector: #selector(didTapDone(sender:)))
 
+        // Prevent users from undo any changes made before entering the view.
+        let canUndo = model.canUndo() && firstUndoOperationId != model.currentUndoOperationId()
         var navigationBarItems = [UIView]()
-        if model.canUndo() {
+        if canUndo {
             navigationBarItems = [undoButton, doneButton]
         } else {
             navigationBarItems = [doneButton]
