@@ -4,16 +4,6 @@
 
 import UIKit
 
-//@objc
-//public protocol ImageEditorViewDelegate: class {
-//    func imageEditor(presentFullScreenOverlay viewController: UIViewController,
-//                     withNavigation: Bool)
-//    func imageEditorPresentCaptionView()
-//    func imageEditorUpdateNavigationBar()
-//}
-
-// MARK: -
-
 @objc
 public protocol ImageEditorBrushViewControllerDelegate: class {
     func brushDidComplete()
@@ -30,15 +20,17 @@ public class ImageEditorBrushViewController: OWSViewController {
 
     private let canvasView: ImageEditorCanvasView
 
-    private let paletteView = ImageEditorPaletteView()
+    private let paletteView: ImageEditorPaletteView
 
     private var brushGestureRecognizer: ImageEditorPanGestureRecognizer?
 
     init(delegate: ImageEditorBrushViewControllerDelegate,
-         model: ImageEditorModel) {
+         model: ImageEditorModel,
+         currentColor: ImageEditorColor) {
         self.delegate = delegate
         self.model = model
         self.canvasView = ImageEditorCanvasView(model: model)
+        self.paletteView = ImageEditorPaletteView(currentColor: currentColor)
 
         super.init(nibName: nil, bundle: nil)
 
@@ -55,6 +47,7 @@ public class ImageEditorBrushViewController: OWSViewController {
     public override func loadView() {
         self.view = UIView()
         self.view.backgroundColor = .black
+        self.view.isOpaque = true
 
         canvasView.configureSubviews()
         self.view.addSubview(canvasView)
@@ -63,7 +56,7 @@ public class ImageEditorBrushViewController: OWSViewController {
         paletteView.delegate = self
         self.view.addSubview(paletteView)
         paletteView.autoVCenterInSuperview()
-        paletteView.autoPinEdge(toSuperviewEdge: .leading, withInset: 20)
+        paletteView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 20)
 
         self.view.isUserInteractionEnabled = true
 
@@ -101,12 +94,6 @@ public class ImageEditorBrushViewController: OWSViewController {
             navigationBarItems = [doneButton]
         }
         updateNavigationBar(navigationBarItems: navigationBarItems)
-    }
-
-    private var currentColor: UIColor {
-        get {
-            return paletteView.selectedColor
-        }
     }
 
     // MARK: - Actions
@@ -168,7 +155,7 @@ public class ImageEditorBrushViewController: OWSViewController {
             self.currentStrokeSamples.append(newSample)
         }
 
-        let strokeColor = currentColor
+        let strokeColor = paletteView.selectedValue.color
         // TODO: Tune stroke width.
         let unitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth()
 

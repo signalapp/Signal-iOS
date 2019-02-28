@@ -10,11 +10,60 @@ public protocol ImageEditorPaletteViewDelegate: class {
 
 // MARK: -
 
+@objc
+public class ImageEditorColor: NSObject {
+    public let color: UIColor
+
+    // Colors are chosen from a spectrum of colors.
+    // This unit value represents the location of the
+    // color within that spectrum.
+    public let palettePhase: CGFloat
+
+    public var cgColor: CGColor {
+        return color.cgColor
+    }
+
+    public required init(color: UIColor, palettePhase: CGFloat) {
+        self.color = color
+        self.palettePhase = palettePhase
+    }
+
+    public class func defaultColor() -> ImageEditorColor {
+        return ImageEditorColor(color: UIColor(rgbHex: 0xffffff), palettePhase: 0)
+    }
+
+    public static var gradientUIColors: [UIColor] {
+        return [
+            UIColor(rgbHex: 0xffffff),
+            UIColor(rgbHex: 0xff0000),
+            UIColor(rgbHex: 0xff00ff),
+            UIColor(rgbHex: 0x0000ff),
+            UIColor(rgbHex: 0x00ffff),
+            UIColor(rgbHex: 0x00ff00),
+            UIColor(rgbHex: 0xffff00),
+            UIColor(rgbHex: 0xff5500),
+            UIColor(rgbHex: 0x000000)
+        ]
+    }
+
+    public static var gradientCGColors: [CGColor] {
+        return gradientUIColors.map({ (color) in
+            return color.cgColor
+        })
+    }
+}
+
+// MARK: -
+
 public class ImageEditorPaletteView: UIView {
 
     public weak var delegate: ImageEditorPaletteViewDelegate?
 
-    public required init() {
+    public var selectedValue: ImageEditorColor
+
+    public required init(currentColor: ImageEditorColor) {
+        self.selectedValue = currentColor
+
         super.init(frame: .zero)
 
         createContents()
@@ -26,9 +75,6 @@ public class ImageEditorPaletteView: UIView {
     }
 
     // MARK: - Views
-
-    // The actual default is selected later.
-    public var selectedColor = UIColor.white
 
     private let imageView = UIImageView()
     private let selectionView = UIView()
@@ -84,36 +130,36 @@ public class ImageEditorPaletteView: UIView {
     // 0 = the color at the top of the image is selected.
     // 1 = the color at the bottom of the image is selected.
     private let selectionSize: CGFloat = 20
-    private var selectionAlpha: CGFloat = 0
 
     private func selectColor(atLocationY y: CGFloat) {
-        selectionAlpha = y.inverseLerp(0, imageView.height(), shouldClamp: true)
+        let palettePhase = y.inverseLerp(0, imageView.height(), shouldClamp: true)
+        self.selectedValue = value(for: palettePhase)
 
         updateState()
 
         delegate?.selectedColorDidChange()
     }
 
-    private func updateState() {
-        var selectedColor = UIColor.white
-        if let image = imageView.image {
-            if let imageColor = image.color(atLocation: CGPoint(x: CGFloat(image.size.width) * 0.5, y: CGFloat(image.size.height) * selectionAlpha)) {
-                selectedColor = imageColor
-            } else {
-                owsFailDebug("Couldn't determine image color.")
-            }
-        } else {
+    private func value(for palettePhase: CGFloat) -> ImageEditorColor {
+        guard let image = imageView.image else {
             owsFailDebug("Missing image.")
+            return ImageEditorColor.defaultColor()
         }
-        self.selectedColor = selectedColor
+        guard let color = image.color(atLocation: CGPoint(x: CGFloat(image.size.width) * 0.5, y: CGFloat(image.size.height) * palettePhase)) else {
+            owsFailDebug("Missing color.")
+            return ImageEditorColor.defaultColor()
+        }
+        return ImageEditorColor(color: color, palettePhase: palettePhase)
+    }
 
-        selectionView.backgroundColor = selectedColor
+    private func updateState() {
+        selectionView.backgroundColor = selectedValue.color
 
         guard let selectionConstraint = selectionConstraint else {
             owsFailDebug("Missing selectionConstraint.")
             return
         }
-        let selectionY = selectionWrapper.height() * selectionAlpha
+        let selectionY = selectionWrapper.height() * selectedValue.palettePhase
         selectionConstraint.constant = selectionY
     }
 
@@ -142,17 +188,7 @@ public class ImageEditorPaletteView: UIView {
         gradientView.layer.addSublayer(gradientLayer)
         gradientLayer.frame = gradientBounds
         // See: https://github.com/signalapp/Signal-Android/blob/master/res/values/arrays.xml#L267
-        gradientLayer.colors = [
-            UIColor(rgbHex: 0xffffff).cgColor,
-            UIColor(rgbHex: 0xff0000).cgColor,
-            UIColor(rgbHex: 0xff00ff).cgColor,
-            UIColor(rgbHex: 0x0000ff).cgColor,
-            UIColor(rgbHex: 0x00ffff).cgColor,
-            UIColor(rgbHex: 0x00ff00).cgColor,
-            UIColor(rgbHex: 0xffff00).cgColor,
-            UIColor(rgbHex: 0xff5500).cgColor,
-            UIColor(rgbHex: 0x000000).cgColor
-        ]
+        gradientLayer.colors = ImageEditorColor.gradientCGColors
         gradientLayer.startPoint = CGPoint.zero
         gradientLayer.endPoint = CGPoint(x: 0, y: gradientSize.height)
         gradientLayer.endPoint = CGPoint(x: 0, y: 1.0)
