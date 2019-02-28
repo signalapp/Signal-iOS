@@ -122,7 +122,8 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         self.model = model
         self.textItem = textItem
         self.maxTextWidthPoints = maxTextWidthPoints
-        self.canvasView = ImageEditorCanvasView(model: model)
+        self.canvasView = ImageEditorCanvasView(model: model,
+                                                itemIdsToIgnore: [textItem.itemId])
         self.paletteView = ImageEditorPaletteView(currentColor: textItem.color)
 
         super.init(nibName: nil, bundle: nil)
