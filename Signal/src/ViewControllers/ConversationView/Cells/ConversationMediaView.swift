@@ -135,7 +135,7 @@ public class ConversationMediaView: UIView {
         } else if attachmentStream.isVideo {
             configureForVideo(attachmentStream: attachmentStream)
         } else {
-//            owsFailDebug("Attachment has unexpected type.")
+            owsFailDebug("Attachment has unexpected type.")
             configure(forError: .invalid)
         }
     }

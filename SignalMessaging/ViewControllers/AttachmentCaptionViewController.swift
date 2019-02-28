@@ -229,8 +229,8 @@ class AttachmentCaptionViewController: OWSViewController {
 
         let contentSize = textView.sizeThatFits(CGSize(width: textView.width(), height: CGFloat.greatestFiniteMagnitude))
 
-            // `textView.contentSize` isn't accurate when restoring a multiline draft, so we compute it here.
-            textView.contentSize = contentSize
+        // `textView.contentSize` isn't accurate when restoring a multiline draft, so we compute it here.
+        textView.contentSize = contentSize
 
         let minHeight: CGFloat = textView.font?.lineHeight ?? 0
         let maxHeight = minHeight * 4

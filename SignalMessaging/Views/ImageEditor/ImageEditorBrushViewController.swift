@@ -11,7 +11,6 @@ public protocol ImageEditorBrushViewControllerDelegate: class {
 
 // MARK: -
 
-// A view for editing text item in image editor.
 public class ImageEditorBrushViewController: OWSViewController {
 
     private weak var delegate: ImageEditorBrushViewControllerDelegate?
