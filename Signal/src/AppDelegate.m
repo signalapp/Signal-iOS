@@ -967,13 +967,22 @@ static NSTimeInterval launchStartedAt;
 - (UIInterfaceOrientationMask)application:(UIApplication *)application
     supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
 {
-    if (self.windowManager.hasCall) {
+    if (self.hasCall) {
         OWSLogInfo(@"has call");
         // The call-banner window is only suitable for portrait display
         return UIInterfaceOrientationMaskPortrait;
     }
 
-    return UIInterfaceOrientationMaskAllButUpsideDown;
+    UIViewController *_Nullable rootViewController = self.window.rootViewController;
+    if (!rootViewController) {
+        return UIInterfaceOrientationMaskAllButUpsideDown;
+    }
+    return rootViewController.supportedInterfaceOrientations;
+}
+
+- (BOOL)hasCall
+{
+    return self.windowManager.hasCall;
 }
 
 #pragma mark Push Notifications Delegate Methods
