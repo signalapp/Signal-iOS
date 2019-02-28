@@ -272,15 +272,24 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - Navigation Bar
 
     public func updateNavigationBar() {
-        var navigationBarItems = [UIBarButtonItem]()
+        var navigationBarItems = [UIView]()
 
         if let viewControllers = viewControllers,
             viewControllers.count == 1,
             let firstViewController = viewControllers.first as? AttachmentPrepViewController {
             navigationBarItems = firstViewController.navigationBarItems()
         }
+        guard navigationBarItems.count > 0 else {
+            self.navigationItem.rightBarButtonItems = []
+            return
+        }
 
-        self.navigationItem.rightBarButtonItems = navigationBarItems
+        let stackView = UIStackView(arrangedSubviews: navigationBarItems)
+        stackView.axis = .horizontal
+        stackView.spacing = 8
+        stackView.alignment = .center
+
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
     }
 
     // MARK: - View Helpers
@@ -753,8 +762,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         mediaMessageView.autoPinEdgesToSuperviewEdges()
 
         #if DEBUG
-        if let imageEditorModel = attachmentItem.imageEditorModel,
-            let imageMediaView = mediaMessageView.contentView {
+        if let imageEditorModel = attachmentItem.imageEditorModel {
 
             let imageEditorView = ImageEditorView(model: imageEditorModel, delegate: self)
             if imageEditorView.configureSubviews() {
@@ -762,13 +770,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
                 mediaMessageView.isHidden = true
 
-                // TODO: Is this necessary?
-                imageMediaView.isUserInteractionEnabled = true
-
-                contentContainer.addSubview(imageEditorView)
-                imageEditorView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-                autoPinView(toBottomOfViewControllerOrKeyboard: imageEditorView, avoidNotch: true)
-                imageEditorView.autoPinWidthToSuperview()
+                view.addSubview(imageEditorView)
+                imageEditorView.autoPinEdgesToSuperviewEdges()
 
                 imageEditorView.addControls(to: imageEditorView,
                                             viewController: self)
@@ -870,7 +873,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     // MARK: - Navigation Bar
 
-    public func navigationBarItems() -> [UIBarButtonItem] {
+    public func navigationBarItems() -> [UIView] {
         guard let imageEditorView = imageEditorView else {
             return []
         }

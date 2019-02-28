@@ -241,30 +241,33 @@ public class ImageEditorView: UIView {
     // MARK: - Navigation Bar
 
     private func navigationBarButton(imageName: String,
-                                     selector: Selector) -> UIBarButtonItem {
-        let button = UIBarButtonItem(image: UIImage(named: imageName), style: .plain, target: self, action: selector)
+                                     selector: Selector) -> UIView {
+        let button = OWSButton()
+        button.setImage(imageName: imageName)
         button.tintColor = .white
+        button.addTarget(self, action: selector, for: .touchUpInside)
+//        button.layer.shadowColor = UIColor.black.cgColor
+//        button.layer.shadowRadius = 4
+//        button.layer.shadowOpacity = 0.66
         return button
     }
 
-    public func navigationBarItems() -> [UIBarButtonItem] {
+    public func navigationBarItems() -> [UIView] {
         let undoButton = navigationBarButton(imageName: "image_editor_undo",
                                              selector: #selector(didTapUndo(sender:)))
         let brushButton = navigationBarButton(imageName: "image_editor_brush",
                                               selector: #selector(didTapBrush(sender:)))
         let cropButton = navigationBarButton(imageName: "image_editor_crop",
                                              selector: #selector(didTapCrop(sender:)))
-        let newTextButton = navigationBarButton(imageName: "image_editor_checkmark_full",
+        let newTextButton = navigationBarButton(imageName: "image_editor_text",
                                                 selector: #selector(didTapNewText(sender:)))
-//        let doneButton = navigationBarButton(imageName:"image_editor_brush",
-//                                             selector: #selector(didTapDone(sender:)))
         let captionButton = navigationBarButton(imageName: "image_editor_caption",
                                              selector: #selector(didTapCaption(sender:)))
 
         if model.canUndo() {
-            return [undoButton, newTextButton, brushButton, cropButton, captionButton].reversed()
+            return [undoButton, newTextButton, brushButton, cropButton, captionButton]
         } else {
-            return [newTextButton, brushButton, cropButton, captionButton].reversed()
+            return [newTextButton, brushButton, cropButton, captionButton]
         }
     }
 
