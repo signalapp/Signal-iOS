@@ -449,7 +449,7 @@ public class ImageEditorView: UIView {
 
         let cropTool = ImageEditorCropViewController(delegate: self, model: model, srcImage: srcImage, previewImage: previewImage)
         self.delegate?.imageEditor(presentFullScreenOverlay: cropTool,
-                                   withNavigation: false)
+                                   withNavigation: true)
     }}
 
 // MARK: -

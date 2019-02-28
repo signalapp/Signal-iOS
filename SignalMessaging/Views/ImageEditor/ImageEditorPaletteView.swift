@@ -10,6 +10,9 @@ public protocol ImageEditorPaletteViewDelegate: class {
 
 // MARK: -
 
+// We represent image editor colors using this (color, phase)
+// tuple so that we can consistently restore palette view
+// state.
 @objc
 public class ImageEditorColor: NSObject {
     public let color: UIColor
