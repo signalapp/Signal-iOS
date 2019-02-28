@@ -125,6 +125,14 @@ extension UIView {
 }
 
 public extension CGFloat {
+    public func clamp(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
+        return CGFloatClamp(self, minValue, maxValue)
+    }
+
+    public func clamp01(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
+        return CGFloatClamp01(self)
+    }
+
     // Linear interpolation
     public func lerp(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
         return CGFloatLerp(minValue, maxValue, self)
@@ -137,6 +145,14 @@ public extension CGFloat {
     }
 
     public static let halfPi: CGFloat = CGFloat.pi * 0.5
+}
+
+public extension Int {
+    public func clamp(_ minValue: Int, _ maxValue: Int) -> Int {
+        assert(minValue <= maxValue)
+
+        return Swift.max(minValue, Swift.min(maxValue, self))
+    }
 }
 
 public extension CGPoint {
