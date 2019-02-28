@@ -13,7 +13,12 @@ public class ImageEditorPanGestureRecognizer: UIPanGestureRecognizer {
 
     public weak var referenceView: UIView?
 
-    public var locationStart: CGPoint?
+    // Capture the location history of this gesture.
+    public var locations = [CGPoint]()
+
+    public var locationStart: CGPoint? {
+        return locations.first
+    }
 
     // MARK: - Touch Handling
 
@@ -25,12 +30,23 @@ public class ImageEditorPanGestureRecognizer: UIPanGestureRecognizer {
             owsFailDebug("Missing view")
             return
         }
-        locationStart = self.location(in: referenceView)
+        locations.append(location(in: referenceView))
+    }
+
+    @objc
+    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+        super.touchesMoved(touches, with: event)
+
+        guard let referenceView = referenceView else {
+            owsFailDebug("Missing view")
+            return
+        }
+        locations.append(location(in: referenceView))
     }
 
     public override func reset() {
         super.reset()
 
-        locationStart = nil
+        locations.removeAll()
     }
 }
