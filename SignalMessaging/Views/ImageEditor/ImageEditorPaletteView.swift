@@ -188,8 +188,6 @@ extension UIImage {
                 return nil
         }
 
-        Logger.verbose("scale: \(self.scale)")
-
         // Convert the location from points to pixels and clamp to the image bounds.
         let xPixels: Int = Int(round(locationPoints.x * self.scale)).clamp(0, imageWidth - 1)
         let yPixels: Int = Int(round(locationPoints.y * self.scale)).clamp(0, imageHeight - 1)

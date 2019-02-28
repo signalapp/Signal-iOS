@@ -8,6 +8,7 @@ import UIKit
 public protocol ImageEditorViewDelegate: class {
     func imageEditor(presentFullScreenOverlay viewController: UIViewController,
                      withNavigation: Bool)
+    func imageEditorPresentCaptionView()
 }
 
 // MARK: -
@@ -277,6 +278,16 @@ public class ImageEditorView: UIView {
 
     @objc func didTapCaption(sender: UIButton) {
         Logger.verbose("")
+
+        delegate?.imageEditorPresentCaptionView()
+
+//        // TODO:
+//        let maxTextWidthPoints = model.srcImageSizePixels.width * ImageEditorTextItem.kDefaultUnitWidth
+//        //        let maxTextWidthPoints = canvasView.imageView.width() * ImageEditorTextItem.kDefaultUnitWidth
+//
+//        let textEditor = ImageEditorTextViewController(delegate: self, textItem: textItem, maxTextWidthPoints: maxTextWidthPoints)
+//        self.delegate?.imageEditor(presentFullScreenOverlay: textEditor,
+//                                   withNavigation: true)
 
         // TODO:
     }

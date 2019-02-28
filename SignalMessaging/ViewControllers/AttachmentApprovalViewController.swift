@@ -226,49 +226,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         // layout immediately to avoid animating the layout process during the transition
         self.currentPageViewController.view.layoutIfNeeded()
-
-        // As a refresher, the _Information Architecture_ here is:
-        //
-        // You are approving an "Album", which has multiple "Attachments"
-        //
-        // The "media message text" and the "media rail" belong to the Album as a whole, whereas
-        // each caption belongs to the individual Attachment.
-        //
-        // The _UI Architecture_ reflects this hierarchy by putting the MediaRail and
-        // MediaMessageText input into the bottomToolView which is then the AttachmentApprovalView's
-        // inputAccessoryView.
-        //
-        // Whereas a CaptionView lives in each page of the PageViewController, per Attachment.
-        //
-        // So as you page, the CaptionViews move out of view with its page, whereas the input
-        // accessory view (rail/media message text) will remain fixed in the viewport.
-        //
-        // However (and here's the kicker), at rest, the media's CaptionView rests just above the
-        // input accessory view. So when things are static, they appear as a single piece of
-        // interface.
-        //
-        // I'm not totally sure if this is what Myles had in mind, but the screenshots left a lot of
-        // behavior ambiguous, and this was my best interpretation.
-        //
-        // Because of this complexity, it is insufficient to observe only the
-        // KeyboardWillChangeFrame, since the keyboard could be changing frame when the CaptionView
-        // became/resigned first responder, when AttachmentApprovalViewController became/resigned
-        // first responder, or when the AttachmentApprovalView's inputAccessoryView.textView
-        // became/resigned first responder, and because these things can happen in immediatre
-        // sequence, getting a single smooth animation requires handling each notification slightly
-        // differently.
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillShow(notification:)),
-                                               name: .UIKeyboardWillShow,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardDidShow(notification:)),
-                                               name: .UIKeyboardDidShow,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillHide(notification:)),
-                                               name: .UIKeyboardWillHide,
-                                               object: nil)
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -282,8 +239,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
         navigationBar.overrideTheme(type: .clear)
-
-        updateCaptionVisibility()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -308,66 +263,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     override public var canBecomeFirstResponder: Bool {
         return true
-    }
-
-    var lastObservedKeyboardTop: CGFloat = 0
-    var inputAccessorySnapshotView: UIView?
-
-    @objc
-    func keyboardDidShow(notification: Notification) {
-        // If this is a result of the vc becoming first responder, the keyboard isn't actually
-        // showing, rather the inputAccessoryView is now showing, so we want to remove any
-        // previously added toolbar snapshot.
-        if isFirstResponder, inputAccessorySnapshotView != nil {
-            removeToolbarSnapshot()
-        }
-    }
-
-    @objc
-    func keyboardWillShow(notification: Notification) {
-        guard let userInfo = notification.userInfo else {
-            owsFailDebug("userInfo was unexpectedly nil")
-            return
-        }
-
-        guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
-            owsFailDebug("keyboardEndFrame was unexpectedly nil")
-            return
-        }
-
-        guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
-            owsFailDebug("keyboardEndFrame was unexpectedly nil")
-            return
-        }
-
-        Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
-        lastObservedKeyboardTop = keyboardEndFrame.size.height
-
-        let keyboardScenario: KeyboardScenario = bottomToolView.isEditingMediaMessage ? .editingMessage : .editingCaption
-        currentPageViewController.updateCaptionViewBottomInset(keyboardScenario: keyboardScenario)
-    }
-
-    @objc
-    func keyboardWillHide(notification: Notification) {
-        guard let userInfo = notification.userInfo else {
-            owsFailDebug("userInfo was unexpectedly nil")
-            return
-        }
-
-        guard let keyboardStartFrame = userInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect else {
-            owsFailDebug("keyboardEndFrame was unexpectedly nil")
-            return
-        }
-
-        guard let keyboardEndFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
-            owsFailDebug("keyboardEndFrame was unexpectedly nil")
-            return
-        }
-
-        Logger.debug("\(keyboardStartFrame) -> \(keyboardEndFrame)")
-
-        lastObservedKeyboardTop = UIScreen.main.bounds.height - keyboardEndFrame.size.height
-        currentPageViewController.updateCaptionViewBottomInset(keyboardScenario: .hidden)
     }
 
     // MARK: - View Helpers
@@ -412,12 +307,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return pagerScrollView
     }()
 
-    func updateCaptionVisibility() {
-        for pageViewController in pageViewControllers {
-            pageViewController.updateCaptionVisibility(attachmentCount: attachments.count)
-        }
-    }
-
     // MARK: - UIPageViewControllerDelegate
 
     public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
@@ -433,9 +322,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // use compact scale when keyboard is popped.
             let scale: AttachmentPrepViewController.AttachmentViewScale = self.isFirstResponder ? .fullsize : .compact
             pendingPage.setAttachmentViewScale(scale, animated: false)
-
-            let keyboardScenario: KeyboardScenario = bottomToolView.isEditingMediaMessage ? .editingMessage : .hidden
-            pendingPage.updateCaptionViewBottomInset(keyboardScenario: keyboardScenario)
         }
     }
 
@@ -524,7 +410,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("cache miss.")
         let viewController = AttachmentPrepViewController(attachmentItem: item)
         viewController.prepDelegate = self
-        viewController.updateCaptionVisibility(attachmentCount: attachments.count)
         cachedPages[item] = viewController
 
         return viewController
@@ -537,8 +422,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         page.loadViewIfNeeded()
-        let keyboardScenario: KeyboardScenario = bottomToolView.isEditingMediaMessage ? .editingMessage : .hidden
-        page.updateCaptionViewBottomInset(keyboardScenario: keyboardScenario)
 
         self.setViewControllers([page], direction: direction, animated: isAnimated, completion: nil)
         updateMediaRail()
@@ -699,74 +582,6 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem) {
         self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: attachmentItem.attachment)
     }
-
-    func prepViewController(_ prepViewController: AttachmentPrepViewController, willBeginEditingCaptionView captionView: CaptionView) {
-        // When the CaptionView becomes first responder, the AttachmentApprovalViewController will
-        // consequently resignFirstResponder, which means the bottomToolView would disappear from
-        // the screen, so before that happens, we add a snapshot to holds it's place.
-        addInputAccessorySnapshot()
-    }
-
-    func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView) {
-        // Disable paging while captions are being edited to avoid a clunky animation.
-        //
-        // Loading the next page causes the CaptionView to resign first responder, which in turn
-        // dismisses the keyboard, which in turn affects the vertical offset of both the CaptionView
-        // from the page we're leaving as well as the page we're entering. Instead we require the
-        // user to dismiss *then* swipe.
-        disablePaging()
-    }
-
-    func addInputAccessorySnapshot() {
-        assert(inputAccessorySnapshotView == nil)
-        // To fix a layout glitch where the snapshot view is 1/2 the width of the screen, it's key
-        // that we use `bottomToolView` and not `inputAccessoryView` which can trigger a layout of
-        // the `bottomToolView`.
-        // Presumably the frame of the inputAccessoryView has just changed because we're in the
-        // middle of switching first responders. We want a snapshot as it *was*, not reflecting any
-        // just-applied superview layout changes.
-        inputAccessorySnapshotView = bottomToolView.snapshotView(afterScreenUpdates: true)
-        guard let inputAccessorySnapshotView = inputAccessorySnapshotView else {
-            owsFailDebug("inputAccessorySnapshotView was unexpectedly nil")
-            return
-        }
-
-        view.addSubview(inputAccessorySnapshotView)
-        inputAccessorySnapshotView.autoSetDimension(.height, toSize: bottomToolView.bounds.height)
-        inputAccessorySnapshotView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-    }
-
-    func removeToolbarSnapshot() {
-        guard let inputAccessorySnapshotView = self.inputAccessorySnapshotView else {
-            owsFailDebug("inputAccessorySnapshotView was unexpectedly nil")
-            return
-        }
-        inputAccessorySnapshotView.removeFromSuperview()
-        self.inputAccessorySnapshotView = nil
-    }
-
-    func prepViewController(_ prepViewController: AttachmentPrepViewController, didEndEditingCaptionView captionView: CaptionView) {
-        enablePaging()
-    }
-
-    func desiredCaptionViewBottomInset(keyboardScenario: KeyboardScenario) -> CGFloat {
-        switch keyboardScenario {
-        case .hidden, .editingMessage:
-            return bottomToolView.bounds.height
-        case .editingCaption:
-            return lastObservedKeyboardTop
-        }
-    }
-
-    // MARK: Helpers
-
-    func disablePaging() {
-        pagerScrollView?.panGestureRecognizer.isEnabled = false
-    }
-
-    func enablePaging() {
-        pagerScrollView?.panGestureRecognizer.isEnabled = true
-    }
 }
 
 // MARK: GalleryRail
@@ -818,12 +633,6 @@ enum KeyboardScenario {
 
 protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem)
-
-    func prepViewController(_ prepViewController: AttachmentPrepViewController, willBeginEditingCaptionView captionView: CaptionView)
-    func prepViewController(_ prepViewController: AttachmentPrepViewController, didBeginEditingCaptionView captionView: CaptionView)
-    func prepViewController(_ prepViewController: AttachmentPrepViewController, didEndEditingCaptionView captionView: CaptionView)
-
-    func desiredCaptionViewBottomInset(keyboardScenario: KeyboardScenario) -> CGFloat
 }
 
 public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
@@ -861,30 +670,9 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         fatalError("init(coder:) has not been implemented")
     }
 
-    func updateCaptionVisibility(attachmentCount: Int) {
-        if attachmentCount > 1 {
-            captionView.isHidden = false
-            return
-        }
-
-        // If we previously had multiple attachments, we'd have shown the caption fields.
-        //
-        // Subsequently, if the user had added caption text, then removed the other attachments
-        // we will continue to show this caption field, so as not to hide any already-entered text.
-        if let captionText = captionView.captionText, captionText.count > 0 {
-            captionView.isHidden = false
-            return
-        }
-
-        captionView.isHidden = true
-    }
-
     // MARK: - Subviews
 
-    lazy var captionView: CaptionView = {
-        return CaptionView(attachmentItem: attachmentItem)
-    }()
-
+    // TODO: Do we still need this?
     lazy var touchInterceptorView: UIView = {
         let touchInterceptorView = UIView()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapTouchInterceptorView(gesture:)))
@@ -1023,12 +811,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         view.addSubview(touchInterceptorView)
         touchInterceptorView.autoPinEdgesToSuperviewEdges()
         touchInterceptorView.isHidden = true
-
-        view.addSubview(captionView)
-        captionView.delegate = self
-
-        captionView.autoPinWidthToSuperview()
-        captionViewBottomConstraint = captionView.autoPinEdge(toSuperviewEdge: .bottom)
     }
 
     override public func viewWillLayoutSubviews() {
@@ -1041,40 +823,11 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         ensureAttachmentViewScale(animated: false)
     }
 
-    // MARK: CaptionView lifts with keyboard
-
-    var hasLaidOutCaptionView: Bool = false
-    var captionViewBottomConstraint: NSLayoutConstraint!
-    func updateCaptionViewBottomInset(keyboardScenario: KeyboardScenario) {
-        guard let prepDelegate = self.prepDelegate else {
-            owsFailDebug("prepDelegate was unexpectedly nil")
-            return
-        }
-
-        let changeBlock = {
-            let offset: CGFloat = -1 * prepDelegate.desiredCaptionViewBottomInset(keyboardScenario: keyboardScenario)
-            self.captionViewBottomConstraint.constant = offset
-            self.captionView.superview?.layoutIfNeeded()
-        }
-
-        // To avoid an animation glitch, we apply this update without animation before initial
-        // appearance. But after that, we want to apply the constraint change within the existing
-        // animation context, since we call this while handling a UIKeyboard notification, which
-        // allows us to slide up the CaptionView in lockstep with the keyboard.
-        if hasLaidOutCaptionView {
-            changeBlock()
-        } else {
-            hasLaidOutCaptionView = true
-            UIView.performWithoutAnimation { changeBlock() }
-        }
-    }
-
     // MARK: - Event Handlers
 
     @objc
     func didTapTouchInterceptorView(gesture: UITapGestureRecognizer) {
         Logger.info("")
-        captionView.endEditing()
         touchInterceptorView.isHidden = true
     }
 
@@ -1228,29 +981,11 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     }
 }
 
-extension AttachmentPrepViewController: CaptionViewDelegate {
-    func captionViewWillBeginEditing(_ captionView: CaptionView) {
-        prepDelegate?.prepViewController(self, willBeginEditingCaptionView: captionView)
-    }
-
-    func captionView(_ captionView: CaptionView, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem) {
+extension AttachmentPrepViewController: AttachmentCaptionDelegate {
+    func captionView(_ captionView: AttachmentCaptionViewController, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem) {
         let attachment = attachmentItem.attachment
         attachment.captionText = captionText
         prepDelegate?.prepViewController(self, didUpdateCaptionForAttachmentItem: attachmentItem)
-    }
-
-    func captionViewDidBeginEditing(_ captionView: CaptionView) {
-        // Don't allow user to pan until they've dismissed the keyboard.
-        // This avoids a really ugly animation from  simultaneously dismissing the keyboard
-        // while loading a new PrepViewController, and it's CaptionView, whose layout depends
-        // on the keyboard's position.
-        touchInterceptorView.isHidden = false
-        prepDelegate?.prepViewController(self, didBeginEditingCaptionView: captionView)
-    }
-
-    func captionViewDidEndEditing(_ captionView: CaptionView) {
-        touchInterceptorView.isHidden = true
-        prepDelegate?.prepViewController(self, didEndEditingCaptionView: captionView)
     }
 }
 
@@ -1331,14 +1066,26 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
         if withNavigation {
             let navigationController = OWSNavigationController(rootViewController: viewController)
             navigationController.modalPresentationStyle = .overFullScreen
-            self.present(navigationController, animated: true) {
+
+            if let navigationBar = navigationController.navigationBar as? OWSNavigationBar {
+                navigationBar.overrideTheme(type: .clear)
+            } else {
+                owsFailDebug("navigationBar was nil or unexpected class")
+            }
+
+            self.present(navigationController, animated: false) {
                 // Do nothing.
             }
         } else {
-            self.present(viewController, animated: true) {
+            self.present(viewController, animated: false) {
                 // Do nothing.
             }
         }
+    }
+
+    public func imageEditorPresentCaptionView() {
+        let view = AttachmentCaptionViewController(delegate: self, attachmentItem: attachmentItem)
+        self.imageEditor(presentFullScreenOverlay: view, withNavigation: true)
     }
 }
 
@@ -1393,250 +1140,8 @@ class BottomToolView: UIView {
     }
 }
 
-protocol CaptionViewDelegate: class {
-    func captionView(_ captionView: CaptionView, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem)
-    func captionViewWillBeginEditing(_ captionView: CaptionView)
-    func captionViewDidBeginEditing(_ captionView: CaptionView)
-    func captionViewDidEndEditing(_ captionView: CaptionView)
-}
-
-class CaptionView: UIView {
-
-    var captionText: String? {
-        get { return textView.text }
-        set {
-            textView.text = newValue
-            updatePlaceholderTextViewVisibility()
-        }
-    }
-
-    let attachmentItem: SignalAttachmentItem
-    var attachment: SignalAttachment {
-        return attachmentItem.attachment
-    }
-
-    weak var delegate: CaptionViewDelegate?
-
-    private let kMinTextViewHeight: CGFloat = 38
-    private var textViewHeightConstraint: NSLayoutConstraint!
-
-    private lazy var lengthLimitLabel: UILabel = {
-        let lengthLimitLabel = UILabel()
-
-        // Length Limit Label shown when the user inputs too long of a message
-        lengthLimitLabel.textColor = .white
-        lengthLimitLabel.text = NSLocalizedString("ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED", comment: "One-line label indicating the user can add no more text to the attachment caption.")
-        lengthLimitLabel.textAlignment = .center
-
-        // Add shadow in case overlayed on white content
-        lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
-        lengthLimitLabel.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
-        lengthLimitLabel.layer.shadowOpacity = 0.8
-        lengthLimitLabel.isHidden = true
-
-        return lengthLimitLabel
-    }()
-
-    // MARK: Initializers
-
-    init(attachmentItem: SignalAttachmentItem) {
-        self.attachmentItem = attachmentItem
-
-        super.init(frame: .zero)
-
-        backgroundColor = UIColor.black.withAlphaComponent(0.6)
-
-        self.captionText = attachmentItem.captionText
-        textView.delegate = self
-
-        let textContainer = UIView()
-        textContainer.addSubview(placeholderTextView)
-        placeholderTextView.autoPinEdgesToSuperviewEdges()
-
-        textContainer.addSubview(textView)
-        textView.autoPinEdgesToSuperviewEdges()
-        textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
-
-        let hStack = UIStackView(arrangedSubviews: [addCaptionButton, textContainer, doneButton])
-        doneButton.isHidden = true
-
-        addSubview(hStack)
-        hStack.autoPinEdgesToSuperviewMargins()
-
-        addSubview(lengthLimitLabel)
-        lengthLimitLabel.autoPinEdge(toSuperviewMargin: .left)
-        lengthLimitLabel.autoPinEdge(toSuperviewMargin: .right)
-        lengthLimitLabel.autoPinEdge(.bottom, to: .top, of: textView, withOffset: -9)
-        lengthLimitLabel.setContentHuggingHigh()
-        lengthLimitLabel.setCompressionResistanceHigh()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    // MARK: 
-
-    func endEditing() {
-        textView.resignFirstResponder()
-    }
-
-    override var inputAccessoryView: UIView? {
-        // Don't inherit the vc's inputAccessoryView
-        return nil
-    }
-
-    // MARK: Subviews
-
-    func updatePlaceholderTextViewVisibility() {
-        let isHidden: Bool = {
-            guard !self.textView.isFirstResponder else {
-                return true
-            }
-
-            guard let captionText = self.textView.text else {
-                return false
-            }
-
-            guard captionText.count > 0 else {
-                return false
-            }
-
-            return true
-        }()
-
-        placeholderTextView.isHidden = isHidden
-    }
-
-    private lazy var placeholderTextView: UITextView = {
-        let placeholderTextView = UITextView()
-        placeholderTextView.text = NSLocalizedString("ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER", comment: "placeholder text for an empty captioning field")
-        placeholderTextView.isEditable = false
-
-        placeholderTextView.backgroundColor = .clear
-        placeholderTextView.font = UIFont.ows_dynamicTypeBody
-
-        placeholderTextView.textColor = Theme.darkThemePrimaryColor
-        placeholderTextView.tintColor = Theme.darkThemePrimaryColor
-        placeholderTextView.returnKeyType = .done
-
-        return placeholderTextView
-    }()
-
-    private lazy var textView: UITextView = {
-        let textView = UITextView()
-        textView.backgroundColor = .clear
-        textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
-        textView.font = UIFont.ows_dynamicTypeBody
-        textView.textColor = Theme.darkThemePrimaryColor
-        textView.tintColor = Theme.darkThemePrimaryColor
-
-        return textView
-    }()
-
-    lazy var addCaptionButton: UIButton = {
-        let addCaptionButton =  OWSButton { [weak self] in
-            self?.textView.becomeFirstResponder()
-        }
-
-        let icon = #imageLiteral(resourceName: "ic_add_caption").withRenderingMode(.alwaysTemplate)
-        addCaptionButton.setImage(icon, for: .normal)
-        addCaptionButton.tintColor = Theme.darkThemePrimaryColor
-
-        return addCaptionButton
-    }()
-
-    lazy var doneButton: UIButton = {
-        let doneButton = OWSButton { [weak self] in
-            self?.textView.resignFirstResponder()
-        }
-        doneButton.setTitle(CommonStrings.doneButton, for: .normal)
-        doneButton.tintColor = Theme.darkThemePrimaryColor
-
-        return doneButton
-    }()
-}
-
-let kMaxCaptionCharacterCount = 240
-
 // Coincides with Android's max text message length
 let kMaxMessageBodyCharacterCount = 2000
-
-extension CaptionView: UITextViewDelegate {
-
-    public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        delegate?.captionViewWillBeginEditing(self)
-        return true
-    }
-
-    public func textViewDidBeginEditing(_ textView: UITextView) {
-        updatePlaceholderTextViewVisibility()
-        doneButton.isHidden = false
-        addCaptionButton.isHidden = true
-
-        delegate?.captionViewDidBeginEditing(self)
-    }
-
-    public func textViewDidEndEditing(_ textView: UITextView) {
-        updatePlaceholderTextViewVisibility()
-        doneButton.isHidden = true
-        addCaptionButton.isHidden = false
-
-        delegate?.captionViewDidEndEditing(self)
-    }
-
-    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        let existingText: String = textView.text ?? ""
-        let proposedText: String = (existingText as NSString).replacingCharacters(in: range, with: text)
-
-        let kMaxCaptionByteCount = kOversizeTextMessageSizeThreshold / 4
-        guard proposedText.utf8.count <= kMaxCaptionByteCount else {
-            Logger.debug("hit caption byte count limit")
-            self.lengthLimitLabel.isHidden = false
-
-            // `range` represents the section of the existing text we will replace. We can re-use that space.
-            // Range is in units of NSStrings's standard UTF-16 characters. Since some of those chars could be
-            // represented as single bytes in utf-8, while others may be 8 or more, the only way to be sure is
-            // to just measure the utf8 encoded bytes of the replaced substring.
-            let bytesAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").utf8.count
-
-            // Accept as much of the input as we can
-            let byteBudget: Int = Int(kOversizeTextMessageSizeThreshold) - bytesAfterDelete
-            if byteBudget >= 0, let acceptableNewText = text.truncated(toByteCount: UInt(byteBudget)) {
-                textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
-            }
-
-            return false
-        }
-
-        // After verifying the byte-length is sufficiently small, verify the character count is within bounds.
-        // Normally this character count should entail *much* less byte count.
-        guard proposedText.count <= kMaxCaptionCharacterCount else {
-            Logger.debug("hit caption character count limit")
-
-            self.lengthLimitLabel.isHidden = false
-
-            // `range` represents the section of the existing text we will replace. We can re-use that space.
-            let charsAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").count
-
-            // Accept as much of the input as we can
-            let charBudget: Int = Int(kMaxCaptionCharacterCount) - charsAfterDelete
-            if charBudget >= 0 {
-                let acceptableNewText = String(text.prefix(charBudget))
-                textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
-            }
-
-            return false
-        }
-
-        self.lengthLimitLabel.isHidden = true
-        return true
-    }
-
-    public func textViewDidChange(_ textView: UITextView) {
-        self.delegate?.captionView(self, didChangeCaptionText: textView.text, attachmentItem: attachmentItem)
-    }
-}
 
 protocol MediaMessageTextToolbarDelegate: class {
     func mediaMessageTextToolbarDidTapSend(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
@@ -1942,11 +1447,11 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
                 return true
             }
 
-            guard let captionText = self.textView.text else {
+            guard let text = self.textView.text else {
                 return false
             }
 
-            guard captionText.count > 0 else {
+            guard text.count > 0 else {
                 return false
             }
 

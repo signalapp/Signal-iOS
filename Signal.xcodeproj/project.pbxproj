@@ -12,6 +12,7 @@
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
 		34074F62203D0CBE004596AE /* OWSSounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074F60203D0CBE004596AE /* OWSSounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34080EFE2225F96D0087E99F /* ImageEditorPaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34080EFD2225F96D0087E99F /* ImageEditorPaletteView.swift */; };
+		34080F0022282C880087E99F /* AttachmentCaptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34080EFF22282C880087E99F /* AttachmentCaptionViewController.swift */; };
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */; };
 		340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */; };
@@ -638,6 +639,7 @@
 		34074F5F203D0CBD004596AE /* OWSSounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSounds.m; sourceTree = "<group>"; };
 		34074F60203D0CBE004596AE /* OWSSounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSounds.h; sourceTree = "<group>"; };
 		34080EFD2225F96D0087E99F /* ImageEditorPaletteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorPaletteView.swift; sourceTree = "<group>"; };
+		34080EFF22282C880087E99F /* AttachmentCaptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentCaptionViewController.swift; sourceTree = "<group>"; };
 		340B02B61F9FD31800F9CFEC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewItemTest.m; sourceTree = "<group>"; };
 		340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettingsOptionsViewController.m; sourceTree = "<group>"; };
@@ -2106,6 +2108,7 @@
 			isa = PBXGroup;
 			children = (
 				34AC09D2211B39B000997B47 /* AttachmentApprovalViewController.swift */,
+				34080EFF22282C880087E99F /* AttachmentCaptionViewController.swift */,
 				34AC09CF211B39B000997B47 /* ContactFieldView.swift */,
 				34AC09CD211B39B000997B47 /* ContactShareApprovalViewController.swift */,
 				34AC09DB211B39B100997B47 /* CountryCodeViewController.h */,
@@ -3328,6 +3331,7 @@
 				34AC09E1211B39B100997B47 /* SelectThreadViewController.m in Sources */,
 				34AC09EF211B39B100997B47 /* ViewControllerUtils.m in Sources */,
 				346941A2215D2EE400B5BFAD /* OWSConversationColor.m in Sources */,
+				34080F0022282C880087E99F /* AttachmentCaptionViewController.swift in Sources */,
 				34AC0A17211B39EA00997B47 /* VideoPlayerView.swift in Sources */,
 				34BEDB1321C43F6A007B0EAE /* ImageEditorView.swift in Sources */,
 				34AC09EE211B39B100997B47 /* EditContactShareNameViewController.swift in Sources */,
