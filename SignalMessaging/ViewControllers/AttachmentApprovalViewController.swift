@@ -1156,32 +1156,28 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
 // MARK: -
 
 extension AttachmentPrepViewController: ImageEditorViewDelegate {
-    public func imageEditor(presentFullScreenOverlay viewController: UIViewController,
-                            withNavigation: Bool) {
+    public func imageEditor(presentFullScreenView viewController: UIViewController,
+                            isTransparent: Bool) {
 
-        if withNavigation {
-            let navigationController = OWSNavigationController(rootViewController: viewController)
-            navigationController.modalPresentationStyle = .overFullScreen
+        let navigationController = OWSNavigationController(rootViewController: viewController)
+        navigationController.modalPresentationStyle = (isTransparent
+            ? .overFullScreen
+            : .fullScreen)
 
-            if let navigationBar = navigationController.navigationBar as? OWSNavigationBar {
-                navigationBar.overrideTheme(type: .clear)
-            } else {
-                owsFailDebug("navigationBar was nil or unexpected class")
-            }
-
-            self.present(navigationController, animated: false) {
-                // Do nothing.
-            }
+        if let navigationBar = navigationController.navigationBar as? OWSNavigationBar {
+            navigationBar.overrideTheme(type: .clear)
         } else {
-            self.present(viewController, animated: false) {
-                // Do nothing.
-            }
+            owsFailDebug("navigationBar was nil or unexpected class")
+        }
+
+        self.present(navigationController, animated: false) {
+            // Do nothing.
         }
     }
 
     public func imageEditorPresentCaptionView() {
         let view = AttachmentCaptionViewController(delegate: self, attachmentItem: attachmentItem)
-        self.imageEditor(presentFullScreenOverlay: view, withNavigation: true)
+        self.imageEditor(presentFullScreenView: view, isTransparent: true)
 
         isShowingCaptionView = true
     }

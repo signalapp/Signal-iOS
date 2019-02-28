@@ -6,8 +6,8 @@ import UIKit
 
 @objc
 public protocol ImageEditorViewDelegate: class {
-    func imageEditor(presentFullScreenOverlay viewController: UIViewController,
-                     withNavigation: Bool)
+    func imageEditor(presentFullScreenView viewController: UIViewController,
+                     isTransparent: Bool)
     func imageEditorPresentCaptionView()
     func imageEditorUpdateNavigationBar()
     func imageEditorAttachmentCount() -> Int
@@ -134,8 +134,8 @@ public class ImageEditorView: UIView {
         Logger.verbose("")
 
         let brushView = ImageEditorBrushViewController(delegate: self, model: model, currentColor: currentColor)
-        self.delegate?.imageEditor(presentFullScreenOverlay: brushView,
-                                   withNavigation: true)
+        self.delegate?.imageEditor(presentFullScreenView: brushView,
+                                   isTransparent: false)
     }
 
     @objc func didTapCrop(sender: UIButton) {
@@ -434,8 +434,8 @@ public class ImageEditorView: UIView {
                                                        model: model,
                                                        textItem: textItem,
                                                        maxTextWidthPoints: maxTextWidthPoints)
-        self.delegate?.imageEditor(presentFullScreenOverlay: textEditor,
-                                   withNavigation: true)
+        self.delegate?.imageEditor(presentFullScreenView: textEditor,
+                                   isTransparent: false)
     }
 
     // MARK: - Crop Tool
@@ -458,8 +458,8 @@ public class ImageEditorView: UIView {
         }
 
         let cropTool = ImageEditorCropViewController(delegate: self, model: model, srcImage: srcImage, previewImage: previewImage)
-        self.delegate?.imageEditor(presentFullScreenOverlay: cropTool,
-                                   withNavigation: true)
+        self.delegate?.imageEditor(presentFullScreenView: cropTool,
+                                   isTransparent: false)
     }}
 
 // MARK: -
