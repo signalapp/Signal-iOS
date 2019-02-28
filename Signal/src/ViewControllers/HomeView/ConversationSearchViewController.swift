@@ -37,8 +37,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         return OWSPrimaryStorage.shared().uiDatabaseConnection
     }
 
-    var searcher: ConversationSearcher {
-        return ConversationSearcher.shared
+    var searcher: FullTextSearcher {
+        return FullTextSearcher.shared
     }
 
     private var contactsManager: OWSContactsManager {

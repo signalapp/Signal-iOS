@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
 @property (nonatomic) BOOL hasUpdatedContactsAtLeastOnce;
 @property (nonatomic) OWSProfileManager *profileManager;
-@property (nonatomic, readonly) ConversationSearcher *conversationSearcher;
+@property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
 
 @end
 
@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     _blockListCache = [OWSBlockListCache new];
     [_blockListCache startObservingAndSyncStateWithDelegate:self];
 
-    _conversationSearcher = ConversationSearcher.shared;
+    _fullTextSearcher = FullTextSearcher.shared;
 
     _contactsManager = Environment.shared.contactsManager;
     _profileManager = [OWSProfileManager sharedManager];
@@ -210,8 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<SignalAccount *> *signalAccountsToSearch = [self.signalAccounts mutableCopy];
     SignalAccount *selfAccount = [[SignalAccount alloc] initWithRecipientId:self.localNumber];
     [signalAccountsToSearch addObject:selfAccount];
-    return [self.conversationSearcher filterSignalAccounts:signalAccountsToSearch
-                                            withSearchText:searchText];
+    return [self.fullTextSearcher filterSignalAccounts:signalAccountsToSearch withSearchText:searchText];
 }
 
 - (BOOL)doesContact:(Contact *)contact matchSearchTerm:(NSString *)searchTerm

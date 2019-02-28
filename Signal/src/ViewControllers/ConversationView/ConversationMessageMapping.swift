@@ -211,7 +211,7 @@ public class ConversationMessageMapping: NSObject {
     // Tries to ensure that the load window includes a given item.
     // On success, returns the index path of that item.
     // On failure, returns nil.
-    @objc
+    @objc(ensureLoadWindowContainsUniqueId:transaction:)
     public func ensureLoadWindowContains(uniqueId: String,
                                          transaction: YapDatabaseReadTransaction) -> IndexPath? {
         if let oldIndex = loadedUniqueIds().firstIndex(of: uniqueId) {

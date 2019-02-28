@@ -59,6 +59,8 @@ extern const UIDataDetectorTypes kOWSAllowedDataDetectorTypes;
 - (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
     NS_SWIFT_NAME(didTapShowAddToContactUI(forContactShare:));
 
+@property (nonatomic, readonly, nullable) NSString *lastSearchedText;
+
 @end
 
 #pragma mark -

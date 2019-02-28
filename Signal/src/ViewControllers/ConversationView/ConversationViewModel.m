@@ -1595,8 +1595,32 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             return;
         }
 
-        indexPath = [self.messageMapping ensureLoadWindowContainsWithUniqueId:quotedInteraction.uniqueId
-                                                                  transaction:transaction];
+        indexPath =
+            [self.messageMapping ensureLoadWindowContainsUniqueId:quotedInteraction.uniqueId transaction:transaction];
+    }];
+
+    self.collapseCutoffDate = [NSDate new];
+
+    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
+
+    if (![self reloadViewItems]) {
+        OWSFailDebug(@"failed to reload view items in resetMapping.");
+    }
+
+    [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
+    [self.delegate conversationViewModelRangeDidChange];
+
+    return indexPath;
+}
+
+- (nullable NSIndexPath *)ensureLoadWindowContainsInteractionId:(NSString *)interactionId
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(interactionId);
+
+    __block NSIndexPath *_Nullable indexPath = nil;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        indexPath = [self.messageMapping ensureLoadWindowContainsUniqueId:interactionId transaction:transaction];
     }];
 
     self.collapseCutoffDate = [NSDate new];

@@ -141,6 +141,7 @@ typedef enum : NSUInteger {
     ConversationViewLayoutDelegate,
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
+    ConversationSearchControllerDelegate,
     LongTextViewDelegate,
     MessageActionsDelegate,
     MessageDetailViewDelegate,
@@ -195,6 +196,8 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL userHasScrolled;
 @property (nonatomic, nullable) NSDate *lastMessageSentDate;
 
+@property (nonatomic, nullable) UIBarButtonItem *customBackButton;
+
 @property (nonatomic) BOOL showLoadMoreHeader;
 @property (nonatomic) UILabel *loadMoreHeader;
 @property (nonatomic) uint64_t lastVisibleSortId;
@@ -226,6 +229,10 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) NSNumber *lastKnownDistanceFromBottom;
 @property (nonatomic) ScrollContinuity scrollContinuity;
 @property (nonatomic, nullable) NSTimer *autoLoadMoreTimer;
+
+@property (nonatomic, readonly) ConversationSearchController *searchController;
+@property (nonatomic, nullable) NSString *lastSearchedText;
+@property (nonatomic) BOOL isShowingSearchUI;
 
 @end
 
@@ -508,6 +515,9 @@ typedef enum : NSUInteger {
         [[ConversationViewModel alloc] initWithThread:thread focusMessageIdOnOpen:focusMessageId delegate:self];
 
     [self updateConversationSnapshot];
+
+    _searchController = [[ConversationSearchController alloc] initWithThread:thread];
+    _searchController.delegate = self;
 
     [self updateShouldObserveVMUpdates];
 
@@ -1391,6 +1401,7 @@ typedef enum : NSUInteger {
 - (void)createBackButton
 {
     UIBarButtonItem *backItem = [self createOWSBackButton];
+    self.customBackButton = backItem;
     if (backItem.customView) {
         // This method gets called multiple times, so it's important we re-layout the unread badge
         // with respect to the new backItem.
@@ -1425,8 +1436,20 @@ typedef enum : NSUInteger {
 
 - (void)updateBarButtonItems
 {
+    self.navigationItem.hidesBackButton = NO;
+    if (self.customBackButton) {
+        self.navigationItem.leftBarButtonItem = self.customBackButton;
+    }
+
     if (self.userLeftGroup) {
         self.navigationItem.rightBarButtonItems = @[];
+        return;
+    }
+
+    if (self.isShowingSearchUI) {
+        self.navigationItem.rightBarButtonItems = @[];
+        self.navigationItem.leftBarButtonItem = nil;
+        self.navigationItem.hidesBackButton = YES;
         return;
     }
 
@@ -3944,17 +3967,105 @@ typedef enum : NSUInteger {
     [self updateGroupModelTo:groupModel successCompletion:nil];
 }
 
-- (void)popAllConversationSettingsViews
+- (void)popAllConversationSettingsViewsWithCompletion:(void (^_Nullable)(void))completionBlock
 {
     if (self.presentedViewController) {
-        [self.presentedViewController
-            dismissViewControllerAnimated:YES
-                               completion:^{
-                                   [self.navigationController popToViewController:self animated:YES];
-                               }];
+        [self.presentedViewController dismissViewControllerAnimated:YES
+                                                         completion:^{
+                                                             [self.navigationController
+                                                                 popToViewController:self
+                                                                            animated:YES
+                                                                          completion:completionBlock];
+                                                         }];
     } else {
-        [self.navigationController popToViewController:self animated:YES];
+        [self.navigationController popToViewController:self animated:YES completion:completionBlock];
     }
+}
+
+#pragma mark - Conversation Search
+
+- (void)conversationSettingsDidRequestConversationSearch:(OWSConversationSettingsViewController *)conversationSettingsViewController
+{
+    [self showSearchUI];
+    [self popAllConversationSettingsViewsWithCompletion:^{
+        // This delay is unfortunate, but without it, self.searchController.uiSearchController.searchBar
+        // isn't yet ready to become first responder. Presumably we're still mid transition.
+        // A hardcorded constant like this isn't great because it's either too slow, making our users
+        // wait, or too fast, and fails to wait long enough to be ready to become first responder.
+        // Luckily in this case the stakes aren't catastrophic. In the case that we're too aggressive
+        // the user will just have to manually tap into the search field before typing.
+
+        // Leaving this assert in as proof that we're not ready to become first responder yet.
+        // If this assert fails, *great* maybe we can get rid of this delay.
+        OWSAssertDebug(![self.searchController.uiSearchController.searchBar canBecomeFirstResponder]);
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self.searchController.uiSearchController.searchBar becomeFirstResponder];
+        });
+    }];
+}
+
+- (void)showSearchUI
+{
+    self.isShowingSearchUI = YES;
+    self.navigationItem.titleView = self.searchController.uiSearchController.searchBar;
+    [self updateBarButtonItems];
+}
+
+- (void)hideSearchUI
+{
+    self.isShowingSearchUI = NO;
+
+    self.navigationItem.titleView = self.headerView;
+    [self updateBarButtonItems];
+
+    // restore first responder to VC
+    [self becomeFirstResponder];
+}
+
+#pragma mark ConversationSearchControllerDelegate
+
+- (void)didDismissSearchController:(UISearchController *)searchController
+{
+    OWSLogVerbose(@"");
+    OWSAssertIsOnMainThread();
+    [self hideSearchUI];
+}
+
+- (void)conversationSearchController:(ConversationSearchController *)conversationSearchController
+              didUpdateSearchResults:(nullable ConversationScreenSearchResultSet *)conversationScreenSearchResultSet
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"conversationScreenSearchResultSet: %@", conversationScreenSearchResultSet.debugDescription);
+    self.lastSearchedText = conversationScreenSearchResultSet.searchText;
+    [UIView performWithoutAnimation:^{
+        [self.collectionView reloadItemsAtIndexPaths:self.collectionView.indexPathsForVisibleItems];
+    }];
+    if (conversationScreenSearchResultSet) {
+        [BenchManager completeEventWithEventId:self.lastSearchedText];
+    }
+}
+
+- (void)conversationSearchController:(ConversationSearchController *)conversationSearchController
+                  didSelectMessageId:(NSString *)messageId
+{
+    OWSLogDebug(@"messageId: %@", messageId);
+    [self scrollToInteractionId:messageId];
+    [BenchManager completeEventWithEventId:[NSString stringWithFormat:@"Conversation Search Nav: %@", messageId]];
+}
+
+- (void)scrollToInteractionId:(NSString *)interactionId
+{
+    NSIndexPath *_Nullable indexPath = [self.conversationViewModel ensureLoadWindowContainsInteractionId:interactionId];
+    if (!indexPath) {
+        OWSFailDebug(@"unable to find indexPath");
+        return;
+    }
+
+    [self.collectionView scrollToItemAtIndexPath:indexPath
+                                atScrollPosition:UICollectionViewScrollPositionCenteredVertically
+                                        animated:YES];
 }
 
 #pragma mark - ConversationViewLayoutDelegate

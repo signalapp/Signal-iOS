@@ -691,6 +691,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     }
     [self.class loadForTextDisplay:self.bodyTextView
                               text:self.displayableBodyText.displayText
+                        searchText:self.delegate.lastSearchedText
                          textColor:self.bodyTextColor
                               font:self.textMessageFont
                 shouldIgnoreEvents:shouldIgnoreEvents];
@@ -698,6 +699,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 + (void)loadForTextDisplay:(OWSMessageTextView *)textView
                       text:(NSString *)text
+                searchText:(nullable NSString *)searchText
                  textColor:(UIColor *)textColor
                       font:(UIFont *)font
         shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
@@ -713,8 +715,29 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     };
     textView.shouldIgnoreEvents = shouldIgnoreEvents;
 
+    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc]
+        initWithString:text
+            attributes:@{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor }];
+    if (searchText.length >= ConversationSearchController.kMinimumSearchTextLength) {
+        NSError *error;
+        NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:searchText
+                                                                          options:NSRegularExpressionCaseInsensitive
+                                                                            error:&error];
+        OWSAssertDebug(error == nil);
+        for (NSTextCheckingResult *match in
+            [regex matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {
+
+            OWSAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength);
+            [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.yellowColor range:match.range];
+            [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.ows_blackColor range:match.range];
+        }
+    }
+
     // For perf, set text last. Otherwise changing font/color is more expensive.
-    textView.text = text;
+
+    // We use attributedText even when we're not highlighting searched text to esnure any lingering
+    // attributes are reset.
+    textView.attributedText = attributedText;
 }
 
 - (BOOL)shouldShowSenderName
@@ -1259,6 +1282,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
     [self.bodyTextView removeFromSuperview];
     self.bodyTextView.text = nil;
+    self.bodyTextView.attributedText = nil;
     self.bodyTextView.hidden = YES;
 
     self.bubbleView.bubbleColor = nil;
