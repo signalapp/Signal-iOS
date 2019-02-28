@@ -40,6 +40,7 @@ public class ImageEditorView: UIView {
 
             updateButtons()
             updateGestureState()
+            delegate?.imageEditorUpdateNavigationBar()
         }
     }
 
@@ -264,10 +265,17 @@ public class ImageEditorView: UIView {
         let captionButton = navigationBarButton(imageName: "image_editor_caption",
                                              selector: #selector(didTapCaption(sender:)))
 
-        if model.canUndo() {
-            return [undoButton, newTextButton, brushButton, cropButton, captionButton]
-        } else {
-            return [newTextButton, brushButton, cropButton, captionButton]
+        switch editorMode {
+        case .text:
+            return []
+        case .brush:
+            return []
+        case .none:
+            if model.canUndo() {
+                return [undoButton, newTextButton, brushButton, cropButton, captionButton]
+            } else {
+                return [newTextButton, brushButton, cropButton, captionButton]
+            }
         }
     }
 
