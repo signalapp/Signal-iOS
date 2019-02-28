@@ -56,7 +56,7 @@ public class ImageEditorPaletteView: UIView {
             guard let strongSelf = self else {
                 return
             }
-            strongSelf.updateState(fireEvent: false)
+            strongSelf.updateState()
         }
         imageView.addSubview(selectionWrapper)
         selectionWrapper.autoPinEdgesToSuperviewEdges()
@@ -67,10 +67,17 @@ public class ImageEditorPaletteView: UIView {
         selectionWrapper.addSubview(selectionView)
         selectionView.autoHCenterInSuperview()
 
+        // There must be a better way to pin the selection view's location,
+        // but I can't find it.
+        let selectionConstraint = NSLayoutConstraint(item: selectionView,
+                                                     attribute: .centerY, relatedBy: .equal, toItem: selectionWrapper, attribute: .top, multiplier: 1, constant: 0)
+        selectionConstraint.autoInstall()
+        self.selectionConstraint = selectionConstraint
+
         isUserInteractionEnabled = true
         addGestureRecognizer(PaletteGestureRecognizer(target: self, action: #selector(didTouch)))
 
-        updateState(fireEvent: false)
+        updateState()
     }
 
     // 0 = the color at the top of the image is selected.
@@ -81,10 +88,12 @@ public class ImageEditorPaletteView: UIView {
     private func selectColor(atLocationY y: CGFloat) {
         selectionAlpha = y.inverseLerp(0, imageView.height(), shouldClamp: true)
 
-        updateState(fireEvent: true)
+        updateState()
+
+        delegate?.selectedColorDidChange()
     }
 
-    private func updateState(fireEvent: Bool) {
+    private func updateState() {
         var selectedColor = UIColor.white
         if let image = imageView.image,
             let cgImage = image.cgImage {
@@ -100,18 +109,12 @@ public class ImageEditorPaletteView: UIView {
 
         selectionView.backgroundColor = selectedColor
 
-        // There must be a better way to pin the selection view's location,
-        // but I can't find it.
-        self.selectionConstraint?.autoRemove()
-        let selectionY = selectionWrapper.height() * selectionAlpha
-        let selectionConstraint = NSLayoutConstraint(item: selectionView,
-                                                     attribute: .centerY, relatedBy: .equal, toItem: selectionWrapper, attribute: .top, multiplier: 1, constant: selectionY)
-        selectionConstraint.autoInstall()
-        self.selectionConstraint = selectionConstraint
-
-        if fireEvent {
-            self.delegate?.selectedColorDidChange()
+        guard let selectionConstraint = selectionConstraint else {
+            owsFailDebug("Missing selectionConstraint.")
+            return
         }
+        let selectionY = selectionWrapper.height() * selectionAlpha
+        selectionConstraint.constant = selectionY
     }
 
     // MARK: Events
