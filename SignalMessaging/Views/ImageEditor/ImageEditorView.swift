@@ -9,6 +9,7 @@ public protocol ImageEditorViewDelegate: class {
     func imageEditor(presentFullScreenOverlay viewController: UIViewController,
                      withNavigation: Bool)
     func imageEditorPresentCaptionView()
+    func imageEditorUpdateNavigationBar()
 }
 
 // MARK: -
@@ -182,6 +183,8 @@ public class ImageEditorView: UIView {
         paletteView.autoPinLeadingToSuperviewMargin(withInset: 10)
 
         updateButtons()
+
+        delegate?.imageEditorUpdateNavigationBar()
     }
 
     private func configure(button: UIButton,
@@ -233,6 +236,36 @@ public class ImageEditorView: UIView {
         }
 
         paletteView.isHidden = !hasPalette
+    }
+
+    // MARK: - Navigation Bar
+
+    private func navigationBarButton(imageName: String,
+                                     selector: Selector) -> UIBarButtonItem {
+        let button = UIBarButtonItem(image: UIImage(named: imageName), style: .plain, target: self, action: selector)
+        button.tintColor = .white
+        return button
+    }
+
+    public func navigationBarItems() -> [UIBarButtonItem] {
+        let undoButton = navigationBarButton(imageName: "image_editor_undo",
+                                             selector: #selector(didTapUndo(sender:)))
+        let brushButton = navigationBarButton(imageName: "image_editor_brush",
+                                              selector: #selector(didTapBrush(sender:)))
+        let cropButton = navigationBarButton(imageName: "image_editor_crop",
+                                             selector: #selector(didTapCrop(sender:)))
+        let newTextButton = navigationBarButton(imageName: "image_editor_checkmark_full",
+                                                selector: #selector(didTapNewText(sender:)))
+//        let doneButton = navigationBarButton(imageName:"image_editor_brush",
+//                                             selector: #selector(didTapDone(sender:)))
+        let captionButton = navigationBarButton(imageName: "image_editor_caption",
+                                             selector: #selector(didTapCaption(sender:)))
+
+        if model.canUndo() {
+            return [undoButton, newTextButton, brushButton, cropButton, captionButton].reversed()
+        } else {
+            return [newTextButton, brushButton, cropButton, captionButton].reversed()
+        }
     }
 
     // MARK: - Actions
@@ -654,10 +687,14 @@ extension ImageEditorView: ImageEditorModelObserver {
     public func imageEditorModelDidChange(before: ImageEditorContents,
                                           after: ImageEditorContents) {
         updateButtons()
+
+        delegate?.imageEditorUpdateNavigationBar()
     }
 
     public func imageEditorModelDidChange(changedItemIds: [String]) {
         updateButtons()
+
+        delegate?.imageEditorUpdateNavigationBar()
     }
 }
 

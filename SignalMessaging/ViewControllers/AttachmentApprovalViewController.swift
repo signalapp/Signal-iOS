@@ -239,12 +239,16 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
         navigationBar.overrideTheme(type: .clear)
+
+        updateNavigationBar()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
         Logger.debug("")
 
         super.viewDidAppear(animated)
+
+        updateNavigationBar()
     }
 
     override public func viewWillDisappear(_ animated: Bool) {
@@ -263,6 +267,20 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     override public var canBecomeFirstResponder: Bool {
         return true
+    }
+
+    // MARK: - Navigation Bar
+
+    public func updateNavigationBar() {
+        var navigationBarItems = [UIBarButtonItem]()
+
+        if let viewControllers = viewControllers,
+            viewControllers.count == 1,
+            let firstViewController = viewControllers.first as? AttachmentPrepViewController {
+            navigationBarItems = firstViewController.navigationBarItems()
+        }
+
+        self.navigationItem.rightBarButtonItems = navigationBarItems
     }
 
     // MARK: - View Helpers
@@ -340,6 +358,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                 updateMediaRail()
             }
         }
+
+        updateNavigationBar()
     }
 
     // MARK: - UIPageViewControllerDataSource
@@ -582,6 +602,10 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem) {
         self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: attachmentItem.attachment)
     }
+
+    func prepViewControllerUpdateNavigationBar() {
+        self.updateNavigationBar()
+    }
 }
 
 // MARK: GalleryRail
@@ -633,6 +657,8 @@ enum KeyboardScenario {
 
 protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem)
+
+    func prepViewControllerUpdateNavigationBar()
 }
 
 public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
@@ -657,6 +683,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     private(set) var scrollView: UIScrollView!
     private(set) var contentContainer: UIView!
     private(set) var playVideoButton: UIView?
+    private var imageEditorView: ImageEditorView?
 
     // MARK: - Initializers
 
@@ -731,6 +758,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
             let imageEditorView = ImageEditorView(model: imageEditorModel, delegate: self)
             if imageEditorView.configureSubviews() {
+                self.imageEditorView = imageEditorView
+
                 mediaMessageView.isHidden = true
 
                 // TODO: Is this necessary?
@@ -813,6 +842,22 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         touchInterceptorView.isHidden = true
     }
 
+    override public func viewWillAppear(_ animated: Bool) {
+        Logger.debug("")
+
+        super.viewWillAppear(animated)
+
+        prepDelegate?.prepViewControllerUpdateNavigationBar()
+    }
+
+    override public func viewDidAppear(_ animated: Bool) {
+        Logger.debug("")
+
+        super.viewDidAppear(animated)
+
+        prepDelegate?.prepViewControllerUpdateNavigationBar()
+    }
+
     override public func viewWillLayoutSubviews() {
         Logger.debug("")
         super.viewWillLayoutSubviews()
@@ -821,6 +866,15 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         updateMinZoomScaleForSize(view.bounds.size)
 
         ensureAttachmentViewScale(animated: false)
+    }
+
+    // MARK: - Navigation Bar
+
+    public func navigationBarItems() -> [UIBarButtonItem] {
+        guard let imageEditorView = imageEditorView else {
+            return []
+        }
+        return imageEditorView.navigationBarItems()
     }
 
     // MARK: - Event Handlers
@@ -1086,6 +1140,10 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
     public func imageEditorPresentCaptionView() {
         let view = AttachmentCaptionViewController(delegate: self, attachmentItem: attachmentItem)
         self.imageEditor(presentFullScreenOverlay: view, withNavigation: true)
+    }
+
+    public func imageEditorUpdateNavigationBar() {
+        prepDelegate?.prepViewControllerUpdateNavigationBar()
     }
 }
 

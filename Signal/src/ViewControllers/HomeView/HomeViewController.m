@@ -672,6 +672,12 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self.searchResultsController viewDidAppear:animated];
 
     self.hasEverAppeared = YES;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        TSThread *thread =
+            [self threadForIndexPath:[NSIndexPath indexPathForRow:0 inSection:HomeViewControllerSectionConversations]];
+        [self presentThread:thread action:ConversationViewActionNone animated:YES];
+    });
 }
 
 - (void)viewDidDisappear:(BOOL)animated
