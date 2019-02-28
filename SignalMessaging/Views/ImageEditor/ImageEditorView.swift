@@ -69,7 +69,6 @@ public class ImageEditorView: UIView {
     // MARK: - Views
 
     private var moveTextGestureRecognizer: ImageEditorPanGestureRecognizer?
-    private var brushGestureRecognizer: ImageEditorPanGestureRecognizer?
     private var tapGestureRecognizer: UITapGestureRecognizer?
     private var pinchGestureRecognizer: ImageEditorPinchGestureRecognizer?
 
@@ -89,12 +88,6 @@ public class ImageEditorView: UIView {
         moveTextGestureRecognizer.delegate = self
         self.addGestureRecognizer(moveTextGestureRecognizer)
         self.moveTextGestureRecognizer = moveTextGestureRecognizer
-
-        let brushGestureRecognizer = ImageEditorPanGestureRecognizer(target: self, action: #selector(handleBrushGesture(_:)))
-        brushGestureRecognizer.maximumNumberOfTouches = 1
-        brushGestureRecognizer.referenceView = canvasView.gestureReferenceView
-        self.addGestureRecognizer(brushGestureRecognizer)
-        self.brushGestureRecognizer = brushGestureRecognizer
 
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
         self.addGestureRecognizer(tapGestureRecognizer)
@@ -132,50 +125,10 @@ public class ImageEditorView: UIView {
         }
     }
 
-    // The model supports redo if we ever want to add it.
-    private let undoButton = OWSButton()
-    private let brushButton = OWSButton()
-    private let cropButton = OWSButton()
-    private let newTextButton = OWSButton()
-    private let captionButton = OWSButton()
-    private let doneButton = OWSButton()
-    private let buttonStackView = UIStackView()
-
     // TODO: Should this method be private?
     @objc
     public func addControls(to containerView: UIView,
                             viewController: UIViewController) {
-        configure(button: undoButton,
-                  imageName: "image_editor_undo",
-                  selector: #selector(didTapUndo(sender:)))
-
-        configure(button: brushButton,
-                  imageName: "image_editor_brush",
-                  selector: #selector(didTapBrush(sender:)))
-
-        configure(button: cropButton,
-                  imageName: "image_editor_crop",
-                  selector: #selector(didTapCrop(sender:)))
-
-        configure(button: newTextButton,
-                  imageName: "image_editor_text",
-                  selector: #selector(didTapNewText(sender:)))
-
-        configure(button: captionButton,
-                  imageName: "image_editor_caption",
-                  selector: #selector(didTapCaption(sender:)))
-
-        configure(button: doneButton,
-                  imageName: "image_editor_checkmark_full",
-                  selector: #selector(didTapDone(sender:)))
-
-        buttonStackView.axis = .horizontal
-        buttonStackView.alignment = .center
-        buttonStackView.spacing = 20
-
-        containerView.addSubview(buttonStackView)
-        buttonStackView.autoPin(toTopLayoutGuideOf: viewController, withInset: 0)
-        buttonStackView.autoPinTrailingToSuperviewMargin(withInset: 18)
 
         containerView.addSubview(paletteView)
         paletteView.autoVCenterInSuperview()
@@ -186,24 +139,7 @@ public class ImageEditorView: UIView {
         delegate?.imageEditorUpdateNavigationBar()
     }
 
-    private func configure(button: UIButton,
-                           imageName: String,
-                           selector: Selector) {
-        if let image = UIImage(named: imageName) {
-            button.setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
-        } else {
-            owsFailDebug("Missing asset: \(imageName)")
-        }
-        button.tintColor = .white
-        button.addTarget(self, action: selector, for: .touchUpInside)
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.shadowRadius = 4
-        button.layer.shadowOpacity = 0.66
-    }
-
     private func updateButtons() {
-        var buttons = [OWSButton]()
-
         var hasPalette = false
         switch editorMode {
         case .text:
@@ -212,26 +148,9 @@ public class ImageEditorView: UIView {
             break
         case .brush:
             hasPalette = true
-
-            if model.canUndo() {
-                buttons =  [undoButton, doneButton]
-            } else {
-                buttons =  [doneButton]
-            }
         case .none:
-            if model.canUndo() {
-                buttons =  [undoButton, newTextButton, brushButton, cropButton, captionButton]
-            } else {
-                buttons =  [newTextButton, brushButton, cropButton, captionButton]
-            }
-        }
-
-        for subview in buttonStackView.subviews {
-            subview.removeFromSuperview()
-        }
-        buttonStackView.addArrangedSubview(UIView.hStretchingSpacer())
-        for button in buttons {
-            buttonStackView.addArrangedSubview(button)
+            hasPalette = false
+            break
         }
 
         paletteView.isHidden = !hasPalette
@@ -340,18 +259,15 @@ public class ImageEditorView: UIView {
         switch editorMode {
         case .none:
             moveTextGestureRecognizer?.isEnabled = true
-            brushGestureRecognizer?.isEnabled = false
             tapGestureRecognizer?.isEnabled = true
             pinchGestureRecognizer?.isEnabled = true
         case .brush:
             // Brush strokes can start and end (and return from) outside the view.
             moveTextGestureRecognizer?.isEnabled = false
-            brushGestureRecognizer?.isEnabled = true
             tapGestureRecognizer?.isEnabled = false
             pinchGestureRecognizer?.isEnabled = false
         case .text:
             moveTextGestureRecognizer?.isEnabled = false
-            brushGestureRecognizer?.isEnabled = false
             tapGestureRecognizer?.isEnabled = false
             pinchGestureRecognizer?.isEnabled = false
         }
