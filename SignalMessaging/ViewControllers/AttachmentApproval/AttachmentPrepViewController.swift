@@ -112,7 +112,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         containerView.addSubview(mediaMessageView)
         mediaMessageView.autoPinEdgesToSuperviewEdges()
 
-        #if DEBUG
         if let imageEditorModel = attachmentItem.imageEditorModel {
 
             let imageEditorView = ImageEditorView(model: imageEditorModel, delegate: self)
@@ -127,7 +126,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
                 imageEditorUpdateNavigationBar()
             }
         }
-        #endif
 
         // Hide the play button embedded in the MediaView and replace it with our own.
         // This allows us to zoom in on the media view without zooming in on the button
