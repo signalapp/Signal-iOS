@@ -330,7 +330,7 @@
 "CALL_LABEL" = "Appeller";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Appel manqué, car le numéro de sécurité de l'appelant a changé.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Appel manqué, car le numéro de sécurité de l’appelant a changé.";
 
 /* notification body */
 "CALL_MISSED_NOTIFICATION_BODY" = "☎️ Appel manqué";
