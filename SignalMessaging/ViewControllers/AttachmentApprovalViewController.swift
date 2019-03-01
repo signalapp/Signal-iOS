@@ -617,6 +617,8 @@ extension AttachmentApprovalViewController: MediaMessageTextToolbarDelegate {
 extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate {
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem) {
         self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: attachmentItem.attachment)
+
+        updateMediaRail()
     }
 
     func prepViewControllerUpdateNavigationBar() {
@@ -1636,6 +1638,16 @@ public class ApprovalRailCellView: GalleryRailCellView {
         return button
     }()
 
+    lazy var captionIndicator: UIView = {
+        let image = UIImage(named: "image_editor_caption")?.withRenderingMode(.alwaysTemplate)
+        let imageView = UIImageView(image: image)
+        imageView.tintColor = .white
+        imageView.layer.shadowColor = UIColor.black.cgColor
+        imageView.layer.shadowRadius = 2
+        imageView.layer.shadowOpacity = 0.66
+        return imageView
+    }()
+
     override func setIsSelected(_ isSelected: Bool) {
         super.setIsSelected(isSelected)
 
@@ -1646,6 +1658,28 @@ public class ApprovalRailCellView: GalleryRailCellView {
             deleteButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: -8)
         } else {
             deleteButton.removeFromSuperview()
+        }
+    }
+
+    override func configure(item: GalleryRailItem, delegate: GalleryRailCellViewDelegate) {
+        super.configure(item: item, delegate: delegate)
+
+        var hasCaption = false
+        if let attachmentItem = item as? SignalAttachmentItem {
+            if let captionText = attachmentItem.captionText {
+                hasCaption = captionText.count > 0
+            }
+        } else {
+            owsFailDebug("Invalid item.")
+        }
+
+        if hasCaption {
+            addSubview(captionIndicator)
+
+            captionIndicator.autoPinEdge(toSuperviewEdge: .top, withInset: 0)
+            captionIndicator.autoPinEdge(toSuperviewEdge: .leading, withInset: 4)
+        } else {
+            captionIndicator.removeFromSuperview()
         }
     }
 }
