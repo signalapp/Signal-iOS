@@ -11,7 +11,7 @@ public class ImageEditorTextItem: ImageEditorItem {
     public let text: String
 
     @objc
-    public let color: UIColor
+    public let color: ImageEditorColor
 
     @objc
     public let font: UIFont
@@ -60,7 +60,7 @@ public class ImageEditorTextItem: ImageEditorItem {
 
     @objc
     public init(text: String,
-                color: UIColor,
+                color: ImageEditorColor,
                 font: UIFont,
                 fontReferenceImageWidth: CGFloat,
                 unitCenter: ImageEditorSample = ImageEditorSample(x: 0.5, y: 0.5),
@@ -81,7 +81,7 @@ public class ImageEditorTextItem: ImageEditorItem {
 
     private init(itemId: String,
                  text: String,
-                 color: UIColor,
+                 color: ImageEditorColor,
                  font: UIFont,
                  fontReferenceImageWidth: CGFloat,
                  unitCenter: ImageEditorSample,
@@ -101,17 +101,17 @@ public class ImageEditorTextItem: ImageEditorItem {
     }
 
     @objc
-    public class func empty(withColor color: UIColor, unitWidth: CGFloat, fontReferenceImageWidth: CGFloat) -> ImageEditorTextItem {
+    public class func empty(withColor color: ImageEditorColor, unitWidth: CGFloat, fontReferenceImageWidth: CGFloat) -> ImageEditorTextItem {
         // TODO: Tune the default font size.
         let font = UIFont.boldSystemFont(ofSize: 30.0)
         return ImageEditorTextItem(text: "", color: color, font: font, fontReferenceImageWidth: fontReferenceImageWidth, unitWidth: unitWidth)
     }
 
     @objc
-    public func copy(withText newText: String) -> ImageEditorTextItem {
+    public func copy(withText newText: String, color newColor: ImageEditorColor) -> ImageEditorTextItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: newText,
-                                   color: color,
+                                   color: newColor,
                                    font: font,
                                    fontReferenceImageWidth: fontReferenceImageWidth,
                                    unitCenter: unitCenter,

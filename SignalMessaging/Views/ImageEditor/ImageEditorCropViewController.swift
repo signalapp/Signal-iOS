@@ -89,19 +89,9 @@ class ImageEditorCropViewController: OWSViewController {
 
         // MARK: - Buttons
 
-        // TODO: Apply icons.
-        let doneButton = OWSButton(imageName: "image_editor_checkmark_full",
-                                   tintColor: UIColor.white) { [weak self] in
-            self?.didTapBackButton()
-        }
         let rotate90Button = OWSButton(imageName: "image_editor_rotate",
                                        tintColor: UIColor.white) { [weak self] in
             self?.rotate90ButtonPressed()
-        }
-        // TODO: Myles may change this asset.
-        let resetButton = OWSButton(imageName: "image_editor_undo",
-                                    tintColor: UIColor.white) { [weak self] in
-            self?.resetButtonPressed()
         }
         let flipButton = OWSButton(imageName: "image_editor_flip",
                                    tintColor: UIColor.white) { [weak self] in
@@ -112,18 +102,6 @@ class ImageEditorCropViewController: OWSViewController {
                                     self?.cropLockButtonPressed()
         }
         self.cropLockButton = cropLockButton
-
-        // MARK: - Header
-
-        let header = UIStackView(arrangedSubviews: [
-            UIView.hStretchingSpacer(),
-            resetButton,
-            doneButton
-            ])
-        header.axis = .horizontal
-        header.spacing = 16
-        header.backgroundColor = .clear
-        header.isOpaque = false
 
         // MARK: - Canvas & Wrapper
 
@@ -172,7 +150,6 @@ class ImageEditorCropViewController: OWSViewController {
 
         let imageMargin: CGFloat = 20
         let stackView = UIStackView(arrangedSubviews: [
-            header,
             wrapperView,
             footer
             ])
@@ -217,6 +194,23 @@ class ImageEditorCropViewController: OWSViewController {
         updateClipViewLayout()
 
         configureGestures()
+
+        updateNavigationBar()
+    }
+
+    public func updateNavigationBar() {
+        // TODO: Change this asset.
+        let resetButton = navigationBarButton(imageName: "image_editor_undo",
+                                             selector: #selector(didTapReset(sender:)))
+        let doneButton = navigationBarButton(imageName: "image_editor_checkmark_full",
+                                             selector: #selector(didTapDone(sender:)))
+        var navigationBarItems = [UIView]()
+        if transform.isNonDefault {
+            navigationBarItems = [resetButton, doneButton]
+        } else {
+            navigationBarItems = [doneButton]
+        }
+        updateNavigationBar(navigationBarItems: navigationBarItems)
     }
 
     private func updateCropLockButton() {
@@ -354,6 +348,7 @@ class ImageEditorCropViewController: OWSViewController {
         applyTransform()
         updateClipViewLayout()
         updateImageLayer()
+        updateNavigationBar()
 
         CATransaction.commit()
     }
@@ -731,14 +726,14 @@ class ImageEditorCropViewController: OWSViewController {
 
     // MARK: - Events
 
-    @objc public func didTapBackButton() {
+    @objc func didTapDone(sender: UIButton) {
         completeAndDismiss()
     }
 
     private func completeAndDismiss() {
         self.delegate?.cropDidComplete(transform: transform)
 
-        self.dismiss(animated: true) {
+        self.dismiss(animated: false) {
             // Do nothing.
         }
     }
@@ -771,7 +766,9 @@ class ImageEditorCropViewController: OWSViewController {
                                              isFlipped: !transform.isFlipped).normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
-    @objc public func resetButtonPressed() {
+    @objc func didTapReset(sender: UIButton) {
+        Logger.verbose("")
+
         updateTransform(ImageEditorTransform.defaultTransform(srcImageSizePixels: model.srcImageSizePixels))
     }
 

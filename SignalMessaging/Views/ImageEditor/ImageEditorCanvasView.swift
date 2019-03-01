@@ -59,7 +59,7 @@ public class ImageEditorCanvasView: UIView {
     private var imageLayer = CALayer()
 
     @objc
-    public func configureSubviews() -> Bool {
+    public func configureSubviews() {
         self.backgroundColor = .clear
         self.isOpaque = false
 
@@ -94,8 +94,6 @@ public class ImageEditorCanvasView: UIView {
         contentView.autoPinEdgesToSuperviewEdges()
 
         updateLayout()
-
-        return true
     }
 
     public var gestureReferenceView: UIView {
@@ -630,6 +628,19 @@ public class ImageEditorCanvasView: UIView {
             }
         }
         return nil
+    }
+
+    // MARK: - Coordinates
+
+    public class func locationImageUnit(forLocationInView locationInView: CGPoint,
+                                        viewBounds: CGRect,
+                                        model: ImageEditorModel,
+                                        transform: ImageEditorTransform) -> CGPoint {
+        let imageFrame = self.imageFrame(forViewSize: viewBounds.size, imageSize: model.srcImageSizePixels, transform: transform)
+        let affineTransformStart = transform.affineTransform(viewSize: viewBounds.size)
+        let locationInContent = locationInView.minus(viewBounds.center).applyingInverse(affineTransformStart).plus(viewBounds.center)
+        let locationImageUnit = locationInContent.toUnitCoordinates(viewBounds: imageFrame, shouldClamp: false)
+        return locationImageUnit
     }
 }
 

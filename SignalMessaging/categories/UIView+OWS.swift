@@ -129,7 +129,7 @@ public extension CGFloat {
         return CGFloatClamp(self, minValue, maxValue)
     }
 
-    public func clamp01(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
+    public func clamp01() -> CGFloat {
         return CGFloatClamp01(self)
     }
 

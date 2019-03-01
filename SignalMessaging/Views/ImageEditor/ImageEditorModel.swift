@@ -86,6 +86,10 @@ public class ImageEditorTransform: NSObject {
                                     isFlipped: false).normalize(srcImageSizePixels: srcImageSizePixels)
     }
 
+    public var isNonDefault: Bool {
+        return !isEqual(ImageEditorTransform.defaultTransform(srcImageSizePixels: outputSizePixels))
+    }
+
     public func affineTransform(viewSize: CGSize) -> CGAffineTransform {
         let translation = unitTranslation.fromUnitCoordinates(viewSize: viewSize)
         // Order matters.  We need want SRT (scale-rotate-translate) ordering so that the translation

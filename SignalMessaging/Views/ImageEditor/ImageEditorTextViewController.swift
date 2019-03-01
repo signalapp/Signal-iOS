@@ -92,7 +92,7 @@ private class VAlignTextView: UITextView {
 
 @objc
 public protocol ImageEditorTextViewControllerDelegate: class {
-    func textEditDidComplete(textItem: ImageEditorTextItem, text: String?)
+    func textEditDidComplete(textItem: ImageEditorTextItem, text: String?, color: ImageEditorColor)
     func textEditDidCancel()
 }
 
@@ -106,14 +106,24 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
     private let maxTextWidthPoints: CGFloat
 
-    private let textView = VAlignTextView(alignment: .bottom)
+    private let textView = VAlignTextView(alignment: .center)
+
+    private let model: ImageEditorModel
+
+    private let canvasView: ImageEditorCanvasView
+
+    private let paletteView: ImageEditorPaletteView
 
     init(delegate: ImageEditorTextViewControllerDelegate,
+         model: ImageEditorModel,
          textItem: ImageEditorTextItem,
          maxTextWidthPoints: CGFloat) {
         self.delegate = delegate
+        self.model = model
         self.textItem = textItem
         self.maxTextWidthPoints = maxTextWidthPoints
+        self.canvasView = ImageEditorCanvasView(model: model)
+        self.paletteView = ImageEditorPaletteView(currentColor: textItem.color)
 
         super.init(nibName: nil, bundle: nil)
 
@@ -131,43 +141,62 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         super.viewWillAppear(animated)
 
         textView.becomeFirstResponder()
+
+        self.view.layoutSubviews()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         textView.becomeFirstResponder()
+
+        self.view.layoutSubviews()
     }
 
     public override func loadView() {
         self.view = UIView()
-        self.view.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
+        self.view.backgroundColor = .black
+        self.view.isOpaque = true
+
+        canvasView.configureSubviews()
+        self.view.addSubview(canvasView)
+        canvasView.autoPinEdgesToSuperviewEdges()
+
+        let tintView = UIView()
+        tintView.backgroundColor = UIColor(white: 0, alpha: 0.33)
+        tintView.isOpaque = false
+        self.view.addSubview(tintView)
+        tintView.autoPinEdgesToSuperviewEdges()
+        tintView.layer.opacity = 0
+        UIView.animate(withDuration: 0.25, animations: {
+            tintView.layer.opacity = 1
+        }, completion: { (_) in
+            tintView.layer.opacity = 1
+        })
 
         configureTextView()
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop,
-                                                           target: self,
-                                                           action: #selector(didTapBackButton))
-
         self.view.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
+
         self.view.addSubview(textView)
         textView.autoPinTopToSuperviewMargin()
         textView.autoHCenterInSuperview()
-        // In order to have text wrapping be as WYSIWYG as possible, we limit the text view
-        // to the max text width on the image.
-//        let maxTextWidthPoints = max(textItem.widthPoints, 200)
-//        textView.autoSetDimension(.width, toSize: maxTextWidthPoints, relation: .lessThanOrEqual)
-//        textView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
-//        textView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
-        textView.autoPinEdge(toSuperviewMargin: .leading)
-        textView.autoPinEdge(toSuperviewMargin: .trailing)
         self.autoPinView(toBottomOfViewControllerOrKeyboard: textView, avoidNotch: true)
+
+        paletteView.delegate = self
+        self.view.addSubview(paletteView)
+        paletteView.autoAlignAxis(.horizontal, toSameAxisOf: textView)
+        paletteView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 20)
+        // This will determine the text view's size.
+        paletteView.autoPinEdge(.leading, to: .trailing, of: textView, withOffset: 8)
+
+        updateNavigationBar()
     }
 
     private func configureTextView() {
         textView.text = textItem.text
         textView.font = textItem.font
-        textView.textColor = textItem.color
+        textView.textColor = textItem.color.color
 
         textView.isEditable = true
         textView.backgroundColor = .clear
@@ -175,7 +204,7 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         // We use a white cursor since we use a dark background.
         textView.tintColor = .white
         textView.returnKeyType = .done
-        // TODO: Limit the size of the text.
+        // TODO: Limit the size of the text?
         // textView.delegate = self
         textView.isScrollEnabled = true
         textView.scrollsToTop = false
@@ -186,25 +215,38 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         textView.contentInset = .zero
     }
 
+    private func updateNavigationBar() {
+        let undoButton = navigationBarButton(imageName: "image_editor_undo",
+                                             selector: #selector(didTapUndo(sender:)))
+        let doneButton = navigationBarButton(imageName: "image_editor_checkmark_full",
+                                             selector: #selector(didTapDone(sender:)))
+
+        let navigationBarItems = [undoButton, doneButton]
+        updateNavigationBar(navigationBarItems: navigationBarItems)
+    }
+
     // MARK: - Events
 
-    @objc public func didTapBackButton() {
+    @objc func didTapUndo(sender: UIButton) {
+        Logger.verbose("")
+
+        self.delegate?.textEditDidCancel()
+
+        self.dismiss(animated: false) {
+            // Do nothing.
+        }
+    }
+
+    @objc func didTapDone(sender: UIButton) {
+        Logger.verbose("")
+
         completeAndDismiss()
     }
 
     private func completeAndDismiss() {
+        self.delegate?.textEditDidComplete(textItem: textItem, text: textView.text, color: paletteView.selectedValue)
 
-        // Before we take a screenshot, make sure selection state
-        // auto-complete suggestions, cursor don't affect screenshot.
-        textView.resignFirstResponder()
-        if textView.isFirstResponder {
-            owsFailDebug("Text view is still first responder.")
-        }
-        textView.selectedTextRange = nil
-
-        self.delegate?.textEditDidComplete(textItem: textItem, text: textView.text)
-
-        self.dismiss(animated: true) {
+        self.dismiss(animated: false) {
             // Do nothing.
         }
     }
@@ -213,5 +255,13 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
     public func textViewDidComplete() {
         completeAndDismiss()
+    }
+}
+
+// MARK: -
+
+extension ImageEditorTextViewController: ImageEditorPaletteViewDelegate {
+    public func selectedColorDidChange() {
+        self.textView.textColor = self.paletteView.selectedValue.color
     }
 }

@@ -8,6 +8,8 @@ import UIKit
 public protocol ImageEditorViewDelegate: class {
     func imageEditor(presentFullScreenOverlay viewController: UIViewController,
                      withNavigation: Bool)
+    func imageEditorPresentCaptionView()
+    func imageEditorUpdateNavigationBar()
 }
 
 // MARK: -
@@ -23,29 +25,8 @@ public class ImageEditorView: UIView {
 
     private let canvasView: ImageEditorCanvasView
 
-    private let paletteView = ImageEditorPaletteView()
-
-    enum EditorMode: String {
-        // This is the default mode.  It is used for interacting with text items.
-        case none
-        case brush
-        case text
-    }
-
-    private var editorMode = EditorMode.none {
-        didSet {
-            AssertIsOnMainThread()
-
-            updateButtons()
-            updateGestureState()
-        }
-    }
-
-    private var currentColor: UIColor {
-        get {
-            return paletteView.selectedColor
-        }
-    }
+    // TODO: We could hang this on the model or make this static.
+    private var currentColor = ImageEditorColor.defaultColor()
 
     @objc
     public required init(model: ImageEditorModel, delegate: ImageEditorViewDelegate) {
@@ -66,19 +47,14 @@ public class ImageEditorView: UIView {
     // MARK: - Views
 
     private var moveTextGestureRecognizer: ImageEditorPanGestureRecognizer?
-    private var brushGestureRecognizer: ImageEditorPanGestureRecognizer?
     private var tapGestureRecognizer: UITapGestureRecognizer?
     private var pinchGestureRecognizer: ImageEditorPinchGestureRecognizer?
 
     @objc
     public func configureSubviews() -> Bool {
-        guard canvasView.configureSubviews() else {
-            return false
-        }
+        canvasView.configureSubviews()
         self.addSubview(canvasView)
         canvasView.autoPinEdgesToSuperviewEdges()
-
-        paletteView.delegate = self
 
         self.isUserInteractionEnabled = true
 
@@ -88,12 +64,6 @@ public class ImageEditorView: UIView {
         moveTextGestureRecognizer.delegate = self
         self.addGestureRecognizer(moveTextGestureRecognizer)
         self.moveTextGestureRecognizer = moveTextGestureRecognizer
-
-        let brushGestureRecognizer = ImageEditorPanGestureRecognizer(target: self, action: #selector(handleBrushGesture(_:)))
-        brushGestureRecognizer.maximumNumberOfTouches = 1
-        brushGestureRecognizer.referenceView = canvasView.gestureReferenceView
-        self.addGestureRecognizer(brushGestureRecognizer)
-        self.brushGestureRecognizer = brushGestureRecognizer
 
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
         self.addGestureRecognizer(tapGestureRecognizer)
@@ -108,130 +78,35 @@ public class ImageEditorView: UIView {
         //        editorGestureRecognizer.require(toFail: tapGestureRecognizer)
         //        editorGestureRecognizer.require(toFail: pinchGestureRecognizer)
 
-        updateGestureState()
-
         return true
     }
-
-    private func commitTextEditingChanges(textItem: ImageEditorTextItem, textView: UITextView) {
-        AssertIsOnMainThread()
-
-        guard let text = textView.text?.ows_stripped(),
-            text.count > 0 else {
-                model.remove(item: textItem)
-                return
-        }
-
-        // Model items are immutable; we _replace_ the item rather than modify it.
-        let newItem = textItem.copy(withText: text)
-        if model.has(itemForId: textItem.itemId) {
-            model.replace(item: newItem, suppressUndo: false)
-        } else {
-            model.append(item: newItem)
-        }
-    }
-
-    // The model supports redo if we ever want to add it.
-    private let undoButton = OWSButton()
-    private let brushButton = OWSButton()
-    private let cropButton = OWSButton()
-    private let newTextButton = OWSButton()
-    private let captionButton = OWSButton()
-    private let doneButton = OWSButton()
-    private let buttonStackView = UIStackView()
 
     // TODO: Should this method be private?
     @objc
     public func addControls(to containerView: UIView,
                             viewController: UIViewController) {
-        configure(button: undoButton,
-                  imageName: "image_editor_undo",
-                  selector: #selector(didTapUndo(sender:)))
-
-        configure(button: brushButton,
-                  imageName: "image_editor_brush",
-                  selector: #selector(didTapBrush(sender:)))
-
-        configure(button: cropButton,
-                  imageName: "image_editor_crop",
-                  selector: #selector(didTapCrop(sender:)))
-
-        configure(button: newTextButton,
-                  imageName: "image_editor_text",
-                  selector: #selector(didTapNewText(sender:)))
-
-        configure(button: captionButton,
-                  imageName: "image_editor_caption",
-                  selector: #selector(didTapCaption(sender:)))
-
-        configure(button: doneButton,
-                  imageName: "image_editor_checkmark_full",
-                  selector: #selector(didTapDone(sender:)))
-
-        buttonStackView.axis = .horizontal
-        buttonStackView.alignment = .center
-        buttonStackView.spacing = 20
-
-        containerView.addSubview(buttonStackView)
-        buttonStackView.autoPin(toTopLayoutGuideOf: viewController, withInset: 0)
-        buttonStackView.autoPinTrailingToSuperviewMargin(withInset: 18)
-
-        containerView.addSubview(paletteView)
-        paletteView.autoVCenterInSuperview()
-        paletteView.autoPinLeadingToSuperviewMargin(withInset: 10)
-
-        updateButtons()
+        delegate?.imageEditorUpdateNavigationBar()
     }
 
-    private func configure(button: UIButton,
-                           imageName: String,
-                           selector: Selector) {
-        if let image = UIImage(named: imageName) {
-            button.setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
+    // MARK: - Navigation Bar
+
+    public func navigationBarItems() -> [UIView] {
+        let undoButton = navigationBarButton(imageName: "image_editor_undo",
+                                             selector: #selector(didTapUndo(sender:)))
+        let brushButton = navigationBarButton(imageName: "image_editor_brush",
+                                              selector: #selector(didTapBrush(sender:)))
+        let cropButton = navigationBarButton(imageName: "image_editor_crop",
+                                             selector: #selector(didTapCrop(sender:)))
+        let newTextButton = navigationBarButton(imageName: "image_editor_text",
+                                                selector: #selector(didTapNewText(sender:)))
+        let captionButton = navigationBarButton(imageName: "image_editor_caption",
+                                             selector: #selector(didTapCaption(sender:)))
+
+        if model.canUndo() {
+            return [undoButton, newTextButton, brushButton, cropButton, captionButton]
         } else {
-            owsFailDebug("Missing asset: \(imageName)")
+            return [newTextButton, brushButton, cropButton, captionButton]
         }
-        button.tintColor = .white
-        button.addTarget(self, action: selector, for: .touchUpInside)
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.shadowRadius = 4
-        button.layer.shadowOpacity = 0.66
-    }
-
-    private func updateButtons() {
-        var buttons = [OWSButton]()
-
-        var hasPalette = false
-        switch editorMode {
-        case .text:
-            // TODO:
-            hasPalette = true
-            break
-        case .brush:
-            hasPalette = true
-
-            if model.canUndo() {
-                buttons =  [undoButton, doneButton]
-            } else {
-                buttons =  [doneButton]
-            }
-        case .none:
-            if model.canUndo() {
-                buttons =  [undoButton, newTextButton, brushButton, cropButton, captionButton]
-            } else {
-                buttons =  [newTextButton, brushButton, cropButton, captionButton]
-            }
-        }
-
-        for subview in buttonStackView.subviews {
-            subview.removeFromSuperview()
-        }
-        buttonStackView.addArrangedSubview(UIView.hStretchingSpacer())
-        for button in buttons {
-            buttonStackView.addArrangedSubview(button)
-        }
-
-        paletteView.isHidden = !hasPalette
     }
 
     // MARK: - Actions
@@ -248,7 +123,9 @@ public class ImageEditorView: UIView {
     @objc func didTapBrush(sender: UIButton) {
         Logger.verbose("")
 
-        self.editorMode = .brush
+        let brushView = ImageEditorBrushViewController(delegate: self, model: model, currentColor: currentColor)
+        self.delegate?.imageEditor(presentFullScreenOverlay: brushView,
+                                   withNavigation: true)
     }
 
     @objc func didTapCrop(sender: UIButton) {
@@ -278,38 +155,11 @@ public class ImageEditorView: UIView {
     @objc func didTapCaption(sender: UIButton) {
         Logger.verbose("")
 
-        // TODO:
+        delegate?.imageEditorPresentCaptionView()
     }
 
     @objc func didTapDone(sender: UIButton) {
         Logger.verbose("")
-
-        self.editorMode = .none
-    }
-
-    // MARK: - Gestures
-
-    private func updateGestureState() {
-        AssertIsOnMainThread()
-
-        switch editorMode {
-        case .none:
-            moveTextGestureRecognizer?.isEnabled = true
-            brushGestureRecognizer?.isEnabled = false
-            tapGestureRecognizer?.isEnabled = true
-            pinchGestureRecognizer?.isEnabled = true
-        case .brush:
-            // Brush strokes can start and end (and return from) outside the view.
-            moveTextGestureRecognizer?.isEnabled = false
-            brushGestureRecognizer?.isEnabled = true
-            tapGestureRecognizer?.isEnabled = false
-            pinchGestureRecognizer?.isEnabled = false
-        case .text:
-            moveTextGestureRecognizer?.isEnabled = false
-            brushGestureRecognizer?.isEnabled = false
-            tapGestureRecognizer?.isEnabled = false
-            pinchGestureRecognizer?.isEnabled = false
-        }
     }
 
     // MARK: - Tap Gesture
@@ -370,11 +220,11 @@ public class ImageEditorView: UIView {
             let viewBounds = view.bounds
             let locationStart = gestureRecognizer.pinchStateStart.centroid
             let locationNow = gestureRecognizer.pinchStateLast.centroid
-            let gestureStartImageUnit = ImageEditorView.locationImageUnit(forLocationInView: locationStart,
+            let gestureStartImageUnit = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationStart,
                                                                           viewBounds: viewBounds,
                                                                           model: self.model,
                                                                           transform: self.model.currentTransform())
-            let gestureNowImageUnit = ImageEditorView.locationImageUnit(forLocationInView: locationNow,
+            let gestureNowImageUnit = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationNow,
                                                                         viewBounds: viewBounds,
                                                                         model: self.model,
                                                                         transform: self.model.currentTransform())
@@ -461,11 +311,11 @@ public class ImageEditorView: UIView {
             let view = self.canvasView.gestureReferenceView
             let viewBounds = view.bounds
             let locationInView = gestureRecognizer.location(in: view)
-            let gestureStartImageUnit = ImageEditorView.locationImageUnit(forLocationInView: locationStart,
+            let gestureStartImageUnit = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationStart,
                                                                           viewBounds: viewBounds,
                                                                           model: self.model,
                                                                           transform: self.model.currentTransform())
-            let gestureNowImageUnit = ImageEditorView.locationImageUnit(forLocationInView: locationInView,
+            let gestureNowImageUnit = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationInView,
                                                                         viewBounds: viewBounds,
                                                                         model: self.model,
                                                                         transform: self.model.currentTransform())
@@ -509,7 +359,7 @@ public class ImageEditorView: UIView {
             let view = self.canvasView.gestureReferenceView
             let viewBounds = view.bounds
             let locationInView = gestureRecognizer.location(in: view)
-            let newSample = ImageEditorView.locationImageUnit(forLocationInView: locationInView,
+            let newSample = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationInView,
                                                               viewBounds: viewBounds,
                                                               model: self.model,
                                                               transform: self.model.currentTransform())
@@ -522,7 +372,7 @@ public class ImageEditorView: UIView {
             self.currentStrokeSamples.append(newSample)
         }
 
-        let strokeColor = currentColor
+        let strokeColor = currentColor.color
         // TODO: Tune stroke width.
         let unitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth()
 
@@ -561,31 +411,19 @@ public class ImageEditorView: UIView {
         }
     }
 
-    // MARK: - Coordinates
-
-    private class func locationImageUnit(forLocationInView locationInView: CGPoint,
-                                         viewBounds: CGRect,
-                                         model: ImageEditorModel,
-                                         transform: ImageEditorTransform) -> CGPoint {
-        let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewBounds.size, imageSize: model.srcImageSizePixels, transform: transform)
-        let affineTransformStart = transform.affineTransform(viewSize: viewBounds.size)
-        let locationInContent = locationInView.minus(viewBounds.center).applyingInverse(affineTransformStart).plus(viewBounds.center)
-        let locationImageUnit = locationInContent.toUnitCoordinates(viewBounds: imageFrame, shouldClamp: false)
-        return locationImageUnit
-    }
-
     // MARK: - Edit Text Tool
 
     private func edit(textItem: ImageEditorTextItem) {
         Logger.verbose("")
 
-       self.editorMode = .text
-
         // TODO:
         let maxTextWidthPoints = model.srcImageSizePixels.width * ImageEditorTextItem.kDefaultUnitWidth
         //        let maxTextWidthPoints = canvasView.imageView.width() * ImageEditorTextItem.kDefaultUnitWidth
 
-        let textEditor = ImageEditorTextViewController(delegate: self, textItem: textItem, maxTextWidthPoints: maxTextWidthPoints)
+        let textEditor = ImageEditorTextViewController(delegate: self,
+                                                       model: model,
+                                                       textItem: textItem,
+                                                       maxTextWidthPoints: maxTextWidthPoints)
         self.delegate?.imageEditor(presentFullScreenOverlay: textEditor,
                                    withNavigation: true)
     }
@@ -594,8 +432,6 @@ public class ImageEditorView: UIView {
 
     private func presentCropTool() {
         Logger.verbose("")
-
-        self.editorMode = .none
 
         guard let srcImage = canvasView.loadSrcImage() else {
             owsFailDebug("Couldn't load src image.")
@@ -613,7 +449,7 @@ public class ImageEditorView: UIView {
 
         let cropTool = ImageEditorCropViewController(delegate: self, model: model, srcImage: srcImage, previewImage: previewImage)
         self.delegate?.imageEditor(presentFullScreenOverlay: cropTool,
-                                   withNavigation: false)
+                                   withNavigation: true)
     }}
 
 // MARK: -
@@ -624,10 +460,6 @@ extension ImageEditorView: UIGestureRecognizerDelegate {
         guard moveTextGestureRecognizer == gestureRecognizer else {
             owsFailDebug("Unexpected gesture.")
             return false
-        }
-        guard editorMode == .none else {
-            // We only filter touches when in default mode.
-            return true
         }
 
         let location = touch.location(in: canvasView.gestureReferenceView)
@@ -642,11 +474,11 @@ extension ImageEditorView: ImageEditorModelObserver {
 
     public func imageEditorModelDidChange(before: ImageEditorContents,
                                           after: ImageEditorContents) {
-        updateButtons()
+        delegate?.imageEditorUpdateNavigationBar()
     }
 
     public func imageEditorModelDidChange(changedItemIds: [String]) {
-        updateButtons()
+        delegate?.imageEditorUpdateNavigationBar()
     }
 }
 
@@ -654,10 +486,8 @@ extension ImageEditorView: ImageEditorModelObserver {
 
 extension ImageEditorView: ImageEditorTextViewControllerDelegate {
 
-    public func textEditDidComplete(textItem: ImageEditorTextItem, text: String?) {
+    public func textEditDidComplete(textItem: ImageEditorTextItem, text: String?, color: ImageEditorColor) {
         AssertIsOnMainThread()
-
-        self.editorMode = .none
 
         guard let text = text?.ows_stripped(),
             text.count > 0 else {
@@ -668,7 +498,7 @@ extension ImageEditorView: ImageEditorTextViewControllerDelegate {
         }
 
         // Model items are immutable; we _replace_ the item rather than modify it.
-        let newItem = textItem.copy(withText: text)
+        let newItem = textItem.copy(withText: text, color: color)
         if model.has(itemForId: textItem.itemId) {
             model.replace(item: newItem, suppressUndo: false)
         } else {
@@ -677,7 +507,6 @@ extension ImageEditorView: ImageEditorTextViewControllerDelegate {
     }
 
     public func textEditDidCancel() {
-        self.editorMode = .none
     }
 }
 
@@ -696,8 +525,7 @@ extension ImageEditorView: ImageEditorCropViewControllerDelegate {
 
 // MARK: -
 
-extension ImageEditorView: ImageEditorPaletteViewDelegate {
-    public func selectedColorDidChange() {
-        // TODO:
+extension ImageEditorView: ImageEditorBrushViewControllerDelegate {
+    public func brushDidComplete() {
     }
 }
