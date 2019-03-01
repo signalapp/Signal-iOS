@@ -86,6 +86,8 @@ public class OnboardingBaseViewController: OWSViewController {
         } else {
             owsFailDebug("Missing or invalid navigationController")
         }
+
+        view.layoutIfNeeded()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
