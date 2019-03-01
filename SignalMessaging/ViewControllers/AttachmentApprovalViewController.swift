@@ -49,7 +49,7 @@ class AttachmentItemCollection {
         attachmentItems = attachmentItems.filter { $0 != item }
     }
 
-    func count() -> Int {
+    var count: Int {
         return attachmentItems.count
     }
 }
@@ -624,7 +624,7 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     }
 
     func prepViewControllerAttachmentCount() -> Int {
-        return attachmentItemCollection.count()
+        return attachmentItemCollection.count
     }
 }
 
@@ -893,24 +893,52 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     // MARK: - Navigation Bar
 
     public func navigationBarItems() -> [UIView] {
+        let captionButton = navigationBarButton(imageName: "image_editor_caption",
+                                                selector: #selector(didTapCaption(sender:)))
+
         guard let imageEditorView = imageEditorView else {
             // Show the "add caption" button for non-image attachments if
             // there is more than one attachment.
             if let prepDelegate = prepDelegate,
                 prepDelegate.prepViewControllerAttachmentCount() > 1 {
-                let captionButton = navigationBarButton(imageName: "image_editor_caption",
-                                                        selector: #selector(didTapCaption(sender:)))
                 return [captionButton]
             }
             return []
         }
-        return imageEditorView.navigationBarItems()
+        var navigationBarItems = imageEditorView.navigationBarItems()
+
+        // Show the caption UI if there's more than one attachment
+        // OR if the attachment already has a caption.
+        var shouldShowCaptionUI = attachmentCount() > 0
+        if let captionText = attachmentItem.captionText, captionText.count > 0 {
+            shouldShowCaptionUI = true
+        }
+        if shouldShowCaptionUI {
+            navigationBarItems.append(captionButton)
+        }
+
+        return navigationBarItems
+    }
+
+    private func attachmentCount() -> Int {
+        guard let prepDelegate = prepDelegate else {
+            owsFailDebug("Missing prepDelegate.")
+            return 0
+        }
+        return prepDelegate.prepViewControllerAttachmentCount()
     }
 
     @objc func didTapCaption(sender: UIButton) {
         Logger.verbose("")
 
-        imageEditorPresentCaptionView()
+        presentCaptionView()
+    }
+
+    private func presentCaptionView() {
+        let view = AttachmentCaptionViewController(delegate: self, attachmentItem: attachmentItem)
+        self.imageEditor(presentFullScreenView: view, isTransparent: true)
+
+        isShowingCaptionView = true
     }
 
     // MARK: - Event Handlers
@@ -1175,23 +1203,8 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
         }
     }
 
-    public func imageEditorPresentCaptionView() {
-        let view = AttachmentCaptionViewController(delegate: self, attachmentItem: attachmentItem)
-        self.imageEditor(presentFullScreenView: view, isTransparent: true)
-
-        isShowingCaptionView = true
-    }
-
     public func imageEditorUpdateNavigationBar() {
         prepDelegate?.prepViewControllerUpdateNavigationBar()
-    }
-
-    public func imageEditorAttachmentCount() -> Int {
-        guard let prepDelegate = prepDelegate else {
-            owsFailDebug("Missing prepDelegate.")
-            return 0
-        }
-        return prepDelegate.prepViewControllerAttachmentCount()
     }
 }
 

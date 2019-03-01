@@ -8,9 +8,7 @@ import UIKit
 public protocol ImageEditorViewDelegate: class {
     func imageEditor(presentFullScreenView viewController: UIViewController,
                      isTransparent: Bool)
-    func imageEditorPresentCaptionView()
     func imageEditorUpdateNavigationBar()
-    func imageEditorAttachmentCount() -> Int
 }
 
 // MARK: -
@@ -100,8 +98,6 @@ public class ImageEditorView: UIView {
                                              selector: #selector(didTapCrop(sender:)))
         let newTextButton = navigationBarButton(imageName: "image_editor_text",
                                                 selector: #selector(didTapNewText(sender:)))
-        let captionButton = navigationBarButton(imageName: "image_editor_caption",
-                                             selector: #selector(didTapCaption(sender:)))
 
         var buttons: [UIView]
         if model.canUndo() {
@@ -110,12 +106,6 @@ public class ImageEditorView: UIView {
             buttons = [newTextButton, brushButton, cropButton]
         }
 
-        // Show the "add caption" button for non-image attachments if
-        // there is more than one attachment.
-        if let delegate = delegate,
-            delegate.imageEditorAttachmentCount() > 1 {
-            buttons.append(captionButton)
-        }
         return buttons
     }
 
@@ -160,12 +150,6 @@ public class ImageEditorView: UIView {
                                                  fontReferenceImageWidth: imageFrame.size.width)
 
         edit(textItem: textItem)
-    }
-
-    @objc func didTapCaption(sender: UIButton) {
-        Logger.verbose("")
-
-        delegate?.imageEditorPresentCaptionView()
     }
 
     @objc func didTapDone(sender: UIButton) {
