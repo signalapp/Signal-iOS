@@ -437,6 +437,8 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         }
     }
 
+    // MARK: - View Lifecycle
+
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -491,7 +493,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         Logger.info("")
 
         guard onboardingCodeView.isComplete else {
-            self.setHasInvalidCode(true)
+            self.setHasInvalidCode(false)
             return
         }
 
@@ -499,7 +501,12 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
         onboardingController.update(verificationCode: onboardingCodeView.verificationCode)
 
+        // Temporarily hide the "resend link" button during the verification attempt.
+        codeStateLink?.layer.opacity = 0.05
+
         onboardingController.tryToVerify(fromViewController: self, completion: { (outcome) in
+            self.codeStateLink?.layer.opacity = 1
+
             if outcome == .invalidVerificationCode {
                 self.setHasInvalidCode(true)
             }
