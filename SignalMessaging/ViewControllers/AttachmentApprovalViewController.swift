@@ -782,6 +782,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         containerView.addSubview(mediaMessageView)
         mediaMessageView.autoPinEdgesToSuperviewEdges()
 
+        #if DEBUG
         if let imageEditorModel = attachmentItem.imageEditorModel {
 
             let imageEditorView = ImageEditorView(model: imageEditorModel, delegate: self)
@@ -797,6 +798,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
                                             viewController: self)
             }
         }
+        #endif
 
         if isZoomable {
             // Add top and bottom gradients to ensure toolbar controls are legible
