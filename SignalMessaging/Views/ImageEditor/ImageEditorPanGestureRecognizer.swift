@@ -14,39 +14,57 @@ public class ImageEditorPanGestureRecognizer: UIPanGestureRecognizer {
     public weak var referenceView: UIView?
 
     // Capture the location history of this gesture.
-    public var locations = [CGPoint]()
+    public var locationHistory = [CGPoint]()
 
-    public var locationStart: CGPoint? {
-        return locations.first
+    public var locationFirst: CGPoint? {
+        return locationHistory.first
     }
 
     // MARK: - Touch Handling
 
     @objc
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
-        super.touchesBegan(touches, with: event)
+        updateLocationHistory(event: event)
 
-        guard let referenceView = referenceView else {
-            owsFailDebug("Missing view")
-            return
-        }
-        locations.append(location(in: referenceView))
+        super.touchesBegan(touches, with: event)
     }
 
     @objc
     public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
-        super.touchesMoved(touches, with: event)
+        updateLocationHistory(event: event)
 
+        super.touchesMoved(touches, with: event)
+    }
+
+    @objc
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+        updateLocationHistory(event: event)
+
+        super.touchesEnded(touches, with: event)
+    }
+
+    private func updateLocationHistory(event: UIEvent) {
+        guard let touches = event.allTouches,
+            touches.count > 0 else {
+                owsFailDebug("no touches.")
+                return
+        }
         guard let referenceView = referenceView else {
             owsFailDebug("Missing view")
             return
         }
-        locations.append(location(in: referenceView))
+        // Find the centroid.
+        var location = CGPoint.zero
+        for touch in touches {
+            location = location.plus(touch.location(in: referenceView))
+        }
+        location = location.times(CGFloat(1) / CGFloat(touches.count))
+        locationHistory.append(location)
     }
 
     public override func reset() {
         super.reset()
 
-        locations.removeAll()
+        locationHistory.removeAll()
     }
 }

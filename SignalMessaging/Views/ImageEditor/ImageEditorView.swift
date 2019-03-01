@@ -274,7 +274,7 @@ public class ImageEditorView: UIView {
 
         switch gestureRecognizer.state {
         case .began:
-            guard let locationStart = gestureRecognizer.locationStart else {
+            guard let locationStart = gestureRecognizer.locationFirst else {
                 owsFailDebug("Missing locationStart.")
                 return
             }
@@ -294,7 +294,7 @@ public class ImageEditorView: UIView {
             guard let textItem = movingTextItem else {
                 return
             }
-            guard let locationStart = gestureRecognizer.locationStart else {
+            guard let locationStart = gestureRecognizer.locationFirst else {
                 owsFailDebug("Missing locationStart.")
                 return
             }
