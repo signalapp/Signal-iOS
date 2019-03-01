@@ -53,7 +53,7 @@ public class ImageEditorCanvasView: UIView {
     public let contentView = OWSLayerView()
 
     // clipView is used to clip the content.  It reflects the actual
-    // visible bounds of the content.
+    // visible bounds of the "canvas" content.
     private let clipView = OWSLayerView()
 
     private var contentViewConstraints = [NSLayoutConstraint]()
@@ -461,6 +461,8 @@ public class ImageEditorCanvasView: UIView {
         shapeLayer.fillColor = nil
         shapeLayer.lineCap = kCALineCapRound
         shapeLayer.lineJoin = kCALineJoinRound
+        // We want strokes to be rendered above the image and behind text.
+        shapeLayer.zPosition = 1
 
         return shapeLayer
     }
@@ -519,6 +521,9 @@ public class ImageEditorCanvasView: UIView {
 
         let transform = CGAffineTransform.identity.scaledBy(x: item.scaling, y: item.scaling).rotated(by: item.rotationRadians)
         layer.setAffineTransform(transform)
+
+        // We want text to be rendered above the image and strokes.
+        layer.zPosition = 2
 
         return layer
     }
