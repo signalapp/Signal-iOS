@@ -233,7 +233,7 @@ class AttachmentCaptionViewController: OWSViewController {
         textView.contentSize = contentSize
 
         let minHeight: CGFloat = textView.font?.lineHeight ?? 0
-        let maxHeight = minHeight * 4
+        let maxHeight: CGFloat = 300
         let newHeight = contentSize.height.clamp(minHeight, maxHeight)
 
         textViewHeightConstraint.constant = newHeight
