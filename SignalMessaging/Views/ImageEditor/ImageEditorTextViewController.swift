@@ -104,6 +104,8 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
     private let textItem: ImageEditorTextItem
 
+    private let isNewItem: Bool
+
     private let maxTextWidthPoints: CGFloat
 
     private let textView = VAlignTextView(alignment: .center)
@@ -117,10 +119,12 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
     init(delegate: ImageEditorTextViewControllerDelegate,
          model: ImageEditorModel,
          textItem: ImageEditorTextItem,
+         isNewItem: Bool,
          maxTextWidthPoints: CGFloat) {
         self.delegate = delegate
         self.model = model
         self.textItem = textItem
+        self.isNewItem = isNewItem
         self.maxTextWidthPoints = maxTextWidthPoints
         self.canvasView = ImageEditorCanvasView(model: model,
                                                 itemIdsToIgnore: [textItem.itemId])
@@ -245,7 +249,33 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
     }
 
     private func completeAndDismiss() {
-        self.delegate?.textEditDidComplete(textItem: textItem, text: textView.text, color: paletteView.selectedValue)
+        var newTextItem = textItem
+
+        if isNewItem {
+            let view = self.canvasView.gestureReferenceView
+            let viewBounds = view.bounds
+
+            // Ensure continuity of the new text item's location
+            // with its apparent location in this text editor.
+            let locationInView = view.convert(textView.bounds.center, from: textView)
+            let textCenterImageUnit = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationInView,
+                                                                              viewBounds: viewBounds,
+                                                                              model: model,
+                                                                              transform: model.currentTransform())
+
+            // Same, but for size.
+            let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewBounds.size,
+                                                              imageSize: model.srcImageSizePixels,
+                                                              transform: model.currentTransform())
+            let unitWidth = textView.width() / imageFrame.width
+
+            newTextItem = textItem.copy(withUnitCenter: textCenterImageUnit, unitWidth: unitWidth)
+        }
+
+        // Hide the text view immediately to avoid animation glitches in the dismiss transition.
+        textView.isHidden = true
+
+        self.delegate?.textEditDidComplete(textItem: newTextItem, text: textView.text, color: paletteView.selectedValue)
 
         self.dismiss(animated: false) {
             // Do nothing.

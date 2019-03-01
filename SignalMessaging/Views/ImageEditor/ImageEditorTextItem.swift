@@ -101,10 +101,20 @@ public class ImageEditorTextItem: ImageEditorItem {
     }
 
     @objc
-    public class func empty(withColor color: ImageEditorColor, unitWidth: CGFloat, fontReferenceImageWidth: CGFloat) -> ImageEditorTextItem {
+    public class func empty(withColor color: ImageEditorColor,
+                            unitWidth: CGFloat,
+                            fontReferenceImageWidth: CGFloat,
+                            scaling: CGFloat,
+                            rotationRadians: CGFloat) -> ImageEditorTextItem {
         // TODO: Tune the default font size.
         let font = UIFont.boldSystemFont(ofSize: 30.0)
-        return ImageEditorTextItem(text: "", color: color, font: font, fontReferenceImageWidth: fontReferenceImageWidth, unitWidth: unitWidth)
+        return ImageEditorTextItem(text: "",
+                                   color: color,
+                                   font: font,
+                                   fontReferenceImageWidth: fontReferenceImageWidth,
+                                   unitWidth: unitWidth,
+                                   rotationRadians: rotationRadians,
+                                   scaling: scaling)
     }
 
     @objc
@@ -146,6 +156,19 @@ public class ImageEditorTextItem: ImageEditorItem {
                                    unitWidth: unitWidth,
                                    rotationRadians: newRotationRadians,
                                    scaling: newScaling)
+    }
+
+    @objc
+    public func copy(withUnitCenter newUnitCenter: CGPoint, unitWidth newUnitWidth: CGFloat) -> ImageEditorTextItem {
+        return ImageEditorTextItem(itemId: itemId,
+                                   text: text,
+                                   color: color,
+                                   font: font,
+                                   fontReferenceImageWidth: fontReferenceImageWidth,
+                                   unitCenter: newUnitCenter,
+                                   unitWidth: newUnitWidth,
+                                   rotationRadians: rotationRadians,
+                                   scaling: scaling)
     }
 
     public override func outputScale() -> CGFloat {

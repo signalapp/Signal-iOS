@@ -29,6 +29,11 @@ public class ImageEditorCanvasView: UIView {
 
     private let itemIdsToIgnore: [String]
 
+    // We want strokes to be rendered above the image and behind text.
+    private static let brushLayerZ: CGFloat = +1
+    // We want text to be rendered above the image and strokes.
+    private static let textLayerZ: CGFloat = +2
+
     @objc
     public required init(model: ImageEditorModel,
                          itemIdsToIgnore: [String] = []) {
@@ -53,7 +58,7 @@ public class ImageEditorCanvasView: UIView {
     public let contentView = OWSLayerView()
 
     // clipView is used to clip the content.  It reflects the actual
-    // visible bounds of the content.
+    // visible bounds of the "canvas" content.
     private let clipView = OWSLayerView()
 
     private var contentViewConstraints = [NSLayoutConstraint]()
@@ -461,6 +466,7 @@ public class ImageEditorCanvasView: UIView {
         shapeLayer.fillColor = nil
         shapeLayer.lineCap = kCALineCapRound
         shapeLayer.lineJoin = kCALineJoinRound
+        shapeLayer.zPosition = brushLayerZ
 
         return shapeLayer
     }
@@ -487,13 +493,15 @@ public class ImageEditorCanvasView: UIView {
         // I don't think we need to enable allowsFontSubpixelQuantization
         // or set truncationMode.
 
-        // This text needs to be rendered at a scale that reflects the sceen scaling
-        // AND the item's scaling.
-        layer.contentsScale = UIScreen.main.scale * item.scaling
+        // This text needs to be rendered at a scale that reflects:
+        //
+        // * The screen scaling (so that text looks sharp on Retina devices.
+        // * The item's scaling (so that text doesn't become blurry as you make it larger).
+        // * Model transform (so that text doesn't become blurry as you zoom the content).
+        layer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
 
         // TODO: Min with measured width.
         let maxWidth = imageFrame.size.width * item.unitWidth
-//        let maxWidth = viewSize.width * item.unitWidth
 
         let maxSize = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
         // TODO: Is there a more accurate way to measure text in a CATextLayer?
@@ -519,6 +527,8 @@ public class ImageEditorCanvasView: UIView {
 
         let transform = CGAffineTransform.identity.scaledBy(x: item.scaling, y: item.scaling).rotated(by: item.rotationRadians)
         layer.setAffineTransform(transform)
+
+        layer.zPosition = textLayerZ
 
         return layer
     }
