@@ -273,7 +273,7 @@ public class ImageEditorModel: NSObject {
 
     @objc
     public static var isFeatureEnabled: Bool {
-        return _isDebugAssertConfiguration()
+        return true
     }
 
     @objc
