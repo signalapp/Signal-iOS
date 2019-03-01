@@ -97,9 +97,8 @@ public class ImageEditorPaletteView: UIView {
             owsFailDebug("Missing image.")
         }
         addSubview(imageView)
-        // We use an invisible margin to expand the hot area of
-        // this control.
-        let margin: CGFloat = 8
+        // We use an invisible margin to expand the hot area of this control.
+        let margin: CGFloat = 20
         imageView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: margin, left: margin, bottom: margin, right: margin))
 
         selectionWrapper.layoutCallback = { [weak self] (view) in
@@ -144,14 +143,49 @@ public class ImageEditorPaletteView: UIView {
     }
 
     private func value(for palettePhase: CGFloat) -> ImageEditorColor {
-        guard let image = imageView.image else {
-            owsFailDebug("Missing image.")
+        // We find the color in the palette's gradient that corresponds
+        // to the "phase".
+        //
+        // 0 = top of gradient, first color.
+        // 1 = bottom of gradient, last color.
+        struct GradientSegment {
+            let color0: UIColor
+            let color1: UIColor
+            let palettePhase0: CGFloat
+            let palettePhase1: CGFloat
+        }
+        var segments = [GradientSegment]()
+        let segmentCount = ImageEditorColor.gradientUIColors.count - 1
+        var prevColor: UIColor?
+        for color in ImageEditorColor.gradientUIColors {
+            if let color0 = prevColor {
+                let index = CGFloat(segments.count)
+                let color1 = color
+                let palettePhase0: CGFloat = index / CGFloat(segmentCount)
+                let palettePhase1: CGFloat = (index + 1) / CGFloat(segmentCount)
+                segments.append(GradientSegment(color0: color0, color1: color1, palettePhase0: palettePhase0, palettePhase1: palettePhase1))
+            }
+            prevColor = color
+        }
+        var bestSegment = segments.first
+        for segment in segments {
+            if palettePhase >= segment.palettePhase0 {
+                bestSegment = segment
+            }
+        }
+        guard let segment = bestSegment else {
+            owsFailDebug("Couldn't find matching segment.")
             return ImageEditorColor.defaultColor()
         }
-        guard let color = image.color(atLocation: CGPoint(x: CGFloat(image.size.width) * 0.5, y: CGFloat(image.size.height) * palettePhase)) else {
-            owsFailDebug("Missing color.")
+        guard palettePhase >= segment.palettePhase0,
+            palettePhase <= segment.palettePhase1 else {
+            owsFailDebug("Invalid segment.")
             return ImageEditorColor.defaultColor()
         }
+        let segmentPhase = palettePhase.inverseLerp(segment.palettePhase0, segment.palettePhase1).clamp01()
+        // If CAGradientLayer doesn't do naive RGB color interpolation,
+        // this won't be WYSIWYG.
+        let color = segment.color0.blend(with: segment.color1, alpha: segmentPhase)
         return ImageEditorColor(color: color, palettePhase: palettePhase)
     }
 
@@ -170,7 +204,6 @@ public class ImageEditorPaletteView: UIView {
 
     @objc
     func didTouch(gesture: UIGestureRecognizer) {
-        Logger.verbose("gesture: \(NSStringForUIGestureRecognizerState(gesture.state))")
         switch gesture.state {
         case .began, .changed, .ended:
             break
@@ -196,55 +229,6 @@ public class ImageEditorPaletteView: UIView {
         gradientLayer.endPoint = CGPoint(x: 0, y: gradientSize.height)
         gradientLayer.endPoint = CGPoint(x: 0, y: 1.0)
         return gradientView.renderAsImage(opaque: true, scale: UIScreen.main.scale)
-    }
-}
-
-// MARK: -
-
-extension UIImage {
-    func color(atLocation locationPoints: CGPoint) -> UIColor? {
-        guard let cgImage = cgImage else {
-            owsFailDebug("Missing cgImage.")
-            return nil
-        }
-        guard let dataProvider = cgImage.dataProvider else {
-            owsFailDebug("Could not create dataProvider.")
-            return nil
-        }
-        guard let pixelData = dataProvider.data else {
-            owsFailDebug("dataProvider has no data.")
-            return nil
-        }
-        let bytesPerPixel: Int = cgImage.bitsPerPixel / 8
-        guard bytesPerPixel == 4 else {
-            owsFailDebug("Invalid bytesPerPixel: \(bytesPerPixel).")
-            return nil
-        }
-        let imageWidth: Int = cgImage.width
-        let imageHeight: Int = cgImage.height
-        guard imageWidth > 0,
-            imageHeight > 0 else {
-                owsFailDebug("Invalid image size.")
-                return nil
-        }
-
-        // Convert the location from points to pixels and clamp to the image bounds.
-        let xPixels: Int = Int(round(locationPoints.x * self.scale)).clamp(0, imageWidth - 1)
-        let yPixels: Int = Int(round(locationPoints.y * self.scale)).clamp(0, imageHeight - 1)
-        let dataLength = (pixelData as Data).count
-        let data: UnsafePointer<UInt8> = CFDataGetBytePtr(pixelData)
-        let index: Int = (imageWidth * yPixels + xPixels) * bytesPerPixel
-        guard index >= 0, index < dataLength else {
-            owsFailDebug("Invalid index.")
-            return nil
-        }
-
-        let red = CGFloat(data[index]) / CGFloat(255.0)
-        let green = CGFloat(data[index+1]) / CGFloat(255.0)
-        let blue = CGFloat(data[index+2]) / CGFloat(255.0)
-        let alpha = CGFloat(data[index+3]) / CGFloat(255.0)
-
-        return UIColor(red: red, green: green, blue: blue, alpha: alpha)
     }
 }
 

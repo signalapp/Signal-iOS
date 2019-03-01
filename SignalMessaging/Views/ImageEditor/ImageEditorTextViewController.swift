@@ -187,9 +187,9 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         paletteView.delegate = self
         self.view.addSubview(paletteView)
         paletteView.autoAlignAxis(.horizontal, toSameAxisOf: textView)
-        paletteView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 20)
+        paletteView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0)
         // This will determine the text view's size.
-        paletteView.autoPinEdge(.leading, to: .trailing, of: textView, withOffset: 8)
+        paletteView.autoPinEdge(.leading, to: .trailing, of: textView, withOffset: 0)
 
         updateNavigationBar()
     }

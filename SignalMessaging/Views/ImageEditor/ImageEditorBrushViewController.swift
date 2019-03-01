@@ -59,7 +59,7 @@ public class ImageEditorBrushViewController: OWSViewController {
         paletteView.delegate = self
         self.view.addSubview(paletteView)
         paletteView.autoVCenterInSuperview()
-        paletteView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 20)
+        paletteView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0)
 
         self.view.isUserInteractionEnabled = true
 
