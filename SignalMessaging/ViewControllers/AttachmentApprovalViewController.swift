@@ -48,6 +48,10 @@ class AttachmentItemCollection {
     func remove(item: SignalAttachmentItem) {
         attachmentItems = attachmentItems.filter { $0 != item }
     }
+
+    var count: Int {
+        return attachmentItems.count
+    }
 }
 
 // MARK: -
@@ -618,6 +622,10 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     func prepViewControllerUpdateNavigationBar() {
         self.updateNavigationBar()
     }
+
+    func prepViewControllerAttachmentCount() -> Int {
+        return attachmentItemCollection.count
+    }
 }
 
 // MARK: GalleryRail
@@ -671,6 +679,8 @@ protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem)
 
     func prepViewControllerUpdateNavigationBar()
+
+    func prepViewControllerAttachmentCount() -> Int
 }
 
 public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
@@ -883,10 +893,52 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     // MARK: - Navigation Bar
 
     public func navigationBarItems() -> [UIView] {
+        let captionButton = navigationBarButton(imageName: "image_editor_caption",
+                                                selector: #selector(didTapCaption(sender:)))
+
         guard let imageEditorView = imageEditorView else {
+            // Show the "add caption" button for non-image attachments if
+            // there is more than one attachment.
+            if let prepDelegate = prepDelegate,
+                prepDelegate.prepViewControllerAttachmentCount() > 1 {
+                return [captionButton]
+            }
             return []
         }
-        return imageEditorView.navigationBarItems()
+        var navigationBarItems = imageEditorView.navigationBarItems()
+
+        // Show the caption UI if there's more than one attachment
+        // OR if the attachment already has a caption.
+        var shouldShowCaptionUI = attachmentCount() > 0
+        if let captionText = attachmentItem.captionText, captionText.count > 0 {
+            shouldShowCaptionUI = true
+        }
+        if shouldShowCaptionUI {
+            navigationBarItems.append(captionButton)
+        }
+
+        return navigationBarItems
+    }
+
+    private func attachmentCount() -> Int {
+        guard let prepDelegate = prepDelegate else {
+            owsFailDebug("Missing prepDelegate.")
+            return 0
+        }
+        return prepDelegate.prepViewControllerAttachmentCount()
+    }
+
+    @objc func didTapCaption(sender: UIButton) {
+        Logger.verbose("")
+
+        presentCaptionView()
+    }
+
+    private func presentCaptionView() {
+        let view = AttachmentCaptionViewController(delegate: self, attachmentItem: attachmentItem)
+        self.imageEditor(presentFullScreenView: view, isTransparent: true)
+
+        isShowingCaptionView = true
     }
 
     // MARK: - Event Handlers
@@ -1132,34 +1184,23 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
 // MARK: -
 
 extension AttachmentPrepViewController: ImageEditorViewDelegate {
-    public func imageEditor(presentFullScreenOverlay viewController: UIViewController,
-                            withNavigation: Bool) {
+    public func imageEditor(presentFullScreenView viewController: UIViewController,
+                            isTransparent: Bool) {
 
-        if withNavigation {
-            let navigationController = OWSNavigationController(rootViewController: viewController)
-            navigationController.modalPresentationStyle = .overFullScreen
+        let navigationController = OWSNavigationController(rootViewController: viewController)
+        navigationController.modalPresentationStyle = (isTransparent
+            ? .overFullScreen
+            : .fullScreen)
 
-            if let navigationBar = navigationController.navigationBar as? OWSNavigationBar {
-                navigationBar.overrideTheme(type: .clear)
-            } else {
-                owsFailDebug("navigationBar was nil or unexpected class")
-            }
-
-            self.present(navigationController, animated: false) {
-                // Do nothing.
-            }
+        if let navigationBar = navigationController.navigationBar as? OWSNavigationBar {
+            navigationBar.overrideTheme(type: .clear)
         } else {
-            self.present(viewController, animated: false) {
-                // Do nothing.
-            }
+            owsFailDebug("navigationBar was nil or unexpected class")
         }
-    }
 
-    public func imageEditorPresentCaptionView() {
-        let view = AttachmentCaptionViewController(delegate: self, attachmentItem: attachmentItem)
-        self.imageEditor(presentFullScreenOverlay: view, withNavigation: true)
-
-        isShowingCaptionView = true
+        self.present(navigationController, animated: false) {
+            // Do nothing.
+        }
     }
 
     public func imageEditorUpdateNavigationBar() {

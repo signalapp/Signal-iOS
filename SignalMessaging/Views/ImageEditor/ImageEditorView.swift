@@ -6,9 +6,8 @@ import UIKit
 
 @objc
 public protocol ImageEditorViewDelegate: class {
-    func imageEditor(presentFullScreenOverlay viewController: UIViewController,
-                     withNavigation: Bool)
-    func imageEditorPresentCaptionView()
+    func imageEditor(presentFullScreenView viewController: UIViewController,
+                     isTransparent: Bool)
     func imageEditorUpdateNavigationBar()
 }
 
@@ -99,14 +98,15 @@ public class ImageEditorView: UIView {
                                              selector: #selector(didTapCrop(sender:)))
         let newTextButton = navigationBarButton(imageName: "image_editor_text",
                                                 selector: #selector(didTapNewText(sender:)))
-        let captionButton = navigationBarButton(imageName: "image_editor_caption",
-                                             selector: #selector(didTapCaption(sender:)))
 
+        var buttons: [UIView]
         if model.canUndo() {
-            return [undoButton, newTextButton, brushButton, cropButton, captionButton]
+            buttons = [undoButton, newTextButton, brushButton, cropButton]
         } else {
-            return [newTextButton, brushButton, cropButton, captionButton]
+            buttons = [newTextButton, brushButton, cropButton]
         }
+
+        return buttons
     }
 
     // MARK: - Actions
@@ -124,8 +124,8 @@ public class ImageEditorView: UIView {
         Logger.verbose("")
 
         let brushView = ImageEditorBrushViewController(delegate: self, model: model, currentColor: currentColor)
-        self.delegate?.imageEditor(presentFullScreenOverlay: brushView,
-                                   withNavigation: true)
+        self.delegate?.imageEditor(presentFullScreenView: brushView,
+                                   isTransparent: false)
     }
 
     @objc func didTapCrop(sender: UIButton) {
@@ -150,12 +150,6 @@ public class ImageEditorView: UIView {
                                                  fontReferenceImageWidth: imageFrame.size.width)
 
         edit(textItem: textItem)
-    }
-
-    @objc func didTapCaption(sender: UIButton) {
-        Logger.verbose("")
-
-        delegate?.imageEditorPresentCaptionView()
     }
 
     @objc func didTapDone(sender: UIButton) {
@@ -424,8 +418,8 @@ public class ImageEditorView: UIView {
                                                        model: model,
                                                        textItem: textItem,
                                                        maxTextWidthPoints: maxTextWidthPoints)
-        self.delegate?.imageEditor(presentFullScreenOverlay: textEditor,
-                                   withNavigation: true)
+        self.delegate?.imageEditor(presentFullScreenView: textEditor,
+                                   isTransparent: false)
     }
 
     // MARK: - Crop Tool
@@ -448,8 +442,8 @@ public class ImageEditorView: UIView {
         }
 
         let cropTool = ImageEditorCropViewController(delegate: self, model: model, srcImage: srcImage, previewImage: previewImage)
-        self.delegate?.imageEditor(presentFullScreenOverlay: cropTool,
-                                   withNavigation: true)
+        self.delegate?.imageEditor(presentFullScreenView: cropTool,
+                                   isTransparent: false)
     }}
 
 // MARK: -

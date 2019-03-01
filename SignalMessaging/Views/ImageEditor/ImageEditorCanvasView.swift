@@ -27,9 +27,13 @@ public class ImageEditorCanvasView: UIView {
 
     private let model: ImageEditorModel
 
+    private let itemIdsToIgnore: [String]
+
     @objc
-    public required init(model: ImageEditorModel) {
+    public required init(model: ImageEditorModel,
+                         itemIdsToIgnore: [String] = []) {
         self.model = model
+        self.itemIdsToIgnore = itemIdsToIgnore
 
         super.init(frame: .zero)
 
@@ -180,6 +184,11 @@ public class ImageEditorCanvasView: UIView {
             updateImageLayer()
 
             for item in model.items() {
+                guard !itemIdsToIgnore.contains(item.itemId) else {
+                    // Ignore this item.
+                    continue
+                }
+
                 guard let layer = ImageEditorCanvasView.layerForItem(item: item,
                                                                      model: model,
                                                                      transform: transform,

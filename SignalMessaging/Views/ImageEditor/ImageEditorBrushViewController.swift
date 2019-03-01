@@ -127,7 +127,7 @@ public class ImageEditorBrushViewController: OWSViewController {
     private var currentStrokeSamples = [ImageEditorStrokeItem.StrokeSample]()
 
     @objc
-    public func handleBrushGesture(_ gestureRecognizer: UIGestureRecognizer) {
+    public func handleBrushGesture(_ gestureRecognizer: ImageEditorPanGestureRecognizer) {
         AssertIsOnMainThread()
 
         let removeCurrentStroke = {
@@ -137,10 +137,9 @@ public class ImageEditorBrushViewController: OWSViewController {
             self.currentStroke = nil
             self.currentStrokeSamples.removeAll()
         }
-        let tryToAppendStrokeSample = {
+        let tryToAppendStrokeSample = { (locationInView: CGPoint) in
             let view = self.canvasView.gestureReferenceView
             let viewBounds = view.bounds
-            let locationInView = gestureRecognizer.location(in: view)
             let newSample = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationInView,
                                                               viewBounds: viewBounds,
                                                               model: self.model,
@@ -162,14 +161,22 @@ public class ImageEditorBrushViewController: OWSViewController {
         case .began:
             removeCurrentStroke()
 
-            tryToAppendStrokeSample()
+            // Apply the location history of the gesture so that the stroke reflects
+            // the touch's movement before the gesture recognized.
+            for location in gestureRecognizer.locations {
+                tryToAppendStrokeSample(location)
+            }
+
+            let locationInView = gestureRecognizer.location(in: canvasView.gestureReferenceView)
+            tryToAppendStrokeSample(locationInView)
 
             let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
             model.append(item: stroke)
             currentStroke = stroke
 
         case .changed, .ended:
-            tryToAppendStrokeSample()
+            let locationInView = gestureRecognizer.location(in: canvasView.gestureReferenceView)
+            tryToAppendStrokeSample(locationInView)
 
             guard let lastStroke = self.currentStroke else {
                 owsFailDebug("Missing last stroke.")
