@@ -29,6 +29,11 @@ public class ImageEditorCanvasView: UIView {
 
     private let itemIdsToIgnore: [String]
 
+    // We want strokes to be rendered above the image and behind text.
+    private static let brushLayerZ: CGFloat = +1
+    // We want text to be rendered above the image and strokes.
+    private static let textLayerZ: CGFloat = +2
+
     @objc
     public required init(model: ImageEditorModel,
                          itemIdsToIgnore: [String] = []) {
@@ -461,8 +466,7 @@ public class ImageEditorCanvasView: UIView {
         shapeLayer.fillColor = nil
         shapeLayer.lineCap = kCALineCapRound
         shapeLayer.lineJoin = kCALineJoinRound
-        // We want strokes to be rendered above the image and behind text.
-        shapeLayer.zPosition = 1
+        shapeLayer.zPosition = brushLayerZ
 
         return shapeLayer
     }
@@ -524,8 +528,7 @@ public class ImageEditorCanvasView: UIView {
         let transform = CGAffineTransform.identity.scaledBy(x: item.scaling, y: item.scaling).rotated(by: item.rotationRadians)
         layer.setAffineTransform(transform)
 
-        // We want text to be rendered above the image and strokes.
-        layer.zPosition = 2
+        layer.zPosition = textLayerZ
 
         return layer
     }

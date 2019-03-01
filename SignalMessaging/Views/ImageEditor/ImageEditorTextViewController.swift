@@ -180,7 +180,6 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         })
 
         configureTextView()
-        textView.addRedBorder()
 
         self.view.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
 
