@@ -242,9 +242,12 @@ public class ImageEditorTransform: NSObject {
 // (multiple times) to preserve/restore editor state.
 private class ImageEditorOperation: NSObject {
 
+    let operationId: String
+
     let contents: ImageEditorContents
 
     required init(contents: ImageEditorContents) {
+        self.operationId = UUID().uuidString
         self.contents = contents
     }
 }
@@ -359,6 +362,14 @@ public class ImageEditorModel: NSObject {
     @objc
     public func canRedo() -> Bool {
         return !redoStack.isEmpty
+    }
+
+    @objc
+    public func currentUndoOperationId() -> String? {
+        guard let operation = undoStack.last else {
+            return nil
+        }
+        return operation.operationId
     }
 
     // MARK: - Observers

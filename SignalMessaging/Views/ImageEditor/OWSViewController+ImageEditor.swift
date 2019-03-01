@@ -29,10 +29,23 @@ public extension UIViewController {
             return
         }
 
+        let spacing: CGFloat = 8
         let stackView = UIStackView(arrangedSubviews: navigationBarItems)
         stackView.axis = .horizontal
-        stackView.spacing = 8
+        stackView.spacing = spacing
         stackView.alignment = .center
+
+        // Ensure layout works on older versions of iOS.
+        var stackSize = CGSize.zero
+        for item in navigationBarItems {
+            let itemSize = item.sizeThatFits(.zero)
+            stackSize.width += itemSize.width + spacing
+            stackSize.height = max(stackSize.height, itemSize.height)
+        }
+        if navigationBarItems.count > 0 {
+            stackSize.width -= spacing
+        }
+        stackView.frame = CGRect(origin: .zero, size: stackSize)
 
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
     }

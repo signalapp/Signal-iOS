@@ -24,7 +24,8 @@ public class ImageEditorView: UIView {
 
     private let canvasView: ImageEditorCanvasView
 
-    // TODO: We could hang this on the model or make this static.
+    // TODO: We could hang this on the model or make this static
+    //       if we wanted more color continuity.
     private var currentColor = ImageEditorColor.defaultColor()
 
     @objc
@@ -273,7 +274,7 @@ public class ImageEditorView: UIView {
 
         switch gestureRecognizer.state {
         case .began:
-            guard let locationStart = gestureRecognizer.locationStart else {
+            guard let locationStart = gestureRecognizer.locationFirst else {
                 owsFailDebug("Missing locationStart.")
                 return
             }
@@ -293,7 +294,7 @@ public class ImageEditorView: UIView {
             guard let textItem = movingTextItem else {
                 return
             }
-            guard let locationStart = gestureRecognizer.locationStart else {
+            guard let locationStart = gestureRecognizer.locationFirst else {
                 owsFailDebug("Missing locationStart.")
                 return
             }
@@ -444,7 +445,8 @@ public class ImageEditorView: UIView {
         let cropTool = ImageEditorCropViewController(delegate: self, model: model, srcImage: srcImage, previewImage: previewImage)
         self.delegate?.imageEditor(presentFullScreenView: cropTool,
                                    isTransparent: false)
-    }}
+    }
+}
 
 // MARK: -
 
@@ -498,6 +500,8 @@ extension ImageEditorView: ImageEditorTextViewControllerDelegate {
         } else {
             model.append(item: newItem)
         }
+
+        self.currentColor = color
     }
 
     public func textEditDidCancel() {
@@ -520,6 +524,7 @@ extension ImageEditorView: ImageEditorCropViewControllerDelegate {
 // MARK: -
 
 extension ImageEditorView: ImageEditorBrushViewControllerDelegate {
-    public func brushDidComplete() {
+    public func brushDidComplete(currentColor: ImageEditorColor) {
+        self.currentColor = currentColor
     }
 }

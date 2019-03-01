@@ -501,7 +501,7 @@ class ImageEditorCropViewController: OWSViewController {
 
         Logger.verbose("")
 
-        guard let locationStart = gestureRecognizer.locationStart else {
+        guard let locationStart = gestureRecognizer.locationFirst else {
             owsFailDebug("Missing locationStart.")
             return
         }
@@ -666,7 +666,7 @@ class ImageEditorCropViewController: OWSViewController {
             owsFailDebug("Missing pinchTransform.")
             return
         }
-        guard let oldLocationView = gestureRecognizer.locationStart else {
+        guard let oldLocationView = gestureRecognizer.locationFirst else {
             owsFailDebug("Missing locationStart.")
             return
         }
@@ -685,7 +685,7 @@ class ImageEditorCropViewController: OWSViewController {
     }
 
     private func cropRegion(forGestureRecognizer gestureRecognizer: ImageEditorPanGestureRecognizer) -> CropRegion? {
-        guard let location = gestureRecognizer.locationStart else {
+        guard let location = gestureRecognizer.locationFirst else {
             owsFailDebug("Missing locationStart.")
             return nil
         }

@@ -6,7 +6,7 @@ import UIKit
 
 @objc
 public protocol ImageEditorBrushViewControllerDelegate: class {
-    func brushDidComplete()
+    func brushDidComplete(currentColor: ImageEditorColor)
 }
 
 // MARK: -
@@ -21,7 +21,10 @@ public class ImageEditorBrushViewController: OWSViewController {
 
     private let paletteView: ImageEditorPaletteView
 
-    private var brushGestureRecognizer: ImageEditorPanGestureRecognizer?
+    // We only want to let users undo changes made in this view.
+    // So we snapshot any older "operation id" and prevent
+    // users from undoing it.
+    private let firstUndoOperationId: String?
 
     init(delegate: ImageEditorBrushViewControllerDelegate,
          model: ImageEditorModel,
@@ -30,6 +33,7 @@ public class ImageEditorBrushViewController: OWSViewController {
         self.model = model
         self.canvasView = ImageEditorCanvasView(model: model)
         self.paletteView = ImageEditorPaletteView(currentColor: currentColor)
+        self.firstUndoOperationId = model.currentUndoOperationId()
 
         super.init(nibName: nil, bundle: nil)
 
@@ -55,15 +59,15 @@ public class ImageEditorBrushViewController: OWSViewController {
         paletteView.delegate = self
         self.view.addSubview(paletteView)
         paletteView.autoVCenterInSuperview()
-        paletteView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 20)
+        paletteView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0)
 
         self.view.isUserInteractionEnabled = true
 
         let brushGestureRecognizer = ImageEditorPanGestureRecognizer(target: self, action: #selector(handleBrushGesture(_:)))
         brushGestureRecognizer.maximumNumberOfTouches = 1
         brushGestureRecognizer.referenceView = canvasView.gestureReferenceView
+        brushGestureRecognizer.delegate = self
         self.view.addGestureRecognizer(brushGestureRecognizer)
-        self.brushGestureRecognizer = brushGestureRecognizer
 
         updateNavigationBar()
     }
@@ -86,8 +90,10 @@ public class ImageEditorBrushViewController: OWSViewController {
         let doneButton = navigationBarButton(imageName: "image_editor_checkmark_full",
                                                 selector: #selector(didTapDone(sender:)))
 
+        // Prevent users from undo any changes made before entering the view.
+        let canUndo = model.canUndo() && firstUndoOperationId != model.currentUndoOperationId()
         var navigationBarItems = [UIView]()
-        if model.canUndo() {
+        if canUndo {
             navigationBarItems = [undoButton, doneButton]
         } else {
             navigationBarItems = [doneButton]
@@ -113,7 +119,7 @@ public class ImageEditorBrushViewController: OWSViewController {
     }
 
     private func completeAndDismiss() {
-        self.delegate?.brushDidComplete()
+        self.delegate?.brushDidComplete(currentColor: paletteView.selectedValue)
 
         self.dismiss(animated: false) {
             // Do nothing.
@@ -163,7 +169,7 @@ public class ImageEditorBrushViewController: OWSViewController {
 
             // Apply the location history of the gesture so that the stroke reflects
             // the touch's movement before the gesture recognized.
-            for location in gestureRecognizer.locations {
+            for location in gestureRecognizer.locationHistory {
                 tryToAppendStrokeSample(location)
             }
 
@@ -220,5 +226,15 @@ extension ImageEditorBrushViewController: ImageEditorModelObserver {
 extension ImageEditorBrushViewController: ImageEditorPaletteViewDelegate {
     public func selectedColorDidChange() {
         // TODO:
+    }
+}
+
+// MARK: -
+
+extension ImageEditorBrushViewController: UIGestureRecognizerDelegate {
+    @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        // Ignore touches that begin inside the palette.
+        let location = touch.location(in: paletteView)
+        return !paletteView.bounds.contains(location)
     }
 }
