@@ -6,7 +6,7 @@ import UIKit
 
 @objc
 public protocol ImageEditorBrushViewControllerDelegate: class {
-    func brushDidComplete()
+    func brushDidComplete(currentColor: ImageEditorColor)
 }
 
 // MARK: -
@@ -121,7 +121,7 @@ public class ImageEditorBrushViewController: OWSViewController {
     }
 
     private func completeAndDismiss() {
-        self.delegate?.brushDidComplete()
+        self.delegate?.brushDidComplete(currentColor: paletteView.selectedValue)
 
         self.dismiss(animated: false) {
             // Do nothing.
