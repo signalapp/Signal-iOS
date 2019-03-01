@@ -447,7 +447,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     };
 
     [layerView addSubview:label];
-    [label ows_autoPinToSuperviewMargins];
+    [label autoPinEdgesToSuperviewMargins];
 
     layerView.userInteractionEnabled = YES;
     [layerView
