@@ -146,11 +146,19 @@ public class ImageEditorView: UIView {
         let textWidthPoints = viewSize.width * ImageEditorTextItem.kDefaultUnitWidth
         let textWidthUnit = textWidthPoints / imageFrame.size.width
 
+        // New items should be aligned "upright", so they should have the _opposite_
+        // of the current transform rotation.
+        let rotationRadians = -model.currentTransform().rotationRadians
+        // Similarly, the size of the text item shuo
+        let scaling = 1 / model.currentTransform().scaling
+
         let textItem = ImageEditorTextItem.empty(withColor: currentColor,
                                                  unitWidth: textWidthUnit,
-                                                 fontReferenceImageWidth: imageFrame.size.width)
+                                                 fontReferenceImageWidth: imageFrame.size.width,
+                                                 scaling: scaling,
+                                                 rotationRadians: rotationRadians)
 
-        edit(textItem: textItem)
+        edit(textItem: textItem, isNewItem: true)
     }
 
     @objc func didTapDone(sender: UIButton) {
@@ -178,7 +186,7 @@ public class ImageEditorView: UIView {
             return
         }
 
-        edit(textItem: textItem)
+        edit(textItem: textItem, isNewItem: false)
     }
 
     // MARK: - Pinch Gesture
@@ -408,7 +416,7 @@ public class ImageEditorView: UIView {
 
     // MARK: - Edit Text Tool
 
-    private func edit(textItem: ImageEditorTextItem) {
+    private func edit(textItem: ImageEditorTextItem, isNewItem: Bool) {
         Logger.verbose("")
 
         // TODO:
@@ -418,6 +426,7 @@ public class ImageEditorView: UIView {
         let textEditor = ImageEditorTextViewController(delegate: self,
                                                        model: model,
                                                        textItem: textItem,
+                                                       isNewItem: isNewItem,
                                                        maxTextWidthPoints: maxTextWidthPoints)
         self.delegate?.imageEditor(presentFullScreenView: textEditor,
                                    isTransparent: false)

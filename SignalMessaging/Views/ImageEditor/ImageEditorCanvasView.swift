@@ -489,13 +489,15 @@ public class ImageEditorCanvasView: UIView {
         // I don't think we need to enable allowsFontSubpixelQuantization
         // or set truncationMode.
 
-        // This text needs to be rendered at a scale that reflects the sceen scaling
-        // AND the item's scaling.
-        layer.contentsScale = UIScreen.main.scale * item.scaling
+        // This text needs to be rendered at a scale that reflects:
+        //
+        // * The screen scaling (so that text looks sharp on Retina devices.
+        // * The item's scaling (so that text doesn't become blurry as you make it larger).
+        // * Model transform (so that text doesn't become blurry as you zoom the content).
+        layer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
 
         // TODO: Min with measured width.
         let maxWidth = imageFrame.size.width * item.unitWidth
-//        let maxWidth = viewSize.width * item.unitWidth
 
         let maxSize = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
         // TODO: Is there a more accurate way to measure text in a CATextLayer?

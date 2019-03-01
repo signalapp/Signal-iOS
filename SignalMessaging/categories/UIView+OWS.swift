@@ -202,6 +202,10 @@ public extension CGPoint {
                        y: Swift.max(y, value.y))
     }
 
+    public var length: CGFloat {
+        return sqrt(x * x + y * y)
+    }
+
     public static let unit: CGPoint = CGPoint(x: 1.0, y: 1.0)
 
     public static let unitMidpoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
