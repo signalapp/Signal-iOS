@@ -609,12 +609,7 @@ private class SignalCallData: NSObject {
     public func handleMissedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        // Insert missed call record
-        if let callRecord = call.callRecord {
-            if callRecord.callType == RPRecentCallTypeIncoming {
-                callRecord.updateCallType(RPRecentCallTypeIncomingMissed)
-            }
-        } else {
+        if call.callRecord == nil {
             // MJK TODO remove this timestamp param
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                      withCallNumber: call.thread.contactIdentifier(),
@@ -622,10 +617,27 @@ private class SignalCallData: NSObject {
                                      in: call.thread)
         }
 
-        assert(call.callRecord != nil)
-        call.callRecord?.save()
+        guard let callRecord = call.callRecord else {
+            handleFailedCall(failedCall: call, error: .assertionError(description: "callRecord was unexpectedly nil"))
+            return
+        }
 
-        self.callUIAdapter.reportMissedCall(call)
+        switch callRecord.callType {
+        case RPRecentCallTypeIncomingMissed:
+            callRecord.save()
+            callUIAdapter.reportMissedCall(call)
+        case RPRecentCallTypeIncomingIncomplete, RPRecentCallTypeIncoming:
+            callRecord.updateCallType(RPRecentCallTypeIncomingMissed)
+            callUIAdapter.reportMissedCall(call)
+        case RPRecentCallTypeOutgoingIncomplete:
+            callRecord.updateCallType(RPRecentCallTypeOutgoingMissed)
+        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity, RPRecentCallTypeIncomingDeclined, RPRecentCallTypeOutgoingMissed, RPRecentCallTypeOutgoing:
+            owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
+            callRecord.save()
+        default:
+            callRecord.save()
+            owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
+        }
     }
 
     /**
@@ -670,6 +682,9 @@ private class SignalCallData: NSObject {
         }
 
         call.state = .remoteBusy
+        assert(call.callRecord != nil)
+        call.callRecord?.updateCallType(RPRecentCallTypeOutgoingMissed)
+
         callUIAdapter.remoteBusy(call)
         terminateCall()
     }
@@ -1919,5 +1934,31 @@ private class SignalCallData: NSObject {
         }
 
         handleFailedCall(failedCall: call, error: CallError.messageSendFailure(underlyingError: error))
+    }
+}
+
+extension RPRecentCallType: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case RPRecentCallTypeIncoming:
+            return "RPRecentCallTypeIncoming"
+        case RPRecentCallTypeOutgoing:
+            return "RPRecentCallTypeOutgoing"
+        case RPRecentCallTypeIncomingMissed:
+            return "RPRecentCallTypeIncomingMissed"
+        case RPRecentCallTypeOutgoingIncomplete:
+            return "RPRecentCallTypeOutgoingIncomplete"
+        case RPRecentCallTypeIncomingIncomplete:
+            return "RPRecentCallTypeIncomingIncomplete"
+        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
+            return "RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity"
+        case RPRecentCallTypeIncomingDeclined:
+            return "RPRecentCallTypeIncomingDeclined"
+        case RPRecentCallTypeOutgoingMissed:
+            return "RPRecentCallTypeOutgoingMissed"
+        default:
+            owsFailDebug("unexpected RPRecentCallType: \(self)")
+            return "RPRecentCallTypeUnknown"
+        }
     }
 }
