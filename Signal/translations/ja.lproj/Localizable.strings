@@ -1539,7 +1539,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "不正な番号です";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Signalのプロフィールは暗号化され、Signalのサービスさえアクセスできません。";
+"ONBOARDING_PROFILE_EXPLANATION" = "プロフィールは暗号化され、Signalのサービスさえアクセスできません。";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "あなたの名前";
@@ -1551,7 +1551,7 @@
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "利用規約と個人情報保護";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Signalは誰でも使えるメッセンジャーアプリです。";
+"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "番号違いですか？";
