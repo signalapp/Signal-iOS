@@ -160,7 +160,11 @@ public class ImageEditorCanvasView: UIView {
             owsFailDebug("Couldn't load background image.")
             return nil
         }
-        return srcImage
+        // We normalize the image orientation here for the sake
+        // of code simplicity.  We could modify the image layer's
+        // transform to handle the normalization, which would
+        // have perf benefits.
+        return srcImage.normalized()
     }
 
     // MARK: - Content
