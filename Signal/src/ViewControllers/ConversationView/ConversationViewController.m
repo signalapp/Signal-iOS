@@ -3528,14 +3528,6 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)clearDraft
-{
-    __block TSThread *thread = _thread;
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [thread setDraft:@"" transaction:transaction];
-    }];
-}
-
 #pragma mark Unread Badge
 
 - (void)updateBackButtonUnreadCount
@@ -4084,7 +4076,12 @@ typedef enum : NSUInteger {
 
 - (void)sendButtonPressed
 {
-    [BenchManager startEventWithTitle:@"Send message" eventId:@"message-send"];
+    [BenchManager startEventWithTitle:@"Send Message" eventId:@"message-send"];
+    [BenchManager startEventWithTitle:@"Send Message milestone: clearTextMessageAnimated completed"
+                              eventId:@"fromSendUntil_clearTextMessageAnimated"];
+    [BenchManager startEventWithTitle:@"Send Message milestone: toggleDefaultKeyboard completed"
+                              eventId:@"fromSendUntil_toggleDefaultKeyboard"];
+
     [self tryToSendTextMessage:self.inputToolbar.messageText updateKeyboardState:YES];
 }
 
@@ -4137,21 +4134,30 @@ typedef enum : NSUInteger {
 
     [self messageWasSent:message];
 
+    // Clearing the text message is a key part of the send animation.
+    // It takes 10-15ms, but we do it inline rather than dispatch async
+    // since the send can't feel "complete" without it.
+    [BenchManager benchWithTitle:@"clearTextMessageAnimated"
+                           block:^{
+                               [self.inputToolbar clearTextMessageAnimated:YES];
+                           }];
+    [BenchManager completeEventWithEventId:@"fromSendUntil_clearTextMessageAnimated"];
+
     dispatch_async(dispatch_get_main_queue(), ^{
+        // After sending we want to return from the numeric keyboard to the
+        // alphabetical one. Because this is so slow (40-50ms), we prefer it
+        // happens async, after any more essential send UI work is done.
         [BenchManager benchWithTitle:@"toggleDefaultKeyboard"
                                block:^{
-                                   if (updateKeyboardState) {
-                                       [self.inputToolbar toggleDefaultKeyboard];
-                                   }
+                                   [self.inputToolbar toggleDefaultKeyboard];
                                }];
-
-        [BenchManager benchWithTitle:@"clearTextMessageAnimated"
-                               block:^{
-                                   [self.inputToolbar clearTextMessageAnimated:YES];
-                               }];
+        [BenchManager completeEventWithEventId:@"fromSendUntil_toggleDefaultKeyboard"];
     });
 
-    [self clearDraft];
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.thread setDraft:@"" transaction:transaction];
+    }];
+
     if (didAddToProfileWhitelist) {
         [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
     }
