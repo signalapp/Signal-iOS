@@ -24,7 +24,7 @@
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Toevoegen";
 
 /* Title for the 'add contact' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Contact toevoegen";
+"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Contactpersoon toevoegen";
 
 /* Title for the 'add by phone number' section of the 'add group member' view. */
 "ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Telefoonnummer toevoegen";
@@ -339,7 +339,7 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Niet beantwoord";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %@";
+"CALL_STATUS_FORMAT" = "Signal-oproep %@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "Bellen";
@@ -1057,16 +1057,16 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Zoeken";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds: {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Sommige van je contactpersonen maken al gebruik van Signal, waaronder %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds: {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Sommige van je contactpersonen maken al gebruik van Signal, waaronder %@ en %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds: {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@, %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Sommige van je contactpersonen maken al gebruik van Signal, waaronder %@, %@ en %@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Begin je eerste gesprek hier.";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Geen resultaten voor ‘%@’ gevonden";
@@ -1084,13 +1084,13 @@
 "IMAGE_EDITOR_CROP_BUTTON" = "Bijsnijden";
 
 /* Label for button that resets crop & rotation state. */
-"IMAGE_EDITOR_RESET_BUTTON" = "Opnieuw instellen";
+"IMAGE_EDITOR_RESET_BUTTON" = "Opnieuw beginnen";
 
 /* Label for button that rotates image 45 degrees. */
-"IMAGE_EDITOR_ROTATE_45_BUTTON" = "Rotate 45°";
+"IMAGE_EDITOR_ROTATE_45_BUTTON" = "Roteer 45°";
 
 /* Label for button that rotates image 90 degrees. */
-"IMAGE_EDITOR_ROTATE_90_BUTTON" = "Rotate 90°";
+"IMAGE_EDITOR_ROTATE_90_BUTTON" = "Roteer 90°";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Je kunt niet meer dan %@ items delen.";
@@ -1108,7 +1108,7 @@
 "IN_CALL_RINGING" = "Bellen…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Beantwoord. Beveiligen…";
+"IN_CALL_SECURING" = "Beantwoord. Aan het beveiligen…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Oproep beëindigd.";
@@ -1509,82 +1509,82 @@
 "ONBOARDING_2FA_EXPLANATION_1" = "Registratievergrendeling is ingeschakeld voor dit telefoonnummer. Voer de pincode voor registratievergrendeling in.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "Your Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"ONBOARDING_2FA_EXPLANATION_2" = "Je registratievergrendelingspincode is iets anders dan de automatische verificatiecode die in de vorige stap naar je telefoon is gestuurd.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "I forgot my PIN";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Ik ben mijn pincode vergeten";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Registratievergrendeling";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
+"ONBOARDING_CAPTCHA_TITLE" = "Voeg iets menselijks toe aan je berichten";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Enable Permissions";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Geef toestemmingen";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Your contact information is always transmitted securely.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Je contactinformatie wordt altijd beveiligd uitgewisseld.";
 
 /* Label for the 'not now' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Niet nu";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal can let you know when you get a message (and who it is from)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Signal kan je laten weten wanneer je een bericht ontvangt (en van wie)";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Enter your phone number to get started";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Voer je telefoonnummer in om te beginnen";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ongeldig nummer";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Signal profiles are end-to-end encrypted and the Signal service never has access to this information.";
+"ONBOARDING_PROFILE_EXPLANATION" = "Signal-profielen zijn eind-tot-eind-versleuteld en de Signal-dienst heeft nooit toegang tot deze informatie.";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Your Name";
+"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Je naam";
 
 /* Title of the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_TITLE" = "Set up your profile";
+"ONBOARDING_PROFILE_TITLE" = "Stel je profiel op";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Voorwaarden en privacybeleid";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Signal is the private messenger for everybody";
+"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Verkeerd nummer?";
 
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "I didn't get a code (available in %@)";
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Ik heb geen code ontvangen (beschikbaar na %@)";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "This code is incorrect";
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "Deze code is onjuist";
 
 /* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "I didn't get a code";
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Ik heb geen code ontvangen";
 
 /* Message for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Please ensure that you have cellular service and can receive SMS messages.";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Ga na dat je mobiel bereik hebt en dat je sms-berichten kunt ontvangen.";
 
 /* Title for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "No code?";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Geen code?";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Resend code";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Stuur code opnieuw";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Bel me";
 
 /* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Still no code?";
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Nog steeds geen code?";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Enter the code we sent to %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Voer de code in die we hebben verzonden naar %@";
 
 /* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "We just resent a code to %@";
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "We hebben zojuist opnieuw een code verzonden naar %@";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Instellingen";
@@ -1695,7 +1695,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "De gescande code lijkt niet op een veiligheidsnummer. Gebruiken jullie allebei de laatste versie van Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Als je de veiligheid van je eind-tot-eindversleuteling met %@ wilt verifiëren, vergelijk dan de bovenstaande nummers met de nummers op het apparaat van je contact.\n\nJe kan ook de code op hun telefoon scannen, of hen vragen jouw code te scannen.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Als je de veiligheid van je eind-tot-eindversleuteling met %@ wilt verifiëren, vergelijk dan de bovenstaande nummers met de nummers op het apparaat van je contactpersoon.\n\nJe kan ook de code op zijn/haar telefoon scannen, of hem/haar vragen jouw code te scannen.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Veiligheidsnummer verifiëren";
@@ -1935,7 +1935,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Ons Signal-veiligheidsnummer:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Je veiligheidsnummer met %@ is veranderd. Het wordt aanbevolen het nieuwe nummer te verifiëren.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Je veiligheidsnummer met %@ is veranderd. Het wordt aanbevolen het nieuwe veiligheidsnummer te verifiëren.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Scan de QR-code op het apparaat van je contact.";
@@ -2343,7 +2343,7 @@
 "SOUNDS_NONE" = "Geen";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Je veiligheidsnummer met %@ komt overeen. Je kan dit contact markeren als geverifieerd.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Je veiligheidsnummer met %@ komt overeen. Je kan deze contactpersoon markeren als geverifieerd.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Veiligheidsnummer komt overeen!";
@@ -2358,7 +2358,7 @@
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ uur";
+"TIME_AMOUNT_HOURS" = "%@ uren";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@u";
@@ -2412,7 +2412,7 @@
 "UNKNOWN_CONTACT_NAME" = "Onbekend contact";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Unknown Country";
+"UNKNOWN_COUNTRY_NAME" = "Onbekend land";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Onbekend";

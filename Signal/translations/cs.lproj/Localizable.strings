@@ -1057,7 +1057,7 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Hledat";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds: {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Některý z vašich kontaktů už je na Signalu, včetně 1 %@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds: {{The names of 2 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@ and %@";
@@ -1551,7 +1551,7 @@
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Smluvní podmínky a zásady ochrany osobních údajů";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Signal is the private messenger for everybody";
+"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Špatné číslo?";

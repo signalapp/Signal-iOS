@@ -378,7 +378,10 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     emptyInboxImageView.layer.minificationFilter = kCAFilterTrilinear;
     emptyInboxImageView.layer.magnificationFilter = kCAFilterTrilinear;
     [emptyInboxImageView autoPinToAspectRatioWithSize:emptyInboxImageView.image.size];
-    
+    CGSize screenSize = UIScreen.mainScreen.bounds.size;
+    CGFloat emptyInboxImageSize = MIN(screenSize.width, screenSize.height) * 0.65f;
+    [emptyInboxImageView autoSetDimension:ALDimensionWidth toSize:emptyInboxImageSize];
+
     UILabel *emptyInboxLabel = [UILabel new];
     emptyInboxLabel.text = NSLocalizedString(@"INBOX_VIEW_EMPTY_INBOX",
                                              @"Message shown in the home view when the inbox is empty.");
@@ -444,7 +447,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     };
 
     [layerView addSubview:label];
-    [label ows_autoPinToSuperviewMargins];
+    [label autoPinEdgesToSuperviewMargins];
 
     layerView.userInteractionEnabled = YES;
     [layerView

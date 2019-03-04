@@ -1551,7 +1551,7 @@
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "လိုက်နာဆောင်ရွက်ရမည့် အချက်များ";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Signal is the private messenger for everybody";
+"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "ဖုန်းနံပါတ်မှားနေပါသလား?";

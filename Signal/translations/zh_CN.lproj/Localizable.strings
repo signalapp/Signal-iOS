@@ -1057,16 +1057,16 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "搜索";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds: {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "您的一些联系人已经在使用Signal了，比如%@。";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds: {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "您的一些联系人已经在使用Signal了，比如%@和%@。";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds: {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@, %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "您的一些联系人已经在使用Signal了，比如%@，%@，以及%@。";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "从这里开始新的会话。";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "没有找到“%@”的相关结果。";
@@ -1087,10 +1087,10 @@
 "IMAGE_EDITOR_RESET_BUTTON" = "复位";
 
 /* Label for button that rotates image 45 degrees. */
-"IMAGE_EDITOR_ROTATE_45_BUTTON" = "Rotate 45°";
+"IMAGE_EDITOR_ROTATE_45_BUTTON" = "旋转45度";
 
 /* Label for button that rotates image 90 degrees. */
-"IMAGE_EDITOR_ROTATE_90_BUTTON" = "Rotate 90°";
+"IMAGE_EDITOR_ROTATE_90_BUTTON" = "旋转90度";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "您最多分享%@项。";
@@ -1509,82 +1509,82 @@
 "ONBOARDING_2FA_EXPLANATION_1" = "该电话号码已经开启注册锁。请输入注册锁PIN码。";
 
 /* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "Your Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"ONBOARDING_2FA_EXPLANATION_2" = "您的注册锁 PIN 码与最后一步时发送给您的验证码是不同的。";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "I forgot my PIN";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "我忘记了PIN码";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "注册锁";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
+"ONBOARDING_CAPTCHA_TITLE" = "给您的消息添加一点人情味";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Enable Permissions";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "开启权限";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Your contact information is always transmitted securely.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "您的联系人信息一直是加密传送的。";
 
 /* Label for the 'not now' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "以后再说";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal can let you know when you get a message (and who it is from)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Signal会及时提醒您收到了谁的信息";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Enter your phone number to get started";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "输入您的手机号以开始使用";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "无效的号码";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Signal profiles are end-to-end encrypted and the Signal service never has access to this information.";
+"ONBOARDING_PROFILE_EXPLANATION" = "Signal的个人资料都是端到端加密的。Signal服务器永远不会有权访问此数据。";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Your Name";
+"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "你的名字";
 
 /* Title of the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_TITLE" = "Set up your profile";
+"ONBOARDING_PROFILE_TITLE" = "设置您的资料";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "协议与隐私政策";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Signal is the private messenger for everybody";
+"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "错误的号码？";
 
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "I didn't get a code (available in %@)";
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "我没有收到验证码（%@后可用）";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "This code is incorrect";
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "验证码不正确";
 
 /* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "I didn't get a code";
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "我没有收到验证码";
 
 /* Message for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Please ensure that you have cellular service and can receive SMS messages.";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "请确保您可以联网并接收短信。";
 
 /* Title for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "No code?";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "没收到验证码？";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Resend code";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "重新发送验证码";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "改成给我打电话";
 
 /* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Still no code?";
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "仍然没收到验证码？";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Enter the code we sent to %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "请输入我们发送到%@的验证码";
 
 /* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "We just resent a code to %@";
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "我们刚刚向%@发送了验证码";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "设置";
@@ -2412,7 +2412,7 @@
 "UNKNOWN_CONTACT_NAME" = "未知的联系人";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Unknown Country";
+"UNKNOWN_COUNTRY_NAME" = "未知国家";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "无法识别";

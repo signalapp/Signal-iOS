@@ -199,8 +199,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    if (self.topViewController) {
-        return self.topViewController.supportedInterfaceOrientations;
+    if (self.visibleViewController) {
+        return self.visibleViewController.supportedInterfaceOrientations;
     } else {
         return UIInterfaceOrientationMaskAllButUpsideDown;
     }

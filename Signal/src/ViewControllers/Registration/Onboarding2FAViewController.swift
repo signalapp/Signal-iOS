@@ -73,7 +73,6 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             explanationLabel1,
             UIView.spacer(withHeight: 10),
             explanationLabel2,
-
             topSpacer,
             pinTextField,
             UIView.spacer(withHeight: 10),
@@ -85,7 +84,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 20, left: 32, bottom: 20, right: 32)
+        stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.autoPinWidthToSuperview()

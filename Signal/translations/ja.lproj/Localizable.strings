@@ -1057,16 +1057,16 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "検索";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds: {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "連絡先には、すでにSignalを使用中の人がいます: %@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds: {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "連絡先には、すでにSignalを使用中の人がいます:%@ と %@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds: {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@, %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "連絡先には、すでにSignalを使用中の人がいます: %@, %@, %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "会話を始めてみましょう";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "「%@」について何も見つかりませんでした";
@@ -1087,10 +1087,10 @@
 "IMAGE_EDITOR_RESET_BUTTON" = "リセット";
 
 /* Label for button that rotates image 45 degrees. */
-"IMAGE_EDITOR_ROTATE_45_BUTTON" = "Rotate 45°";
+"IMAGE_EDITOR_ROTATE_45_BUTTON" = "45°回転";
 
 /* Label for button that rotates image 90 degrees. */
-"IMAGE_EDITOR_ROTATE_90_BUTTON" = "Rotate 90°";
+"IMAGE_EDITOR_ROTATE_90_BUTTON" = "90°回転";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "画像の共有は%@点までです。";
@@ -1509,82 +1509,82 @@
 "ONBOARDING_2FA_EXPLANATION_1" = "この電話番号は登録ロックが設定されています。登録ロックPINを入力してください。";
 
 /* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "Your Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"ONBOARDING_2FA_EXPLANATION_2" = "PINは、あなたの電話から送信された自動認証コードとは別の暗証番号です。";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "I forgot my PIN";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "PINを忘れました";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "登録鍵";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
+"ONBOARDING_CAPTCHA_TITLE" = "メッセージに「人間っぽさ」を加える";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Enable Permissions";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "パーミッションを有効化する";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Your contact information is always transmitted securely.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "情報は常に安全に送信されます";
 
 /* Label for the 'not now' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "あとで";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal can let you know when you get a message (and who it is from)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Signalがメッセージの受信時間（相手）を知らせる";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Enter your phone number to get started";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "あなたの電話番号を入力してください";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "不正な番号です";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Signal profiles are end-to-end encrypted and the Signal service never has access to this information.";
+"ONBOARDING_PROFILE_EXPLANATION" = "プロフィールは暗号化され、Signalのサービスさえアクセスできません。";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Your Name";
+"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "あなたの名前";
 
 /* Title of the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_TITLE" = "Set up your profile";
+"ONBOARDING_PROFILE_TITLE" = "プロフィールの設定";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "利用規約と個人情報保護";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Signal is the private messenger for everybody";
+"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "番号違いですか？";
 
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "I didn't get a code (available in %@)";
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "（%@にある）コードを得られませんでした";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "This code is incorrect";
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "コードが不正です";
 
 /* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "I didn't get a code";
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "コードが得られませんでした";
 
 /* Message for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Please ensure that you have cellular service and can receive SMS messages.";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "SMSショートメッセージが受信できるようになっているか確認してください。";
 
 /* Title for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "No code?";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "コードがない？";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Resend code";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "コードの再送信";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "音声通話で受信する";
 
 /* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Still no code?";
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "コードがまだ届かない？";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Enter the code we sent to %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "%@に送信したコードを入力してください";
 
 /* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "We just resent a code to %@";
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "%@にコードを再送しました";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "設定";
@@ -2412,7 +2412,7 @@
 "UNKNOWN_CONTACT_NAME" = "不明な連絡先";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Unknown Country";
+"UNKNOWN_COUNTRY_NAME" = "国名が不明";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "不明";
