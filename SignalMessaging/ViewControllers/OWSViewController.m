@@ -23,7 +23,7 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
 
 @property (nonatomic, weak) UIView *bottomLayoutView;
 @property (nonatomic) NSLayoutConstraint *bottomLayoutConstraint;
-@property (nonatomic) BOOL shouldAnimatedBottomLayout;
+@property (nonatomic) BOOL shouldAnimateBottomLayout;
 
 @end
 
@@ -71,14 +71,14 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
 {
     [super viewDidAppear:animated];
 
-    self.shouldAnimatedBottomLayout = YES;
+    self.shouldAnimateBottomLayout = YES;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
 
-    self.shouldAnimatedBottomLayout = NO;
+    self.shouldAnimateBottomLayout = NO;
 }
 
 - (void)viewDidLoad
@@ -216,7 +216,7 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
     };
 
 
-    if (self.shouldAnimatedBottomLayout) {
+    if (self.shouldAnimateBottomLayout) {
         updateLayout();
     } else {
         [UIView performWithoutAnimation:updateLayout];
