@@ -20,6 +20,10 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void);
 // BUT adjust its location upward if the keyboard appears.
 - (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view avoidNotch:(BOOL)avoidNotch;
 
+// If YES, the bottom view never "reclaims" layout space if the keyboard is dismissed.
+// Defaults to NO.
+@property (nonatomic) BOOL shouldBottomViewReserveSpaceForKeyboard;
+
 @end
 
 NS_ASSUME_NONNULL_END

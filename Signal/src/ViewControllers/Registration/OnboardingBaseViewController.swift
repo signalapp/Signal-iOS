@@ -73,6 +73,12 @@ public class OnboardingBaseViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
+        self.shouldBottomViewReserveSpaceForKeyboard = true
+    }
+
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 

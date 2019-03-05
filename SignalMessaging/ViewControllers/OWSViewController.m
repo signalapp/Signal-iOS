@@ -211,7 +211,11 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
         // There's no need to use: [UIView animateWithDuration:...].
         // Any layout changes made during these notifications are
         // automatically animated.
-        self.bottomLayoutConstraint.constant = offset;
+        if (self.shouldBottomViewReserveSpaceForKeyboard) {
+            self.bottomLayoutConstraint.constant = MIN(self.bottomLayoutConstraint.constant, offset);
+        } else {
+            self.bottomLayoutConstraint.constant = offset;
+        }
         [self.bottomLayoutView.superview layoutIfNeeded];
     };
 
