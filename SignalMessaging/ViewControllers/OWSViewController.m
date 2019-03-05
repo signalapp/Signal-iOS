@@ -208,9 +208,6 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
     // We want to suppress those animations if the view isn't visible,
     // otherwise presentation animations don't work properly.
     dispatch_block_t updateLayout = ^{
-        // There's no need to use: [UIView animateWithDuration:...].
-        // Any layout changes made during these notifications are
-        // automatically animated.
         if (self.shouldBottomViewReserveSpaceForKeyboard) {
             self.bottomLayoutConstraint.constant = MIN(self.bottomLayoutConstraint.constant, offset);
         } else {
