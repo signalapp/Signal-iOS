@@ -70,6 +70,10 @@ public class OnboardingController: NSObject {
         return AppEnvironment.shared.accountManager
     }
 
+    private var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
     private var backup: OWSBackup {
         return AppEnvironment.shared.backup
     }
@@ -161,6 +165,13 @@ public class OnboardingController: NSObject {
         AssertIsOnMainThread()
 
         Logger.info("")
+
+        // At this point, the user has been prompted for contact access
+        // and has valid service credentials.
+        // We start the contact fetch/intersection now so that by the time
+        // they get to HomeView we can show meaningful contact in the suggested
+        // contact bubble.
+        contactsManager.requestSystemContactsOnce()
 
         if tsAccountManager.isReregistering() {
             showProfileView(fromView: view)
