@@ -467,9 +467,32 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self updateViewState];
 }
 
+- (NSArray<SignalAccount *> *)suggestedAccountsForFirstContact
+{
+    NSMutableArray<SignalAccount *> *accounts = [NSMutableArray new];
+    NSString *_Nullable localNumber = [TSAccountManager localNumber];
+    if (localNumber == nil) {
+        OWSFailDebug(@"localNumber was unexepectedly nil");
+        return @[];
+    }
+
+    for (SignalAccount *account in self.contactsManager.signalAccounts) {
+        if ([localNumber isEqual:account.recipientId]) {
+            continue;
+        }
+        [accounts addObject:account];
+        if (accounts.count >= 3) {
+            return accounts;
+        }
+    }
+
+    return [accounts copy];
+}
+
 - (void)updateFirstConversationLabel
 {
-    NSArray<SignalAccount *> *signalAccounts = self.contactsManager.signalAccounts;
+
+    NSArray<SignalAccount *> *signalAccounts = self.suggestedAccountsForFirstContact;
 
     NSString *formatString = @"";
     NSMutableArray<NSString *> *contactNames = [NSMutableArray new];
