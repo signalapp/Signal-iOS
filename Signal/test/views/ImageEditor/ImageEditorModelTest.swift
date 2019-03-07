@@ -14,7 +14,7 @@ class ImageEditorModelTest: SignalBaseTest {
         let unitTranslation = CGPoint.zero
         let rotationRadians: CGFloat = 0
         let scaling: CGFloat = 1
-        let transform = ImageEditorTransform(outputSizePixels: outputSizePixels, unitTranslation: unitTranslation, rotationRadians: rotationRadians, scaling: scaling)
+        let transform = ImageEditorTransform(outputSizePixels: outputSizePixels, unitTranslation: unitTranslation, rotationRadians: rotationRadians, scaling: scaling, isFlipped: false)
 
         let viewSize = outputSizePixels
         let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: imageSizePixels, transform: transform)
@@ -34,7 +34,7 @@ class ImageEditorModelTest: SignalBaseTest {
         let unitTranslation = CGPoint(x: +0.5, y: -0.5)
         let rotationRadians: CGFloat = 0
         let scaling: CGFloat = 2
-        let transform = ImageEditorTransform(outputSizePixels: outputSizePixels, unitTranslation: unitTranslation, rotationRadians: rotationRadians, scaling: scaling)
+        let transform = ImageEditorTransform(outputSizePixels: outputSizePixels, unitTranslation: unitTranslation, rotationRadians: rotationRadians, scaling: scaling, isFlipped: false)
 
         let viewSize = CGSize(width: 335, height: 595)
         let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: imageSizePixels, transform: transform)
