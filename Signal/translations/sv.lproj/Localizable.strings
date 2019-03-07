@@ -1452,7 +1452,7 @@
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ till %@";
 
 /* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Namnge gruppchatten";
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Namnge gruppkonversationen";
 
 /* a title for the non-contacts section of the 'new group' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Andra användare";
@@ -1551,7 +1551,7 @@
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Villkor & Dataskyddspolicy";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
+"ONBOARDING_SPLASH_TITLE" = "Ta sekretess med dig.\nVar dig själv i varje meddelande.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Fel nummer?";
@@ -1995,7 +1995,7 @@
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Andra kontakter";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Senaste chattar";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Senaste konversationer";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Skicka igen";

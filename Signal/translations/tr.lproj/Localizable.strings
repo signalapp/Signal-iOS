@@ -1518,7 +1518,7 @@
 "ONBOARDING_2FA_TITLE" = "Kayıt Kilidi";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
+"ONBOARDING_CAPTCHA_TITLE" = "Mesajlarınıza insan eli değsin";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "İzinleri Etkinleştir";
@@ -1551,7 +1551,7 @@
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Şartlar ve Gizlilik İlkesi";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
+"ONBOARDING_SPLASH_TITLE" = "Gizliliğinizi koruyun.\nHer mesajda kendiniz olun.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Yanlış numara?";

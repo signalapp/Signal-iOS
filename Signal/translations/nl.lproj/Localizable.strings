@@ -8,14 +8,14 @@
 "ACTION_AUDIO_CALL" = "Signal-oproep";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Nodig uit voor Signal";
+"ACTION_INVITE" = "Uitnodigen voor Signal";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Stuur bericht";
 
 /* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Deel contact";
+"ACTION_SHARE_CONTACT" = "Deel contactinformatie";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Video-oproep";
@@ -123,7 +123,7 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Fout bij verzenden van bijlage";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Converteren van afbeelding mislukt.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Kan afbeelding niet converteren naar JPEG.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Kan video niet verwerken.";
@@ -294,7 +294,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "%@ blokkeren?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Geblokkeerde gebruikers zullen je niet kunnen bellen of berichten sturen.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Wanneer een geblokkeerde gebruiker jou belt gaat jouw telefoon niet over. Wanneer een geblokkeerde gebruiker jou een bericht stuurt komt die nooit aan.";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Doorgaan";
@@ -850,10 +850,10 @@
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Voer een pincode in voor de registratievergrendeling. De volgende keer dat je dit telefoonnummer probeert te registreren bij Signal, zal je gevraagd worden deze pincode in te voeren.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Schakel voor verhoogde veiligheid een pincode voor registratievergrendeling in, die vereist zal worden om dit telefoonnummer opnieuw bij Signal te registreren.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Schakel voor verhoogde veiligheid een registratievergrendeling in. Door dit in te schakelen kan niemand Signal met jouw telefoonnummer registreren zonder eerst een pincode in te voeren.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registratievergrendeling is ingeschakeld. Wanneer je je telefoonnummer opnieuw bij Signal registreert, zal je gevraagd worden deze pincode in te voeren.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registratievergrendeling is ingeschakeld. Je zult je registratievergrendelingspincode moeten invoeren als je je nummer opnieuw registreert bij Signal. Dit voorkomt dat een ander jouw nummer kan registreren.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Registratievergrendeling";
@@ -904,7 +904,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Er is een onbekende fout opgetreden.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is geen Signal-gebruiker.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contactpersoon is geen Signal-gebruiker.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Fout met bijlage: vraag je contact om Signal bij te werken naar de laatste versie en het bericht opnieuw te verzenden.";
@@ -1138,19 +1138,19 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Ongeldig audiobestand.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Je kan toegang geven tot je contacten in de iOS-instellingenapp om je vrienden uit te nodigen voor Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Je kan toegang geven tot je contacten in de iOS-instellingenapp om je vrienden en kennissen uit te nodigen voor Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Toegang tot contacten toestaan";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Vrienden uitnodigen voor Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Kennissen uitnodigen voor Signal";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Zoeken";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Vrienden uitnodigen";
+"INVITE_FRIENDS_PICKER_TITLE" = "Kennissen uitnodigen";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Door meerdere mensen tegelijkertijd uit te nodigen maak je een groepsbericht. De ontvangers kunnen elkaar zien.";
@@ -1255,7 +1255,7 @@
 "MESSAGE_ACTION_DETAILS" = "Meer informatie";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Dit bericht beantwoorden";
+"MESSAGE_ACTION_REPLY" = "Op dit bericht reageren";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SAVE_MEDIA" = "Media opslaan";
@@ -1348,7 +1348,7 @@
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is niet langer gemarkeerd als geverifieerd. Tik voor opties.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "Je hebt deze gebruiker geblokkeerd";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "Je hebt deze persoon geblokkeerd";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ is niet langer gemarkeerd als geverifieerd. Tik voor opties.";
@@ -1551,7 +1551,7 @@
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Voorwaarden en privacybeleid";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
+"ONBOARDING_SPLASH_TITLE" = "Neem privacy met je mee.\nWees jezelf in elk bericht.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Verkeerd nummer?";
@@ -1695,7 +1695,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "De gescande code lijkt niet op een veiligheidsnummer. Gebruiken jullie allebei de laatste versie van Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Als je de veiligheid van je eind-tot-eindversleuteling met %@ wilt verifiëren, vergelijk dan de bovenstaande nummers met de nummers op het apparaat van je contactpersoon.\n\nJe kan ook de code op zijn/haar telefoon scannen, of hem/haar vragen jouw code te scannen.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Als je de veiligheid van je eind-tot-eindversleuteling met %@ wilt verifiëren, vergelijk dan de bovenstaande nummers met de nummers op het apparaat van je contactpersoon.\n\nJe kan ook de code op zijn/haar telefoon scannen, of hem/haar vragen om jouw code te scannen.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Veiligheidsnummer verifiëren";
@@ -1749,7 +1749,7 @@
 "PUSH_MANAGER_MARKREAD" = "Markeren als gelezen";
 
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Antwoord";
+"PUSH_MANAGER_REPLY" = "Reageer";
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Opnieuw registreren voor pushmeldingen geslaagd.";
@@ -1761,13 +1761,13 @@
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Reageren op %@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "In reactie op %@";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Reageren op jou";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "In reactie op jou";
 
 /* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Reageren op jezelf";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "In reactie op jezelf";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Oorspronkelijk bericht niet gevonden.";
@@ -2010,13 +2010,13 @@
 "SEND_INVITE_FAILURE" = "Uitnodiging sturen mislukt, probeer het later opnieuw.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Je hebt een vriend uitgenodigd om Signal te gebruiken!";
+"SEND_INVITE_SUCCESS" = "Je hebt een kennis uitgenodigd om Signal te gebruiken!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Uitnodigen via sms: %@";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "Vriend uitnodigen via onbeveiligde sms?";
+"SEND_SMS_CONFIRM_TITLE" = "Kennis uitnodigen via onbeveiligde sms?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Wil je het volgende nummer uitnodigen voor Signal:";
@@ -2358,7 +2358,7 @@
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ uren";
+"TIME_AMOUNT_HOURS" = "%@ uur";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@u";
@@ -2400,7 +2400,7 @@
 "TXT_DELETE_TITLE" = "Wissen";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
-"UNARCHIVE_ACTION" = "De-archiveer";
+"UNARCHIVE_ACTION" = "Dearchiveren";
 
 /* In Inbox view, last message label for thread with corrupted attachment. */
 "UNKNOWN_ATTACHMENT_LABEL" = "Onbekende bijlage";
@@ -2481,7 +2481,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Je profiel instellen";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Je kan nu een profielfoto en naam delen met je vrienden op Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Je kan nu een profielfoto en naam delen met je gesprekspartners op Signal.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Klaar voor je close-up?";
