@@ -13,7 +13,7 @@ public class OWSButton: UIButton {
     // MARK: -
 
     @objc
-    init(block: @escaping () -> Void = { }) {
+    public init(block: @escaping () -> Void = { }) {
         super.init(frame: .zero)
 
         self.block = block
@@ -21,7 +21,7 @@ public class OWSButton: UIButton {
     }
 
     @objc
-    init(title: String, block: @escaping () -> Void = { }) {
+    public init(title: String, block: @escaping () -> Void = { }) {
         super.init(frame: .zero)
 
         self.block = block
@@ -30,8 +30,8 @@ public class OWSButton: UIButton {
     }
 
     @objc
-    init(imageName: String,
-         tintColor: UIColor,
+    public init(imageName: String,
+         tintColor: UIColor?,
          block: @escaping () -> Void = { }) {
         super.init(frame: .zero)
 

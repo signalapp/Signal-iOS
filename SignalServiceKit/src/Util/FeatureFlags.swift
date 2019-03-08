@@ -19,4 +19,9 @@ public class FeatureFlags: NSObject {
     public static var sendingMediaWithOversizeText: Bool {
         return false
     }
+
+    @objc
+    public static var useCustomPhotoCapture: Bool {
+        return true
+    }
 }

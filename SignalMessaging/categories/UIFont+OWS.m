@@ -34,6 +34,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont boldSystemFontOfSize:size];
 }
 
++ (UIFont *)ows_monospacedDigitFontWithSize:(CGFloat)size;
+{
+    return [self monospacedDigitSystemFontOfSize:size weight:UIFontWeightRegular];
+}
+
 #pragma mark - Icon Fonts
 
 + (UIFont *)ows_fontAwesomeFont:(CGFloat)size
