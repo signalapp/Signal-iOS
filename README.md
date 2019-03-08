@@ -1,24 +1,12 @@
-# Signal for iOS
+# Loki Messenger iOS
 
-Signal is a messaging app for simple private communication with friends.
-
-[![Available on the App Store](http://cl.ly/WouG/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8)
-
-## Translation
-
-Help us translate Signal! The translation effort happens on [Transifex](https://www.transifex.com/signalapp/signal-ios/)
+Loki messenger is a fully end to end encrypted messenger that aims to remove any chance of metadata collection by routing all messages through an onion routing network. Storage of offline messages is handled by Service Nodes, which are a distributed set of nodes run by the community.
 
 ## Contributing Code
-
-Instructions on how to set up your development environment and build Signal-iOS can be found in [BUILDING.md](https://github.com/signalapp/Signal-iOS/blob/master/BUILDING.md). Other useful instructions for development can be found on the [Development Guide wiki page](https://github.com/signalapp/Signal-iOS/wiki/Development-Guide). We also recommend reading the [contribution guidelines](https://github.com/signalapp/Signal-iOS/blob/master/CONTRIBUTING.md).
+Code should be contributed via pull request to the dev branch, all submitted code will be reviewed.
 
 ## Contributing Ideas
-Have something you want to say about Open Whisper Systems projects or want to be part of the conversation? Get involved in the [community forum](https://community.signalusers.org).
-
-## SignalServiceKit
-
-Check out the [SignalServiceKit README](SignalServiceKit/README.md) for
-details about using SignalServiceKit in your own app.
+Have something you want to say about Loki messenger, create an issue with the discussion tag and the community can weigh in
 
 ## Cryptography Notice
 
