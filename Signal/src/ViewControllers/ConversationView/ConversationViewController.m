@@ -153,6 +153,7 @@ typedef enum : NSUInteger {
     UIDocumentPickerDelegate,
     UIImagePickerControllerDelegate,
     OWSImagePickerControllerDelegate,
+    OWSPhotoCaptureViewControllerDelegate,
     UINavigationControllerDelegate,
     UITextViewDelegate,
     ConversationCollectionViewDelegate,
@@ -2781,6 +2782,24 @@ typedef enum : NSUInteger {
     [self showApprovalDialogForAttachment:attachment];
 }
 
+#pragma mark - OWSPhotoCaptureViewControllerDelegate
+
+- (void)photoCaptureViewController:(OWSPhotoCaptureViewController *)photoCaptureViewController
+     didFinishProcessingAttachment:(SignalAttachment *)attachment
+{
+    OWSLogDebug(@"");
+    [self dismissViewControllerAnimated:YES
+                             completion:^{
+                                 [self showApprovalDialogForAttachment:attachment];
+                             }];
+}
+
+- (void)photoCaptureViewControllerDidCancel:(OWSPhotoCaptureViewController *)photoCaptureViewController
+{
+    OWSLogDebug(@"");
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark - UIImagePickerController
 
 /*
@@ -2794,14 +2813,34 @@ typedef enum : NSUInteger {
             return;
         }
 
-        UIImagePickerController *picker = [OWSImagePickerController new];
-        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
-        picker.allowsEditing = NO;
-        picker.delegate = self;
-        
+        UIViewController *pickerModal;
+
+        if (SSKFeatureFlags.useCustomPhotoCapture) {
+            OWSPhotoCaptureViewController *captureVC = [OWSPhotoCaptureViewController new];
+            captureVC.delegate = self;
+            OWSNavigationController *navController =
+                [[OWSNavigationController alloc] initWithRootViewController:captureVC];
+            UINavigationBar *navigationBar = navController.navigationBar;
+            if (![navigationBar isKindOfClass:[OWSNavigationBar class]]) {
+                OWSFailDebug(@"navigationBar was nil or unexpected class");
+            } else {
+                OWSNavigationBar *owsNavigationBar = (OWSNavigationBar *)navigationBar;
+                [owsNavigationBar overrideThemeWithType:NavigationBarThemeOverrideClear];
+            }
+
+            pickerModal = navController;
+        } else {
+            UIImagePickerController *picker = [OWSImagePickerController new];
+            pickerModal = picker;
+            picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+            picker.allowsEditing = NO;
+            picker.delegate = self;
+        }
+        OWSAssertDebug(pickerModal);
+
         [self dismissKeyBoard];
-        [self presentViewController:picker animated:YES completion:nil];
+        [self presentViewController:pickerModal animated:YES completion:nil];
     }];
 }
 

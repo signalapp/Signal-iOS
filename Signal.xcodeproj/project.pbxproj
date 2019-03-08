@@ -492,6 +492,7 @@
 		4C9CA25D217E676900607C63 /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C9CA25C217E676900607C63 /* ZXingObjC.framework */; };
 		4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA46F4B219CCC630038ABDE /* CaptionView.swift */; };
 		4CA46F4D219CFDAA0038ABDE /* GalleryRailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA46F49219C78050038ABDE /* GalleryRailView.swift */; };
+		4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA485BA2232339F004B9E7D /* PhotoCaptureViewController.swift */; };
 		4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */; };
 		4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5F26820F7D060004D1B42 /* MessageActions.swift */; };
 		4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */; };
@@ -1235,6 +1236,7 @@
 		4C9CA25C217E676900607C63 /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZXingObjC.framework; path = ThirdParty/Carthage/Build/iOS/ZXingObjC.framework; sourceTree = "<group>"; };
 		4CA46F49219C78050038ABDE /* GalleryRailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryRailView.swift; sourceTree = "<group>"; };
 		4CA46F4B219CCC630038ABDE /* CaptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionView.swift; sourceTree = "<group>"; };
+		4CA485BA2232339F004B9E7D /* PhotoCaptureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureViewController.swift; sourceTree = "<group>"; };
 		4CA5F792211E1F06008C2708 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		4CB5F26820F7D060004D1B42 /* MessageActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActions.swift; sourceTree = "<group>"; };
 		4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProximityMonitoringManager.swift; sourceTree = "<group>"; };
@@ -1836,14 +1838,15 @@
 			path = mocks;
 			sourceTree = "<group>";
 		};
-		34969558219B605E00DCFE74 /* PhotoLibrary */ = {
+		34969558219B605E00DCFE74 /* Photos */ = {
 			isa = PBXGroup;
 			children = (
 				34969559219B605E00DCFE74 /* ImagePickerController.swift */,
 				3496955A219B605E00DCFE74 /* PhotoCollectionPickerController.swift */,
 				3496955B219B605E00DCFE74 /* PhotoLibrary.swift */,
+				4CA485BA2232339F004B9E7D /* PhotoCaptureViewController.swift */,
 			);
-			path = PhotoLibrary;
+			path = Photos;
 			sourceTree = "<group>";
 		};
 		3496956121A301A100DCFE74 /* Backup */ = {
@@ -1901,7 +1904,7 @@
 				345BC30A2047030600257B7C /* OWS2FASettingsViewController.h */,
 				345BC30B2047030600257B7C /* OWS2FASettingsViewController.m */,
 				34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */,
-				34969558219B605E00DCFE74 /* PhotoLibrary */,
+				34969558219B605E00DCFE74 /* Photos */,
 				34CE88E51F2FB9A10098030F /* ProfileViewController.h */,
 				34CE88E61F2FB9A10098030F /* ProfileViewController.m */,
 				340FC875204DAC8C007AEB0F /* Registration */,
@@ -3600,6 +3603,7 @@
 				4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */,
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
+				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
 				3448E16422135FFA004B052E /* OnboardingPhoneNumberViewController.swift in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				344825C6211390C800DB4BD8 /* OWSOrphanDataCleaner.m in Sources */,

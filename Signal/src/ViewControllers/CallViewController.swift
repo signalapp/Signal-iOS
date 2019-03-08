@@ -626,7 +626,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         case .answering:
             return NSLocalizedString("IN_CALL_SECURING", comment: "Call setup status label")
         case .connected:
-            let callDuration = call.connectionDuration()
+            let callDuration: TimeInterval = call.connectionDuration()
             let callDurationDate = Date(timeIntervalSinceReferenceDate: callDuration)
             if dateFormatter == nil {
                 dateFormatter = DateFormatter()
