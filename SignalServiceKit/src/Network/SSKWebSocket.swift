@@ -145,6 +145,10 @@ extension SSKWebSocketImpl: WebSocketDelegate {
         switch error {
         case let wsError as WSError:
             websocketError = SSKWebSocketError(underlyingError: wsError)
+        case let nsError as NSError:
+            let networkDownCode = 50
+            assert(nsError.domain == "NSPOSIXErrorDomain" && nsError.code == networkDownCode)
+            websocketError = error
         default:
             assert(error == nil, "unexpected error type: \(String(describing: error))")
             websocketError = error
