@@ -208,16 +208,19 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
     // We want to suppress those animations if the view isn't visible,
     // otherwise presentation animations don't work properly.
     dispatch_block_t updateLayout = ^{
-        if (self.shouldBottomViewReserveSpaceForKeyboard) {
-            self.bottomLayoutConstraint.constant = MIN(self.bottomLayoutConstraint.constant, offset);
-        } else {
-            self.bottomLayoutConstraint.constant = offset;
+        if (self.shouldBottomViewReserveSpaceForKeyboard && offset >= 0) {
+            // To avoid unnecessary animations / layout jitter,
+            // some views never reclaim layout space when the keyboard is dismissed.
+            //
+            // They _do_ need to relayout if the user switches keyboards.
+            return;
         }
+        self.bottomLayoutConstraint.constant = offset;
         [self.bottomLayoutView.superview layoutIfNeeded];
     };
 
 
-    if (self.shouldAnimateBottomLayout) {
+    if (self.shouldAnimateBottomLayout && CurrentAppContext().isAppForegroundAndActive) {
         updateLayout();
     } else {
         [UIView performWithoutAnimation:updateLayout];

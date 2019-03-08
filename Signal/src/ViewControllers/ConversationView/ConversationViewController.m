@@ -214,6 +214,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isViewCompletelyAppeared;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldObserveVMUpdates;
+@property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL hasUnreadMessages;
 @property (nonatomic) BOOL isPickingMediaAsDocument;
@@ -1230,6 +1231,7 @@ typedef enum : NSUInteger {
 
     self.isViewCompletelyAppeared = YES;
     self.viewHasEverAppeared = YES;
+    self.shouldAnimateKeyboardChanges = YES;
 
     // HACK: Because the inputToolbar is the inputAccessoryView, we make some special considertations WRT it's firstResponder status.
     //
@@ -1291,6 +1293,7 @@ typedef enum : NSUInteger {
     [super viewDidDisappear:animated];
     self.userHasScrolled = NO;
     self.isViewVisible = NO;
+    self.shouldAnimateKeyboardChanges = NO;
 
     [self.audioAttachmentPlayer stop];
     self.audioAttachmentPlayer = nil;
@@ -3720,12 +3723,21 @@ typedef enum : NSUInteger {
         return;
     }
     CGRect keyboardEndFrame = [keyboardEndFrameValue CGRectValue];
+    CGRect keyboardEndFrameConverted = [self.view convertRect:keyboardEndFrame fromView:nil];
 
     UIEdgeInsets oldInsets = self.collectionView.contentInset;
     UIEdgeInsets newInsets = oldInsets;
 
-    // bottomLayoutGuide accounts for extra offset needed on iPhoneX
-    newInsets.bottom = keyboardEndFrame.size.height - self.bottomLayoutGuide.length;
+    // Use a content inset that so that the conversation content
+    // is not hidden behind the keyboard + input accessory.
+    //
+    // Make sure to leave space for the bottom layout guide (the notch).
+    //
+    // Always reserve room for the input accessory, which we display even
+    // if the keyboard is not active.
+    newInsets.bottom = MAX(0,
+        MAX(self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y,
+            self.inputToolbar.height));
 
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
 
@@ -3774,7 +3786,7 @@ typedef enum : NSUInteger {
         }
     };
 
-    if (self.isViewCompletelyAppeared) {
+    if (self.shouldAnimateKeyboardChanges && CurrentAppContext().isAppForegroundAndActive) {
         adjustInsets();
     } else {
         // Even though we are scrolling without explicitly animating, the notification seems to occur within the context
