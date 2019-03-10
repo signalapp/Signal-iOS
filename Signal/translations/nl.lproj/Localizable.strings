@@ -240,7 +240,7 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokkeren";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "De groep \"%@\" blokkeren en verlaten?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "De groep “%@” blokkeren en verlaten?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ blokkeren?";
@@ -1039,7 +1039,7 @@
 "GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Contactinformatie";
 
 /* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "De titel is nu \"%@\".";
+"GROUP_TITLE_CHANGED" = "De titel is nu “%@”.";
 
 /* No comment provided by engineer. */
 "GROUP_UPDATED" = "Groep bijgewerkt.";
@@ -2424,7 +2424,7 @@
 "UNLINK_CONFIRMATION_ALERT_BODY" = "Dit apparaat zal niet langer in staat zijn berichten te sturen en te ontvangen als het is ontkoppeld.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%@\" ontkoppelen?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "“%@” ontkoppelen?";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal kon je apparaat niet ontkoppelen.";

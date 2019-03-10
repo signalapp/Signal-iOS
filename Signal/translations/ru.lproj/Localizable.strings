@@ -1476,7 +1476,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Поиск по номеру телефона";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Примечание для себя";
+"NOTE_TO_SELF" = "Заметка для себя";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Возможно, вы получили сообщения во время перезапуска вашего %@.";
@@ -1518,7 +1518,7 @@
 "ONBOARDING_2FA_TITLE" = "Блокировка регистрации";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
+"ONBOARDING_CAPTCHA_TITLE" = "Добавьте немного человечности в ваши сообщения";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Включить разрешения";
