@@ -4988,6 +4988,7 @@ typedef enum : NSUInteger {
 - (void)conversationViewModelDidDeleteMostRecentMenuActionsViewItem
 {
     OWSAssertIsOnMainThread();
+
     [[OWSWindowManager sharedManager] hideMenuActionsWindow];
 }
 
@@ -4996,7 +4997,11 @@ typedef enum : NSUInteger {
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
+    OWSAssertIsOnMainThread();
+
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    [[OWSWindowManager sharedManager] hideMenuActionsWindow];
 
     // Snapshot the "last visible row".
     NSIndexPath *_Nullable lastVisibleIndexPath = self.lastVisibleIndexPath;
