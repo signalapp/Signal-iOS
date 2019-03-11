@@ -5001,6 +5001,10 @@ typedef enum : NSUInteger {
 
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
+    // The "message actions" window tries to pin the message
+    // in the content of this view.  It's easier to dismiss the
+    // "message actions" window when the device changes orientation
+    // than to try to ensure this works in that case.
     [[OWSWindowManager sharedManager] hideMenuActionsWindow];
 
     // Snapshot the "last visible row".
