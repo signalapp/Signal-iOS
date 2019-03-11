@@ -169,6 +169,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         let vc = AttachmentApprovalViewController(mode: .modal, attachments: attachments)
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
+        navController.ows_prefersStatusBarHidden = true
 
         guard let navigationBar = navController.navigationBar as? OWSNavigationBar else {
             owsFailDebug("navigationBar was nil or unexpected class")
@@ -197,6 +198,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }()
 
     // MARK: - View Lifecycle
+
+    public override var prefersStatusBarHidden: Bool {
+        return true
+    }
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -229,8 +234,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("")
         super.viewWillAppear(animated)
 
-        CurrentAppContext().setStatusBarHidden(true, animated: animated)
-
         guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else {
             owsFailDebug("navigationBar was nil or unexpected class")
             return
@@ -251,10 +254,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     override public func viewWillDisappear(_ animated: Bool) {
         Logger.debug("")
         super.viewWillDisappear(animated)
-
-        // Since this VC is being dismissed, the "show status bar" animation would feel like
-        // it's occuring on the presenting view controller - it's better not to animate at all.
-        CurrentAppContext().setStatusBarHidden(false, animated: false)
     }
 
     override public var inputAccessoryView: UIView? {

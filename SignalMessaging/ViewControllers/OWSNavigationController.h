@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -22,6 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 // want to cancel back button presses or back gestures due to, for example,
 // unsaved changes.
 @interface OWSNavigationController : UINavigationController
+
+// If set, this property lets us override prefersStatusBarHidden behavior.
+// This is useful for supressing the status bar while a modal is presented,
+// regardless of which view is currently visible.
+@property (nonatomic, nullable) NSNumber *ows_prefersStatusBarHidden;
 
 @end
 

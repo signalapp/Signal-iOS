@@ -2836,7 +2836,9 @@ typedef enum : NSUInteger {
             OWSImagePickerGridController *picker = [OWSImagePickerGridController new];
             picker.delegate = self;
 
-            pickerModal = [[OWSNavigationController alloc] initWithRootViewController:picker];
+            OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:picker];
+            modal.ows_prefersStatusBarHidden = @(YES);
+            pickerModal = modal;
         } else {
             UIImagePickerController *picker = [OWSImagePickerController new];
             picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;

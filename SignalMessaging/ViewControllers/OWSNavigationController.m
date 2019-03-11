@@ -69,6 +69,14 @@ NS_ASSUME_NONNULL_BEGIN
     self.interactivePopGestureRecognizer.delegate = self;
 }
 
+- (BOOL)prefersStatusBarHidden
+{
+    if (self.ows_prefersStatusBarHidden) {
+        return self.ows_prefersStatusBarHidden.boolValue;
+    }
+    return [super prefersStatusBarHidden];
+}
+
 #pragma mark - UINavigationBarDelegate
 
 - (void)setupNavbar
