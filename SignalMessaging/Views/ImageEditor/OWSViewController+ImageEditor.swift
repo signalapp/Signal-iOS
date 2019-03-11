@@ -29,7 +29,7 @@ public extension UIViewController {
             return
         }
 
-        let spacing: CGFloat = 8
+        let spacing: CGFloat = 16
         let stackView = UIStackView(arrangedSubviews: navigationBarItems)
         stackView.axis = .horizontal
         stackView.spacing = spacing
