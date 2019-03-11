@@ -2496,7 +2496,10 @@ typedef enum : NSUInteger {
     [self.scrollDownButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
     [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
 
-    self.scrollDownButtonButtomConstraint = [self.scrollDownButton autoPinEdgeToSuperviewMargin:ALEdgeBottom];
+    // The "scroll down" button layout tracks the content inset of the collection view,
+    // so pin to the edge of the collection view.
+    self.scrollDownButtonButtomConstraint =
+        [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.collectionView];
     [self.scrollDownButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
 #ifdef DEBUG
@@ -2510,6 +2513,13 @@ typedef enum : NSUInteger {
     [self.scrollUpButton autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [self.scrollUpButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 #endif
+
+    [self updateScrollDownButtonLayout];
+}
+
+- (void)updateScrollDownButtonLayout
+{
+    self.scrollDownButtonButtomConstraint.constant = -1 * self.collectionView.contentInset.bottom;
 }
 
 - (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
@@ -3751,7 +3761,8 @@ typedef enum : NSUInteger {
         // does not fire a UIKeyboardFrameWillChange notification. In that case, the scroll
         // down button gets mostly obscured by the keyboard.
         // RADAR: #36297652
-        self.scrollDownButtonButtomConstraint.constant = -1 * newInsets.bottom;
+        [self updateScrollDownButtonLayout];
+
         [self.scrollDownButton setNeedsLayout];
         [self.scrollDownButton layoutIfNeeded];
         // HACK: I've made the assumption that we are already in the context of an animation, in which case the
@@ -5080,6 +5091,9 @@ typedef enum : NSUInteger {
         safeAreaInsets = self.view.safeAreaInsets;
     }
     [self.inputToolbar updateLayoutWithSafeAreaInsets:safeAreaInsets];
+
+    // Scroll button layout depends on input toolbar size.
+    [self updateScrollDownButtonLayout];
 }
 
 #pragma mark - Conversation Snapshot
