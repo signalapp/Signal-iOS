@@ -171,7 +171,7 @@ public class OnboardingController: NSObject {
         // We start the contact fetch/intersection now so that by the time
         // they get to HomeView we can show meaningful contact in the suggested
         // contact bubble.
-        contactsManager.requestSystemContactsOnce()
+        contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
         if tsAccountManager.isReregistering() {
             showProfileView(fromView: view)
