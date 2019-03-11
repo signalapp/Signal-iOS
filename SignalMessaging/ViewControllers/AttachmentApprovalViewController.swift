@@ -294,7 +294,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             cancelButton.tintColor = .white
             self.navigationItem.leftBarButtonItem = cancelButton
         } else {
-            self.navigationItem.leftBarButtonItem = nil
+            // Note: using a custom leftBarButtonItem breaks the interactive pop gesture.
+            self.navigationItem.leftBarButtonItem = self.createOWSBackButton()
         }
     }
 
