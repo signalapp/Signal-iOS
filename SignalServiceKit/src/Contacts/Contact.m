@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "Contact.h"
@@ -45,7 +45,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
     NSMutableDictionary<NSString *, NSString *> *phoneNumberNameMap = [NSMutableDictionary new];
-    for (CNLabeledValue *phoneNumberField in cnContact.phoneNumbers) {
+    const NSUInteger kMaxPhoneNumbersConsidered = 50;
+
+    NSArray<CNLabeledValue *> *consideredPhoneNumbers;
+    if (cnContact.phoneNumbers.count <= kMaxPhoneNumbersConsidered) {
+        consideredPhoneNumbers = cnContact.phoneNumbers;
+    } else {
+        OWSLogInfo(@"For perf, only considering the first %lu phone numbers for contact with many numbers.", (unsigned long)kMaxPhoneNumbersConsidered);
+        consideredPhoneNumbers = [cnContact.phoneNumbers subarrayWithRange:NSMakeRange(0, kMaxPhoneNumbersConsidered)];
+    }
+    for (CNLabeledValue *phoneNumberField in consideredPhoneNumbers) {
         if ([phoneNumberField.value isKindOfClass:[CNPhoneNumber class]]) {
             CNPhoneNumber *phoneNumber = (CNPhoneNumber *)phoneNumberField.value;
             [phoneNumbers addObject:phoneNumber.stringValue];
