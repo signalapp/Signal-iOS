@@ -480,10 +480,10 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
         if ([localNumber isEqual:account.recipientId]) {
             continue;
         }
-        [accounts addObject:account];
         if (accounts.count >= 3) {
-            return accounts;
+            break;
         }
+        [accounts addObject:account];
     }
 
     return [accounts copy];
