@@ -577,7 +577,7 @@ public class OWSLinkPreview: MTLModel {
                 return parseLinkDataAndBuildDraft(linkData: data, linkUrlString: previewUrl)
             }.then(on: DispatchQueue.global()) { (linkPreviewDraft) -> Promise<OWSLinkPreviewDraft> in
                 guard linkPreviewDraft.isValid() else {
-                    return Promise(error: LinkPreviewError.noPreview)
+                    throw LinkPreviewError.noPreview
                 }
                 setCachedLinkPreview(linkPreviewDraft, forPreviewUrl: previewUrl)
 
