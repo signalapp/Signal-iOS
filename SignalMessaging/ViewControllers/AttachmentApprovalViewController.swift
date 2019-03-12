@@ -1462,6 +1462,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
         lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
         lengthLimitLabel.layer.shadowOffset = .zero
         lengthLimitLabel.layer.shadowOpacity = 0.8
+        lengthLimitLabel.layer.shadowRadius = 2.0
         lengthLimitLabel.isHidden = true
 
         return lengthLimitLabel
