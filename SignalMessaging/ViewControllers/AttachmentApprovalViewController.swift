@@ -241,6 +241,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         navigationBar.overrideTheme(type: .clear)
 
         updateNavigationBar()
+        updateControlVisibility()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -249,6 +250,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         super.viewDidAppear(animated)
 
         updateNavigationBar()
+        updateControlVisibility()
     }
 
     override public func viewWillDisappear(_ animated: Bool) {
@@ -262,12 +264,18 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     override public var canBecomeFirstResponder: Bool {
-        return true
+        return !shouldHideControls
     }
 
     // MARK: - Navigation Bar
 
     public func updateNavigationBar() {
+        guard !shouldHideControls else {
+            self.navigationItem.leftBarButtonItem = nil
+            self.navigationItem.rightBarButtonItem = nil
+            return
+        }
+
         var navigationBarItems = [UIView]()
         var isShowingCaptionView = false
 
@@ -296,6 +304,27 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         } else {
             // Note: using a custom leftBarButtonItem breaks the interactive pop gesture.
             self.navigationItem.leftBarButtonItem = self.createOWSBackButton()
+        }
+    }
+
+    // MARK: - Control Visibility
+
+    public var shouldHideControls: Bool {
+        guard let pageViewController = pageViewControllers.first else {
+            return false
+        }
+        return pageViewController.shouldHideControls
+    }
+
+    private func updateControlVisibility() {
+        if shouldHideControls {
+            if isFirstResponder {
+                resignFirstResponder()
+            }
+        } else {
+            if !isFirstResponder {
+                becomeFirstResponder()
+            }
         }
     }
 
@@ -376,6 +405,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         updateNavigationBar()
+        updateControlVisibility()
     }
 
     // MARK: - UIPageViewControllerDataSource
@@ -622,7 +652,11 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     }
 
     func prepViewControllerUpdateNavigationBar() {
-        self.updateNavigationBar()
+        updateNavigationBar()
+    }
+
+    func prepViewControllerUpdateControls() {
+        updateControlVisibility()
     }
 
     func prepViewControllerAttachmentCount() -> Int {
@@ -682,6 +716,8 @@ protocol AttachmentPrepViewControllerDelegate: class {
 
     func prepViewControllerUpdateNavigationBar()
 
+    func prepViewControllerUpdateControls()
+
     func prepViewControllerAttachmentCount() -> Int
 }
 
@@ -712,7 +748,15 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     fileprivate var isShowingCaptionView = false {
         didSet {
             prepDelegate?.prepViewControllerUpdateNavigationBar()
+            prepDelegate?.prepViewControllerUpdateControls()
         }
+    }
+
+    public var shouldHideControls: Bool {
+        guard let imageEditorView = imageEditorView else {
+            return false
+        }
+        return imageEditorView.shouldHideControls
     }
 
     // MARK: - Initializers
@@ -794,8 +838,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
                 view.addSubview(imageEditorView)
                 imageEditorView.autoPinEdgesToSuperviewEdges()
 
-                imageEditorView.addControls(to: imageEditorView,
-                                            viewController: self)
+                imageEditorUpdateNavigationBar()
             }
         }
         #endif
@@ -872,6 +915,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         super.viewWillAppear(animated)
 
         prepDelegate?.prepViewControllerUpdateNavigationBar()
+        prepDelegate?.prepViewControllerUpdateControls()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -880,6 +924,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         super.viewDidAppear(animated)
 
         prepDelegate?.prepViewControllerUpdateNavigationBar()
+        prepDelegate?.prepViewControllerUpdateControls()
     }
 
     override public func viewWillLayoutSubviews() {
@@ -1207,6 +1252,10 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
 
     public func imageEditorUpdateNavigationBar() {
         prepDelegate?.prepViewControllerUpdateNavigationBar()
+    }
+
+    public func imageEditorUpdateControls() {
+        prepDelegate?.prepViewControllerUpdateControls()
     }
 }
 
