@@ -4988,6 +4988,7 @@ typedef enum : NSUInteger {
 - (void)conversationViewModelDidDeleteMostRecentMenuActionsViewItem
 {
     OWSAssertIsOnMainThread();
+
     [[OWSWindowManager sharedManager] hideMenuActionsWindow];
 }
 
@@ -4996,7 +4997,15 @@ typedef enum : NSUInteger {
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
+    OWSAssertIsOnMainThread();
+
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    // The "message actions" window tries to pin the message
+    // in the content of this view.  It's easier to dismiss the
+    // "message actions" window when the device changes orientation
+    // than to try to ensure this works in that case.
+    [[OWSWindowManager sharedManager] hideMenuActionsWindow];
 
     // Snapshot the "last visible row".
     NSIndexPath *_Nullable lastVisibleIndexPath = self.lastVisibleIndexPath;
