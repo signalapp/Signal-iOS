@@ -138,6 +138,12 @@ public class ImageEditorView: UIView {
     @objc func didTapNewText(sender: UIButton) {
         Logger.verbose("")
 
+        createNewTextItem()
+    }
+
+    private func createNewTextItem() {
+        Logger.verbose("")
+
         let viewSize = canvasView.gestureReferenceView.bounds.size
         let imageSize =  model.srcImageSizePixels
         let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: imageSize,
@@ -178,6 +184,8 @@ public class ImageEditorView: UIView {
 
         let location = gestureRecognizer.location(in: canvasView.gestureReferenceView)
         guard let textLayer = self.textLayer(forLocation: location) else {
+            // If there is no text item under the "tap", start a new one.
+            createNewTextItem()
             return
         }
 
