@@ -111,8 +111,7 @@ public class ImageEditorPaletteView: UIView {
         // We use an invisible margin to expand the hot area of this control.
         let margin: CGFloat = 20
         imageView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: margin, left: margin, bottom: margin, right: margin))
-        imageView.layer.borderColor = UIColor.white.cgColor
-        imageView.layer.borderWidth = CGHairlineWidth()
+        imageView.addBorder(with: .white)
 
         imageWrapper.layoutCallback = { [weak self] (view) in
             guard let strongSelf = self else {
