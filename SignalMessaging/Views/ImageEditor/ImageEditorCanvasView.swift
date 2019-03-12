@@ -642,8 +642,22 @@ public class ImageEditorCanvasView: UIView {
         guard let sublayers = contentView.layer.sublayers else {
             return nil
         }
+
+        // First we build a map of all text layers.
+        var layerMap = [String: EditorTextLayer]()
         for layer in sublayers {
             guard let textLayer = layer as? EditorTextLayer else {
+                continue
+            }
+            layerMap[textLayer.itemId] = textLayer
+        }
+
+        // The layer ordering in the model is authoritative.
+        // Iterate over the layers in _reverse_ order of which they appear
+        // in the model, so that layers "on top" are hit first.
+        for item in model.items().reversed() {
+            guard let textLayer = layerMap[item.itemId] else {
+                // Not a text layer.
                 continue
             }
             if textLayer.hitTest(point) != nil {
