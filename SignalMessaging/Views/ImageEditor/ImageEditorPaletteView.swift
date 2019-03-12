@@ -81,7 +81,9 @@ public class ImageEditorPaletteView: UIView {
 
     private let imageView = UIImageView()
     private let selectionView = UIView()
-    private let selectionWrapper = OWSLayerView()
+    // imageWrapper is used to host the "selection view".
+    private let imageWrapper = OWSLayerView()
+    private let shadowView = UIView()
     private var selectionConstraint: NSLayoutConstraint?
 
     private func createContents() {
@@ -89,9 +91,18 @@ public class ImageEditorPaletteView: UIView {
         self.isOpaque = false
         self.layoutMargins = .zero
 
+        shadowView.backgroundColor = .black
+        shadowView.layer.shadowColor = UIColor.black.cgColor
+        shadowView.layer.shadowRadius = 2.0
+        shadowView.layer.shadowOpacity = 0.33
+        shadowView.layer.shadowOffset = .zero
+        addSubview(shadowView)
+
         if let image = ImageEditorPaletteView.buildPaletteGradientImage() {
             imageView.image = image
-            imageView.layer.cornerRadius = image.size.width * 0.5
+            let imageRadius = image.size.width * 0.5
+            imageView.layer.cornerRadius = imageRadius
+            shadowView.layer.cornerRadius = imageRadius
             imageView.clipsToBounds = true
         } else {
             owsFailDebug("Missing image.")
@@ -102,29 +113,27 @@ public class ImageEditorPaletteView: UIView {
         imageView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: margin, left: margin, bottom: margin, right: margin))
         imageView.layer.borderColor = UIColor.white.cgColor
         imageView.layer.borderWidth = CGHairlineWidth()
-        imageView.layer.shadowColor = UIColor.black.cgColor
-        imageView.layer.shadowRadius = 2.0
-        imageView.layer.shadowOpacity = 0.33
-        imageView.layer.shadowOffset = .zero
-        selectionWrapper.layoutCallback = { [weak self] (view) in
+
+        imageWrapper.layoutCallback = { [weak self] (view) in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.updateState()
         }
-        self.addSubview(selectionWrapper)
-        selectionWrapper.autoPin(toEdgesOf: imageView)
+        addSubview(imageWrapper)
+        imageWrapper.autoPin(toEdgesOf: imageView)
+        shadowView.autoPin(toEdgesOf: imageView)
 
         selectionView.addBorder(with: .white)
         selectionView.layer.cornerRadius = selectionSize / 2
         selectionView.autoSetDimensions(to: CGSize(width: selectionSize, height: selectionSize))
-        selectionWrapper.addSubview(selectionView)
+        imageWrapper.addSubview(selectionView)
         selectionView.autoHCenterInSuperview()
 
         // There must be a better way to pin the selection view's location,
         // but I can't find it.
         let selectionConstraint = NSLayoutConstraint(item: selectionView,
-                                                     attribute: .centerY, relatedBy: .equal, toItem: selectionWrapper, attribute: .top, multiplier: 1, constant: 0)
+                                                     attribute: .centerY, relatedBy: .equal, toItem: imageWrapper, attribute: .top, multiplier: 1, constant: 0)
         selectionConstraint.autoInstall()
         self.selectionConstraint = selectionConstraint
 
@@ -201,7 +210,7 @@ public class ImageEditorPaletteView: UIView {
             owsFailDebug("Missing selectionConstraint.")
             return
         }
-        let selectionY = selectionWrapper.height() * selectedValue.palettePhase
+        let selectionY = imageWrapper.height() * selectedValue.palettePhase
         selectionConstraint.constant = selectionY
     }
 
