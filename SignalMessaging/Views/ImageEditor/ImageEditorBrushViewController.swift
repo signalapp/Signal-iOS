@@ -165,9 +165,9 @@ public class ImageEditorBrushViewController: OWSViewController {
             let view = self.canvasView.gestureReferenceView
             let viewBounds = view.bounds
             let newSample = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationInView,
-                                                              viewBounds: viewBounds,
-                                                              model: self.model,
-                                                              transform: self.model.currentTransform())
+                                                                    viewBounds: viewBounds,
+                                                                    model: self.model,
+                                                                    transform: self.model.currentTransform())
 
             if let prevSample = self.currentStrokeSamples.last,
                 prevSample == newSample {
@@ -179,7 +179,7 @@ public class ImageEditorBrushViewController: OWSViewController {
 
         let strokeColor = paletteView.selectedValue.color
         // TODO: Tune stroke width.
-        let unitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth()
+        let unitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth() / self.model.currentTransform().scaling
 
         switch gestureRecognizer.state {
         case .began:
