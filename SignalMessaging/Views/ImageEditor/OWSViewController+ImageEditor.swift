@@ -15,6 +15,7 @@ public extension NSObject {
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowRadius = 2
         button.layer.shadowOpacity = 0.66
+        button.layer.shadowOffset = .zero
         return button
     }
 }
