@@ -23,11 +23,13 @@ class ImageEditorCropViewController: OWSViewController {
 
     private var transform: ImageEditorTransform
 
-    public let contentView = OWSLayerView()
-
     public let clipView = OWSLayerView()
 
-    private var imageLayer = CALayer()
+    public let croppedContentView = OWSLayerView()
+    public let uncroppedContentView = UIView()
+
+    private var croppedImageLayer = CALayer()
+    private var uncroppedImageLayer = CALayer()
 
     private enum CropRegion {
         // The sides of the crop region.
@@ -121,19 +123,32 @@ class ImageEditorCropViewController: OWSViewController {
         }
         wrapperView.addSubview(clipView)
 
-        imageLayer.contents = previewImage.cgImage
-        imageLayer.contentsScale = previewImage.scale
-        contentView.backgroundColor = .clear
-        contentView.isOpaque = false
-        contentView.layer.addSublayer(imageLayer)
-        contentView.layoutCallback = { [weak self] (_) in
+        croppedImageLayer.contents = previewImage.cgImage
+        croppedImageLayer.contentsScale = previewImage.scale
+        croppedContentView.backgroundColor = .clear
+        croppedContentView.isOpaque = false
+        croppedContentView.layer.addSublayer(croppedImageLayer)
+        croppedContentView.layoutCallback = { [weak self] (_) in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.updateContent()
         }
-        clipView.addSubview(contentView)
-        contentView.autoPinEdgesToSuperviewEdges()
+        clipView.addSubview(croppedContentView)
+        croppedContentView.autoPinEdgesToSuperviewEdges()
+
+        uncroppedImageLayer.contents = previewImage.cgImage
+        uncroppedImageLayer.contentsScale = previewImage.scale
+        // The "uncropped" view/layer are used to display the
+        // content that has been cropped out.  Its content
+        // should be semi-transparent to distinguish it from
+        // the content within the crop bounds.
+        uncroppedImageLayer.opacity = 0.5
+        uncroppedContentView.backgroundColor = .clear
+        uncroppedContentView.isOpaque = false
+        uncroppedContentView.layer.addSublayer(uncroppedImageLayer)
+        wrapperView.addSubview(uncroppedContentView)
+        uncroppedContentView.autoPin(toEdgesOf: croppedContentView)
 
         // MARK: - Footer
 
@@ -329,7 +344,7 @@ class ImageEditorCropViewController: OWSViewController {
 
         Logger.verbose("")
 
-        let viewSize = contentView.bounds.size
+        let viewSize = croppedContentView.bounds.size
         guard viewSize.width > 0,
                 viewSize.height > 0 else {
                 return
@@ -354,13 +369,15 @@ class ImageEditorCropViewController: OWSViewController {
     }
 
     private func applyTransform() {
-        let viewSize = contentView.bounds.size
-        contentView.layer.setAffineTransform(transform.affineTransform(viewSize: viewSize))
+        let viewSize = croppedContentView.bounds.size
+        croppedContentView.layer.setAffineTransform(transform.affineTransform(viewSize: viewSize))
+        uncroppedContentView.layer.setAffineTransform(transform.affineTransform(viewSize: viewSize))
     }
 
     private func updateImageLayer() {
-        let viewSize = contentView.bounds.size
-        ImageEditorCanvasView.updateImageLayer(imageLayer: imageLayer, viewSize: viewSize, imageSize: model.srcImageSizePixels, transform: transform)
+        let viewSize = croppedContentView.bounds.size
+        ImageEditorCanvasView.updateImageLayer(imageLayer: croppedImageLayer, viewSize: viewSize, imageSize: model.srcImageSizePixels, transform: transform)
+        ImageEditorCanvasView.updateImageLayer(imageLayer: uncroppedImageLayer, viewSize: viewSize, imageSize: model.srcImageSizePixels, transform: transform)
     }
 
     private func configureGestures() {
