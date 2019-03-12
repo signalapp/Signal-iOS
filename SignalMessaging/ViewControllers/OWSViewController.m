@@ -204,9 +204,6 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
     // bar.
     CGFloat offset = -MAX(0, (self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y));
 
-    // UIKit by default animates all changes in response to keyboard events.
-    // We want to suppress those animations if the view isn't visible,
-    // otherwise presentation animations don't work properly.
     dispatch_block_t updateLayout = ^{
         if (self.shouldBottomViewReserveSpaceForKeyboard && offset >= 0) {
             // To avoid unnecessary animations / layout jitter,
@@ -223,6 +220,9 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
     if (self.shouldAnimateBottomLayout && CurrentAppContext().isAppForegroundAndActive) {
         updateLayout();
     } else {
+        // UIKit by default animates all changes in response to keyboard events.
+        // We want to suppress those animations if the view isn't visible,
+        // otherwise presentation animations don't work properly.
         [UIView performWithoutAnimation:updateLayout];
     }
 }
