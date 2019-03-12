@@ -169,6 +169,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         let vc = AttachmentApprovalViewController(mode: .modal, attachments: attachments)
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
+        navController.ows_prefersStatusBarHidden = true
 
         guard let navigationBar = navController.navigationBar as? OWSNavigationBar else {
             owsFailDebug("navigationBar was nil or unexpected class")
@@ -197,6 +198,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }()
 
     // MARK: - View Lifecycle
+
+    public override var prefersStatusBarHidden: Bool {
+        return true
+    }
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -229,8 +234,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("")
         super.viewWillAppear(animated)
 
-        CurrentAppContext().setStatusBarHidden(true, animated: animated)
-
         guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else {
             owsFailDebug("navigationBar was nil or unexpected class")
             return
@@ -238,6 +241,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         navigationBar.overrideTheme(type: .clear)
 
         updateNavigationBar()
+        updateControlVisibility()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -246,15 +250,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         super.viewDidAppear(animated)
 
         updateNavigationBar()
+        updateControlVisibility()
     }
 
     override public func viewWillDisappear(_ animated: Bool) {
         Logger.debug("")
         super.viewWillDisappear(animated)
-
-        // Since this VC is being dismissed, the "show status bar" animation would feel like
-        // it's occuring on the presenting view controller - it's better not to animate at all.
-        CurrentAppContext().setStatusBarHidden(false, animated: false)
     }
 
     override public var inputAccessoryView: UIView? {
@@ -263,12 +264,18 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     override public var canBecomeFirstResponder: Bool {
-        return true
+        return !shouldHideControls
     }
 
     // MARK: - Navigation Bar
 
     public func updateNavigationBar() {
+        guard !shouldHideControls else {
+            self.navigationItem.leftBarButtonItem = nil
+            self.navigationItem.rightBarButtonItem = nil
+            return
+        }
+
         var navigationBarItems = [UIView]()
         var isShowingCaptionView = false
 
@@ -295,7 +302,29 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             cancelButton.tintColor = .white
             self.navigationItem.leftBarButtonItem = cancelButton
         } else {
-            self.navigationItem.leftBarButtonItem = nil
+            // Note: using a custom leftBarButtonItem breaks the interactive pop gesture.
+            self.navigationItem.leftBarButtonItem = self.createOWSBackButton()
+        }
+    }
+
+    // MARK: - Control Visibility
+
+    public var shouldHideControls: Bool {
+        guard let pageViewController = pageViewControllers.first else {
+            return false
+        }
+        return pageViewController.shouldHideControls
+    }
+
+    private func updateControlVisibility() {
+        if shouldHideControls {
+            if isFirstResponder {
+                resignFirstResponder()
+            }
+        } else {
+            if !isFirstResponder {
+                becomeFirstResponder()
+            }
         }
     }
 
@@ -376,6 +405,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         updateNavigationBar()
+        updateControlVisibility()
     }
 
     // MARK: - UIPageViewControllerDataSource
@@ -622,7 +652,11 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     }
 
     func prepViewControllerUpdateNavigationBar() {
-        self.updateNavigationBar()
+        updateNavigationBar()
+    }
+
+    func prepViewControllerUpdateControls() {
+        updateControlVisibility()
     }
 
     func prepViewControllerAttachmentCount() -> Int {
@@ -682,6 +716,8 @@ protocol AttachmentPrepViewControllerDelegate: class {
 
     func prepViewControllerUpdateNavigationBar()
 
+    func prepViewControllerUpdateControls()
+
     func prepViewControllerAttachmentCount() -> Int
 }
 
@@ -712,7 +748,15 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     fileprivate var isShowingCaptionView = false {
         didSet {
             prepDelegate?.prepViewControllerUpdateNavigationBar()
+            prepDelegate?.prepViewControllerUpdateControls()
         }
+    }
+
+    public var shouldHideControls: Bool {
+        guard let imageEditorView = imageEditorView else {
+            return false
+        }
+        return imageEditorView.shouldHideControls
     }
 
     // MARK: - Initializers
@@ -794,8 +838,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
                 view.addSubview(imageEditorView)
                 imageEditorView.autoPinEdgesToSuperviewEdges()
 
-                imageEditorView.addControls(to: imageEditorView,
-                                            viewController: self)
+                imageEditorUpdateNavigationBar()
             }
         }
         #endif
@@ -872,6 +915,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         super.viewWillAppear(animated)
 
         prepDelegate?.prepViewControllerUpdateNavigationBar()
+        prepDelegate?.prepViewControllerUpdateControls()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -880,6 +924,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         super.viewDidAppear(animated)
 
         prepDelegate?.prepViewControllerUpdateNavigationBar()
+        prepDelegate?.prepViewControllerUpdateControls()
     }
 
     override public func viewWillLayoutSubviews() {
@@ -1208,6 +1253,10 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
     public func imageEditorUpdateNavigationBar() {
         prepDelegate?.prepViewControllerUpdateNavigationBar()
     }
+
+    public func imageEditorUpdateControls() {
+        prepDelegate?.prepViewControllerUpdateControls()
+    }
 }
 
 // MARK: -
@@ -1411,7 +1460,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
 
         // Add shadow in case overlayed on white content
         lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
-        lengthLimitLabel.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        lengthLimitLabel.layer.shadowOffset = .zero
         lengthLimitLabel.layer.shadowOpacity = 0.8
         lengthLimitLabel.isHidden = true
 
@@ -1645,6 +1694,7 @@ public class ApprovalRailCellView: GalleryRailCellView {
         imageView.layer.shadowColor = UIColor.black.cgColor
         imageView.layer.shadowRadius = 2
         imageView.layer.shadowOpacity = 0.66
+        imageView.layer.shadowOffset = .zero
         return imageView
     }()
 
@@ -1676,8 +1726,8 @@ public class ApprovalRailCellView: GalleryRailCellView {
         if hasCaption {
             addSubview(captionIndicator)
 
-            captionIndicator.autoPinEdge(toSuperviewEdge: .top, withInset: 0)
-            captionIndicator.autoPinEdge(toSuperviewEdge: .leading, withInset: 4)
+            captionIndicator.autoPinEdge(toSuperviewEdge: .top, withInset: 2)
+            captionIndicator.autoPinEdge(toSuperviewEdge: .leading, withInset: 6)
         } else {
             captionIndicator.removeFromSuperview()
         }

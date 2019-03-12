@@ -380,19 +380,32 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     func complete(withAssets assets: [PHAsset]) {
-        let attachmentPromises: [Promise<SignalAttachment>] = assets.map({
-            return photoCollectionContents.outgoingAttachment(for: $0)
-        })
 
-        firstly {
-            when(fulfilled: attachmentPromises)
-        }.map { attachments in
-            Logger.debug("built all attachments")
-            self.didComplete(withAttachments: attachments)
-        }.catch { error in
-            Logger.error("failed to prepare attachments. error: \(error)")
-            OWSAlerts.showAlert(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
-        }.retainUntilComplete()
+        ModalActivityIndicatorViewController.present(fromViewController: self,
+                                                     canCancel: false) { (modal) in
+                                                        let attachmentPromises: [Promise<SignalAttachment>] = assets.map({
+                                                            return self.photoCollectionContents.outgoingAttachment(for: $0)
+                                                        })
+
+                                                        firstly {
+                                                            when(fulfilled: attachmentPromises)
+                                                            }.map { attachments in
+                                                                Logger.debug("built all attachments")
+
+                                                                DispatchQueue.main.async {
+                                                                    modal.dismiss(completion: {
+                                                                        self.didComplete(withAttachments: attachments)
+                                                                    })
+                                                                }
+                                                            }.catch { error in
+                                                                Logger.error("failed to prepare attachments. error: \(error)")
+                                                                DispatchQueue.main.async {
+                                                                    modal.dismiss(completion: {
+                                                                        OWSAlerts.showAlert(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
+                                                                    })
+                                                                }
+                                                            }.retainUntilComplete()
+        }
     }
 
     private func didComplete(withAttachments attachments: [SignalAttachment]) {

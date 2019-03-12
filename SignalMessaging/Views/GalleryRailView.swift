@@ -64,14 +64,17 @@ public class GalleryRailCellView: UIView {
     private(set) var isSelected: Bool = false
 
     func setIsSelected(_ isSelected: Bool) {
+        let borderWidth: CGFloat = 2
         self.isSelected = isSelected
+
+        // Reserve space for the selection border whether or not the cell is selected.
+        layoutMargins = UIEdgeInsets(top: 0, left: borderWidth, bottom: 0, right: borderWidth)
+
         if isSelected {
-            layoutMargins = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
             imageView.layer.borderColor = Theme.galleryHighlightColor.cgColor
-            imageView.layer.borderWidth = 2
-            imageView.layer.cornerRadius = 2
+            imageView.layer.borderWidth = borderWidth
+            imageView.layer.cornerRadius = borderWidth
         } else {
-            layoutMargins = .zero
             imageView.layer.borderWidth = 0
             imageView.layer.cornerRadius = 0
         }

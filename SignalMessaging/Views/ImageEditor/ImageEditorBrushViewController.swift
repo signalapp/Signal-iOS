@@ -84,11 +84,18 @@ public class ImageEditorBrushViewController: OWSViewController {
         self.view.layoutSubviews()
     }
 
-    public func updateNavigationBar() {
+    private func updateNavigationBar() {
+        // Hide controls during stroke.
+        let hasStroke = currentStroke != nil
+        guard !hasStroke else {
+            updateNavigationBar(navigationBarItems: [])
+            return
+        }
+
         let undoButton = navigationBarButton(imageName: "image_editor_undo",
                                              selector: #selector(didTapUndo(sender:)))
         let doneButton = navigationBarButton(imageName: "image_editor_checkmark_full",
-                                                selector: #selector(didTapDone(sender:)))
+                                             selector: #selector(didTapDone(sender:)))
 
         // Prevent users from undo any changes made before entering the view.
         let canUndo = model.canUndo() && firstUndoOperationId != model.currentUndoOperationId()
@@ -99,6 +106,12 @@ public class ImageEditorBrushViewController: OWSViewController {
             navigationBarItems = [doneButton]
         }
         updateNavigationBar(navigationBarItems: navigationBarItems)
+    }
+
+    private func updateControls() {
+        // Hide controls during stroke.
+        let hasStroke = currentStroke != nil
+        paletteView.isHidden = hasStroke
     }
 
     // MARK: - Actions
@@ -129,7 +142,12 @@ public class ImageEditorBrushViewController: OWSViewController {
     // MARK: - Brush
 
     // These properties are non-empty while drawing a stroke.
-    private var currentStroke: ImageEditorStrokeItem?
+    private var currentStroke: ImageEditorStrokeItem? {
+        didSet {
+            updateControls()
+            updateNavigationBar()
+        }
+    }
     private var currentStrokeSamples = [ImageEditorStrokeItem.StrokeSample]()
 
     @objc

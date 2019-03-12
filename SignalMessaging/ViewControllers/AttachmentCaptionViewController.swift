@@ -75,11 +75,6 @@ class AttachmentCaptionViewController: OWSViewController {
 
         configureTextView()
 
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                                           target: self,
-                                                           action: #selector(didTapCancel))
-        cancelButton.tintColor = .white
-        navigationItem.leftBarButtonItem = cancelButton
         let doneIcon = UIImage(named: "image_editor_checkmark_full")?.withRenderingMode(.alwaysTemplate)
         let doneButton = UIBarButtonItem(image: doneIcon, style: .plain,
                                                             target: self,
@@ -96,13 +91,21 @@ class AttachmentCaptionViewController: OWSViewController {
         stackView.axis = .vertical
         stackView.spacing = 20
         stackView.alignment = .fill
-        stackView.addBackgroundView(withBackgroundColor: UIColor(white: 0, alpha: 0.5))
         stackView.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
         stackView.isLayoutMarginsRelativeArrangement = true
         self.view.addSubview(stackView)
         stackView.autoPinEdge(toSuperviewEdge: .leading)
         stackView.autoPinEdge(toSuperviewEdge: .trailing)
         self.autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
+
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = UIColor(white: 0, alpha: 0.5)
+        view.addSubview(backgroundView)
+        view.sendSubview(toBack: backgroundView)
+        backgroundView.autoPinEdge(toSuperviewEdge: .leading)
+        backgroundView.autoPinEdge(toSuperviewEdge: .trailing)
+        backgroundView.autoPinEdge(toSuperviewEdge: .bottom)
+        backgroundView.autoPinEdge(.top, to: .top, of: stackView)
 
         let minTextHeight: CGFloat = textView.font?.lineHeight ?? 0
         textViewHeightConstraint = textView.autoSetDimension(.height, toSize: minTextHeight)
@@ -174,7 +177,7 @@ class AttachmentCaptionViewController: OWSViewController {
 
         // Add shadow in case overlayed on white content
         lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
-        lengthLimitLabel.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        lengthLimitLabel.layer.shadowOffset = .zero
         lengthLimitLabel.layer.shadowOpacity = 0.8
         lengthLimitLabel.isHidden = true
 

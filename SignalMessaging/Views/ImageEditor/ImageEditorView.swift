@@ -9,6 +9,7 @@ public protocol ImageEditorViewDelegate: class {
     func imageEditor(presentFullScreenView viewController: UIViewController,
                      isTransparent: Bool)
     func imageEditorUpdateNavigationBar()
+    func imageEditorUpdateControls()
 }
 
 // MARK: -
@@ -81,16 +82,17 @@ public class ImageEditorView: UIView {
         return true
     }
 
-    // TODO: Should this method be private?
-    @objc
-    public func addControls(to containerView: UIView,
-                            viewController: UIViewController) {
+    // MARK: - Navigation Bar
+
+    private func updateNavigationBar() {
         delegate?.imageEditorUpdateNavigationBar()
     }
 
-    // MARK: - Navigation Bar
-
     public func navigationBarItems() -> [UIView] {
+        guard !shouldHideControls else {
+            return []
+        }
+
         let undoButton = navigationBarButton(imageName: "image_editor_undo",
                                              selector: #selector(didTapUndo(sender:)))
         let brushButton = navigationBarButton(imageName: "image_editor_brush",
@@ -108,6 +110,15 @@ public class ImageEditorView: UIView {
         }
 
         return buttons
+    }
+
+    private func updateControls() {
+        delegate?.imageEditorUpdateControls()
+    }
+
+    public var shouldHideControls: Bool {
+        // Hide controls during "text item move".
+        return movingTextItem != nil
     }
 
     // MARK: - Actions
@@ -136,6 +147,12 @@ public class ImageEditorView: UIView {
     }
 
     @objc func didTapNewText(sender: UIButton) {
+        Logger.verbose("")
+
+        createNewTextItem()
+    }
+
+    private func createNewTextItem() {
         Logger.verbose("")
 
         let viewSize = canvasView.gestureReferenceView.bounds.size
@@ -178,6 +195,8 @@ public class ImageEditorView: UIView {
 
         let location = gestureRecognizer.location(in: canvasView.gestureReferenceView)
         guard let textLayer = self.textLayer(forLocation: location) else {
+            // If there is no text item under the "tap", start a new one.
+            createNewTextItem()
             return
         }
 
@@ -263,7 +282,12 @@ public class ImageEditorView: UIView {
     // MARK: - Editor Gesture
 
     // These properties are valid while moving a text item.
-    private var movingTextItem: ImageEditorTextItem?
+    private var movingTextItem: ImageEditorTextItem? {
+        didSet {
+            updateNavigationBar()
+            updateControls()
+        }
+    }
     private var movingTextStartUnitCenter: CGPoint?
     private var movingTextHasMoved = false
 
@@ -479,11 +503,11 @@ extension ImageEditorView: ImageEditorModelObserver {
 
     public func imageEditorModelDidChange(before: ImageEditorContents,
                                           after: ImageEditorContents) {
-        delegate?.imageEditorUpdateNavigationBar()
+        updateNavigationBar()
     }
 
     public func imageEditorModelDidChange(changedItemIds: [String]) {
-        delegate?.imageEditorUpdateNavigationBar()
+        updateNavigationBar()
     }
 }
 

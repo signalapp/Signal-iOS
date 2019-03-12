@@ -15,6 +15,7 @@ public extension NSObject {
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowRadius = 2
         button.layer.shadowOpacity = 0.66
+        button.layer.shadowOffset = .zero
         return button
     }
 }
@@ -29,7 +30,7 @@ public extension UIViewController {
             return
         }
 
-        let spacing: CGFloat = 8
+        let spacing: CGFloat = 16
         let stackView = UIStackView(arrangedSubviews: navigationBarItems)
         stackView.axis = .horizontal
         stackView.spacing = spacing
