@@ -531,11 +531,9 @@ public class OWSLinkPreview: MTLModel {
     private static var linkPreviewDraftCache: NSCache<NSString, OWSLinkPreviewDraft> = NSCache()
 
     private class func cachedLinkPreview(forPreviewUrl previewUrl: String) -> OWSLinkPreviewDraft? {
-        var result: OWSLinkPreviewDraft?
-        serialQueue.sync {
-            result = linkPreviewDraftCache.object(forKey: previewUrl as NSString)
+        return serialQueue.sync {
+            return linkPreviewDraftCache.object(forKey: previewUrl as NSString)
         }
-        return result
     }
 
     private class func setCachedLinkPreview(_ linkPreviewDraft: OWSLinkPreviewDraft,
@@ -561,7 +559,6 @@ public class OWSLinkPreview: MTLModel {
     }
 
     public class func tryToBuildPreviewInfo(previewUrl: String?) -> Promise<OWSLinkPreviewDraft> {
-
         guard OWSLinkPreview.featureEnabled else {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
@@ -578,14 +575,13 @@ public class OWSLinkPreview: MTLModel {
         return downloadLink(url: previewUrl)
             .then(on: DispatchQueue.global()) { (data) -> Promise<OWSLinkPreviewDraft> in
                 return parseLinkDataAndBuildDraft(linkData: data, linkUrlString: previewUrl)
-                    .then(on: DispatchQueue.global()) { (linkPreviewDraft) -> Promise<OWSLinkPreviewDraft> in
-                        guard linkPreviewDraft.isValid() else {
-                            return Promise(error: LinkPreviewError.noPreview)
-                        }
-                        setCachedLinkPreview(linkPreviewDraft, forPreviewUrl: previewUrl)
-
-                        return Promise.value(linkPreviewDraft)
+            }.then(on: DispatchQueue.global()) { (linkPreviewDraft) -> Promise<OWSLinkPreviewDraft> in
+                guard linkPreviewDraft.isValid() else {
+                    throw LinkPreviewError.noPreview
                 }
+                setCachedLinkPreview(linkPreviewDraft, forPreviewUrl: previewUrl)
+
+                return Promise.value(linkPreviewDraft)
         }
     }
 
@@ -761,18 +757,18 @@ public class OWSLinkPreview: MTLModel {
             }
 
             return downloadImage(url: imageUrl, imageMimeType: imageMimeType)
-                .then(on: DispatchQueue.global()) { (imageData: Data) -> Promise<OWSLinkPreviewDraft> in
+                .map(on: DispatchQueue.global()) { (imageData: Data) -> OWSLinkPreviewDraft in
                     // We always recompress images to Jpeg.
                     let imageFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: "jpg")
                     do {
                         try imageData.write(to: NSURL.fileURL(withPath: imageFilePath), options: .atomicWrite)
                     } catch let error as NSError {
                         owsFailDebug("file write failed: \(imageFilePath), \(error)")
-                        return Promise(error: LinkPreviewError.assertionFailure)
+                        throw LinkPreviewError.assertionFailure
                     }
 
                     let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, imageFilePath: imageFilePath)
-                    return Promise.value(linkPreviewDraft)
+                    return linkPreviewDraft
                 }
                 .recover(on: DispatchQueue.global()) { (_) -> Promise<OWSLinkPreviewDraft> in
                     return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
