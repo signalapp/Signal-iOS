@@ -23,6 +23,7 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
 
 @property (nonatomic, weak) UIView *bottomLayoutView;
 @property (nonatomic) NSLayoutConstraint *bottomLayoutConstraint;
+@property (nonatomic) BOOL shouldAnimateBottomLayout;
 
 @end
 
@@ -64,6 +65,22 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
     return self;
 }
 
+#pragma mark - View Lifecycle
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    self.shouldAnimateBottomLayout = YES;
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+
+    self.shouldAnimateBottomLayout = NO;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -72,6 +89,8 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
         self.view.backgroundColor = Theme.backgroundColor;
     }
 }
+
+#pragma mark -
 
 - (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view avoidNotch:(BOOL)avoidNotch
 {
@@ -185,11 +204,27 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
     // bar.
     CGFloat offset = -MAX(0, (self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y));
 
-    // There's no need to use: [UIView animateWithDuration:...].
-    // Any layout changes made during these notifications are
-    // automatically animated.
-    self.bottomLayoutConstraint.constant = offset;
-    [self.bottomLayoutView.superview layoutIfNeeded];
+    dispatch_block_t updateLayout = ^{
+        if (self.shouldBottomViewReserveSpaceForKeyboard && offset >= 0) {
+            // To avoid unnecessary animations / layout jitter,
+            // some views never reclaim layout space when the keyboard is dismissed.
+            //
+            // They _do_ need to relayout if the user switches keyboards.
+            return;
+        }
+        self.bottomLayoutConstraint.constant = offset;
+        [self.bottomLayoutView.superview layoutIfNeeded];
+    };
+
+
+    if (self.shouldAnimateBottomLayout && CurrentAppContext().isAppForegroundAndActive) {
+        updateLayout();
+    } else {
+        // UIKit by default animates all changes in response to keyboard events.
+        // We want to suppress those animations if the view isn't visible,
+        // otherwise presentation animations don't work properly.
+        [UIView performWithoutAnimation:updateLayout];
+    }
 }
 
 #pragma mark - Orientation
