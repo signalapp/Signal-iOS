@@ -44,7 +44,7 @@ public class SSKPreferences: NSObject {
     @objc
     public class func setHasSavedThread(value: Bool, transaction: YapDatabaseReadWriteTransaction) {
         transaction.setBool(value,
-                            forKey: areLinkPreviewsEnabledKey,
+                            forKey: hasSavedThreadKey,
                             inCollection: collection)
     }
 
