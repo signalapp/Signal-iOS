@@ -368,14 +368,22 @@ class ImageEditorCropViewController: OWSViewController {
 
         let pinchGestureRecognizer = ImageEditorPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         pinchGestureRecognizer.referenceView = self.clipView
+        // Use this VC as a delegate to ensure that pinches only
+        // receive touches that start inside of the cropped image bounds.
         pinchGestureRecognizer.delegate = self
         view.addGestureRecognizer(pinchGestureRecognizer)
 
         let panGestureRecognizer = ImageEditorPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
         panGestureRecognizer.maximumNumberOfTouches = 1
         panGestureRecognizer.referenceView = self.clipView
-        panGestureRecognizer.delegate = self
+        // _DO NOT_ use this VC as a delegate to filter touches;
+        // pan gestures can start outside the cropped image bounds.
+        // Otherwise the edges of the crop rect are difficult to
+        // "grab".
         view.addGestureRecognizer(panGestureRecognizer)
+
+        // De-conflict the gestures; the pan gesture has priority.
+        panGestureRecognizer.shouldBeRequiredToFail(by: pinchGestureRecognizer)
     }
 
     override public var canBecomeFirstResponder: Bool {
