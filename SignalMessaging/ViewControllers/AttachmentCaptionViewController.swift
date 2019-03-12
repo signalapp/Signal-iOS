@@ -177,7 +177,7 @@ class AttachmentCaptionViewController: OWSViewController {
 
         // Add shadow in case overlayed on white content
         lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
-        lengthLimitLabel.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        lengthLimitLabel.layer.shadowOffset = .zero
         lengthLimitLabel.layer.shadowOpacity = 0.8
         lengthLimitLabel.isHidden = true
 

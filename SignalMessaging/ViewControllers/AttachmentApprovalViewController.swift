@@ -1460,7 +1460,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
 
         // Add shadow in case overlayed on white content
         lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
-        lengthLimitLabel.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        lengthLimitLabel.layer.shadowOffset = .zero
         lengthLimitLabel.layer.shadowOpacity = 0.8
         lengthLimitLabel.isHidden = true
 
@@ -1694,6 +1694,7 @@ public class ApprovalRailCellView: GalleryRailCellView {
         imageView.layer.shadowColor = UIColor.black.cgColor
         imageView.layer.shadowRadius = 2
         imageView.layer.shadowOpacity = 0.66
+        imageView.layer.shadowOffset = .zero
         return imageView
     }()
 
@@ -1725,8 +1726,8 @@ public class ApprovalRailCellView: GalleryRailCellView {
         if hasCaption {
             addSubview(captionIndicator)
 
-            captionIndicator.autoPinEdge(toSuperviewEdge: .top, withInset: 0)
-            captionIndicator.autoPinEdge(toSuperviewEdge: .leading, withInset: 4)
+            captionIndicator.autoPinEdge(toSuperviewEdge: .top, withInset: 2)
+            captionIndicator.autoPinEdge(toSuperviewEdge: .leading, withInset: 6)
         } else {
             captionIndicator.removeFromSuperview()
         }

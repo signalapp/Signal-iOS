@@ -103,8 +103,9 @@ public class ImageEditorPaletteView: UIView {
         imageView.layer.borderColor = UIColor.white.cgColor
         imageView.layer.borderWidth = CGHairlineWidth()
         imageView.layer.shadowColor = UIColor.black.cgColor
-        imageView.layer.shadowOpacity = 2.0
+        imageView.layer.shadowRadius = 2.0
         imageView.layer.shadowOpacity = 0.33
+        imageView.layer.shadowOffset = .zero
         selectionWrapper.layoutCallback = { [weak self] (view) in
             guard let strongSelf = self else {
                 return
