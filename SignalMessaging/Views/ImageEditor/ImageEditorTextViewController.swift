@@ -92,7 +92,8 @@ private class VAlignTextView: UITextView {
 
 @objc
 public protocol ImageEditorTextViewControllerDelegate: class {
-    func textEditDidComplete(textItem: ImageEditorTextItem, text: String?, color: ImageEditorColor)
+    func textEditDidComplete(textItem: ImageEditorTextItem)
+    func textEditDidDelete(textItem: ImageEditorTextItem)
     func textEditDidCancel()
 }
 
@@ -195,6 +196,10 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         // This will determine the text view's size.
         paletteView.autoPinEdge(.leading, to: .trailing, of: textView, withOffset: 0)
 
+        let pinchGestureRecognizer = ImageEditorPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
+        pinchGestureRecognizer.referenceView = view
+        view.addGestureRecognizer(pinchGestureRecognizer)
+
         updateNavigationBar()
     }
 
@@ -228,6 +233,35 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
         let navigationBarItems = [undoButton, doneButton]
         updateNavigationBar(navigationBarItems: navigationBarItems)
+    }
+
+    // MARK: - Pinch Gesture
+
+    private var pinchFontStart: UIFont?
+
+    @objc
+    public func handlePinchGesture(_ gestureRecognizer: ImageEditorPinchGestureRecognizer) {
+        AssertIsOnMainThread()
+
+        switch gestureRecognizer.state {
+        case .began:
+            pinchFontStart = textView.font
+        case .changed, .ended:
+            guard let pinchFontStart = pinchFontStart else {
+                return
+            }
+            var pointSize: CGFloat = pinchFontStart.pointSize
+            if gestureRecognizer.pinchStateLast.distance > 0 {
+                pointSize *= gestureRecognizer.pinchStateLast.distance / gestureRecognizer.pinchStateStart.distance
+            }
+            let minPointSize: CGFloat = 12
+            let maxPointSize: CGFloat = 64
+            pointSize = max(minPointSize, min(maxPointSize, pointSize))
+            let font = pinchFontStart.withSize(pointSize)
+            textView.font = font
+        default:
+            pinchFontStart = nil
+        }
     }
 
     // MARK: - Events
@@ -268,14 +302,39 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
                                                               imageSize: model.srcImageSizePixels,
                                                               transform: model.currentTransform())
             let unitWidth = textView.width() / imageFrame.width
-
-            newTextItem = textItem.copy(withUnitCenter: textCenterImageUnit, unitWidth: unitWidth)
+            newTextItem = textItem.copy(unitCenter: textCenterImageUnit).copy(unitWidth: unitWidth)
         }
+
+        var font = textItem.font
+        if let newFont = textView.font {
+            font = newFont
+        } else {
+            owsFailDebug("Missing font.")
+        }
+        newTextItem = newTextItem.copy(font: font)
+
+        guard let text = textView.text?.ows_stripped(),
+            text.count > 0 else {
+                self.delegate?.textEditDidDelete(textItem: textItem)
+
+                self.dismiss(animated: false) {
+                    // Do nothing.
+                }
+
+                return
+        }
+
+        newTextItem = newTextItem.copy(withText: text, color: paletteView.selectedValue)
 
         // Hide the text view immediately to avoid animation glitches in the dismiss transition.
         textView.isHidden = true
 
-        self.delegate?.textEditDidComplete(textItem: newTextItem, text: textView.text, color: paletteView.selectedValue)
+        if textItem == newTextItem {
+            // No changes were made.  Cancel to avoid dirtying the undo stack.
+            self.delegate?.textEditDidCancel()
+        } else {
+            self.delegate?.textEditDidComplete(textItem: newTextItem)
+        }
 
         self.dismiss(animated: false) {
             // Do nothing.
