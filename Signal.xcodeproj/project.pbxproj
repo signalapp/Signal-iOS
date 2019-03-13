@@ -16,6 +16,7 @@
 		34080F02222853E30087E99F /* ImageEditorBrushViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34080F01222853E30087E99F /* ImageEditorBrushViewController.swift */; };
 		34080F04222858DC0087E99F /* OWSViewController+ImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34080F03222858DC0087E99F /* OWSViewController+ImageEditor.swift */; };
 		340872BF22393CFA00CB25B0 /* UIGestureRecognizer+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872BE22393CF900CB25B0 /* UIGestureRecognizer+OWS.swift */; };
+		340872C122394CAA00CB25B0 /* ImageEditorTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872C022394CAA00CB25B0 /* ImageEditorTransform.swift */; };
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */; };
 		340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */; };
@@ -646,6 +647,7 @@
 		34080F01222853E30087E99F /* ImageEditorBrushViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorBrushViewController.swift; sourceTree = "<group>"; };
 		34080F03222858DC0087E99F /* OWSViewController+ImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSViewController+ImageEditor.swift"; sourceTree = "<group>"; };
 		340872BE22393CF900CB25B0 /* UIGestureRecognizer+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIGestureRecognizer+OWS.swift"; sourceTree = "<group>"; };
+		340872C022394CAA00CB25B0 /* ImageEditorTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTransform.swift; sourceTree = "<group>"; };
 		340B02B61F9FD31800F9CFEC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewItemTest.m; sourceTree = "<group>"; };
 		340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettingsOptionsViewController.m; sourceTree = "<group>"; };
@@ -1933,6 +1935,7 @@
 				34BBC854220C7ADA00857249 /* ImageEditorStrokeItem.swift */,
 				34BBC855220C7ADA00857249 /* ImageEditorTextItem.swift */,
 				34BBC84A220B2CB200857249 /* ImageEditorTextViewController.swift */,
+				340872C022394CAA00CB25B0 /* ImageEditorTransform.swift */,
 				34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */,
 				34BBC856220C7ADA00857249 /* OrderedDictionary.swift */,
 				34080F03222858DC0087E99F /* OWSViewController+ImageEditor.swift */,
@@ -3409,6 +3412,7 @@
 				45194F8F1FD71FF500333B2C /* ThreadUtil.m in Sources */,
 				34BEDB0E21C405B0007B0EAE /* ImageEditorModel.swift in Sources */,
 				451F8A3B1FD71297005CB9DA /* UIUtil.m in Sources */,
+				340872C122394CAA00CB25B0 /* ImageEditorTransform.swift in Sources */,
 				450C800F20AD1AB900F3A091 /* OWSWindowManager.m in Sources */,
 				454A965A1FD6017E008D2A0E /* SignalAttachment.swift in Sources */,
 				45BC829D1FD9C4B400011CF3 /* ShareViewDelegate.swift in Sources */,
