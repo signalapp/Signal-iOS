@@ -207,7 +207,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             cancelButton.sizeToFit()
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
         } else {
-            // Mimic a UIBarButtonItem of type .cancel, but with a shadow.
+            // Mimic a conventional back button, but with a shadow.
             let isRTL = CurrentAppContext().isRTL
             let imageName = isRTL ? "NavBarBackRTL" : "NavBarBack"
             let backButton = OWSButton(imageName: imageName, tintColor: .white) { [weak self] in
