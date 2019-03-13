@@ -79,8 +79,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return bottomToolView.galleryRailView
     }
 
-    var mediaMessageTextToolbar: MediaMessageTextToolbar {
-        return bottomToolView.mediaMessageTextToolbar
+    var attachmentTextToolbar: AttachmentTextToolbar {
+        return bottomToolView.attachmentTextToolbar
     }
 
     lazy var bottomToolView: AttachmentApprovalInputAccessoryView = {
@@ -106,7 +106,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         // Bottom Toolbar
         galleryRailView.delegate = self
-        mediaMessageTextToolbar.mediaMessageTextToolbarDelegate = self
+        attachmentTextToolbar.attachmentTextToolbarDelegate = self
 
         // Navigation
 
@@ -566,27 +566,27 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 }
 
-extension AttachmentApprovalViewController: MediaMessageTextToolbarDelegate {
-    func mediaMessageTextToolbarDidBeginEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
+extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
+    func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
         currentPageViewController.setAttachmentViewScale(.compact, animated: true)
     }
 
-    func mediaMessageTextToolbarDidEndEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
+    func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
         currentPageViewController.setAttachmentViewScale(.fullsize, animated: true)
     }
 
-    func mediaMessageTextToolbarDidTapSend(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
+    func attachmentTextToolbarDidTapSend(_ attachmentTextToolbar: AttachmentTextToolbar) {
         // Toolbar flickers in and out if there are errors
         // and remains visible momentarily after share extension is dismissed.
         // It's easiest to just hide it at this point since we're done with it.
         currentPageViewController.shouldAllowAttachmentViewResizing = false
-        mediaMessageTextToolbar.isUserInteractionEnabled = false
-        mediaMessageTextToolbar.isHidden = true
+        attachmentTextToolbar.isUserInteractionEnabled = false
+        attachmentTextToolbar.isHidden = true
 
-        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: mediaMessageTextToolbar.messageText)
+        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: attachmentTextToolbar.messageText)
     }
 
-    func mediaMessageTextToolbarDidAddMore(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
+    func attachmentTextToolbarDidAddMore(_ attachmentTextToolbar: AttachmentTextToolbar) {
         self.approvalDelegate?.attachmentApproval?(self, addMoreToAttachments: attachments)
     }
 }

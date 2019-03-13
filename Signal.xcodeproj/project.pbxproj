@@ -22,6 +22,8 @@
 		340872CB2239563500CB25B0 /* AttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872C62239563500CB25B0 /* AttachmentPrepViewController.swift */; };
 		340872CC2239563500CB25B0 /* AttachmentCaptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872C72239563500CB25B0 /* AttachmentCaptionViewController.swift */; };
 		340872CE2239596100CB25B0 /* AttachmentApprovalInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872CD2239596000CB25B0 /* AttachmentApprovalInputAccessoryView.swift */; };
+		340872DD22399F9100CB25B0 /* AttachmentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872DB22399F9100CB25B0 /* AttachmentTextView.swift */; };
+		340872DE22399F9100CB25B0 /* AttachmentTextToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872DC22399F9100CB25B0 /* AttachmentTextToolbar.swift */; };
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */; };
 		340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */; };
@@ -657,6 +659,8 @@
 		340872C62239563500CB25B0 /* AttachmentPrepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentPrepViewController.swift; sourceTree = "<group>"; };
 		340872C72239563500CB25B0 /* AttachmentCaptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentCaptionViewController.swift; sourceTree = "<group>"; };
 		340872CD2239596000CB25B0 /* AttachmentApprovalInputAccessoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalInputAccessoryView.swift; sourceTree = "<group>"; };
+		340872DB22399F9100CB25B0 /* AttachmentTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentTextView.swift; sourceTree = "<group>"; };
+		340872DC22399F9100CB25B0 /* AttachmentTextToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentTextToolbar.swift; sourceTree = "<group>"; };
 		340B02B61F9FD31800F9CFEC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewItemTest.m; sourceTree = "<group>"; };
 		340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettingsOptionsViewController.m; sourceTree = "<group>"; };
@@ -1491,6 +1495,8 @@
 				340872C72239563500CB25B0 /* AttachmentCaptionViewController.swift */,
 				340872C42239563500CB25B0 /* AttachmentItemCollection.swift */,
 				340872C62239563500CB25B0 /* AttachmentPrepViewController.swift */,
+				340872DC22399F9100CB25B0 /* AttachmentTextToolbar.swift */,
+				340872DB22399F9100CB25B0 /* AttachmentTextView.swift */,
 			);
 			path = AttachmentApproval;
 			sourceTree = "<group>";
@@ -3403,6 +3409,7 @@
 				340872CC2239563500CB25B0 /* AttachmentCaptionViewController.swift in Sources */,
 				34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */,
 				346129E61FD5C0C600532771 /* OWSDatabaseMigrationRunner.m in Sources */,
+				340872DD22399F9100CB25B0 /* AttachmentTextView.swift in Sources */,
 				34AC0A11211B39EA00997B47 /* OWSLayerView.swift in Sources */,
 				34AC0A1B211B39EA00997B47 /* GradientView.swift in Sources */,
 				34AC09E2211B39B100997B47 /* ReturnToCallViewController.swift in Sources */,
@@ -3475,6 +3482,7 @@
 				34BBC84B220B2CB200857249 /* ImageEditorTextViewController.swift in Sources */,
 				34AC09FA211B39B100997B47 /* SharingThreadPickerViewController.m in Sources */,
 				45F59A082028E4FB00E8D2B0 /* OWSAudioSession.swift in Sources */,
+				340872DE22399F9100CB25B0 /* AttachmentTextToolbar.swift in Sources */,
 				34612A071FD7238600532771 /* OWSSyncManager.m in Sources */,
 				450C801220AD1D5B00F3A091 /* UIDevice+featureSupport.swift in Sources */,
 				451F8A471FD715BA005CB9DA /* OWSAvatarBuilder.m in Sources */,
