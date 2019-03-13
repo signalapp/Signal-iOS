@@ -140,16 +140,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         }
         #endif
 
-        if isZoomable {
-            // Add top and bottom gradients to ensure toolbar controls are legible
-            // when placed over image/video preview which may be a clashing color.
-            let topGradient = GradientView(from: backgroundColor, to: UIColor.clear)
-            self.view.addSubview(topGradient)
-            topGradient.autoPinWidthToSuperview()
-            topGradient.autoPinEdge(toSuperviewEdge: .top)
-            topGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(60))
-        }
-
         // Hide the play button embedded in the MediaView and replace it with our own.
         // This allows us to zoom in on the media view without zooming in on the button
         if attachment.isVideo {

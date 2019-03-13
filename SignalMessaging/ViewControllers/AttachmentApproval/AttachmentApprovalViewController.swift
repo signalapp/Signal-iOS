@@ -190,13 +190,67 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         let hasCancel = (mode != .sharedNavigation)
         if hasCancel {
-            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                               target: self, action: #selector(cancelPressed))
-            cancelButton.tintColor = .white
-            self.navigationItem.leftBarButtonItem = cancelButton
+            // Mimic a UIBarButtonItem of type .cancel, but with a shadow.
+            let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
+                self?.cancelPressed()
+            }
+            cancelButton.setTitleColor(.white, for: .normal)
+            if let titleLabel = cancelButton.titleLabel {
+                titleLabel.font = UIFont.systemFont(ofSize: 18.0)
+                titleLabel.layer.shadowColor = UIColor.black.cgColor
+                titleLabel.layer.shadowRadius = 2.0
+                titleLabel.layer.shadowOpacity = 0.66
+                titleLabel.layer.shadowOffset = .zero
+            } else {
+                owsFailDebug("Missing titleLabel.")
+            }
+            cancelButton.sizeToFit()
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
         } else {
+            // Mimic a conventional back button, but with a shadow.
+            let isRTL = CurrentAppContext().isRTL
+            let imageName = isRTL ? "NavBarBackRTL" : "NavBarBack"
+            let backButton = OWSButton(imageName: imageName, tintColor: .white) { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            }
+
+            // Nudge closer to the left edge to match default back button item.
+            let kExtraLeftPadding: CGFloat = isRTL ? +0 : -8
+
+            // Give some extra hit area to the back button. This is a little smaller
+            // than the default back button, but makes sense for our left aligned title
+            // view in the MessagesViewController
+            let kExtraRightPadding: CGFloat = isRTL ? -0 : +10
+
+            // Extra hit area above/below
+            let kExtraHeightPadding: CGFloat = 4
+
+            // Matching the default backbutton placement is tricky.
+            // We can't just adjust the imageEdgeInsets on a UIBarButtonItem directly,
+            // so we adjust the imageEdgeInsets on a UIButton, then wrap that
+            // in a UIBarButtonItem.
+
+            backButton.contentHorizontalAlignment = .left
+
+            // Default back button is 1.5 pixel lower than our extracted image.
+            let kTopInsetPadding: CGFloat = 1.5
+            backButton.imageEdgeInsets = UIEdgeInsets(top: kTopInsetPadding, left: kExtraLeftPadding, bottom: 0, right: 0)
+
+            var backImageSize = CGSize.zero
+            if let backImage = UIImage(named: imageName) {
+                backImageSize = backImage.size
+            } else {
+                owsFailDebug("Missing backImage.")
+            }
+            backButton.frame = CGRect(origin: .zero, size: CGSize(width: backImageSize.width + kExtraRightPadding,
+                                                                  height: backImageSize.height + kExtraHeightPadding))
+
+            backButton.layer.shadowColor = UIColor.black.cgColor
+            backButton.layer.shadowRadius = 2.0
+            backButton.layer.shadowOpacity = 0.66
+            backButton.layer.shadowOffset = .zero
             // Note: using a custom leftBarButtonItem breaks the interactive pop gesture.
-            self.navigationItem.leftBarButtonItem = self.createOWSBackButton()
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
         }
     }
 
@@ -507,7 +561,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     // MARK: - Event Handlers
 
-    @objc func cancelPressed(sender: UIButton) {
+    private func cancelPressed() {
         self.approvalDelegate?.attachmentApproval(self, didCancelAttachments: attachments)
     }
 }
