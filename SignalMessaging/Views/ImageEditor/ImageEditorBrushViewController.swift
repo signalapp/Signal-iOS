@@ -178,7 +178,6 @@ public class ImageEditorBrushViewController: OWSViewController {
         }
 
         let strokeColor = paletteView.selectedValue.color
-        // TODO: Tune stroke width.
         let unitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth() / self.model.currentTransform().scaling
 
         switch gestureRecognizer.state {
