@@ -145,6 +145,10 @@ public extension CGFloat {
     }
 
     public static let halfPi: CGFloat = CGFloat.pi * 0.5
+
+    public func fuzzyEquals(_ other: CGFloat, tolerance: CGFloat = 0.001) -> Bool {
+        return abs(self - other) < tolerance
+    }
 }
 
 public extension Int {
@@ -212,6 +216,11 @@ public extension CGPoint {
 
     public func applyingInverse(_ transform: CGAffineTransform) -> CGPoint {
         return applying(transform.inverted())
+    }
+
+    public func fuzzyEquals(_ other: CGPoint, tolerance: CGFloat = 0.001) -> Bool {
+        return (x.fuzzyEquals(other.x, tolerance: tolerance) &&
+            y.fuzzyEquals(other.y, tolerance: tolerance))
     }
 }
 

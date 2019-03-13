@@ -214,7 +214,6 @@ class ImageEditorCropViewController: OWSViewController {
     }
 
     public func updateNavigationBar() {
-        // TODO: Change this asset.
         let resetButton = navigationBarButton(imageName: "image_editor_undo",
                                              selector: #selector(didTapReset(sender:)))
         let doneButton = navigationBarButton(imageName: "image_editor_checkmark_full",

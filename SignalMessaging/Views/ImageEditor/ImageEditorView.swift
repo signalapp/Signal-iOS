@@ -260,9 +260,8 @@ public class ImageEditorView: UIView {
 
             let newRotationRadians = textItem.rotationRadians + gestureRecognizer.pinchStateLast.angleRadians - gestureRecognizer.pinchStateStart.angleRadians
 
-            let newItem = textItem.copy(withUnitCenter: unitCenter,
-                                        scaling: newScaling,
-                                        rotationRadians: newRotationRadians)
+            let newItem = textItem.copy(unitCenter: unitCenter).copy(scaling: newScaling,
+                                                                     rotationRadians: newRotationRadians)
 
             if pinchHasChanged {
                 model.replace(item: newItem, suppressUndo: true)
@@ -348,7 +347,7 @@ public class ImageEditorView: UIView {
                                                                         transform: self.model.currentTransform())
             let gestureDeltaImageUnit = gestureNowImageUnit.minus(gestureStartImageUnit)
             let unitCenter = CGPointClamp01(movingTextStartUnitCenter.plus(gestureDeltaImageUnit))
-            let newItem = textItem.copy(withUnitCenter: unitCenter)
+            let newItem = textItem.copy(unitCenter: unitCenter)
 
             if movingTextHasMoved {
                 model.replace(item: newItem, suppressUndo: true)
@@ -515,26 +514,25 @@ extension ImageEditorView: ImageEditorModelObserver {
 
 extension ImageEditorView: ImageEditorTextViewControllerDelegate {
 
-    public func textEditDidComplete(textItem: ImageEditorTextItem, text: String?, color: ImageEditorColor) {
+    public func textEditDidComplete(textItem: ImageEditorTextItem) {
         AssertIsOnMainThread()
 
-        guard let text = text?.ows_stripped(),
-            text.count > 0 else {
-                if model.has(itemForId: textItem.itemId) {
-                    model.remove(item: textItem)
-                }
-                return
-        }
-
         // Model items are immutable; we _replace_ the item rather than modify it.
-        let newItem = textItem.copy(withText: text, color: color)
         if model.has(itemForId: textItem.itemId) {
-            model.replace(item: newItem, suppressUndo: false)
+            model.replace(item: textItem, suppressUndo: false)
         } else {
-            model.append(item: newItem)
+            model.append(item: textItem)
         }
 
-        self.currentColor = color
+        self.currentColor = textItem.color
+    }
+
+    public func textEditDidDelete(textItem: ImageEditorTextItem) {
+        AssertIsOnMainThread()
+
+        if model.has(itemForId: textItem.itemId) {
+            model.remove(item: textItem)
+        }
     }
 
     public func textEditDidCancel() {

@@ -54,6 +54,10 @@ public class ImageEditorColor: NSObject {
             return color.cgColor
         })
     }
+
+    static func ==(left: ImageEditorColor, right: ImageEditorColor) -> Bool {
+        return left.palettePhase.fuzzyEquals(right.palettePhase)
+    }
 }
 
 // MARK: -

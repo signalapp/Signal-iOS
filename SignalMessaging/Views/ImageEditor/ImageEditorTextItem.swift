@@ -131,47 +131,71 @@ public class ImageEditorTextItem: ImageEditorItem {
     }
 
     @objc
-    public func copy(withUnitCenter newUnitCenter: CGPoint) -> ImageEditorTextItem {
+    public func copy(unitCenter: CGPoint) -> ImageEditorTextItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: text,
                                    color: color,
                                    font: font,
                                    fontReferenceImageWidth: fontReferenceImageWidth,
-                                   unitCenter: newUnitCenter,
+                                   unitCenter: unitCenter,
                                    unitWidth: unitWidth,
                                    rotationRadians: rotationRadians,
                                    scaling: scaling)
     }
 
     @objc
-    public func copy(withUnitCenter newUnitCenter: CGPoint,
-                     scaling newScaling: CGFloat,
-                     rotationRadians newRotationRadians: CGFloat) -> ImageEditorTextItem {
+    public func copy(scaling: CGFloat,
+                     rotationRadians: CGFloat) -> ImageEditorTextItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: text,
                                    color: color,
                                    font: font,
                                    fontReferenceImageWidth: fontReferenceImageWidth,
-                                   unitCenter: newUnitCenter,
+                                   unitCenter: unitCenter,
                                    unitWidth: unitWidth,
-                                   rotationRadians: newRotationRadians,
-                                   scaling: newScaling)
+                                   rotationRadians: rotationRadians,
+                                   scaling: scaling)
     }
 
     @objc
-    public func copy(withUnitCenter newUnitCenter: CGPoint, unitWidth newUnitWidth: CGFloat) -> ImageEditorTextItem {
+    public func copy(unitWidth: CGFloat) -> ImageEditorTextItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: text,
                                    color: color,
                                    font: font,
                                    fontReferenceImageWidth: fontReferenceImageWidth,
-                                   unitCenter: newUnitCenter,
-                                   unitWidth: newUnitWidth,
+                                   unitCenter: unitCenter,
+                                   unitWidth: unitWidth,
+                                   rotationRadians: rotationRadians,
+                                   scaling: scaling)
+    }
+
+    @objc
+    public func copy(font: UIFont) -> ImageEditorTextItem {
+        return ImageEditorTextItem(itemId: itemId,
+                                   text: text,
+                                   color: color,
+                                   font: font,
+                                   fontReferenceImageWidth: fontReferenceImageWidth,
+                                   unitCenter: unitCenter,
+                                   unitWidth: unitWidth,
                                    rotationRadians: rotationRadians,
                                    scaling: scaling)
     }
 
     public override func outputScale() -> CGFloat {
         return scaling
+    }
+
+    static func ==(left: ImageEditorTextItem, right: ImageEditorTextItem) -> Bool {
+        return (left.text == right.text &&
+            left.color == right.color &&
+            left.font.fontName == right.font.fontName &&
+            left.font.pointSize.fuzzyEquals(right.font.pointSize) &&
+            left.fontReferenceImageWidth.fuzzyEquals(right.fontReferenceImageWidth) &&
+            left.unitCenter.fuzzyEquals(right.unitCenter) &&
+            left.unitWidth.fuzzyEquals(right.unitWidth) &&
+            left.rotationRadians.fuzzyEquals(right.rotationRadians) &&
+            left.scaling.fuzzyEquals(right.scaling))
     }
 }
