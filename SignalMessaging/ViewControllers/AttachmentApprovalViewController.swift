@@ -1462,6 +1462,7 @@ class MediaMessageTextToolbar: UIView, UITextViewDelegate {
         lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
         lengthLimitLabel.layer.shadowOffset = .zero
         lengthLimitLabel.layer.shadowOpacity = 0.8
+        lengthLimitLabel.layer.shadowRadius = 2.0
         lengthLimitLabel.isHidden = true
 
         return lengthLimitLabel
@@ -1676,12 +1677,14 @@ public class ApprovalRailCellView: GalleryRailCellView {
             strongSelf.approvalRailCellDelegate?.approvalRailCellView(strongSelf, didRemoveItem: attachmentItem)
         }
 
-        button.setImage(#imageLiteral(resourceName: "ic_circled_x"), for: .normal)
+        button.setImage(UIImage(named: "x-24")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .white
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowRadius = 2
+        button.layer.shadowOpacity = 0.66
+        button.layer.shadowOffset = .zero
 
-        let kInsetDistance: CGFloat = 5
-        button.imageEdgeInsets = UIEdgeInsets(top: kInsetDistance, left: kInsetDistance, bottom: kInsetDistance, right: kInsetDistance)
-
-        let kButtonWidth: CGFloat = 24 + kInsetDistance * 2
+        let kButtonWidth: CGFloat = 24
         button.autoSetDimensions(to: CGSize(width: kButtonWidth, height: kButtonWidth))
 
         return button
@@ -1704,8 +1707,8 @@ public class ApprovalRailCellView: GalleryRailCellView {
         if isSelected {
             addSubview(deleteButton)
 
-            deleteButton.autoPinEdge(toSuperviewEdge: .top, withInset: -12)
-            deleteButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: -8)
+            deleteButton.autoPinEdge(toSuperviewEdge: .top, withInset: cellBorderWidth)
+            deleteButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: cellBorderWidth + 4)
         } else {
             deleteButton.removeFromSuperview()
         }
@@ -1726,8 +1729,8 @@ public class ApprovalRailCellView: GalleryRailCellView {
         if hasCaption {
             addSubview(captionIndicator)
 
-            captionIndicator.autoPinEdge(toSuperviewEdge: .top, withInset: 2)
-            captionIndicator.autoPinEdge(toSuperviewEdge: .leading, withInset: 6)
+            captionIndicator.autoPinEdge(toSuperviewEdge: .top, withInset: cellBorderWidth)
+            captionIndicator.autoPinEdge(toSuperviewEdge: .leading, withInset: cellBorderWidth + 4)
         } else {
             captionIndicator.removeFromSuperview()
         }
