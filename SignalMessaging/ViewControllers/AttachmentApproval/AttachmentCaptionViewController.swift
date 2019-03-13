@@ -9,6 +9,8 @@ protocol AttachmentCaptionDelegate: class {
     func captionViewDidCancel()
 }
 
+// MARK: -
+
 class AttachmentCaptionViewController: OWSViewController {
 
     weak var delegate: AttachmentCaptionDelegate?
