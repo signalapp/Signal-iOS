@@ -190,10 +190,19 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         let hasCancel = (mode != .sharedNavigation)
         if hasCancel {
-            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                               target: self, action: #selector(cancelPressed))
-            cancelButton.tintColor = .white
-            self.navigationItem.leftBarButtonItem = cancelButton
+            // Mimic a UIBarButtonItem of type .cancel, but with a shadow.
+            let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
+                self?.cancelPressed()
+            }
+            cancelButton.setTitleColor(.white, for: .normal)
+            if let titleLabel = cancelButton.titleLabel {
+                titleLabel.font = UIFont.systemFont(ofSize: 18.0)
+                titleLabel.layer.shadowColor = UIColor.black.cgColor
+                titleLabel.layer.shadowRadius = 2.0
+                titleLabel.layer.shadowOpacity = 0.66
+                titleLabel.layer.shadowOffset = .zero
+            }
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
         } else {
             // Note: using a custom leftBarButtonItem breaks the interactive pop gesture.
             self.navigationItem.leftBarButtonItem = self.createOWSBackButton()
@@ -507,7 +516,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     // MARK: - Event Handlers
 
-    @objc func cancelPressed(sender: UIButton) {
+    private func cancelPressed() {
         self.approvalDelegate?.attachmentApproval(self, didCancelAttachments: attachments)
     }
 }
