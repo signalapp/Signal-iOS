@@ -20,10 +20,11 @@
 		340872C92239563500CB25B0 /* AttachmentItemCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872C42239563500CB25B0 /* AttachmentItemCollection.swift */; };
 		340872CA2239563500CB25B0 /* AttachmentApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872C52239563500CB25B0 /* AttachmentApprovalViewController.swift */; };
 		340872CB2239563500CB25B0 /* AttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872C62239563500CB25B0 /* AttachmentPrepViewController.swift */; };
-		340872CC2239563500CB25B0 /* AttachmentCaptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872C72239563500CB25B0 /* AttachmentCaptionViewController.swift */; };
 		340872CE2239596100CB25B0 /* AttachmentApprovalInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872CD2239596000CB25B0 /* AttachmentApprovalInputAccessoryView.swift */; };
-		340872DD22399F9100CB25B0 /* AttachmentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872DB22399F9100CB25B0 /* AttachmentTextView.swift */; };
-		340872DE22399F9100CB25B0 /* AttachmentTextToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872DC22399F9100CB25B0 /* AttachmentTextToolbar.swift */; };
+		340872D02239787F00CB25B0 /* AttachmentTextToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872CF2239787F00CB25B0 /* AttachmentTextToolbar.swift */; };
+		340872D622397E6800CB25B0 /* AttachmentCaptionToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872D522397E6800CB25B0 /* AttachmentCaptionToolbar.swift */; };
+		340872D822397F4600CB25B0 /* AttachmentCaptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872D722397F4500CB25B0 /* AttachmentCaptionViewController.swift */; };
+		340872DA22397FEB00CB25B0 /* AttachmentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872D922397FEB00CB25B0 /* AttachmentTextView.swift */; };
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */; };
 		340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */; };
@@ -657,10 +658,11 @@
 		340872C42239563500CB25B0 /* AttachmentItemCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentItemCollection.swift; sourceTree = "<group>"; };
 		340872C52239563500CB25B0 /* AttachmentApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalViewController.swift; sourceTree = "<group>"; };
 		340872C62239563500CB25B0 /* AttachmentPrepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentPrepViewController.swift; sourceTree = "<group>"; };
-		340872C72239563500CB25B0 /* AttachmentCaptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentCaptionViewController.swift; sourceTree = "<group>"; };
 		340872CD2239596000CB25B0 /* AttachmentApprovalInputAccessoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalInputAccessoryView.swift; sourceTree = "<group>"; };
-		340872DB22399F9100CB25B0 /* AttachmentTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentTextView.swift; sourceTree = "<group>"; };
-		340872DC22399F9100CB25B0 /* AttachmentTextToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentTextToolbar.swift; sourceTree = "<group>"; };
+		340872CF2239787F00CB25B0 /* AttachmentTextToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentTextToolbar.swift; sourceTree = "<group>"; };
+		340872D522397E6800CB25B0 /* AttachmentCaptionToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentCaptionToolbar.swift; sourceTree = "<group>"; };
+		340872D722397F4500CB25B0 /* AttachmentCaptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentCaptionViewController.swift; sourceTree = "<group>"; };
+		340872D922397FEB00CB25B0 /* AttachmentTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentTextView.swift; sourceTree = "<group>"; };
 		340B02B61F9FD31800F9CFEC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewItemTest.m; sourceTree = "<group>"; };
 		340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettingsOptionsViewController.m; sourceTree = "<group>"; };
@@ -1492,11 +1494,12 @@
 				340872C32239563500CB25B0 /* ApprovalRailCellView.swift */,
 				340872CD2239596000CB25B0 /* AttachmentApprovalInputAccessoryView.swift */,
 				340872C52239563500CB25B0 /* AttachmentApprovalViewController.swift */,
-				340872C72239563500CB25B0 /* AttachmentCaptionViewController.swift */,
+				340872D522397E6800CB25B0 /* AttachmentCaptionToolbar.swift */,
+				340872D722397F4500CB25B0 /* AttachmentCaptionViewController.swift */,
 				340872C42239563500CB25B0 /* AttachmentItemCollection.swift */,
 				340872C62239563500CB25B0 /* AttachmentPrepViewController.swift */,
-				340872DC22399F9100CB25B0 /* AttachmentTextToolbar.swift */,
-				340872DB22399F9100CB25B0 /* AttachmentTextView.swift */,
+				340872CF2239787F00CB25B0 /* AttachmentTextToolbar.swift */,
+				340872D922397FEB00CB25B0 /* AttachmentTextView.swift */,
 			);
 			path = AttachmentApproval;
 			sourceTree = "<group>";
@@ -3399,6 +3402,7 @@
 				34BBC857220C7ADA00857249 /* ImageEditorItem.swift in Sources */,
 				34480B641FD0A98800BC14EF /* UIView+OWS.m in Sources */,
 				34AC0A1C211B39EA00997B47 /* OWSFlatButton.swift in Sources */,
+				340872D822397F4600CB25B0 /* AttachmentCaptionViewController.swift in Sources */,
 				34C3C7932040B0DD0000134C /* OWSAudioPlayer.m in Sources */,
 				34AC09E5211B39B100997B47 /* ScreenLockViewController.m in Sources */,
 				34AC09F7211B39B100997B47 /* MediaMessageView.swift in Sources */,
@@ -3406,10 +3410,8 @@
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
 				34AC09E6211B39B100997B47 /* SelectRecipientViewController.m in Sources */,
 				4C858A52212DC5E1001B45D3 /* UIImage+OWS.swift in Sources */,
-				340872CC2239563500CB25B0 /* AttachmentCaptionViewController.swift in Sources */,
 				34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */,
 				346129E61FD5C0C600532771 /* OWSDatabaseMigrationRunner.m in Sources */,
-				340872DD22399F9100CB25B0 /* AttachmentTextView.swift in Sources */,
 				34AC0A11211B39EA00997B47 /* OWSLayerView.swift in Sources */,
 				34AC0A1B211B39EA00997B47 /* GradientView.swift in Sources */,
 				34AC09E2211B39B100997B47 /* ReturnToCallViewController.swift in Sources */,
@@ -3430,6 +3432,7 @@
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
 				452C7CA72037628B003D51A5 /* Weak.swift in Sources */,
 				34D5872F208E2C4200D2255A /* OWS109OutgoingMessageState.m in Sources */,
+				340872D02239787F00CB25B0 /* AttachmentTextToolbar.swift in Sources */,
 				34AC09F8211B39B100997B47 /* CountryCodeViewController.m in Sources */,
 				451F8A341FD710C3005CB9DA /* FullTextSearcher.swift in Sources */,
 				34080F04222858DC0087E99F /* OWSViewController+ImageEditor.swift in Sources */,
@@ -3466,6 +3469,7 @@
 				34BEDB0B21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift in Sources */,
 				34AC0A1A211B39EA00997B47 /* CommonStrings.swift in Sources */,
 				34AC0A19211B39EA00997B47 /* OWSAlerts.swift in Sources */,
+				340872DA22397FEB00CB25B0 /* AttachmentTextView.swift in Sources */,
 				34FDB29221FF986600A01202 /* UIView+OWS.swift in Sources */,
 				34BBC859220C7ADA00857249 /* ImageEditorStrokeItem.swift in Sources */,
 				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
@@ -3482,7 +3486,6 @@
 				34BBC84B220B2CB200857249 /* ImageEditorTextViewController.swift in Sources */,
 				34AC09FA211B39B100997B47 /* SharingThreadPickerViewController.m in Sources */,
 				45F59A082028E4FB00E8D2B0 /* OWSAudioSession.swift in Sources */,
-				340872DE22399F9100CB25B0 /* AttachmentTextToolbar.swift in Sources */,
 				34612A071FD7238600532771 /* OWSSyncManager.m in Sources */,
 				450C801220AD1D5B00F3A091 /* UIDevice+featureSupport.swift in Sources */,
 				451F8A471FD715BA005CB9DA /* OWSAvatarBuilder.m in Sources */,
@@ -3497,6 +3500,7 @@
 				349EA07C2162AEA800F7B17F /* OWS111UDAttributesMigration.swift in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
 				459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */,
+				340872D622397E6800CB25B0 /* AttachmentCaptionToolbar.swift in Sources */,
 				34ABB2C42090C59700C727A6 /* OWSResaveCollectionDBMigration.m in Sources */,
 				4C948FF72146EB4800349F0D /* BlockListCache.swift in Sources */,
 				4551DB5A205C562300C8AE75 /* Collection+OWS.swift in Sources */,
