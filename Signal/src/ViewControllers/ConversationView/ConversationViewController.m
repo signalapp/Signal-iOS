@@ -1272,6 +1272,7 @@ typedef enum : NSUInteger {
     self.actionOnOpen = ConversationViewActionNone;
 
     [self updateInputToolbarLayout];
+    [self ensureScrollDownButton];
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
@@ -2500,7 +2501,7 @@ typedef enum : NSUInteger {
     // The "scroll down" button layout tracks the content inset of the collection view,
     // so pin to the edge of the collection view.
     self.scrollDownButtonButtomConstraint =
-        [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.collectionView];
+        [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
     [self.scrollDownButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
 #ifdef DEBUG
@@ -2520,7 +2521,9 @@ typedef enum : NSUInteger {
 
 - (void)updateScrollDownButtonLayout
 {
-    self.scrollDownButtonButtomConstraint.constant = -1 * self.collectionView.contentInset.bottom;
+    CGFloat inset = -(self.collectionView.contentInset.bottom + self.bottomLayoutGuide.length);
+    self.scrollDownButtonButtomConstraint.constant = inset;
+    [self.view setNeedsLayout];
 }
 
 - (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
@@ -2593,20 +2596,11 @@ typedef enum : NSUInteger {
         }
     }
 
-    if (shouldShowScrollDownButton) {
-        self.scrollDownButton.hidden = NO;
-
-    } else {
-        self.scrollDownButton.hidden = YES;
-    }
+    self.scrollDownButton.hidden = !shouldShowScrollDownButton;
 
 #ifdef DEBUG
     BOOL shouldShowScrollUpButton = self.collectionView.contentOffset.y > 0;
-    if (shouldShowScrollUpButton) {
-        self.scrollUpButton.hidden = NO;
-    } else {
-        self.scrollUpButton.hidden = YES;
-    }
+    self.scrollUpButton.hidden = !shouldShowScrollUpButton;
 #endif
 }
 
@@ -3794,9 +3788,7 @@ typedef enum : NSUInteger {
     //
     // Always reserve room for the input accessory, which we display even
     // if the keyboard is not active.
-    newInsets.bottom = MAX(0,
-        MAX(self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y,
-            self.inputToolbar.height));
+    newInsets.bottom = MAX(0, self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y);
 
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
 
