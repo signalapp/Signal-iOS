@@ -107,7 +107,6 @@ class AttachmentCaptionToolbar: UIView, UITextViewDelegate {
     lazy var textView: UITextView = {
         let textView = buildTextView()
 
-        textView.returnKeyType = .done
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
 
         return textView
@@ -190,14 +189,7 @@ class AttachmentCaptionToolbar: UIView, UITextViewDelegate {
             }
         }
 
-        // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
-        // allows the user to get the keyboard out of the way while in the attachment approval view.
-        if text == "\n" {
-            textView.resignFirstResponder()
-            return false
-        } else {
-            return true
-        }
+        return true
     }
 
     // MARK: - Helpers

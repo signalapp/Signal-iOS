@@ -213,7 +213,6 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         textView.isOpaque = false
         // We use a white cursor since we use a dark background.
         textView.tintColor = .white
-        textView.returnKeyType = .done
         // TODO: Limit the size of the text?
         // textView.delegate = self
         textView.isScrollEnabled = true
