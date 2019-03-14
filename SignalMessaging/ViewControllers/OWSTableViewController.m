@@ -170,12 +170,30 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return [self itemWithText:text actionBlock:actionBlock accessoryType:UITableViewCellAccessoryDisclosureIndicator];
 }
 
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text
+                 accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                             actionBlock:(nullable OWSTableActionBlock)actionBlock
+{
+    return [self itemWithText:text
+        accessibilityIdentifier:accessibilityIdentifier
+                    actionBlock:actionBlock
+                  accessoryType:UITableViewCellAccessoryDisclosureIndicator];
+}
+
 + (OWSTableItem *)checkmarkItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
     return [self itemWithText:text actionBlock:actionBlock accessoryType:UITableViewCellAccessoryCheckmark];
 }
 
 + (OWSTableItem *)itemWithText:(NSString *)text
+                   actionBlock:(nullable OWSTableActionBlock)actionBlock
+                 accessoryType:(UITableViewCellAccessoryType)accessoryType
+{
+    return [self itemWithText:text accessibilityIdentifier:nil actionBlock:actionBlock accessoryType:accessoryType];
+}
+
++ (OWSTableItem *)itemWithText:(NSString *)text
+       accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
                    actionBlock:(nullable OWSTableActionBlock)actionBlock
                  accessoryType:(UITableViewCellAccessoryType)accessoryType
 {
@@ -188,6 +206,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         UITableViewCell *cell = [OWSTableItem newCell];
         cell.textLabel.text = text;
         cell.accessoryType = accessoryType;
+        cell.accessibilityIdentifier = accessibilityIdentifier;
         return cell;
     };
     return item;
@@ -208,6 +227,14 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                               detailText:(NSString *)detailText
                              actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
+    return [self disclosureItemWithText:text detailText:detailText accessibilityIdentifier:nil actionBlock:actionBlock];
+}
+
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text
+                              detailText:(NSString *)detailText
+                 accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                             actionBlock:(nullable OWSTableActionBlock)actionBlock
+{
     OWSAssertDebug(text.length > 0);
     OWSAssertDebug(actionBlock);
 
@@ -220,6 +247,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         cell.textLabel.text = text;
         cell.detailTextLabel.text = detailText;
         [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
+        cell.accessibilityIdentifier = accessibilityIdentifier;
         return cell;
     };
     return item;
@@ -386,6 +414,21 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                               target:(id)target
                             selector:(SEL)selector
 {
+    return [self switchItemWithText:text
+            accessibilityIdentifier:nil
+                          isOnBlock:isOnBlock
+                     isEnabledBlock:isEnabledBlock
+                             target:target
+                           selector:selector];
+}
+
++ (OWSTableItem *)switchItemWithText:(NSString *)text
+             accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                           isOnBlock:(OWSTableSwitchBlock)isOnBlock
+                      isEnabledBlock:(OWSTableSwitchBlock)isEnabledBlock
+                              target:(id)target
+                            selector:(SEL)selector
+{
     OWSAssertDebug(text.length > 0);
     OWSAssertDebug(target);
     OWSAssertDebug(selector);
@@ -401,6 +444,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         [cellSwitch setOn:isOnBlock()];
         [cellSwitch addTarget:weakTarget action:selector forControlEvents:UIControlEventValueChanged];
         cellSwitch.enabled = isEnabledBlock();
+        cellSwitch.accessibilityIdentifier = accessibilityIdentifier;
 
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
