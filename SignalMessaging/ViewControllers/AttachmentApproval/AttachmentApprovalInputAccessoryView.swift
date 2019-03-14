@@ -66,6 +66,8 @@ class AttachmentApprovalInputAccessoryView: UIView {
         backgroundView.autoPinEdge(toSuperviewEdge: .leading)
         backgroundView.autoPinEdge(toSuperviewEdge: .trailing)
         backgroundView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -200)
+        backgroundView.setContentHuggingLow()
+        backgroundView.setCompressionResistanceLow()
 
         currentCaptionLabel.textColor = UIColor(white: 1, alpha: 0.8)
         currentCaptionLabel.font = UIFont.ows_dynamicTypeBody
