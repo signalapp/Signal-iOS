@@ -113,7 +113,9 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         content.categoryIdentifier = category.identifier
         content.userInfo = userInfo
         let isAppActive = UIApplication.shared.applicationState == .active
-        content.sound = sound?.notificationSound(isQuiet: isAppActive)
+        if let sound = sound, sound != OWSSound.none {
+            content.sound = sound.notificationSound(isQuiet: isAppActive)
+        }
 
         var notificationIdentifier: String = UUID().uuidString
         if let replacingIdentifier = replacingIdentifier {
