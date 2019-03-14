@@ -13,7 +13,6 @@ class FakeOutboundCallInitiator: OutboundCallInitiator {
         passedRecipientId = recipientId
         return true
     }
-    
 }
 
 class OutboundCallInitiatorTest: SignalBaseTest {
@@ -29,5 +28,4 @@ class OutboundCallInitiatorTest: SignalBaseTest {
         fakeOutboundCallInitiator.initiateCall(handle: "+1555555555")
         XCTAssertNotNil(fakeOutboundCallInitiator.passedRecipientId)
     }
-    
 }
