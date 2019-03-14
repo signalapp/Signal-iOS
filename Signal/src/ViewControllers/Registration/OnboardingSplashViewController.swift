@@ -21,10 +21,12 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         heroImageView.layer.magnificationFilter = kCAFilterTrilinear
         heroImageView.setCompressionResistanceLow()
         heroImageView.setContentHuggingVerticalLow()
+        heroImageView.accessibilityLabel = "onboarding.splash." + "heroImageView"
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_SPLASH_TITLE", comment: "Title of the 'onboarding splash' view."))
         view.addSubview(titleLabel)
         titleLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
+        titleLabel.accessibilityLabel = "onboarding.splash." + "titleLabel"
 
         let explanationLabel = UILabel()
         explanationLabel.text = NSLocalizedString("ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
@@ -36,11 +38,13 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.isUserInteractionEnabled = true
         explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explanationLabelTapped)))
+        explanationLabel.accessibilityLabel = "onboarding.splash." + "explanationLabel"
 
         let continueButton = self.button(title: NSLocalizedString("BUTTON_CONTINUE",
                                                                  comment: "Label for 'continue' button."),
                                                     selector: #selector(continuePressed))
         view.addSubview(continueButton)
+        continueButton.accessibilityLabel = "onboarding.splash." + "continueButton"
 
         let stackView = UIStackView(arrangedSubviews: [
             heroImageView,

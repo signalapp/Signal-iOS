@@ -20,17 +20,21 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
                                                             action: #selector(skipWasPressed))
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_PERMISSIONS_TITLE", comment: "Title of the 'onboarding permissions' view."))
+        titleLabel.accessibilityLabel = "onboarding.permissions." + "titleLabel"
 
         let explanationLabel = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_PERMISSIONS_EXPLANATION",
                                                                                   comment: "Explanation in the 'onboarding permissions' view."))
+        explanationLabel.accessibilityLabel = "onboarding.permissions." + "explanationLabel"
 
         let giveAccessButton = self.button(title: NSLocalizedString("ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
                                                                     comment: "Label for the 'give access' button in the 'onboarding permissions' view."),
                                            selector: #selector(giveAccessPressed))
+        giveAccessButton.accessibilityLabel = "onboarding.permissions." + "giveAccessButton"
 
         let notNowButton = self.linkButton(title: NSLocalizedString("ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON",
                                                                     comment: "Label for the 'not now' button in the 'onboarding permissions' view."),
                                            selector: #selector(notNowPressed))
+        notNowButton.accessibilityLabel = "onboarding.permissions." + "notNowButton"
 
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,

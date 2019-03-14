@@ -32,6 +32,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
                                                                                          comment: "The first explanation in the 'onboarding 2FA' view."))
         explanationLabel1.font = UIFont.ows_dynamicTypeCaption1
         explanationLabel2.font = UIFont.ows_dynamicTypeCaption1
+        explanationLabel1.accessibilityLabel = "onboarding.2fa." + "explanationLabel1"
+        explanationLabel2.accessibilityLabel = "onboarding.2fa." + "explanationLabel2"
 
         pinTextField.textAlignment = .center
         pinTextField.delegate = self
@@ -41,6 +43,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinTextField.setContentHuggingHorizontalLow()
         pinTextField.setCompressionResistanceHorizontalLow()
         pinTextField.autoSetDimension(.height, toSize: 40)
+        pinTextField.accessibilityLabel = "onboarding.2fa." + "pinTextField"
 
         pinStrokeNormal = pinTextField.addBottomStroke()
         pinStrokeError = pinTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
@@ -50,6 +53,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         validationWarningLabel.textColor = .ows_destructiveRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         validationWarningLabel.textAlignment = .center
+        validationWarningLabel.accessibilityLabel = "onboarding.2fa." + "validationWarningLabel"
 
         let validationWarningRow = UIView()
         validationWarningRow.addSubview(validationWarningLabel)
@@ -59,10 +63,12 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         let forgotPinLink = self.linkButton(title: NSLocalizedString("ONBOARDING_2FA_FORGOT_PIN_LINK",
                                                                      comment: "Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view."),
                                             selector: #selector(forgotPinLinkTapped))
+        forgotPinLink.accessibilityLabel = "onboarding.2fa." + "forgotPinLink"
 
         let nextButton = self.button(title: NSLocalizedString("BUTTON_NEXT",
                                                               comment: "Label for the 'next' button."),
                                      selector: #selector(nextPressed))
+        nextButton.accessibilityLabel = "onboarding.2fa." + "nextButton"
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()

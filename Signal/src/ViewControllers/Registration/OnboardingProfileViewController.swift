@@ -31,13 +31,16 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
         view.layoutMargins = .zero
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_PROFILE_TITLE", comment: "Title of the 'onboarding profile' view."))
+        titleLabel.accessibilityLabel = "onboarding.profile." + "titleLabel"
 
         let explanationLabel = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_PROFILE_EXPLANATION",
                                                                                         comment: "Explanation in the 'onboarding profile' view."))
+        explanationLabel.accessibilityLabel = "onboarding.profile." + "explanationLabel"
 
         let nextButton = self.button(title: NSLocalizedString("BUTTON_NEXT",
                                                               comment: "Label for the 'next' button."),
                                      selector: #selector(nextPressed))
+        nextButton.accessibilityLabel = "onboarding.profile." + "nextButton"
 
         avatarView.autoSetDimensions(to: CGSize(width: CGFloat(avatarSize), height: CGFloat(avatarSize)))
 
@@ -64,6 +67,7 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
         avatarWrapper.addSubview(cameraCircle)
         cameraCircle.autoPinEdge(toSuperviewEdge: .trailing)
         cameraCircle.autoPinEdge(toSuperviewEdge: .bottom)
+        avatarWrapper.accessibilityLabel = "onboarding.profile." + "avatarWrapper"
 
         nameTextfield.textAlignment = .left
         nameTextfield.delegate = self
@@ -74,6 +78,7 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
                                                       comment: "Placeholder text for the profile name in the 'onboarding profile' view.")
         nameTextfield.setContentHuggingHorizontalLow()
         nameTextfield.setCompressionResistanceHorizontalLow()
+        nameTextfield.accessibilityLabel = "onboarding.profile." + "nameTextfield"
 
         let nameWrapper = UIView.container()
         nameWrapper.setCompressionResistanceHorizontalLow()

@@ -17,6 +17,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         view.layoutMargins = .zero
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_CAPTCHA_TITLE", comment: "Title of the 'onboarding Captcha' view."))
+        titleLabel.accessibilityLabel = "onboarding.captcha." + "titleLabel"
 
         let titleRow = UIStackView(arrangedSubviews: [
             titleLabel
@@ -43,6 +44,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         webView.allowsLinkPreview = false
         webView.scrollView.contentInset = .zero
         webView.layoutMargins = .zero
+        webView.accessibilityLabel = "onboarding.captcha." + "webView"
 
         let stackView = UIStackView(arrangedSubviews: [
             titleRow,
