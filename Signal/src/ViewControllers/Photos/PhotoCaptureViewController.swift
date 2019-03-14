@@ -425,12 +425,11 @@ class CaptureButton: UIView {
 
     let defaultDiameter: CGFloat = ScaleFromIPhone5To7Plus(60, 80)
     let recordingDiameter: CGFloat = ScaleFromIPhone5To7Plus(90, 120)
-    var sizeConstraints: [NSLayoutConstraint]!
+    var innerButtonSizeConstraints: [NSLayoutConstraint]!
+    var zoomIndicatorSizeConstraints: [NSLayoutConstraint]!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
-        sizeConstraints = autoSetDimensions(to: CGSize(width: defaultDiameter, height: defaultDiameter))
 
         tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
         innerButton.addGestureRecognizer(tapGesture)
@@ -440,17 +439,20 @@ class CaptureButton: UIView {
         innerButton.addGestureRecognizer(longPressGesture)
 
         addSubview(innerButton)
+        innerButtonSizeConstraints = autoSetDimensions(to: CGSize(width: defaultDiameter, height: defaultDiameter))
         innerButton.backgroundColor = UIColor.ows_white.withAlphaComponent(0.33)
         innerButton.layer.shadowOffset = .zero
         innerButton.layer.shadowOpacity = 0.33
         innerButton.layer.shadowRadius = 2
         innerButton.autoPinEdgesToSuperviewEdges()
 
-        zoomIndicator.isUserInteractionEnabled = false
         addSubview(zoomIndicator)
+        zoomIndicatorSizeConstraints = zoomIndicator.autoSetDimensions(to: CGSize(width: defaultDiameter, height: defaultDiameter))
+        zoomIndicator.isUserInteractionEnabled = false
         zoomIndicator.layer.borderColor = UIColor.ows_white.cgColor
         zoomIndicator.layer.borderWidth = 1.5
-        zoomIndicator.autoPin(toEdgesOf: innerButton)
+        zoomIndicator.autoAlignAxis(.horizontal, toSameAxisOf: innerButton)
+        zoomIndicator.autoAlignAxis(.vertical, toSameAxisOf: innerButton)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -479,10 +481,10 @@ class CaptureButton: UIView {
         case .possible: break
         case .began:
             initialTouchLocation = gesture.location(in: gesture.view)
-            zoomIndicator.transform = .identity
             delegate?.didBeginLongPressCaptureButton(self)
-            UIView.animate(withDuration: 0.3) {
-                self.sizeConstraints.forEach { $0.constant = self.recordingDiameter }
+            UIView.animate(withDuration: 0.2) {
+                self.innerButtonSizeConstraints.forEach { $0.constant = self.recordingDiameter }
+                self.zoomIndicatorSizeConstraints.forEach { $0.constant = self.recordingDiameter }
                 self.superview?.layoutIfNeeded()
             }
         case .changed:
@@ -511,23 +513,25 @@ class CaptureButton: UIView {
 
             Logger.verbose("distance: \(distance), alpha: \(alpha)")
 
-            let transformScale = CGFloatLerp(1, 0.1, alpha)
-            zoomIndicator.transform = CGAffineTransform(scaleX: transformScale, y: transformScale)
+            let zoomIndicatorDiameter = CGFloatLerp(recordingDiameter, 3, alpha)
+            self.zoomIndicatorSizeConstraints.forEach { $0.constant = zoomIndicatorDiameter }
             zoomIndicator.superview?.layoutIfNeeded()
 
             delegate?.longPressCaptureButton(self, didUpdateZoomAlpha: alpha)
         case .ended:
-            UIView.animate(withDuration: 0.3) {
-                self.zoomIndicator.transform = .identity
-                self.sizeConstraints.forEach { $0.constant = self.defaultDiameter }
+            UIView.animate(withDuration: 0.2) {
+                self.innerButtonSizeConstraints.forEach { $0.constant = self.defaultDiameter }
+                self.zoomIndicatorSizeConstraints.forEach { $0.constant = self.defaultDiameter }
+
                 self.superview?.layoutIfNeeded()
             }
             delegate?.didCompleteLongPressCaptureButton(self)
         case .cancelled, .failed:
 
-            UIView.animate(withDuration: 0.3) {
-                self.zoomIndicator.transform = .identity
-                self.sizeConstraints.forEach { $0.constant = self.defaultDiameter }
+            UIView.animate(withDuration: 0.2) {
+                self.innerButtonSizeConstraints.forEach { $0.constant = self.defaultDiameter }
+                self.zoomIndicatorSizeConstraints.forEach { $0.constant = self.defaultDiameter }
+
                 self.superview?.layoutIfNeeded()
             }
             delegate?.didCancelLongPressCaptureButton(self)
