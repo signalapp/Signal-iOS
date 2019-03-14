@@ -264,13 +264,3 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         }
     }
 }
-
-public extension CGSize {
-    var aspectRatio: CGFloat {
-        guard self.height > 0 else {
-            return 0
-        }
-
-        return self.width / self.height
-    }
-}

@@ -149,6 +149,10 @@ public extension CGFloat {
     public func fuzzyEquals(_ other: CGFloat, tolerance: CGFloat = 0.001) -> Bool {
         return abs(self - other) < tolerance
     }
+
+    public var square: CGFloat {
+        return self * self
+    }
 }
 
 public extension Int {
@@ -221,6 +225,25 @@ public extension CGPoint {
     public func fuzzyEquals(_ other: CGPoint, tolerance: CGFloat = 0.001) -> Bool {
         return (x.fuzzyEquals(other.x, tolerance: tolerance) &&
             y.fuzzyEquals(other.y, tolerance: tolerance))
+    }
+
+    public static func tan(angle: CGFloat) -> CGPoint {
+        return CGPoint(x: sin(angle),
+                       y: cos(angle))
+    }
+}
+
+public extension CGSize {
+    var aspectRatio: CGFloat {
+        guard self.height > 0 else {
+            return 0
+        }
+
+        return self.width / self.height
+    }
+
+    var asPoint: CGPoint {
+        return CGPoint(x: width, y: height)
     }
 }
 
