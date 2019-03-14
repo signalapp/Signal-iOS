@@ -458,6 +458,7 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
         navigationController.modalPresentationStyle = (isTransparent
             ? .overFullScreen
             : .fullScreen)
+        navigationController.ows_prefersStatusBarHidden = true
 
         if let navigationBar = navigationController.navigationBar as? OWSNavigationBar {
             navigationBar.overrideTheme(type: .clear)

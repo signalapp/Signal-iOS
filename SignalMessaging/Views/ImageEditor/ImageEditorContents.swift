@@ -74,4 +74,9 @@ public class ImageEditorContents: NSObject {
     public func items() -> [ImageEditorItem] {
         return itemMap.orderedValues()
     }
+
+    @objc
+    public func itemIds() -> [String] {
+        return itemMap.orderedKeys
+    }
 }

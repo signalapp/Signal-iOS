@@ -7,6 +7,7 @@ import UIKit
 
 protocol AttachmentCaptionToolbarDelegate: class {
     func attachmentCaptionToolbarDidEdit(_ attachmentCaptionToolbar: AttachmentCaptionToolbar)
+    func attachmentCaptionToolbarDidComplete()
 }
 
 // MARK: -
@@ -193,7 +194,7 @@ class AttachmentCaptionToolbar: UIView, UITextViewDelegate {
         // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
         // allows the user to get the keyboard out of the way while in the attachment approval view.
         if text == "\n" {
-            textView.resignFirstResponder()
+            attachmentCaptionToolbarDelegate?.attachmentCaptionToolbarDidComplete()
             return false
         } else {
             return true

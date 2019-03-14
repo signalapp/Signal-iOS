@@ -61,6 +61,15 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                    options: [UIPageViewControllerOptionInterPageSpacingKey: kSpacingBetweenItems])
         self.dataSource = self
         self.delegate = self
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didBecomeActive),
+                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     @objc
@@ -77,6 +86,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         navigationBar.overrideTheme(type: .clear)
 
         return navController
+    }
+
+    // MARK: - Notifications
+
+    @objc func didBecomeActive() {
+        AssertIsOnMainThread()
+
+        updateContents()
     }
 
     // MARK: - Subviews
@@ -158,8 +175,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     private func updateContents() {
         updateNavigationBar()
-        updateControlVisibility()
         updateInputAccessory()
+        updateControlVisibility()
     }
 
     // MARK: - Input Accessory
@@ -714,7 +731,11 @@ extension AttachmentApprovalViewController: AttachmentApprovalInputAccessoryView
         updateMediaRail()
     }
 
-    public func attachmentApprovalInputEditCaptions() {
+    public func attachmentApprovalInputStartEditingCaptions() {
         isEditingCaptions = true
+    }
+
+    public func attachmentApprovalInputStopEditingCaptions() {
+        isEditingCaptions = false
     }
 }
