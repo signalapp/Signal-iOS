@@ -1057,7 +1057,7 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Suchen";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds: {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Einige deiner Kontakte sind bereits bei Signal, darunter %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Einige deiner Kontakte sind bereits bei Signal, darunter %@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds: {{The names of 2 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Einige deiner Kontakte sind bereits bei Signal, darunter %@ und %@";
@@ -1102,7 +1102,7 @@
 "IN_CALL_CONNECTING" = "Verbinden …";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Verbindung wird wiederhergestellt …";
+"IN_CALL_RECONNECTING" = "Neu verbinden …";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Klingeln …";
@@ -1503,7 +1503,7 @@
 "NOTIFICATIONS_SHOW" = "Anzeigen";
 
 /* No comment provided by engineer. */
-"OK" = "O. K.";
+"OK" = "Okay";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Für diese Rufnummer ist eine Registrierungssperre aktiviert. Bitte gib die PIN für die Registrierungssperre ein.";
