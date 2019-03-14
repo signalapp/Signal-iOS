@@ -115,6 +115,11 @@ public class ImageEditorModel: NSObject {
     }
 
     @objc
+    public func itemIds() -> [String] {
+        return contents.itemIds()
+    }
+
+    @objc
     public func has(itemForId itemId: String) -> Bool {
         return item(forId: itemId) != nil
     }

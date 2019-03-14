@@ -33,6 +33,8 @@ public class ImageEditorCanvasView: UIView {
     private static let brushLayerZ: CGFloat = +1
     // We want text to be rendered above the image and strokes.
     private static let textLayerZ: CGFloat = +2
+    // We leave space for 10k items/layers of each type.
+    private static let zPositionSpacing: CGFloat = 0.0001
 
     @objc
     public required init(model: ImageEditorModel,
@@ -470,9 +472,20 @@ public class ImageEditorCanvasView: UIView {
         shapeLayer.fillColor = nil
         shapeLayer.lineCap = kCALineCapRound
         shapeLayer.lineJoin = kCALineJoinRound
-        shapeLayer.zPosition = brushLayerZ
+        shapeLayer.zPosition = zPositionForItem(item: item, model: model, zPositionBase: brushLayerZ)
 
         return shapeLayer
+    }
+
+    private class func zPositionForItem(item: ImageEditorItem,
+                                        model: ImageEditorModel,
+                                        zPositionBase: CGFloat) -> CGFloat {
+        let itemIds = model.itemIds()
+        guard let itemIndex = itemIds.firstIndex(of: item.itemId) else {
+            owsFailDebug("Couldn't find index of item.")
+            return zPositionBase
+        }
+        return zPositionBase + CGFloat(itemIndex) * zPositionSpacing
     }
 
     private class func textLayerForItem(item: ImageEditorTextItem,
@@ -532,7 +545,7 @@ public class ImageEditorCanvasView: UIView {
         let transform = CGAffineTransform.identity.scaledBy(x: item.scaling, y: item.scaling).rotated(by: item.rotationRadians)
         layer.setAffineTransform(transform)
 
-        layer.zPosition = textLayerZ
+        layer.zPosition = zPositionForItem(item: item, model: model, zPositionBase: textLayerZ)
 
         return layer
     }
