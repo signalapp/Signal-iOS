@@ -7,7 +7,8 @@ import UIKit
 
 protocol AttachmentApprovalInputAccessoryViewDelegate: class {
     func attachmentApprovalInputUpdateMediaRail()
-    func attachmentApprovalInputEditCaptions()
+    func attachmentApprovalInputStartEditingCaptions()
+    func attachmentApprovalInputStopEditingCaptions()
 }
 
 // MARK: -
@@ -62,12 +63,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
         let backgroundView = UIView()
         backgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         addSubview(backgroundView)
-        backgroundView.autoPinEdge(toSuperviewEdge: .top)
-        backgroundView.autoPinEdge(toSuperviewEdge: .leading)
-        backgroundView.autoPinEdge(toSuperviewEdge: .trailing)
-        backgroundView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -200)
-        backgroundView.setContentHuggingLow()
-        backgroundView.setCompressionResistanceLow()
+        backgroundView.autoPinEdgesToSuperviewEdges()
 
         currentCaptionLabel.textColor = UIColor(white: 1, alpha: 0.8)
         currentCaptionLabel.font = UIFont.ows_dynamicTypeBody
@@ -85,7 +81,13 @@ class AttachmentApprovalInputAccessoryView: UIView {
         stackView.axis = .vertical
 
         addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewEdges()
+        stackView.autoPinEdge(toSuperviewEdge: .top)
+        stackView.autoPinEdge(toSuperviewEdge: .leading)
+        stackView.autoPinEdge(toSuperviewEdge: .trailing)
+        // We pin to the superview's _margin_.  Otherwise the notch breaks
+        // the layout if you hide the keyboard in the simulator (or if the
+        // user uses an external keyboard).
+        stackView.autoPinEdge(toSuperviewMargin: .bottom)
     }
 
     // MARK: - Events
@@ -94,7 +96,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
         guard sender.state == .recognized else {
             return
         }
-        delegate?.attachmentApprovalInputEditCaptions()
+        delegate?.attachmentApprovalInputStartEditingCaptions()
     }
 
     // MARK: 
@@ -171,5 +173,9 @@ extension AttachmentApprovalInputAccessoryView: AttachmentCaptionToolbarDelegate
         currentAttachmentItem.attachment.captionText = attachmentCaptionToolbar.textView.text
 
         delegate?.attachmentApprovalInputUpdateMediaRail()
+    }
+
+    public func attachmentCaptionToolbarDidComplete() {
+        delegate?.attachmentApprovalInputStopEditingCaptions()
     }
 }

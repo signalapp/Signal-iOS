@@ -731,7 +731,11 @@ extension AttachmentApprovalViewController: AttachmentApprovalInputAccessoryView
         updateMediaRail()
     }
 
-    public func attachmentApprovalInputEditCaptions() {
+    public func attachmentApprovalInputStartEditingCaptions() {
         isEditingCaptions = true
+    }
+
+    public func attachmentApprovalInputStopEditingCaptions() {
+        isEditingCaptions = false
     }
 }
