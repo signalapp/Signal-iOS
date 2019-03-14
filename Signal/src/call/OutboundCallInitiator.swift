@@ -35,7 +35,7 @@ import SignalMessaging
     @discardableResult @objc public func initiateCall(handle: String) -> Bool {
         Logger.info("with handle: \(handle)")
 
-        guard let recipientId = PhoneNumber(fromE164: handle)?.toE164() else {
+        guard let recipientId = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: handle)?.toE164() else {
             Logger.warn("unable to parse signalId from phone number: \(handle)")
             return false
         }
