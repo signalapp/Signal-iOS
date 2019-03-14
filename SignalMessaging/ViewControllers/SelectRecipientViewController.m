@@ -69,7 +69,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _phoneNumberTextField);
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _phoneNumberButton);
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _examplePhoneNumberLabel);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _tableViewController);
 }
 
 - (void)viewDidLoad
