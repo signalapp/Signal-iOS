@@ -1114,7 +1114,7 @@
 "IN_CALL_TERMINATED" = "Končan klic.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ti pogovori so premaknjeni v arhiv in se bodo znova pojavili v nabiralniku samo, če prejmete novo sporočilo.";
 
 /* Message shown in the home view when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Vaš poštni nabiralnik je lačen nove pošte. ;-) Začnite s sporočilom prijatelju!";

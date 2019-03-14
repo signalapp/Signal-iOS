@@ -1048,7 +1048,7 @@
 "GROUP_YOU_LEFT" = "Elhagytad a csoportot.";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archív beszélgetések";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Letiltva";
@@ -1114,7 +1114,7 @@
 "IN_CALL_TERMINATED" = "Hívás vége";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ezek a beszélgetések archiválva vannak, ezért csak akkor jelennek meg újra a bejövő üzenet közt, ha újabb üzenet érkezik.";
 
 /* Message shown in the home view when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Dobj a postaládádba valamit, hogy ne legyen olyan magányos! Láss hozzá, és üzenj egy barátodnak!";
