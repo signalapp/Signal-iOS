@@ -7,13 +7,9 @@ import UIKit
 import AVFoundation
 
 protocol AttachmentPrepViewControllerDelegate: class {
-    func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem)
-
     func prepViewControllerUpdateNavigationBar()
 
     func prepViewControllerUpdateControls()
-
-    func prepViewControllerAttachmentCount() -> Int
 }
 
 // MARK: -
@@ -41,13 +37,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     private(set) var contentContainer: UIView!
     private(set) var playVideoButton: UIView?
     private var imageEditorView: ImageEditorView?
-
-    public var isShowingCaptionView = false {
-        didSet {
-            prepDelegate?.prepViewControllerUpdateNavigationBar()
-            prepDelegate?.prepViewControllerUpdateControls()
-        }
-    }
 
     public var shouldHideControls: Bool {
         guard let imageEditorView = imageEditorView else {
@@ -189,8 +178,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             playButton.autoCenterInSuperview()
         }
 
-        // Caption
-
         view.addSubview(touchInterceptorView)
         touchInterceptorView.autoPinEdgesToSuperviewEdges()
         touchInterceptorView.isHidden = true
@@ -227,52 +214,10 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     // MARK: - Navigation Bar
 
     public func navigationBarItems() -> [UIView] {
-        let captionButton = navigationBarButton(imageName: "image_editor_caption",
-                                                selector: #selector(didTapCaption(sender:)))
-
         guard let imageEditorView = imageEditorView else {
-            // Show the "add caption" button for non-image attachments if
-            // there is more than one attachment.
-            if let prepDelegate = prepDelegate,
-                prepDelegate.prepViewControllerAttachmentCount() > 1 {
-                return [captionButton]
-            }
             return []
         }
-        var navigationBarItems = imageEditorView.navigationBarItems()
-
-        // Show the caption UI if there's more than one attachment
-        // OR if the attachment already has a caption.
-        var shouldShowCaptionUI = attachmentCount() > 0
-        if let captionText = attachmentItem.captionText, captionText.count > 0 {
-            shouldShowCaptionUI = true
-        }
-        if shouldShowCaptionUI {
-            navigationBarItems.append(captionButton)
-        }
-
-        return navigationBarItems
-    }
-
-    private func attachmentCount() -> Int {
-        guard let prepDelegate = prepDelegate else {
-            owsFailDebug("Missing prepDelegate.")
-            return 0
-        }
-        return prepDelegate.prepViewControllerAttachmentCount()
-    }
-
-    @objc func didTapCaption(sender: UIButton) {
-        Logger.verbose("")
-
-        presentCaptionView()
-    }
-
-    private func presentCaptionView() {
-        let view = AttachmentCaptionViewController(delegate: self, attachmentItem: attachmentItem)
-        self.imageEditor(presentFullScreenView: view, isTransparent: true)
-
-        isShowingCaptionView = true
+        return imageEditorView.navigationBarItems()
     }
 
     // MARK: - Event Handlers
@@ -430,22 +375,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
                 self.contentContainer.transform = scale.concatenating(translate)
             }
         }
-    }
-}
-
-// MARK: -
-
-extension AttachmentPrepViewController: AttachmentCaptionDelegate {
-    func captionView(_ captionView: AttachmentCaptionViewController, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem) {
-        let attachment = attachmentItem.attachment
-        attachment.captionText = captionText
-        prepDelegate?.prepViewController(self, didUpdateCaptionForAttachmentItem: attachmentItem)
-
-        isShowingCaptionView = false
-    }
-
-    func captionViewDidCancel() {
-        isShowingCaptionView = false
     }
 }
 

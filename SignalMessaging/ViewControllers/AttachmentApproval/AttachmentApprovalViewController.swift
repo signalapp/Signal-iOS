@@ -34,6 +34,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
 
+    public var isEditingCaptions = false {
+        didSet {
+            updateContents()
+        }
+    }
+
     // MARK: - Initializers
 
     @available(*, unavailable, message:"use attachment: constructor instead.")
@@ -79,13 +85,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return bottomToolView.galleryRailView
     }
 
-    var mediaMessageTextToolbar: MediaMessageTextToolbar {
-        return bottomToolView.mediaMessageTextToolbar
+    var attachmentTextToolbar: AttachmentTextToolbar {
+        return bottomToolView.attachmentTextToolbar
     }
 
     lazy var bottomToolView: AttachmentApprovalInputAccessoryView = {
         let isAddMoreVisible = mode == .sharedNavigation
         let bottomToolView = AttachmentApprovalInputAccessoryView(isAddMoreVisible: isAddMoreVisible)
+        bottomToolView.delegate = self
 
         return bottomToolView
     }()
@@ -106,7 +113,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         // Bottom Toolbar
         galleryRailView.delegate = self
-        mediaMessageTextToolbar.mediaMessageTextToolbarDelegate = self
+        attachmentTextToolbar.attachmentTextToolbarDelegate = self
 
         // Navigation
 
@@ -133,8 +140,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         navigationBar.overrideTheme(type: .clear)
 
-        updateNavigationBar()
-        updateControlVisibility()
+        updateContents()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -142,14 +148,21 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         super.viewDidAppear(animated)
 
-        updateNavigationBar()
-        updateControlVisibility()
+        updateContents()
     }
 
     override public func viewWillDisappear(_ animated: Bool) {
         Logger.debug("")
         super.viewWillDisappear(animated)
     }
+
+    private func updateContents() {
+        updateNavigationBar()
+        updateControlVisibility()
+        updateInputAccessory()
+    }
+
+    // MARK: - Input Accessory
 
     override public var inputAccessoryView: UIView? {
         bottomToolView.layoutIfNeeded()
@@ -158,6 +171,15 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     override public var canBecomeFirstResponder: Bool {
         return !shouldHideControls
+    }
+
+    public func updateInputAccessory() {
+        var currentPageViewController: AttachmentPrepViewController?
+        if pageViewControllers.count == 1 {
+            currentPageViewController = pageViewControllers.first
+        }
+        let currentAttachmentItem: SignalAttachmentItem? = currentPageViewController?.attachmentItem
+        bottomToolView.update(isEditingCaptions: isEditingCaptions, currentAttachmentItem: currentAttachmentItem)
     }
 
     // MARK: - Navigation Bar
@@ -169,21 +191,36 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
 
+        guard !isEditingCaptions else {
+            // Hide all navigation bar items while the caption view is open.
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("ATTACHMENT_APPROVAL_CAPTION_TITLE", comment: "Title for 'caption' mode of the attachment approval view."), style: .plain, target: nil, action: nil)
+
+            let doneButton = navigationBarButton(imageName: "image_editor_checkmark_full",
+                                                 selector: #selector(didTapCaptionDone(sender:)))
+            let navigationBarItems = [doneButton]
+            updateNavigationBar(navigationBarItems: navigationBarItems)
+            return
+        }
+
         var navigationBarItems = [UIView]()
-        var isShowingCaptionView = false
 
         if let viewControllers = viewControllers,
             viewControllers.count == 1,
             let firstViewController = viewControllers.first as? AttachmentPrepViewController {
             navigationBarItems = firstViewController.navigationBarItems()
-            isShowingCaptionView = firstViewController.isShowingCaptionView
-        }
 
-        guard !isShowingCaptionView else {
-            // Hide all navigation bar items while the caption view is open.
-            self.navigationItem.leftBarButtonItem = nil
-            self.navigationItem.rightBarButtonItem = nil
-            return
+            // Show the caption UI if there's more than one attachment
+            // OR if the attachment already has a caption.
+            let attachmentCount = attachmentItemCollection.count
+            var shouldShowCaptionUI = attachmentCount > 0
+            if let captionText = firstViewController.attachmentItem.captionText, captionText.count > 0 {
+                shouldShowCaptionUI = true
+            }
+            if shouldShowCaptionUI {
+                let captionButton = navigationBarButton(imageName: "image_editor_caption",
+                                                        selector: #selector(didTapCaption(sender:)))
+                navigationBarItems.append(captionButton)
+            }
         }
 
         updateNavigationBar(navigationBarItems: navigationBarItems)
@@ -264,15 +301,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     private func updateControlVisibility() {
-        if shouldHideControls {
-            if isFirstResponder {
-                resignFirstResponder()
-            }
-        } else {
-            if !isFirstResponder {
-                becomeFirstResponder()
-            }
+        if !shouldHideControls, !isFirstResponder {
+            becomeFirstResponder()
         }
+        bottomToolView.shouldHideControls = shouldHideControls
     }
 
     // MARK: - View Helpers
@@ -351,8 +383,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
         }
 
-        updateNavigationBar()
-        updateControlVisibility()
+        updateContents()
     }
 
     // MARK: - UIPageViewControllerDataSource
@@ -564,29 +595,43 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     private func cancelPressed() {
         self.approvalDelegate?.attachmentApproval(self, didCancelAttachments: attachments)
     }
+
+    @objc func didTapCaption(sender: UIButton) {
+        Logger.verbose("")
+
+        isEditingCaptions = true
+    }
+
+    @objc func didTapCaptionDone(sender: UIButton) {
+        Logger.verbose("")
+
+        isEditingCaptions = false
+    }
 }
 
-extension AttachmentApprovalViewController: MediaMessageTextToolbarDelegate {
-    func mediaMessageTextToolbarDidBeginEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
+// MARK: -
+
+extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
+    func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
         currentPageViewController.setAttachmentViewScale(.compact, animated: true)
     }
 
-    func mediaMessageTextToolbarDidEndEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
+    func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
         currentPageViewController.setAttachmentViewScale(.fullsize, animated: true)
     }
 
-    func mediaMessageTextToolbarDidTapSend(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
+    func attachmentTextToolbarDidTapSend(_ attachmentTextToolbar: AttachmentTextToolbar) {
         // Toolbar flickers in and out if there are errors
         // and remains visible momentarily after share extension is dismissed.
         // It's easiest to just hide it at this point since we're done with it.
         currentPageViewController.shouldAllowAttachmentViewResizing = false
-        mediaMessageTextToolbar.isUserInteractionEnabled = false
-        mediaMessageTextToolbar.isHidden = true
+        attachmentTextToolbar.isUserInteractionEnabled = false
+        attachmentTextToolbar.isHidden = true
 
-        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: mediaMessageTextToolbar.messageText)
+        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: attachmentTextToolbar.messageText)
     }
 
-    func mediaMessageTextToolbarDidAddMore(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
+    func attachmentTextToolbarDidAddMore(_ attachmentTextToolbar: AttachmentTextToolbar) {
         self.approvalDelegate?.attachmentApproval?(self, addMoreToAttachments: attachments)
     }
 }
@@ -594,22 +639,12 @@ extension AttachmentApprovalViewController: MediaMessageTextToolbarDelegate {
 // MARK: -
 
 extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate {
-    func prepViewController(_ prepViewController: AttachmentPrepViewController, didUpdateCaptionForAttachmentItem attachmentItem: SignalAttachmentItem) {
-        self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: attachmentItem.attachment)
-
-        updateMediaRail()
-    }
-
     func prepViewControllerUpdateNavigationBar() {
         updateNavigationBar()
     }
 
     func prepViewControllerUpdateControls() {
         updateControlVisibility()
-    }
-
-    func prepViewControllerAttachmentCount() -> Int {
-        return attachmentItemCollection.count
     }
 }
 
@@ -669,5 +704,17 @@ enum KeyboardScenario {
 extension AttachmentApprovalViewController: ApprovalRailCellViewDelegate {
     func approvalRailCellView(_ approvalRailCellView: ApprovalRailCellView, didRemoveItem attachmentItem: SignalAttachmentItem) {
         remove(attachmentItem: attachmentItem)
+    }
+}
+
+// MARK: -
+
+extension AttachmentApprovalViewController: AttachmentApprovalInputAccessoryViewDelegate {
+    public func attachmentApprovalInputUpdateMediaRail() {
+        updateMediaRail()
+    }
+
+    public func attachmentApprovalInputEditCaptions() {
+        isEditingCaptions = true
     }
 }
