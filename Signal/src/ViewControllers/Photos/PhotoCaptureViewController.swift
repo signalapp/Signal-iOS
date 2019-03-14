@@ -324,9 +324,7 @@ class PhotoCaptureViewController: OWSViewController {
 
         view.addSubview(captureButton)
         captureButton.autoHCenterInSuperview()
-        let captureButtonDiameter: CGFloat = 80
-        captureButton.autoSetDimensions(to: CGSize(width: captureButtonDiameter, height: captureButtonDiameter))
-        // on iPhoneX 12.1
+
         captureButton.autoPinEdge(toSuperviewMargin: .bottom, withInset: 10)
     }
 
@@ -425,8 +423,14 @@ class CaptureButton: UIView {
 
     weak var delegate: CaptureButtonDelegate?
 
+    let defaultDiameter: CGFloat = ScaleFromIPhone5To7Plus(60, 80)
+    let recordingDiameter: CGFloat = ScaleFromIPhone5To7Plus(90, 120)
+    var sizeConstraints: [NSLayoutConstraint]!
+
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        sizeConstraints = autoSetDimensions(to: CGSize(width: defaultDiameter, height: defaultDiameter))
 
         tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
         innerButton.addGestureRecognizer(tapGesture)
@@ -477,6 +481,10 @@ class CaptureButton: UIView {
             initialTouchLocation = gesture.location(in: gesture.view)
             zoomIndicator.transform = .identity
             delegate?.didBeginLongPressCaptureButton(self)
+            UIView.animate(withDuration: 0.3) {
+                self.sizeConstraints.forEach { $0.constant = self.recordingDiameter }
+                self.superview?.layoutIfNeeded()
+            }
         case .changed:
             guard let referenceHeight = delegate?.zoomScaleReferenceHeight else {
                 owsFailDebug("referenceHeight was unexpectedly nil")
@@ -509,10 +517,19 @@ class CaptureButton: UIView {
 
             delegate?.longPressCaptureButton(self, didUpdateZoomAlpha: alpha)
         case .ended:
-            zoomIndicator.transform = .identity
+            UIView.animate(withDuration: 0.3) {
+                self.zoomIndicator.transform = .identity
+                self.sizeConstraints.forEach { $0.constant = self.defaultDiameter }
+                self.superview?.layoutIfNeeded()
+            }
             delegate?.didCompleteLongPressCaptureButton(self)
         case .cancelled, .failed:
-            zoomIndicator.transform = .identity
+
+            UIView.animate(withDuration: 0.3) {
+                self.zoomIndicator.transform = .identity
+                self.sizeConstraints.forEach { $0.constant = self.defaultDiameter }
+                self.superview?.layoutIfNeeded()
+            }
             delegate?.didCancelLongPressCaptureButton(self)
         }
     }
