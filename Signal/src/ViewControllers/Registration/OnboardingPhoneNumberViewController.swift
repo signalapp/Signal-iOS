@@ -34,7 +34,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         view.layoutMargins = .zero
 
         let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_PHONE_NUMBER_TITLE", comment: "Title of the 'onboarding phone number' view."))
-        titleLabel.accessibilityLabel = "onboarding.phoneNumber." + "titleLabel"
+        titleLabel.accessibilityIdentifier = "onboarding.phoneNumber." + "titleLabel"
 
         // Country
 
@@ -44,7 +44,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         countryNameLabel.font = UIFont.ows_dynamicTypeBodyClamped
         countryNameLabel.setContentHuggingHorizontalLow()
         countryNameLabel.setCompressionResistanceHorizontalLow()
-        countryNameLabel.accessibilityLabel = "onboarding.phoneNumber." + "countryNameLabel"
+        countryNameLabel.accessibilityIdentifier = "onboarding.phoneNumber." + "countryNameLabel"
 
         let countryIcon = UIImage(named: (CurrentAppContext().isRTL
             ? "small_chevron_left"
@@ -53,7 +53,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         countryImageView.tintColor = Theme.placeholderColor
         countryImageView.setContentHuggingHigh()
         countryImageView.setCompressionResistanceHigh()
-        countryImageView.accessibilityLabel = "onboarding.phoneNumber." + "countryImageView"
+        countryImageView.accessibilityIdentifier = "onboarding.phoneNumber." + "countryImageView"
 
         let countryRow = UIStackView(arrangedSubviews: [
             countryNameLabel,
@@ -66,7 +66,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         countryRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(countryRowTapped)))
         countryRow.autoSetDimension(.height, toSize: rowHeight)
         _ = countryRow.addBottomStroke()
-        countryRow.accessibilityLabel = "onboarding.phoneNumber." + "countryRow"
+        countryRow.accessibilityIdentifier = "onboarding.phoneNumber." + "countryRow"
 
         callingCodeLabel.textColor = Theme.primaryColor
         callingCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped
@@ -76,7 +76,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         callingCodeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(countryCodeTapped)))
         _ = callingCodeLabel.addBottomStroke()
         callingCodeLabel.autoSetDimension(.width, toSize: rowHeight, relation: .greaterThanOrEqual)
-        callingCodeLabel.accessibilityLabel = "onboarding.phoneNumber." + "callingCodeLabel"
+        callingCodeLabel.accessibilityIdentifier = "onboarding.phoneNumber." + "callingCodeLabel"
 
         phoneNumberTextField.textAlignment = .left
         phoneNumberTextField.delegate = self
@@ -85,7 +85,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         phoneNumberTextField.font = UIFont.ows_dynamicTypeBodyClamped
         phoneNumberTextField.setContentHuggingHorizontalLow()
         phoneNumberTextField.setCompressionResistanceHorizontalLow()
-        phoneNumberTextField.accessibilityLabel = "onboarding.phoneNumber." + "phoneNumberTextField"
+        phoneNumberTextField.accessibilityIdentifier = "onboarding.phoneNumber." + "phoneNumberTextField"
 
         phoneStrokeNormal = phoneNumberTextField.addBottomStroke()
         phoneStrokeError = phoneNumberTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
@@ -105,7 +105,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         validationWarningLabel.textColor = .ows_destructiveRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         validationWarningLabel.autoSetDimension(.height, toSize: validationWarningLabel.font.lineHeight)
-        validationWarningLabel.accessibilityLabel = "onboarding.phoneNumber." + "validationWarningLabel"
+        validationWarningLabel.accessibilityIdentifier = "onboarding.phoneNumber." + "validationWarningLabel"
 
         let validationWarningRow = UIView()
         validationWarningRow.addSubview(validationWarningLabel)
@@ -115,7 +115,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         let nextButton = self.button(title: NSLocalizedString("BUTTON_NEXT",
                                                                 comment: "Label for the 'next' button."),
                                            selector: #selector(nextPressed))
-        nextButton.accessibilityLabel = "onboarding.phoneNumber." + "nextButton"
+        nextButton.accessibilityIdentifier = "onboarding.phoneNumber." + "nextButton"
         self.nextButton = nextButton
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()

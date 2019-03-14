@@ -277,13 +277,13 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
         let titleLabel = self.titleLabel(text: "")
         self.titleLabel = titleLabel
-        titleLabel.accessibilityLabel = "onboarding.verification." + "titleLabel"
+        titleLabel.accessibilityIdentifier = "onboarding.verification." + "titleLabel"
 
         let backLink = self.linkButton(title: NSLocalizedString("ONBOARDING_VERIFICATION_BACK_LINK",
                                                                 comment: "Label for the link that lets users change their phone number in the onboarding views."),
                                        selector: #selector(backLinkTapped))
         self.backLink = backLink
-        backLink.accessibilityLabel = "onboarding.verification." + "backLink"
+        backLink.accessibilityIdentifier = "onboarding.verification." + "backLink"
 
         onboardingCodeView.delegate = self
 
@@ -293,7 +293,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         errorLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
         errorLabel.textAlignment = .center
         errorLabel.autoSetDimension(.height, toSize: errorLabel.font.lineHeight)
-        errorLabel.accessibilityLabel = "onboarding.verification." + "errorLabel"
+        errorLabel.accessibilityIdentifier = "onboarding.verification." + "errorLabel"
 
         // Wrap the error label in a row so that we can show/hide it without affecting view layout.
         let errorRow = UIView()
@@ -304,7 +304,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
                                              selector: #selector(resendCodeLinkTapped))
         codeStateLink.enableMultilineLabel()
         self.codeStateLink = codeStateLink
-        codeStateLink.accessibilityLabel = "onboarding.verification." + "codeStateLink"
+        codeStateLink.accessibilityIdentifier = "onboarding.verification." + "codeStateLink"
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
