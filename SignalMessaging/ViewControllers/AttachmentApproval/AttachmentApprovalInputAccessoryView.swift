@@ -127,16 +127,13 @@ class AttachmentApprovalInputAccessoryView: UIView {
                 attachmentTextToolbar.textView.resignFirstResponder()
             }
         } else if (isEditingCaptions) {
+            // While editing captions, the keyboard should always remain visible.
             if !attachmentCaptionToolbar.textView.isFirstResponder {
                 attachmentCaptionToolbar.textView.becomeFirstResponder()
             }
-        } else {
-            if !attachmentTextToolbar.textView.isFirstResponder {
-                attachmentTextToolbar.textView.becomeFirstResponder()
-            }
         }
-
-        invalidateIntrinsicContentSize()
+        // NOTE: We don't automatically make attachmentTextToolbar.textView
+        // first responder;
 
         layoutSubviews()
     }
