@@ -21,9 +21,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
-    = UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent;
-
 @interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareButtonsViewDelegate>
 
 @property (nonatomic) OWSBubbleView *bubbleView;
@@ -107,8 +104,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     [self.senderNameLabel ows_autoPinToSuperviewMargins];
 
     self.bodyTextView = [self newTextView];
-    // Setting dataDetectorTypes is expensive.  Do it just once.
-    self.bodyTextView.dataDetectorTypes = kOWSAllowedDataDetectorTypes;
     self.bodyTextView.hidden = YES;
 
     self.linkPreviewView = [[LinkPreviewView alloc] initWithDraftDelegate:nil];
@@ -682,7 +677,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSent;
     }
     [self.class loadForTextDisplay:self.bodyTextView
-                              text:self.displayableBodyText.displayText
+                   displayableText:self.displayableBodyText
                         searchText:self.delegate.lastSearchedText
                          textColor:self.bodyTextColor
                               font:self.textMessageFont
@@ -690,7 +685,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 }
 
 + (void)loadForTextDisplay:(OWSMessageTextView *)textView
-                      text:(NSString *)text
+           displayableText:(DisplayableText *)displayableText
                 searchText:(nullable NSString *)searchText
                  textColor:(UIColor *)textColor
                       font:(UIFont *)font
@@ -706,6 +701,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
     };
     textView.shouldIgnoreEvents = shouldIgnoreEvents;
+
+    NSString *text = displayableText.displayText;
 
     NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc]
         initWithString:text
@@ -724,6 +721,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.ows_blackColor range:match.range];
         }
     }
+
+    [textView ensureShouldLinkifyText:displayableText.shouldAllowLinkification];
 
     // For perf, set text last. Otherwise changing font/color is more expensive.
 

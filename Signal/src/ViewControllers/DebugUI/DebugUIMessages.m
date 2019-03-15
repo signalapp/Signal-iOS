@@ -287,6 +287,11 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages testDirectionalFilenamesInThread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Test Linkification"
+                        actionBlock:^{
+                            [DebugUIMessages testLinkificationInThread:thread];
+                        }],
+
     ]];
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -4340,6 +4345,53 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     // private setter to avoid starting expire machinery.
     message.read = YES;
     [message save];
+}
+
++ (void)testLinkificationInThread:(TSThread *)thread
+{
+    NSArray<NSString *> *strings = @[@"google.com",
+                                     @"foo.google.com",
+                                     @"https://foo.google.com",
+                                     @"https://foo.google.com/some/path.html",
+                                     @"http://кц.com",
+                                     @"кц.com",
+                                     @"http://asĸ.com",
+                                     @"кц.рф",
+                                     @"кц.рф/some/path",
+                                     @"https://кц.рф/some/path",
+                                     @"http://foo.кц.рф"];
+
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection
+     readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+         for (NSString *string in strings) {
+             // DO NOT log these strings with the debugger attached.
+             //        OWSLogInfo(@"%@", string);
+
+             {
+                 [self createFakeIncomingMessage:thread
+                                     messageBody:string
+                                 fakeAssetLoader:nil
+                          isAttachmentDownloaded:NO
+                                   quotedMessage:nil
+                                     transaction:transaction];
+             }
+             {
+                 NSString *recipientId = @"+1323555555";
+                 NSString *groupName = string;
+                 NSMutableArray<NSString *> *recipientIds = [@[
+                                                               recipientId,
+                                                               [TSAccountManager localNumber],
+                                                               ] mutableCopy];
+                 NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
+                 TSGroupModel *groupModel =
+                 [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+
+                 TSGroupThread *groupThread =
+                 [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                 OWSAssertDebug(groupThread);
+             }
+         }
+     }];
 }
 
 + (void)testIndicScriptsInThread:(TSThread *)thread
