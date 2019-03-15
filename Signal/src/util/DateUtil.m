@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DateUtil.h"
@@ -361,11 +361,11 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
         [calendar components:NSCalendarUnitMinute | NSCalendarUnitHour fromDate:date toDate:nowDate options:0];
 
     NSInteger minutesDiff = MAX(0, [relativeDiffComponents minute]);
-    if (minutesDiff < 1) {
+    NSInteger hoursDiff = MAX(0, [relativeDiffComponents hour]);
+    if (hoursDiff < 1 && minutesDiff < 1) {
         return NSLocalizedString(@"DATE_NOW", @"The present; the current time.");
     }
 
-    NSInteger hoursDiff = MAX(0, [relativeDiffComponents hour]);
     if (hoursDiff < 1) {
         NSString *minutesString = [OWSFormat formatInt:(int)minutesDiff];
         return [NSString stringWithFormat:NSLocalizedString(@"DATE_MINUTES_AGO_FORMAT",
