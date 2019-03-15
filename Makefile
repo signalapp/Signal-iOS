@@ -32,6 +32,9 @@ build: dependencies
 test:
 	bundle exec fastlane test
 
+ci: dependencies
+	bundle exec fastlane testWithRetry
+
 clean: clean_carthage
 	cd $(WORKING_DIR) && \
 		$(XCODE_BUILD) clean | xcpretty

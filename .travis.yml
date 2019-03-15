@@ -1,16 +1,22 @@
 language: objective-c
 cache: cocoapods # pod install somtimes takes >20 minutes, so lets cache this
 
-osx_image: xcode8.3
+osx_image: xcode10.1
 
 env:
-  -EARLY_START_SIMULATOR=1 # early starting simulator reduces false negatives due to test timeouts
+  global:
+
+# GITHUB access token
+# generate with 'travis encrypt GITHUB_ACCESS_TOKEN=<token_here>'
+# https://docs.travis-ci.com/user/encryption-keys/
+    - secure: c9mORtuHhiuIk9nU+un0cU6F+YKlKTTfrZHIdQt0ZBb0HsKtd5z/MF6yPftqQUTMdoKUOqUNkU/yMnFOq1NNSbEctnrWmIoeHtY/7zEXc60+KJRyZkWjfPk+DdhtX4bh+tJZ3l1j06J5jLGVFY2qi5VjcXomVYGtpnKGnjDM4C4=
+    - EARLY_START_SIMULATOR=1 # early starting simulator reduces false negatives due to test timeouts
 
 before_install:
     - brew update # we may not be running the latest version so always update
     - brew outdated xctool || brew upgrade xctool # only upgrade if outdated (saves 2 minutes)
+    - gem install bundler:2.0.1
     - bundle
     - bundle exec pod repo update --silent # log output is too long without --silent
 
 script: make ci
-

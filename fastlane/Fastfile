@@ -13,6 +13,9 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
+ENV['FASTLANE_XCODEBUILD_SETTINGS_RETRIES'] = "5" #this is to handle timeout due to CPU operation
+ENV['FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT'] = "30"
+
 default_platform(:ios)
 
 platform :ios do
@@ -23,5 +26,31 @@ platform :ios do
       scheme: "Signal", 
       devices: ["iPhone SE"]
     )
+  end
+
+  lane :testWithRetry do
+    test_run_block = lambda do |testrun_info|
+      failed_test_count = testrun_info[:failed].size
+
+      if failed_test_count > 0
+        UI.important('The run of tests would finish with failures due to fragile tests here.')
+
+        try_attempt = testrun_info[:try_count]
+        if try_attempt < 3
+          UI.header('Since we are using :multi_scan, we can re-run just those failing tests!')
+        end
+      end
+    end
+
+    result = multi_scan(
+      workspace: "Signal.xcworkspace",
+      try_count: 3,
+      fail_build: false,
+      scheme: 'Signal',
+      testrun_completed_block: test_run_block
+    )
+    unless result[:failed_testcount].zero?
+      UI.message("There are #{result[:failed_testcount]} legitimate failing tests")
+    end
   end
 end
