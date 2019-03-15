@@ -526,6 +526,19 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 }
 
+- (CGSize)cachedImageSize
+{
+    OWSAssertDebug(self.shouldHaveImageSize);
+
+    @synchronized(self) {
+        if (self.cachedImageWidth && self.cachedImageHeight) {
+            return CGSizeMake(self.cachedImageWidth.floatValue, self.cachedImageHeight.floatValue);
+        } else {
+            return CGSizeZero;
+        }
+    }
+}
+
 #pragma mark - Update With...
 
 - (void)applyChangeAsyncToLatestCopyWithChangeBlock:(void (^)(TSAttachmentStream *))changeBlock

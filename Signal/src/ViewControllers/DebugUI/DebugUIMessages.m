@@ -3802,7 +3802,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                    sourceFilename:@"test.mp3"
                                                           caption:nil
                                                    albumMessageId:nil
-                                                   attachmentType:TSAttachmentTypeDefault];
+                                                   attachmentType:TSAttachmentTypeDefault
+                                                        mediaSize:CGSizeZero];
                 pointer.state = TSAttachmentPointerStateFailed;
                 [pointer saveWithTransaction:transaction];
                 // MJK - should be safe to remove this senderTimestamp
@@ -4701,7 +4702,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                            sourceFilename:fakeAssetLoader.filename
                                                   caption:nil
                                            albumMessageId:nil
-                                           attachmentType:TSAttachmentTypeDefault];
+                                           attachmentType:TSAttachmentTypeDefault
+                                                mediaSize:CGSizeZero];
         attachmentPointer.state = TSAttachmentPointerStateFailed;
         [attachmentPointer saveWithTransaction:transaction];
         return attachmentPointer;

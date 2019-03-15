@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachmentPointer.h"
@@ -11,6 +11,15 @@
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface TSAttachmentStream (TSAttachmentPointer)
+
+- (CGSize)cachedImageSize;
+
+@end
+
+#pragma mark -
+
 
 @interface TSAttachmentPointer ()
 
@@ -53,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
                   attachmentType:(TSAttachmentType)attachmentType
+                       mediaSize:(CGSize)mediaSize
 {
     self = [super initWithServerId:serverId
                      encryptionKey:key
@@ -69,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     _state = TSAttachmentPointerStateEnqueued;
     self.attachmentType = attachmentType;
     _pointerType = TSAttachmentPointerTypeIncoming;
+    _mediaSize = mediaSize;
 
     return self;
 }
@@ -89,6 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     _state = TSAttachmentPointerStateEnqueued;
     self.attachmentType = attachmentStream.attachmentType;
     _pointerType = TSAttachmentPointerTypeRestoring;
+    _mediaSize = (attachmentStream.shouldHaveImageSize ? attachmentStream.cachedImageSize : CGSizeZero);
 
     return self;
 }
@@ -129,6 +141,12 @@ NS_ASSUME_NONNULL_BEGIN
         albumMessageId = albumMessage.uniqueId;
     }
 
+    CGSize mediaSize = CGSizeZero;
+    if (attachmentProto.hasWidth && attachmentProto.hasHeight && attachmentProto.width > 0
+        && attachmentProto.height > 0) {
+        mediaSize = CGSizeMake(attachmentProto.width, attachmentProto.height);
+    }
+
     TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
                                                                              key:attachmentProto.key
                                                                           digest:digest
@@ -137,7 +155,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   sourceFilename:attachmentProto.fileName
                                                                          caption:caption
                                                                   albumMessageId:albumMessageId
-                                                                  attachmentType:attachmentType];
+                                                                  attachmentType:attachmentType
+                                                                       mediaSize:mediaSize];
     return pointer;
 }
 
