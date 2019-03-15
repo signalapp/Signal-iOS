@@ -704,10 +704,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 : nil);
 
         if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+            TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
+            CGSize mediaSize = CGSizeZero;
+            if (attachmentPointer.mediaSize.width > 0 && attachmentPointer.mediaSize.height > 0) {
+                mediaSize = attachmentPointer.mediaSize;
+            }
             [mediaAlbumItems addObject:[[ConversationMediaAlbumItem alloc] initWithAttachment:attachment
                                                                              attachmentStream:nil
                                                                                       caption:caption
-                                                                                    mediaSize:CGSizeZero]];
+                                                                                    mediaSize:mediaSize]];
             continue;
         }
         TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
