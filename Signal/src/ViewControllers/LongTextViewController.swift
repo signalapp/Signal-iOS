@@ -153,8 +153,9 @@ public class LongTextViewController: OWSViewController {
 
         view.addSubview(messageTextView)
         messageTextView.autoPinEdge(toSuperviewEdge: .top)
-        messageTextView.autoPinEdge(toSuperviewMargin: .leading)
-        messageTextView.autoPinEdge(toSuperviewMargin: .trailing)
+        messageTextView.autoPinEdge(toSuperviewEdge: .leading)
+        messageTextView.autoPinEdge(toSuperviewEdge: .trailing)
+        messageTextView.textContainerInset = UIEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
 
         let footer = UIToolbar()
         view.addSubview(footer)
