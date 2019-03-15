@@ -638,7 +638,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                     self.audioDurationSeconds = audioDurationSeconds;
                     self.messageCellType = OWSMessageCellType_Audio;
                 } else {
-                    OWSLogVerbose(@"contentType: %@", self.attachmentStream.contentType);
                     self.messageCellType = OWSMessageCellType_GenericAttachment;
                 }
             } else if (self.messageCellType == OWSMessageCellType_Unknown) {
