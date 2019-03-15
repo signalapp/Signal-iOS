@@ -274,14 +274,15 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_GenericAttachment:
             bodyMediaView = [self loadViewForGenericAttachment];
             break;
-        case OWSMessageCellType_DownloadingAttachment:
-            bodyMediaView = [self loadViewForDownloadingAttachment];
-            break;
         case OWSMessageCellType_ContactShare:
             bodyMediaView = [self loadViewForContactShare];
             break;
         case OWSMessageCellType_MediaMessage:
             bodyMediaView = [self loadViewForMediaAlbum];
+            break;
+        case OWSMessageCellType_OversizeTextDownloading:
+        case OWSMessageCellType_OversizeTextFailed:
+            bodyMediaView = [self loadViewForOversizeTextDownload];
             break;
     }
 
@@ -564,8 +565,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
-        case OWSMessageCellType_DownloadingAttachment:
         case OWSMessageCellType_ContactShare:
+        case OWSMessageCellType_OversizeTextDownloading:
+        case OWSMessageCellType_OversizeTextFailed:
             return NO;
         case OWSMessageCellType_MediaMessage:
             return YES;
@@ -579,9 +581,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             return NO;
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
-        case OWSMessageCellType_DownloadingAttachment:
         case OWSMessageCellType_ContactShare:
         case OWSMessageCellType_MediaMessage:
+        case OWSMessageCellType_OversizeTextDownloading:
+        case OWSMessageCellType_OversizeTextFailed:
             return YES;
     }
 }
@@ -870,31 +873,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     return attachmentView;
 }
 
-- (UIView *)loadViewForDownloadingAttachment
-{
-    OWSAssertDebug(self.viewItem.attachmentPointer);
-
-    // TODO: We probably want to do something different for attachments
-    // being restored from backup.
-    AttachmentPointerView *downloadView =
-        [[AttachmentPointerView alloc] initWithAttachmentPointer:self.viewItem.attachmentPointer
-                                                      isIncoming:self.isIncoming
-                                               conversationStyle:self.conversationStyle];
-
-    UIView *wrapper = [UIView new];
-    [wrapper addSubview:downloadView];
-    [downloadView autoPinEdgesToSuperviewEdges];
-
-    self.loadCellContentBlock = ^{
-        // Do nothing.
-    };
-    self.unloadCellContentBlock = ^{
-        // Do nothing.
-    };
-
-    return wrapper;
-}
-
 - (UIView *)loadViewForContactShare
 {
     OWSAssertDebug(self.viewItem.contactShare);
@@ -913,6 +891,26 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     };
 
     return contactShareView;
+}
+
+- (UIView *)loadViewForOversizeTextDownload
+{
+    BOOL isFailed = self.cellType == OWSMessageCellType_OversizeTextFailed;
+
+    // We can use an empty view.  The progress views will display download
+    // progress or tap-to-retry UI.
+    UIView *attachmentView = [UIView new];
+
+    [self addProgressViewsIfNecessary:attachmentView];
+
+    self.loadCellContentBlock = ^{
+        // Do nothing.
+    };
+    self.unloadCellContentBlock = ^{
+        // Do nothing.
+    };
+
+    return attachmentView;
 }
 
 - (void)addProgressViewsIfNecessary:(UIView *)bodyMediaView
@@ -1075,9 +1073,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             result = [attachmentView measureSizeWithMaxMessageWidth:maxMessageWidth];
             break;
         }
-        case OWSMessageCellType_DownloadingAttachment:
-            result = CGSizeMake(MIN(200, maxMessageWidth), [AttachmentPointerView measureHeight]);
-            break;
         case OWSMessageCellType_ContactShare:
             OWSAssertDebug(self.viewItem.contactShare);
 
@@ -1121,6 +1116,12 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
                     result = CGSizeRound(CGSizeMake(mediaWidth, mediaHeight));
                 }
             }
+            break;
+        case OWSMessageCellType_OversizeTextDownloading:
+        case OWSMessageCellType_OversizeTextFailed:
+            // There's no way to predict the size of the oversize text,
+            // so we just use a square bubble.
+            result = CGSizeMake(maxMessageWidth, maxMessageWidth);
             break;
     }
 
@@ -1462,6 +1463,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
+        case OWSMessageCellType_OversizeTextDownloading:
+        case OWSMessageCellType_OversizeTextFailed:
             break;
         case OWSMessageCellType_Audio:
             if (self.viewItem.attachmentStream) {
@@ -1472,8 +1475,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             if (self.viewItem.attachmentStream) {
                 [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream];
             }
-            break;
-        case OWSMessageCellType_DownloadingAttachment:
             break;
         case OWSMessageCellType_ContactShare:
             [self.delegate didTapContactShareViewItem:self.viewItem];
