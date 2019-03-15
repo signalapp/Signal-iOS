@@ -116,9 +116,17 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Invalid attachment key.");
         return nil;
     }
-    if (attachmentProto.contentType.length < 1) {
-        OWSFailDebug(@"Invalid attachment content type.");
-        return nil;
+    NSString *_Nullable fileName = attachmentProto.fileName;
+    NSString *_Nullable contentType = attachmentProto.contentType;
+    if (contentType.length < 1) {
+        OWSLogError(@"Invalid attachment content type.");
+        NSString *_Nullable fileExtension = [fileName pathExtension].lowercaseString;
+        if (fileExtension.length > 0) {
+            contentType = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
+        }
+        if (contentType.length < 1) {
+            contentType = OWSMimeTypeApplicationOctetStream;
+        }
     }
 
     // digest will be empty for old clients.
@@ -151,8 +159,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              key:attachmentProto.key
                                                                           digest:digest
                                                                        byteCount:attachmentProto.size
-                                                                     contentType:attachmentProto.contentType
-                                                                  sourceFilename:attachmentProto.fileName
+                                                                     contentType:contentType
+                                                                  sourceFilename:fileName
                                                                          caption:caption
                                                                   albumMessageId:albumMessageId
                                                                   attachmentType:attachmentType
