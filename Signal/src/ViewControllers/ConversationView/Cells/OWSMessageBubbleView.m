@@ -281,7 +281,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             bodyMediaView = [self loadViewForMediaAlbum];
             break;
         case OWSMessageCellType_OversizeTextDownloading:
-        case OWSMessageCellType_OversizeTextFailed:
             bodyMediaView = [self loadViewForOversizeTextDownload];
             break;
     }
@@ -567,7 +566,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_GenericAttachment:
         case OWSMessageCellType_ContactShare:
         case OWSMessageCellType_OversizeTextDownloading:
-        case OWSMessageCellType_OversizeTextFailed:
             return NO;
         case OWSMessageCellType_MediaMessage:
             return YES;
@@ -584,7 +582,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_ContactShare:
         case OWSMessageCellType_MediaMessage:
         case OWSMessageCellType_OversizeTextDownloading:
-        case OWSMessageCellType_OversizeTextFailed:
             return YES;
     }
 }
@@ -895,8 +892,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForOversizeTextDownload
 {
-    BOOL isFailed = self.cellType == OWSMessageCellType_OversizeTextFailed;
-
     // We can use an empty view.  The progress views will display download
     // progress or tap-to-retry UI.
     UIView *attachmentView = [UIView new];
@@ -1118,7 +1113,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             }
             break;
         case OWSMessageCellType_OversizeTextDownloading:
-        case OWSMessageCellType_OversizeTextFailed:
             // There's no way to predict the size of the oversize text,
             // so we just use a square bubble.
             result = CGSizeMake(maxMessageWidth, maxMessageWidth);
@@ -1464,7 +1458,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_OversizeTextDownloading:
-        case OWSMessageCellType_OversizeTextFailed:
             break;
         case OWSMessageCellType_Audio:
             if (self.viewItem.attachmentStream) {
