@@ -60,6 +60,15 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 @implementation OWSMessageBubbleView
 
+#pragma mark - Dependencies
+
+- (OWSAttachmentDownloads *)attachmentDownloads
+{
+    return SSKEnvironment.shared.attachmentDownloads;
+}
+
+#pragma mark -
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -830,7 +839,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
                                                                           conversationStyle:self.conversationStyle];
     self.viewItem.lastAudioMessageView = audioMessageView;
     [audioMessageView createContents];
-    [self addAttachmentUploadViewIfNecessary];
+    [self addProgressViewsIfNecessary:audioMessageView];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -850,7 +859,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     OWSGenericAttachmentView *attachmentView =
         [[OWSGenericAttachmentView alloc] initWithAttachment:self.viewItem.attachmentStream isIncoming:self.isIncoming];
     [attachmentView createContentsWithConversationStyle:self.conversationStyle];
-    [self addAttachmentUploadViewIfNecessary];
+    [self addProgressViewsIfNecessary:attachmentView];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -907,32 +916,98 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     return contactShareView;
 }
 
-- (void)addAttachmentUploadViewIfNecessary
+- (void)addProgressViewsIfNecessary:(UIView *)bodyMediaView
 {
-    [self addAttachmentUploadViewIfNecessaryWithAttachmentStateCallback:nil];
+    if (self.viewItem.attachmentStream) {
+        [self addUploadViewIfNecessary:bodyMediaView];
+    } else if (self.viewItem.attachmentPointer) {
+        [self addDownloadViewIfNecessary:bodyMediaView];
+    }
 }
 
-- (void)addAttachmentUploadViewIfNecessaryWithAttachmentStateCallback:
-    (nullable AttachmentStateBlock)attachmentStateCallback
+- (void)addUploadViewIfNecessary:(UIView *)bodyMediaView
 {
-    if (!self.viewItem.attachmentStream) {
+    OWSAssertDebug(self.viewItem.attachmentStream);
+
+    if (!self.isOutgoing) {
+        return;
+    }
+    if (self.viewItem.attachmentStream.isUploaded) {
         return;
     }
 
-    if (!attachmentStateCallback) {
-        attachmentStateCallback = ^(BOOL isAttachmentReady) {
-        };
+    AttachmentUploadView *uploadView = [[AttachmentUploadView alloc] initWithAttachment:self.viewItem.attachmentStream];
+    [self.bubbleView addSubview:uploadView];
+    [uploadView autoPinEdgesToSuperviewEdges];
+    [uploadView setContentHuggingLow];
+    [uploadView setCompressionResistanceLow];
+}
+
+- (void)addDownloadViewIfNecessary:(UIView *)bodyMediaView
+{
+    OWSAssertDebug(self.viewItem.attachmentPointer);
+
+    switch (self.viewItem.attachmentPointer.state) {
+        case TSAttachmentPointerStateFailed:
+            [self addTapToRetryView:bodyMediaView];
+            return;
+        case TSAttachmentPointerStateEnqueued:
+        case TSAttachmentPointerStateDownloading:
+            break;
+    }
+    switch (self.viewItem.attachmentPointer.pointerType) {
+        case TSAttachmentPointerTypeRestoring:
+            // TODO: Show "restoring" indicator and possibly progress.
+            return;
+        case TSAttachmentPointerTypeUnknown:
+        case TSAttachmentPointerTypeIncoming:
+            break;
+    }
+    NSString *_Nullable uniqueId = self.viewItem.attachmentPointer.uniqueId;
+    if (uniqueId.length < 1) {
+        OWSFailDebug(@"Missing uniqueId.");
+        return;
+    }
+    if ([self.attachmentDownloads downloadProgressForAttachmentId:uniqueId] == nil) {
+        OWSFailDebug(@"Missing download progress.");
+        return;
     }
 
-    if (self.isOutgoing) {
-        if (!self.viewItem.attachmentStream.isUploaded) {
-            AttachmentUploadView *attachmentUploadView =
-                [[AttachmentUploadView alloc] initWithAttachment:self.viewItem.attachmentStream
-                                         attachmentStateCallback:attachmentStateCallback];
-            [self.bubbleView addSubview:attachmentUploadView];
-            [attachmentUploadView ows_autoPinToSuperviewEdges];
-        }
-    }
+    UIView *overlayView = [UIView new];
+    overlayView.backgroundColor = [self.bubbleColor colorWithAlphaComponent:0.5];
+    [bodyMediaView addSubview:overlayView];
+    [overlayView autoPinEdgesToSuperviewEdges];
+    [overlayView setContentHuggingLow];
+    [overlayView setCompressionResistanceLow];
+
+    MediaDownloadView *downloadView =
+        [[MediaDownloadView alloc] initWithAttachmentId:uniqueId radius:self.conversationStyle.maxMessageWidth * 0.1f];
+    bodyMediaView.layer.opacity = 0.5f;
+    [self.bubbleView addSubview:downloadView];
+    [downloadView autoPinEdgesToSuperviewEdges];
+    [downloadView setContentHuggingLow];
+    [downloadView setCompressionResistanceLow];
+}
+
+- (void)addTapToRetryView:(UIView *)bodyMediaView
+{
+    OWSAssertDebug(self.viewItem.attachmentPointer);
+
+    // Hide the body media view, replace with "tap to retry" indicator.
+
+    UILabel *label = [UILabel new];
+    label.text = NSLocalizedString(
+        @"ATTACHMENT_DOWNLOADING_STATUS_FAILED", @"Status label when an attachment download has failed.");
+    label.font = UIFont.ows_dynamicTypeCaption1Font;
+    label.textColor = Theme.primaryColor;
+    label.numberOfLines = 0;
+    label.lineBreakMode = NSLineBreakByWordWrapping;
+    label.textAlignment = NSTextAlignmentCenter;
+    label.backgroundColor = self.bubbleColor;
+    [bodyMediaView addSubview:label];
+    [label autoPinEdgesToSuperviewEdges];
+    [label setContentHuggingLow];
+    [label setCompressionResistanceLow];
 }
 
 - (void)showAttachmentErrorViewWithMediaView:(UIView *)mediaView
