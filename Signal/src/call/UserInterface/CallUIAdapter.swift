@@ -100,6 +100,9 @@ extension CallUIAdaptee {
             // So we use the non-CallKit call UI.
             Logger.info("choosing non-callkit adaptee for simulator.")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
+        } else if CallUIAdapter.isCallkitDisabledForLocale {
+            Logger.info("choosing non-callkit adaptee due to locale.")
+            adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
         } else if #available(iOS 11, *) {
             Logger.info("choosing callkit adaptee for iOS11+")
             let showNames = Environment.shared.preferences.notificationPreviewType() != .noNameNoPreview
@@ -127,6 +130,22 @@ extension CallUIAdaptee {
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
 
         callService.addObserverAndSyncState(observer: self)
+    }
+
+    @objc
+    public static var isCallkitDisabledForLocale: Bool {
+        let locale = Locale.current
+        guard let regionCode = locale.regionCode else {
+            owsFailDebug("Missing region code.")
+            return false
+        }
+
+        // Apple has stopped approving apps that use CallKit functionality in mainland China.
+        // When the "CN" region is enabled, this check simply switches to the same pre-CallKit
+        // interface that is still used by everyone on iOS 9.
+        //
+        // For further reference: https://forums.developer.apple.com/thread/103083
+        return regionCode == "CN"
     }
 
     // MARK: Dependencies
