@@ -990,14 +990,14 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     UILabel *label = [UILabel new];
     label.text = NSLocalizedString(
         @"ATTACHMENT_DOWNLOADING_STATUS_FAILED", @"Status label when an attachment download has failed.");
-    label.font = UIFont.ows_dynamicTypeCaption1Font;
-    label.textColor = Theme.primaryColor;
+    label.font = UIFont.ows_dynamicTypeBodyFont;
+    label.textColor = Theme.secondaryColor;
     label.numberOfLines = 0;
     label.lineBreakMode = NSLineBreakByWordWrapping;
     label.textAlignment = NSTextAlignmentCenter;
     label.backgroundColor = self.bubbleColor;
     [bodyMediaView addSubview:label];
-    [label autoPinEdgesToSuperviewEdges];
+    [label autoPinEdgesToSuperviewMargins];
     [label setContentHuggingLow];
     [label setCompressionResistanceLow];
 }
