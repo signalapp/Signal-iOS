@@ -182,10 +182,8 @@ dispatch_queue_t NetworkManagerQueue()
 
     OWSSessionManager *_Nullable sessionManager = [self.pool lastObject];
     if (sessionManager) {
-        OWSLogVerbose(@"Cache hit.");
         [self.pool removeLastObject];
     } else {
-        OWSLogVerbose(@"Cache miss.");
         sessionManager = [OWSSessionManager new];
     }
     OWSAssertDebug(sessionManager);

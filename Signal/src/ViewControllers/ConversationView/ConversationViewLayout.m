@@ -92,9 +92,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     self.hasLayout = YES;
 
-    // TODO: Remove this log statement after we've reduced the invalidation churn.
-    OWSLogVerbose(@"prepareLayout");
-
     [self prepareLayoutOfItems];
 }
 

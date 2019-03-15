@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -24,24 +24,6 @@ public class DisappearingTimerConfigurationView: UIView {
             // or as a non-interactive status indicator
             pressGesture.isEnabled = delegate != nil
         }
-    }
-
-    override public var frame: CGRect {
-        didSet {
-            Logger.verbose("\(oldValue) -> \(frame)")
-        }
-    }
-
-    override public var bounds: CGRect {
-        didSet {
-            Logger.verbose("\(oldValue) -> \(bounds)")
-        }
-    }
-
-    override public func layoutSubviews() {
-        let oldFrame = self.frame
-        super.layoutSubviews()
-        Logger.verbose("Frame: \(oldFrame) -> \(self.frame)")
     }
 
     private let imageView: UIImageView
