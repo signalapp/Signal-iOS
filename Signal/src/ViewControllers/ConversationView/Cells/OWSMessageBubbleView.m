@@ -168,22 +168,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     return self.viewItem.displayableBodyText;
 }
 
-- (nullable TSAttachmentStream *)attachmentStream
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssertDebug(self.viewItem.attachmentStream);
-
-    return self.viewItem.attachmentStream;
-}
-
-- (nullable TSAttachmentPointer *)attachmentPointer
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssertDebug(self.viewItem.attachmentPointer);
-
-    return self.viewItem.attachmentPointer;
-}
-
 - (TSMessage *)message
 {
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
@@ -276,7 +260,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_TextOnlyMessage:
             break;
         case OWSMessageCellType_Audio:
-            OWSAssertDebug(self.viewItem.attachmentStream);
             bodyMediaView = [self loadViewForAudio];
             break;
         case OWSMessageCellType_GenericAttachment:
@@ -837,10 +820,11 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForAudio
 {
-    OWSAssertDebug(self.attachmentStream);
-    OWSAssertDebug([self.attachmentStream isAudio]);
+    TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
+    OWSAssertDebug(attachment);
+    OWSAssertDebug([attachment isAudio]);
 
-    OWSAudioMessageView *audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:self.attachmentStream
+    OWSAudioMessageView *audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:attachment
                                                                                  isIncoming:self.isIncoming
                                                                                    viewItem:self.viewItem
                                                                           conversationStyle:self.conversationStyle];
@@ -861,8 +845,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (UIView *)loadViewForGenericAttachment
 {
     OWSAssertDebug(self.viewItem.attachmentStream);
+
+    // TODO:
     OWSGenericAttachmentView *attachmentView =
-        [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
+        [[OWSGenericAttachmentView alloc] initWithAttachment:self.viewItem.attachmentStream isIncoming:self.isIncoming];
     [attachmentView createContentsWithConversationStyle:self.conversationStyle];
     [self addAttachmentUploadViewIfNecessary];
 
@@ -878,12 +864,12 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForDownloadingAttachment
 {
-    OWSAssertDebug(self.attachmentPointer);
+    OWSAssertDebug(self.viewItem.attachmentPointer);
 
     // TODO: We probably want to do something different for attachments
     // being restored from backup.
     AttachmentPointerView *downloadView =
-        [[AttachmentPointerView alloc] initWithAttachmentPointer:self.attachmentPointer
+        [[AttachmentPointerView alloc] initWithAttachmentPointer:self.viewItem.attachmentPointer
                                                       isIncoming:self.isIncoming
                                                conversationStyle:self.conversationStyle];
 
@@ -929,7 +915,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (void)addAttachmentUploadViewIfNecessaryWithAttachmentStateCallback:
     (nullable AttachmentStateBlock)attachmentStateCallback
 {
-    OWSAssertDebug(self.attachmentStream);
+    if (!self.viewItem.attachmentStream) {
+        return;
+    }
 
     if (!attachmentStateCallback) {
         attachmentStateCallback = ^(BOOL isAttachmentReady) {
@@ -937,9 +925,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     }
 
     if (self.isOutgoing) {
-        if (!self.attachmentStream.isUploaded) {
+        if (!self.viewItem.attachmentStream.isUploaded) {
             AttachmentUploadView *attachmentUploadView =
-                [[AttachmentUploadView alloc] initWithAttachment:self.attachmentStream
+                [[AttachmentUploadView alloc] initWithAttachment:self.viewItem.attachmentStream
                                          attachmentStateCallback:attachmentStateCallback];
             [self.bubbleView addSubview:attachmentUploadView];
             [attachmentUploadView ows_autoPinToSuperviewEdges];
@@ -1007,7 +995,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_GenericAttachment: {
             OWSAssertDebug(self.viewItem.attachmentStream);
             OWSGenericAttachmentView *attachmentView =
-                [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
+                [[OWSGenericAttachmentView alloc] initWithAttachment:self.viewItem.attachmentStream
+                                                          isIncoming:self.isIncoming];
             [attachmentView createContentsWithConversationStyle:self.conversationStyle];
             result = [attachmentView measureSizeWithMaxMessageWidth:maxMessageWidth];
             break;
@@ -1391,29 +1380,27 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 {
     OWSAssertDebug(self.delegate);
 
+    if (self.viewItem.attachmentPointer && self.viewItem.attachmentPointer.state == TSAttachmentPointerStateFailed) {
+        [self.delegate didTapFailedIncomingAttachment:self.viewItem];
+        return;
+    }
+
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
             break;
         case OWSMessageCellType_Audio:
-            OWSAssertDebug(self.viewItem.attachmentStream);
-
-            [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:self.viewItem.attachmentStream];
+            if (self.viewItem.attachmentStream) {
+                [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:self.viewItem.attachmentStream];
+            }
             return;
         case OWSMessageCellType_GenericAttachment:
-            OWSAssertDebug(self.viewItem.attachmentStream);
-
-            [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream];
-            break;
-        case OWSMessageCellType_DownloadingAttachment: {
-            TSAttachmentPointer *_Nullable attachmentPointer = self.viewItem.attachmentPointer;
-            OWSAssertDebug(attachmentPointer);
-
-            if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
-                [self.delegate didTapFailedIncomingAttachment:self.viewItem];
+            if (self.viewItem.attachmentStream) {
+                [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream];
             }
             break;
-        }
+        case OWSMessageCellType_DownloadingAttachment:
+            break;
         case OWSMessageCellType_ContactShare:
             [self.delegate didTapContactShareViewItem:self.viewItem];
             break;

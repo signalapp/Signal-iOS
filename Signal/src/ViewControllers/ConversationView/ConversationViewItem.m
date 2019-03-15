@@ -632,13 +632,19 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                     self.audioDurationSeconds = audioDurationSeconds;
                     self.messageCellType = OWSMessageCellType_Audio;
                 } else {
+                    OWSLogVerbose(@"contentType: %@", self.attachmentStream.contentType);
                     self.messageCellType = OWSMessageCellType_GenericAttachment;
                 }
             } else if (self.messageCellType == OWSMessageCellType_Unknown) {
                 self.messageCellType = OWSMessageCellType_GenericAttachment;
             }
         } else if ([mediaAttachment isKindOfClass:[TSAttachmentPointer class]]) {
-            self.messageCellType = OWSMessageCellType_DownloadingAttachment;
+            if ([mediaAttachment isAudio]) {
+                self.audioDurationSeconds = 0;
+                self.messageCellType = OWSMessageCellType_Audio;
+            } else {
+                self.messageCellType = OWSMessageCellType_DownloadingAttachment;
+            }
             self.attachmentPointer = (TSAttachmentPointer *)mediaAttachment;
         } else {
             OWSFailDebug(@"Unknown attachment type");
