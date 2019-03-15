@@ -643,7 +643,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 self.audioDurationSeconds = 0;
                 self.messageCellType = OWSMessageCellType_Audio;
             } else {
-                self.messageCellType = OWSMessageCellType_DownloadingAttachment;
+                self.messageCellType = OWSMessageCellType_GenericAttachment;
             }
             self.attachmentPointer = (TSAttachmentPointer *)mediaAttachment;
         } else {

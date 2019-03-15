@@ -853,11 +853,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForGenericAttachment
 {
-    OWSAssertDebug(self.viewItem.attachmentStream);
-
-    // TODO:
+    TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
+    OWSAssertDebug(attachment);
     OWSGenericAttachmentView *attachmentView =
-        [[OWSGenericAttachmentView alloc] initWithAttachment:self.viewItem.attachmentStream isIncoming:self.isIncoming];
+        [[OWSGenericAttachmentView alloc] initWithAttachment:attachment isIncoming:self.isIncoming];
     [attachmentView createContentsWithConversationStyle:self.conversationStyle];
     [self addProgressViewsIfNecessary:attachmentView];
 
@@ -1068,10 +1067,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             result = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
             break;
         case OWSMessageCellType_GenericAttachment: {
-            OWSAssertDebug(self.viewItem.attachmentStream);
+            TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
+            OWSAssertDebug(attachment);
             OWSGenericAttachmentView *attachmentView =
-                [[OWSGenericAttachmentView alloc] initWithAttachment:self.viewItem.attachmentStream
-                                                          isIncoming:self.isIncoming];
+                [[OWSGenericAttachmentView alloc] initWithAttachment:attachment isIncoming:self.isIncoming];
             [attachmentView createContentsWithConversationStyle:self.conversationStyle];
             result = [attachmentView measureSizeWithMaxMessageWidth:maxMessageWidth];
             break;

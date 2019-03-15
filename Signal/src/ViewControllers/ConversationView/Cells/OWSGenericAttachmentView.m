@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSGenericAttachmentView.h"
@@ -18,7 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSGenericAttachmentView ()
 
-@property (nonatomic) TSAttachmentStream *attachmentStream;
+@property (nonatomic) TSAttachment *attachment;
+@property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic) BOOL isIncoming;
 @property (nonatomic) UILabel *topLabel;
 @property (nonatomic) UILabel *bottomLabel;
@@ -29,12 +30,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSGenericAttachmentView
 
-- (instancetype)initWithAttachment:(TSAttachmentStream *)attachmentStream isIncoming:(BOOL)isIncoming
+- (instancetype)initWithAttachment:(TSAttachment *)attachment isIncoming:(BOOL)isIncoming
 {
     self = [super init];
 
     if (self) {
-        _attachmentStream = attachmentStream;
+        _attachment = attachment;
+        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+            _attachmentStream = (TSAttachmentStream *)attachment;
+        }
         _isIncoming = isIncoming;
     }
 
@@ -105,13 +109,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self addArrangedSubview:imageView];
     [imageView setContentHuggingHigh];
 
-    NSString *filename = self.attachmentStream.sourceFilename;
+    NSString *_Nullable filename = self.attachment.sourceFilename;
     if (!filename) {
         filename = [[self.attachmentStream originalFilePath] lastPathComponent];
     }
     NSString *fileExtension = filename.pathExtension;
     if (fileExtension.length < 1) {
-        fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType];
+        fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType];
     }
 
     UILabel *fileTypeLabel = [UILabel new];
@@ -132,9 +136,9 @@ NS_ASSUME_NONNULL_BEGIN
     labelsView.alignment = UIStackViewAlignmentLeading;
     [self addArrangedSubview:labelsView];
 
-    NSString *topText = [self.attachmentStream.sourceFilename ows_stripped];
+    NSString *topText = [self.attachment.sourceFilename ows_stripped];
     if (topText.length < 1) {
-        topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType].localizedUppercaseString;
+        topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType].localizedUppercaseString;
     }
     if (topText.length < 1) {
         topText = NSLocalizedString(@"GENERIC_ATTACHMENT_LABEL", @"A label for generic attachments.");
@@ -147,12 +151,18 @@ NS_ASSUME_NONNULL_BEGIN
     topLabel.font = [OWSGenericAttachmentView topLabelFont];
     [labelsView addArrangedSubview:topLabel];
 
-    NSError *error;
-    unsigned long long fileSize =
-        [[NSFileManager defaultManager] attributesOfItemAtPath:[self.attachmentStream originalFilePath] error:&error]
-            .fileSize;
-    OWSAssertDebug(!error);
-    NSString *bottomText = [OWSFormat formatFileSize:fileSize];
+    unsigned long long fileSize = 0;
+    if (self.attachmentStream) {
+        NSError *error;
+        fileSize = [[NSFileManager defaultManager] attributesOfItemAtPath:[self.attachmentStream originalFilePath]
+                                                                    error:&error]
+                       .fileSize;
+        OWSAssertDebug(!error);
+    }
+    NSString *bottomText = @" ";
+    if (fileSize > 0) {
+        bottomText = [OWSFormat formatFileSize:fileSize];
+    }
     UILabel *bottomLabel = [UILabel new];
     self.bottomLabel = bottomLabel;
     bottomLabel.text = bottomText;
