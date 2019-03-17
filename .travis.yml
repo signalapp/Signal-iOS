@@ -9,7 +9,7 @@ env:
 # GITHUB access token
 # generate with 'travis encrypt GITHUB_ACCESS_TOKEN=<token_here>'
 # https://docs.travis-ci.com/user/encryption-keys/
-    - secure: c9mORtuHhiuIk9nU+un0cU6F+YKlKTTfrZHIdQt0ZBb0HsKtd5z/MF6yPftqQUTMdoKUOqUNkU/yMnFOq1NNSbEctnrWmIoeHtY/7zEXc60+KJRyZkWjfPk+DdhtX4bh+tJZ3l1j06J5jLGVFY2qi5VjcXomVYGtpnKGnjDM4C4=
+    - secure: "yDODMMuul6femHizVVoeEaxbl8xSpMuV44tqwe9hx63geCwuHEBfzE7wzQtDbPMeEQU3oZu1PLFwsNQ61RZjBDsnusr2LEFDzh8eRwSAhf4Joke75WWXdDwas/ChpWuHRhc4kLyBxVSI541po+HxgWgHHScmOLmMsc1CA85KMKfocQHFTMCJIqBxwR56UuaJNxFb5SCJm9h69VtboyFDIK5H2824IOIzL8Z6dLgFyaBTrPe5WlQuNqhSopXoOk/v5FExxxrV3CiFTZU/RCH9g0UQWx4kkrBm1J3lLGTNyZNIzRvA0RfBx084xjJAc2ZTqbfT4hgoUApLUEI0SpRwDymDEwaXyN/fLOXTBrMVZGJvuYB3kbdTPc5g7oqnrBRW2UXbt+pOzDN7K/3RF2O4Jccm9bc7b9Y+kTMpyTorBUxKsZcBfxje75Cud5wUU9TCo5sTL9JnE1W5acOIeQ3lDspbcAE+ZOMeGvetY/n2LbanAkd8ScxvDEnqFBqFsDBSJz7lSqFotanPMHWzFztgDE3auq1En1R9TqdYCVOKFZF00plnul20VHnaUYHiLfcY5bZAT50I9v7QPKvo9QDSx3NHT/N+HQ2TzHwC6bc+HbW+jSMrILjpKdKvENcYWnpaFf+rC1VNyc9eFeed2T9+MjeC7WhUZ8Z9AJPEphMfgLc="
     - EARLY_START_SIMULATOR=1 # early starting simulator reduces false negatives due to test timeouts
 
 before_install:
@@ -19,4 +19,4 @@ before_install:
     - bundle
     - bundle exec pod repo update --silent # log output is too long without --silent
 
-script: make ci
+script: make dependencies; bundle exec fastlane testWithRetry
