@@ -73,7 +73,16 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 + (OWSTableItem *)disclosureItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)disclosureItemWithText:(NSString *)text
+                 accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                             actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text
                               detailText:(NSString *)detailText
+                             actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text
+                              detailText:(NSString *)detailText
+                 accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
                              actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)disclosureItemWithText:(NSString *)text
@@ -110,6 +119,13 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
                             selector:(SEL)selector;
 
 + (OWSTableItem *)switchItemWithText:(NSString *)text
+                           isOnBlock:(OWSTableSwitchBlock)isOnBlock
+                      isEnabledBlock:(OWSTableSwitchBlock)isEnabledBlock
+                              target:(id)target
+                            selector:(SEL)selector;
+
++ (OWSTableItem *)switchItemWithText:(NSString *)text
+             accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
                            isOnBlock:(OWSTableSwitchBlock)isOnBlock
                       isEnabledBlock:(OWSTableSwitchBlock)isEnabledBlock
                               target:(id)target

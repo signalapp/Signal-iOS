@@ -88,6 +88,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [blocklistSection
         addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE",
                                                          @"Label for the block list section of the settings view")
+                             accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"blocklist"]
                                          actionBlock:^{
                                              [weakSelf showBlocklist];
                                          }]];
@@ -101,11 +102,15 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [readReceiptsSection
         addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_READ_RECEIPT",
                                                      @"Label for the 'read receipts' setting.")
-                                       isOnBlock:^{
-                                           return [OWSReadReceiptManager.sharedManager areReadReceiptsEnabled];
-                                       }
-                                          target:weakSelf
-                                        selector:@selector(didToggleReadReceiptsSwitch:)]];
+                    accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"read_receipts"]
+                    isOnBlock:^{
+                        return [OWSReadReceiptManager.sharedManager areReadReceiptsEnabled];
+                    }
+                    isEnabledBlock:^{
+                        return YES;
+                    }
+                    target:weakSelf
+                    selector:@selector(didToggleReadReceiptsSwitch:)]];
     [contents addSection:readReceiptsSection];
 
     OWSTableSection *typingIndicatorsSection = [OWSTableSection new];
@@ -116,11 +121,15 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [typingIndicatorsSection
         addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_TYPING_INDICATORS",
                                                      @"Label for the 'typing indicators' setting.")
-                                       isOnBlock:^{
-                                           return [SSKEnvironment.shared.typingIndicators areTypingIndicatorsEnabled];
-                                       }
-                                          target:weakSelf
-                                        selector:@selector(didToggleTypingIndicatorsSwitch:)]];
+                    accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"typing_indicators"]
+                    isOnBlock:^{
+                        return [SSKEnvironment.shared.typingIndicators areTypingIndicatorsEnabled];
+                    }
+                    isEnabledBlock:^{
+                        return YES;
+                    }
+                    target:weakSelf
+                    selector:@selector(didToggleTypingIndicatorsSwitch:)]];
     [contents addSection:typingIndicatorsSection];
 
     OWSTableSection *screenLockSection = [OWSTableSection new];
@@ -132,11 +141,15 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         addItem:[OWSTableItem
                     switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_SWITCH_LABEL",
                                            @"Label for the 'enable screen lock' switch of the privacy settings.")
-                             isOnBlock:^{
-                                 return [OWSScreenLock.sharedManager isScreenLockEnabled];
-                             }
-                                target:self
-                              selector:@selector(isScreenLockEnabledDidChange:)]];
+                    accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"screenlock"]
+                    isOnBlock:^{
+                        return [OWSScreenLock.sharedManager isScreenLockEnabled];
+                    }
+                    isEnabledBlock:^{
+                        return YES;
+                    }
+                    target:self
+                    selector:@selector(isScreenLockEnabledDidChange:)]];
     [contents addSection:screenLockSection];
 
     if (OWSScreenLock.sharedManager.isScreenLockEnabled) {
@@ -145,13 +158,15 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         NSString *screenLockTimeoutString = [self formatScreenLockTimeout:screenLockTimeout useShortFormat:YES];
         [screenLockTimeoutSection
             addItem:[OWSTableItem
-                        disclosureItemWithText:
-                            NSLocalizedString(@"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT",
-                                @"Label for the 'screen lock activity timeout' setting of the privacy settings.")
-                                    detailText:screenLockTimeoutString
-                                   actionBlock:^{
-                                       [weakSelf showScreenLockTimeoutUI];
-                                   }]];
+                         disclosureItemWithText:
+                             NSLocalizedString(@"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT",
+                                 @"Label for the 'screen lock activity timeout' setting of the privacy settings.")
+                                     detailText:screenLockTimeoutString
+                        accessibilityIdentifier:[NSString
+                                                    stringWithFormat:@"settings.privacy.%@", @"screen_lock_timeout"]
+                                    actionBlock:^{
+                                        [weakSelf showScreenLockTimeoutUI];
+                                    }]];
         [contents addSection:screenLockTimeoutSection];
     }
 
@@ -160,11 +175,15 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     screenSecuritySection.footerTitle = NSLocalizedString(@"SETTINGS_SCREEN_SECURITY_DETAIL", nil);
     [screenSecuritySection
         addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
-                                       isOnBlock:^{
-                                           return [Environment.shared.preferences screenSecurityIsEnabled];
-                                       }
-                                          target:weakSelf
-                                        selector:@selector(didToggleScreenSecuritySwitch:)]];
+                    accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"screen_security"]
+                    isOnBlock:^{
+                        return [Environment.shared.preferences screenSecurityIsEnabled];
+                    }
+                    isEnabledBlock:^{
+                        return YES;
+                    }
+                    target:weakSelf
+                    selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
     
     // Allow calls to connect directly vs. using TURN exclusively
@@ -176,11 +195,16 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [callingSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
                                                                  @"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE",
                                                                  @"Table cell label")
-                                                   isOnBlock:^{
-                                                       return [Environment.shared.preferences doCallsHideIPAddress];
-                                                   }
-                                                      target:weakSelf
-                                                    selector:@selector(didToggleCallsHideIPAddressSwitch:)]];
+                                accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@",
+                                                                  @"calling_hide_ip_address"]
+                                isOnBlock:^{
+                                    return [Environment.shared.preferences doCallsHideIPAddress];
+                                }
+                                isEnabledBlock:^{
+                                    return YES;
+                                }
+                                target:weakSelf
+                                selector:@selector(didToggleCallsHideIPAddressSwitch:)]];
     [contents addSection:callingSection];
 
     if (@available(iOS 11, *)) {
@@ -189,11 +213,15 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
             addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
                                                          @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
                                                          @"Short table cell label")
-                                           isOnBlock:^{
-                                               return [Environment.shared.preferences isSystemCallLogEnabled];
-                                           }
-                                              target:weakSelf
-                                            selector:@selector(didToggleEnableSystemCallLogSwitch:)]];
+                        accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"callkit_history"]
+                        isOnBlock:^{
+                            return [Environment.shared.preferences isSystemCallLogEnabled];
+                        }
+                        isEnabledBlock:^{
+                            return YES;
+                        }
+                        target:weakSelf
+                        selector:@selector(didToggleEnableSystemCallLogSwitch:)]];
         callKitSection.footerTitle = NSLocalizedString(
             @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION", @"Settings table section footer.");
         [contents addSection:callKitSection];
@@ -201,23 +229,32 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         OWSTableSection *callKitSection = [OWSTableSection new];
         callKitSection.footerTitle
             = NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
-        [callKitSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_CALLKIT_TITLE",
-                                                                     @"Short table cell label")
-                                                       isOnBlock:^{
-                                                           return [Environment.shared.preferences isCallKitEnabled];
-                                                       }
-                                                          target:weakSelf
-                                                        selector:@selector(didToggleEnableCallKitSwitch:)]];
+        [callKitSection
+            addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
+                                                         @"SETTINGS_PRIVACY_CALLKIT_TITLE", @"Short table cell label")
+                        accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"callkit"]
+                        isOnBlock:^{
+                            return [Environment.shared.preferences isCallKitEnabled];
+                        }
+                        isEnabledBlock:^{
+                            return YES;
+                        }
+                        target:weakSelf
+                        selector:@selector(didToggleEnableCallKitSwitch:)]];
         if (self.preferences.isCallKitEnabled) {
             [callKitSection
                 addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE",
                                                              @"Label for 'CallKit privacy' preference")
-                                               isOnBlock:^{
-                                                   return (BOOL) !
-                                                       [Environment.shared.preferences isCallKitPrivacyEnabled];
-                                               }
-                                                  target:weakSelf
-                                                selector:@selector(didToggleEnableCallKitPrivacySwitch:)]];
+                            accessibilityIdentifier:[NSString
+                                                        stringWithFormat:@"settings.privacy.%@", @"callkit_privacy"]
+                            isOnBlock:^{
+                                return (BOOL) ![Environment.shared.preferences isCallKitPrivacyEnabled];
+                            }
+                            isEnabledBlock:^{
+                                return YES;
+                            }
+                            target:weakSelf
+                            selector:@selector(didToggleEnableCallKitPrivacySwitch:)]];
         }
         [contents addSection:callKitSection];
     }
@@ -236,17 +273,20 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                               @"Indicates that 'two factor auth' is enabled in the privacy settings.")
                                         : NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_DISABLED",
                                               @"Indicates that 'two factor auth' is disabled in the privacy settings."))
-                            actionBlock:^{
-                                [weakSelf show2FASettings];
-                            }]];
+                            accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"2fa"]
+                           actionBlock:^{
+                               [weakSelf show2FASettings];
+                           }]];
     [contents addSection:twoFactorAuthSection];
 
     OWSTableSection *historyLogsSection = [OWSTableSection new];
     historyLogsSection.headerTitle = NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"Section header");
-    [historyLogsSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_CLEAR_HISTORY", @"")
-                                                         actionBlock:^{
-                                                             [weakSelf clearHistoryLogs];
-                                                         }]];
+    [historyLogsSection
+        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_CLEAR_HISTORY", @"")
+                             accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"clear_logs"]
+                                         actionBlock:^{
+                                             [weakSelf clearHistoryLogs];
+                                         }]];
     [contents addSection:historyLogsSection];
 
     OWSTableSection *unidentifiedDeliveryIndicatorsSection = [OWSTableSection new];
@@ -285,6 +325,8 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                        action:@selector(didToggleUDShowIndicatorsSwitch:)
                              forControlEvents:UIControlEventValueChanged];
                         [cellSwitch setContentHuggingHorizontalHigh];
+                        cellSwitch.accessibilityIdentifier =
+                            [NSString stringWithFormat:@"settings.privacy.%@", @"sealed_sender"];
 
                         UIStackView *stackView =
                             [[UIStackView alloc] initWithArrangedSubviews:@[ label, iconView, spacer, cellSwitch ]];
@@ -310,11 +352,15 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     OWSTableSection *unidentifiedDeliveryUnrestrictedSection = [OWSTableSection new];
     OWSTableItem *unrestrictedAccessItem = [OWSTableItem
         switchItemWithText:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS", @"switch label")
-                 isOnBlock:^{
-                     return [SSKEnvironment.shared.udManager shouldAllowUnrestrictedAccessLocal];
-                 }
-                    target:weakSelf
-                  selector:@selector(didToggleUDUnrestrictedAccessSwitch:)];
+        accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"sealed_sender_unrestricted"]
+        isOnBlock:^{
+            return [SSKEnvironment.shared.udManager shouldAllowUnrestrictedAccessLocal];
+        }
+        isEnabledBlock:^{
+            return YES;
+        }
+        target:weakSelf
+        selector:@selector(didToggleUDUnrestrictedAccessSwitch:)];
     [unidentifiedDeliveryUnrestrictedSection addItem:unrestrictedAccessItem];
     unidentifiedDeliveryUnrestrictedSection.footerTitle
         = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER", @"table section footer");
@@ -324,6 +370,8 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [unidentifiedDeliveryLearnMoreSection
         addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE",
                                                          @"Label for a link to more info about unidentified delivery.")
+                             accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@",
+                                                               @"sealed_sender_learn_more"]
                                          actionBlock:^{
                                              NSURL *url = [NSURL URLWithString:kSealedSenderInfoURL];
                                              OWSAssertDebug(url);
@@ -335,11 +383,15 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [linkPreviewsSection
         addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_LINK_PREVIEWS",
                                                      @"Setting for enabling & disabling link previews.")
-                                       isOnBlock:^{
-                                           return [SSKPreferences areLinkPreviewsEnabled];
-                                       }
-                                          target:weakSelf
-                                        selector:@selector(didToggleLinkPreviewsEnabled:)]];
+                    accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"link_previews"]
+                    isOnBlock:^{
+                        return [SSKPreferences areLinkPreviewsEnabled];
+                    }
+                    isEnabledBlock:^{
+                        return YES;
+                    }
+                    target:weakSelf
+                    selector:@selector(didToggleLinkPreviewsEnabled:)]];
     linkPreviewsSection.headerTitle = NSLocalizedString(
         @"SETTINGS_LINK_PREVIEWS_HEADER", @"Header for setting for enabling & disabling link previews.");
     linkPreviewsSection.footerTitle = NSLocalizedString(

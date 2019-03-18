@@ -64,6 +64,11 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     if (self.delegate.shouldHideContacts) {
         self.tableViewController.tableView.scrollEnabled = NO;
     }
+
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _countryCodeButton);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _phoneNumberTextField);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _phoneNumberButton);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _examplePhoneNumberLabel);
 }
 
 - (void)viewDidLoad

@@ -15,10 +15,10 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalMessaging/UIUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
