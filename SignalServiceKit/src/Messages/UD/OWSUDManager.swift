@@ -180,7 +180,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func isUDVerboseLoggingEnabled() -> Bool {
-        return true
+        return false
     }
 
     // MARK: - Dependencies
