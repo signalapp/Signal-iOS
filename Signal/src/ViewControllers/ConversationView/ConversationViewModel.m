@@ -587,12 +587,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return;
     }
 
-    NSString *_Nullable mostRecentMenuActionsInterationId = self.mostRecentMenuActionsViewItem.interaction.uniqueId;
-    if (mostRecentMenuActionsInterationId != nil &&
-        [diff.removedItemIds containsObject:mostRecentMenuActionsInterationId]) {
-        [self.delegate conversationViewModelDidDeleteMostRecentMenuActionsViewItem];
-    }
-
     NSMutableSet<NSString *> *diffAddedItemIds = [diff.addedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffRemovedItemIds = [diff.removedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffUpdatedItemIds = [diff.updatedItemIds mutableCopy];
