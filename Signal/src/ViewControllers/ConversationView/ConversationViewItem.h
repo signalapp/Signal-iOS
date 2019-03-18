@@ -12,9 +12,9 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_TextOnlyMessage,
     OWSMessageCellType_Audio,
     OWSMessageCellType_GenericAttachment,
-    OWSMessageCellType_DownloadingAttachment,
     OWSMessageCellType_ContactShare,
     OWSMessageCellType_MediaMessage,
+    OWSMessageCellType_OversizeTextDownloading,
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);

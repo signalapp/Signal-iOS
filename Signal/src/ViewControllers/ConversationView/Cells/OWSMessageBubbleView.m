@@ -60,6 +60,15 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 @implementation OWSMessageBubbleView
 
+#pragma mark - Dependencies
+
+- (OWSAttachmentDownloads *)attachmentDownloads
+{
+    return SSKEnvironment.shared.attachmentDownloads;
+}
+
+#pragma mark -
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -168,22 +177,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     return self.viewItem.displayableBodyText;
 }
 
-- (nullable TSAttachmentStream *)attachmentStream
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssertDebug(self.viewItem.attachmentStream);
-
-    return self.viewItem.attachmentStream;
-}
-
-- (nullable TSAttachmentPointer *)attachmentPointer
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssertDebug(self.viewItem.attachmentPointer);
-
-    return self.viewItem.attachmentPointer;
-}
-
 - (TSMessage *)message
 {
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
@@ -276,20 +269,19 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_TextOnlyMessage:
             break;
         case OWSMessageCellType_Audio:
-            OWSAssertDebug(self.viewItem.attachmentStream);
             bodyMediaView = [self loadViewForAudio];
             break;
         case OWSMessageCellType_GenericAttachment:
             bodyMediaView = [self loadViewForGenericAttachment];
-            break;
-        case OWSMessageCellType_DownloadingAttachment:
-            bodyMediaView = [self loadViewForDownloadingAttachment];
             break;
         case OWSMessageCellType_ContactShare:
             bodyMediaView = [self loadViewForContactShare];
             break;
         case OWSMessageCellType_MediaMessage:
             bodyMediaView = [self loadViewForMediaAlbum];
+            break;
+        case OWSMessageCellType_OversizeTextDownloading:
+            bodyMediaView = [self loadViewForOversizeTextDownload];
             break;
     }
 
@@ -572,8 +564,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
-        case OWSMessageCellType_DownloadingAttachment:
         case OWSMessageCellType_ContactShare:
+        case OWSMessageCellType_OversizeTextDownloading:
             return NO;
         case OWSMessageCellType_MediaMessage:
             return YES;
@@ -587,9 +579,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             return NO;
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
-        case OWSMessageCellType_DownloadingAttachment:
         case OWSMessageCellType_ContactShare:
         case OWSMessageCellType_MediaMessage:
+        case OWSMessageCellType_OversizeTextDownloading:
             return YES;
     }
 }
@@ -837,16 +829,17 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForAudio
 {
-    OWSAssertDebug(self.attachmentStream);
-    OWSAssertDebug([self.attachmentStream isAudio]);
+    TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
+    OWSAssertDebug(attachment);
+    OWSAssertDebug([attachment isAudio]);
 
-    OWSAudioMessageView *audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:self.attachmentStream
+    OWSAudioMessageView *audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:attachment
                                                                                  isIncoming:self.isIncoming
                                                                                    viewItem:self.viewItem
                                                                           conversationStyle:self.conversationStyle];
     self.viewItem.lastAudioMessageView = audioMessageView;
     [audioMessageView createContents];
-    [self addAttachmentUploadViewIfNecessary];
+    [self addProgressViewsIfNecessary:audioMessageView];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -860,11 +853,12 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForGenericAttachment
 {
-    OWSAssertDebug(self.viewItem.attachmentStream);
+    TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
+    OWSAssertDebug(attachment);
     OWSGenericAttachmentView *attachmentView =
-        [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
+        [[OWSGenericAttachmentView alloc] initWithAttachment:attachment isIncoming:self.isIncoming];
     [attachmentView createContentsWithConversationStyle:self.conversationStyle];
-    [self addAttachmentUploadViewIfNecessary];
+    [self addProgressViewsIfNecessary:attachmentView];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -874,31 +868,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     };
 
     return attachmentView;
-}
-
-- (UIView *)loadViewForDownloadingAttachment
-{
-    OWSAssertDebug(self.attachmentPointer);
-
-    // TODO: We probably want to do something different for attachments
-    // being restored from backup.
-    AttachmentPointerView *downloadView =
-        [[AttachmentPointerView alloc] initWithAttachmentPointer:self.attachmentPointer
-                                                      isIncoming:self.isIncoming
-                                               conversationStyle:self.conversationStyle];
-
-    UIView *wrapper = [UIView new];
-    [wrapper addSubview:downloadView];
-    [downloadView autoPinEdgesToSuperviewEdges];
-
-    self.loadCellContentBlock = ^{
-        // Do nothing.
-    };
-    self.unloadCellContentBlock = ^{
-        // Do nothing.
-    };
-
-    return wrapper;
 }
 
 - (UIView *)loadViewForContactShare
@@ -921,30 +890,116 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     return contactShareView;
 }
 
-- (void)addAttachmentUploadViewIfNecessary
+- (UIView *)loadViewForOversizeTextDownload
 {
-    [self addAttachmentUploadViewIfNecessaryWithAttachmentStateCallback:nil];
+    // We can use an empty view.  The progress views will display download
+    // progress or tap-to-retry UI.
+    UIView *attachmentView = [UIView new];
+
+    [self addProgressViewsIfNecessary:attachmentView];
+
+    self.loadCellContentBlock = ^{
+        // Do nothing.
+    };
+    self.unloadCellContentBlock = ^{
+        // Do nothing.
+    };
+
+    return attachmentView;
 }
 
-- (void)addAttachmentUploadViewIfNecessaryWithAttachmentStateCallback:
-    (nullable AttachmentStateBlock)attachmentStateCallback
+- (void)addProgressViewsIfNecessary:(UIView *)bodyMediaView
 {
-    OWSAssertDebug(self.attachmentStream);
+    if (self.viewItem.attachmentStream) {
+        [self addUploadViewIfNecessary:bodyMediaView];
+    } else if (self.viewItem.attachmentPointer) {
+        [self addDownloadViewIfNecessary:bodyMediaView];
+    }
+}
 
-    if (!attachmentStateCallback) {
-        attachmentStateCallback = ^(BOOL isAttachmentReady) {
-        };
+- (void)addUploadViewIfNecessary:(UIView *)bodyMediaView
+{
+    OWSAssertDebug(self.viewItem.attachmentStream);
+
+    if (!self.isOutgoing) {
+        return;
+    }
+    if (self.viewItem.attachmentStream.isUploaded) {
+        return;
     }
 
-    if (self.isOutgoing) {
-        if (!self.attachmentStream.isUploaded) {
-            AttachmentUploadView *attachmentUploadView =
-                [[AttachmentUploadView alloc] initWithAttachment:self.attachmentStream
-                                         attachmentStateCallback:attachmentStateCallback];
-            [self.bubbleView addSubview:attachmentUploadView];
-            [attachmentUploadView ows_autoPinToSuperviewEdges];
-        }
+    AttachmentUploadView *uploadView = [[AttachmentUploadView alloc] initWithAttachment:self.viewItem.attachmentStream];
+    [self.bubbleView addSubview:uploadView];
+    [uploadView autoPinEdgesToSuperviewEdges];
+    [uploadView setContentHuggingLow];
+    [uploadView setCompressionResistanceLow];
+}
+
+- (void)addDownloadViewIfNecessary:(UIView *)bodyMediaView
+{
+    OWSAssertDebug(self.viewItem.attachmentPointer);
+
+    switch (self.viewItem.attachmentPointer.state) {
+        case TSAttachmentPointerStateFailed:
+            [self addTapToRetryView:bodyMediaView];
+            return;
+        case TSAttachmentPointerStateEnqueued:
+        case TSAttachmentPointerStateDownloading:
+            break;
     }
+    switch (self.viewItem.attachmentPointer.pointerType) {
+        case TSAttachmentPointerTypeRestoring:
+            // TODO: Show "restoring" indicator and possibly progress.
+            return;
+        case TSAttachmentPointerTypeUnknown:
+        case TSAttachmentPointerTypeIncoming:
+            break;
+    }
+    NSString *_Nullable uniqueId = self.viewItem.attachmentPointer.uniqueId;
+    if (uniqueId.length < 1) {
+        OWSFailDebug(@"Missing uniqueId.");
+        return;
+    }
+    if ([self.attachmentDownloads downloadProgressForAttachmentId:uniqueId] == nil) {
+        OWSFailDebug(@"Missing download progress.");
+        return;
+    }
+
+    UIView *overlayView = [UIView new];
+    overlayView.backgroundColor = [self.bubbleColor colorWithAlphaComponent:0.5];
+    [bodyMediaView addSubview:overlayView];
+    [overlayView autoPinEdgesToSuperviewEdges];
+    [overlayView setContentHuggingLow];
+    [overlayView setCompressionResistanceLow];
+
+    MediaDownloadView *downloadView =
+        [[MediaDownloadView alloc] initWithAttachmentId:uniqueId radius:self.conversationStyle.maxMessageWidth * 0.1f];
+    bodyMediaView.layer.opacity = 0.5f;
+    [self.bubbleView addSubview:downloadView];
+    [downloadView autoPinEdgesToSuperviewEdges];
+    [downloadView setContentHuggingLow];
+    [downloadView setCompressionResistanceLow];
+}
+
+- (void)addTapToRetryView:(UIView *)bodyMediaView
+{
+    OWSAssertDebug(self.viewItem.attachmentPointer);
+
+    // Hide the body media view, replace with "tap to retry" indicator.
+
+    UILabel *label = [UILabel new];
+    label.text = NSLocalizedString(
+        @"ATTACHMENT_DOWNLOADING_STATUS_FAILED", @"Status label when an attachment download has failed.");
+    label.font = UIFont.ows_dynamicTypeBodyFont;
+    label.textColor = Theme.secondaryColor;
+    label.numberOfLines = 0;
+    label.lineBreakMode = NSLineBreakByWordWrapping;
+    label.textAlignment = NSTextAlignmentCenter;
+    label.backgroundColor = self.bubbleColor;
+    [bodyMediaView addSubview:label];
+    [label autoPinEdgesToSuperviewMargins];
+    [label setContentHuggingLow];
+    [label setCompressionResistanceLow];
 }
 
 - (void)showAttachmentErrorViewWithMediaView:(UIView *)mediaView
@@ -1005,16 +1060,14 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             result = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
             break;
         case OWSMessageCellType_GenericAttachment: {
-            OWSAssertDebug(self.viewItem.attachmentStream);
+            TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
+            OWSAssertDebug(attachment);
             OWSGenericAttachmentView *attachmentView =
-                [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
+                [[OWSGenericAttachmentView alloc] initWithAttachment:attachment isIncoming:self.isIncoming];
             [attachmentView createContentsWithConversationStyle:self.conversationStyle];
             result = [attachmentView measureSizeWithMaxMessageWidth:maxMessageWidth];
             break;
         }
-        case OWSMessageCellType_DownloadingAttachment:
-            result = CGSizeMake(MIN(200, maxMessageWidth), [AttachmentPointerView measureHeight]);
-            break;
         case OWSMessageCellType_ContactShare:
             OWSAssertDebug(self.viewItem.contactShare);
 
@@ -1027,8 +1080,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             if (self.viewItem.mediaAlbumItems.count == 1) {
                 // Honor the content aspect ratio for single media.
                 ConversationMediaAlbumItem *mediaAlbumItem = self.viewItem.mediaAlbumItems.firstObject;
-                if (mediaAlbumItem.attachmentStream && mediaAlbumItem.mediaSize.width > 0
-                    && mediaAlbumItem.mediaSize.height > 0) {
+                if (mediaAlbumItem.mediaSize.width > 0 && mediaAlbumItem.mediaSize.height > 0) {
                     CGSize mediaSize = mediaAlbumItem.mediaSize;
                     CGFloat contentAspectRatio = mediaSize.width / mediaSize.height;
                     // Clamp the aspect ratio so that very thin/wide content is presented
@@ -1059,6 +1111,11 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
                     result = CGSizeRound(CGSizeMake(mediaWidth, mediaHeight));
                 }
             }
+            break;
+        case OWSMessageCellType_OversizeTextDownloading:
+            // There's no way to predict the size of the oversize text,
+            // so we just use a square bubble.
+            result = CGSizeMake(maxMessageWidth, maxMessageWidth);
             break;
     }
 
@@ -1392,29 +1449,26 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 {
     OWSAssertDebug(self.delegate);
 
+    if (self.viewItem.attachmentPointer && self.viewItem.attachmentPointer.state == TSAttachmentPointerStateFailed) {
+        [self.delegate didTapFailedIncomingAttachment:self.viewItem];
+        return;
+    }
+
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
+        case OWSMessageCellType_OversizeTextDownloading:
             break;
         case OWSMessageCellType_Audio:
-            OWSAssertDebug(self.viewItem.attachmentStream);
-
-            [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:self.viewItem.attachmentStream];
+            if (self.viewItem.attachmentStream) {
+                [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:self.viewItem.attachmentStream];
+            }
             return;
         case OWSMessageCellType_GenericAttachment:
-            OWSAssertDebug(self.viewItem.attachmentStream);
-
-            [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream];
-            break;
-        case OWSMessageCellType_DownloadingAttachment: {
-            TSAttachmentPointer *_Nullable attachmentPointer = self.viewItem.attachmentPointer;
-            OWSAssertDebug(attachmentPointer);
-
-            if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
-                [self.delegate didTapFailedIncomingAttachment:self.viewItem];
+            if (self.viewItem.attachmentStream) {
+                [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream];
             }
             break;
-        }
         case OWSMessageCellType_ContactShare:
             [self.delegate didTapContactShareViewItem:self.viewItem];
             break;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAudioMessageView.h"
@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSAudioMessageView ()
 
-@property (nonatomic) TSAttachmentStream *attachmentStream;
+@property (nonatomic) TSAttachment *attachment;
+@property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic) BOOL isIncoming;
 @property (nonatomic, weak) id<ConversationViewItem> viewItem;
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
@@ -30,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSAudioMessageView
 
-- (instancetype)initWithAttachment:(TSAttachmentStream *)attachmentStream
+- (instancetype)initWithAttachment:(TSAttachment *)attachment
                         isIncoming:(BOOL)isIncoming
                           viewItem:(id<ConversationViewItem>)viewItem
                  conversationStyle:(ConversationStyle *)conversationStyle
@@ -38,7 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
 
     if (self) {
-        _attachmentStream = attachmentStream;
+        _attachment = attachment;
+        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+            _attachmentStream = (TSAttachmentStream *)attachment;
+        }
         _isIncoming = isIncoming;
         _viewItem = viewItem;
         _conversationStyle = conversationStyle;
@@ -66,8 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)audioDurationSeconds
 {
-    OWSAssertDebug(self.viewItem.audioDurationSeconds > 0.f);
-
     return self.viewItem.audioDurationSeconds;
 }
 
@@ -174,7 +176,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isVoiceMessage
 {
-    return self.attachmentStream.isVoiceMessage;
+    return self.attachment.isVoiceMessage;
 }
 
 - (void)createContents
@@ -190,13 +192,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self addArrangedSubview:self.audioPlayPauseButton];
     [self.audioPlayPauseButton setContentHuggingHigh];
 
-    NSString *filename = self.attachmentStream.sourceFilename;
-    if (!filename) {
+    NSString *_Nullable filename = self.attachment.sourceFilename;
+    if (filename.length < 1) {
         filename = [self.attachmentStream.originalFilePath lastPathComponent];
     }
     NSString *topText = [[filename stringByDeletingPathExtension] ows_stripped];
     if (topText.length < 1) {
-        topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType].localizedUppercaseString;
+        topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType].localizedUppercaseString;
     }
     if (topText.length < 1) {
         topText = NSLocalizedString(@"GENERIC_ATTACHMENT_LABEL", @"A label for generic attachments.");
