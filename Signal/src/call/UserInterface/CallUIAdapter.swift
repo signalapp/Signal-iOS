@@ -132,7 +132,8 @@ extension CallUIAdaptee {
         callService.addObserverAndSyncState(observer: self)
     }
 
-    private static var isCallkitDisabledForLocale: Bool {
+    @objc
+    public static var isCallkitDisabledForLocale: Bool {
         let locale = Locale.current
         guard let regionCode = locale.regionCode else {
             owsFailDebug("Missing region code.")
