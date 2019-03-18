@@ -245,6 +245,10 @@ public extension CGSize {
     var asPoint: CGPoint {
         return CGPoint(x: width, y: height)
     }
+
+    var ceil: CGSize {
+        return CGSizeCeil(self)
+    }
 }
 
 public extension CGRect {
