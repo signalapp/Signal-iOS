@@ -35,4 +35,21 @@ public extension NSRegularExpression {
             return nil
         }
     }
+
+    @objc
+    public func parseFirstMatch(inText text: String,
+                                options: NSRegularExpression.Options = []) -> String? {
+        guard let match = self.firstMatch(in: text,
+                                          options: [],
+                                          range: NSRange(location: 0, length: text.utf16.count)) else {
+                                            return nil
+        }
+        let matchRange = match.range(at: 1)
+        guard let textRange = Range(matchRange, in: text) else {
+            owsFailDebug("Invalid match.")
+            return nil
+        }
+        let substring = String(text[textRange])
+        return substring
+    }
 }

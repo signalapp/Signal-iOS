@@ -28,9 +28,15 @@ public class LongTextViewController: OWSViewController {
 
     let viewItem: ConversationViewItem
 
-    let messageBody: String
-
     var messageTextView: UITextView!
+
+    var displayableText: DisplayableText? {
+        return viewItem.displayableBodyText
+    }
+
+    var fullText: String {
+        return displayableText?.fullText ?? ""
+    }
 
     // MARK: Initializers
 
@@ -42,21 +48,7 @@ public class LongTextViewController: OWSViewController {
     @objc
     public required init(viewItem: ConversationViewItem) {
         self.viewItem = viewItem
-
-        self.messageBody = LongTextViewController.displayableText(viewItem: viewItem)
-
         super.init(nibName: nil, bundle: nil)
-    }
-
-    private class func displayableText(viewItem: ConversationViewItem) -> String {
-        guard viewItem.hasBodyText else {
-            return ""
-        }
-        guard let displayableText = viewItem.displayableBodyText else {
-            return ""
-        }
-        let messageBody = displayableText.fullText
-        return messageBody
     }
 
     // MARK: View Lifecycle
@@ -137,8 +129,13 @@ public class LongTextViewController: OWSViewController {
         messageTextView.showsVerticalScrollIndicator = true
         messageTextView.isUserInteractionEnabled = true
         messageTextView.textColor = Theme.primaryColor
-        messageTextView.dataDetectorTypes = kOWSAllowedDataDetectorTypes
-        messageTextView.text = messageBody
+        if let displayableText = displayableText {
+            messageTextView.text = fullText
+            messageTextView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
+        } else {
+            owsFailDebug("displayableText was unexpectedly nil")
+            messageTextView.text = ""
+        }
 
         // RADAR #18669
         // https://github.com/lionheart/openradar-mirror/issues/18669
@@ -153,8 +150,9 @@ public class LongTextViewController: OWSViewController {
 
         view.addSubview(messageTextView)
         messageTextView.autoPinEdge(toSuperviewEdge: .top)
-        messageTextView.autoPinEdge(toSuperviewMargin: .leading)
-        messageTextView.autoPinEdge(toSuperviewMargin: .trailing)
+        messageTextView.autoPinEdge(toSuperviewEdge: .leading)
+        messageTextView.autoPinEdge(toSuperviewEdge: .trailing)
+        messageTextView.textContainerInset = UIEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
 
         let footer = UIToolbar()
         view.addSubview(footer)
@@ -172,6 +170,6 @@ public class LongTextViewController: OWSViewController {
     // MARK: - Actions
 
     @objc func shareButtonPressed() {
-        AttachmentSharing.showShareUI(forText: messageBody)
+        AttachmentSharing.showShareUI(forText: fullText)
     }
 }
