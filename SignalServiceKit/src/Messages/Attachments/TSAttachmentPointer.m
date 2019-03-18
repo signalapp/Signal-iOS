@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSAttachmentStream (TSAttachmentPointer)
 
-- (CGSize)cachedImageSize;
+- (CGSize)cachedMediaSize;
 
 @end
 
@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     _state = TSAttachmentPointerStateEnqueued;
     self.attachmentType = attachmentStream.attachmentType;
     _pointerType = TSAttachmentPointerTypeRestoring;
-    _mediaSize = (attachmentStream.shouldHaveImageSize ? attachmentStream.cachedImageSize : CGSizeZero);
+    _mediaSize = (attachmentStream.shouldHaveImageSize ? attachmentStream.cachedMediaSize : CGSizeZero);
 
     return self;
 }
@@ -119,7 +119,9 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *_Nullable fileName = attachmentProto.fileName;
     NSString *_Nullable contentType = attachmentProto.contentType;
     if (contentType.length < 1) {
-        OWSLogError(@"Invalid attachment content type.");
+        // Content type might not set if the sending client can't
+        // infer a MIME type from the file extension.
+        OWSLogWarn(@"Invalid attachment content type.");
         NSString *_Nullable fileExtension = [fileName pathExtension].lowercaseString;
         if (fileExtension.length > 0) {
             contentType = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];

@@ -526,7 +526,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 }
 
-- (CGSize)cachedImageSize
+- (CGSize)cachedMediaSize
 {
     OWSAssertDebug(self.shouldHaveImageSize);
 

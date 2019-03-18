@@ -159,6 +159,9 @@ NS_ASSUME_NONNULL_BEGIN
                        .fileSize;
         OWSAssertDebug(!error);
     }
+    // We don't want to show the file size while the attachment is downloading.
+    // To avoid layout jitter when the download completes, we reserve space in
+    // the layout using a whitespace string.
     NSString *bottomText = @" ";
     if (fileSize > 0) {
         bottomText = [OWSFormat formatFileSize:fileSize];

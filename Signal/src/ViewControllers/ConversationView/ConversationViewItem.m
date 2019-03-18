@@ -990,6 +990,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (BOOL)canCopyMedia
 {
     if (self.attachmentPointer != nil) {
+        // The attachment is still downloading.
         return NO;
     }
 
@@ -1018,6 +1019,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (BOOL)canSaveMedia
 {
     if (self.attachmentPointer != nil) {
+        // The attachment is still downloading.
         return NO;
     }
 
@@ -1143,6 +1145,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (BOOL)hasMediaActionContent
 {
     if (self.attachmentPointer != nil) {
+        // The attachment is still downloading.
         return NO;
     }
 
