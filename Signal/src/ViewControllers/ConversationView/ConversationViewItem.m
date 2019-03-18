@@ -283,6 +283,32 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self clearCachedLayoutState];
 }
 
+- (void)setIsFirstInCluster:(BOOL)isFirstInCluster
+{
+    if (_isFirstInCluster == isFirstInCluster) {
+        return;
+    }
+
+    _isFirstInCluster = isFirstInCluster;
+
+    // Although this doesn't affect layout size, the view model use
+    // hasCachedLayoutState to detect which cells needs to be redrawn due to changes.
+    [self clearCachedLayoutState];
+}
+
+- (void)setIsLastInCluster:(BOOL)isLastInCluster
+{
+    if (_isLastInCluster == isLastInCluster) {
+        return;
+    }
+
+    _isLastInCluster = isLastInCluster;
+
+    // Although this doesn't affect layout size, the view model use
+    // hasCachedLayoutState to detect which cells needs to be redrawn due to changes.
+    [self clearCachedLayoutState];
+}
+
 - (void)setUnreadIndicator:(nullable OWSUnreadIndicator *)unreadIndicator
 {
     if ([NSObject isNullableObject:_unreadIndicator equalTo:unreadIndicator]) {
