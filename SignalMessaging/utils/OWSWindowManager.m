@@ -500,6 +500,8 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     // In the normal case, that means the SignalViewController will call `becomeFirstResponder`
     // on the vc on top of its navigation stack.
     [self.rootWindow makeKeyAndVisible];
+
+    [self fixit_workAroundRotationIssue];
 }
 
 - (void)ensureRootWindowHidden
@@ -616,6 +618,91 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 - (void)returnToCallWasTapped:(ReturnToCallViewController *)viewController
 {
     [self showCallView];
+}
+
+#pragma mark - Fixit
+
+- (void)fixit_workAroundRotationIssue
+{
+    // ### Symptom
+    //
+    // The app can get into a degraded state where the main window will incorrectly remain locked in
+    // portrait mode. Worse yet, the status bar and input window will continue to rotate with respect
+    // to the device orientation. So once you're in this degraded state, the status bar and input
+    // window can be in landscape while simultaneoulsy the view controller behind them is in portrait.
+    //
+    // ### To Reproduce
+    //
+    // On an iPhone6 (not reproducible on an iPhoneX)
+    //
+    // 0. Ensure "screen protection" is enabled (not necessarily screen lock)
+    // 1. Enter Conversation View Controller
+    // 2. Pop Keyboard
+    // 3. Begin dismissing keyboard with one finger, but stopping when it's about 50% dismissed,
+    //    keep your finger there with the keyboard partially dismissed.
+    // 4. With your other hand, hit the home button to leave Signal.
+    // 5. Re-enter Signal
+    // 6. Rotate to landscape
+    //
+    // Expected: Conversation View, Input Toolbar window, and Settings Bar should all rotate to landscape.
+    // Actual: The input toolbar and the settings toolbar rotate to landscape, but the Conversation
+    //         View remains in portrait, this looks super broken.
+    //
+    // ### Background
+    //
+    // Some debugging shows that the `ConversationViewController.view.window.isInterfaceAutorotationDisabled`
+    // is true. This is a private property, whose function we don't exactly know, but it seems like
+    // `interfaceAutorotation` is disabled when certain transition animations begin, and then
+    // re-enabled once the animation completes.
+    //
+    // My best guess is that autorotation is intended to be disabled for the duration of the
+    // interactive-keyboard-dismiss-transition, so when we start the interactive dismiss, autorotation
+    // has been disabled, but because we hide the main app window in the middle of the transition,
+    // autorotation doesn't have a chance to be re-enabled.
+    //
+    // ## So, The Fix
+    //
+    // If we find ourself in a situation where autorotation is disabled while showing the rootWindow,
+    // we re-enable autorotation.
+
+    // NSString *encodedSelectorString1 = @"isInterfaceAutorotationDisabled".encodedForSelector;
+    NSString *encodedSelectorString1 = @"egVaAAZ2BHdydHZSBwYBBAEGcgZ6AQBVegVyc312dQ==";
+    NSString *_Nullable selectorString1 = encodedSelectorString1.decodedForSelector;
+    if (selectorString1 == nil) {
+        OWSFailDebug(@"selectorString1 was unexpectedly nil");
+        return;
+    }
+    SEL selector1 = NSSelectorFromString(selectorString1);
+
+    if (![self.rootWindow respondsToSelector:selector1]) {
+        OWSFailDebug(@"failure: doesn't respond to selector1");
+        return;
+    }
+    IMP imp1 = [self.rootWindow methodForSelector:selector1];
+    BOOL (*func1)(id, SEL) = (void *)imp1;
+    BOOL isDisabled = func1(self.rootWindow, selector1);
+    OWSLogInfo(@"autorotation is disabled: %d", isDisabled);
+
+    if (isDisabled) {
+        // NSString *encodedSelectorString2 = @"endDisablingInterfaceAutorotation".encodedForSelector;
+        NSString *encodedSelectorString2 = @"dgB1VXoFcnN9egB4WgAGdgR3cnR2UgcGAQQBBnIGegEA";
+        NSString *selectorString2 = encodedSelectorString2.decodedForSelector;
+        if (selectorString2 == nil) {
+            OWSFailDebug(@"selectorString2 was unexpectedly nil");
+            return;
+        }
+        SEL selector2 = NSSelectorFromString(selectorString2);
+
+        if (![self.rootWindow respondsToSelector:selector2]) {
+            OWSFailDebug(@"failure: doesn't respond to selector2");
+            return;
+        }
+
+        IMP imp2 = [self.rootWindow methodForSelector:selector2];
+        void (*func2)(id, SEL) = (void *)imp2;
+        func2(self.rootWindow, selector2);
+        OWSLogInfo(@"re-enabling autorotation");
+    }
 }
 
 @end
