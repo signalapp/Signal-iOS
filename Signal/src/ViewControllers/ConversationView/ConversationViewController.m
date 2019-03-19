@@ -4761,7 +4761,8 @@ typedef enum : NSUInteger {
     OWSAssertDebug(self.conversationViewModel);
 
     if (!self.viewLoaded) {
-        OWSLogVerbose(@"Ignoring update; view has not yet loaded.");
+        // It's safe to ignore updates before the view loads;
+        // viewWillAppear will call resetContentAndLayout.
         return;
     }
 
