@@ -245,7 +245,7 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
     private let actionStackView: UIStackView
     private var actions: [MenuAction]
     private var actionViews: [MenuActionView]
-    private var hapticFeedback: HapticFeedback
+    private var hapticFeedback: SelectionHapticFeedback
     private var hasEverHighlightedAction = false
 
     weak var delegate: MenuActionSheetDelegate?
@@ -268,7 +268,7 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
 
         actions = []
         actionViews = []
-        hapticFeedback = HapticFeedback()
+        hapticFeedback = SelectionHapticFeedback()
 
         super.init(frame: frame)
 

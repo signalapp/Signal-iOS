@@ -88,10 +88,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
     }
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-
     // MARK: - Settings Nag Views
 
     var isShowingSettingsNag = false {
@@ -230,12 +226,18 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         return .portrait
     }
 
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+
     // MARK: - Create Views
 
     func createViews() {
         self.view.isUserInteractionEnabled = true
-        self.view.addGestureRecognizer(OWSAnyTouchGestureRecognizer(target: self,
-                                                                    action: #selector(didTouchRootView)))
+        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self,
+                                                              action: #selector(didTouchRootView)))
+
+        videoHintView.delegate = self
 
         // Dark blurred background.
         let blurEffect = UIBlurEffect(style: .dark)
@@ -596,6 +598,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         updateCallUI(callState: call.state)
     }
 
+    let videoHintView = CallVideoHintView()
+
     internal func updateLocalVideoLayout() {
         if !localVideoView.isHidden {
             localVideoView.superview?.bringSubview(toFront: localVideoView)
@@ -744,10 +748,20 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             contactNameLabel.isHidden = true
             callStatusLabel.isHidden = true
             ongoingCallControls.isHidden = true
+            videoHintView.isHidden = true
         } else {
             leaveCallViewButton.isHidden = false
             contactNameLabel.isHidden = false
             callStatusLabel.isHidden = false
+
+            if hasRemoteVideo && !hasLocalVideo && !hasShownLocalVideo && !hasUserDismissedVideoHint {
+                view.addSubview(videoHintView)
+                videoHintView.isHidden = false
+                videoHintView.autoPinEdge(.bottom, to: .top, of: audioModeVideoButton)
+                videoHintView.autoPinEdge(.trailing, to: .leading, of: audioModeVideoButton, withOffset: buttonSize() / 2 + videoHintView.kTailHMargin + videoHintView.kTailWidth / 2)
+            } else {
+                videoHintView.removeFromSuperview()
+            }
         }
 
         let doLocalVideoLayout = {
@@ -1021,6 +1035,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         AssertIsOnMainThread()
 
+        guard localVideoView.captureSession != captureSession else {
+            Logger.debug("ignoring redundant update")
+            return
+        }
+
         localVideoView.captureSession = captureSession
         let isHidden = captureSession == nil
 
@@ -1040,9 +1059,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         return self.remoteVideoTrack != nil
     }
 
+    var hasUserDismissedVideoHint: Bool = false
+
     internal func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
+
         guard self.remoteVideoTrack != remoteVideoTrack else {
+            Logger.debug("ignoring redundant update")
             return
         }
 
@@ -1051,10 +1074,31 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         remoteVideoView.renderFrame(nil)
         self.remoteVideoTrack = remoteVideoTrack
         self.remoteVideoTrack?.add(remoteVideoView)
+
         shouldRemoteVideoControlsBeHidden = false
+
+        if remoteVideoTrack != nil {
+            playRemoteEnabledVideoHapticFeedback()
+        }
 
         updateRemoteVideoLayout()
     }
+
+    // MARK: Video Haptics
+
+    let feedbackGenerator = NotificationHapticFeedback()
+    var lastHapticTime: TimeInterval = CACurrentMediaTime()
+    func playRemoteEnabledVideoHapticFeedback() {
+        let currentTime = CACurrentMediaTime()
+        guard currentTime - lastHapticTime > 5 else {
+            Logger.debug("ignoring haptic feedback since it's too soon")
+            return
+        }
+        feedbackGenerator.notificationOccurred(.success)
+        lastHapticTime = currentTime
+    }
+
+    // MARK: - Dismiss
 
     internal func dismissIfPossible(shouldDelay: Bool, ignoreNag ignoreNagParam: Bool = false, completion: (() -> Void)? = nil) {
         callUIAdapter.audioService.delegate = nil
@@ -1172,5 +1216,12 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             // before iOS11, manually enable proximityMonitoring while we're on a call.
             self.proximityMonitoringManager.add(lifetime: self)
         }
+    }
+}
+
+extension CallViewController: CallVideoHintViewDelegate {
+    func didTapCallVideoHintView(_ videoHintView: CallVideoHintView) {
+        self.hasUserDismissedVideoHint = true
+        updateRemoteVideoLayout()
     }
 }
