@@ -36,7 +36,7 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
     weak var delegate: MenuActionsViewControllerDelegate?
 
     @objc
-    public let focusedInteraction: TSInteraction?
+    public let focusedInteraction: TSInteraction
 
     private let focusedView: UIView
     private let actionSheetView: MenuActionSheetView
@@ -46,7 +46,7 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
     }
 
     @objc
-    required init(focusedInteraction: TSInteraction?, focusedView: UIView, actions: [MenuAction]) {
+    required init(focusedInteraction: TSInteraction, focusedView: UIView, actions: [MenuAction]) {
         self.focusedView = focusedView
         self.focusedInteraction = focusedInteraction
 
@@ -180,7 +180,7 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
     public let vSpacing: CGFloat = 10
 
     @objc
-    public func focusUI() -> UIView {
+    public var focusUI: UIView {
         return actionSheetView
     }
 

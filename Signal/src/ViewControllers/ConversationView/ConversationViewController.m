@@ -212,7 +212,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) NSString *lastSearchedText;
 @property (nonatomic) BOOL isShowingSearchUI;
 @property (nonatomic, nullable) MenuActionsViewController *menuActionsViewController;
-@property (nonatomic) CGFloat contentInsetPadding;
+@property (nonatomic) CGFloat extraContentInsetPadding;
 
 @end
 
@@ -749,7 +749,7 @@ typedef enum : NSUInteger {
     if (!self.viewHasEverAppeared) {
         [self scrollToDefaultPosition];
     } else if (self.menuActionsViewController != nil) {
-        [self scrollToFocusInteraction:NO];
+        [self scrollToMenuActionInteraction:NO];
     }
 
     [self updateLastVisibleSortId];
@@ -763,7 +763,7 @@ typedef enum : NSUInteger {
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
 {
-    return self.conversationViewModel.viewItems;
+    return self.conversationViewModel.viewState.viewItems;
 }
 
 - (ThreadDynamicInteractions *)dynamicInteractions
@@ -773,14 +773,11 @@ typedef enum : NSUInteger {
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
 {
-    NSInteger row = 0;
-    for (id<ConversationViewItem> viewItem in self.viewItems) {
-        if (viewItem.unreadIndicator) {
-            return [NSIndexPath indexPathForRow:row inSection:0];
-        }
-        row++;
+    NSNumber *_Nullable unreadIndicatorIndex = self.conversationViewModel.viewState.unreadIndicatorIndex;
+    if (unreadIndicatorIndex == nil) {
+        return nil;
     }
-    return nil;
+    return [NSIndexPath indexPathForRow:unreadIndicatorIndex.integerValue inSection:0];
 }
 
 - (NSIndexPath *_Nullable)indexPathOfMessageOnOpen
@@ -1981,11 +1978,11 @@ typedef enum : NSUInteger {
     // which we might want to scroll to the bottom of the screen to
     // pin above the menu actions popup.
     CGSize mainScreenSize = UIScreen.mainScreen.bounds.size;
-    self.contentInsetPadding = MAX(mainScreenSize.width, mainScreenSize.height);
+    self.extraContentInsetPadding = MAX(mainScreenSize.width, mainScreenSize.height);
 
     UIEdgeInsets contentInset = self.collectionView.contentInset;
-    contentInset.top += self.contentInsetPadding;
-    contentInset.bottom += self.contentInsetPadding;
+    contentInset.top += self.extraContentInsetPadding;
+    contentInset.bottom += self.extraContentInsetPadding;
     self.collectionView.contentInset = contentInset;
 
     self.menuActionsViewController = menuActionsViewController;
@@ -1996,14 +1993,14 @@ typedef enum : NSUInteger {
     OWSLogVerbose(@"");
 
     // Changes made in this "is presenting" callback are animated by the caller.
-    [self scrollToFocusInteraction:NO];
+    [self scrollToMenuActionInteraction:NO];
 }
 
 - (void)menuActionsDidPresent:(MenuActionsViewController *)menuActionsViewController
 {
     OWSLogVerbose(@"");
 
-    [self scrollToFocusInteraction:NO];
+    [self scrollToMenuActionInteraction:NO];
 }
 
 - (void)menuActionsIsDismissing:(MenuActionsViewController *)menuActionsViewController
@@ -2038,24 +2035,26 @@ typedef enum : NSUInteger {
     }
 
     UIEdgeInsets contentInset = self.collectionView.contentInset;
-    contentInset.top -= self.contentInsetPadding;
-    contentInset.bottom -= self.contentInsetPadding;
+    contentInset.top -= self.extraContentInsetPadding;
+    contentInset.bottom -= self.extraContentInsetPadding;
     self.collectionView.contentInset = contentInset;
 
     self.menuActionsViewController = nil;
-    self.contentInsetPadding = 0;
+    self.extraContentInsetPadding = 0;
 }
 
-- (void)scrollToFocusInteractionIfNecessary
+- (void)scrollToMenuActionInteractionIfNecessary
 {
     if (self.menuActionsViewController != nil) {
-        [self scrollToFocusInteraction:NO];
+        [self scrollToMenuActionInteraction:NO];
     }
 }
 
-- (void)scrollToFocusInteraction:(BOOL)animated
+- (void)scrollToMenuActionInteraction:(BOOL)animated
 {
-    NSValue *_Nullable contentOffset = [self contentOffsetForFocusInteraction];
+    OWSAssertDebug(self.menuActionsViewController);
+
+    NSValue *_Nullable contentOffset = [self contentOffsetForMenuActionInteraction];
     if (contentOffset == nil) {
         OWSFailDebug(@"Missing contentOffset.");
         return;
@@ -2063,11 +2062,13 @@ typedef enum : NSUInteger {
     [self.collectionView setContentOffset:contentOffset.CGPointValue animated:animated];
 }
 
-- (nullable NSValue *)contentOffsetForFocusInteraction
+- (nullable NSValue *)contentOffsetForMenuActionInteraction
 {
-    NSString *_Nullable focusedInteractionId = self.menuActionsViewController.focusedInteraction.uniqueId;
-    if (focusedInteractionId == nil) {
-        // This is expected if there is no focus interaction.
+    OWSAssertDebug(self.menuActionsViewController);
+
+    NSString *_Nullable menuActionInteractionId = self.menuActionsViewController.focusedInteraction.uniqueId;
+    if (menuActionInteractionId == nil) {
+        OWSFailDebug(@"Missing menu action interaction.");
         return nil;
     }
     CGPoint modalTopWindow = [self.menuActionsViewController.focusUI convertPoint:CGPointZero toView:nil];
@@ -2075,18 +2076,13 @@ typedef enum : NSUInteger {
     CGPoint offset = modalTopLocal;
     CGFloat focusTop = offset.y - self.menuActionsViewController.vSpacing;
 
-    NSIndexPath *_Nullable indexPath = nil;
-    for (NSUInteger i = 0; i < self.viewItems.count; i++) {
-        id<ConversationViewItem> viewItem = self.viewItems[i];
-        if ([viewItem.interaction.uniqueId isEqualToString:focusedInteractionId]) {
-            indexPath = [NSIndexPath indexPathForRow:(NSInteger)i inSection:0];
-            break;
-        }
-    }
-    if (indexPath == nil) {
-        // This is expected if the focus interaction is being deleted.
+    NSNumber *_Nullable interactionIndex
+        = self.conversationViewModel.viewState.interactionIndexMap[menuActionInteractionId];
+    if (interactionIndex == nil) {
+        // This is expected if the menu action interaction is being deleted.
         return nil;
     }
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:interactionIndex.integerValue inSection:0];
     UICollectionViewLayoutAttributes *_Nullable layoutAttributes =
         [self.layout layoutAttributesForItemAtIndexPath:indexPath];
     if (layoutAttributes == nil) {
@@ -2109,16 +2105,12 @@ typedef enum : NSUInteger {
     if (!OWSWindowManager.sharedManager.isPresentingMenuActions) {
         return NO;
     }
-    NSString *_Nullable focusedInteractionId = self.menuActionsViewController.focusedInteraction.uniqueId;
-    if (focusedInteractionId == nil) {
+    NSString *_Nullable menuActionInteractionId = self.menuActionsViewController.focusedInteraction.uniqueId;
+    if (menuActionInteractionId == nil) {
         return NO;
     }
-    for (id<ConversationViewItem> viewItem in self.viewItems) {
-        if ([viewItem.interaction.uniqueId isEqualToString:focusedInteractionId]) {
-            return NO;
-        }
-    }
-    return YES;
+    // Check whether there is still a view item for this interaction.
+    return (self.conversationViewModel.viewState.interactionIndexMap[menuActionInteractionId] == nil);
 }
 
 #pragma mark - ConversationViewCellDelegate
@@ -3857,8 +3849,8 @@ typedef enum : NSUInteger {
     newInsets.top = 0;
     newInsets.bottom = MAX(0, self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y);
 
-    newInsets.top += self.contentInsetPadding;
-    newInsets.bottom += self.contentInsetPadding;
+    newInsets.top += self.extraContentInsetPadding;
+    newInsets.bottom += self.extraContentInsetPadding;
 
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
 
@@ -4515,7 +4507,7 @@ typedef enum : NSUInteger {
     targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset
 {
     if (self.menuActionsViewController != nil) {
-        NSValue *_Nullable contentOffset = [self contentOffsetForFocusInteraction];
+        NSValue *_Nullable contentOffset = [self contentOffsetForMenuActionInteraction];
         if (contentOffset != nil) {
             return contentOffset.CGPointValue;
         }
@@ -4768,6 +4760,11 @@ typedef enum : NSUInteger {
     OWSAssertDebug(conversationUpdate);
     OWSAssertDebug(self.conversationViewModel);
 
+    if (!self.viewLoaded) {
+        OWSLogVerbose(@"Ignoring update; view has not yet loaded.");
+        return;
+    }
+
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
     [self dismissMenuActionsIfNecessary];
@@ -5018,7 +5015,7 @@ typedef enum : NSUInteger {
             [strongSelf updateInputToolbarLayout];
 
             if (self.menuActionsViewController != nil) {
-                [self scrollToFocusInteraction:NO];
+                [self scrollToMenuActionInteraction:NO];
             } else if (lastVisibleIndexPath) {
                 [strongSelf.collectionView scrollToItemAtIndexPath:lastVisibleIndexPath
                                                   atScrollPosition:UICollectionViewScrollPositionBottom
