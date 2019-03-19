@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,6 +12,8 @@ typedef NS_ENUM(NSUInteger, NotificationType) {
     NotificationNameNoPreview,
     NotificationNamePreview,
 };
+
+NSString *NSStringForNotificationType(NotificationType value);
 
 // Used when migrating logging to NSUserDefaults.
 extern NSString *const OWSPreferencesSignalDatabaseCollection;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPreferences.h"
@@ -13,6 +13,18 @@
 #import <SignalServiceKit/YapDatabaseTransaction+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *NSStringForNotificationType(NotificationType value)
+{
+    switch (notificationType) {
+        case NotificationNamePreview:
+            return @"NotificationNamePreview";
+        case NotificationNameNoPreview:
+            return @"NotificationNameNoPreview";
+        case NotificationNoNameNoPreview:
+            return @"NotificationNoNameNoPreview";
+    }
+}
 
 NSString *const OWSPreferencesSignalDatabaseCollection = @"SignalPreferences";
 NSString *const OWSPreferencesCallLoggingDidChangeNotification = @"OWSPreferencesCallLoggingDidChangeNotification";

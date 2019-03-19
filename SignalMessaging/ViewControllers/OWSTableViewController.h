@@ -91,6 +91,10 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 
 + (OWSTableItem *)checkmarkItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
++ (OWSTableItem *)checkmarkItemWithText:(NSString *)text
+                accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                            actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
 + (OWSTableItem *)itemWithText:(NSString *)text
                    actionBlock:(nullable OWSTableActionBlock)actionBlock
                  accessoryType:(UITableViewCellAccessoryType)accessoryType;
@@ -102,6 +106,10 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
                           actionBlock:(nullable OWSTableSubPageBlock)actionBlock;
 
 + (OWSTableItem *)actionItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)actionItemWithText:(NSString *)text
+             accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                         actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text;
 

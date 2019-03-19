@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSoundSettingsViewController.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalMessaging/OWSAudioPlayer.h>
 #import <SignalMessaging/OWSSounds.h>
+#import <SignalMessaging/UIUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -89,15 +90,19 @@ NS_ASSUME_NONNULL_BEGIN
         }();
 
         if (sound == self.currentSound) {
-            item = [OWSTableItem checkmarkItemWithText:soundLabelText
-                                           actionBlock:^{
-                                               [weakSelf soundWasSelected:sound];
-                                           }];
+            item = [OWSTableItem
+                  checkmarkItemWithText:soundLabelText
+                accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, [OWSSounds displayNameForSound:sound])
+                            actionBlock:^{
+                                [weakSelf soundWasSelected:sound];
+                            }];
         } else {
-            item = [OWSTableItem actionItemWithText:soundLabelText
-                                        actionBlock:^{
-                                            [weakSelf soundWasSelected:sound];
-                                        }];
+            item = [OWSTableItem
+                     actionItemWithText:soundLabelText
+                accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, [OWSSounds displayNameForSound:sound])
+                            actionBlock:^{
+                                [weakSelf soundWasSelected:sound];
+                            }];
         }
         [soundsSection addItem:item];
     }

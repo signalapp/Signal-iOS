@@ -182,7 +182,17 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)checkmarkItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
-    return [self itemWithText:text actionBlock:actionBlock accessoryType:UITableViewCellAccessoryCheckmark];
+    return [self checkmarkItemWithText:text accessibilityIdentifier:nil actionBlock:actionBlock];
+}
+
++ (OWSTableItem *)checkmarkItemWithText:(NSString *)text
+                accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                            actionBlock:(nullable OWSTableActionBlock)actionBlock;
+{
+    return [self itemWithText:text
+        accessibilityIdentifier:accessibilityIdentifier
+                    actionBlock:actionBlock
+                  accessoryType:UITableViewCellAccessoryCheckmark];
 }
 
 + (OWSTableItem *)itemWithText:(NSString *)text
@@ -291,6 +301,13 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)actionItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
+    return [self actionItemWithText:text accessibilityIdentifier:nil actionBlock:actionBlock];
+}
+
++ (OWSTableItem *)actionItemWithText:(NSString *)text
+             accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                         actionBlock:(nullable OWSTableActionBlock)actionBlock;
+{
     OWSAssertDebug(text.length > 0);
     OWSAssertDebug(actionBlock);
 
@@ -299,6 +316,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     item.customCellBlock = ^{
         UITableViewCell *cell = [OWSTableItem newCell];
         cell.textLabel.text = text;
+        cell.accessibilityIdentifier = accessibilityIdentifier;
         return cell;
     };
     return item;
