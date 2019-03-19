@@ -65,6 +65,9 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         self.tableViewController.tableView.scrollEnabled = NO;
     }
 
+    // These subviews are lazy-created; ensure they exist now.
+    [self phoneNumberButton];
+    [self phoneNumberTextField];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _countryCodeButton);
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _phoneNumberTextField);
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _phoneNumberButton);
