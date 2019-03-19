@@ -1,24 +1,37 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-protocol HapticAdapter {
+protocol SelectionHapticFeedbackAdapter {
     func selectionChanged()
 }
 
-class LegacyHapticAdapter: NSObject, HapticAdapter {
+class SelectionHapticFeedback: SelectionHapticFeedbackAdapter {
+    let adapter: SelectionHapticFeedbackAdapter
 
-    // MARK: HapticAdapter
+    init() {
+        if #available(iOS 10, *) {
+            adapter = ModernSelectionHapticFeedbackAdapter()
+        } else {
+            adapter = LegacySelectionHapticFeedbackAdapter()
+        }
+    }
 
+    func selectionChanged() {
+        adapter.selectionChanged()
+    }
+}
+
+class LegacySelectionHapticFeedbackAdapter: NSObject, SelectionHapticFeedbackAdapter {
     func selectionChanged() {
         // do nothing
     }
 }
 
 @available(iOS 10, *)
-class FeedbackGeneratorHapticAdapter: NSObject, HapticAdapter {
+class ModernSelectionHapticFeedbackAdapter: NSObject, SelectionHapticFeedbackAdapter {
     let selectionFeedbackGenerator: UISelectionFeedbackGenerator
 
     override init() {
@@ -31,21 +44,5 @@ class FeedbackGeneratorHapticAdapter: NSObject, HapticAdapter {
     func selectionChanged() {
         selectionFeedbackGenerator.selectionChanged()
         selectionFeedbackGenerator.prepare()
-    }
-}
-
-class HapticFeedback: HapticAdapter {
-    let adapter: HapticAdapter
-
-    init() {
-        if #available(iOS 10, *) {
-            adapter = FeedbackGeneratorHapticAdapter()
-        } else {
-            adapter = LegacyHapticAdapter()
-        }
-    }
-
-    func selectionChanged() {
-        adapter.selectionChanged()
     }
 }
