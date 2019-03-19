@@ -44,6 +44,50 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@implementation ConversationViewState
+
+- (instancetype)initWithViewItems:(NSArray<id<ConversationViewItem>> *)viewItems
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _viewItems = viewItems;
+    NSMutableDictionary<NSString *, NSNumber *> *interactionIndexMap = [NSMutableDictionary new];
+    NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
+    for (NSUInteger i = 0; i < self.viewItems.count; i++) {
+        id<ConversationViewItem> viewItem = self.viewItems[i];
+        interactionIndexMap[viewItem.interaction.uniqueId] = @(i);
+        [interactionIds addObject:viewItem.interaction.uniqueId];
+
+        if (viewItem.unreadIndicator != nil) {
+            _unreadIndicatorIndex = @(i);
+        }
+    }
+    _interactionIndexMap = [interactionIndexMap copy];
+    _interactionIds = [interactionIds copy];
+
+    return self;
+}
+
+- (nullable id<ConversationViewItem>)unreadIndicatorViewItem
+{
+    if (self.unreadIndicatorIndex == nil) {
+        return nil;
+    }
+    NSUInteger index = self.unreadIndicatorIndex.unsignedIntegerValue;
+    if (index >= self.viewItems.count) {
+        OWSFailDebug(@"Invalid index.");
+        return nil;
+    }
+    return self.viewItems[index];
+}
+
+@end
+
+#pragma mark -
+
 @implementation ConversationUpdateItem
 
 - (instancetype)initWithUpdateItemType:(ConversationUpdateItemType)updateItemType
@@ -150,7 +194,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 // * Afterward, we must prod the view controller to update layout & view state.
 @property (nonatomic) ConversationMessageMapping *messageMapping;
 
-@property (nonatomic) NSArray<id<ConversationViewItem>> *viewItems;
+@property (nonatomic) ConversationViewState *viewState;
 @property (nonatomic) NSMutableDictionary<NSString *, id<ConversationViewItem>> *viewItemCache;
 
 @property (nonatomic, nullable) ThreadDynamicInteractions *dynamicInteractions;
@@ -187,6 +231,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     _persistedViewItems = @[];
     _unsavedOutgoingMessages = @[];
     self.focusMessageIdOnOpen = focusMessageIdOnOpen;
+    _viewState = [[ConversationViewState alloc] initWithViewItems:@[]];
 
     [self configure];
 
@@ -492,22 +537,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     }
 }
 
-- (nullable id<ConversationViewItem>)viewItemForUnreadMessagesIndicator
-{
-    for (id<ConversationViewItem> viewItem in self.viewItems) {
-        if (viewItem.unreadIndicator) {
-            return viewItem;
-        }
-    }
-    return nil;
-}
-
 - (void)clearUnreadMessagesIndicator
 {
     OWSAssertIsOnMainThread();
 
     // TODO: Remove by making unread indicator a view model concern.
-    id<ConversationViewItem> _Nullable oldIndicatorItem = [self viewItemForUnreadMessagesIndicator];
+    id<ConversationViewItem> _Nullable oldIndicatorItem = [self.viewState unreadIndicatorViewItem];
     if (oldIndicatorItem) {
         // TODO ideally this would be happening within the *same* transaction that caused the unreadMessageIndicator
         // to be cleared.
@@ -542,19 +577,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     OWSLogVerbose(@"");
 
-    if (!self.delegate.isObservingVMUpdates) {
-        return;
-    }
-
     // External database modifications (e.g. changes from another process such as the SAE)
     // are "flushed" using touchDbAsync when the app re-enters the foreground.
 }
 
 - (void)uiDatabaseWillUpdate:(NSNotification *)notification
 {
-    if (!self.delegate.isObservingVMUpdates) {
-        return;
-    }
     [self.delegate conversationViewModelWillUpdate];
 }
 
@@ -594,12 +622,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return;
     }
 
-    NSString *_Nullable mostRecentMenuActionsInterationId = self.mostRecentMenuActionsViewItem.interaction.uniqueId;
-    if (mostRecentMenuActionsInterationId != nil &&
-        [diff.removedItemIds containsObject:mostRecentMenuActionsInterationId]) {
-        [self.delegate conversationViewModelDidDeleteMostRecentMenuActionsViewItem];
-    }
-
     NSMutableSet<NSString *> *diffAddedItemIds = [diff.addedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffRemovedItemIds = [diff.removedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffUpdatedItemIds = [diff.updatedItemIds mutableCopy];
@@ -626,10 +648,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         }
     }
 
-    NSMutableArray<NSString *> *oldItemIdList = [NSMutableArray new];
-    for (id<ConversationViewItem> viewItem in self.viewItems) {
-        [oldItemIdList addObject:viewItem.itemId];
-    }
+    NSArray<NSString *> *oldItemIdList = self.viewState.interactionIds;
 
     // We need to reload any modified interactions _before_ we call
     // reloadViewItems.
@@ -668,7 +687,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return;
     }
 
-    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewItems.count);
+    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewState.viewItems.count);
 
     [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:updatedItemSet];
 }
@@ -681,10 +700,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     OWSLogVerbose(@"");
 
-    NSMutableArray<NSString *> *oldItemIdList = [NSMutableArray new];
-    for (id<ConversationViewItem> viewItem in self.viewItems) {
-        [oldItemIdList addObject:viewItem.itemId];
-    }
+    NSArray<NSString *> *oldItemIdList = self.viewState.interactionIds;
 
     if (![self reloadViewItems]) {
         // These errors are rare.
@@ -695,7 +711,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return;
     }
 
-    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewItems.count);
+    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewState.viewItems.count);
 
     [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:[NSSet set]];
 }
@@ -705,23 +721,15 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     OWSAssertDebug(oldItemIdList);
     OWSAssertDebug(updatedItemSetParam);
 
-    if (!self.delegate.isObservingVMUpdates) {
-        OWSLogVerbose(@"Skipping VM update.");
-        // We fire this event, but it will be ignored.
-        [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate];
-        return;
-    }
-
     if (oldItemIdList.count != [NSSet setWithArray:oldItemIdList].count) {
         OWSFailDebug(@"Old view item list has duplicates.");
         [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
         return;
     }
 
-    NSMutableArray<NSString *> *newItemIdList = [NSMutableArray new];
+    NSArray<NSString *> *newItemIdList = self.viewState.interactionIds;
     NSMutableDictionary<NSString *, id<ConversationViewItem>> *newViewItemMap = [NSMutableDictionary new];
-    for (id<ConversationViewItem> viewItem in self.viewItems) {
-        [newItemIdList addObject:viewItem.itemId];
+    for (id<ConversationViewItem> viewItem in self.viewState.viewItems) {
         newViewItemMap[viewItem.itemId] = viewItem;
     }
 
@@ -1530,7 +1538,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         viewItem.senderName = senderName;
     }
 
-    self.viewItems = viewItems;
+    self.viewState = [[ConversationViewState alloc] initWithViewItems:viewItems];
     self.viewItemCache = viewItemCache;
 
     return !hasError;
@@ -1681,7 +1689,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     // Update the view items if necessary.
     // We don't have to do this if they haven't been configured yet.
-    if (didChange && self.viewItems != nil) {
+    if (didChange && self.viewState.viewItems != nil) {
         // When we receive an incoming message, we clear any typing indicators
         // from that sender.  Ideally, we'd like both changes (disappearance of
         // the typing indicators, appearance of the incoming message) to show up

@@ -34,6 +34,19 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 
 #pragma mark -
 
+@interface ConversationViewState : NSObject
+
+@property (nonatomic, readonly) NSArray<id<ConversationViewItem>> *viewItems;
+@property (nonatomic, readonly) NSDictionary<NSString *, NSNumber *> *interactionIndexMap;
+// We have to track interactionIds separately.  We can't just use interactionIndexMap.allKeys,
+// as that won't preserve ordering.
+@property (nonatomic, readonly) NSArray<NSString *> *interactionIds;
+@property (nonatomic, readonly, nullable) NSNumber *unreadIndicatorIndex;
+
+@end
+
+#pragma mark -
+
 @interface ConversationUpdateItem : NSObject
 
 @property (nonatomic, readonly) ConversationUpdateItemType updateItemType;
@@ -74,10 +87,6 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 // to prod the view to reset its scroll state, etc.
 - (void)conversationViewModelDidReset;
 
-- (void)conversationViewModelDidDeleteMostRecentMenuActionsViewItem;
-
-- (BOOL)isObservingVMUpdates;
-
 - (ConversationStyle *)conversationStyle;
 
 @end
@@ -86,10 +95,9 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 
 @interface ConversationViewModel : NSObject
 
-@property (nonatomic, readonly) NSArray<id<ConversationViewItem>> *viewItems;
+@property (nonatomic, readonly) ConversationViewState *viewState;
 @property (nonatomic, nullable) NSString *focusMessageIdOnOpen;
 @property (nonatomic, readonly, nullable) ThreadDynamicInteractions *dynamicInteractions;
-@property (nonatomic, nullable) id<ConversationViewItem> mostRecentMenuActionsViewItem;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithThread:(TSThread *)thread

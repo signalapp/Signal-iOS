@@ -108,25 +108,6 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
-// We use snapshots to ensure that the view has a consistent
-// representation of view model state which is not updated
-// when the view is not observing view model changes.
-@interface ConversationSnapshot : NSObject
-
-@property (nonatomic) NSArray<id<ConversationViewItem>> *viewItems;
-@property (nonatomic) ThreadDynamicInteractions *dynamicInteractions;
-@property (nonatomic) BOOL canLoadMoreItems;
-
-@end
-
-#pragma mark -
-
-@implementation ConversationSnapshot
-
-@end
-
-#pragma mark -
-
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
     ContactShareApprovalViewControllerDelegate,
     AVAudioPlayerDelegate,
@@ -163,7 +144,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
-@property (nonatomic, readonly) ConversationSnapshot *conversationSnapshot;
 
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
 @property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
@@ -214,14 +194,10 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) BOOL isViewCompletelyAppeared;
 @property (nonatomic) BOOL isViewVisible;
-@property (nonatomic) BOOL shouldObserveVMUpdates;
 @property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL hasUnreadMessages;
 @property (nonatomic) BOOL isPickingMediaAsDocument;
-@property (nonatomic, nullable) NSNumber *previousLastTimestamp;
-@property (nonatomic, nullable) NSNumber *previousViewItemCount;
-@property (nonatomic, nullable) NSNumber *previousViewTopToContentBottom;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
 @property (nonatomic) NSTimer *reloadTimer;
@@ -235,6 +211,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) ConversationSearchController *searchController;
 @property (nonatomic, nullable) NSString *lastSearchedText;
 @property (nonatomic) BOOL isShowingSearchUI;
+@property (nonatomic, nullable) MenuActionsViewController *menuActionsViewController;
+@property (nonatomic) CGFloat extraContentInsetPadding;
 
 @end
 
@@ -516,12 +494,8 @@ typedef enum : NSUInteger {
     _conversationViewModel =
         [[ConversationViewModel alloc] initWithThread:thread focusMessageIdOnOpen:focusMessageId delegate:self];
 
-    [self updateConversationSnapshot];
-
     _searchController = [[ConversationSearchController alloc] initWithThread:thread];
     _searchController.delegate = self;
-
-    [self updateShouldObserveVMUpdates];
 
     self.reloadTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
                                                             target:self
@@ -540,8 +514,9 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    if (self.isUserScrolling || !self.isViewCompletelyAppeared || !self.isViewVisible || !self.shouldObserveVMUpdates
-        || !self.viewHasEverAppeared) {
+    if (self.isUserScrolling || !self.isViewCompletelyAppeared || !self.isViewVisible
+        || !CurrentAppContext().isAppForegroundAndActive || !self.viewHasEverAppeared
+        || OWSWindowManager.sharedManager.isPresentingMenuActions) {
         return;
     }
 
@@ -710,7 +685,6 @@ typedef enum : NSUInteger {
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
-    [self updateShouldObserveVMUpdates];
     [self cancelVoiceMemo];
     self.isUserScrolling = NO;
     [self saveDraft];
@@ -722,7 +696,6 @@ typedef enum : NSUInteger {
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    [self updateShouldObserveVMUpdates];
     [self startReadTimer];
 }
 
@@ -775,6 +748,8 @@ typedef enum : NSUInteger {
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
         [self scrollToDefaultPosition];
+    } else if (self.menuActionsViewController != nil) {
+        [self scrollToMenuActionInteraction:NO];
     }
 
     [self updateLastVisibleSortId];
@@ -788,24 +763,21 @@ typedef enum : NSUInteger {
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
 {
-    return self.conversationSnapshot.viewItems;
+    return self.conversationViewModel.viewState.viewItems;
 }
 
 - (ThreadDynamicInteractions *)dynamicInteractions
 {
-    return self.conversationSnapshot.dynamicInteractions;
+    return self.conversationViewModel.dynamicInteractions;
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
 {
-    NSInteger row = 0;
-    for (id<ConversationViewItem> viewItem in self.viewItems) {
-        if (viewItem.unreadIndicator) {
-            return [NSIndexPath indexPathForRow:row inSection:0];
-        }
-        row++;
+    NSNumber *_Nullable unreadIndicatorIndex = self.conversationViewModel.viewState.unreadIndicatorIndex;
+    if (unreadIndicatorIndex == nil) {
+        return nil;
     }
-    return nil;
+    return [NSIndexPath indexPathForRow:unreadIndicatorIndex.integerValue inSection:0];
 }
 
 - (NSIndexPath *_Nullable)indexPathOfMessageOnOpen
@@ -882,7 +854,6 @@ typedef enum : NSUInteger {
     // Avoid layout corrupt issues and out-of-date message subtitles.
     self.lastReloadDate = [NSDate new];
     [self.conversationViewModel viewDidResetContentAndLayout];
-    [self tryToUpdateConversationSnapshot];
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
 
@@ -1287,7 +1258,7 @@ typedef enum : NSUInteger {
 
     self.isViewCompletelyAppeared = NO;
 
-    [[OWSWindowManager sharedManager] hideMenuActionsWindow];
+    [self dismissMenuActions];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -1749,7 +1720,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertDebug(self.conversationViewModel);
 
-    self.showLoadMoreHeader = self.conversationSnapshot.canLoadMoreItems;
+    self.showLoadMoreHeader = self.conversationViewModel.canLoadMoreItems;
 }
 
 - (void)setShowLoadMoreHeader:(BOOL)showLoadMoreHeader
@@ -1995,63 +1966,151 @@ typedef enum : NSUInteger {
 
 #pragma mark - MenuActionsViewControllerDelegate
 
-- (void)menuActionsDidHide:(MenuActionsViewController *)menuActionsViewController
+- (void)menuActionsWillPresent:(MenuActionsViewController *)menuActionsViewController
 {
+    OWSLogVerbose(@"");
+
+    // While the menu actions are presented, temporarily use extra content
+    // inset padding so that interactions near the top or bottom of the
+    // collection view can be scrolled anywhere within the viewport.
+    //
+    // e.g. In a new conversation, there might be only a single message
+    // which we might want to scroll to the bottom of the screen to
+    // pin above the menu actions popup.
+    CGSize mainScreenSize = UIScreen.mainScreen.bounds.size;
+    self.extraContentInsetPadding = MAX(mainScreenSize.width, mainScreenSize.height);
+
+    UIEdgeInsets contentInset = self.collectionView.contentInset;
+    contentInset.top += self.extraContentInsetPadding;
+    contentInset.bottom += self.extraContentInsetPadding;
+    self.collectionView.contentInset = contentInset;
+
+    self.menuActionsViewController = menuActionsViewController;
+}
+
+- (void)menuActionsIsPresenting:(MenuActionsViewController *)menuActionsViewController
+{
+    OWSLogVerbose(@"");
+
+    // Changes made in this "is presenting" callback are animated by the caller.
+    [self scrollToMenuActionInteraction:NO];
+}
+
+- (void)menuActionsDidPresent:(MenuActionsViewController *)menuActionsViewController
+{
+    OWSLogVerbose(@"");
+
+    [self scrollToMenuActionInteraction:NO];
+}
+
+- (void)menuActionsIsDismissing:(MenuActionsViewController *)menuActionsViewController
+{
+    OWSLogVerbose(@"");
+
+    // Changes made in this "is dismissing" callback are animated by the caller.
+    [self clearMenuActionsState];
+}
+
+- (void)menuActionsDidDismiss:(MenuActionsViewController *)menuActionsViewController
+{
+    OWSLogVerbose(@"");
+
+    [self dismissMenuActions];
+}
+
+- (void)dismissMenuActions
+{
+    OWSLogVerbose(@"");
+
+    [self clearMenuActionsState];
     [[OWSWindowManager sharedManager] hideMenuActionsWindow];
-
-    [self updateShouldObserveVMUpdates];
 }
 
-- (void)menuActions:(MenuActionsViewController *)menuActionsViewController
-    isPresentingWithVerticalFocusChange:(CGFloat)verticalChange
+- (void)clearMenuActionsState
 {
-    UIEdgeInsets oldInset = self.collectionView.contentInset;
-    CGPoint oldOffset = self.collectionView.contentOffset;
+    OWSLogVerbose(@"");
 
-    UIEdgeInsets newInset = oldInset;
-    CGPoint newOffset = oldOffset;
+    if (self.menuActionsViewController == nil) {
+        return;
+    }
 
-    // In case the message is at the very top or bottom edge of the conversation we have to have these additional
-    // insets to be sure we can sufficiently scroll the contentOffset.
-    newInset.top += verticalChange;
-    newInset.bottom -= verticalChange;
-    newOffset.y -= verticalChange;
+    UIEdgeInsets contentInset = self.collectionView.contentInset;
+    contentInset.top -= self.extraContentInsetPadding;
+    contentInset.bottom -= self.extraContentInsetPadding;
+    self.collectionView.contentInset = contentInset;
 
-    OWSLogDebug(@"verticalChange: %f, insets: %@ -> %@",
-        verticalChange,
-        NSStringFromUIEdgeInsets(oldInset),
-        NSStringFromUIEdgeInsets(newInset));
-
-    // Because we're in the context of the frame-changing animation, these adjustments should happen
-    // in lockstep with the messageActions frame change.
-    self.collectionView.contentOffset = newOffset;
-    self.collectionView.contentInset = newInset;
+    self.menuActionsViewController = nil;
+    self.extraContentInsetPadding = 0;
 }
 
-- (void)menuActions:(MenuActionsViewController *)menuActionsViewController
-    isDismissingWithVerticalFocusChange:(CGFloat)verticalChange
+- (void)scrollToMenuActionInteractionIfNecessary
 {
-    UIEdgeInsets oldInset = self.collectionView.contentInset;
-    CGPoint oldOffset = self.collectionView.contentOffset;
+    if (self.menuActionsViewController != nil) {
+        [self scrollToMenuActionInteraction:NO];
+    }
+}
 
-    UIEdgeInsets newInset = oldInset;
-    CGPoint newOffset = oldOffset;
+- (void)scrollToMenuActionInteraction:(BOOL)animated
+{
+    OWSAssertDebug(self.menuActionsViewController);
 
-    // In case the message is at the very top or bottom edge of the conversation we have to have these additional
-    // insets to be sure we can sufficiently scroll the contentOffset.
-    newInset.top -= verticalChange;
-    newInset.bottom += verticalChange;
-    newOffset.y += verticalChange;
+    NSValue *_Nullable contentOffset = [self contentOffsetForMenuActionInteraction];
+    if (contentOffset == nil) {
+        OWSFailDebug(@"Missing contentOffset.");
+        return;
+    }
+    [self.collectionView setContentOffset:contentOffset.CGPointValue animated:animated];
+}
 
-    OWSLogDebug(@"verticalChange: %f, insets: %@ -> %@",
-        verticalChange,
-        NSStringFromUIEdgeInsets(oldInset),
-        NSStringFromUIEdgeInsets(newInset));
+- (nullable NSValue *)contentOffsetForMenuActionInteraction
+{
+    OWSAssertDebug(self.menuActionsViewController);
 
-    // Because we're in the context of the frame-changing animation, these adjustments should happen
-    // in lockstep with the messageActions frame change.
-    self.collectionView.contentOffset = newOffset;
-    self.collectionView.contentInset = newInset;
+    NSString *_Nullable menuActionInteractionId = self.menuActionsViewController.focusedInteraction.uniqueId;
+    if (menuActionInteractionId == nil) {
+        OWSFailDebug(@"Missing menu action interaction.");
+        return nil;
+    }
+    CGPoint modalTopWindow = [self.menuActionsViewController.focusUI convertPoint:CGPointZero toView:nil];
+    CGPoint modalTopLocal = [self.view convertPoint:modalTopWindow fromView:nil];
+    CGPoint offset = modalTopLocal;
+    CGFloat focusTop = offset.y - self.menuActionsViewController.vSpacing;
+
+    NSNumber *_Nullable interactionIndex
+        = self.conversationViewModel.viewState.interactionIndexMap[menuActionInteractionId];
+    if (interactionIndex == nil) {
+        // This is expected if the menu action interaction is being deleted.
+        return nil;
+    }
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:interactionIndex.integerValue inSection:0];
+    UICollectionViewLayoutAttributes *_Nullable layoutAttributes =
+        [self.layout layoutAttributesForItemAtIndexPath:indexPath];
+    if (layoutAttributes == nil) {
+        OWSFailDebug(@"Missing layoutAttributes.");
+        return nil;
+    }
+    CGRect cellFrame = layoutAttributes.frame;
+    return [NSValue valueWithCGPoint:CGPointMake(0, CGRectGetMaxY(cellFrame) - focusTop)];
+}
+
+- (void)dismissMenuActionsIfNecessary
+{
+    if (self.shouldDismissMenuActions) {
+        [self dismissMenuActions];
+    }
+}
+
+- (BOOL)shouldDismissMenuActions
+{
+    if (!OWSWindowManager.sharedManager.isPresentingMenuActions) {
+        return NO;
+    }
+    NSString *_Nullable menuActionInteractionId = self.menuActionsViewController.focusedInteraction.uniqueId;
+    if (menuActionInteractionId == nil) {
+        return NO;
+    }
+    // Check whether there is still a view item for this interaction.
+    return (self.conversationViewModel.viewState.interactionIndexMap[menuActionInteractionId] == nil);
 }
 
 #pragma mark - ConversationViewCellDelegate
@@ -2100,14 +2159,13 @@ typedef enum : NSUInteger {
 - (void)presentMessageActions:(NSArray<MenuAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
 {
     MenuActionsViewController *menuActionsViewController =
-        [[MenuActionsViewController alloc] initWithFocusedView:cell actions:messageActions];
+        [[MenuActionsViewController alloc] initWithFocusedInteraction:cell.viewItem.interaction
+                                                          focusedView:cell
+                                                              actions:messageActions];
 
     menuActionsViewController.delegate = self;
 
-    self.conversationViewModel.mostRecentMenuActionsViewItem = cell.viewItem;
     [[OWSWindowManager sharedManager] showMenuActionsWindow:menuActionsViewController];
-
-    [self updateShouldObserveVMUpdates];
 }
 
 - (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
@@ -3788,7 +3846,11 @@ typedef enum : NSUInteger {
     //
     // Always reserve room for the input accessory, which we display even
     // if the keyboard is not active.
+    newInsets.top = 0;
     newInsets.bottom = MAX(0, self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y);
+
+    newInsets.top += self.extraContentInsetPadding;
+    newInsets.bottom += self.extraContentInsetPadding;
 
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
 
@@ -4308,7 +4370,6 @@ typedef enum : NSUInteger {
 {
     _isViewVisible = isViewVisible;
 
-    [self updateShouldObserveVMUpdates];
     [self updateCellsVisible];
 }
 
@@ -4321,134 +4382,8 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)updateShouldObserveVMUpdates
-{
-    if (!CurrentAppContext().isAppForegroundAndActive) {
-        self.shouldObserveVMUpdates = NO;
-        return;
-    }
-
-    if (!self.isViewVisible) {
-        self.shouldObserveVMUpdates = NO;
-        return;
-    }
-
-    if (OWSWindowManager.sharedManager.isPresentingMenuActions) {
-        self.shouldObserveVMUpdates = NO;
-        return;
-    }
-
-    self.shouldObserveVMUpdates = YES;
-}
-
-- (void)setShouldObserveVMUpdates:(BOOL)shouldObserveVMUpdates
-{
-    if (_shouldObserveVMUpdates == shouldObserveVMUpdates) {
-        return;
-    }
-
-    _shouldObserveVMUpdates = shouldObserveVMUpdates;
-
-    if (self.shouldObserveVMUpdates) {
-        OWSLogVerbose(@"resume observation of view model.");
-
-        [self updateConversationSnapshot];
-        [self resetContentAndLayout];
-        [self updateBackButtonUnreadCount];
-        [self updateNavigationBarSubtitleLabel];
-        [self updateDisappearingMessagesConfiguration];
-
-        // Detect changes in the mapping's "window" size.
-        if (self.previousViewTopToContentBottom && self.previousViewItemCount
-            && self.previousViewItemCount.unsignedIntegerValue != self.viewItems.count) {
-            CGFloat newContentHeight = self.safeContentHeight;
-            CGPoint newContentOffset
-                = CGPointMake(0, MAX(0, newContentHeight - self.previousViewTopToContentBottom.floatValue));
-            [self.collectionView setContentOffset:newContentOffset animated:NO];
-        }
-
-        // When we resume observing database changes, we want to scroll to show the user
-        // any new items inserted while we were not observing.  We therefore find the
-        // first item at or after the "view horizon".  See the comments below which explain
-        // the "view horizon".
-        id<ConversationViewItem> _Nullable lastViewItem = self.viewItems.lastObject;
-        BOOL hasAddedNewItems = (lastViewItem && self.previousLastTimestamp
-            && lastViewItem.interaction.timestamp > self.previousLastTimestamp.unsignedLongLongValue);
-
-        OWSLogInfo(@"hasAddedNewItems: %d", hasAddedNewItems);
-        if (hasAddedNewItems) {
-            NSIndexPath *_Nullable indexPathToShow = [self firstIndexPathAtViewHorizonTimestamp];
-            if (indexPathToShow) {
-                // The goal is to show _both_ the last item before the "view horizon" and the
-                // first item after the "view horizon".  We can't do "top on first item after"
-                // or "bottom on last item before" or we won't see the other. Unfortunately,
-                // this gets tricky if either is huge.  The largest cells are oversize text,
-                // which should be rare.  Other cells are considerably smaller than a screenful.
-                [self.collectionView scrollToItemAtIndexPath:indexPathToShow
-                                            atScrollPosition:UICollectionViewScrollPositionCenteredVertically
-                                                    animated:NO];
-            }
-        }
-        self.viewHorizonTimestamp = nil;
-        OWSLogVerbose(@"resumed observation of view model.");
-    } else {
-        OWSLogVerbose(@"pausing observation of view model.");
-        // When stopping observation, try to record the timestamp of the "view horizon".
-        // The "view horizon" is where we'll want to focus the users when we resume
-        // observation if any changes have happened while we weren't observing.
-        // Ideally, we'll focus on those changes.  But we can't skip over unread
-        // interactions, so we prioritize those, if any.
-        //
-        // We'll use this later to update the view to reflect any changes made while
-        // we were not observing the database.  See extendRangeToIncludeUnobservedItems
-        // and the logic above.
-        id<ConversationViewItem> _Nullable lastViewItem = self.viewItems.lastObject;
-        if (lastViewItem) {
-            self.previousLastTimestamp = @(lastViewItem.interaction.timestamp);
-            self.previousViewItemCount = @(self.viewItems.count);
-        } else {
-            self.previousLastTimestamp = nil;
-            self.previousViewItemCount = nil;
-        }
-
-        __block TSInteraction *_Nullable firstUnseenInteraction = nil;
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            firstUnseenInteraction =
-            [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:self.thread.uniqueId];
-        }];
-        if (firstUnseenInteraction) {
-            // If there are any unread interactions, focus on the first one.
-            self.viewHorizonTimestamp = @(firstUnseenInteraction.timestamp);
-        } else if (lastViewItem) {
-            // Otherwise, focus _just after_ the last interaction.
-            self.viewHorizonTimestamp = @(lastViewItem.interaction.timestamp + 1);
-        } else {
-            self.viewHorizonTimestamp = nil;
-        }
-
-        // Snapshot the scroll state by measuring the "distance from top of view to
-        // bottom of content"; if the mapping's "window" size grows, it will grow
-        // _upward_.
-        OWSAssertDebug([self.collectionView.collectionViewLayout isKindOfClass:[ConversationViewLayout class]]);
-        ConversationViewLayout *conversationViewLayout
-            = (ConversationViewLayout *)self.collectionView.collectionViewLayout;
-        // To avoid laying out the collection view during initial view
-        // presentation, don't trigger layout here (via safeContentHeight)
-        // until layout has been done at least once.
-        if (conversationViewLayout.hasEverHadLayout) {
-            self.previousViewTopToContentBottom = @(self.safeContentHeight - self.collectionView.contentOffset.y);
-        } else {
-            self.previousViewTopToContentBottom = nil;
-        }
-
-        OWSLogVerbose(@"paused observation of view model.");
-    }
-}
-
 - (nullable NSIndexPath *)firstIndexPathAtViewHorizonTimestamp
 {
-    OWSAssertDebug(self.shouldObserveVMUpdates);
-
     if (!self.viewHorizonTimestamp) {
         return nil;
     }
@@ -4571,6 +4506,13 @@ typedef enum : NSUInteger {
 - (CGPoint)collectionView:(UICollectionView *)collectionView
     targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset
 {
+    if (self.menuActionsViewController != nil) {
+        NSValue *_Nullable contentOffset = [self contentOffsetForMenuActionInteraction];
+        if (contentOffset != nil) {
+            return contentOffset.CGPointValue;
+        }
+    }
+
     if (self.scrollContinuity == kScrollContinuityBottom && self.lastKnownDistanceFromBottom) {
         NSValue *_Nullable contentOffset =
             [self contentOffsetForLastKnownDistanceFromBottom:self.lastKnownDistanceFromBottom.floatValue];
@@ -4795,11 +4737,6 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationViewModelDelegate
 
-- (BOOL)isObservingVMUpdates
-{
-    return self.shouldObserveVMUpdates;
-}
-
 - (void)conversationViewModelWillUpdate
 {
     OWSAssertIsOnMainThread();
@@ -4823,13 +4760,15 @@ typedef enum : NSUInteger {
     OWSAssertDebug(conversationUpdate);
     OWSAssertDebug(self.conversationViewModel);
 
-    if (!self.shouldObserveVMUpdates) {
+    if (!self.viewLoaded) {
+        // It's safe to ignore updates before the view loads;
+        // viewWillAppear will call resetContentAndLayout.
         return;
     }
 
-    [self updateConversationSnapshot];
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
+    [self dismissMenuActionsIfNecessary];
 
     if (self.isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -5037,13 +4976,6 @@ typedef enum : NSUInteger {
     [self scrollToBottomAnimated:NO];
 }
 
-- (void)conversationViewModelDidDeleteMostRecentMenuActionsViewItem
-{
-    OWSAssertIsOnMainThread();
-
-    [[OWSWindowManager sharedManager] hideMenuActionsWindow];
-}
-
 #pragma mark - Orientation
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -5057,7 +4989,7 @@ typedef enum : NSUInteger {
     // in the content of this view.  It's easier to dismiss the
     // "message actions" window when the device changes orientation
     // than to try to ensure this works in that case.
-    [[OWSWindowManager sharedManager] hideMenuActionsWindow];
+    [self dismissMenuActions];
 
     // Snapshot the "last visible row".
     NSIndexPath *_Nullable lastVisibleIndexPath = self.lastVisibleIndexPath;
@@ -5083,7 +5015,9 @@ typedef enum : NSUInteger {
 
             [strongSelf updateInputToolbarLayout];
 
-            if (lastVisibleIndexPath) {
+            if (self.menuActionsViewController != nil) {
+                [self scrollToMenuActionInteraction:NO];
+            } else if (lastVisibleIndexPath) {
                 [strongSelf.collectionView scrollToItemAtIndexPath:lastVisibleIndexPath
                                                   atScrollPosition:UICollectionViewScrollPositionBottom
                                                           animated:NO];
@@ -5135,26 +5069,6 @@ typedef enum : NSUInteger {
 
     // Scroll button layout depends on input toolbar size.
     [self updateScrollDownButtonLayout];
-}
-
-#pragma mark - Conversation Snapshot
-
-- (void)tryToUpdateConversationSnapshot
-{
-    if (!self.isObservingVMUpdates) {
-        return;
-    }
-
-    [self updateConversationSnapshot];
-}
-
-- (void)updateConversationSnapshot
-{
-    ConversationSnapshot *conversationSnapshot = [ConversationSnapshot new];
-    conversationSnapshot.viewItems = self.conversationViewModel.viewItems;
-    conversationSnapshot.dynamicInteractions = self.conversationViewModel.dynamicInteractions;
-    conversationSnapshot.canLoadMoreItems = self.conversationViewModel.canLoadMoreItems;
-    _conversationSnapshot = conversationSnapshot;
 }
 
 @end
