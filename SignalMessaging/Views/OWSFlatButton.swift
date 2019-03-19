@@ -15,6 +15,16 @@ public class OWSFlatButton: UIView {
     private var upColor: UIColor?
     private var downColor: UIColor?
 
+    @objc
+    public override var accessibilityIdentifier: String? {
+        didSet {
+            guard let accessibilityIdentifier = self.accessibilityIdentifier else {
+                return
+            }
+            button.accessibilityIdentifier = "\(accessibilityIdentifier).button"
+        }
+    }
+
     override public var backgroundColor: UIColor? {
         willSet {
             owsFailDebug("Use setBackgroundColors(upColor:) instead.")

@@ -507,8 +507,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         UIView *buttonRow = [strongSelf createRowWithHeight:kButtonRowHeight
                                                 previousRow:examplePhoneNumberRow
                                                   superview:cell.contentView];
-        OWSLogVerbose(@"strongSelf.phoneNumberButton: %@", strongSelf.phoneNumberButton.accessibilityIdentifier);
-        OWSLogFlush();
         [buttonRow addSubview:strongSelf.phoneNumberButton];
         [strongSelf.phoneNumberButton autoVCenterInSuperview];
         [strongSelf.phoneNumberButton autoPinTrailingToSuperviewMargin];
