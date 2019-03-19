@@ -327,6 +327,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
         cell.detailTextLabel.text
             = NSLocalizedString(@"LINK_NEW_DEVICE_SUBTITLE", @"Subheading for 'Link New Device' navigation");
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"add");
         return cell;
     } else if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionExistingDevices) {
         OWSDeviceTableViewCell *cell =

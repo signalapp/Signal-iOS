@@ -58,6 +58,7 @@
 
     [informationSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_LEGAL_TERMS_CELL",
                                                                          @"table cell label")
+                                             accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"terms")
                                                          actionBlock:^{
                                                              [[UIApplication sharedApplication]
                                                                  openURL:[NSURL URLWithString:kLegalTermsUrlString]];
@@ -68,6 +69,7 @@
     OWSTableSection *helpSection = [OWSTableSection new];
     helpSection.headerTitle = NSLocalizedString(@"SETTINGS_HELP_HEADER", @"");
     [helpSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_SUPPORT", @"")
+                                      accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"support")
                                                   actionBlock:^{
                                                       [[UIApplication sharedApplication]
                                                           openURL:[NSURL URLWithString:@"https://support.signal.org"]];

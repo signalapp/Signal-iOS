@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *NSStringForNotificationType(NotificationType value)
 {
-    switch (notificationType) {
+    switch (value) {
         case NotificationNamePreview:
             return @"NotificationNamePreview";
         case NotificationNameNoPreview:
