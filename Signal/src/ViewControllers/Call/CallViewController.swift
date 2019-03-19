@@ -88,10 +88,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
     }
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-
     // MARK: - Settings Nag Views
 
     var isShowingSettingsNag = false {
@@ -228,6 +224,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .portrait
+    }
+
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
 
     // MARK: - Create Views
@@ -1035,6 +1035,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         AssertIsOnMainThread()
 
+        guard localVideoView.captureSession != captureSession else {
+            Logger.debug("ignoring redundant update")
+            return
+        }
+
         localVideoView.captureSession = captureSession
         let isHidden = captureSession == nil
 
@@ -1058,7 +1063,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     internal func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
+
         guard self.remoteVideoTrack != remoteVideoTrack else {
+            Logger.debug("ignoring redundant update")
             return
         }
 
@@ -1070,8 +1077,28 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         shouldRemoteVideoControlsBeHidden = false
 
+        if remoteVideoTrack != nil {
+            playRemoteEnabledVideoHapticFeedback()
+        }
+
         updateRemoteVideoLayout()
     }
+
+    // MARK: Video Haptics
+
+    let feedbackGenerator = NotificationHapticFeedback()
+    var lastHapticTime: TimeInterval = CACurrentMediaTime()
+    func playRemoteEnabledVideoHapticFeedback() {
+        let currentTime = CACurrentMediaTime()
+        guard currentTime - lastHapticTime > 5 else {
+            Logger.debug("ignoring haptic feedback since it's too soon")
+            return
+        }
+        feedbackGenerator.notificationOccurred(.success)
+        lastHapticTime = currentTime
+    }
+
+    // MARK: - Dismiss
 
     internal func dismissIfPossible(shouldDelay: Bool, ignoreNag ignoreNagParam: Bool = false, completion: (() -> Void)? = nil) {
         callUIAdapter.audioService.delegate = nil

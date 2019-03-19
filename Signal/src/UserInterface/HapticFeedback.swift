@@ -46,3 +46,62 @@ class ModernSelectionHapticFeedbackAdapter: NSObject, SelectionHapticFeedbackAda
         selectionFeedbackGenerator.prepare()
     }
 }
+
+enum NotificationHapticFeedbackType {
+    case error, success, warning
+}
+
+extension NotificationHapticFeedbackType {
+    var uiNotificationFeedbackType: UINotificationFeedbackType {
+        switch self {
+        case .error: return .error
+        case .success: return .success
+        case .warning: return .warning
+        }
+    }
+}
+
+protocol NotificationHapticFeedbackAdapter {
+    func notificationOccurred(_ notificationType: NotificationHapticFeedbackType)
+}
+
+class NotificationHapticFeedback: NotificationHapticFeedbackAdapter {
+
+    let adapter: NotificationHapticFeedbackAdapter
+
+    init() {
+        if #available(iOS 10, *) {
+            adapter = ModernNotificationHapticFeedbackAdapter()
+        } else {
+            adapter = LegacyNotificationHapticFeedbackAdapter()
+        }
+    }
+
+    func notificationOccurred(_ notificationType: NotificationHapticFeedbackType) {
+        adapter.notificationOccurred(notificationType)
+    }
+}
+
+@available(iOS 10.0, *)
+class ModernNotificationHapticFeedbackAdapter: NotificationHapticFeedbackAdapter {
+    let feedbackGenerator = UINotificationFeedbackGenerator()
+
+    init() {
+        feedbackGenerator.prepare()
+    }
+
+    func notificationOccurred(_ notificationType: NotificationHapticFeedbackType) {
+        feedbackGenerator.notificationOccurred(notificationType.uiNotificationFeedbackType)
+        feedbackGenerator.prepare()
+    }
+}
+
+class LegacyNotificationHapticFeedbackAdapter: NotificationHapticFeedbackAdapter {
+    func notificationOccurred(_ notificationType: NotificationHapticFeedbackType) {
+        vibrate()
+    }
+
+    private func vibrate() {
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+    }
+}
