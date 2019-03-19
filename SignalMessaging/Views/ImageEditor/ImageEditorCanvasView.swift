@@ -500,8 +500,14 @@ public class ImageEditorCanvasView: UIView {
         // using the image width as reference.
         let fontSize = item.font.pointSize * imageFrame.size.width / item.fontReferenceImageWidth
 
+        let text = item.text.filterForDisplay ?? ""
+        let attributedString = NSAttributedString(string: text,
+                                                  attributes: [
+                                                    NSAttributedStringKey.font: item.font.withSize(fontSize),
+                                                    NSAttributedStringKey.foregroundColor: item.color.color
+            ])
         let layer = EditorTextLayer(itemId: item.itemId)
-        layer.string = item.text
+        layer.string = attributedString
         layer.foregroundColor = item.color.cgColor
         layer.font = CGFont(item.font.fontName as CFString)
         layer.fontSize = fontSize
@@ -523,21 +529,18 @@ public class ImageEditorCanvasView: UIView {
         let maxSize = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
         // TODO: Is there a more accurate way to measure text in a CATextLayer?
         //       CoreText?
-        let textBounds = (item.text as NSString).boundingRect(with: maxSize,
-                                                              options: [
-                                                                .usesLineFragmentOrigin,
-                                                                .usesFontLeading
+        let textBounds = attributedString.boundingRect(with: maxSize,
+                                                       options: [
+                                                        .usesLineFragmentOrigin,
+                                                        .usesFontLeading
             ],
-                                                              attributes: [
-                                                                .font: item.font.withSize(fontSize)
-            ],
-                                                              context: nil)
+                                                       context: nil)
         // The text item's center is specified in "image unit" coordinates, but
         // needs to be rendered in "canvas" coordinates.  The imageFrame
         // is the bounds of the image specified in "canvas" coordinates,
         // so to transform we can simply convert from image frame units.
         let centerInCanvas = item.unitCenter.fromUnitCoordinates(viewBounds: imageFrame)
-        let layerSize = CGSizeCeil(textBounds.size)
+        let layerSize = textBounds.size.ceil
         layer.frame = CGRect(origin: CGPoint(x: centerInCanvas.x - layerSize.width * 0.5,
                                              y: centerInCanvas.y - layerSize.height * 0.5),
                              size: layerSize)
