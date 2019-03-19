@@ -72,12 +72,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     [addSection
         addItem:[OWSTableItem
-                    disclosureItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_ADD_BUTTON",
-                                               @"A label for the 'add phone number' button in the block list table.")
-                               actionBlock:^{
-                                   AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
-                                   [weakSelf.navigationController pushViewController:vc animated:YES];
-                               }]];
+                     disclosureItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_ADD_BUTTON",
+                                                @"A label for the 'add phone number' button in the block list table.")
+                    accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"add")
+                                actionBlock:^{
+                                    AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
+                                    [weakSelf.navigationController pushViewController:vc animated:YES];
+                                }]];
     [contents addSection:addSection];
 
     // "Blocklist" section
@@ -95,6 +96,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                 itemWithCustomCellBlock:^{
                                                     ContactTableViewCell *cell = [ContactTableViewCell new];
                                                     [cell configureWithRecipientId:phoneNumber];
+                                                    cell.accessibilityIdentifier
+                                                        = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"user");
                                                     return cell;
                                                 }
                                                 customRowHeight:UITableViewAutomaticDimension
