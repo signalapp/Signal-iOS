@@ -854,8 +854,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
     OWSAssertDebug(attachment);
-    OWSGenericAttachmentView *attachmentView =
-        [[OWSGenericAttachmentView alloc] initWithAttachment:attachment isIncoming:self.isIncoming];
+    OWSGenericAttachmentView *attachmentView = [[OWSGenericAttachmentView alloc] initWithAttachment:attachment
+                                                                                         isIncoming:self.isIncoming
+                                                                                           viewItem:self.viewItem];
     [attachmentView createContentsWithConversationStyle:self.conversationStyle];
     [self addProgressViewsIfNecessary:attachmentView shouldShowDownloadProgress:NO];
 
@@ -1065,7 +1066,9 @@ NS_ASSUME_NONNULL_BEGIN
             TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
             OWSAssertDebug(attachment);
             OWSGenericAttachmentView *attachmentView =
-                [[OWSGenericAttachmentView alloc] initWithAttachment:attachment isIncoming:self.isIncoming];
+                [[OWSGenericAttachmentView alloc] initWithAttachment:attachment
+                                                          isIncoming:self.isIncoming
+                                                            viewItem:self.viewItem];
             [attachmentView createContentsWithConversationStyle:self.conversationStyle];
             result = [attachmentView measureSizeWithMaxMessageWidth:maxMessageWidth];
             break;

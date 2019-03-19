@@ -136,8 +136,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     switch (self.viewItem.attachmentPointer.state) {
         case TSAttachmentPointerStateFailed:
-            // TODO:
-            //            [self addTapToRetryView:bodyMediaView];
+            // We don't need to handle the "tap to retry" state here,
+            // only download progress.
             return;
         case TSAttachmentPointerStateEnqueued:
         case TSAttachmentPointerStateDownloading:
