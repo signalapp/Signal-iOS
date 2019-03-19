@@ -111,6 +111,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     nameRow.userInteractionEnabled = YES;
     [nameRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(nameRowTapped:)]];
+    nameRow.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"nameRow");
     [rows addObject:nameRow];
 
     UILabel *nameLabel = [UILabel new];
@@ -150,6 +151,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     avatarRow.userInteractionEnabled = YES;
     [avatarRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarRowTapped:)]];
+    avatarRow.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"avatarRow");
     [rows addObject:avatarRow];
 
     UILabel *avatarLabel = [UILabel new];
@@ -186,6 +188,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     infoRow.userInteractionEnabled = YES;
     [infoRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(infoRowTapped:)]];
+    infoRow.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"infoRow");
     [rows addObject:infoRow];
 
     UILabel *infoLabel = [UILabel new];
