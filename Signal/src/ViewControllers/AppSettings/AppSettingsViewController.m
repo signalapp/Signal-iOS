@@ -164,6 +164,8 @@
                                  }
                                  [accessoryLabel sizeToFit];
                                  cell.accessoryView = accessoryLabel;
+                                 cell.accessibilityIdentifier
+                                     = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"network_status");
                                  return cell;
                              }
                                          actionBlock:nil]];
@@ -171,24 +173,29 @@
 
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
                                                               @"Settings table view cell label")
+                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"invite")
                                               actionBlock:^{
                                                   [weakSelf showInviteFlow];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_TITLE",
                                                               @"Settings table view cell label")
+                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"privacy")
                                               actionBlock:^{
                                                   [weakSelf showPrivacy];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil)
+                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"notifications")
                                               actionBlock:^{
                                                   [weakSelf showNotifications];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"LINKED_DEVICES_TITLE",
                                                               @"Menu item and navbar title for the device manager")
+                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"linked_devices")
                                               actionBlock:^{
                                                   [weakSelf showLinkedDevices];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"")
+                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"advanced")
                                               actionBlock:^{
                                                   [weakSelf showAdvanced];
                                               }]];
@@ -197,17 +204,20 @@
     if (showBackup) {
         [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_BACKUP",
                                                                   @"Label for the backup view in app settings.")
+                                      accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"backup")
                                                   actionBlock:^{
                                                       [weakSelf showBackup];
                                                   }]];
     }
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ABOUT", @"")
+                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"about")
                                               actionBlock:^{
                                                   [weakSelf showAbout];
                                               }]];
 
 #ifdef USE_DEBUG_UI
     [section addItem:[OWSTableItem disclosureItemWithText:@"Debug UI"
+                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"debugui")
                                               actionBlock:^{
                                                   [weakSelf showDebugUI];
                                               }]];
@@ -216,14 +226,17 @@
     if (TSAccountManager.sharedInstance.isDeregistered) {
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON",
                                                                   @"Label for re-registration button.")
+                                      accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"reregister")
                                                      selector:@selector(reregisterUser)
                                                         color:[UIColor ows_materialBlueColor]]];
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
                                                                   @"Label for 'delete data' button.")
+                                      accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"delete_data")
                                                      selector:@selector(deleteUnregisterUserData)
                                                         color:[UIColor ows_destructiveRedColor]]];
     } else {
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
+                                      accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"delete_account")
                                                      selector:@selector(unregisterUser)
                                                         color:[UIColor ows_destructiveRedColor]]];
     }
@@ -233,7 +246,10 @@
     self.contents = contents;
 }
 
-- (OWSTableItem *)destructiveButtonItemWithTitle:(NSString *)title selector:(SEL)selector color:(UIColor *)color
+- (OWSTableItem *)destructiveButtonItemWithTitle:(NSString *)title
+                         accessibilityIdentifier:(NSString *)accessibilityIdentifier
+                                        selector:(SEL)selector
+                                           color:(UIColor *)color
 {
     __weak AppSettingsViewController *weakSelf = self;
    return [OWSTableItem
@@ -254,6 +270,7 @@
             [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
             [button autoVCenterInSuperview];
             [button autoPinLeadingAndTrailingToSuperviewMargin];
+            button.accessibilityIdentifier = accessibilityIdentifier;
 
             return cell;
         }
@@ -334,6 +351,8 @@
     [disclosureButton autoPinLeadingToTrailingEdgeOfView:nameView offset:16.f];
     [disclosureButton setContentCompressionResistancePriority:(UILayoutPriorityDefaultHigh + 1)
                                                       forAxis:UILayoutConstraintAxisHorizontal];
+
+    cell.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"profile");
 
     return cell;
 }
@@ -471,6 +490,7 @@
                                                         target:self
                                                         action:@selector(didPressEnableDarkTheme:)];
     }
+    barButtonItem.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dark_theme");
     return barButtonItem;
 }
 
