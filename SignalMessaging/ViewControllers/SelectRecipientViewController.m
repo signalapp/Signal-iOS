@@ -64,14 +64,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     if (self.delegate.shouldHideContacts) {
         self.tableViewController.tableView.scrollEnabled = NO;
     }
-
-    // These subviews are lazy-created; ensure they exist now.
-    [self phoneNumberButton];
-    [self phoneNumberTextField];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _countryCodeButton);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _phoneNumberTextField);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _phoneNumberButton);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _examplePhoneNumberLabel);
 }
 
 - (void)viewDidLoad
@@ -131,6 +123,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         [_countryCodeButton addTarget:self
                                action:@selector(showCountryCodeView:)
                      forControlEvents:UIControlEventTouchUpInside];
+        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _countryCodeButton);
     }
 
     return _countryCodeButton;
@@ -157,6 +150,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         _examplePhoneNumberLabel = [UILabel new];
         _examplePhoneNumberLabel.font = [self examplePhoneNumberFont];
         _examplePhoneNumberLabel.textColor = [Theme secondaryColor];
+        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _examplePhoneNumberLabel);
     }
 
     return _examplePhoneNumberLabel;
@@ -176,6 +170,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         [_phoneNumberTextField addTarget:self
                                   action:@selector(textFieldDidChange:)
                         forControlEvents:UIControlEventEditingChanged];
+        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _phoneNumberTextField);
     }
 
     return _phoneNumberTextField;
@@ -194,6 +189,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         _phoneNumberButton = button;
         [button autoSetDimension:ALDimensionWidth toSize:140];
         [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
+        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _phoneNumberButton);
     }
     return _phoneNumberButton;
 }
@@ -511,6 +507,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         UIView *buttonRow = [strongSelf createRowWithHeight:kButtonRowHeight
                                                 previousRow:examplePhoneNumberRow
                                                   superview:cell.contentView];
+        OWSLogVerbose(@"strongSelf.phoneNumberButton: %@", strongSelf.phoneNumberButton.accessibilityIdentifier);
+        OWSLogFlush();
         [buttonRow addSubview:strongSelf.phoneNumberButton];
         [strongSelf.phoneNumberButton autoVCenterInSuperview];
         [strongSelf.phoneNumberButton autoPinTrailingToSuperviewMargin];
