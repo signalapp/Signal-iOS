@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "BlockListUIUtils.h"
@@ -130,6 +130,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                 }
                             }];
                 }];
+    blockAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"block");
     [actionSheetController addAction:blockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
@@ -139,9 +140,14 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                                   completionBlock(NO);
                                                               }
                                                           }];
+    dismissAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss");
     [actionSheetController addAction:dismissAction];
 
-    [fromViewController presentViewController:actionSheetController animated:YES completion:nil];
+    [fromViewController presentViewController:actionSheetController
+                                     animated:YES
+                                   completion:^{
+                                       [actionSheetController applyAccessibilityIdentifiers];
+                                   }];
 }
 
 + (void)showBlockGroupActionSheet:(TSGroupThread *)groupThread
@@ -180,6 +186,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                }
                            }];
                 }];
+    blockAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"block");
     [actionSheetController addAction:blockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
@@ -189,9 +196,14 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                                   completionBlock(NO);
                                                               }
                                                           }];
+    dismissAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss");
     [actionSheetController addAction:dismissAction];
 
-    [fromViewController presentViewController:actionSheetController animated:YES completion:nil];
+    [fromViewController presentViewController:actionSheetController
+                                     animated:YES
+                                   completion:^{
+                                       [actionSheetController applyAccessibilityIdentifiers];
+                                   }];
 }
 
 + (void)blockPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
@@ -345,6 +357,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                               }
                                           }];
                 }];
+    unblockAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"unblock");
     [actionSheetController addAction:unblockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
@@ -354,9 +367,14 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                                   completionBlock(YES);
                                                               }
                                                           }];
+    dismissAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss");
     [actionSheetController addAction:dismissAction];
 
-    [fromViewController presentViewController:actionSheetController animated:YES completion:nil];
+    [fromViewController presentViewController:actionSheetController
+                                     animated:YES
+                                   completion:^{
+                                       [actionSheetController applyAccessibilityIdentifiers];
+                                   }];
 }
 
 + (void)unblockPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
@@ -418,6 +436,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                        }
                                    }];
                 }];
+    unblockAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"unblock");
     [actionSheetController addAction:unblockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
@@ -427,9 +446,14 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                                   completionBlock(YES);
                                                               }
                                                           }];
+    dismissAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss");
     [actionSheetController addAction:dismissAction];
 
-    [fromViewController presentViewController:actionSheetController animated:YES completion:nil];
+    [fromViewController presentViewController:actionSheetController
+                                     animated:YES
+                                   completion:^{
+                                       [actionSheetController applyAccessibilityIdentifiers];
+                                   }];
 }
 
 + (void)unblockGroup:(TSGroupModel *)groupModel
@@ -469,10 +493,16 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     UIAlertController *controller =
         [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
 
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:completionBlock]];
-    [fromViewController presentViewController:controller animated:YES completion:nil];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:completionBlock];
+    okAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"ok");
+    [controller addAction:okAction];
+    [fromViewController presentViewController:controller
+                                     animated:YES
+                                   completion:^{
+                                       [controller applyAccessibilityIdentifiers];
+                                   }];
 }
 
 + (NSString *)formatDisplayNameForAlertTitle:(NSString *)displayName
