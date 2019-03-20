@@ -555,16 +555,22 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         uint32_t screenLockTimeout = (uint32_t)round(timeoutValue.doubleValue);
         NSString *screenLockTimeoutString = [self formatScreenLockTimeout:screenLockTimeout useShortFormat:NO];
 
-        [controller addAction:[UIAlertAction actionWithTitle:screenLockTimeoutString
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:^(UIAlertAction *action) {
-                                                         [OWSScreenLock.sharedManager
-                                                             setScreenLockTimeout:screenLockTimeout];
-                                                     }]];
+        UIAlertAction *action =
+            [UIAlertAction actionWithTitle:screenLockTimeoutString
+                                     style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction *ignore) {
+                                       [OWSScreenLock.sharedManager setScreenLockTimeout:screenLockTimeout];
+                                   }];
+        action.accessibilityIdentifier = [NSString stringWithFormat:@"settings.privacy.timeout.%@", timeoutValue];
+        [controller addAction:action];
     }
     [controller addAction:[OWSAlerts cancelAction]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:controller animated:YES completion:nil];
+    [fromViewController presentViewController:controller
+                                     animated:YES
+                                   completion:^{
+                                       [controller applyAccessibilityIdentifiers];
+                                   }];
 }
 
 - (NSString *)formatScreenLockTimeout:(NSInteger)value useShortFormat:(BOOL)useShortFormat
