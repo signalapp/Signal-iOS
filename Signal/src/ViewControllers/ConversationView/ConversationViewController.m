@@ -4986,7 +4986,9 @@ typedef enum : NSUInteger {
     // in the content of this view.  It's easier to dismiss the
     // "message actions" window when the device changes orientation
     // than to try to ensure this works in that case.
-    [self dismissMenuActions];
+    if (OWSWindowManager.sharedManager.isPresentingMenuActions) {
+        [self dismissMenuActions];
+    }
 
     // Snapshot the "last visible row".
     NSIndexPath *_Nullable lastVisibleIndexPath = self.lastVisibleIndexPath;
