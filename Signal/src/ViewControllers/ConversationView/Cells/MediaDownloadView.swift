@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,7 +17,8 @@ public class MediaDownloadView: UIView {
 
     private let attachmentId: String
     private let radius: CGFloat
-    private let shapeLayer = CAShapeLayer()
+    private let shapeLayer1 = CAShapeLayer()
+    private let shapeLayer2 = CAShapeLayer()
 
     @objc
     public required init(attachmentId: String, radius: CGFloat) {
@@ -26,7 +27,10 @@ public class MediaDownloadView: UIView {
 
         super.init(frame: .zero)
 
-        layer.addSublayer(shapeLayer)
+        shapeLayer1.zPosition = 1
+        shapeLayer2.zPosition = 2
+        layer.addSublayer(shapeLayer1)
+        layer.addSublayer(shapeLayer2)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name.attachmentDownloadProgress, object: nil, queue: nil) { [weak self] notification in
             guard let strongSelf = self else { return }
@@ -68,11 +72,13 @@ public class MediaDownloadView: UIView {
     internal func updateLayers() {
         AssertIsOnMainThread()
 
-        shapeLayer.frame = self.bounds
+        shapeLayer1.frame = self.bounds
+        shapeLayer2.frame = self.bounds
 
         guard let progress = attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
             Logger.warn("No progress for attachment.")
-            shapeLayer.path = nil
+            shapeLayer1.path = nil
+            shapeLayer2.path = nil
             return
         }
 
@@ -87,13 +93,26 @@ public class MediaDownloadView: UIView {
         let startAngle: CGFloat = CGFloat.pi * 1.5
         let endAngle: CGFloat = CGFloat.pi * (1.5 + 2 * CGFloat(progress.floatValue))
 
-        let bezierPath = UIBezierPath()
-        bezierPath.addArc(withCenter: center, radius: outerRadius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
-        bezierPath.addArc(withCenter: center, radius: innerRadius, startAngle: endAngle, endAngle: startAngle, clockwise: false)
+        let bezierPath1 = UIBezierPath()
+        bezierPath1.append(UIBezierPath(ovalIn: CGRect(origin: center.minus(CGPoint(x: innerRadius,
+                                                                                    y: innerRadius)),
+                                                       size: CGSize(width: innerRadius * 2,
+                                                                    height: innerRadius * 2))))
+        bezierPath1.append(UIBezierPath(ovalIn: CGRect(origin: center.minus(CGPoint(x: outerRadius,
+                                                                                    y: outerRadius)),
+                                                       size: CGSize(width: outerRadius * 2,
+                                                                    height: outerRadius * 2))))
+        shapeLayer1.path = bezierPath1.cgPath
+        let fillColor1: UIColor = UIColor(white: 1.0, alpha: 0.4)
+        shapeLayer1.fillColor = fillColor1.cgColor
+        shapeLayer1.fillRule = kCAFillRuleEvenOdd
 
-        shapeLayer.path = bezierPath.cgPath
-        let fillColor: UIColor = (Theme.isDarkThemeEnabled ? .ows_gray45 : .ows_gray60)
-        shapeLayer.fillColor = fillColor.cgColor
+        let bezierPath2 = UIBezierPath()
+        bezierPath2.addArc(withCenter: center, radius: outerRadius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+        bezierPath2.addArc(withCenter: center, radius: innerRadius, startAngle: endAngle, endAngle: startAngle, clockwise: false)
+        shapeLayer2.path = bezierPath2.cgPath
+        let fillColor2: UIColor = (Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_white)
+        shapeLayer2.fillColor = fillColor2.cgColor
 
         CATransaction.commit()
     }
