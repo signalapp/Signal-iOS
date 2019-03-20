@@ -15,6 +15,7 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/NSString+SSK.h>
@@ -304,15 +305,22 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                              NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
                                  @"The alert message if user tries to exit the new group view without saving changes.")
                   preferredStyle:UIAlertControllerStyleAlert];
-    [controller
-        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DISCARD_BUTTON",
-                                                     @"The label for the 'discard' button in alerts and action sheets.")
-                                           style:UIAlertActionStyleDestructive
-                                         handler:^(UIAlertAction *action) {
-                                             [weakSelf profileCompletedOrSkipped];
-                                         }]];
+    UIAlertAction *discardAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DISCARD_BUTTON",
+                                           @"The label for the 'discard' button in alerts and action sheets.")
+                                 style:UIAlertActionStyleDestructive
+                               handler:^(UIAlertAction *action) {
+                                   [weakSelf profileCompletedOrSkipped];
+                               }];
+    discardAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"discard");
+    [controller addAction:discardAction];
+
     [controller addAction:[OWSAlerts cancelAction]];
-    [self presentViewController:controller animated:YES completion:nil];
+    [self presentViewController:controller
+                       animated:YES
+                     completion:^{
+                         [controller applyAccessibilityIdentifiers];
+                     }];
 }
 
 - (void)avatarTapped
