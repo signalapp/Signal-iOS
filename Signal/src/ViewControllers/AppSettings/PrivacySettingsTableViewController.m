@@ -419,16 +419,22 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
     [alertController addAction:[OWSAlerts cancelAction]];
 
-    UIAlertAction *deleteAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
-                            @"Confirmation text for button which deletes all message, calling, attachments, etc.")
-                  style:UIAlertActionStyleDestructive
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [self deleteThreadsAndMessages];
-                }];
+    UIAlertAction *deleteAction =
+        [UIAlertAction actionWithTitle:
+                           NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
+                               @"Confirmation text for button which deletes all message, calling, attachments, etc.")
+               accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"delete")
+                                 style:UIAlertActionStyleDestructive
+                               handler:^(UIAlertAction *_Nonnull action) {
+                                   [self deleteThreadsAndMessages];
+                               }];
     [alertController addAction:deleteAction];
 
-    [self presentViewController:alertController animated:true completion:nil];
+    [self presentViewController:alertController
+                       animated:true
+                     completion:^{
+                         [alertController applyAccessibilityIdentifiers];
+                     }];
 }
 
 - (void)deleteThreadsAndMessages

@@ -10,7 +10,7 @@ extension UIAlertController {
         for action in actions {
             guard let view = action.value(forKey: "__representer") as? UIView else {
                 owsFailDebug("Missing representer.")
-                return
+                continue
             }
             view.accessibilityIdentifier = action.accessibilityIdentifier
         }

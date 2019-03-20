@@ -46,16 +46,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateNavigationItems
 {
-    self.navigationItem.leftBarButtonItem =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                      target:self
-                                                      action:@selector(cancelWasPressed:)];
+    UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                target:self
+                                                                                action:@selector(cancelWasPressed:)];
+    cancelItem.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"cancel");
+    self.navigationItem.leftBarButtonItem = cancelItem;
 
     if (self.isDirty) {
-        self.navigationItem.rightBarButtonItem =
-            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
-                                                          target:self
-                                                          action:@selector(saveWasPressed:)];
+        UIBarButtonItem *saveItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
+                                                                                  target:self
+                                                                                  action:@selector(saveWasPressed:)];
+        saveItem.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"save");
+        self.navigationItem.rightBarButtonItem = saveItem;
     } else {
         self.navigationItem.rightBarButtonItem = nil;
     }
