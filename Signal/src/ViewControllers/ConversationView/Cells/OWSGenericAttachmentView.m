@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) TSAttachment *attachment;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
+@property (nonatomic, weak) id<ConversationViewItem> viewItem;
 @property (nonatomic) BOOL isIncoming;
 @property (nonatomic) UILabel *topLabel;
 @property (nonatomic) UILabel *bottomLabel;
@@ -30,7 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSGenericAttachmentView
 
-- (instancetype)initWithAttachment:(TSAttachment *)attachment isIncoming:(BOOL)isIncoming
+- (instancetype)initWithAttachment:(TSAttachment *)attachment
+                        isIncoming:(BOOL)isIncoming
+                          viewItem:(id<ConversationViewItem>)viewItem
 {
     self = [super init];
 
@@ -40,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
             _attachmentStream = (TSAttachmentStream *)attachment;
         }
         _isIncoming = isIncoming;
+        _viewItem = viewItem;
     }
 
     return self;
@@ -130,6 +134,8 @@ NS_ASSUME_NONNULL_BEGIN
     [fileTypeLabel autoCenterInSuperview];
     [fileTypeLabel autoSetDimension:ALDimensionWidth toSize:self.iconWidth - 20.f];
 
+    [self replaceIconWithDownloadProgressIfNecessary:imageView];
+
     UIStackView *labelsView = [UIStackView new];
     labelsView.axis = UILayoutConstraintAxisVertical;
     labelsView.spacing = [OWSGenericAttachmentView labelVSpacing];
@@ -173,6 +179,46 @@ NS_ASSUME_NONNULL_BEGIN
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     bottomLabel.font = [OWSGenericAttachmentView bottomLabelFont];
     [labelsView addArrangedSubview:bottomLabel];
+}
+
+- (void)replaceIconWithDownloadProgressIfNecessary:(UIView *)iconView
+{
+    if (!self.viewItem.attachmentPointer) {
+        return;
+    }
+
+    switch (self.viewItem.attachmentPointer.state) {
+        case TSAttachmentPointerStateFailed:
+            // We don't need to handle the "tap to retry" state here,
+            // only download progress.
+            return;
+        case TSAttachmentPointerStateEnqueued:
+        case TSAttachmentPointerStateDownloading:
+            break;
+    }
+    switch (self.viewItem.attachmentPointer.pointerType) {
+        case TSAttachmentPointerTypeRestoring:
+            // TODO: Show "restoring" indicator and possibly progress.
+            return;
+        case TSAttachmentPointerTypeUnknown:
+        case TSAttachmentPointerTypeIncoming:
+            break;
+    }
+    NSString *_Nullable uniqueId = self.viewItem.attachmentPointer.uniqueId;
+    if (uniqueId.length < 1) {
+        OWSFailDebug(@"Missing uniqueId.");
+        return;
+    }
+
+    CGSize iconViewSize = [iconView sizeThatFits:CGSizeZero];
+    CGFloat downloadViewSize = MIN(iconViewSize.width, iconViewSize.height);
+    MediaDownloadView *downloadView =
+        [[MediaDownloadView alloc] initWithAttachmentId:uniqueId radius:downloadViewSize * 0.5f];
+    iconView.layer.opacity = 0.01f;
+    [self addSubview:downloadView];
+    [downloadView autoSetDimensionsToSize:CGSizeMake(downloadViewSize, downloadViewSize)];
+    [downloadView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:iconView];
+    [downloadView autoAlignAxis:ALAxisVertical toSameAxisOfView:iconView];
 }
 
 + (UIFont *)topLabelFont

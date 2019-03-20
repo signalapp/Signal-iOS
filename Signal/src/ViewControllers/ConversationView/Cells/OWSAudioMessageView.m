@@ -128,6 +128,45 @@ NS_ASSUME_NONNULL_BEGIN
     self.audioProgressView.progressColor = progressColor;
 }
 
+- (void)replaceIconWithDownloadProgressIfNecessary:(UIView *)iconView
+{
+    if (!self.viewItem.attachmentPointer) {
+        return;
+    }
+
+    switch (self.viewItem.attachmentPointer.state) {
+        case TSAttachmentPointerStateFailed:
+            // We don't need to handle the "tap to retry" state here,
+            // only download progress.
+            return;
+        case TSAttachmentPointerStateEnqueued:
+        case TSAttachmentPointerStateDownloading:
+            break;
+    }
+    switch (self.viewItem.attachmentPointer.pointerType) {
+        case TSAttachmentPointerTypeRestoring:
+            // TODO: Show "restoring" indicator and possibly progress.
+            return;
+        case TSAttachmentPointerTypeUnknown:
+        case TSAttachmentPointerTypeIncoming:
+            break;
+    }
+    NSString *_Nullable uniqueId = self.viewItem.attachmentPointer.uniqueId;
+    if (uniqueId.length < 1) {
+        OWSFailDebug(@"Missing uniqueId.");
+        return;
+    }
+
+    CGFloat downloadViewSize = self.iconSize;
+    MediaDownloadView *downloadView =
+        [[MediaDownloadView alloc] initWithAttachmentId:uniqueId radius:downloadViewSize * 0.5f];
+    iconView.layer.opacity = 0.01f;
+    [self addSubview:downloadView];
+    [downloadView autoSetDimensionsToSize:CGSizeMake(downloadViewSize, downloadViewSize)];
+    [downloadView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:iconView];
+    [downloadView autoAlignAxis:ALAxisVertical toSameAxisOfView:iconView];
+}
+
 #pragma mark -
 
 - (CGFloat)hMargin
@@ -191,6 +230,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.audioPlayPauseButton.enabled = NO;
     [self addArrangedSubview:self.audioPlayPauseButton];
     [self.audioPlayPauseButton setContentHuggingHigh];
+
+    [self replaceIconWithDownloadProgressIfNecessary:self.audioPlayPauseButton];
 
     NSString *_Nullable filename = self.attachment.sourceFilename;
     if (filename.length < 1) {

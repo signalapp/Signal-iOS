@@ -838,7 +838,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           conversationStyle:self.conversationStyle];
     self.viewItem.lastAudioMessageView = audioMessageView;
     [audioMessageView createContents];
-    [self addProgressViewsIfNecessary:audioMessageView];
+    [self addProgressViewsIfNecessary:audioMessageView shouldShowDownloadProgress:NO];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -854,10 +854,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
     OWSAssertDebug(attachment);
-    OWSGenericAttachmentView *attachmentView =
-        [[OWSGenericAttachmentView alloc] initWithAttachment:attachment isIncoming:self.isIncoming];
+    OWSGenericAttachmentView *attachmentView = [[OWSGenericAttachmentView alloc] initWithAttachment:attachment
+                                                                                         isIncoming:self.isIncoming
+                                                                                           viewItem:self.viewItem];
     [attachmentView createContentsWithConversationStyle:self.conversationStyle];
-    [self addProgressViewsIfNecessary:attachmentView];
+    [self addProgressViewsIfNecessary:attachmentView shouldShowDownloadProgress:NO];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -895,7 +896,7 @@ NS_ASSUME_NONNULL_BEGIN
     // progress or tap-to-retry UI.
     UIView *attachmentView = [UIView new];
 
-    [self addProgressViewsIfNecessary:attachmentView];
+    [self addProgressViewsIfNecessary:attachmentView shouldShowDownloadProgress:YES];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -907,12 +908,12 @@ NS_ASSUME_NONNULL_BEGIN
     return attachmentView;
 }
 
-- (void)addProgressViewsIfNecessary:(UIView *)bodyMediaView
+- (void)addProgressViewsIfNecessary:(UIView *)bodyMediaView shouldShowDownloadProgress:(BOOL)shouldShowDownloadProgress
 {
     if (self.viewItem.attachmentStream) {
         [self addUploadViewIfNecessary:bodyMediaView];
     } else if (self.viewItem.attachmentPointer) {
-        [self addDownloadViewIfNecessary:bodyMediaView];
+        [self addDownloadViewIfNecessary:bodyMediaView shouldShowDownloadProgress:(BOOL)shouldShowDownloadProgress];
     }
 }
 
@@ -934,7 +935,7 @@ NS_ASSUME_NONNULL_BEGIN
     [uploadView setCompressionResistanceLow];
 }
 
-- (void)addDownloadViewIfNecessary:(UIView *)bodyMediaView
+- (void)addDownloadViewIfNecessary:(UIView *)bodyMediaView shouldShowDownloadProgress:(BOOL)shouldShowDownloadProgress
 {
     OWSAssertDebug(self.viewItem.attachmentPointer);
 
@@ -953,6 +954,9 @@ NS_ASSUME_NONNULL_BEGIN
         case TSAttachmentPointerTypeUnknown:
         case TSAttachmentPointerTypeIncoming:
             break;
+    }
+    if (!shouldShowDownloadProgress) {
+        return;
     }
     NSString *_Nullable uniqueId = self.viewItem.attachmentPointer.uniqueId;
     if (uniqueId.length < 1) {
@@ -1062,7 +1066,9 @@ NS_ASSUME_NONNULL_BEGIN
             TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
             OWSAssertDebug(attachment);
             OWSGenericAttachmentView *attachmentView =
-                [[OWSGenericAttachmentView alloc] initWithAttachment:attachment isIncoming:self.isIncoming];
+                [[OWSGenericAttachmentView alloc] initWithAttachment:attachment
+                                                          isIncoming:self.isIncoming
+                                                            viewItem:self.viewItem];
             [attachmentView createContentsWithConversationStyle:self.conversationStyle];
             result = [attachmentView measureSizeWithMaxMessageWidth:maxMessageWidth];
             break;
