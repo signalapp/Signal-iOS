@@ -224,7 +224,7 @@ public class ConversationMediaView: UIView {
             }
             strongSelf.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
                 guard attachmentStream.isValidImage else {
-                    owsFailDebug("Ignoring invalid attachment.")
+                    Logger.warn("Ignoring invalid attachment.")
                     return nil
                 }
                 guard let filePath = attachmentStream.originalFilePath else {
@@ -278,7 +278,7 @@ public class ConversationMediaView: UIView {
             }
             self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
                 guard attachmentStream.isValidImage else {
-                    owsFailDebug("Ignoring invalid attachment.")
+                    Logger.warn("Ignoring invalid attachment.")
                     return nil
                 }
                 return attachmentStream.thumbnailImageMedium(success: { (image) in
@@ -341,7 +341,7 @@ public class ConversationMediaView: UIView {
             }
             self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
                 guard attachmentStream.isValidVideo else {
-                    owsFailDebug("Ignoring invalid attachment.")
+                    Logger.warn("Ignoring invalid attachment.")
                     return nil
                 }
                 return attachmentStream.thumbnailImageMedium(success: { (image) in
