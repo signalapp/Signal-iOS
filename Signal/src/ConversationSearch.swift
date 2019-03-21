@@ -30,7 +30,8 @@ public class ConversationSearchController: NSObject {
 
     let thread: TSThread
 
-    let resultsBar: SearchResultsBar = SearchResultsBar(frame: .zero)
+    @objc
+    public let resultsBar: SearchResultsBar = SearchResultsBar(frame: .zero)
 
     // MARK: Initializer
 
@@ -130,7 +131,7 @@ protocol SearchResultsBarDelegate: AnyObject {
                           resultSet: ConversationScreenSearchResultSet)
 }
 
-class SearchResultsBar: UIToolbar {
+public class SearchResultsBar: UIToolbar {
 
     weak var resultsBarDelegate: SearchResultsBarDelegate?
 

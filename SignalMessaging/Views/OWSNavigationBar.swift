@@ -55,6 +55,20 @@ public class OWSNavigationBar: UINavigationBar {
                                                object: nil)
     }
 
+    // MARK: FirstResponder Stubbing
+
+    @objc
+    public weak var stubbedNextResponder: UIResponder?
+
+    override public var next: UIResponder? {
+        if let stubbedNextResponder = self.stubbedNextResponder {
+            Logger.debug("returning stubbed responder")
+            return stubbedNextResponder
+        }
+
+        return super.next
+    }
+
     // MARK: Theme
 
     private func applyTheme() {
