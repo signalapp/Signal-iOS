@@ -852,13 +852,10 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
-            NSString *_Nullable phoneNumber = handle;
-            if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-                phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
-                if (phoneNumber.length < 1) {
-                    OWSLogWarn(@"ignoring attempt to initiate video call to unknown anonymous signal user.");
-                    return;
-                }
+            NSString *_Nullable phoneNumber = [self phoneNumberForIntentHandle:handle];
+            if (phoneNumber.length < 1) {
+                OWSLogWarn(@"ignoring attempt to initiate video call to unknown user.");
+                return;
             }
 
             // This intent can be received from more than one user interaction.
@@ -914,13 +911,10 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
-            NSString *_Nullable phoneNumber = handle;
-            if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-                phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
-                if (phoneNumber.length < 1) {
-                    OWSLogWarn(@"ignoring attempt to initiate audio call to unknown anonymous signal user.");
-                    return;
-                }
+            NSString *_Nullable phoneNumber = [self phoneNumberForIntentHandle:handle];
+            if (phoneNumber.length < 1) {
+                OWSLogWarn(@"ignoring attempt to initiate audio call to unknown user.");
+                return;
             }
 
             if (AppEnvironment.shared.callService.call != nil) {
@@ -960,6 +954,27 @@ static NSTimeInterval launchStartedAt;
     //    }
 
     return NO;
+}
+
+- (nullable NSString *)phoneNumberForIntentHandle:(NSString *)handle
+{
+    OWSAssertDebug(handle.length > 0);
+
+    if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
+        NSString *_Nullable phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
+        if (phoneNumber.length < 1) {
+            OWSLogWarn(@"ignoring attempt to initiate audio call to unknown anonymous signal user.");
+            return nil;
+        }
+        return phoneNumber;
+    }
+
+    for (PhoneNumber *phoneNumber in
+        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:handle
+                                              clientPhoneNumber:[TSAccountManager localNumber]]) {
+        return phoneNumber.toE164;
+    }
+    return nil;
 }
 
 #pragma mark - Orientation
