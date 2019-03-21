@@ -207,7 +207,9 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                 selector:@selector(didToggleCallsHideIPAddressSwitch:)]];
     [contents addSection:callingSection];
 
-    if (@available(iOS 11, *)) {
+    if (CallUIAdapter.isCallkitDisabledForLocale) {
+        // Hide all CallKit-related prefs; CallKit is disabled.
+    } else if (@available(iOS 11, *)) {
         OWSTableSection *callKitSection = [OWSTableSection new];
         [callKitSection
             addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
