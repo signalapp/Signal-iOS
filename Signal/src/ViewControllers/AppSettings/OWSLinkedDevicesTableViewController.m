@@ -34,6 +34,8 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
 - (void)dealloc
 {
+    OWSLogVerbose(@"");
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

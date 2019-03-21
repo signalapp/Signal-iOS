@@ -185,7 +185,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                     target:weakSelf
                     selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
-    
+
     // Allow calls to connect directly vs. using TURN exclusively
     OWSTableSection *callingSection = [OWSTableSection new];
     callingSection.headerTitle
@@ -341,7 +341,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                     customRowHeight:UITableViewAutomaticDimension
                     actionBlock:^{
                         NSURL *url = [NSURL URLWithString:kSealedSenderInfoURL];
-                        OWSAssertDebug(url);
+                        OWSCAssertDebug(url);
                         [UIApplication.sharedApplication openURL:url];
                     }]];
 
@@ -374,7 +374,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                                @"sealed_sender_learn_more"]
                                          actionBlock:^{
                                              NSURL *url = [NSURL URLWithString:kSealedSenderInfoURL];
-                                             OWSAssertDebug(url);
+                                             OWSCAssertDebug(url);
                                              [UIApplication.sharedApplication openURL:url];
                                          }]];
     [contents addSection:unidentifiedDeliveryLearnMoreSection];
