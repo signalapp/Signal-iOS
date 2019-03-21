@@ -656,7 +656,11 @@ typedef enum : NSUInteger {
 
 - (nullable UIView *)inputAccessoryView
 {
-    return self.inputToolbar;
+    if (self.isShowingSearchUI) {
+        return self.searchController.resultsBar;
+    } else {
+        return self.inputToolbar;
+    }
 }
 
 - (void)registerCellClasses
@@ -1218,7 +1222,14 @@ typedef enum : NSUInteger {
         // We don't have to worry about the input toolbar being visible if the inputToolbar.textView is first responder
         // In fact doing so would unnecessarily dismiss the keyboard which is probably not desirable and at least
         // a distracting animation.
-        if (!self.inputToolbar.isInputTextViewFirstResponder) {
+        BOOL shouldBecomeFirstResponder = NO;
+        if (self.isShowingSearchUI) {
+            shouldBecomeFirstResponder = !self.searchController.uiSearchController.searchBar.isFirstResponder;
+        } else {
+            shouldBecomeFirstResponder = !self.inputToolbar.isInputTextViewFirstResponder;
+        }
+
+        if (shouldBecomeFirstResponder) {
             OWSLogDebug(@"reclaiming first responder to ensure toolbar is shown.");
             [self becomeFirstResponder];
         }
@@ -4123,8 +4134,47 @@ typedef enum : NSUInteger {
 - (void)showSearchUI
 {
     self.isShowingSearchUI = YES;
-    self.navigationItem.titleView = self.searchController.uiSearchController.searchBar;
+
+    UIView *searchBar = self.searchController.uiSearchController.searchBar;
+
+    // Note: setting a searchBar as the titleView causes UIKit to render the navBar
+    // *slightly* taller (44pt -> 56pt)
+    self.navigationItem.titleView = searchBar;
     [self updateBarButtonItems];
+
+    // Hack so that the ResultsBar stays on the screen when dismissing the search field
+    // keyboard.
+    //
+    // Details:
+    //
+    // When the search UI is activated, both the SearchField and the ConversationVC
+    // have the resultsBar as their inputAccessoryView.
+    //
+    // So when the SearchField is first responder, the ResultsBar is shown on top of the keyboard.
+    // When the ConversationVC is first responder, the ResultsBar is shown at the bottom of the
+    // screen.
+    //
+    // When the user swipes to dismiss the keyboard, trying to see more of the content while
+    // searching, we want the ResultsBar to stay at the bottom of the screen - that is, we
+    // want the ConversationVC to becomeFirstResponder.
+    //
+    // If the SearchField were a subview of ConversationVC.view, this would all be automatic,
+    // as first responder status is percolated up the responder chain via `nextResponder`, which
+    // basically travereses each superView, until you're at a rootView, at which point the next
+    // responder is the ViewController which controls that View.
+    //
+    // However, because SearchField lives in the Navbar, it's "controlled" by the
+    // NavigationController, not the ConversationVC.
+    //
+    // So here we stub the next responder on the navBar so that when the searchBar resigns
+    // first responder, the ConversationVC will be in it's responder chain - keeeping the
+    // ResultsBar on the bottom of the screen after dismissing the keyboard.
+    if (![self.navigationController.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
+        OWSFailDebug(@"unexpected navigationController: %@", self.navigationController);
+        return;
+    }
+    OWSNavigationBar *navBar = (OWSNavigationBar *)self.navigationController.navigationBar;
+    navBar.stubbedNextResponder = self;
 }
 
 - (void)hideSearchUI
@@ -4134,8 +4184,17 @@ typedef enum : NSUInteger {
     self.navigationItem.titleView = self.headerView;
     [self updateBarButtonItems];
 
+    if (![self.navigationController.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
+        OWSFailDebug(@"unexpected navigationController: %@", self.navigationController);
+        return;
+    }
+    OWSNavigationBar *navBar = (OWSNavigationBar *)self.navigationController.navigationBar;
+    OWSAssertDebug(navBar.stubbedNextResponder == self);
+    navBar.stubbedNextResponder = nil;
+
     // restore first responder to VC
     [self becomeFirstResponder];
+    [self reloadInputViews];
 }
 
 #pragma mark ConversationSearchControllerDelegate
