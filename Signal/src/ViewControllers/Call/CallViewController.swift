@@ -458,7 +458,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         // Note: It's critical that we present from this view and
         // not the "frontmost view controller" since this view may
         // reside on a separate window.
-        self.present(actionSheetController, animated: true)
+        presentAlert(actionSheetController)
     }
 
     func updateAvatarImage() {

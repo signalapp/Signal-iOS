@@ -396,7 +396,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         actionSheet.addAction(OWSAlerts.cancelAction)
         actionSheet.addAction(deleteAction)
 
-        self.present(actionSheet, animated: true)
+        self.presentAlert(actionSheet)
     }
 
     // MARK: MediaGalleryDataSourceDelegate

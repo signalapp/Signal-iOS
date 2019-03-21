@@ -13,6 +13,8 @@ public extension UIEdgeInsets {
     }
 }
 
+// MARK: -
+
 @objc
 public extension UINavigationController {
     @objc
@@ -44,6 +46,8 @@ public extension UINavigationController {
         CATransaction.commit()
     }
 }
+
+// MARK: -
 
 extension UIView {
     public func renderAsImage() -> UIImage? {
@@ -124,6 +128,37 @@ extension UIView {
     }
 }
 
+// MARK: -
+
+public extension UIViewController {
+    @objc
+    public func presentAlert(_ alert: UIAlertController) {
+        self.presentAlert(alert, animated: true)
+    }
+
+    @objc
+    public func presentAlert(_ alert: UIAlertController, animated: Bool) {
+        self.present(alert,
+                     animated: animated,
+                     completion: {
+                        alert.applyAccessibilityIdentifiers()
+        })
+    }
+
+    @objc
+    public func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
+        self.present(alert,
+                     animated: true,
+                     completion: {
+                        alert.applyAccessibilityIdentifiers()
+
+                        completion()
+        })
+    }
+}
+
+// MARK: -
+
 public extension CGFloat {
     public func clamp(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
         return CGFloatClamp(self, minValue, maxValue)
@@ -155,6 +190,8 @@ public extension CGFloat {
     }
 }
 
+// MARK: -
+
 public extension Int {
     public func clamp(_ minValue: Int, _ maxValue: Int) -> Int {
         assert(minValue <= maxValue)
@@ -162,6 +199,8 @@ public extension Int {
         return Swift.max(minValue, Swift.min(maxValue, self))
     }
 }
+
+// MARK: -
 
 public extension CGPoint {
     public func toUnitCoordinates(viewBounds: CGRect, shouldClamp: Bool) -> CGPoint {
@@ -233,6 +272,8 @@ public extension CGPoint {
     }
 }
 
+// MARK: -
+
 public extension CGSize {
     var aspectRatio: CGFloat {
         guard self.height > 0 else {
@@ -250,6 +291,8 @@ public extension CGSize {
         return CGSizeCeil(self)
     }
 }
+
+// MARK: -
 
 public extension CGRect {
     public var center: CGPoint {
@@ -273,6 +316,8 @@ public extension CGRect {
     }
 }
 
+// MARK: -
+
 public extension CGAffineTransform {
     public static func translate(_ point: CGPoint) -> CGAffineTransform {
         return CGAffineTransform(translationX: point.x, y: point.y)
@@ -294,6 +339,8 @@ public extension CGAffineTransform {
         return rotated(by: angleRadians)
     }
 }
+
+// MARK: -
 
 public extension UIBezierPath {
     public func addRegion(withPoints points: [CGPoint]) {

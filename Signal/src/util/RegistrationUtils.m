@@ -27,10 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)showReregistrationUIFromViewController:(UIViewController *)fromViewController
 {
-    UIAlertController *actionSheetController =
+    UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
-    [actionSheetController
+    [actionSheet
         addAction:[UIAlertAction
                       actionWithTitle:NSLocalizedString(@"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER",
                                           @"Label for button that lets users re-register using the same phone number.")
@@ -39,9 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
                                   [RegistrationUtils reregisterWithFromViewController:fromViewController];
                               }]];
 
-    [actionSheetController addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSAlerts cancelAction]];
 
-    [fromViewController presentViewController:actionSheetController animated:YES completion:nil];
+    [fromViewController presentAlert:actionSheet];
 }
 
 + (void)reregisterWithFromViewController:(UIViewController *)fromViewController

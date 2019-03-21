@@ -1078,7 +1078,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)didTapLeaveGroup
 {
-    UIAlertController *alertController =
+    UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_TITLE", @"Alert title")
                                             message:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_DESCRIPTION", @"Alert body")
                                      preferredStyle:UIAlertControllerStyleAlert];
@@ -1089,10 +1089,10 @@ const CGFloat kIconViewLength = 24;
                 handler:^(UIAlertAction *_Nonnull action) {
                     [self leaveGroup];
                 }];
-    [alertController addAction:leaveAction];
-    [alertController addAction:[OWSAlerts cancelAction]];
+    [alert addAction:leaveAction];
+    [alert addAction:[OWSAlerts cancelAction]];
 
-    [self presentViewController:alertController animated:YES completion:nil];
+    [self presentAlert:alert];
 }
 
 - (BOOL)hasLeftGroup
@@ -1220,10 +1220,9 @@ const CGFloat kIconViewLength = 24;
             @"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
     }
 
-    UIAlertController *actionSheetController =
-        [UIAlertController alertControllerWithTitle:title
-                                            message:message
-                                     preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:title
+                                                                         message:message
+                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
 
     __weak OWSConversationSettingsViewController *weakSelf = self;
     if (self.thread.isMuted) {
@@ -1233,10 +1232,10 @@ const CGFloat kIconViewLength = 24;
                                                        handler:^(UIAlertAction *_Nonnull ignore) {
                                                            [weakSelf setThreadMutedUntilDate:nil];
                                                        }];
-        [actionSheetController addAction:action];
+        [actionSheet addAction:action];
     } else {
 #ifdef DEBUG
-        [actionSheetController
+        [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION",
                                                          @"Label for button to mute a thread for a minute.")
                                                style:UIAlertActionStyleDestructive
@@ -1253,7 +1252,7 @@ const CGFloat kIconViewLength = 24;
                                                  [weakSelf setThreadMutedUntilDate:mutedUntilDate];
                                              }]];
 #endif
-        [actionSheetController
+        [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION",
                                                          @"Label for button to mute a thread for a hour.")
                                                style:UIAlertActionStyleDestructive
@@ -1269,7 +1268,7 @@ const CGFloat kIconViewLength = 24;
                                                                               options:0];
                                                  [weakSelf setThreadMutedUntilDate:mutedUntilDate];
                                              }]];
-        [actionSheetController
+        [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION",
                                                          @"Label for button to mute a thread for a day.")
                                                style:UIAlertActionStyleDestructive
@@ -1285,7 +1284,7 @@ const CGFloat kIconViewLength = 24;
                                                                               options:0];
                                                  [weakSelf setThreadMutedUntilDate:mutedUntilDate];
                                              }]];
-        [actionSheetController
+        [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION",
                                                          @"Label for button to mute a thread for a week.")
                                                style:UIAlertActionStyleDestructive
@@ -1301,7 +1300,7 @@ const CGFloat kIconViewLength = 24;
                                                                               options:0];
                                                  [weakSelf setThreadMutedUntilDate:mutedUntilDate];
                                              }]];
-        [actionSheetController
+        [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION",
                                                          @"Label for button to mute a thread for a year.")
                                                style:UIAlertActionStyleDestructive
@@ -1319,9 +1318,9 @@ const CGFloat kIconViewLength = 24;
                                              }]];
     }
 
-    [actionSheetController addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSAlerts cancelAction]];
 
-    [self presentViewController:actionSheetController animated:YES completion:nil];
+    [self presentAlert:actionSheet];
 }
 
 - (void)setThreadMutedUntilDate:(nullable NSDate *)value

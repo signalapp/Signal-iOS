@@ -245,7 +245,7 @@ public class OnboardingController: NSObject {
                                       style: .destructive) { (_) in
                                         self.showProfileView(fromView: view)
         })
-        view.present(alert, animated: true)
+        view.presentAlert(alert)
     }
 
     public func onboardingDidRequire2FAPin(viewController: UIViewController) {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSProfileManager.h"
@@ -1467,20 +1467,20 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     OWSAssertIsOnMainThread();
 
-    UIAlertController *alertController =
+    UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
     NSString *shareTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
         @"Button to confirm that user wants to share their profile with a user or group.");
-    [alertController addAction:[UIAlertAction actionWithTitle:shareTitle
-                                                        style:UIAlertActionStyleDefault
-                                                      handler:^(UIAlertAction *_Nonnull action) {
-                                                          [self userAddedThreadToProfileWhitelist:thread];
-                                                          successHandler();
-                                                      }]];
-    [alertController addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[UIAlertAction actionWithTitle:shareTitle
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *_Nonnull action) {
+                                                [self userAddedThreadToProfileWhitelist:thread];
+                                                successHandler();
+                                            }]];
+    [alert addAction:[OWSAlerts cancelAction]];
 
-    [fromViewController presentViewController:alertController animated:YES completion:nil];
+    [fromViewController presentAlert:alert];
 }
 
 - (void)userAddedThreadToProfileWhitelist:(TSThread *)thread

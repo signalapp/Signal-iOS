@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSoundSettingsViewController.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalMessaging/OWSAudioPlayer.h>
 #import <SignalMessaging/OWSSounds.h>
+#import <SignalMessaging/UIUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,16 +46,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateNavigationItems
 {
-    self.navigationItem.leftBarButtonItem =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                      target:self
-                                                      action:@selector(cancelWasPressed:)];
+    UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                target:self
+                                                                                action:@selector(cancelWasPressed:)];
+    cancelItem.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"cancel");
+    self.navigationItem.leftBarButtonItem = cancelItem;
 
     if (self.isDirty) {
-        self.navigationItem.rightBarButtonItem =
-            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
-                                                          target:self
-                                                          action:@selector(saveWasPressed:)];
+        UIBarButtonItem *saveItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
+                                                                                  target:self
+                                                                                  action:@selector(saveWasPressed:)];
+        saveItem.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"save");
+        self.navigationItem.rightBarButtonItem = saveItem;
     } else {
         self.navigationItem.rightBarButtonItem = nil;
     }
@@ -89,15 +92,19 @@ NS_ASSUME_NONNULL_BEGIN
         }();
 
         if (sound == self.currentSound) {
-            item = [OWSTableItem checkmarkItemWithText:soundLabelText
-                                           actionBlock:^{
-                                               [weakSelf soundWasSelected:sound];
-                                           }];
+            item = [OWSTableItem
+                  checkmarkItemWithText:soundLabelText
+                accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, [OWSSounds displayNameForSound:sound])
+                            actionBlock:^{
+                                [weakSelf soundWasSelected:sound];
+                            }];
         } else {
-            item = [OWSTableItem actionItemWithText:soundLabelText
-                                        actionBlock:^{
-                                            [weakSelf soundWasSelected:sound];
-                                        }];
+            item = [OWSTableItem
+                     actionItemWithText:soundLabelText
+                accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, [OWSSounds displayNameForSound:sound])
+                            actionBlock:^{
+                                [weakSelf soundWasSelected:sound];
+                            }];
         }
         [soundsSection addItem:item];
     }

@@ -8,6 +8,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSSounds.h>
+#import <SignalMessaging/UIUtil.h>
 
 @implementation NotificationSettingsViewController
 
@@ -47,6 +48,7 @@
                                   NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
                                       @"Label for settings view that allows user to change the notification sound.")
                                           detailText:[OWSSounds displayNameForSound:[OWSSounds globalNotificationSound]]
+                             accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"message_sound")
                                          actionBlock:^{
                                              OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
                                              [weakSelf.navigationController pushViewController:vc animated:YES];
@@ -56,24 +58,29 @@
         @"Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the "
         @"foreground.");
     [soundsSection addItem:[OWSTableItem switchItemWithText:inAppSoundsLabelText
-                                                  isOnBlock:^{
-                                                      return [prefs soundInForeground];
-                                                  }
-                                                     target:weakSelf
-                                                   selector:@selector(didToggleSoundNotificationsSwitch:)]];
+                               accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"in_app_sounds")
+                               isOnBlock:^{
+                                   return [prefs soundInForeground];
+                               }
+                               isEnabledBlock:^{
+                                   return YES;
+                               }
+                               target:weakSelf
+                               selector:@selector(didToggleSoundNotificationsSwitch:)]];
     [contents addSection:soundsSection];
 
     OWSTableSection *backgroundSection = [OWSTableSection new];
     backgroundSection.headerTitle = NSLocalizedString(@"SETTINGS_NOTIFICATION_CONTENT_TITLE", @"table section header");
     [backgroundSection
         addItem:[OWSTableItem
-                    disclosureItemWithText:NSLocalizedString(@"NOTIFICATIONS_SHOW", nil)
-                                detailText:[prefs nameForNotificationPreviewType:[prefs notificationPreviewType]]
-                               actionBlock:^{
-                                   NotificationSettingsOptionsViewController *vc =
-                                       [NotificationSettingsOptionsViewController new];
-                                   [weakSelf.navigationController pushViewController:vc animated:YES];
-                               }]];
+                     disclosureItemWithText:NSLocalizedString(@"NOTIFICATIONS_SHOW", nil)
+                                 detailText:[prefs nameForNotificationPreviewType:[prefs notificationPreviewType]]
+                    accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"options")
+                                actionBlock:^{
+                                    NotificationSettingsOptionsViewController *vc =
+                                        [NotificationSettingsOptionsViewController new];
+                                    [weakSelf.navigationController pushViewController:vc animated:YES];
+                                }]];
     backgroundSection.footerTitle
         = NSLocalizedString(@"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION", @"table section footer");
     [contents addSection:backgroundSection];

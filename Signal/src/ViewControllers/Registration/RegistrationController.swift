@@ -76,6 +76,6 @@ public class RegistrationController: NSObject {
 //                                      style: .destructive) { (_) in
 //                                        self.showProfileView(fromView: view)
 //        })
-//        view.present(alert, animated: true)
+//        view.presentAlert(alert)
 //    }
 }

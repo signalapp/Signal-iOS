@@ -321,7 +321,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController
 {
-    UIAlertController *alertController = [UIAlertController
+    UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
                                                    : @"Alert title for when the user has just tried to edit a "
                                                      @"contacts after declining to give Signal contacts "
@@ -332,18 +332,17 @@ NS_ASSUME_NONNULL_BEGIN
                                                      @"permissions")
                   preferredStyle:UIAlertControllerStyleAlert];
 
-    [alertController
-        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
-                                                     @"Button text to dismiss missing contacts permission alert")
-                                           style:UIAlertActionStyleCancel
-                                         handler:nil]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
+                                                        @"Button text to dismiss missing contacts permission alert")
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
 
     UIAlertAction *_Nullable openSystemSettingsAction = CurrentAppContext().openSystemSettingsAction;
     if (openSystemSettingsAction) {
-        [alertController addAction:openSystemSettingsAction];
+        [alert addAction:openSystemSettingsAction];
     }
 
-    [viewController presentViewController:alertController animated:YES completion:nil];
+    [viewController presentAlert:alert];
 }
 
 - (void)presentContactViewControllerForRecipientId:(NSString *)recipientId

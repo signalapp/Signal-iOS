@@ -108,7 +108,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         })
         actionSheet.addAction(OWSAlerts.cancelAction)
 
-        fromViewController.present(actionSheet, animated: true)
+        fromViewController.presentAlert(actionSheet)
     }
 
     private func showPhoneNumberPicker(phoneNumbers: [String], fromViewController: UIViewController, completion :@escaping ((String) -> Void)) {
@@ -123,7 +123,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         }
         actionSheet.addAction(OWSAlerts.cancelAction)
 
-        fromViewController.present(actionSheet, animated: true)
+        fromViewController.presentAlert(actionSheet)
     }
 
     func didPressCreateNewContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {

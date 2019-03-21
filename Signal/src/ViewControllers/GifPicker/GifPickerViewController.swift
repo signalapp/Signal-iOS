@@ -404,7 +404,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                 strongSelf.dismiss(animated: true, completion: nil)
             })
 
-            strongSelf.present(alert, animated: true, completion: nil)
+            strongSelf.presentAlert(alert)
         }.retainUntilComplete()
     }
 

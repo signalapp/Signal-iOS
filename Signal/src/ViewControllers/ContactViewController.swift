@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -566,7 +566,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
                                                 UIPasteboard.general.string = phoneNumber.phoneNumber
         })
         actionSheet.addAction(OWSAlerts.cancelAction)
-        present(actionSheet, animated: true)
+        presentAlert(actionSheet)
     }
 
     func callPhoneNumberWithSystemCall(phoneNumber: OWSContactPhoneNumber) {
@@ -594,7 +594,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
                                                 UIPasteboard.general.string = email.email
         })
         actionSheet.addAction(OWSAlerts.cancelAction)
-        present(actionSheet, animated: true)
+        presentAlert(actionSheet)
     }
 
     func openEmailInEmailApp(email: OWSContactEmail) {
@@ -624,7 +624,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
                                                 UIPasteboard.general.string = strongSelf.formatAddressForQuery(address: address)
         })
         actionSheet.addAction(OWSAlerts.cancelAction)
-        present(actionSheet, animated: true)
+        presentAlert(actionSheet)
     }
 
     func openAddressInMaps(address: OWSContactAddress) {

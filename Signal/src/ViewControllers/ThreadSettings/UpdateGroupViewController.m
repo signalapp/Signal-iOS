@@ -415,32 +415,31 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    UIAlertController *controller = [UIAlertController
+    UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
                                      @"The alert title if user tries to exit update group view without saving changes.")
                          message:
                              NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
                                  @"The alert message if user tries to exit update group view without saving changes.")
                   preferredStyle:UIAlertControllerStyleAlert];
-    [controller
-        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_SAVE",
-                                                     @"The label for the 'save' button in action sheets.")
-                                           style:UIAlertActionStyleDefault
-                                         handler:^(UIAlertAction *action) {
-                                             OWSAssertDebug(self.conversationSettingsViewDelegate);
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_SAVE",
+                                                        @"The label for the 'save' button in action sheets.")
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *action) {
+                                                OWSAssertDebug(self.conversationSettingsViewDelegate);
 
-                                             [self updateGroup];
+                                                [self updateGroup];
 
-                                             [self.conversationSettingsViewDelegate
-                                                 popAllConversationSettingsViewsWithCompletion:nil];
-                                         }]];
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
-                                                             @"The label for the 'don't save' button in action sheets.")
-                                                   style:UIAlertActionStyleDestructive
-                                                 handler:^(UIAlertAction *action) {
-                                                     [self.navigationController popViewControllerAnimated:YES];
-                                                 }]];
-    [self presentViewController:controller animated:YES completion:nil];
+                                                [self.conversationSettingsViewDelegate
+                                                    popAllConversationSettingsViewsWithCompletion:nil];
+                                            }]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
+                                                        @"The label for the 'don't save' button in action sheets.")
+                                              style:UIAlertActionStyleDestructive
+                                            handler:^(UIAlertAction *action) {
+                                                [self.navigationController popViewControllerAnimated:YES];
+                                            }]];
+    [self presentAlert:alert];
 }
 
 - (void)updateGroupPressed

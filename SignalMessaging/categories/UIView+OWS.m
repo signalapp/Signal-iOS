@@ -2,9 +2,10 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "UIView+OWS.h"
 #import "OWSMath.h"
+#import "UIView+OWS.h"
 #import <SignalCoreKit/iOSVersions.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -593,6 +594,24 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 }
 
 @end
+
+#pragma mark -
+
+@implementation UIAlertAction (OWS)
+
++ (instancetype)actionWithTitle:(nullable NSString *)title
+        accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                          style:(UIAlertActionStyle)style
+                        handler:(void (^__nullable)(UIAlertAction *action))handler
+{
+    UIAlertAction *action = [UIAlertAction actionWithTitle:title style:style handler:handler];
+    action.accessibilityIdentifier = accessibilityIdentifier;
+    return action;
+}
+
+@end
+
+#pragma mark -
 
 CGFloat CGHairlineWidth()
 {

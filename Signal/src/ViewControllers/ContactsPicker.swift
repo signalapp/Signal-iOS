@@ -189,7 +189,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 })
                 alert.addAction(openSettingsAction)
 
-                self.present(alert, animated: true, completion: nil)
+                self.presentAlert(alert)
 
             case CNAuthorizationStatus.notDetermined:
                 //This case means the user is prompted for the first time for allowing contacts

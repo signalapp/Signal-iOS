@@ -319,17 +319,20 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE", @"Title of the debug log alert.")
                              message:NSLocalizedString(@"DEBUG_LOG_ALERT_MESSAGE", @"Message of the debug log alert.")
                       preferredStyle:UIAlertControllerStyleAlert];
-        [alert addAction:[UIAlertAction
-                             actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
-                                                 @"Label for the 'email debug log' option of the debug log alert.")
-                                       style:UIAlertActionStyleDefault
-                                     handler:^(UIAlertAction *action) {
-                                         [Pastelog.sharedManager submitEmail:url];
+        [alert
+            addAction:[UIAlertAction
+                                  actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
+                                                      @"Label for the 'email debug log' option of the debug log alert.")
+                          accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"send_email")
+                                            style:UIAlertActionStyleDefault
+                                          handler:^(UIAlertAction *action) {
+                                              [Pastelog.sharedManager submitEmail:url];
 
-                                         completion();
-                                     }]];
+                                              completion();
+                                          }]];
         [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
                                                             @"Label for the 'copy link' option of the debug log alert.")
+                                accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"copy_link")
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction *action) {
                                                     UIPasteboard *pb = [UIPasteboard generalPasteboard];
@@ -341,27 +344,32 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         [alert
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF",
                                                          @"Label for the 'send to self' option of the debug log alert.")
+                             accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"send_to_self")
                                                style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *action) {
                                                  [Pastelog.sharedManager sendToSelf:url];
                                              }]];
-        [alert addAction:[UIAlertAction
-                             actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD",
-                                                 @"Label for the 'send to last thread' option of the debug log alert.")
-                                       style:UIAlertActionStyleDefault
-                                     handler:^(UIAlertAction *action) {
-                                         [Pastelog.sharedManager sendToMostRecentThread:url];
-                                     }]];
+        [alert addAction:[UIAlertAction actionWithTitle:
+                                            NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD",
+                                                @"Label for the 'send to last thread' option of the debug log alert.")
+                                accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"send_to_last_thread")
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *action) {
+                                                    [Pastelog.sharedManager sendToMostRecentThread:url];
+                                                }]];
 #endif
-        [alert addAction:[UIAlertAction
-                             actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_BUG_REPORT",
-                                                 @"Label for the 'Open a Bug Report' option of the debug log alert.")
-                                       style:UIAlertActionStyleDefault
-                                     handler:^(UIAlertAction *action) {
-                                         [Pastelog.sharedManager prepareRedirection:url completion:completion];
-                                     }]];
+        [alert
+            addAction:
+                [UIAlertAction actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_BUG_REPORT",
+                                                   @"Label for the 'Open a Bug Report' option of the debug log alert.")
+                       accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"submit_bug_report")
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction *action) {
+                                           [Pastelog.sharedManager prepareRedirection:url completion:completion];
+                                       }]];
         [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SHARE",
                                                             @"Label for the 'Share' option of the debug log alert.")
+                                accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"share")
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction *action) {
                                                     [AttachmentSharing showShareUIForText:url.absoluteString
@@ -370,7 +378,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         [alert addAction:[OWSAlerts cancelAction]];
         UIViewController *presentingViewController
             = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-        [presentingViewController presentViewController:alert animated:NO completion:nil];
+        [presentingViewController presentAlert:alert animated:NO];
     }];
 }
 
@@ -507,10 +515,11 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                          message:message
                   preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"")
+                            accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"ok")
                                               style:UIAlertActionStyleDefault
                                             handler:nil]];
     UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-    [presentingViewController presentViewController:alert animated:NO completion:nil];
+    [presentingViewController presentAlert:alert animated:NO];
 }
 
 #pragma mark Logs submission
@@ -561,18 +570,21 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                                             message:NSLocalizedString(@"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE",
                                                         @"Message of the alert before redirecting to GitHub Issues.")
                                      preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction
-                         actionWithTitle:NSLocalizedString(@"OK", @"")
-                                   style:UIAlertActionStyleDefault
-                                 handler:^(UIAlertAction *action) {
-                                     [UIApplication.sharedApplication
-                                         openURL:[NSURL URLWithString:[[NSBundle mainBundle]
-                                                                          objectForInfoDictionaryKey:@"LOGS_URL"]]];
+    [alert
+        addAction:[UIAlertAction
+                              actionWithTitle:NSLocalizedString(@"OK", @"")
+                      accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"ok")
+                                        style:UIAlertActionStyleDefault
+                                      handler:^(UIAlertAction *action) {
+                                          [UIApplication.sharedApplication
+                                              openURL:[NSURL
+                                                          URLWithString:[[NSBundle mainBundle]
+                                                                            objectForInfoDictionaryKey:@"LOGS_URL"]]];
 
-                                     completion();
-                                 }]];
+                                          completion();
+                                      }]];
     UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-    [presentingViewController presentViewController:alert animated:NO completion:nil];
+    [presentingViewController presentAlert:alert animated:NO];
 }
 
 - (void)sendToSelf:(NSURL *)url

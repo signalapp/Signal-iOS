@@ -185,7 +185,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                     target:weakSelf
                     selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
-    
+
     // Allow calls to connect directly vs. using TURN exclusively
     OWSTableSection *callingSection = [OWSTableSection new];
     callingSection.headerTitle
@@ -341,7 +341,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                     customRowHeight:UITableViewAutomaticDimension
                     actionBlock:^{
                         NSURL *url = [NSURL URLWithString:kSealedSenderInfoURL];
-                        OWSAssertDebug(url);
+                        OWSCAssertDebug(url);
                         [UIApplication.sharedApplication openURL:url];
                     }]];
 
@@ -374,7 +374,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                                @"sealed_sender_learn_more"]
                                          actionBlock:^{
                                              NSURL *url = [NSURL URLWithString:kSealedSenderInfoURL];
-                                             OWSAssertDebug(url);
+                                             OWSCAssertDebug(url);
                                              [UIApplication.sharedApplication openURL:url];
                                          }]];
     [contents addSection:unidentifiedDeliveryLearnMoreSection];
@@ -411,24 +411,26 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
 - (void)clearHistoryLogs
 {
-    UIAlertController *alertController =
+    UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:nil
                                             message:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION",
                                                         @"Alert message before user confirms clearing history")
                                      preferredStyle:UIAlertControllerStyleAlert];
 
-    [alertController addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSAlerts cancelAction]];
 
-    UIAlertAction *deleteAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
-                            @"Confirmation text for button which deletes all message, calling, attachments, etc.")
-                  style:UIAlertActionStyleDestructive
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [self deleteThreadsAndMessages];
-                }];
-    [alertController addAction:deleteAction];
+    UIAlertAction *deleteAction =
+        [UIAlertAction actionWithTitle:
+                           NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
+                               @"Confirmation text for button which deletes all message, calling, attachments, etc.")
+               accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"delete")
+                                 style:UIAlertActionStyleDestructive
+                               handler:^(UIAlertAction *_Nonnull action) {
+                                   [self deleteThreadsAndMessages];
+                               }];
+    [alert addAction:deleteAction];
 
-    [self presentViewController:alertController animated:true completion:nil];
+    [self presentAlert:alert];
 }
 
 - (void)deleteThreadsAndMessages
@@ -546,7 +548,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     OWSLogInfo(@"");
 
-    UIAlertController *controller = [UIAlertController
+    UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT",
                                      @"Label for the 'screen lock activity timeout' setting of the privacy settings.")
                          message:nil
@@ -555,16 +557,18 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         uint32_t screenLockTimeout = (uint32_t)round(timeoutValue.doubleValue);
         NSString *screenLockTimeoutString = [self formatScreenLockTimeout:screenLockTimeout useShortFormat:NO];
 
-        [controller addAction:[UIAlertAction actionWithTitle:screenLockTimeoutString
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:^(UIAlertAction *action) {
-                                                         [OWSScreenLock.sharedManager
-                                                             setScreenLockTimeout:screenLockTimeout];
-                                                     }]];
+        UIAlertAction *action =
+            [UIAlertAction actionWithTitle:screenLockTimeoutString
+                                     style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction *ignore) {
+                                       [OWSScreenLock.sharedManager setScreenLockTimeout:screenLockTimeout];
+                                   }];
+        action.accessibilityIdentifier = [NSString stringWithFormat:@"settings.privacy.timeout.%@", timeoutValue];
+        [alert addAction:action];
     }
-    [controller addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSAlerts cancelAction]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:controller animated:YES completion:nil];
+    [fromViewController presentAlert:alert];
 }
 
 - (NSString *)formatScreenLockTimeout:(NSInteger)value useShortFormat:(BOOL)useShortFormat

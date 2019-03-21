@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ShowGroupMembersViewController.h"
@@ -213,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    UIAlertController *actionSheetController = [UIAlertController
+    UIAlertController *actionSheet = [UIAlertController
         alertControllerWithTitle:nil
                          message:NSLocalizedString(@"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE",
                                      @"Label for the 'reset all no-longer-verified group members' confirmation alert.")
@@ -225,10 +225,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                          handler:^(UIAlertAction *_Nonnull action) {
                                                              [weakSelf resetAllNoLongerVerified];
                                                          }];
-    [actionSheetController addAction:verifyAction];
-    [actionSheetController addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:verifyAction];
+    [actionSheet addAction:[OWSAlerts cancelAction]];
 
-    [self presentViewController:actionSheetController animated:YES completion:nil];
+    [self presentAlert:actionSheet];
 }
 
 - (void)resetAllNoLongerVerified
@@ -275,7 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
     ContactsViewHelper *helper = self.contactsViewHelper;
     SignalAccount *_Nullable signalAccount = [helper fetchSignalAccountForRecipientId:recipientId];
 
-    UIAlertController *actionSheetController =
+    UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
     if (self.contactsViewHelper.contactsManager.supportsContactEditing) {
@@ -283,19 +283,18 @@ NS_ASSUME_NONNULL_BEGIN
             ? NSLocalizedString(@"GROUP_MEMBERS_VIEW_CONTACT_INFO", @"Button label for the 'show contact info' button")
             : NSLocalizedString(
                   @"GROUP_MEMBERS_ADD_CONTACT_INFO", @"Button label to add information to an unknown contact");
-        [actionSheetController addAction:[UIAlertAction actionWithTitle:contactInfoTitle
-                                                                  style:UIAlertActionStyleDefault
-                                                                handler:^(UIAlertAction *_Nonnull action) {
-                                                                    [self
-                                                                        showContactInfoViewForRecipientId:recipientId];
-                                                                }]];
+        [actionSheet addAction:[UIAlertAction actionWithTitle:contactInfoTitle
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction *_Nonnull action) {
+                                                          [self showContactInfoViewForRecipientId:recipientId];
+                                                      }]];
     }
 
     BOOL isBlocked;
     if (signalAccount) {
         isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
         if (isBlocked) {
-            [actionSheetController
+            [actionSheet
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
                                                              @"Button label for the 'unblock' button")
                                                    style:UIAlertActionStyleDefault
@@ -310,7 +309,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              }];
                                                  }]];
         } else {
-            [actionSheetController
+            [actionSheet
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
                                                              @"Button label for the 'block' button")
                                                    style:UIAlertActionStyleDestructive
@@ -328,7 +327,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         isBlocked = [helper isRecipientIdBlocked:recipientId];
         if (isBlocked) {
-            [actionSheetController
+            [actionSheet
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
                                                              @"Button label for the 'unblock' button")
                                                    style:UIAlertActionStyleDefault
@@ -343,7 +342,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                            }];
                                                  }]];
         } else {
-            [actionSheetController
+            [actionSheet
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
                                                              @"Button label for the 'block' button")
                                                    style:UIAlertActionStyleDestructive
@@ -361,21 +360,20 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!isBlocked) {
-        [actionSheetController
+        [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_SEND_MESSAGE",
                                                          @"Button label for the 'send message to group member' button")
                                                style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *_Nonnull action) {
                                                  [self showConversationViewForRecipientId:recipientId];
                                              }]];
-        [actionSheetController
-            addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_CALL",
-                                                         @"Button label for the 'call group member' button")
-                                               style:UIAlertActionStyleDefault
-                                             handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self callMember:recipientId];
-                                             }]];
-        [actionSheetController
+        [actionSheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_CALL",
+                                                                  @"Button label for the 'call group member' button")
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction *_Nonnull action) {
+                                                          [self callMember:recipientId];
+                                                      }]];
+        [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"VERIFY_PRIVACY",
                                                          @"Label for button or row which allows users to verify the "
                                                          @"safety number of another user.")
@@ -385,9 +383,9 @@ NS_ASSUME_NONNULL_BEGIN
                                              }]];
     }
 
-    [actionSheetController addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSAlerts cancelAction]];
 
-    [self presentViewController:actionSheetController animated:YES completion:nil];
+    [self presentAlert:actionSheet];
 }
 
 - (void)showContactInfoViewForRecipientId:(NSString *)recipientId

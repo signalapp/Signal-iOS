@@ -462,7 +462,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [alert addAction:[OWSAlerts cancelAction]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:alert animated:YES completion:nil];
+    [fromViewController presentAlert:alert];
 }
 
 #pragma mark - Send Media
@@ -2753,7 +2753,7 @@ NS_ASSUME_NONNULL_BEGIN
     [alert addAction:[OWSAlerts cancelAction]];
 
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:alert animated:YES completion:nil];
+    [fromViewController presentAlert:alert];
 }
 
 #pragma mark - Sequences

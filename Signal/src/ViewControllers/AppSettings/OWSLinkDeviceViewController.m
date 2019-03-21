@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *title = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_TITLE", @"report an invalid linking code");
         NSString *body = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_BODY", @"report an invalid linking code");
 
-        UIAlertController *alertController =
+        UIAlertController *alert =
             [UIAlertController alertControllerWithTitle:title message:body preferredStyle:UIAlertControllerStyleAlert];
 
         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      [self popToLinkedDeviceList];
                                                                  });
                                                              }];
-        [alertController addAction:cancelAction];
+        [alert addAction:cancelAction];
 
         UIAlertAction *proceedAction =
             [UIAlertAction actionWithTitle:NSLocalizedString(@"LINK_DEVICE_RESTART", @"attempt another linking")
@@ -151,18 +151,18 @@ NS_ASSUME_NONNULL_BEGIN
                                    handler:^(UIAlertAction *action) {
                                        [self.qrScanningController startCapture];
                                    }];
-        [alertController addAction:proceedAction];
+        [alert addAction:proceedAction];
 
-        [self presentViewController:alertController animated:YES completion:nil];
+        [self presentAlert:alert];
     } else {
         NSString *title = NSLocalizedString(
             @"LINK_DEVICE_PERMISSION_ALERT_TITLE", @"confirm the users intent to link a new device");
         NSString *linkingDescription
             = NSLocalizedString(@"LINK_DEVICE_PERMISSION_ALERT_BODY", @"confirm the users intent to link a new device");
 
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
-                                                                                 message:linkingDescription
-                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:title
+                                                                       message:linkingDescription
+                                                                preferredStyle:UIAlertControllerStyleAlert];
 
         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
                                                                style:UIAlertActionStyleCancel
@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      [self popToLinkedDeviceList];
                                                                  });
                                                              }];
-        [alertController addAction:cancelAction];
+        [alert addAction:cancelAction];
 
         UIAlertAction *proceedAction =
             [UIAlertAction actionWithTitle:NSLocalizedString(@"CONFIRM_LINK_NEW_DEVICE_ACTION", @"Button text")
@@ -179,9 +179,9 @@ NS_ASSUME_NONNULL_BEGIN
                                    handler:^(UIAlertAction *action) {
                                        [self provisionWithParser:parser];
                                    }];
-        [alertController addAction:proceedAction];
+        [alert addAction:proceedAction];
 
-        [self presentViewController:alertController animated:YES completion:nil];
+        [self presentAlert:alert];
     }
 }
 
@@ -225,12 +225,10 @@ NS_ASSUME_NONNULL_BEGIN
         failure:^(NSError *error) {
             OWSLogError(@"Failed to provision device with error: %@", error);
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self presentViewController:[self retryAlertControllerWithError:error
-                                                                     retryBlock:^{
-                                                                         [self provisionWithParser:parser];
-                                                                     }]
-                                   animated:YES
-                                 completion:nil];
+                [self presentAlert:[self retryAlertControllerWithError:error
+                                                            retryBlock:^{
+                                                                [self provisionWithParser:parser];
+                                                            }]];
             });
         }];
 }

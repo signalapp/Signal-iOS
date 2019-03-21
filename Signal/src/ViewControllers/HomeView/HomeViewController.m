@@ -1354,7 +1354,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
                                             }]];
     [alert addAction:[OWSAlerts cancelAction]];
 
-    [self presentViewController:alert animated:YES completion:nil];
+    [self presentAlert:alert];
 }
 
 - (void)deleteThread:(TSThread *)thread
