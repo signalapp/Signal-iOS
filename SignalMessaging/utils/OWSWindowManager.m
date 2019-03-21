@@ -681,27 +681,60 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     IMP imp1 = [self.rootWindow methodForSelector:selector1];
     BOOL (*func1)(id, SEL) = (void *)imp1;
     BOOL isDisabled = func1(self.rootWindow, selector1);
-    OWSLogInfo(@"autorotation is disabled: %d", isDisabled);
 
     if (isDisabled) {
-        // NSString *encodedSelectorString2 = @"endDisablingInterfaceAutorotation".encodedForSelector;
-        NSString *encodedSelectorString2 = @"dgB1VXoFcnN9egB4WgAGdgR3cnR2UgcGAQQBBnIGegEA";
-        NSString *selectorString2 = encodedSelectorString2.decodedForSelector;
-        if (selectorString2 == nil) {
-            OWSFailDebug(@"selectorString2 was unexpectedly nil");
+        OWSLogInfo(@"autorotation is disabled.");
+
+        // The remainder of this method calls:
+        //   [[UIScrollToDismissSupport supportForScreen:UIScreen.main] finishScrollViewTransition]
+        // after verifying the methods/classes exist.
+
+        // NSString *encodedKlassString = @"UIScrollToDismissSupport".encodedForSelector;
+        NSString *encodedKlassString = @"ZlpkdAQBfX1lAVV6BX56BQVkBwICAQQG";
+        NSString *_Nullable klassString = encodedKlassString.decodedForSelector;
+        if (klassString == nil) {
+            OWSFailDebug(@"klassString was unexpectedly nil");
             return;
         }
-        SEL selector2 = NSSelectorFromString(selectorString2);
-
-        if (![self.rootWindow respondsToSelector:selector2]) {
-            OWSFailDebug(@"failure: doesn't respond to selector2");
+        id klass = NSClassFromString(klassString);
+        if (klass == nil) {
+            OWSFailDebug(@"klass was unexpectedly nil");
             return;
         }
 
-        IMP imp2 = [self.rootWindow methodForSelector:selector2];
-        void (*func2)(id, SEL) = (void *)imp2;
-        func2(self.rootWindow, selector2);
-        OWSLogInfo(@"re-enabling autorotation");
+        // NSString *encodedSelector2String = @"supportForScreen:".encodedForSelector;
+        NSString *encodedSelector2String = @"BQcCAgEEBlcBBGR0BHZ2AEs=";
+        NSString *_Nullable selector2String = encodedSelector2String.decodedForSelector;
+        if (selector2String == nil) {
+            OWSFailDebug(@"selector2String was unexpectedly nil");
+            return;
+        }
+        SEL selector2 = NSSelectorFromString(selector2String);
+        if (![klass respondsToSelector:selector2]) {
+            OWSFailDebug(@"klass didn't respond to selector");
+            return;
+        }
+        IMP imp2 = [klass methodForSelector:selector2];
+        id (*func2)(id, SEL, UIScreen *) = (void *)imp2;
+        id dismissSupport = func2(klass, selector2, UIScreen.mainScreen);
+
+        // NSString *encodedSelector3String = @"finishScrollViewTransition".encodedForSelector;
+        NSString *encodedSelector3String = @"d3oAegV5ZHQEAX19Z3p2CWUEcgAFegZ6AQA=";
+        NSString *_Nullable selector3String = encodedSelector3String.decodedForSelector;
+        if (selector3String == nil) {
+            OWSFailDebug(@"selector3String was unexpectedly nil");
+            return;
+        }
+        SEL selector3 = NSSelectorFromString(selector3String);
+        if (![dismissSupport respondsToSelector:selector3]) {
+            OWSFailDebug(@"dismissSupport didn't respond to selector");
+            return;
+        }
+        IMP imp3 = [dismissSupport methodForSelector:selector3];
+        void (*func3)(id, SEL) = (void *)imp3;
+        func3(dismissSupport, selector3);
+
+        OWSLogInfo(@"finished scrollView transition");
     }
 }
 
