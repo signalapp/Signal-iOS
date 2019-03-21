@@ -434,7 +434,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             if (error) {
                 [fromViewController
                     dismissViewControllerAnimated:YES
-                                       completion:^(void) {
+                                       completion:^{
                                            OWSLogInfo(@"Sending message failed with error: %@", error);
                                            [self showSendFailureAlertWithError:error
                                                                        message:message
@@ -448,11 +448,10 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         });
     };
 
-    [fromViewController presentViewController:progressAlert
-                                     animated:YES
-                                   completion:^(void) {
-                                       sendMessageBlock(sendCompletion);
-                                   }];
+    [fromViewController presentAlert:progressAlert
+                          completion:^{
+                              sendMessageBlock(sendCompletion);
+                          }];
 }
 
 - (void)showSendFailureAlertWithError:(NSError *)error
@@ -503,7 +502,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             OWSFailDebug(@"Untrusted recipient error is missing recipient id.");
         }
 
-        [fromViewController presentViewController:failureAlert animated:YES completion:nil];
+        [fromViewController presentAlert:failureAlert];
     } else {
         // Non-identity failure, e.g. network offline, rate limit
 
@@ -526,7 +525,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                                    }];
 
         [failureAlert addAction:retryAction];
-        [fromViewController presentViewController:failureAlert animated:YES completion:nil];
+        [fromViewController presentAlert:failureAlert];
     }
 }
 
@@ -597,30 +596,28 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     [progressAlert addAction:progressCancelAction];
 
     [fromViewController
-        presentViewController:progressAlert
-                     animated:YES
-                   completion:^(void) {
-                       [self.messageSender sendMessage:message
-                           success:^(void) {
-                               OWSLogInfo(@"Resending attachment succeeded.");
-                               dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                   [self.shareViewDelegate shareViewWasCompleted];
-                               });
-                           }
-                           failure:^(NSError *error) {
-                               dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                   [fromViewController
-                                       dismissViewControllerAnimated:YES
-                                                          completion:^(void) {
-                                                              OWSLogInfo(
-                                                                  @"Sending attachment failed with error: %@", error);
-                                                              [self showSendFailureAlertWithError:error
-                                                                                          message:message
-                                                                               fromViewController:fromViewController];
-                                                          }];
-                               });
-                           }];
-                   }];
+        presentAlert:progressAlert
+          completion:^{
+              [self.messageSender sendMessage:message
+                  success:^{
+                      OWSLogInfo(@"Resending attachment succeeded.");
+                      dispatch_async(dispatch_get_main_queue(), ^{
+                          [self.shareViewDelegate shareViewWasCompleted];
+                      });
+                  }
+                  failure:^(NSError *error) {
+                      dispatch_async(dispatch_get_main_queue(), ^{
+                          [fromViewController
+                              dismissViewControllerAnimated:YES
+                                                 completion:^{
+                                                     OWSLogInfo(@"Sending attachment failed with error: %@", error);
+                                                     [self showSendFailureAlertWithError:error
+                                                                                 message:message
+                                                                      fromViewController:fromViewController];
+                                                 }];
+                      });
+                  }];
+          }];
 }
 
 - (void)attachmentUploadProgress:(NSNotification *)notification

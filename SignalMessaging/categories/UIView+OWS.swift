@@ -144,6 +144,17 @@ public extension UIViewController {
                         alert.applyAccessibilityIdentifiers()
         })
     }
+
+    @objc
+    public func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
+        self.present(alert,
+                     animated: true,
+                     completion: {
+                        alert.applyAccessibilityIdentifiers()
+
+                        completion()
+        })
+    }
 }
 
 // MARK: -
