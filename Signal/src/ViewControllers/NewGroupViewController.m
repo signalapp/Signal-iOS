@@ -559,7 +559,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    UIAlertController *controller = [UIAlertController
+    UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:
             NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
                 @"The alert title if user tries to exit the new group view without saving changes.")
@@ -567,15 +567,15 @@ NS_ASSUME_NONNULL_BEGIN
                              NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
                                  @"The alert message if user tries to exit the new group view without saving changes.")
                   preferredStyle:UIAlertControllerStyleAlert];
-    [controller
+    [alert
         addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DISCARD_BUTTON",
                                                      @"The label for the 'discard' button in alerts and action sheets.")
                                            style:UIAlertActionStyleDestructive
                                          handler:^(UIAlertAction *action) {
                                              [self.navigationController popViewControllerAnimated:YES];
                                          }]];
-    [controller addAction:[OWSAlerts cancelAction]];
-    [self presentViewController:controller animated:YES completion:nil];
+    [alert addAction:[OWSAlerts cancelAction]];
+    [self presentAlert:alert];
 }
 
 - (void)groupNameDidChange:(id)sender

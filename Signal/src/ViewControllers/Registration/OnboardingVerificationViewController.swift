@@ -490,7 +490,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         })
         actionSheet.addAction(OWSAlerts.cancelAction)
 
-        self.present(actionSheet, animated: true)
+        self.presentAlert(actionSheet)
     }
 
     private func tryToVerify() {

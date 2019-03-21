@@ -1060,10 +1060,9 @@ typedef enum : NSUInteger {
         }
         BOOL hasMultiple = noLongerVerifiedRecipientIds.count > 1;
 
-        UIAlertController *actionSheetController =
-            [UIAlertController alertControllerWithTitle:nil
-                                                message:nil
-                                         preferredStyle:UIAlertControllerStyleActionSheet];
+        UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:nil
+                                                                             message:nil
+                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
 
         __weak ConversationViewController *weakSelf = self;
         UIAlertAction *verifyAction = [UIAlertAction
@@ -1077,17 +1076,17 @@ typedef enum : NSUInteger {
                     handler:^(UIAlertAction *action) {
                         [weakSelf showNoLongerVerifiedUI];
                     }];
-        [actionSheetController addAction:verifyAction];
+        [actionSheet addAction:verifyAction];
 
         UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
                                                                 style:UIAlertActionStyleCancel
                                                               handler:^(UIAlertAction *action) {
                                                                   [weakSelf resetVerificationStateToDefault];
                                                               }];
-        [actionSheetController addAction:dismissAction];
+        [actionSheet addAction:dismissAction];
 
         [self dismissKeyBoard];
-        [self presentViewController:actionSheetController animated:YES completion:nil];
+        [self presentAlert:actionSheet];
     }
 }
 
@@ -1777,19 +1776,18 @@ typedef enum : NSUInteger {
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message
 {
-    UIAlertController *actionSheetController =
-        [UIAlertController alertControllerWithTitle:message.mostRecentFailureText
-                                            message:nil
-                                     preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:message.mostRecentFailureText
+                                                                         message:nil
+                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
 
-    [actionSheetController addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
                                                                   style:UIAlertActionStyleDestructive
                                                                 handler:^(UIAlertAction *action) {
                                                                     [message remove];
                                                                 }];
-    [actionSheetController addAction:deleteMessageAction];
+    [actionSheet addAction:deleteMessageAction];
 
     UIAlertAction *resendMessageAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
@@ -1801,10 +1799,10 @@ typedef enum : NSUInteger {
                         }];
                 }];
 
-    [actionSheetController addAction:resendMessageAction];
+    [actionSheet addAction:resendMessageAction];
 
     [self dismissKeyBoard];
-    [self presentViewController:actionSheetController animated:YES completion:nil];
+    [self presentAlert:actionSheet];
 }
 
 - (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalIdParam
@@ -1832,11 +1830,11 @@ typedef enum : NSUInteger {
     NSString *alertMessage = [NSString
         stringWithFormat:NSLocalizedString(@"CORRUPTED_SESSION_DESCRIPTION", @"ActionSheet title"), self.thread.name];
 
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
-                                                                             message:alertMessage
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:alertMessage
+                                                            preferredStyle:UIAlertControllerStyleAlert];
 
-    [alertController addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *resetSessionAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
@@ -1853,10 +1851,10 @@ typedef enum : NSUInteger {
                             [self.sessionResetJobQueue addContactThread:contactThread transaction:transaction];
                         }];
                 }];
-    [alertController addAction:resetSessionAction];
+    [alert addAction:resetSessionAction];
 
     [self dismissKeyBoard];
-    [self presentViewController:alertController animated:YES completion:nil];
+    [self presentAlert:alert];
 }
 
 - (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage
@@ -1865,12 +1863,11 @@ typedef enum : NSUInteger {
     NSString *titleFormat = NSLocalizedString(@"SAFETY_NUMBERS_ACTIONSHEET_TITLE", @"Action sheet heading");
     NSString *titleText = [NSString stringWithFormat:titleFormat, keyOwner];
 
-    UIAlertController *actionSheetController =
-        [UIAlertController alertControllerWithTitle:titleText
-                                            message:nil
-                                     preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:titleText
+                                                                         message:nil
+                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
 
-    [actionSheetController addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *showSafteyNumberAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
@@ -1879,7 +1876,7 @@ typedef enum : NSUInteger {
                                    OWSLogInfo(@"Remote Key Changed actions: Show fingerprint display");
                                    [self showFingerprintWithRecipientId:errorMessage.theirSignalId];
                                }];
-    [actionSheetController addAction:showSafteyNumberAction];
+    [actionSheet addAction:showSafteyNumberAction];
 
     UIAlertAction *acceptSafetyNumberAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
@@ -1900,10 +1897,10 @@ typedef enum : NSUInteger {
 
                                    }
                                }];
-    [actionSheetController addAction:acceptSafetyNumberAction];
+    [actionSheet addAction:acceptSafetyNumberAction];
 
     [self dismissKeyBoard];
-    [self presentViewController:actionSheetController animated:YES completion:nil];
+    [self presentAlert:actionSheet];
 }
 
 - (void)handleCallTap:(TSCall *)call
@@ -1918,7 +1915,7 @@ typedef enum : NSUInteger {
     TSContactThread *contactThread = (TSContactThread *)self.thread;
     NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:contactThread.contactIdentifier];
 
-    UIAlertController *alertController = [UIAlertController
+    UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:[CallStrings callBackAlertTitle]
                          message:[NSString stringWithFormat:[CallStrings callBackAlertMessageFormat], displayName]
                   preferredStyle:UIAlertControllerStyleAlert];
@@ -1929,11 +1926,11 @@ typedef enum : NSUInteger {
                                                        handler:^(UIAlertAction *action) {
                                                            [weakSelf startAudioCall];
                                                        }];
-    [alertController addAction:callAction];
-    [alertController addAction:[OWSAlerts cancelAction]];
+    [alert addAction:callAction];
+    [alert addAction:[OWSAlerts cancelAction]];
 
     [self dismissKeyBoard];
-    [self presentViewController:alertController animated:YES completion:nil];
+    [self presentAlert:alert];
 }
 
 #pragma mark - MessageActionsDelegate
@@ -2191,10 +2188,10 @@ typedef enum : NSUInteger {
                                        @"Embeds {{the unknown user's name or phone number}}."),
                   [BlockListUIUtils formatDisplayNameForAlertTitle:displayName]];
 
-    UIAlertController *actionSheetController =
+    UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
-    [actionSheetController addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *blockAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(
@@ -2210,10 +2207,10 @@ typedef enum : NSUInteger {
                         [interaction removeWithTransaction:transaction];
                     }];
                 }];
-    [actionSheetController addAction:blockAction];
+    [actionSheet addAction:blockAction];
 
     [self dismissKeyBoard];
-    [self presentViewController:actionSheetController animated:YES completion:nil];
+    [self presentAlert:actionSheet];
 }
 
 - (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction
@@ -3393,10 +3390,10 @@ typedef enum : NSUInteger {
     }
 
 
-    UIAlertController *actionSheetController =
+    UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
-    [actionSheetController addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *takeMediaAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")
@@ -3407,7 +3404,7 @@ typedef enum : NSUInteger {
     UIImage *takeMediaImage = [UIImage imageNamed:@"actionsheet_camera_black"];
     OWSAssertDebug(takeMediaImage);
     [takeMediaAction setValue:takeMediaImage forKey:@"image"];
-    [actionSheetController addAction:takeMediaAction];
+    [actionSheet addAction:takeMediaAction];
 
     UIAlertAction *chooseMediaAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
@@ -3418,7 +3415,7 @@ typedef enum : NSUInteger {
     UIImage *chooseMediaImage = [UIImage imageNamed:@"actionsheet_camera_roll_black"];
     OWSAssertDebug(chooseMediaImage);
     [chooseMediaAction setValue:chooseMediaImage forKey:@"image"];
-    [actionSheetController addAction:chooseMediaAction];
+    [actionSheet addAction:chooseMediaAction];
 
     UIAlertAction *gifAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"SELECT_GIF_BUTTON", @"Label for 'select GIF to attach' action sheet button")
@@ -3429,7 +3426,7 @@ typedef enum : NSUInteger {
     UIImage *gifImage = [UIImage imageNamed:@"actionsheet_gif_black"];
     OWSAssertDebug(gifImage);
     [gifAction setValue:gifImage forKey:@"image"];
-    [actionSheetController addAction:gifAction];
+    [actionSheet addAction:gifAction];
 
     UIAlertAction *chooseDocumentAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_FROM_DOCUMENT_PICKER_BUTTON",
@@ -3441,7 +3438,7 @@ typedef enum : NSUInteger {
     UIImage *chooseDocumentImage = [UIImage imageNamed:@"actionsheet_document_black"];
     OWSAssertDebug(chooseDocumentImage);
     [chooseDocumentAction setValue:chooseDocumentImage forKey:@"image"];
-    [actionSheetController addAction:chooseDocumentAction];
+    [actionSheet addAction:chooseDocumentAction];
 
     if (kIsSendingContactSharesEnabled) {
         UIAlertAction *chooseContactAction =
@@ -3454,11 +3451,11 @@ typedef enum : NSUInteger {
         UIImage *chooseContactImage = [UIImage imageNamed:@"actionsheet_contact"];
         OWSAssertDebug(takeMediaImage);
         [chooseContactAction setValue:chooseContactImage forKey:@"image"];
-        [actionSheetController addAction:chooseContactAction];
+        [actionSheet addAction:chooseContactAction];
     }
 
     [self dismissKeyBoard];
-    [self presentViewController:actionSheetController animated:true completion:nil];
+    [self presentAlert:actionSheet];
 }
 
 - (nullable NSIndexPath *)lastVisibleIndexPath

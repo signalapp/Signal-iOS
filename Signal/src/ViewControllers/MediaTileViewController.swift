@@ -602,7 +602,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         actionSheet.addAction(deleteAction)
         actionSheet.addAction(OWSAlerts.cancelAction)
 
-        present(actionSheet, animated: true)
+        presentAlert(actionSheet)
     }
 
     var footerBarBottomConstraint: NSLayoutConstraint!

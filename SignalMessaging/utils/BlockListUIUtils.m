@@ -110,7 +110,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                      @"blocked user's name or phone number}}."),
                                 [self formatDisplayNameForAlertTitle:displayName]];
 
-    UIAlertController *actionSheetController =
+    UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:title
                                             message:NSLocalizedString(@"BLOCK_USER_BEHAVIOR_EXPLANATION",
                                                         @"An explanation of the consequences of blocking another user.")
@@ -131,7 +131,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                             }];
                 }];
     blockAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"block");
-    [actionSheetController addAction:blockAction];
+    [actionSheet addAction:blockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
                                                             style:UIAlertActionStyleCancel
@@ -141,8 +141,8 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                               }
                                                           }];
     dismissAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss");
-    [actionSheetController addAction:dismissAction];
-    [fromViewController presentAlert:actionSheetController animated:YES];
+    [actionSheet addAction:dismissAction];
+    [fromViewController presentAlert:actionSheet];
 }
 
 + (void)showBlockGroupActionSheet:(TSGroupThread *)groupThread
@@ -161,7 +161,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                              @"A format for the 'block group' action sheet title. Embeds the {{group name}}."),
         [self formatDisplayNameForAlertTitle:groupName]];
 
-    UIAlertController *actionSheetController =
+    UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:title
                                             message:NSLocalizedString(@"BLOCK_GROUP_BEHAVIOR_EXPLANATION",
                                                         @"An explanation of the consequences of blocking a group.")
@@ -182,7 +182,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                            }];
                 }];
     blockAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"block");
-    [actionSheetController addAction:blockAction];
+    [actionSheet addAction:blockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
                                                             style:UIAlertActionStyleCancel
@@ -192,8 +192,8 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                               }
                                                           }];
     dismissAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss");
-    [actionSheetController addAction:dismissAction];
-    [fromViewController presentAlert:actionSheetController animated:YES];
+    [actionSheet addAction:dismissAction];
+    [fromViewController presentAlert:actionSheet];
 }
 
 + (void)blockPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
@@ -330,7 +330,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                 @"A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}."),
         [self formatDisplayNameForAlertTitle:displayName]];
 
-    UIAlertController *actionSheetController =
+    UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
     UIAlertAction *unblockAction = [UIAlertAction
@@ -348,7 +348,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                           }];
                 }];
     unblockAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"unblock");
-    [actionSheetController addAction:unblockAction];
+    [actionSheet addAction:unblockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
                                                             style:UIAlertActionStyleCancel
@@ -358,8 +358,8 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                               }
                                                           }];
     dismissAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss");
-    [actionSheetController addAction:dismissAction];
-    [fromViewController presentAlert:actionSheetController animated:YES];
+    [actionSheet addAction:dismissAction];
+    [fromViewController presentAlert:actionSheet];
 }
 
 + (void)unblockPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
@@ -402,10 +402,9 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     NSString *message = NSLocalizedString(
         @"BLOCK_LIST_UNBLOCK_GROUP_BODY", @"Action sheet body when confirming you want to unblock a group");
 
-    UIAlertController *actionSheetController =
-        [UIAlertController alertControllerWithTitle:title
-                                            message:message
-                                     preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:title
+                                                                         message:message
+                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
 
     UIAlertAction *unblockAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON", @"Button label for the 'unblock' button")
@@ -422,7 +421,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                    }];
                 }];
     unblockAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"unblock");
-    [actionSheetController addAction:unblockAction];
+    [actionSheet addAction:unblockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
                                                             style:UIAlertActionStyleCancel
@@ -432,8 +431,8 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                               }
                                                           }];
     dismissAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss");
-    [actionSheetController addAction:dismissAction];
-    [fromViewController presentAlert:actionSheetController animated:YES];
+    [actionSheet addAction:dismissAction];
+    [fromViewController presentAlert:actionSheet];
 }
 
 + (void)unblockGroup:(TSGroupModel *)groupModel
@@ -478,7 +477,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                      handler:completionBlock];
     okAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"ok");
     [alert addAction:okAction];
-    [fromViewController presentAlert:alert animated:YES];
+    [fromViewController presentAlert:alert];
 }
 
 + (NSString *)formatDisplayNameForAlertTitle:(NSString *)displayName

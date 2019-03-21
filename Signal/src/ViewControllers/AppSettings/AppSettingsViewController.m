@@ -429,19 +429,19 @@
 - (void)showDeleteAccountUI:(BOOL)isRegistered
 {
     __weak AppSettingsViewController *weakSelf = self;
-    
-    UIAlertController *alertController =
+
+    UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")
                                             message:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TEXT", @"")
                                      preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
-                                                        style:UIAlertActionStyleDestructive
-                                                      handler:^(UIAlertAction *action) {
-                                                          [weakSelf deleteAccount:isRegistered];
-                                                      }]];
-    [alertController addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
+                                              style:UIAlertActionStyleDestructive
+                                            handler:^(UIAlertAction *action) {
+                                                [weakSelf deleteAccount:isRegistered];
+                                            }]];
+    [alert addAction:[OWSAlerts cancelAction]];
 
-    [self presentViewController:alertController animated:YES completion:nil];
+    [self presentAlert:alert];
 }
 
 - (void)deleteAccount:(BOOL)isRegistered

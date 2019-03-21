@@ -316,7 +316,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [alert addAction:discardAction];
 
     [alert addAction:[OWSAlerts cancelAction]];
-    [self presentAlert:alert animated:YES];
+    [self presentAlert:alert];
 }
 
 - (void)avatarTapped

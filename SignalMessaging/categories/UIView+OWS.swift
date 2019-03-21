@@ -130,9 +130,14 @@ extension UIView {
 
 // MARK: -
 
-extension UIViewController {
+public extension UIViewController {
     @objc
-    public func presentAlert(_ alert: UIAlertController, animated: Bool = true) {
+    public func presentAlert(_ alert: UIAlertController) {
+        self.presentAlert(alert, animated: true)
+    }
+
+    @objc
+    public func presentAlert(_ alert: UIAlertController, animated: Bool) {
         self.present(alert,
                      animated: animated,
                      completion: {

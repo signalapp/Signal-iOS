@@ -748,10 +748,9 @@ NS_ASSUME_NONNULL_BEGIN
             stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
     }
 
-    UIAlertController *alertController =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRMATION_TITLE", @"")
-                                            message:confirmMessage
-                                     preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRMATION_TITLE", @"")
+                                                                   message:confirmMessage
+                                                            preferredStyle:UIAlertControllerStyleAlert];
 
     UIAlertAction *okAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"OK", @"")
@@ -765,8 +764,8 @@ NS_ASSUME_NONNULL_BEGIN
                     }
                 }];
 
-    [alertController addAction:[OWSAlerts cancelAction]];
-    [alertController addAction:okAction];
+    [alert addAction:[OWSAlerts cancelAction]];
+    [alert addAction:okAction];
     self.searchBar.text = @"";
     [self searchTextDidChange];
 
@@ -774,10 +773,10 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self presentedViewController]) {
         [self dismissViewControllerAnimated:YES
                                  completion:^{
-                                     [self presentViewController:alertController animated:YES completion:nil];
+                                     [self presentAlert:alert];
                                  }];
     } else {
-        [self presentViewController:alertController animated:YES completion:nil];
+        [self presentAlert:alert];
     }
 }
 

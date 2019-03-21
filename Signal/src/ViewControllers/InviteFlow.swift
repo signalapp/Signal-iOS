@@ -177,7 +177,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
                     self.sendSMSTo(phoneNumbers: phoneNumbers)
                 }))
                 warning.addAction(OWSAlerts.cancelAction)
-                self.presentingViewController.present(warning, animated: true, completion: nil)
+                self.presentingViewController.presentAlert(warning)
             } else {
                 self.sendSMSTo(phoneNumbers: phoneNumbers)
             }

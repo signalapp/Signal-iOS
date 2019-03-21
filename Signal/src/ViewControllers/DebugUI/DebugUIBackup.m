@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIBackup.h"
@@ -153,19 +153,19 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"tryToImportBackup.");
 
-    UIAlertController *controller =
+    UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:@"Restore CloudKit Backup"
                                             message:@"This will delete all of your database contents."
                                      preferredStyle:UIAlertControllerStyleAlert];
 
-    [controller addAction:[UIAlertAction actionWithTitle:@"Restore"
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [OWSBackup.sharedManager tryToImportBackup];
-                                                 }]];
-    [controller addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Restore"
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *_Nonnull action) {
+                                                [OWSBackup.sharedManager tryToImportBackup];
+                                            }]];
+    [alert addAction:[OWSAlerts cancelAction]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:controller animated:YES completion:nil];
+    [fromViewController presentAlert:alert];
 }
 
 + (void)logDatabaseSizeStats

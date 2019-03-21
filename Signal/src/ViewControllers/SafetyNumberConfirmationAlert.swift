@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -62,7 +62,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
                                            comment: "Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}}")
         let body = String(format: bodyFormat, displayName)
 
-        let actionSheetController = UIAlertController(title: title, message: body, preferredStyle: .actionSheet)
+        let actionSheet = UIAlertController(title: title, message: body, preferredStyle: .actionSheet)
 
         let confirmAction = UIAlertAction(title: confirmationText, style: .default) { _ in
             Logger.info("Confirmed identity: \(untrustedIdentity)")
@@ -74,7 +74,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
                 }
             }
         }
-        actionSheetController.addAction(confirmAction)
+        actionSheet.addAction(confirmAction)
 
         let showSafetyNumberAction = UIAlertAction(title: NSLocalizedString("VERIFY_PRIVACY", comment: "Label for button or row which allows users to verify the safety number of another user."), style: .default) { _ in
             Logger.info("Opted to show Safety Number for identity: \(untrustedIdentity)")
@@ -85,7 +85,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
                                                    completion: { completion(false) })
 
         }
-        actionSheetController.addAction(showSafetyNumberAction)
+        actionSheet.addAction(showSafetyNumberAction)
 
         // We can't use the default `OWSAlerts.cancelAction` because we need to specify that the completion
         // handler is called.
@@ -93,11 +93,11 @@ public class SafetyNumberConfirmationAlert: NSObject {
             Logger.info("user canceled.")
             completion(false)
         }
-        actionSheetController.addAction(cancelAction)
+        actionSheet.addAction(cancelAction)
 
         beforePresentationHandler?()
 
-        UIApplication.shared.frontmostViewController?.present(actionSheetController, animated: true)
+        UIApplication.shared.frontmostViewController?.presentAlert(actionSheet)
         return true
     }
 

@@ -430,7 +430,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                }];
     [alert addAction:deleteAction];
 
-    [self presentAlert:alert animated:YES];
+    [self presentAlert:alert];
 }
 
 - (void)deleteThreadsAndMessages
@@ -568,7 +568,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     }
     [alert addAction:[OWSAlerts cancelAction]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentAlert:alert animated:YES];
+    [fromViewController presentAlert:alert];
 }
 
 - (NSString *)formatScreenLockTimeout:(NSInteger)value useShortFormat:(BOOL)useShortFormat
