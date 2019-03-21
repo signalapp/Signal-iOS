@@ -237,6 +237,11 @@ class ImageEditorCropViewController: OWSViewController {
             : "image_editor_crop_unlock"))
     }
 
+    @objc
+    public override var prefersStatusBarHidden: Bool {
+        return true
+    }
+
     private static let desiredCornerSize: CGFloat = 24
     private static let minCropSize: CGFloat = desiredCornerSize * 2
     private var cornerSize = CGSize.zero

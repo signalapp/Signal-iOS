@@ -114,6 +114,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return bottomToolView
     }()
 
+    lazy var touchInterceptorView = UIView()
+
     // MARK: - View Lifecycle
 
     public override var prefersStatusBarHidden: Bool {
@@ -145,6 +147,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         // layout immediately to avoid animating the layout process during the transition
         self.currentPageViewController.view.layoutIfNeeded()
+
+        view.addSubview(touchInterceptorView)
+        touchInterceptorView.autoPinEdgesToSuperviewEdges()
+        touchInterceptorView.isHidden = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapTouchInterceptorView(gesture:)))
+        touchInterceptorView.addGestureRecognizer(tapGesture)
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -177,6 +185,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         updateNavigationBar()
         updateInputAccessory()
         updateControlVisibility()
+
+        touchInterceptorView.isHidden = !isEditingCaptions
     }
 
     // MARK: - Input Accessory
@@ -608,6 +618,13 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     // MARK: - Event Handlers
+
+    @objc
+    func didTapTouchInterceptorView(gesture: UITapGestureRecognizer) {
+        Logger.info("")
+
+        isEditingCaptions = false
+    }
 
     private func cancelPressed() {
         self.approvalDelegate?.attachmentApproval(self, didCancelAttachments: attachments)

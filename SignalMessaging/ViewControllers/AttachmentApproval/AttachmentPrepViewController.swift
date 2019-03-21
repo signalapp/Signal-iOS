@@ -57,17 +57,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Subviews
-
-    // TODO: Do we still need this?
-    lazy var touchInterceptorView: UIView = {
-        let touchInterceptorView = UIView()
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapTouchInterceptorView(gesture:)))
-        touchInterceptorView.addGestureRecognizer(tapGesture)
-
-        return touchInterceptorView
-    }()
-
     // MARK: - View Lifecycle
 
     override public func loadView() {
@@ -175,10 +164,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
             playButton.autoCenterInSuperview()
         }
-
-        view.addSubview(touchInterceptorView)
-        touchInterceptorView.autoPinEdgesToSuperviewEdges()
-        touchInterceptorView.isHidden = true
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -219,12 +204,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     }
 
     // MARK: - Event Handlers
-
-    @objc
-    func didTapTouchInterceptorView(gesture: UITapGestureRecognizer) {
-        Logger.info("")
-        touchInterceptorView.isHidden = true
-    }
 
     @objc
     public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {

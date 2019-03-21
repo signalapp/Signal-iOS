@@ -234,6 +234,11 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         updateNavigationBar(navigationBarItems: navigationBarItems)
     }
 
+    @objc
+    public override var prefersStatusBarHidden: Bool {
+        return true
+    }
+
     // MARK: - Pinch Gesture
 
     private var pinchFontStart: UIFont?
