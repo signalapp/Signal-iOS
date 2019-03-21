@@ -114,6 +114,11 @@ public class ImageEditorBrushViewController: OWSViewController {
         paletteView.isHidden = hasStroke
     }
 
+    @objc
+    public override var prefersStatusBarHidden: Bool {
+        return true
+    }
+
     // MARK: - Actions
 
     @objc func didTapUndo(sender: UIButton) {
