@@ -96,8 +96,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                 itemWithCustomCellBlock:^{
                                                     ContactTableViewCell *cell = [ContactTableViewCell new];
                                                     [cell configureWithRecipientId:phoneNumber];
-                                                    cell.accessibilityIdentifier
-                                                        = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"user");
+                                                    cell.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(
+                                                        BlockListViewController, @"user");
                                                     return cell;
                                                 }
                                                 customRowHeight:UITableViewAutomaticDimension

@@ -142,12 +142,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                           }];
     dismissAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss");
     [actionSheetController addAction:dismissAction];
-
-    [fromViewController presentViewController:actionSheetController
-                                     animated:YES
-                                   completion:^{
-                                       [actionSheetController applyAccessibilityIdentifiers];
-                                   }];
+    [fromViewController presentAlert:actionSheetController animated:YES];
 }
 
 + (void)showBlockGroupActionSheet:(TSGroupThread *)groupThread
@@ -198,12 +193,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                           }];
     dismissAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss");
     [actionSheetController addAction:dismissAction];
-
-    [fromViewController presentViewController:actionSheetController
-                                     animated:YES
-                                   completion:^{
-                                       [actionSheetController applyAccessibilityIdentifiers];
-                                   }];
+    [fromViewController presentAlert:actionSheetController animated:YES];
 }
 
 + (void)blockPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
@@ -369,12 +359,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                           }];
     dismissAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss");
     [actionSheetController addAction:dismissAction];
-
-    [fromViewController presentViewController:actionSheetController
-                                     animated:YES
-                                   completion:^{
-                                       [actionSheetController applyAccessibilityIdentifiers];
-                                   }];
+    [fromViewController presentAlert:actionSheetController animated:YES];
 }
 
 + (void)unblockPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
@@ -448,12 +433,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                           }];
     dismissAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss");
     [actionSheetController addAction:dismissAction];
-
-    [fromViewController presentViewController:actionSheetController
-                                     animated:YES
-                                   completion:^{
-                                       [actionSheetController applyAccessibilityIdentifiers];
-                                   }];
+    [fromViewController presentAlert:actionSheetController animated:YES];
 }
 
 + (void)unblockGroup:(TSGroupModel *)groupModel
@@ -490,19 +470,15 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     OWSAssertDebug(title.length > 0);
     OWSAssertDebug(fromViewController);
 
-    UIAlertController *controller =
+    UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
 
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
                                                        style:UIAlertActionStyleDefault
                                                      handler:completionBlock];
     okAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"ok");
-    [controller addAction:okAction];
-    [fromViewController presentViewController:controller
-                                     animated:YES
-                                   completion:^{
-                                       [controller applyAccessibilityIdentifiers];
-                                   }];
+    [alert addAction:okAction];
+    [fromViewController presentAlert:alert animated:YES];
 }
 
 + (NSString *)formatDisplayNameForAlertTitle:(NSString *)displayName

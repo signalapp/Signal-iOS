@@ -297,7 +297,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     }
  
     __weak ProfileViewController *weakSelf = self;
-    UIAlertController *controller = [UIAlertController
+    UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:
             NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
                 @"The alert title if user tries to exit the new group view without saving changes.")
@@ -313,14 +313,10 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                    [weakSelf profileCompletedOrSkipped];
                                }];
     discardAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"discard");
-    [controller addAction:discardAction];
+    [alert addAction:discardAction];
 
-    [controller addAction:[OWSAlerts cancelAction]];
-    [self presentViewController:controller
-                       animated:YES
-                     completion:^{
-                         [controller applyAccessibilityIdentifiers];
-                     }];
+    [alert addAction:[OWSAlerts cancelAction]];
+    [self presentAlert:alert animated:YES];
 }
 
 - (void)avatarTapped

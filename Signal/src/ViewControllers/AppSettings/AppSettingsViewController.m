@@ -165,7 +165,7 @@
                                  [accessoryLabel sizeToFit];
                                  cell.accessoryView = accessoryLabel;
                                  cell.accessibilityIdentifier
-                                     = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"network_status");
+                                     = SUBVIEW_ACCESSIBILITY_IDENTIFIER(AppSettingsViewController, @"network_status");
                                  return cell;
                              }
                                          actionBlock:nil]];

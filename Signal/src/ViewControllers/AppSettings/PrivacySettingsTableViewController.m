@@ -411,13 +411,13 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
 - (void)clearHistoryLogs
 {
-    UIAlertController *alertController =
+    UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:nil
                                             message:NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION",
                                                         @"Alert message before user confirms clearing history")
                                      preferredStyle:UIAlertControllerStyleAlert];
 
-    [alertController addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *deleteAction =
         [UIAlertAction actionWithTitle:
@@ -428,13 +428,9 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                handler:^(UIAlertAction *_Nonnull action) {
                                    [self deleteThreadsAndMessages];
                                }];
-    [alertController addAction:deleteAction];
+    [alert addAction:deleteAction];
 
-    [self presentViewController:alertController
-                       animated:true
-                     completion:^{
-                         [alertController applyAccessibilityIdentifiers];
-                     }];
+    [self presentAlert:alert animated:YES];
 }
 
 - (void)deleteThreadsAndMessages
@@ -552,7 +548,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     OWSLogInfo(@"");
 
-    UIAlertController *controller = [UIAlertController
+    UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT",
                                      @"Label for the 'screen lock activity timeout' setting of the privacy settings.")
                          message:nil
@@ -568,15 +564,11 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                        [OWSScreenLock.sharedManager setScreenLockTimeout:screenLockTimeout];
                                    }];
         action.accessibilityIdentifier = [NSString stringWithFormat:@"settings.privacy.timeout.%@", timeoutValue];
-        [controller addAction:action];
+        [alert addAction:action];
     }
-    [controller addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSAlerts cancelAction]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:controller
-                                     animated:YES
-                                   completion:^{
-                                       [controller applyAccessibilityIdentifiers];
-                                   }];
+    [fromViewController presentAlert:alert animated:YES];
 }
 
 - (NSString *)formatScreenLockTimeout:(NSInteger)value useShortFormat:(BOOL)useShortFormat

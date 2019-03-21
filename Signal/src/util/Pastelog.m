@@ -378,11 +378,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         [alert addAction:[OWSAlerts cancelAction]];
         UIViewController *presentingViewController
             = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-        [presentingViewController presentViewController:alert
-                                               animated:NO
-                                             completion:^{
-                                                 [alert applyAccessibilityIdentifiers];
-                                             }];
+        [presentingViewController presentAlert:alert animated:NO];
     }];
 }
 
@@ -523,11 +519,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                                               style:UIAlertActionStyleDefault
                                             handler:nil]];
     UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-    [presentingViewController presentViewController:alert
-                                           animated:NO
-                                         completion:^{
-                                             [alert applyAccessibilityIdentifiers];
-                                         }];
+    [presentingViewController presentAlert:alert animated:NO];
 }
 
 #pragma mark Logs submission
@@ -592,11 +584,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                                           completion();
                                       }]];
     UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-    [presentingViewController presentViewController:alert
-                                           animated:NO
-                                         completion:^{
-                                             [alert applyAccessibilityIdentifiers];
-                                         }];
+    [presentingViewController presentAlert:alert animated:NO];
 }
 
 - (void)sendToSelf:(NSURL *)url

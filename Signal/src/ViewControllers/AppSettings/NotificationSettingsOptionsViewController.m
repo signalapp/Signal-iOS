@@ -40,8 +40,9 @@
                                  if (selectedNotifType == notificationType) {
                                      cell.accessoryType = UITableViewCellAccessoryCheckmark;
                                  }
-                                 cell.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(
-                                     self, NSStringForNotificationType(notificationType));
+                                 cell.accessibilityIdentifier
+                                     = SUBVIEW_ACCESSIBILITY_IDENTIFIER(NotificationSettingsOptionsViewController,
+                                         NSStringForNotificationType(notificationType));
                                  return cell;
                              }
                              actionBlock:^{

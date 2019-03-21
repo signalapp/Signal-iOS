@@ -11,20 +11,17 @@ import Foundation
     public class func showNoMicrophonePermissionAlert() {
         let alertTitle = NSLocalizedString("CALL_AUDIO_PERMISSION_TITLE", comment: "Alert title when calling and permissions for microphone are missing")
         let alertMessage = NSLocalizedString("CALL_AUDIO_PERMISSION_MESSAGE", comment: "Alert message when calling and permissions for microphone are missing")
-        let alertController = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
+        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
 
         let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel)
         dismissAction.accessibilityIdentifier = "OWSAlerts.\("dismiss")"
-        alertController.addAction(dismissAction)
+        alert.addAction(dismissAction)
 
         if let settingsAction = CurrentAppContext().openSystemSettingsAction {
             settingsAction.accessibilityIdentifier = "OWSAlerts.\("settings")"
-            alertController.addAction(settingsAction)
+            alert.addAction(settingsAction)
         }
-        CurrentAppContext().frontmostViewController()?.present(alertController, animated: true,
-                                                               completion: {
-                                                                    alertController.applyAccessibilityIdentifiers()
-        })
+        CurrentAppContext().frontmostViewController()?.presentAlert(alert)
     }
 
     @objc
@@ -33,10 +30,7 @@ import Foundation
             owsFailDebug("frontmostViewController was unexpectedly nil")
             return
         }
-        frontmostViewController.present(alert, animated: true,
-            completion: {
-            alert.applyAccessibilityIdentifiers()
-            })
+        frontmostViewController.presentAlert(alert)
     }
 
     @objc
@@ -67,10 +61,7 @@ import Foundation
         let okAction = UIAlertAction(title: actionTitle, style: .default, handler: buttonAction)
         okAction.accessibilityIdentifier = "OWSAlerts.\("ok")"
         alert.addAction(okAction)
-        fromViewController?.present(alert, animated: true,
-                                    completion: {
-                                        alert.applyAccessibilityIdentifiers()
-        })
+        fromViewController?.presentAlert(alert)
     }
 
     @objc
@@ -85,10 +76,7 @@ import Foundation
         okAction.accessibilityIdentifier = "OWSAlerts.\("ok")"
         alert.addAction(okAction)
 
-        CurrentAppContext().frontmostViewController()?.present(alert, animated: true,
-                                                               completion: {
-                                                                alert.applyAccessibilityIdentifiers()
-        })
+        CurrentAppContext().frontmostViewController()?.presentAlert(alert)
     }
 
     @objc
