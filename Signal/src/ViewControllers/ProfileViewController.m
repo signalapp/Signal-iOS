@@ -349,10 +349,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         case ProfileViewMode_AppSettings:
             if (self.hasUnsavedChanges) {
                 // If we have a unsaved changes, right item should be a "save" button.
-                self.navigationItem.rightBarButtonItem =
+                UIBarButtonItem *saveButton =
                     [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
                                                                   target:self
                                                                   action:@selector(updatePressed)];
+                SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, saveButton);
+                self.navigationItem.rightBarButtonItem = saveButton;
             } else {
                 self.navigationItem.rightBarButtonItem = nil;
             }

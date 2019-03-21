@@ -21,7 +21,10 @@ import Foundation
             settingsAction.accessibilityIdentifier = "OWSAlerts.\("settings")"
             alertController.addAction(settingsAction)
         }
-        CurrentAppContext().frontmostViewController()?.present(alertController, animated: true, completion: nil)
+        CurrentAppContext().frontmostViewController()?.present(alertController, animated: true,
+                                                               completion: {
+                                                                    alertController.applyAccessibilityIdentifiers()
+        })
     }
 
     @objc
@@ -30,7 +33,10 @@ import Foundation
             owsFailDebug("frontmostViewController was unexpectedly nil")
             return
         }
-        frontmostViewController.present(alert, animated: true, completion: nil)
+        frontmostViewController.present(alert, animated: true,
+            completion: {
+            alert.applyAccessibilityIdentifiers()
+            })
     }
 
     @objc
@@ -61,7 +67,10 @@ import Foundation
         let okAction = UIAlertAction(title: actionTitle, style: .default, handler: buttonAction)
         okAction.accessibilityIdentifier = "OWSAlerts.\("ok")"
         alert.addAction(okAction)
-        fromViewController?.present(alert, animated: true, completion: nil)
+        fromViewController?.present(alert, animated: true,
+                                    completion: {
+                                        alert.applyAccessibilityIdentifiers()
+        })
     }
 
     @objc
@@ -76,7 +85,10 @@ import Foundation
         okAction.accessibilityIdentifier = "OWSAlerts.\("ok")"
         alert.addAction(okAction)
 
-        CurrentAppContext().frontmostViewController()?.present(alert, animated: true, completion: nil)
+        CurrentAppContext().frontmostViewController()?.present(alert, animated: true,
+                                                               completion: {
+                                                                alert.applyAccessibilityIdentifiers()
+        })
     }
 
     @objc
