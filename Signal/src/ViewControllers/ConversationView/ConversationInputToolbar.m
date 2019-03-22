@@ -136,6 +136,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.inputTextView.backgroundColor = Theme.toolbarBackgroundColor;
     [self.inputTextView setContentHuggingLow];
     [self.inputTextView setCompressionResistanceLow];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputTextView);
 
     _textViewHeightConstraint = [self.inputTextView autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
 
@@ -152,6 +153,7 @@ const CGFloat kMaxTextViewHeight = 98;
                            forState:UIControlStateNormal];
     self.attachmentButton.tintColor = Theme.navbarIconColor;
     [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
     _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.sendButton setTitle:MessageStrings.sendButton forState:UIControlStateNormal];
@@ -161,6 +163,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.sendButton.contentEdgeInsets = UIEdgeInsetsMake(0, 4, 0, 4);
     [self.sendButton autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _sendButton);
 
     UIImage *voiceMemoIcon = [UIImage imageNamed:@"voice-memo-button"];
     OWSAssertDebug(voiceMemoIcon);
@@ -169,6 +172,7 @@ const CGFloat kMaxTextViewHeight = 98;
                           forState:UIControlStateNormal];
     self.voiceMemoButton.imageView.tintColor = Theme.navbarIconColor;
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
     // We want to be permissive about the voice message gesture, so we hang
     // the long press GR on the button's wrapper, not the button itself.
@@ -184,11 +188,13 @@ const CGFloat kMaxTextViewHeight = 98;
     self.quotedReplyWrapper.hidden = YES;
     [self.quotedReplyWrapper setContentHuggingHorizontalLow];
     [self.quotedReplyWrapper setCompressionResistanceHorizontalLow];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _quotedReplyWrapper);
 
     _linkPreviewWrapper = [UIView containerView];
     self.linkPreviewWrapper.hidden = YES;
     [self.linkPreviewWrapper setContentHuggingHorizontalLow];
     [self.linkPreviewWrapper setCompressionResistanceHorizontalLow];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _linkPreviewWrapper);
 
     // V Stack
     UIStackView *vStack = [[UIStackView alloc]
@@ -346,6 +352,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.quotedReplyWrapper.layoutMargins = UIEdgeInsetsZero;
     [self.quotedReplyWrapper addSubview:quotedMessagePreview];
     [quotedMessagePreview ows_autoPinToSuperviewMargins];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, quotedMessagePreview);
 
     self.linkPreviewView.hasAsymmetricalRounding = !self.quotedReply;
 }
@@ -563,6 +570,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.voiceMemoUI.backgroundColor = Theme.toolbarBackgroundColor;
     [self addSubview:self.voiceMemoUI];
     self.voiceMemoUI.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoUI);
 
     self.voiceMemoContentView = [UIView new];
     [self.voiceMemoUI addSubview:self.voiceMemoContentView];
@@ -572,6 +580,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.recordingLabel.textColor = [UIColor ows_destructiveRedColor];
     self.recordingLabel.font = [UIFont ows_mediumFontWithSize:14.f];
     [self.voiceMemoContentView addSubview:self.recordingLabel];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _recordingLabel);
 
     VoiceMemoLockView *voiceMemoLockView = [VoiceMemoLockView new];
     self.voiceMemoLockView = voiceMemoLockView;
@@ -773,6 +782,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [sendVoiceMemoButton autoVCenterInSuperview];
     [sendVoiceMemoButton setCompressionResistanceHigh];
     [sendVoiceMemoButton setContentHuggingHigh];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, sendVoiceMemoButton);
 
     UIButton *cancelButton = [[OWSButton alloc] initWithBlock:^{
         [weakSelf.inputToolbarDelegate voiceMemoGestureDidCancel];
@@ -781,6 +791,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [cancelButton setTitleColor:UIColor.ows_destructiveRedColor forState:UIControlStateNormal];
     cancelButton.alpha = 0;
     cancelButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, cancelButton);
 
     [self.voiceMemoContentView addSubview:cancelButton];
     OWSAssert(self.recordingLabel != nil);

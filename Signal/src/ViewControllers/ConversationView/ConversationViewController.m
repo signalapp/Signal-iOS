@@ -619,10 +619,12 @@ typedef enum : NSUInteger {
     [self.collectionView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
     [self.collectionView applyScrollViewInsetsFix];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _collectionView);
 
     _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
@@ -634,6 +636,7 @@ typedef enum : NSUInteger {
     [self.loadMoreHeader autoPinWidthToWidthOfView:self.view];
     [self.loadMoreHeader autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.loadMoreHeader autoSetDimension:ALDimensionHeight toSize:kLoadMoreHeaderHeight];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _loadMoreHeader);
 
     [self updateShowLoadMoreHeader];
 }
@@ -1006,6 +1009,7 @@ typedef enum : NSUInteger {
     [closeButton autoPinLeadingToTrailingEdgeOfView:label offset:kBannerHSpacing];
 
     [bannerView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:tapSelector]];
+    bannerView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"banner_close");
 
     [self.view addSubview:bannerView];
     [bannerView autoPinToTopLayoutGuideOfViewController:self withInset:10];
@@ -1083,11 +1087,13 @@ typedef enum : NSUInteger {
                     }];
         [actionSheet addAction:verifyAction];
 
-        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
-                                                                style:UIAlertActionStyleCancel
-                                                              handler:^(UIAlertAction *action) {
-                                                                  [weakSelf resetVerificationStateToDefault];
-                                                              }];
+        UIAlertAction *dismissAction =
+            [UIAlertAction actionWithTitle:CommonStrings.dismissButton
+                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
+                                     style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action) {
+                                       [weakSelf resetVerificationStateToDefault];
+                                   }];
         [actionSheet addAction:dismissAction];
 
         [self dismissKeyBoard];
@@ -1358,6 +1364,7 @@ typedef enum : NSUInteger {
     ConversationHeaderView *headerView =
         [[ConversationHeaderView alloc] initWithThread:self.thread contactsManager:self.contactsManager];
     self.headerView = headerView;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, headerView);
 
     headerView.delegate = self;
     self.navigationItem.titleView = headerView;
@@ -1483,7 +1490,9 @@ typedef enum : NSUInteger {
             0,
             round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
             round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-        [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:callButton]];
+        [barButtons
+            addObject:[[UIBarButtonItem alloc] initWithCustomView:callButton
+                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")]];
     }
 
     if (self.disappearingMessagesConfiguration.isEnabled) {
@@ -1502,7 +1511,9 @@ typedef enum : NSUInteger {
             timerView.frame = CGRectMake(0, 0, 36, 44);
         }
 
-        [barButtons addObject:[[UIBarButtonItem alloc] initWithCustomView:timerView]];
+        [barButtons
+            addObject:[[UIBarButtonItem alloc] initWithCustomView:timerView
+                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"timer")]];
     }
 
     self.navigationItem.rightBarButtonItems = [barButtons copy];
@@ -1804,14 +1815,15 @@ typedef enum : NSUInteger {
     [actionSheet addAction:deleteMessageAction];
 
     UIAlertAction *resendMessageAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *action) {
-                    [self.editingDatabaseConnection
-                        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                            [self.messageSenderJobQueue addMessage:message transaction:transaction];
+                actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
+                          style:UIAlertActionStyleDefault
+                        handler:^(UIAlertAction *action) {
+                            [self.editingDatabaseConnection
+                                asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                                    [self.messageSenderJobQueue addMessage:message transaction:transaction];
+                                }];
                         }];
-                }];
 
     [actionSheet addAction:resendMessageAction];
 
@@ -1851,20 +1863,21 @@ typedef enum : NSUInteger {
     [alert addAction:[OWSAlerts cancelAction]];
 
     UIAlertAction *resetSessionAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *action) {
-                    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-                        // Corrupt Message errors only appear in contact threads.
-                        OWSLogError(@"Unexpected request to reset session in group thread. Refusing");
-                        return;
-                    }
-                    TSContactThread *contactThread = (TSContactThread *)self.thread;
-                    [self.editingDatabaseConnection
-                        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                            [self.sessionResetJobQueue addContactThread:contactThread transaction:transaction];
+                actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
+        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reset_session")
+                          style:UIAlertActionStyleDefault
+                        handler:^(UIAlertAction *action) {
+                            if (![self.thread isKindOfClass:[TSContactThread class]]) {
+                                // Corrupt Message errors only appear in contact threads.
+                                OWSLogError(@"Unexpected request to reset session in group thread. Refusing");
+                                return;
+                            }
+                            TSContactThread *contactThread = (TSContactThread *)self.thread;
+                            [self.editingDatabaseConnection
+                                asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                                    [self.sessionResetJobQueue addContactThread:contactThread transaction:transaction];
+                                }];
                         }];
-                }];
     [alert addAction:resetSessionAction];
 
     [self dismissKeyBoard];
@@ -1885,6 +1898,7 @@ typedef enum : NSUInteger {
 
     UIAlertAction *showSafteyNumberAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_safety_number")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *action) {
                                    OWSLogInfo(@"Remote Key Changed actions: Show fingerprint display");
@@ -1894,13 +1908,14 @@ typedef enum : NSUInteger {
 
     UIAlertAction *acceptSafetyNumberAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"accept_safety_number")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *action) {
                                    OWSLogInfo(@"Remote Key Changed actions: Accepted new identity key");
 
-                                   // DEPRECATED: we're no longer creating these incoming SN error's per message,
-                                   // but there will be some legacy ones in the wild, behind which await
-                                   // as-of-yet-undecrypted messages
+        // DEPRECATED: we're no longer creating these incoming SN error's per message,
+        // but there will be some legacy ones in the wild, behind which await
+        // as-of-yet-undecrypted messages
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
                                    if ([errorMessage isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
@@ -1936,6 +1951,7 @@ typedef enum : NSUInteger {
 
     __weak ConversationViewController *weakSelf = self;
     UIAlertAction *callAction = [UIAlertAction actionWithTitle:[CallStrings callBackAlertCallButton]
+                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction *action) {
                                                            [weakSelf startAudioCall];
@@ -2207,20 +2223,22 @@ typedef enum : NSUInteger {
 
     [actionSheet addAction:[OWSAlerts cancelAction]];
 
-    UIAlertAction *blockAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(
-                            @"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION", @"Action sheet that will block an unknown user.")
-                  style:UIAlertActionStyleDestructive
-                handler:^(UIAlertAction *action) {
-                    OWSLogInfo(@"Blocking an unknown user.");
-                    [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
-                    // Delete the offers.
-                    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        contactThread.hasDismissedOffers = YES;
-                        [contactThread saveWithTransaction:transaction];
-                        [interaction removeWithTransaction:transaction];
-                    }];
-                }];
+    UIAlertAction *blockAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION",
+                                           @"Action sheet that will block an unknown user.")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block_user")
+                                 style:UIAlertActionStyleDestructive
+                               handler:^(UIAlertAction *action) {
+                                   OWSLogInfo(@"Blocking an unknown user.");
+                                   [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
+                                   // Delete the offers.
+                                   [self.editingDatabaseConnection
+                                       readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                           contactThread.hasDismissedOffers = YES;
+                                           [contactThread saveWithTransaction:transaction];
+                                           [interaction removeWithTransaction:transaction];
+                                       }];
+                               }];
     [actionSheet addAction:blockAction];
 
     [self dismissKeyBoard];
@@ -2566,6 +2584,7 @@ typedef enum : NSUInteger {
     [self.view addSubview:self.scrollDownButton];
     [self.scrollDownButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
     [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _scrollDownButton);
 
     // The "scroll down" button layout tracks the content inset of the collection view,
     // so pin to the edge of the collection view.
@@ -2584,6 +2603,7 @@ typedef enum : NSUInteger {
     [self.scrollUpButton autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [self.scrollUpButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 #endif
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _scrollUpButton);
 
     [self updateScrollDownButtonLayout];
 }
@@ -3409,34 +3429,40 @@ typedef enum : NSUInteger {
 
     [actionSheet addAction:[OWSAlerts cancelAction]];
 
-    UIAlertAction *takeMediaAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *action) {
-                    [self takePictureOrVideo];
-                }];
+    UIAlertAction *takeMediaAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(
+                                           @"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_camera")
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *action) {
+                                   [self takePictureOrVideo];
+                               }];
     UIImage *takeMediaImage = [UIImage imageNamed:@"actionsheet_camera_black"];
     OWSAssertDebug(takeMediaImage);
     [takeMediaAction setValue:takeMediaImage forKey:@"image"];
     [actionSheet addAction:takeMediaAction];
 
-    UIAlertAction *chooseMediaAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *action) {
-                    [self chooseFromLibraryAsMedia];
-                }];
+    UIAlertAction *chooseMediaAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(
+                                           @"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_choose_media")
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *action) {
+                                   [self chooseFromLibraryAsMedia];
+                               }];
     UIImage *chooseMediaImage = [UIImage imageNamed:@"actionsheet_camera_roll_black"];
     OWSAssertDebug(chooseMediaImage);
     [chooseMediaAction setValue:chooseMediaImage forKey:@"image"];
     [actionSheet addAction:chooseMediaAction];
 
-    UIAlertAction *gifAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"SELECT_GIF_BUTTON", @"Label for 'select GIF to attach' action sheet button")
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *action) {
-                    [self showGifPicker];
-                }];
+    UIAlertAction *gifAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"SELECT_GIF_BUTTON",
+                                           @"Label for 'select GIF to attach' action sheet button")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_gif")
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *action) {
+                                   [self showGifPicker];
+                               }];
     UIImage *gifImage = [UIImage imageNamed:@"actionsheet_gif_black"];
     OWSAssertDebug(gifImage);
     [gifAction setValue:gifImage forKey:@"image"];
@@ -3445,6 +3471,7 @@ typedef enum : NSUInteger {
     UIAlertAction *chooseDocumentAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_FROM_DOCUMENT_PICKER_BUTTON",
                                            @"action sheet button title when choosing attachment type")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_document")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *action) {
                                    [self showAttachmentDocumentPickerMenu];
@@ -3458,6 +3485,7 @@ typedef enum : NSUInteger {
         UIAlertAction *chooseContactAction =
             [UIAlertAction actionWithTitle:NSLocalizedString(@"ATTACHMENT_MENU_CONTACT_BUTTON",
                                                @"attachment menu option to send contact")
+                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_contact")
                                      style:UIAlertActionStyleDefault
                                    handler:^(UIAlertAction *action) {
                                        [self chooseContactForSending];
@@ -4542,6 +4570,10 @@ typedef enum : NSUInteger {
     cell.conversationStyle = self.conversationStyle;
 
     [cell loadForDisplay];
+
+    // TODO: Confirm with nancy if this will work.
+    NSString *cellName = [NSString stringWithFormat:@"interaction.%@", NSUUID.UUID.UUIDString];
+    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
 
     return cell;
 }
