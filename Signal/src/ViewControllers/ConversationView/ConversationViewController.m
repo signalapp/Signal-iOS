@@ -194,6 +194,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) BOOL isViewCompletelyAppeared;
 @property (nonatomic) BOOL isViewVisible;
+@property (nonatomic) BOOL isViewDisappearing;
 @property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL hasUnreadMessages;
@@ -737,6 +738,7 @@ typedef enum : NSUInteger {
     [self hideInputIfNeeded];
 
     self.isViewVisible = YES;
+    self.isViewDisappearing = NO;
 
     // We should have already requested contact access at this point, so this should be a no-op
     // unless it ever becomes possible to load this VC without going via the HomeViewController.
@@ -1262,17 +1264,20 @@ typedef enum : NSUInteger {
 // until `viewDidDisappear`.
 - (void)viewWillDisappear:(BOOL)animated
 {
-    OWSLogDebug(@"viewWillDisappear");
+    OWSLogDebug(@"");
 
     [super viewWillDisappear:animated];
 
     self.isViewCompletelyAppeared = NO;
+    self.isViewDisappearing = YES;
 
     [self dismissMenuActions];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
+    OWSLogDebug(@"");
+
     [super viewDidDisappear:animated];
     self.userHasScrolled = NO;
     self.isViewVisible = NO;
@@ -3827,6 +3832,15 @@ typedef enum : NSUInteger {
 - (void)handleKeyboardNotification:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
+
+    if (self.isViewDisappearing) {
+        // To avoid unnecessary animations, ignore keyboard notifications
+        // while the view is disappearing or has disappeared.
+        //
+        // This is safe; we'll always get more keyboard notifications when
+        // the view will re-appear.
+        return;
+    }
 
     NSDictionary *userInfo = [notification userInfo];
 
