@@ -750,7 +750,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
                                                           style:UIBarButtonItemStylePlain
                                                          target:self
                                                          action:@selector(settingsButtonPressed:)
-                                        accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"settings")];
+                                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"settings")];
     }
     settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
     self.navigationItem.leftBarButtonItem = settingsButton;
@@ -760,7 +760,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
                                                       target:self
                                                       action:@selector(showNewConversationView)
-                                     accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"compose")];
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"compose")];
 }
 
 - (void)settingsButtonPressed:(id)sender
@@ -1108,7 +1108,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
     // TODO: Work with Nancy to confirm that this is accessible via Appium.
     NSString *cellName = [NSString stringWithFormat:@"conversation-%@", NSUUID.UUID.UUIDString];
-    cell.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, cellName);
+    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
 
     return cell;
 }
@@ -1153,7 +1153,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeTop];
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeBottom];
 
-    cell.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"archived_conversations");
+    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"archived_conversations");
 
     return cell;
 }

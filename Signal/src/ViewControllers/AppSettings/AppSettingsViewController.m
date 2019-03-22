@@ -165,7 +165,7 @@
                                  [accessoryLabel sizeToFit];
                                  cell.accessoryView = accessoryLabel;
                                  cell.accessibilityIdentifier
-                                     = SUBVIEW_ACCESSIBILITY_IDENTIFIER(AppSettingsViewController, @"network_status");
+                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(AppSettingsViewController, @"network_status");
                                  return cell;
                              }
                                          actionBlock:nil]];
@@ -173,29 +173,29 @@
 
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
                                                               @"Settings table view cell label")
-                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"invite")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"invite")
                                               actionBlock:^{
                                                   [weakSelf showInviteFlow];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_TITLE",
                                                               @"Settings table view cell label")
-                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"privacy")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"privacy")
                                               actionBlock:^{
                                                   [weakSelf showPrivacy];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil)
-                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"notifications")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"notifications")
                                               actionBlock:^{
                                                   [weakSelf showNotifications];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"LINKED_DEVICES_TITLE",
                                                               @"Menu item and navbar title for the device manager")
-                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"linked_devices")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"linked_devices")
                                               actionBlock:^{
                                                   [weakSelf showLinkedDevices];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"")
-                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"advanced")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"advanced")
                                               actionBlock:^{
                                                   [weakSelf showAdvanced];
                                               }]];
@@ -204,20 +204,20 @@
     if (showBackup) {
         [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_BACKUP",
                                                                   @"Label for the backup view in app settings.")
-                                      accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"backup")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"backup")
                                                   actionBlock:^{
                                                       [weakSelf showBackup];
                                                   }]];
     }
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ABOUT", @"")
-                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"about")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"about")
                                               actionBlock:^{
                                                   [weakSelf showAbout];
                                               }]];
 
 #ifdef USE_DEBUG_UI
     [section addItem:[OWSTableItem disclosureItemWithText:@"Debug UI"
-                                  accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"debugui")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"debugui")
                                               actionBlock:^{
                                                   [weakSelf showDebugUI];
                                               }]];
@@ -226,19 +226,20 @@
     if (TSAccountManager.sharedInstance.isDeregistered) {
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON",
                                                                   @"Label for re-registration button.")
-                                      accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"reregister")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reregister")
                                                      selector:@selector(reregisterUser)
                                                         color:[UIColor ows_materialBlueColor]]];
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
                                                                   @"Label for 'delete data' button.")
-                                      accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"delete_data")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")
                                                      selector:@selector(deleteUnregisterUserData)
                                                         color:[UIColor ows_destructiveRedColor]]];
     } else {
-        [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
-                                      accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"delete_account")
-                                                     selector:@selector(unregisterUser)
-                                                        color:[UIColor ows_destructiveRedColor]]];
+        [section
+            addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_account")
+                                                selector:@selector(unregisterUser)
+                                                   color:[UIColor ows_destructiveRedColor]]];
     }
 
     [contents addSection:section];
@@ -352,7 +353,7 @@
     [disclosureButton setContentCompressionResistancePriority:(UILayoutPriorityDefaultHigh + 1)
                                                       forAxis:UILayoutConstraintAxisHorizontal];
 
-    cell.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"profile");
+    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"profile");
 
     return cell;
 }
@@ -490,7 +491,7 @@
                                                         target:self
                                                         action:@selector(didPressEnableDarkTheme:)];
     }
-    barButtonItem.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dark_theme");
+    barButtonItem.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dark_theme");
     return barButtonItem;
 }
 

@@ -226,9 +226,21 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                          customRowHeight:(CGFloat)customRowHeight
                              actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
+    return [self disclosureItemWithText:text
+                accessibilityIdentifier:nil
+                        customRowHeight:customRowHeight
+                            actionBlock:actionBlock];
+}
+
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text
+                 accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                         customRowHeight:(CGFloat)customRowHeight
+                             actionBlock:(nullable OWSTableActionBlock)actionBlock
+{
     OWSAssertDebug(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
 
-    OWSTableItem *item = [self disclosureItemWithText:text actionBlock:actionBlock];
+    OWSTableItem *item =
+        [self disclosureItemWithText:text accessibilityIdentifier:accessibilityIdentifier actionBlock:actionBlock];
     item.customRowHeight = @(customRowHeight);
     return item;
 }

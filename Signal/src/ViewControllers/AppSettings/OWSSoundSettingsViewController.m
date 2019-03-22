@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                       target:self
                                                       action:@selector(cancelWasPressed:)
-                                     accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"cancel")];
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"cancel")];
     self.navigationItem.leftBarButtonItem = cancelItem;
 
     if (self.isDirty) {
@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
             [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
                                                           target:self
                                                           action:@selector(saveWasPressed:)
-                                         accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"save")];
+                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"save")];
         self.navigationItem.rightBarButtonItem = saveItem;
     } else {
         self.navigationItem.rightBarButtonItem = nil;
@@ -97,14 +97,14 @@ NS_ASSUME_NONNULL_BEGIN
         if (sound == self.currentSound) {
             item = [OWSTableItem
                   checkmarkItemWithText:soundLabelText
-                accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, [OWSSounds displayNameForSound:sound])
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, [OWSSounds displayNameForSound:sound])
                             actionBlock:^{
                                 [weakSelf soundWasSelected:sound];
                             }];
         } else {
             item = [OWSTableItem
                      actionItemWithText:soundLabelText
-                accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, [OWSSounds displayNameForSound:sound])
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, [OWSSounds displayNameForSound:sound])
                             actionBlock:^{
                                 [weakSelf soundWasSelected:sound];
                             }];

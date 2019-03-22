@@ -425,7 +425,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         [UIAlertAction actionWithTitle:
                            NSLocalizedString(@"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
                                @"Confirmation text for button which deletes all message, calling, attachments, etc.")
-               accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"delete")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete")
                                  style:UIAlertActionStyleDestructive
                                handler:^(UIAlertAction *_Nonnull action) {
                                    [self deleteThreadsAndMessages];

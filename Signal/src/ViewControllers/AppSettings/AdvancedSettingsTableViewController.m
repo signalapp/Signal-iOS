@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *loggingSection = [OWSTableSection new];
     loggingSection.headerTitle = NSLocalizedString(@"LOGGING_SECTION", nil);
     [loggingSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_DEBUGLOG", @"")
-                                accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"enable_debug_log")
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"enable_debug_log")
                                 isOnBlock:^{
                                     return [OWSPreferences isLoggingEnabled];
                                 }
@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([OWSPreferences isLoggingEnabled]) {
         [loggingSection
             addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"")
-                             accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"submit_debug_log")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"submit_debug_log")
                                          actionBlock:^{
                                              OWSLogInfo(@"Submitting debug logs");
                                              [DDLog flushLog];
@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
     pushNotificationsSection.headerTitle
         = NSLocalizedString(@"PUSH_REGISTER_TITLE", @"Used in table section header and alert view title contexts");
     [pushNotificationsSection addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"REREGISTER_FOR_PUSH", nil)
-                                               accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(
+                                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                                            self, @"reregister_push_notifications")
                                                            actionBlock:^{
                                                                [weakSelf syncPushTokens];
@@ -187,7 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
     [censorshipSection
         addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION",
                                                      @"Label for the  'manual censorship circumvention' switch.")
-                         accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"censorship_circumvention")
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"censorship_circumvention")
                                        isOnBlock:isCensorshipCircumventionOnBlock
                                   isEnabledBlock:isManualCensorshipCircumventionOnEnabledBlock
                                           target:weakSelf

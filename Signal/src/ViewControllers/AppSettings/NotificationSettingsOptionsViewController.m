@@ -41,7 +41,7 @@
                                      cell.accessoryType = UITableViewCellAccessoryCheckmark;
                                  }
                                  cell.accessibilityIdentifier
-                                     = SUBVIEW_ACCESSIBILITY_IDENTIFIER(NotificationSettingsOptionsViewController,
+                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NotificationSettingsOptionsViewController,
                                          NSStringForNotificationType(notificationType));
                                  return cell;
                              }

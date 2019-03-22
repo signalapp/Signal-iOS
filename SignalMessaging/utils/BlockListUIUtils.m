@@ -118,7 +118,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 
     UIAlertAction *blockAction = [UIAlertAction
                 actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
-        accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"block")
+        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
                           style:UIAlertActionStyleDestructive
                         handler:^(UIAlertAction *_Nonnull action) {
                             [self blockPhoneNumbers:phoneNumbers
@@ -134,7 +134,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     [actionSheet addAction:blockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                          accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss")
+                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
                                                             style:UIAlertActionStyleCancel
                                                           handler:^(UIAlertAction *_Nonnull action) {
                                                               if (completionBlock) {
@@ -169,7 +169,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 
     UIAlertAction *blockAction = [UIAlertAction
                 actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
-        accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"block")
+        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
                           style:UIAlertActionStyleDestructive
                         handler:^(UIAlertAction *_Nonnull action) {
                             [self blockGroup:groupThread
@@ -185,7 +185,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     [actionSheet addAction:blockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                          accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss")
+                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
                                                             style:UIAlertActionStyleCancel
                                                           handler:^(UIAlertAction *_Nonnull action) {
                                                               if (completionBlock) {
@@ -336,7 +336,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     UIAlertAction *unblockAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(
                                            @"BLOCK_LIST_UNBLOCK_BUTTON", @"Button label for the 'unblock' button")
-               accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"unblock")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
                                  style:UIAlertActionStyleDestructive
                                handler:^(UIAlertAction *_Nonnull action) {
                                    [BlockListUIUtils unblockPhoneNumbers:phoneNumbers
@@ -352,7 +352,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     [actionSheet addAction:unblockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                          accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss")
+                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
                                                             style:UIAlertActionStyleCancel
                                                           handler:^(UIAlertAction *_Nonnull action) {
                                                               if (completionBlock) {
@@ -409,7 +409,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 
     UIAlertAction *unblockAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
                                                                       @"Button label for the 'unblock' button")
-                                          accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"unblock")
+                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
                                                             style:UIAlertActionStyleDestructive
                                                           handler:^(UIAlertAction *_Nonnull action) {
                                                               [BlockListUIUtils unblockGroup:groupModel
@@ -425,7 +425,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     [actionSheet addAction:unblockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                          accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"dismiss")
+                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
                                                             style:UIAlertActionStyleCancel
                                                           handler:^(UIAlertAction *_Nonnull action) {
                                                               if (completionBlock) {
@@ -474,7 +474,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
         [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
 
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                     accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"ok")
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
                                                        style:UIAlertActionStyleDefault
                                                      handler:completionBlock];
     [alert addAction:okAction];
