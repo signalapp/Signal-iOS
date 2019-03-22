@@ -334,6 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
                                                         @"Button text to dismiss missing contacts permission alert")
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"not_now")
                                               style:UIAlertActionStyleCancel
                                             handler:nil]];
 
