@@ -287,6 +287,8 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     self.reminderViewCell.selectionStyle = UITableViewCellSelectionStyleNone;
     [self.reminderViewCell.contentView addSubview:reminderStackView];
     [reminderStackView autoPinEdgesToSuperviewEdges];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _reminderViewCell);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, reminderStackView);
 
     __weak HomeViewController *weakSelf = self;
     ReminderView *deregisteredView =
@@ -301,18 +303,21 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
                         }];
     _deregisteredView = deregisteredView;
     [reminderStackView addArrangedSubview:deregisteredView];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, deregisteredView);
 
     ReminderView *outageView = [ReminderView
         nagWithText:NSLocalizedString(@"OUTAGE_WARNING", @"Label warning the user that the Signal service may be down.")
           tapAction:nil];
     _outageView = outageView;
     [reminderStackView addArrangedSubview:outageView];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, outageView);
 
     ReminderView *archiveReminderView =
         [ReminderView explanationWithText:NSLocalizedString(@"INBOX_VIEW_ARCHIVE_MODE_REMINDER",
                                               @"Label reminding the user that they are in archive mode.")];
     _archiveReminderView = archiveReminderView;
     [reminderStackView addArrangedSubview:archiveReminderView];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, archiveReminderView);
 
     ReminderView *missingContactsPermissionView = [ReminderView
         nagWithText:NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
@@ -322,6 +327,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
           }];
     _missingContactsPermissionView = missingContactsPermissionView;
     [reminderStackView addArrangedSubview:missingContactsPermissionView];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, missingContactsPermissionView);
 
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.delegate = self;
@@ -332,6 +338,8 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kArchivedConversationsReuseIdentifier];
     [self.view addSubview:self.tableView];
     [self.tableView autoPinEdgesToSuperviewEdges];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _tableView);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _searchBar);
 
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
@@ -340,6 +348,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self.view addSubview:self.emptyInboxView];
     [self.emptyInboxView autoPinWidthToSuperviewMargins];
     [self.emptyInboxView autoVCenterInSuperview];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _emptyInboxView);
 
     [self createFirstConversationCueView];
     [self.view addSubview:self.firstConversationCueView];
@@ -353,6 +362,8 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
                                                      relation:NSLayoutRelationGreaterThanOrEqual];
     [self.firstConversationCueView autoPinEdgeToSuperviewMargin:ALEdgeBottom
                                                        relation:NSLayoutRelationGreaterThanOrEqual];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _firstConversationCueView);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _firstConversationLabel);
 
     UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
     pullToRefreshView.tintColor = [UIColor grayColor];
@@ -360,13 +371,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
     [self.tableView insertSubview:pullToRefreshView atIndex:0];
-
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _tableView);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _emptyInboxView);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _firstConversationCueView);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _firstConversationLabel);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _searchBar);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _reminderStackView);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, pullToRefreshView);
 }
 
 - (UIView *)createEmptyInboxView
@@ -744,15 +749,18 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
         settingsButton = [[UIBarButtonItem alloc] initWithImage:image
                                                           style:UIBarButtonItemStylePlain
                                                          target:self
-                                                         action:@selector(settingsButtonPressed:)];
+                                                         action:@selector(settingsButtonPressed:)
+                                        accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"settings")];
     }
     settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
     self.navigationItem.leftBarButtonItem = settingsButton;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, settingsButton);
 
     self.navigationItem.rightBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
                                                       target:self
-                                                      action:@selector(showNewConversationView)];
+                                                      action:@selector(showNewConversationView)
+                                     accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"compose")];
 }
 
 - (void)settingsButtonPressed:(id)sender
@@ -1098,6 +1106,10 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     BOOL isBlocked = [self.blocklistCache isThreadBlocked:thread.threadRecord];
     [cell configureWithThread:thread isBlocked:isBlocked];
 
+    // TODO: Work with Nancy to confirm that this is accessible via Appium.
+    NSString *cellName = [NSString stringWithFormat:@"conversation-%@", NSUUID.UUID.UUIDString];
+    cell.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, cellName);
+
     return cell;
 }
 
@@ -1140,6 +1152,8 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeTrailing relation:NSLayoutRelationGreaterThanOrEqual];
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeTop];
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeBottom];
+
+    cell.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"archived_conversations");
 
     return cell;
 }
