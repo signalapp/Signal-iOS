@@ -308,11 +308,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     UIAlertAction *discardAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DISCARD_BUTTON",
                                            @"The label for the 'discard' button in alerts and action sheets.")
+               accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"discard")
                                  style:UIAlertActionStyleDestructive
                                handler:^(UIAlertAction *action) {
                                    [weakSelf profileCompletedOrSkipped];
                                }];
-    discardAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"discard");
     [alert addAction:discardAction];
 
     [alert addAction:[OWSAlerts cancelAction]];

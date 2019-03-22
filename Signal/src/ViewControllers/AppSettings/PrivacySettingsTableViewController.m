@@ -561,11 +561,11 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
         UIAlertAction *action =
             [UIAlertAction actionWithTitle:screenLockTimeoutString
+                   accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.timeout.%@", timeoutValue]
                                      style:UIAlertActionStyleDefault
                                    handler:^(UIAlertAction *ignore) {
                                        [OWSScreenLock.sharedManager setScreenLockTimeout:screenLockTimeout];
                                    }];
-        action.accessibilityIdentifier = [NSString stringWithFormat:@"settings.privacy.timeout.%@", timeoutValue];
         [alert addAction:action];
     }
     [alert addAction:[OWSAlerts cancelAction]];

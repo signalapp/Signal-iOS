@@ -268,18 +268,18 @@ NS_ASSUME_NONNULL_BEGIN
         [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
                                          style:UIBarButtonItemStylePlain
                                         target:self
-                                        action:@selector(backButtonWasPressed)];
-    backButton.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"back");
+                                        action:@selector(backButtonWasPressed)
+                       accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"back")];
     self.navigationItem.backBarButtonItem = backButton;
 
     if (self.shouldHaveNextButton) {
         UIBarButtonItem *nextButton = [[UIBarButtonItem alloc]
-            initWithTitle:NSLocalizedString(@"ENABLE_2FA_VIEW_NEXT_BUTTON",
-                              @"Label for the 'next' button in the 'enable two factor auth' views.")
-                    style:UIBarButtonItemStylePlain
-                   target:self
-                   action:@selector(nextButtonWasPressed)];
-        nextButton.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"next");
+                      initWithTitle:NSLocalizedString(@"ENABLE_2FA_VIEW_NEXT_BUTTON",
+                                        @"Label for the 'next' button in the 'enable two factor auth' views.")
+                              style:UIBarButtonItemStylePlain
+                             target:self
+                             action:@selector(nextButtonWasPressed)
+            accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"next")];
         self.navigationItem.rightBarButtonItem = nextButton;
     } else {
         self.navigationItem.rightBarButtonItem = nil;
