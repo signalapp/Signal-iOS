@@ -363,7 +363,7 @@ const CGFloat kIconViewLength = 24;
                                      @"Table cell label in conversation settings which returns the user to the "
                                      @"conversation with 'search mode' activated");
                                  return
-                                     [weakSelf disclosureCellWithName:title iconName:@"actionsheet_camera_roll_black"];
+                                     [weakSelf disclosureCellWithName:title iconName:@"conversation_settings_search"];
                              }
                              actionBlock:^{
                                  [weakSelf tappedConversationSearch];
