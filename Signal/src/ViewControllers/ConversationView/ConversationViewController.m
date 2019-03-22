@@ -194,7 +194,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) BOOL isViewCompletelyAppeared;
 @property (nonatomic) BOOL isViewVisible;
-@property (nonatomic) BOOL isViewDisappearing;
 @property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL hasUnreadMessages;
@@ -214,6 +213,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isShowingSearchUI;
 @property (nonatomic, nullable) MenuActionsViewController *menuActionsViewController;
 @property (nonatomic) CGFloat extraContentInsetPadding;
+@property (nonatomic) CGFloat contentInsetBottom;
 
 @end
 
@@ -738,7 +738,6 @@ typedef enum : NSUInteger {
     [self hideInputIfNeeded];
 
     self.isViewVisible = YES;
-    self.isViewDisappearing = NO;
 
     // We should have already requested contact access at this point, so this should be a no-op
     // unless it ever becomes possible to load this VC without going via the HomeViewController.
@@ -1269,7 +1268,6 @@ typedef enum : NSUInteger {
     [super viewWillDisappear:animated];
 
     self.isViewCompletelyAppeared = NO;
-    self.isViewDisappearing = YES;
 
     [self dismissMenuActions];
 }
@@ -3833,15 +3831,6 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    if (self.isViewDisappearing) {
-        // To avoid unnecessary animations, ignore keyboard notifications
-        // while the view is disappearing or has disappeared.
-        //
-        // This is safe; we'll always get more keyboard notifications when
-        // the view will re-appear.
-        return;
-    }
-
     NSDictionary *userInfo = [notification userInfo];
 
     NSValue *_Nullable keyboardBeginFrameValue = userInfo[UIKeyboardFrameBeginUserInfoKey];
@@ -3861,18 +3850,26 @@ typedef enum : NSUInteger {
     UIEdgeInsets oldInsets = self.collectionView.contentInset;
     UIEdgeInsets newInsets = oldInsets;
 
-    // Use a content inset that so that the conversation content
-    // is not hidden behind the keyboard + input accessory.
+    // Measures how far the keyboard "intrudes" into the collection view's content region.
+    // Indicates how large the bottom content inset should be in order to avoid the keyboard
+    // from hiding the conversation content.
     //
-    // Make sure to leave space for the bottom layout guide (the notch).
-    //
-    // Always reserve room for the input accessory, which we display even
-    // if the keyboard is not active.
-    newInsets.top = 0;
-    newInsets.bottom = MAX(0, self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y);
+    // NOTE: we can ignore the "bottomLayoutGuide" (i.e. the notch); this will be accounted
+    // for by the "adjustedContentInset".
+    CGFloat keyboardContentOverlap
+        = MAX(0, self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y);
 
-    newInsets.top += self.extraContentInsetPadding;
-    newInsets.bottom += self.extraContentInsetPadding;
+    // For the sake of continuity, we want to maintain the same contentInsetBottom when the
+    // the keyboard/input accessory are hidden, e.g. during dismissal animations, when
+    // presenting popups like the attachment picker, etc.
+    //
+    // Therefore, we only zero out the contentInsetBottom if the inputAccessoryView is nil.
+    if (self.inputAccessoryView == nil || keyboardContentOverlap > 0) {
+        self.contentInsetBottom = keyboardContentOverlap;
+    }
+
+    newInsets.top = 0 + self.extraContentInsetPadding;
+    newInsets.bottom = self.contentInsetBottom + self.extraContentInsetPadding;
 
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
 
