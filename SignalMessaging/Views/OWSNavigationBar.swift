@@ -62,7 +62,6 @@ public class OWSNavigationBar: UINavigationBar {
 
     override public var next: UIResponder? {
         if let stubbedNextResponder = self.stubbedNextResponder {
-            Logger.debug("returning stubbed responder")
             return stubbedNextResponder
         }
 
