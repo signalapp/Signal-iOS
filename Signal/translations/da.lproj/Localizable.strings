@@ -95,6 +95,9 @@
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Tilføj en billedtekst...";
 
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Fil type: %@";
 
@@ -112,12 +115,6 @@
 
 /* Status label when an attachment download has failed. */
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Fejl ved afhentning. Tryk for at prøve igen.";
-
-/* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Henter...";
-
-/* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Sat i kø";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = " Kunne ikke sende fil";
@@ -305,14 +302,8 @@
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Næste";
 
-/* Label for redo button. */
-"BUTTON_REDO" = "Gentag";
-
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Vælg";
-
-/* Label for undo button. */
-"BUTTON_UNDO" = "Fortryd";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Ring igen";
@@ -358,6 +349,9 @@
 
 /* Accessibility label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Afvis opkald";
+
+/* tooltip label when remote party has enabled their video */
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tap here to turn on your video";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Afslut opkald";
@@ -569,6 +563,15 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Slet samtale?";
 
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
+
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 match";
+
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
+
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Samtale indstillingér";
 
@@ -619,6 +622,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Opret ny kontakt";
+
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tryk for at ændre";
@@ -1056,17 +1062,17 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Søg";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds: {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Nogle af dine kontakter er allerede på Signal, blandt andet %@.";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds: {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@ and %@";
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Nogle af dine kontakter er allerede på Signal, blandt andet %@ og %@.";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds: {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@, %@ and %@";
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Nogle af dine kontakter er allerede på Signal, blandt andet %@, %@ og %@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Begynd din første samtale her.";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Ingen resultater fundet for '%@'";
@@ -1076,21 +1082,6 @@
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
-
-/* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Børste";
-
-/* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Beskær";
-
-/* Label for button that resets crop & rotation state. */
-"IMAGE_EDITOR_RESET_BUTTON" = "Reset";
-
-/* Label for button that rotates image 45 degrees. */
-"IMAGE_EDITOR_ROTATE_45_BUTTON" = "Rotate 45°";
-
-/* Label for button that rotates image 90 degrees. */
-"IMAGE_EDITOR_ROTATE_90_BUTTON" = "Rotate 90°";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Du kan ikke dele mere end %@ ting.";
@@ -1509,10 +1500,10 @@
 "ONBOARDING_2FA_EXPLANATION_1" = "Dette telefonnummer har registreringslås slået til. Indtast venligst registreringskoden";
 
 /* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "Your Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"ONBOARDING_2FA_EXPLANATION_2" = "Din Registreringslås PIN er separat fra den automatiske verifikationskode, der blev sendt til din telefon under det sidste trin.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "I forgot my PIN";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Jeg har glemt min PIN-kode";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Registreringslås";
@@ -1521,10 +1512,10 @@
 "ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Enable Permissions";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Giv tilladelse";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Your contact information is always transmitted securely.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Din kontaktinformation bliver altid sendt sikkert.";
 
 /* Label for the 'not now' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Ikke nu";
@@ -1542,7 +1533,7 @@
 "ONBOARDING_PROFILE_EXPLANATION" = "Signal profiles are end-to-end encrypted and the Signal service never has access to this information.";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Your Name";
+"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Dit navn";
 
 /* Title of the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_TITLE" = "Konfigurer din profil";
@@ -1551,40 +1542,40 @@
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Vilkår og privatlivspolitik";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
+"ONBOARDING_SPLASH_TITLE" = "Tag privatlivet med dig. \nSkriv lige hvad du vil i enhver besked";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Forkert nummer?";
 
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "I didn't get a code (available in %@)";
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Jeg har ikke modtaget en verifikationskode (tilgængelig i %@)";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "This code is incorrect";
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "Den indtastede verifikationskode er forkert";
 
 /* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "I didn't get a code";
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Jeg har ikke modtaget en verifikationskode";
 
 /* Message for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Please ensure that you have cellular service and can receive SMS messages.";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Tjek at du har mobil dækning og kan modtage SMSer.";
 
 /* Title for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "No code?";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Ingen verifikationskode?";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Resend code";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Gensend verifikationskode";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Ring til mig i stedet ";
 
 /* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Still no code?";
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Stadig ingen verifikationskode?";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Enter the code we sent to %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Indtast verifikationskoden vi sendte til %@";
 
 /* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "We just resent a code to %@";
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "Vi har gensendt en verifikationskode til %@";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Indstillingér";
@@ -1648,6 +1639,15 @@
 
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Arbejdsfax";
+
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Unable to capture image.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Unable to capture image.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Failed to configure camera.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Unavngivet album";
@@ -1799,12 +1799,6 @@
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registrering af dette telefonnummer vil være muligt uden din Registreringslås PIN-kode, når der er  gået 7 dage siden telefonnummeret sidst var aktiv på Signal.";
 
-/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "Dette telefonnummer har Registreringslås aktiveret. Indtast venligst Registreringslås PIN-koden.\n\nDin Registreringslås PIN er separat fra den automatiske verifikationskode, der blev sendt til din telefon under det sidste trin.";
-
-/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registrering fejlede";
-
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Indsend";
 
@@ -1826,9 +1820,6 @@
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landekode";
 
-/* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Registreringslås";
-
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Indtast nummer";
 
@@ -1847,15 +1838,6 @@
 /* alert title when registering an iPad */
 "REGISTRATION_IPAD_CONFIRM_TITLE" = "Har du allerede en Signal konto?";
 
-/* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Vilkår og privatlivspolitik";
-
-/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Ved at registrere denne enhed accepterer du Signal's %@";
-
-/* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "vilkår";
-
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Dette telefonnummerformat er ikke understøttet.";
 
@@ -1865,9 +1847,6 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Du skal registrere dig, før du kan sende en besked.";
 
-/* No comment provided by engineer. */
-"REGISTRATION_TITLE_LABEL" = "Dit telefonnummer";
-
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikation mislykkedes";
 
@@ -1876,9 +1855,6 @@
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Forkert registreringslås PIN.";
-
-/* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Registrer";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Indtast venligst et gyldigt telefonnummer for at registrere.";
@@ -2412,7 +2388,7 @@
 "UNKNOWN_CONTACT_NAME" = "Ukendt kontakt";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Unknown Country";
+"UNKNOWN_COUNTRY_NAME" = "Ukendt land";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Ukendt";
@@ -2512,24 +2488,6 @@
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Opgrader iOS";
-
-/* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Tilbage";
-
-/* Text field placeholder for SMS verification code during registration */
-"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Verifikationskode";
-
-/* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Ring mig op i stedet.";
-
-/* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Gensend kode på SMS";
-
-/* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Indsend";
-
-/* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Indtast verifikationskoden vi sendte til %@.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Du har markeret %@ som ikke godkendt.";

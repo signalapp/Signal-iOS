@@ -95,6 +95,9 @@
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Bir başlık ekleyin...";
 
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Başlık";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Dosya türü: %@";
 
@@ -113,29 +116,23 @@
 /* Status label when an attachment download has failed. */
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "İndirme başarısız. Yeniden denemek için dokunun.";
 
-/* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "İndiriliyor...";
-
-/* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Sıraya eklendi";
-
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Eklenti Gönderilirken Hata";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Resim dönüştürülemedi.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Görüntü dönüştürülemedi.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Video işlenemedi.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Resim işlenemedi.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Görüntü işlenemedi.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Bu görüntüdeki metaveriler kaldırılamadı.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Resim yeniden bouytlandırılamadı.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Görüntü yeniden boyutlandırılamadı.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Eklenti çok büyük.";
@@ -150,7 +147,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Eklenti boş.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Resim seçin ya da fotoğraf çekin, sonra gönderin";
+"ATTACHMENT_HINT" = "Görüntü seçin veya çekin sonra gönderin";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Eklenti";
@@ -305,14 +302,8 @@
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "İleri";
 
-/* Label for redo button. */
-"BUTTON_REDO" = "Yinele";
-
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Seç";
-
-/* Label for undo button. */
-"BUTTON_UNDO" = "Geri al";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Tekrar Ara";
@@ -358,6 +349,9 @@
 
 /* Accessibility label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Gelen aramayı reddet";
+
+/* tooltip label when remote party has enabled their video */
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Görüntünüzü açmak için buraya dokunun";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Aramayı sonlandır";
@@ -569,6 +563,15 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Sohbeti Sil?";
 
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "Eşleşme yok";
+
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 eşleşme";
+
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d/%d eşleşme";
+
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Sohbet Seçenekleri";
 
@@ -619,6 +622,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Yeni Kişi Oluştur";
+
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "Sohbeti Araştır";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Değiştirmek için Dokunun";
@@ -814,7 +820,7 @@
 "EDIT_TXT" = "Düzenle";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Merhaba,\n\nSon zamanlarda iPhone'umdaki konuşmalarımı gizli tutmak için Signal kullanıyorum. Size de kurmanızı öneririm, böylelikle iletilerimizin ve aramalarımızın aramızda kaldığından emin olabiliriz.\n\nSignal, iPhone ve Android için kullanılabilir. Şu adresten edinebilirsiniz: %@ \n\nSignal mevcut ileti uygulamanız gibi çalışır. Resim ve video gönderebilir, arama yapabilir ve grup sohbetlerine başlayabiliriz. En iyi yanı ise yapımcıları dahil hiçkimsenin göremeyecek olması!\n\nSignal'i yapan Open Whisper Systems hakkında daha fazla bilgi için şu adresi ziyaret edebilirsin: %@";
+"EMAIL_INVITE_BODY" = "Merhaba,\n\nSon zamanlarda iPhone'umdaki konuşmalarımı gizli tutmak için Signal kullanıyorum. Size de kurmanızı öneririm, böylelikle iletilerimizin ve aramalarımızın aramızda kaldığından emin olabiliriz.\n\nSignal, iPhone ve Android için kullanılabilir. Şu adresten edinebilirsiniz: %@ \n\nSignal mevcut ileti uygulamanız gibi çalışır. Görüntü ve video gönderebilir, arama yapabilir ve grup sohbetlerine başlayabiliriz. En iyi yanı ise yapımcıları dahil hiç kimsenin göremeyecek olması!\n\nSignal'i yapan Open Whisper Systems hakkında daha fazla bilgi için şu adresi ziyaret edebilirsin: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Haydi Signal'e geçelim";
@@ -1056,13 +1062,13 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Ara";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds: {{The name of 1 of your Signal contacts}}. */
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Bazı kişileriniz zaten Signal kullanıyor, örneğin %@.";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds: {{The names of 2 of your Signal contacts}}. */
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Bazı kişileriniz zaten Signal kullanıyor, örneğin %@ ve %@";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds: {{The names of 3 of your Signal contacts}}. */
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Bazı kişileriniz zaten Signal kullanıyor, örneğin %@, %@ ve %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
@@ -1076,21 +1082,6 @@
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
-
-/* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Fırça";
-
-/* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Kırpma";
-
-/* Label for button that resets crop & rotation state. */
-"IMAGE_EDITOR_RESET_BUTTON" = "Sıfırla";
-
-/* Label for button that rotates image 45 degrees. */
-"IMAGE_EDITOR_ROTATE_45_BUTTON" = "45 derece döndür";
-
-/* Label for button that rotates image 90 degrees. */
-"IMAGE_EDITOR_ROTATE_90_BUTTON" = "90 derece döndür";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "%@ öğeden daha fazlasını paylaşamazsınız.";
@@ -1649,6 +1640,15 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "İş Faksı";
 
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Görüntü yakalanamadı.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Görüntü yakalanamadı.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Kamera yapılandırılamadı.";
+
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "İsimsiz Albüm";
 
@@ -1788,7 +1788,7 @@
 "QUOTED_REPLY_TYPE_GIF" = "GIF";
 
 /* Indicates this message is a quoted reply to an image file. */
-"QUOTED_REPLY_TYPE_IMAGE" = "Resim";
+"QUOTED_REPLY_TYPE_IMAGE" = "Görüntü";
 
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
@@ -1798,12 +1798,6 @@
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Bu telefon numarasının kaydı, numaranın en son Signal üzerinde aktif olmasının üzerinden 7 gün geçtikten sonra Kayıt Kilidi PIN'iniz olmadan mümkün olabilecektir.";
-
-/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "Bu telefon numarası Kayıt Kilidi'ni etkinleştirmiş. Lütfen Kayıt Kilidi PIN'ini girin.\n\nKayıt Kilidi PIN'iniz son aşamada otomatik olarak gönderilen doğrulama kodundan farklıdır.";
-
-/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Kaydolma İşlemi Başarısız Oldu";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Gönder";
@@ -1826,9 +1820,6 @@
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Ülke Kodu";
 
-/* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Kayıt Kilidi";
-
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Numarayı Gir";
 
@@ -1847,15 +1838,6 @@
 /* alert title when registering an iPad */
 "REGISTRATION_IPAD_CONFIRM_TITLE" = "Zaten Signal hesabınız var mı?";
 
-/* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Şartlar ve Gizlilik İlkesi";
-
-/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Bu cihazı kaydederek Signal'in %@'ni kabul etmiş olursunuz.";
-
-/* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "şartlar";
-
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Bu telefon numarası formatı desteklenmiyor, lütfen destek ile iletişime geç.";
 
@@ -1865,9 +1847,6 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "İleti göndermeden önce kaydolmanız gerekiyor.";
 
-/* No comment provided by engineer. */
-"REGISTRATION_TITLE_LABEL" = "Telefon Numaranız";
-
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Doğrulama Başarısız Oldu";
 
@@ -1876,9 +1855,6 @@
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Hatalı Kayıt Kilidi PIN'i.";
-
-/* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Kaydet";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Kaydolmak için lütfen geçerli bir telefon numarası girin.";
@@ -2512,24 +2488,6 @@
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOS'u Güncelle";
-
-/* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Geri";
-
-/* Text field placeholder for SMS verification code during registration */
-"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Doğrulama Kodu";
-
-/* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Bunun Yerine Beni Ara";
-
-/* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Kodu tekrar SMS ile gönder";
-
-/* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Gönder";
-
-/* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "%@ numarasına gönderilen doğrulama kodunu giriniz.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@ doğrulanmamış olarak işaretlendi.";

@@ -95,6 +95,9 @@
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Beschriftung hinzufügen …";
 
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Beschriftung";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Dateityp: %@";
 
@@ -112,12 +115,6 @@
 
 /* Status label when an attachment download has failed. */
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Herunterladen gescheitert. Für erneuten Versuch antippen.";
-
-/* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Wird heruntergeladen …";
-
-/* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "In Wartereihe";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Fehler beim Senden des Anhangs";
@@ -305,14 +302,8 @@
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Weiter";
 
-/* Label for redo button. */
-"BUTTON_REDO" = "Wiederherstellen";
-
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Auswählen";
-
-/* Label for undo button. */
-"BUTTON_UNDO" = "Rückgängig";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Erneut anrufen";
@@ -358,6 +349,9 @@
 
 /* Accessibility label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Eingehenden Anruf ablehnen";
+
+/* tooltip label when remote party has enabled their video */
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Zum Anschalten deiner Videoübertragung hier antippen";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Anruf beenden";
@@ -569,6 +563,15 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Unterhaltung löschen?";
 
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "Keine Treffer";
+
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 Treffer";
+
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d von %d Treffern";
+
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Unterhaltungseinstellungen";
 
@@ -619,6 +622,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Neuen Kontakt erstellen";
+
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "Unterhaltung durchsuchen";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Zum Ändern antippen";
@@ -1056,13 +1062,13 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Suchen";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds: {{The name of 1 of your Signal contacts}}. */
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Einige deiner Kontakte sind bereits bei Signal, darunter %@";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds: {{The names of 2 of your Signal contacts}}. */
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Einige deiner Kontakte sind bereits bei Signal, darunter %@ und %@";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds: {{The names of 3 of your Signal contacts}}. */
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Einige deiner Kontakte sind bereits bei Signal, darunter %@, %@ und %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
@@ -1076,21 +1082,6 @@
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
-
-/* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Pinsel";
-
-/* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Zuschneiden";
-
-/* Label for button that resets crop & rotation state. */
-"IMAGE_EDITOR_RESET_BUTTON" = "Neu starten";
-
-/* Label for button that rotates image 45 degrees. */
-"IMAGE_EDITOR_ROTATE_45_BUTTON" = "45° rotieren";
-
-/* Label for button that rotates image 90 degrees. */
-"IMAGE_EDITOR_ROTATE_90_BUTTON" = "90° rotieren";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Du kannst nicht mehr als %@ Elemente teilen.";
@@ -1649,6 +1640,15 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Fax Arbeit";
 
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Bild kann nicht aufgenommen werden.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Bild kann nicht aufgenommen werden.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Konfigurieren der Kamera gescheitert.";
+
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Unbenanntes Album";
 
@@ -1799,12 +1799,6 @@
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Ohne deine PIN für die Registrierungssperre wird die Registrierung dieser Rufnummer erst nach Ablauf von 7 Tagen seit der letzten Aktivität der Rufnummer auf Signal möglich sein.";
 
-/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "Für diese Rufnummer ist die Registrierungssperre aktiviert. Bitte gib die PIN für die Registrierungssperre ein.\n\nDeine PIN für die Registrierungssperre ist unabhängig vom automatisch erstellten Verifikationscode, der beim letzten Schritt an dein Telefon gesendet wurde.";
-
-/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registrierung gescheitert";
-
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Übermitteln";
 
@@ -1826,9 +1820,6 @@
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landesvorwahl";
 
-/* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Registrierungssperre";
-
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Rufnummer eingeben";
 
@@ -1847,15 +1838,6 @@
 /* alert title when registering an iPad */
 "REGISTRATION_IPAD_CONFIRM_TITLE" = "Du hast bereits ein Signal-Konto?";
 
-/* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Bedingungen & Datenschutzerklärung";
-
-/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Durch Registrieren dieses Geräts stimmst zu Signals %@ zu";
-
-/* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "Bedingungen";
-
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Dieses Rufnummernformat wird nicht unterstützt, bitte den Support kontaktieren.";
 
@@ -1865,9 +1847,6 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Du musst dich registrieren, bevor du eine Nachricht senden kannst.";
 
-/* No comment provided by engineer. */
-"REGISTRATION_TITLE_LABEL" = "Deine Rufnummer";
-
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikation gescheitert";
 
@@ -1876,9 +1855,6 @@
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Falsche PIN für die Registrierungssperre.";
-
-/* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Registrieren";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Bitte gib eine gültige Rufnummer ein, um Signal zu registrieren.";
@@ -2512,24 +2488,6 @@
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOS aktualisieren";
-
-/* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Zurück";
-
-/* Text field placeholder for SMS verification code during registration */
-"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Verifikationscode";
-
-/* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Mich anrufen";
-
-/* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Code via SMS erneut senden";
-
-/* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Senden";
-
-/* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Gib den an %@ gesendeten Verifikationscode ein.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Du hast %@ als nicht verifiziert markiert.";

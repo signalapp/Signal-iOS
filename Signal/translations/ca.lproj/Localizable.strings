@@ -95,6 +95,9 @@
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Afegeix una descripció...";
 
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tipus de fitxer: %@";
 
@@ -112,12 +115,6 @@
 
 /* Status label when an attachment download has failed. */
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Ha fallat la baixada. Toqueu per a provar de nou.";
-
-/* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "S'està baixant...";
-
-/* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "A la cua";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Error en enviar l'adjunt";
@@ -305,14 +302,8 @@
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Següent";
 
-/* Label for redo button. */
-"BUTTON_REDO" = "Refés";
-
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Seleccionar";
-
-/* Label for undo button. */
-"BUTTON_UNDO" = "Desfés";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Torna a trucar";
@@ -358,6 +349,9 @@
 
 /* Accessibility label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Rebutja trucades";
+
+/* tooltip label when remote party has enabled their video */
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tap here to turn on your video";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Finalitza la trucada";
@@ -569,6 +563,15 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Esborrar conversa?";
 
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
+
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 match";
+
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
+
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Configuració del xat";
 
@@ -619,6 +622,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Crea un contacte nou";
+
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Toca per canviar";
@@ -1056,13 +1062,13 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Cerca";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds: {{The name of 1 of your Signal contacts}}. */
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Alguns dels vostres contactes ja són al Signal, inclòs %@.";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds: {{The names of 2 of your Signal contacts}}. */
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Alguns dels vostres contactes ja són al Signal, inclosos %@i %@.";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds: {{The names of 3 of your Signal contacts}}. */
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Alguns dels vostres contactes ja són al Signal, inclosos %@, %@i %@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
@@ -1076,21 +1082,6 @@
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
-
-/* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Pinzell";
-
-/* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Retalla";
-
-/* Label for button that resets crop & rotation state. */
-"IMAGE_EDITOR_RESET_BUTTON" = "Restableix";
-
-/* Label for button that rotates image 45 degrees. */
-"IMAGE_EDITOR_ROTATE_45_BUTTON" = "Gira 45°";
-
-/* Label for button that rotates image 90 degrees. */
-"IMAGE_EDITOR_ROTATE_90_BUTTON" = "Gira 90°";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "No podeu compartir més de %@ elements.";
@@ -1649,6 +1640,15 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Fax de la feina";
 
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Unable to capture image.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Unable to capture image.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Failed to configure camera.";
+
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Àlbum sense nom";
 
@@ -1799,12 +1799,6 @@
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "El registre d'aquest número de telèfon serà possible sense el PIN de bloqueig de registre 7 dies després des de l'última activitat del número de telèfon al Signal.";
 
-/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "Aquest número de telèfon té el bloqueig de registre activat. Si us plau, introduïu el PIN de bloqueig de registre.\n\nEl PIN de bloqueig de registre és diferent del codi de verificació automatitzat que s'ha enviat al vostre telèfon al pas anterior.";
-
-/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Ha fallat el registre";
-
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Tramet";
 
@@ -1826,9 +1820,6 @@
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Codi internacional";
 
-/* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Pany de Registre";
-
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Introduïu el número";
 
@@ -1847,15 +1838,6 @@
 /* alert title when registering an iPad */
 "REGISTRATION_IPAD_CONFIRM_TITLE" = "Ja teniu un compte al Signal?";
 
-/* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Condicions de servei i política de privadesa";
-
-/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Registrant aquest dispositiu accepteu el següent de Signal: %@";
-
-/* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "termes";
-
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "El format del número de telèfon no és compatible, contacteu amb el suport.";
 
@@ -1865,9 +1847,6 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Heu de registrar-vos per poder enviar un missatge. ";
 
-/* No comment provided by engineer. */
-"REGISTRATION_TITLE_LABEL" = "El vostre número de telèfon";
-
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "La verificació ha fallat";
 
@@ -1876,9 +1855,6 @@
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Codi PIN de registre incorrecte.";
-
-/* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Registra";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Introduïu un número de telèfon vàlid a registrar.";
@@ -2512,24 +2488,6 @@
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Actualitzeu l'iOS";
-
-/* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Enrere";
-
-/* Text field placeholder for SMS verification code during registration */
-"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Codi de verificació";
-
-/* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Telefona'm, millor";
-
-/* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Reenvia el codi via SMS";
-
-/* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Tramet";
-
-/* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Introduïu el codi de verificació que hem enviat a %@.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Heu marcat %@ com a no verificat.";

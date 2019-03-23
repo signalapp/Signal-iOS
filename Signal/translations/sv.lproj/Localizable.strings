@@ -95,6 +95,9 @@
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Lägg till en bildtext...";
 
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Rubrik";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Filtyp: %@";
 
@@ -112,12 +115,6 @@
 
 /* Status label when an attachment download has failed. */
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Nedladdning misslyckad. Tryck för att försöka igen.";
-
-/* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Laddar ner …";
-
-/* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Köad";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Fel vid sändning av bifogad fil";
@@ -305,14 +302,8 @@
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Nästa";
 
-/* Label for redo button. */
-"BUTTON_REDO" = "Gör om";
-
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Välj";
-
-/* Label for undo button. */
-"BUTTON_UNDO" = "Ångra";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Ring igen";
@@ -358,6 +349,9 @@
 
 /* Accessibility label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Avvisa inkommande samtal";
+
+/* tooltip label when remote party has enabled their video */
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tryck här för att aktivera din video";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Avsluta samtal";
@@ -429,7 +423,7 @@
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Välj färg för utgående meddelanden för denna konversation.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Bara du kommer att kunna se färgen du väljer.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Bara du kommer att se färgen du väljer.";
 
 /* Modal Sheet title when picking a conversation color. */
 "COLOR_PICKER_SHEET_TITLE" = "Konversationsfärg";
@@ -456,7 +450,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Är du säker på att du vill radera ditt konto?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Du kommer inte längre kunna skicka eller ta emot meddelanden i den här gruppen.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Du kommer inte längre att kunna skicka eller ta emot meddelanden i den här gruppen.";
 
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Vill du verkligen lämna?";
@@ -569,6 +563,15 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Radera konversation?";
 
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "Inga resultat";
+
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 resultat";
+
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d av %d resultat";
+
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Konversationsinställningar";
 
@@ -619,6 +622,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Skapa ny kontakt";
+
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "Sök i konversationen";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tryck för att ändra";
@@ -850,7 +856,7 @@
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Ange en registreringslås-PIN. Du kommer att behöva ange denna PIN nästa gång du registrerar detta telefonnummer med Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "För ökad säkerhet kan du aktivera en registreringslås-PIN som kommer att krävas för att kunna registrera detta telefonnummer med Signal igen.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "För ökad säkerhet kan du aktivera en registreringslås-PIN som kommer att krävas för att registrera detta telefonnummer med Signal igen.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
 "ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registreringslås är aktiverat. Du kommer att behöva ange din PIN när du registrerar ditt telefonnummer med Signal igen.";
@@ -1056,13 +1062,13 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Sök";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds: {{The name of 1 of your Signal contacts}}. */
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Några av dina kontakter är redan på Signal, inklusive %@.";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds: {{The names of 2 of your Signal contacts}}. */
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Några av dina kontakter är redan på Signal, inklusive %@ och %@";
 
-/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds: {{The names of 3 of your Signal contacts}}. */
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Några av dina kontakter är redan på Signal, inklusive %@, %@ och %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
@@ -1076,21 +1082,6 @@
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
-
-/* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Pensel";
-
-/* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Beskära";
-
-/* Label for button that resets crop & rotation state. */
-"IMAGE_EDITOR_RESET_BUTTON" = "Starta om";
-
-/* Label for button that rotates image 45 degrees. */
-"IMAGE_EDITOR_ROTATE_45_BUTTON" = "Rotera 45°";
-
-/* Label for button that rotates image 90 degrees. */
-"IMAGE_EDITOR_ROTATE_90_BUTTON" = "Rotera 90°";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Du kan inte dela mer än %@ objekt.";
@@ -1649,6 +1640,15 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Arbetsfax";
 
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Kunde inte ta bilden.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Kunde inte ta bilden.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Kunde inte konfigurera kameran.";
+
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Namnlösa album";
 
@@ -1731,7 +1731,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Dina kontakter kommer kunna se din Signalprofil när du startar nya konversationer och när du delar den med andra användare eller grupper.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Dina kontakter kommer att kunna se din Signal-profil när du startar nya konversationer och när du delar den med andra användare eller grupper.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tryck här för att veta mer. ";
@@ -1799,12 +1799,6 @@
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Efter att 7 dagar har gått sen telefonnumret senast var aktivt i Signal så kan det här telefonnumret registreras igen utan din pinkod för registreringslås.";
 
-/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "Det här telefonnumret har registreringslås aktiverat. Ange pinkoden för registreringslås.\n\nDin pinkod för registreringslås är inte samma som den automatiska verifieringskoden som skickades till din telefon i förra steget.";
-
-/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Kunde inte registrera";
-
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Skicka";
 
@@ -1826,9 +1820,6 @@
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landskod";
 
-/* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Registreringslås";
-
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Ange nummer";
 
@@ -1847,15 +1838,6 @@
 /* alert title when registering an iPad */
 "REGISTRATION_IPAD_CONFIRM_TITLE" = "Har du redan ett Signal-konto?";
 
-/* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Villkor & Dataskyddspolicy";
-
-/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Genom att registrera denna enhet godkänner du Signals %@";
-
-/* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "villkor";
-
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Formatet på telefonnumret stöds inte, vänligen kontaktar supporten.";
 
@@ -1865,9 +1847,6 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Du behöver registrera dig innan du kan skicka ett meddelande.";
 
-/* No comment provided by engineer. */
-"REGISTRATION_TITLE_LABEL" = "Ditt telefonnummer";
-
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Kunde inte bekräfta";
 
@@ -1876,9 +1855,6 @@
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Fel PIN-kod för registreringslås";
-
-/* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Registrera";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Ange ett giltigt telefonnummer för att registrera.";
@@ -1956,13 +1932,13 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "För många felaktiga autentiseringsförsök. Försök igen senare.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att kunna använda skärmlås.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att använda Skärmlås.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att kunna använda skärmlås.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att använda Skärmlås.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att kunna använda skärmlås.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att använda Skärmlås.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autentisera för att öppna Signal";
@@ -2421,7 +2397,7 @@
 "UNLINK_ACTION" = "Avlänka";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Denna enhet kommer inte längre att kunna skicka eller ta emot meddelanden om den är frånkopplad.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Denna enhet kommer inte längre att skicka eller ta emot meddelanden om den är frånkopplad.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Avlänka \"%@\"?";
@@ -2512,24 +2488,6 @@
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Uppgradera iOS";
-
-/* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Tillbaka";
-
-/* Text field placeholder for SMS verification code during registration */
-"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Verifieringskod";
-
-/* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Ring mig istället";
-
-/* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Skicka koden igen via SMS";
-
-/* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Skicka";
-
-/* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Ange verifieringskoden vi skickade till %@.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Du markerade %@ som ej verifierad.";
