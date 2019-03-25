@@ -624,6 +624,7 @@ NSError *ContactDiscoveryServiceErrorMakeWithReason(NSInteger code, NSString *re
     [dateFormatter setDateFormat:@"yyy-MM-dd'T'HH:mm:ss.SSSSSS"];
     NSDate *timestampDate = [dateFormatter dateFromString:signatureBodyEntity.timestamp];
     if (!timestampDate) {
+        OWSFailDebug(@"Could not parse signature body timestamp: %@", signatureBodyEntity.timestamp);
         *error = ContactDiscoveryServiceErrorMakeWithReason(
             ContactDiscoveryServiceErrorAssertionError, @"could not parse signature body timestamp.");
         return NO;
@@ -639,6 +640,7 @@ NSError *ContactDiscoveryServiceErrorMakeWithReason(NSInteger code, NSString *re
     BOOL isExpired = [now isAfterDate:timestampDatePlus1Day];
 
     if (isExpired) {
+        OWSFailDebug(@"Could not parse signature body timestamp: %@", signatureBodyEntity.timestamp);
         *error = ContactDiscoveryServiceErrorMakeWithReason(
             ContactDiscoveryServiceErrorAttestationFailed, @"Signature is expired.");
         return NO;
