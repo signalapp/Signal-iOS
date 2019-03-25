@@ -58,8 +58,29 @@ def main():
         '3.0.2',
         # These tags were from unmerged branches investigating an issue that only reproduced when installed from TF.
         '2.34.0.10', '2.34.0.11', '2.34.0.12', '2.34.0.13', '2.34.0.15', '2.34.0.16', '2.34.0.17', '2.34.0.18', '2.34.0.19', '2.34.0.20', '2.34.0.6', '2.34.0.7', '2.34.0.8', '2.34.0.9',
+        '2.37.3.0',
+        '2.37.4.0',
+        '2.38.0.2.1',
+        '2.38.0.3.1',
+        '2.38.0.4.1'
     ]
     tags_of_concern = [tag for tag in tags_of_concern if tag not in tags_to_ignore]
+
+    # Interal Builds
+    #
+    # If you want to tag a build which is not intended to be reverse
+    # integrated, include the text "internal" somewhere in the tag name, such as
+    #
+    # 1.2.3.4.5-internal
+    # 1.2.3.4.5-internal-mkirk
+    #
+    # NOTE: that if you upload the build to test flight, you still need to give testflight
+    # a numeric build number - so tag won't match the build number exactly as they do
+    # with production build tags. That's fine.
+    #
+    # To avoid collision with "production" build numbers, use at least a 5
+    # digit build number.
+    tags_of_concern = [tag for tag in tags_of_concern if "internal" not in tag]
 
     if len(tags_of_concern) > 0:
         logging.debug("Found unmerged tags newer than epoch: %s" % tags_of_concern)
