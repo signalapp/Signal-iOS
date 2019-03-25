@@ -23,6 +23,8 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
 
 NSError *ContactDiscoveryServiceErrorMakeWithReason(NSInteger code, NSString *reason)
 {
+    OWSCFailDebug(@"Error: %@", reason);
+
     return [NSError errorWithDomain:ContactDiscoveryServiceErrorDomain
                                code:code
                            userInfo:@{ ContactDiscoveryServiceErrorKey_Reason : reason }];
@@ -640,7 +642,7 @@ NSError *ContactDiscoveryServiceErrorMakeWithReason(NSInteger code, NSString *re
     BOOL isExpired = [now isAfterDate:timestampDatePlus1Day];
 
     if (isExpired) {
-        OWSFailDebug(@"Could not parse signature body timestamp: %@", signatureBodyEntity.timestamp);
+        OWSFailDebug(@"Signature is expired: %@", signatureBodyEntity.timestamp);
         *error = ContactDiscoveryServiceErrorMakeWithReason(
             ContactDiscoveryServiceErrorAttestationFailed, @"Signature is expired.");
         return NO;
