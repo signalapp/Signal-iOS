@@ -214,7 +214,8 @@ const CGFloat kIconViewLength = 24;
             [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_TXT", nil)
                                              style:UIBarButtonItemStylePlain
                                             target:self
-                                            action:@selector(didTapEditButton)];
+                                            action:@selector(didTapEditButton)
+                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"edit")];
     }
 }
 
@@ -272,6 +273,7 @@ const CGFloat kIconViewLength = 24;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
 
     _disappearingMessagesDurationLabel = [UILabel new];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _disappearingMessagesDurationLabel);
 
     self.disappearingMessagesDurations = [OWSDisappearingMessagesConfiguration validDurationsSeconds];
 
@@ -323,21 +325,31 @@ const CGFloat kIconViewLength = 24;
 
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
         && !self.hasExistingContact) {
-        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            return
-                [weakSelf disclosureCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_NEW_CONTACT",
-                                                     @"Label for 'new contact' button in conversation settings view.")
-                                        iconName:@"table_ic_new_contact"];
-        }
-                                 actionBlock:^{
-                                     [weakSelf presentContactViewController];
-                                 }]];
-        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            return
-                [weakSelf disclosureCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
-                                                     @"Label for 'new contact' button in conversation settings view.")
-                                        iconName:@"table_ic_add_to_existing_contact"];
-        }
+        [mainSection
+            addItem:[OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            return [weakSelf
+                                 disclosureCellWithName:
+                                     NSLocalizedString(@"CONVERSATION_SETTINGS_NEW_CONTACT",
+                                         @"Label for 'new contact' button in conversation settings view.")
+                                               iconName:@"table_ic_new_contact"
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                            OWSConversationSettingsViewController, @"new_contact")];
+                        }
+                        actionBlock:^{
+                            [weakSelf presentContactViewController];
+                        }]];
+        [mainSection addItem:[OWSTableItem
+                                 itemWithCustomCellBlock:^{
+                                     return [weakSelf
+                                          disclosureCellWithName:
+                                              NSLocalizedString(@"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
+                                                  @"Label for 'new contact' button in conversation settings view.")
+                                                        iconName:@"table_ic_add_to_existing_contact"
+                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                     OWSConversationSettingsViewController,
+                                                                     @"add_to_existing_contact")];
+                                 }
                                  actionBlock:^{
                                      OWSConversationSettingsViewController *strongSelf = weakSelf;
                                      OWSCAssertDebug(strongSelf);
@@ -349,8 +361,11 @@ const CGFloat kIconViewLength = 24;
 
     [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
-                                 return [weakSelf disclosureCellWithName:MediaStrings.allMedia
-                                                                iconName:@"actionsheet_camera_roll_black"];
+                                 return [weakSelf
+                                      disclosureCellWithName:MediaStrings.allMedia
+                                                    iconName:@"actionsheet_camera_roll_black"
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                 OWSConversationSettingsViewController, @"all_media")];
                              }
                              actionBlock:^{
                                  [weakSelf showMediaGallery];
@@ -362,24 +377,31 @@ const CGFloat kIconViewLength = 24;
                                  NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_SEARCH",
                                      @"Table cell label in conversation settings which returns the user to the "
                                      @"conversation with 'search mode' activated");
-                                 return
-                                     [weakSelf disclosureCellWithName:title iconName:@"conversation_settings_search"];
+                                 return [weakSelf
+                                      disclosureCellWithName:title
+                                                    iconName:@"conversation_settings_search"
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                 OWSConversationSettingsViewController, @"search")];
                              }
                              actionBlock:^{
                                  [weakSelf tappedConversationSearch];
                              }]];
 
     if (!isNoteToSelf && !self.isGroupThread && self.thread.hasSafetyNumbers) {
-        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            return [weakSelf
-                disclosureCellWithName:
-                    NSLocalizedString(@"VERIFY_PRIVACY",
-                        @"Label for button or row which allows users to verify the safety number of another user.")
-                              iconName:@"table_ic_not_verified"];
-        }
-                                 actionBlock:^{
-                                     [weakSelf showVerificationView];
-                                 }]];
+        [mainSection
+            addItem:[OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            return [weakSelf
+                                 disclosureCellWithName:NSLocalizedString(@"VERIFY_PRIVACY",
+                                                            @"Label for button or row which allows users to verify the "
+                                                            @"safety number of another user.")
+                                               iconName:@"table_ic_not_verified"
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                            OWSConversationSettingsViewController, @"safety_numbers")];
+                        }
+                        actionBlock:^{
+                            [weakSelf showVerificationView];
+                        }]];
     }
 
     if (isNoteToSelf) {
@@ -392,15 +414,18 @@ const CGFloat kIconViewLength = 24;
                             OWSCAssertDebug(strongSelf);
 
                             return [strongSelf
-                                labelCellWithName:
-                                    (strongSelf.isGroupThread
-                                            ? NSLocalizedString(
-                                                  @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP",
-                                                  @"Indicates that user's profile has been shared with a group.")
-                                            : NSLocalizedString(
-                                                  @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
-                                                  @"Indicates that user's profile has been shared with a user."))
-                                         iconName:@"table_ic_share_profile"];
+                                      labelCellWithName:
+                                          (strongSelf.isGroupThread
+                                                  ? NSLocalizedString(
+                                                        @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP",
+                                                        @"Indicates that user's profile has been shared with a group.")
+                                                  : NSLocalizedString(
+                                                        @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
+                                                        @"Indicates that user's profile has been shared with a user."))
+                                               iconName:@"table_ic_share_profile"
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                            OWSConversationSettingsViewController,
+                                                            @"profile_is_shared")];
                         }
                                     actionBlock:nil]];
     } else {
@@ -411,13 +436,15 @@ const CGFloat kIconViewLength = 24;
                             OWSCAssertDebug(strongSelf);
 
                             UITableViewCell *cell = [strongSelf
-                                disclosureCellWithName:
-                                    (strongSelf.isGroupThread
-                                            ? NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP",
-                                                  @"Action that shares user profile with a group.")
-                                            : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
-                                                  @"Action that shares user profile with a user."))
-                                              iconName:@"table_ic_share_profile"];
+                                 disclosureCellWithName:
+                                     (strongSelf.isGroupThread
+                                             ? NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP",
+                                                   @"Action that shares user profile with a group.")
+                                             : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
+                                                   @"Action that shares user profile with a user."))
+                                               iconName:@"table_ic_share_profile"
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                            OWSConversationSettingsViewController, @"share_profile")];
                             cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
 
                             return cell;
@@ -476,6 +503,9 @@ const CGFloat kIconViewLength = 24;
 
                                  cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
 
+                                 cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                     OWSConversationSettingsViewController, @"disappearing_messages");
+
                                  return cell;
                              }
                                      customRowHeight:UITableViewAutomaticDimension
@@ -524,6 +554,9 @@ const CGFloat kIconViewLength = 24;
 
                             cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
 
+                            cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                OWSConversationSettingsViewController, @"disappearing_messages_duration");
+
                             return cell;
                         }
                                 customRowHeight:UITableViewAutomaticDimension
@@ -541,9 +574,12 @@ const CGFloat kIconViewLength = 24;
                             [OWSConversationColor conversationColorOrDefaultForColorName:colorName].themeColor;
                         NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
                             @"Label for table cell which leads to picking a new conversation color");
-                        return [strongSelf cellWithName:title
-                                               iconName:@"ic_color_palette"
-                                    disclosureIconColor:currentColor];
+                        return [strongSelf
+                                       cellWithName:title
+                                           iconName:@"ic_color_palette"
+                                disclosureIconColor:currentColor
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                        OWSConversationSettingsViewController, @"conversation_color")];
                     }
                     actionBlock:^{
                         [weakSelf showColorPicker];
@@ -561,7 +597,9 @@ const CGFloat kIconViewLength = 24;
                     UITableViewCell *cell =
                         [weakSelf disclosureCellWithName:NSLocalizedString(@"EDIT_GROUP_ACTION",
                                                              @"table cell label in conversation settings")
-                                                iconName:@"table_ic_group_edit"];
+                                                iconName:@"table_ic_group_edit"
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                             OWSConversationSettingsViewController, @"edit_group")];
                     cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
                     return cell;
                 }
@@ -573,7 +611,9 @@ const CGFloat kIconViewLength = 24;
                     UITableViewCell *cell =
                         [weakSelf disclosureCellWithName:NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION",
                                                              @"table cell label in conversation settings")
-                                                iconName:@"table_ic_group_members"];
+                                                iconName:@"table_ic_group_members"
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                             OWSConversationSettingsViewController, @"group_members")];
                     cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
                     return cell;
                 }
@@ -585,7 +625,9 @@ const CGFloat kIconViewLength = 24;
                     UITableViewCell *cell =
                         [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
                                                              @"table cell label in conversation settings")
-                                                iconName:@"table_ic_group_leave"];
+                                                iconName:@"table_ic_group_leave"
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                             OWSConversationSettingsViewController, @"leave_group")];
                     cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
 
                     return cell;
@@ -638,6 +680,10 @@ const CGFloat kIconViewLength = 24;
 
                             OWSSound sound = [OWSSounds notificationSoundForThread:strongSelf.thread];
                             cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
+
+                            cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                OWSConversationSettingsViewController, @"notifications");
+
                             return cell;
                         }
                         customRowHeight:UITableViewAutomaticDimension
@@ -706,6 +752,10 @@ const CGFloat kIconViewLength = 24;
                         [contentRow autoPinEdgesToSuperviewMargins];
 
                         cell.detailTextLabel.text = muteStatus;
+
+                        cell.accessibilityIdentifier
+                            = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSConversationSettingsViewController, @"mute");
+
                         return cell;
                     }
                     customRowHeight:UITableViewAutomaticDimension
@@ -743,8 +793,11 @@ const CGFloat kIconViewLength = 24;
                                      cellTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_USER",
                                          @"table cell label in conversation settings");
                                  }
-                                 UITableViewCell *cell =
-                                     [strongSelf disclosureCellWithName:cellTitle iconName:@"table_ic_block"];
+                                 UITableViewCell *cell = [strongSelf
+                                      disclosureCellWithName:cellTitle
+                                                    iconName:@"table_ic_block"
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                 OWSConversationSettingsViewController, @"block")];
 
                                  cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
@@ -755,6 +808,7 @@ const CGFloat kIconViewLength = 24;
                                                              action:@selector(blockConversationSwitchDidChange:)
                                                    forControlEvents:UIControlEventValueChanged];
                                  cell.accessoryView = blockConversationSwitch;
+
                                  return cell;
                              }
                                          actionBlock:nil]];
@@ -812,17 +866,23 @@ const CGFloat kIconViewLength = 24;
     return cell;
 }
 
-- (UITableViewCell *)disclosureCellWithName:(NSString *)name iconName:(NSString *)iconName
+- (UITableViewCell *)disclosureCellWithName:(NSString *)name
+                                   iconName:(NSString *)iconName
+                    accessibilityIdentifier:(NSString *)accessibilityIdentifier
 {
     UITableViewCell *cell = [self cellWithName:name iconName:iconName];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.accessibilityIdentifier = accessibilityIdentifier;
     return cell;
 }
 
-- (UITableViewCell *)labelCellWithName:(NSString *)name iconName:(NSString *)iconName
+- (UITableViewCell *)labelCellWithName:(NSString *)name
+                              iconName:(NSString *)iconName
+               accessibilityIdentifier:(NSString *)accessibilityIdentifier
 {
     UITableViewCell *cell = [self cellWithName:name iconName:iconName];
     cell.accessoryType = UITableViewCellAccessoryNone;
+    cell.accessibilityIdentifier = accessibilityIdentifier;
     return cell;
 }
 
@@ -915,6 +975,8 @@ const CGFloat kIconViewLength = 24;
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(conversationNameTouched:)]];
     mainSectionHeader.userInteractionEnabled = YES;
+
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, mainSectionHeader);
 
     return mainSectionHeader;
 }
@@ -1084,11 +1146,12 @@ const CGFloat kIconViewLength = 24;
                                      preferredStyle:UIAlertControllerStyleAlert];
 
     UIAlertAction *leaveAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"LEAVE_BUTTON_TITLE", @"Confirmation button within contextual alert")
-                  style:UIAlertActionStyleDestructive
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [self leaveGroup];
-                }];
+                actionWithTitle:NSLocalizedString(@"LEAVE_BUTTON_TITLE", @"Confirmation button within contextual alert")
+        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"leave_group_confirm")
+                          style:UIAlertActionStyleDestructive
+                        handler:^(UIAlertAction *_Nonnull action) {
+                            [self leaveGroup];
+                        }];
     [alert addAction:leaveAction];
     [alert addAction:[OWSAlerts cancelAction]];
 
@@ -1228,6 +1291,7 @@ const CGFloat kIconViewLength = 24;
     if (self.thread.isMuted) {
         UIAlertAction *action = [UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_UNMUTE_ACTION",
                                                                    @"Label for button to unmute a thread.")
+                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unmute")
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *_Nonnull ignore) {
                                                            [weakSelf setThreadMutedUntilDate:nil];
@@ -1238,6 +1302,7 @@ const CGFloat kIconViewLength = 24;
         [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION",
                                                          @"Label for button to mute a thread for a minute.")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_minute")
                                                style:UIAlertActionStyleDestructive
                                              handler:^(UIAlertAction *_Nonnull ignore) {
                                                  NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
@@ -1255,6 +1320,7 @@ const CGFloat kIconViewLength = 24;
         [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION",
                                                          @"Label for button to mute a thread for a hour.")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_hour")
                                                style:UIAlertActionStyleDestructive
                                              handler:^(UIAlertAction *_Nonnull ignore) {
                                                  NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
@@ -1271,6 +1337,7 @@ const CGFloat kIconViewLength = 24;
         [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION",
                                                          @"Label for button to mute a thread for a day.")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_day")
                                                style:UIAlertActionStyleDestructive
                                              handler:^(UIAlertAction *_Nonnull ignore) {
                                                  NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
@@ -1287,6 +1354,7 @@ const CGFloat kIconViewLength = 24;
         [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION",
                                                          @"Label for button to mute a thread for a week.")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_week")
                                                style:UIAlertActionStyleDestructive
                                              handler:^(UIAlertAction *_Nonnull ignore) {
                                                  NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
@@ -1303,6 +1371,7 @@ const CGFloat kIconViewLength = 24;
         [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION",
                                                          @"Label for button to mute a thread for a year.")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mute_1_year")
                                                style:UIAlertActionStyleDestructive
                                              handler:^(UIAlertAction *_Nonnull ignore) {
                                                  NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];

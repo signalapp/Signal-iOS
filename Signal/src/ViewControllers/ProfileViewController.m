@@ -112,7 +112,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     nameRow.userInteractionEnabled = YES;
     [nameRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(nameRowTapped:)]];
-    nameRow.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"nameRow");
+    nameRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"nameRow");
     [rows addObject:nameRow];
 
     UILabel *nameLabel = [UILabel new];
@@ -152,7 +152,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     avatarRow.userInteractionEnabled = YES;
     [avatarRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarRowTapped:)]];
-    avatarRow.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"avatarRow");
+    avatarRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"avatarRow");
     [rows addObject:avatarRow];
 
     UILabel *avatarLabel = [UILabel new];
@@ -165,7 +165,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [avatarLabel autoVCenterInSuperview];
 
     self.avatarView = [AvatarImageView new];
-    self.avatarView.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"avatarView");
+    self.avatarView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"avatarView");
 
     UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
     self.cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
@@ -189,7 +189,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     infoRow.userInteractionEnabled = YES;
     [infoRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(infoRowTapped:)]];
-    infoRow.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"infoRow");
+    infoRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"infoRow");
     [rows addObject:infoRow];
 
     UILabel *infoLabel = [UILabel new];
@@ -308,11 +308,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     UIAlertAction *discardAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DISCARD_BUTTON",
                                            @"The label for the 'discard' button in alerts and action sheets.")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"discard")
                                  style:UIAlertActionStyleDestructive
                                handler:^(UIAlertAction *action) {
                                    [weakSelf profileCompletedOrSkipped];
                                }];
-    discardAction.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"discard");
     [alert addAction:discardAction];
 
     [alert addAction:[OWSAlerts cancelAction]];

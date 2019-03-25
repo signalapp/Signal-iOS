@@ -6,6 +6,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <SignalMessaging/OWSAudioPlayer.h>
 #import <SignalMessaging/OWSSounds.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -46,17 +47,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateNavigationItems
 {
-    UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                                target:self
-                                                                                action:@selector(cancelWasPressed:)];
-    cancelItem.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"cancel");
+    UIBarButtonItem *cancelItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                      target:self
+                                                      action:@selector(cancelWasPressed:)
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"cancel")];
     self.navigationItem.leftBarButtonItem = cancelItem;
 
     if (self.isDirty) {
-        UIBarButtonItem *saveItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
-                                                                                  target:self
-                                                                                  action:@selector(saveWasPressed:)];
-        saveItem.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"save");
+        UIBarButtonItem *saveItem =
+            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
+                                                          target:self
+                                                          action:@selector(saveWasPressed:)
+                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"save")];
         self.navigationItem.rightBarButtonItem = saveItem;
     } else {
         self.navigationItem.rightBarButtonItem = nil;
@@ -94,14 +97,14 @@ NS_ASSUME_NONNULL_BEGIN
         if (sound == self.currentSound) {
             item = [OWSTableItem
                   checkmarkItemWithText:soundLabelText
-                accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, [OWSSounds displayNameForSound:sound])
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, [OWSSounds displayNameForSound:sound])
                             actionBlock:^{
                                 [weakSelf soundWasSelected:sound];
                             }];
         } else {
             item = [OWSTableItem
                      actionItemWithText:soundLabelText
-                accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, [OWSSounds displayNameForSound:sound])
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, [OWSSounds displayNameForSound:sound])
                             actionBlock:^{
                                 [weakSelf soundWasSelected:sound];
                             }];

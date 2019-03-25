@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
         addItem:[OWSTableItem
                      disclosureItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_ADD_BUTTON",
                                                 @"A label for the 'add phone number' button in the block list table.")
-                    accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"add")
+                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"add")
                                 actionBlock:^{
                                     AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
                                     [weakSelf.navigationController pushViewController:vc animated:YES];
@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                 itemWithCustomCellBlock:^{
                                                     ContactTableViewCell *cell = [ContactTableViewCell new];
                                                     [cell configureWithRecipientId:phoneNumber];
-                                                    cell.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(
+                                                    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                         BlockListViewController, @"user");
                                                     return cell;
                                                 }

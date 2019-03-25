@@ -143,7 +143,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                          @"The title for the 'update group' button.")
                                                style:UIBarButtonItemStylePlain
                                               target:self
-                                              action:@selector(updateGroupPressed)]
+                                              action:@selector(updateGroupPressed)
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"update")]
             : nil);
 }
 
@@ -206,10 +207,12 @@ NS_ASSUME_NONNULL_BEGIN
     [groupNameTextField autoVCenterInSuperview];
     [groupNameTextField autoPinTrailingToSuperviewMargin];
     [groupNameTextField autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, groupNameTextField);
 
     [avatarView
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];
     avatarView.userInteractionEnabled = YES;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, avatarView);
 
     return firstSectionHeader;
 }
@@ -285,6 +288,12 @@ NS_ASSUME_NONNULL_BEGIN
                             }
 
                             [cell configureWithRecipientId:recipientId];
+
+                            // TODO: Confirm with nancy if this will work.
+                            NSString *cellName = [NSString stringWithFormat:@"member.%@", recipientId];
+                            cell.accessibilityIdentifier
+                                = ACCESSIBILITY_IDENTIFIER_WITH_NAME(UpdateGroupViewController, cellName);
+
                             return cell;
                         }
                         customRowHeight:UITableViewAutomaticDimension
@@ -424,6 +433,7 @@ NS_ASSUME_NONNULL_BEGIN
                   preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_SAVE",
                                                         @"The label for the 'save' button in action sheets.")
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"save")
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction *action) {
                                                 OWSAssertDebug(self.conversationSettingsViewDelegate);
@@ -435,6 +445,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             }]];
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
                                                         @"The label for the 'don't save' button in action sheets.")
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dont_save")
                                               style:UIAlertActionStyleDestructive
                                             handler:^(UIAlertAction *action) {
                                                 [self.navigationController popViewControllerAnimated:YES];

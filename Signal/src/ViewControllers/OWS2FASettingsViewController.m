@@ -224,19 +224,19 @@ NS_ASSUME_NONNULL_BEGIN
                     addItem:[OWSTableItem disclosureItemWithText:
                                               NSLocalizedString(@"ENABLE_2FA_VIEW_DISABLE_2FA",
                                                   @"Label for the 'enable two-factor auth' item in the settings view")
-                                         accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"enable_2fa")
+                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"enable_2fa")
                                                      actionBlock:^{
                                                          [weakSelf tryToDisable2FA];
                                                      }]];
             } else {
-                [section
-                    addItem:[OWSTableItem disclosureItemWithText:
-                                              NSLocalizedString(@"ENABLE_2FA_VIEW_ENABLE_2FA",
-                                                  @"Label for the 'enable two-factor auth' item in the settings view")
-                                         accessibilityIdentifier:SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"disable_2fa")
-                                                     actionBlock:^{
-                                                         [weakSelf showEnable2FAWorkUI];
-                                                     }]];
+                [section addItem:[OWSTableItem
+                                      disclosureItemWithText:
+                                          NSLocalizedString(@"ENABLE_2FA_VIEW_ENABLE_2FA",
+                                              @"Label for the 'enable two-factor auth' item in the settings view")
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"disable_2fa")
+                                                 actionBlock:^{
+                                                     [weakSelf showEnable2FAWorkUI];
+                                                 }]];
             }
             [contents addSection:section];
             self.tableViewController.contents = contents;
@@ -268,18 +268,18 @@ NS_ASSUME_NONNULL_BEGIN
         [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
                                          style:UIBarButtonItemStylePlain
                                         target:self
-                                        action:@selector(backButtonWasPressed)];
-    backButton.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"back");
+                                        action:@selector(backButtonWasPressed)
+                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
     self.navigationItem.backBarButtonItem = backButton;
 
     if (self.shouldHaveNextButton) {
         UIBarButtonItem *nextButton = [[UIBarButtonItem alloc]
-            initWithTitle:NSLocalizedString(@"ENABLE_2FA_VIEW_NEXT_BUTTON",
-                              @"Label for the 'next' button in the 'enable two factor auth' views.")
-                    style:UIBarButtonItemStylePlain
-                   target:self
-                   action:@selector(nextButtonWasPressed)];
-        nextButton.accessibilityIdentifier = SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, @"next");
+                      initWithTitle:NSLocalizedString(@"ENABLE_2FA_VIEW_NEXT_BUTTON",
+                                        @"Label for the 'next' button in the 'enable two factor auth' views.")
+                              style:UIBarButtonItemStylePlain
+                             target:self
+                             action:@selector(nextButtonWasPressed)
+            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"next")];
         self.navigationItem.rightBarButtonItem = nextButton;
     } else {
         self.navigationItem.rightBarButtonItem = nil;

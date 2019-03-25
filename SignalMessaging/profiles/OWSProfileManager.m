@@ -1473,6 +1473,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     NSString *shareTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
         @"Button to confirm that user wants to share their profile with a user or group.");
     [alert addAction:[UIAlertAction actionWithTitle:shareTitle
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share_profile")
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction *_Nonnull action) {
                                                 [self userAddedThreadToProfileWhitelist:thread];
