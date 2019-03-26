@@ -75,8 +75,8 @@ private class VAlignTextView: UITextView {
 
     override var keyCommands: [UIKeyCommand]? {
         return [
-            UIKeyCommand(input: "\r", modifierFlags: .command, action: #selector(self.modifiedReturnPressed(sender:)), discoverabilityTitle: "Send Message"),
-            UIKeyCommand(input: "\r", modifierFlags: .alternate, action: #selector(self.modifiedReturnPressed(sender:)), discoverabilityTitle: "Send Message")
+            UIKeyCommand(input: "\r", modifierFlags: .command, action: #selector(self.modifiedReturnPressed(sender:)), discoverabilityTitle: "Add Text"),
+            UIKeyCommand(input: "\r", modifierFlags: .alternate, action: #selector(self.modifiedReturnPressed(sender:)), discoverabilityTitle: "Add Text")
         ]
     }
 
@@ -295,7 +295,7 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
             // Ensure continuity of the new text item's location
             // with its apparent location in this text editor.
-            let locationInView = view.convert(textView.bounds.center, from: textView)
+            let locationInView = view.convert(textView.bounds.center, from: textView).clamp(view.bounds)
             let textCenterImageUnit = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationInView,
                                                                               viewBounds: viewBounds,
                                                                               model: model,
