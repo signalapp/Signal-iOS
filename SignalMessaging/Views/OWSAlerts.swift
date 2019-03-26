@@ -96,10 +96,8 @@ import Foundation
 
     @objc
     public class func showIOSUpgradeNagIfNecessary() {
-        // Only show the nag to iOS 8 users.
-        //
-        // NOTE: Our current minimum iOS version is 9, so this should never show.
-        if #available(iOS 9.0, *) {
+        // Our min SDK is iOS9, so this will only show for iOS9 users
+        if #available(iOS 10.0, *) {
             return
         }
 
@@ -110,8 +108,7 @@ import Foundation
         }
 
         if let iOSUpgradeNagDate = Environment.shared.preferences.iOSUpgradeNagDate() {
-            // Nag no more than once every three days.
-            let kNagFrequencySeconds = 3 * kDayInterval
+            let kNagFrequencySeconds = 14 * kDayInterval
             guard fabs(iOSUpgradeNagDate.timeIntervalSinceNow) > kNagFrequencySeconds else {
                 return
             }
