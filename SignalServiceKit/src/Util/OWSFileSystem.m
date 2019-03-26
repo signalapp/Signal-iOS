@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFileSystem.h"
@@ -336,12 +336,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 NSString *OWSTemporaryDirectory(void)
 {
-    NSString *dirName = @"ows_temp";
-    NSString *dirPath = [NSTemporaryDirectory() stringByAppendingPathComponent:dirName];
-    BOOL success = [OWSFileSystem ensureDirectoryExists:dirPath fileProtectionType:NSFileProtectionComplete];
-    OWSCAssert(success);
+    static NSString *dirPath;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSString *dirName = [NSString stringWithFormat:@"ows_temp_%@", NSUUID.UUID.UUIDString];
+        dirPath = [NSTemporaryDirectory() stringByAppendingPathComponent:dirName];
+        BOOL success = [OWSFileSystem ensureDirectoryExists:dirPath fileProtectionType:NSFileProtectionComplete];
+        OWSCAssert(success);
+
+        // On launch, clear old temp directories.
+        //
+        // NOTE: ClearOldTemporaryDirectoriesSync() will call this function
+        // OWSTemporaryDirectory(), but there's no risk of deadlock;
+        // ClearOldTemporaryDirectories() calls ClearOldTemporaryDirectoriesSync()
+        // after a long delay.
+        ClearOldTemporaryDirectories();
+    });
     return dirPath;
 }
 
@@ -352,6 +366,52 @@ NSString *OWSTemporaryDirectoryAccessibleAfterFirstAuth(void)
                                      fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
     OWSCAssert(success);
     return dirPath;
+}
+
+void ClearOldTemporaryDirectoriesSync(void)
+{
+    // Ignore the "current" temp directory.
+    NSString *currentTempDirName = OWSTemporaryDirectory().lastPathComponent;
+
+    NSString *dirPath = NSTemporaryDirectory();
+    NSError *error;
+    NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];
+    if (error) {
+        OWSCFailDebug(@"contentsOfDirectoryAtPath error: %@", error);
+        return;
+    }
+    for (NSString *fileName in fileNames) {
+        if (!CurrentAppContext().isAppForegroundAndActive) {
+            // Abort if app not active.
+            return;
+        }
+        if ([fileName isEqualToString:currentTempDirName]) {
+            continue;
+        }
+        if (![fileName hasPrefix:@"ows_temp"]) {
+            continue;
+        }
+        NSString *filePath = [dirPath stringByAppendingPathComponent:fileName];
+        OWSLogVerbose(@"Clearing old temp directory: %@", filePath);
+        if (![OWSFileSystem deleteFile:filePath]) {
+            // This can happen if the app launches before the phone is unlocked.
+            // Clean up will occur when app becomes active.
+            OWSLogWarn(@"Could not delete old temp directory: %@", filePath);
+        }
+    }
+}
+
+// NOTE: We need to call this method on launch _and_ every time the app becomes active,
+//       since file protection may prevent it from succeeding in the background.
+void ClearOldTemporaryDirectories(void)
+{
+    // We use the lowest priority queue for this, and wait N seconds
+    // to avoid interfering with app startup.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10.f * NSEC_PER_SEC)),
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0),
+        ^{
+            ClearOldTemporaryDirectoriesSync();
+        });
 }
 
 NS_ASSUME_NONNULL_END

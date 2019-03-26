@@ -636,6 +636,9 @@ static NSTimeInterval launchStartedAt;
     // be called _before_ we become active.
     [self clearAllNotificationsAndRestoreBadgeCount];
 
+    // On every activation, clear old temp directories.
+    ClearOldTemporaryDirectories();
+
     OWSLogInfo(@"applicationDidBecomeActive completed.");
 }
 
