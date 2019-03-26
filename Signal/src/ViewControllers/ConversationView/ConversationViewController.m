@@ -2752,6 +2752,8 @@ typedef enum : NSUInteger {
         AudioServicesPlaySystemSound(soundId);
     }
     [self.typingIndicators didSendOutgoingMessageInThread:self.thread];
+
+    [OWSLinkPreview clearLinkPreviewCache];
 }
 
 #pragma mark UIDocumentMenuDelegate

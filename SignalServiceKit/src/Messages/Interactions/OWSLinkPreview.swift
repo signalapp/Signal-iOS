@@ -554,6 +554,13 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
+    public class func clearLinkPreviewCache() {
+        return serialQueue.async {
+            linkPreviewDraftCache.removeAllObjects()
+        }
+    }
+
+    @objc
     public class func tryToBuildPreviewInfoObjc(previewUrl: String?) -> AnyPromise {
         return AnyPromise(tryToBuildPreviewInfo(previewUrl: previewUrl))
     }

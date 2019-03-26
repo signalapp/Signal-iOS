@@ -709,6 +709,8 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self.searchResultsController viewDidAppear:animated];
 
     self.hasEverAppeared = YES;
+
+    [OWSLinkPreview clearLinkPreviewCache];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
