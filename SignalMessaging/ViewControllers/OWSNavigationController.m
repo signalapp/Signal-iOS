@@ -208,6 +208,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     if (self.visibleViewController) {
+        if (@available(iOS 10, *)) {
+            // do nothing
+        } else {
+            // Avoid crash in SAE on iOS9
+            if (!CurrentAppContext().isMainApp) {
+                return UIInterfaceOrientationMaskAllButUpsideDown;
+            }
+        }
         return self.visibleViewController.supportedInterfaceOrientations;
     } else {
         return UIInterfaceOrientationMaskAllButUpsideDown;
