@@ -518,7 +518,7 @@ public class OWSLinkPreview: MTLModel {
 
     // This cache should only be accessed on serialQueue.
     //
-    // We should only main
+    // We should only maintain a "cache" of the last known draft.
     private static var linkPreviewDraftCache: OWSLinkPreviewDraft?
 
     private class func cachedLinkPreview(forPreviewUrl previewUrl: String) -> OWSLinkPreviewDraft? {
