@@ -231,7 +231,7 @@
 "BACKUP_UNEXPECTED_ERROR" = "Onverwachte back-upfout";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Je zult geen berichten of updates van deze groep meer ontvangen.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Je zult niet langer berichten of meldingen van deze group  ontvangen.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokkeren";
@@ -459,7 +459,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Nieuw apparaat koppelen";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ heet mogelijk de app opnieuw geïnstalleerd of heeft een ander apparaat in gebruik genomen. Verifieer jullie veiligheidsnummers om zeker te zijn dat je met de juiste persoon communiceert.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ heeft mogelijk de app opnieuw geïnstalleerd of heeft een ander apparaat in gebruik genomen. Verifieer jullie veiligheidsnummers om zeker te zijn dat je met de juiste persoon communiceert.";
 
 /* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Veiligheidsnummer met %@ is veranderd";
@@ -787,13 +787,13 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal heeft toegang nodig tot je contacten om contactinformatie te bewerken";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Groep bewerken";
+"EDIT_GROUP_ACTION" = "Groep aanpassen";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contacten";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Groep bewerken";
+"EDIT_GROUP_DEFAULT_TITLE" = "Groep aanpassen";
 
 /* Label for the cell that lets you add a new member to a group. */
 "EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Toevoegen…";
@@ -805,7 +805,7 @@
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "Toegevoegd";
 
 /* The title for the 'update group' button. */
-"EDIT_GROUP_UPDATE_BUTTON" = "Bijwerken";
+"EDIT_GROUP_UPDATE_BUTTON" = "Aanpassen";
 
 /* The alert message if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Wil je de wijzigingen aan deze groep behouden?";
@@ -1048,7 +1048,7 @@
 "GROUP_TITLE_CHANGED" = "De titel is nu “%@”.";
 
 /* No comment provided by engineer. */
-"GROUP_UPDATED" = "Groep bijgewerkt.";
+"GROUP_UPDATED" = "Groep aangepast.";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Je hebt de groep verlaten.";
@@ -1491,7 +1491,7 @@
 "NOTIFICATIONS_SENDER_ONLY" = "Alleen naam";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SHOW" = "Toon";
+"NOTIFICATIONS_SHOW" = "Laat zien";
 
 /* No comment provided by engineer. */
 "OK" = "Begrepen";
@@ -2310,7 +2310,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Veiligheidsnummer tonen";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Gesprek tonen";
+"SHOW_THREAD_BUTTON_TITLE" = "Gesprek laten zien";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Ik nodig je uit om Signal te installeren! Hier is de link:";
@@ -2418,7 +2418,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Je apparaat ondersteunt deze functie niet.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Je kunt groepsleden niet verwijderen. Ofwel moeten zij zelf de groep verlaten, ofwel kun je een nieuwe groep zonder dit lid aanmaken.";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Je kunt groepsleden niet verwijderen. Ofwel moet hij zelf de groep verlaten, ofwel kun je een nieuwe groep zonder dit lid aanmaken.";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Niet ondersteund";
@@ -2484,7 +2484,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hallo, beveiligde videogesprekken!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal vereist iOS 9 of later. Gebruik de software-update-functie in de iOS-instellingenapp.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Werk iOS bij";

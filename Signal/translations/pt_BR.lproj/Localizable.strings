@@ -300,7 +300,7 @@
 "BUTTON_DONE" = "Pronto";
 
 /* Label for the 'next' button. */
-"BUTTON_NEXT" = "Próximo";
+"BUTTON_NEXT" = "Avançar";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Selecionar";
@@ -318,7 +318,7 @@
 "CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Recebendo ligação";
 
 /* Accessibility label for placing call button */
-"CALL_LABEL" = "Chamar";
+"CALL_LABEL" = "Ligar";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Chamada perdida porque o número de segurança do chamador mudou.";
@@ -339,7 +339,7 @@
 "CALL_USER_ALERT_MESSAGE_FORMAT" = "Gostaria de chamar %@?";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Chamar?";
+"CALL_USER_ALERT_TITLE" = "Ligar?";
 
 /* Accessibility label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Receber chamada";
@@ -351,7 +351,7 @@
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Recusar chamada";
 
 /* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tap here to turn on your video";
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Toque para ligar seu vídeo";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Terminar chamada";
@@ -510,7 +510,7 @@
 "CONTACT_FIELD_FAMILY_NAME" = "Sobrenome";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Nome";
+"CONTACT_FIELD_GIVEN_NAME" = "Primeiro nome";
 
 /* Label for the 'middle name' field of a contact. */
 "CONTACT_FIELD_MIDDLE_NAME" = "Segundo nome";
@@ -564,13 +564,13 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Excluir conversa?";
 
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
+"CONVERSATION_SEARCH_NO_RESULTS" = "Sem resultados";
 
 /* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 match";
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 resultado";
 
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d de %d resultados";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Configurações de Conversa";
@@ -624,7 +624,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Criar Novo Contato";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
+"CONVERSATION_SETTINGS_SEARCH" = "Buscar na Conversa";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Toque para mudar";
@@ -745,7 +745,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redirecionando para o GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Recadastrar este telefone";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Recadastrar este número de telefone";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Dispositivo não cadastrado. Seu número de telefone pode estar cadastrado no Signal em outro aparelho. Clique para se recadastrar.";
@@ -847,7 +847,7 @@
 "ENABLE_2FA_VIEW_ENABLE_2FA" = "Ativar";
 
 /* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Próximo";
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Avançar";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN incorreto.";
@@ -1279,7 +1279,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Enviando";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Enviado";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Enviada";
 
 /* Status label for messages which were skipped. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Ignorada";
@@ -1641,13 +1641,13 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Fax no Trabalho";
 
 /* alert title, generic error preventing user from capturing a photo */
-"PHOTO_CAPTURE_GENERIC_ERROR" = "Unable to capture image.";
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Não foi possível capturar a imagem.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Unable to capture image.";
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Não foi possível capturar a imagem.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Failed to configure camera.";
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Falha ao configurar câmera.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Álbum sem nome";
@@ -1833,7 +1833,7 @@
 "REGISTRATION_IPAD_CONFIRM_BODY" = "O Signal será agora desativado em outros dispositivos cadastrados atualmente com este número de telefone.";
 
 /* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Registre esse iPad";
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Cadastrar este iPad";
 
 /* alert title when registering an iPad */
 "REGISTRATION_IPAD_CONFIRM_TITLE" = "Já tem uma conta no Signal?";
@@ -2136,7 +2136,7 @@
 "SETTINGS_INFORMATION_HEADER" = "Informação";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Convide seus amigos";
+"SETTINGS_INVITE_TITLE" = "Convide sua turma";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "Você pode falar comigo pelo @signalapp. Baixe agora: https://signal.org/download/.";
@@ -2484,7 +2484,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Olá, chamadas seguras em vídeo!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "O Signal requer iOS 9 ou superior. Por favor, use o recurso de Atualização de Software disponível nos Ajustes do iOS.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Atualize o iOS";
