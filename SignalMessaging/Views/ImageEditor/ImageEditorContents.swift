@@ -11,7 +11,7 @@ import UIKit
 // as immutable, once configured.
 public class ImageEditorContents: NSObject {
 
-    public typealias ItemMapType = OrderedDictionary<ImageEditorItem>
+    public typealias ItemMapType = OrderedDictionary<String, ImageEditorItem>
 
     // This represents the current state of each item,
     // a mapping of [itemId : item].
@@ -72,7 +72,7 @@ public class ImageEditorContents: NSObject {
 
     @objc
     public func items() -> [ImageEditorItem] {
-        return itemMap.orderedValues()
+        return itemMap.orderedValues
     }
 
     @objc

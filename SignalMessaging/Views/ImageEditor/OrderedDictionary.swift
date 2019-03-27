@@ -4,16 +4,13 @@
 
 import Foundation
 
-public class OrderedDictionary<ValueType>: NSObject {
+public class OrderedDictionary<KeyType: Hashable, ValueType> {
 
-    public typealias KeyType = String
+    private var keyValueMap = [KeyType: ValueType]()
 
-    var keyValueMap = [KeyType: ValueType]()
+    public var orderedKeys = [KeyType]()
 
-    var orderedKeys = [KeyType]()
-
-    public override init() {
-    }
+    public init() { }
 
     // Used to clone copies of instances of this class.
     public init(keyValueMap: [KeyType: ValueType],
@@ -25,7 +22,7 @@ public class OrderedDictionary<ValueType>: NSObject {
 
     // Since the contents are immutable, we only modify copies
     // made with this method.
-    public func clone() -> OrderedDictionary<ValueType> {
+    public func clone() -> OrderedDictionary<KeyType, ValueType> {
         return OrderedDictionary(keyValueMap: keyValueMap, orderedKeys: orderedKeys)
     }
 
@@ -90,7 +87,7 @@ public class OrderedDictionary<ValueType>: NSObject {
         return orderedKeys.count
     }
 
-    public func orderedValues() -> [ValueType] {
+    public var orderedValues: [ValueType] {
         var values = [ValueType]()
         for key in orderedKeys {
             guard let value = self.keyValueMap[key] else {
