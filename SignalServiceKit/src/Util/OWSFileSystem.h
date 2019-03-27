@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 // unless the temp data may need to be accessed while the device is locked.
 NSString *OWSTemporaryDirectory(void);
 NSString *OWSTemporaryDirectoryAccessibleAfterFirstAuth(void);
+void ClearOldTemporaryDirectories(void);
 
 @interface OWSFileSystem : NSObject
 
