@@ -188,9 +188,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSLayoutConstraint *scrollDownButtonButtomConstraint;
 
 @property (nonatomic) ConversationScrollButton *scrollDownButton;
-#ifdef DEBUG
-@property (nonatomic) ConversationScrollButton *scrollUpButton;
-#endif
 
 @property (nonatomic) BOOL isViewCompletelyAppeared;
 @property (nonatomic) BOOL isViewVisible;
@@ -2592,19 +2589,6 @@ typedef enum : NSUInteger {
         [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
     [self.scrollDownButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 
-#ifdef DEBUG
-    self.scrollUpButton = [[ConversationScrollButton alloc] initWithIconText:@"\uf102"];
-    [self.scrollUpButton addTarget:self
-                            action:@selector(scrollUpButtonTapped)
-                  forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.scrollUpButton];
-    [self.scrollUpButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
-    [self.scrollUpButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
-    [self.scrollUpButton autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [self.scrollUpButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _scrollUpButton);
-#endif
-
     [self updateScrollDownButtonLayout];
 }
 
@@ -2654,13 +2638,6 @@ typedef enum : NSUInteger {
     [self scrollToBottomAnimated:YES];
 }
 
-#ifdef DEBUG
-- (void)scrollUpButtonTapped
-{
-    [self.collectionView setContentOffset:CGPointZero animated:YES];
-}
-#endif
-
 - (void)ensureScrollDownButton
 {
     OWSAssertIsOnMainThread();
@@ -2686,11 +2663,6 @@ typedef enum : NSUInteger {
     }
 
     self.scrollDownButton.hidden = !shouldShowScrollDownButton;
-
-#ifdef DEBUG
-    BOOL shouldShowScrollUpButton = self.collectionView.contentOffset.y > 0;
-    self.scrollUpButton.hidden = !shouldShowScrollUpButton;
-#endif
 }
 
 #pragma mark - Attachment Picking: Contacts
