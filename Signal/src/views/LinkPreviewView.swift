@@ -103,7 +103,7 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
     }
 
     public func imageState() -> LinkPreviewImageState {
-        if linkPreviewDraft.imageFilePath != nil {
+        if linkPreviewDraft.jpegImageData != nil {
             return .loaded
         } else {
             return .none
@@ -113,11 +113,11 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
     public func image() -> UIImage? {
         assert(imageState() == .loaded)
 
-        guard let imageFilepath = linkPreviewDraft.imageFilePath else {
+        guard let jpegImageData = linkPreviewDraft.jpegImageData else {
             return nil
         }
-        guard let image = UIImage(contentsOfFile: imageFilepath) else {
-            owsFailDebug("Could not load image: \(imageFilepath)")
+        guard let image = UIImage(data: jpegImageData) else {
+            owsFailDebug("Could not load image: \(jpegImageData.count)")
             return nil
         }
         return image

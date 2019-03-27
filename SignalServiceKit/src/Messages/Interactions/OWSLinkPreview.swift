@@ -41,23 +41,14 @@ public class OWSLinkPreviewDraft: NSObject {
     public var title: String?
 
     @objc
-    public var imageFilePath: String?
+    public var jpegImageData: Data?
 
-    public init(urlString: String, title: String?, imageFilePath: String? = nil) {
+    public init(urlString: String, title: String?, jpegImageData: Data? = nil) {
         self.urlString = urlString
         self.title = title
-        self.imageFilePath = imageFilePath
+        self.jpegImageData = jpegImageData
 
         super.init()
-    }
-
-    deinit {
-        // Eagerly clean up temp files.
-        if let imageFilePath = imageFilePath {
-            DispatchQueue.global().async {
-                OWSFileSystem.deleteFile(imageFilePath)
-            }
-        }
     }
 
     fileprivate func isValid() -> Bool {
@@ -65,7 +56,7 @@ public class OWSLinkPreviewDraft: NSObject {
         if let titleValue = title {
             hasTitle = titleValue.count > 0
         }
-        let hasImage = imageFilePath != nil
+        let hasImage = jpegImageData != nil
         return hasTitle || hasImage
     }
 
@@ -198,7 +189,7 @@ public class OWSLinkPreview: MTLModel {
         guard SSKPreferences.areLinkPreviewsEnabled else {
             throw LinkPreviewError.noPreview
         }
-        let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(inputFilePath: info.imageFilePath,
+        let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(jpegImageData: info.jpegImageData,
                                                                         transaction: transaction)
 
         let linkPreview = OWSLinkPreview(urlString: info.urlString, title: info.title, imageAttachmentId: imageAttachmentId)
@@ -211,34 +202,32 @@ public class OWSLinkPreview: MTLModel {
         return linkPreview
     }
 
-    private class func saveAttachmentIfPossible(inputFilePath filePath: String?,
+    private class func saveAttachmentIfPossible(jpegImageData: Data?,
                                                 transaction: YapDatabaseReadWriteTransaction) -> String? {
-        guard let filePath = filePath else {
+        guard let jpegImageData = jpegImageData else {
             return nil
         }
-        guard let fileSize = OWSFileSystem.fileSize(ofPath: filePath) else {
-            owsFailDebug("Unknown file size for path: \(filePath)")
+        let fileSize = jpegImageData.count
+        guard fileSize > 0 else {
+            owsFailDebug("Invalid file size for image data.")
             return nil
         }
-        guard fileSize.uint32Value > 0 else {
-            owsFailDebug("Invalid file size for path: \(filePath)")
+        let fileExtension = "jpg"
+        let contentType = OWSMimeTypeImageJpeg
+
+        let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
+        do {
+            try jpegImageData.write(to: NSURL.fileURL(withPath: filePath), options: .atomicWrite)
+        } catch let error as NSError {
+            owsFailDebug("file write failed: \(filePath), \(error)")
             return nil
         }
-        let filename = (filePath as NSString).lastPathComponent
-        let fileExtension = (filename as NSString).pathExtension
-        guard fileExtension.count > 0 else {
-            owsFailDebug("Invalid file extension for path: \(filePath)")
-            return nil
-        }
-        guard let contentType = MIMETypeUtil.mimeType(forFileExtension: fileExtension) else {
-            owsFailDebug("Invalid content type for path: \(filePath)")
-            return nil
-        }
+
         guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true) else {
             owsFailDebug("Could not create data source for path: \(filePath)")
             return nil
         }
-        let attachment = TSAttachmentStream(contentType: contentType, byteCount: fileSize.uint32Value, sourceFilename: nil, caption: nil, albumMessageId: nil)
+        let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil)
         guard attachment.write(dataSource) else {
             owsFailDebug("Could not write data source for path: \(filePath)")
             return nil
@@ -528,16 +517,25 @@ public class OWSLinkPreview: MTLModel {
     // MARK: - Preview Construction
 
     // This cache should only be accessed on serialQueue.
-    private static var linkPreviewDraftCache: NSCache<NSString, OWSLinkPreviewDraft> = NSCache()
+    //
+    // We should only main
+    private static var linkPreviewDraftCache: OWSLinkPreviewDraft?
 
     private class func cachedLinkPreview(forPreviewUrl previewUrl: String) -> OWSLinkPreviewDraft? {
         return serialQueue.sync {
-            return linkPreviewDraftCache.object(forKey: previewUrl as NSString)
+            guard let linkPreviewDraft = linkPreviewDraftCache,
+                linkPreviewDraft.urlString == previewUrl else {
+                    Logger.verbose("----- Cache miss.")
+                return nil
+            }
+            Logger.verbose("----- Cache hit.")
+            return linkPreviewDraft
         }
     }
 
     private class func setCachedLinkPreview(_ linkPreviewDraft: OWSLinkPreviewDraft,
                                             forPreviewUrl previewUrl: String) {
+        assert(previewUrl == linkPreviewDraft.urlString)
 
         // Exit early if link previews are not enabled in order to avoid
         // tainting the cache.
@@ -549,14 +547,14 @@ public class OWSLinkPreview: MTLModel {
         }
 
         serialQueue.sync {
-            linkPreviewDraftCache.setObject(linkPreviewDraft, forKey: previewUrl as NSString)
+            linkPreviewDraftCache = linkPreviewDraft
         }
     }
 
     @objc
     public class func clearLinkPreviewCache() {
         return serialQueue.async {
-            linkPreviewDraftCache.removeAllObjects()
+            linkPreviewDraftCache = nil
         }
     }
 
@@ -766,15 +764,7 @@ public class OWSLinkPreview: MTLModel {
             return downloadImage(url: imageUrl, imageMimeType: imageMimeType)
                 .map(on: DispatchQueue.global()) { (imageData: Data) -> OWSLinkPreviewDraft in
                     // We always recompress images to Jpeg.
-                    let imageFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: "jpg")
-                    do {
-                        try imageData.write(to: NSURL.fileURL(withPath: imageFilePath), options: .atomicWrite)
-                    } catch let error as NSError {
-                        owsFailDebug("file write failed: \(imageFilePath), \(error)")
-                        throw LinkPreviewError.assertionFailure
-                    }
-
-                    let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, imageFilePath: imageFilePath)
+                    let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, jpegImageData: imageData)
                     return linkPreviewDraft
                 }
                 .recover(on: DispatchQueue.global()) { (_) -> Promise<OWSLinkPreviewDraft> in
