@@ -270,6 +270,11 @@ public extension CGPoint {
         return CGPoint(x: sin(angle),
                        y: cos(angle))
     }
+
+    public func clamp(_ rect: CGRect) -> CGPoint {
+        return CGPoint(x: x.clamp(rect.minX, rect.maxX),
+                       y: y.clamp(rect.minY, rect.maxY))
+    }
 }
 
 // MARK: -
