@@ -2602,8 +2602,8 @@ typedef enum : NSUInteger {
     [self.scrollUpButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
     [self.scrollUpButton autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [self.scrollUpButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
-#endif
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _scrollUpButton);
+#endif
 
     [self updateScrollDownButtonLayout];
 }
