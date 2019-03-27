@@ -584,6 +584,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             owsFailDebug("Could not prepare attachment for output: \(attachmentError).")
             return attachmentItem.attachment
         }
+        // Preserve caption text.
+        dstAttachment.captionText = attachmentItem.captionText
         return dstAttachment
     }
 
