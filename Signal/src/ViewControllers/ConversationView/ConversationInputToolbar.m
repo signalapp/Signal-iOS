@@ -878,10 +878,6 @@ const CGFloat kMaxTextViewHeight = 98;
     [self ensureShouldShowVoiceMemoButtonAnimated:YES doLayout:YES];
     [self updateHeightWithTextView:textView];
     [self updateInputLinkPreview];
-
-    if (textView.text.ows_stripped.length < 1) {
-        [OWSLinkPreview clearLinkPreviewCache];
-    }
 }
 
 - (void)textViewDidChangeSelection:(UITextView *)textView
