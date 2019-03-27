@@ -5,6 +5,7 @@
 #import "OWSFileSystem.h"
 #import "OWSError.h"
 #import "TSConstants.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -373,6 +374,7 @@ void ClearOldTemporaryDirectoriesSync(void)
     // Ignore the "current" temp directory.
     NSString *currentTempDirName = OWSTemporaryDirectory().lastPathComponent;
 
+    NSDate *thresholdDate = CurrentAppContext().appLaunchTime;
     NSString *dirPath = NSTemporaryDirectory();
     NSError *error;
     NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];
@@ -388,11 +390,30 @@ void ClearOldTemporaryDirectoriesSync(void)
         if ([fileName isEqualToString:currentTempDirName]) {
             continue;
         }
-        if (![fileName hasPrefix:@"ows_temp"]) {
-            continue;
-        }
+
         NSString *filePath = [dirPath stringByAppendingPathComponent:fileName];
-        OWSLogVerbose(@"Clearing old temp directory: %@", filePath);
+
+        // Delete files with either:
+        //
+        // a) "ows_temp" name prefix.
+        // b) modified time before app launch time.
+        if (![fileName hasPrefix:@"ows_temp"]) {
+            NSError *error;
+            NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
+            if (!attributes || error) {
+                // This is fine; the file may have been deleted since we found it.
+                OWSLogError(@"Could not get attributes of file or directory at: %@", filePath);
+                continue;
+            }
+            // Don't delete files which were created in the last N minutes.
+            NSDate *creationDate = attributes.fileModificationDate;
+            if ([creationDate isAfterDate:thresholdDate]) {
+                OWSLogInfo(@"Skipping file due to age: %f", fabs([creationDate timeIntervalSinceNow]));
+                continue;
+            }
+        }
+
+        OWSLogVerbose(@"Removing temp file or directory: %@", filePath);
         if (![OWSFileSystem deleteFile:filePath]) {
             // This can happen if the app launches before the phone is unlocked.
             // Clean up will occur when app becomes active.
@@ -407,7 +428,7 @@ void ClearOldTemporaryDirectories(void)
 {
     // We use the lowest priority queue for this, and wait N seconds
     // to avoid interfering with app startup.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10.f * NSEC_PER_SEC)),
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)),
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0),
         ^{
             ClearOldTemporaryDirectoriesSync();
