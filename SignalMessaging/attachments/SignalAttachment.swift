@@ -160,10 +160,6 @@ public class SignalAttachment: NSObject {
     @objc
     public let dataUTI: String
 
-    // Can be used by views to link this SignalAttachment with an Photos framework asset.
-    @objc
-    public var assetId: String?
-
     var error: SignalAttachmentError? {
         didSet {
             AssertIsOnMainThread()

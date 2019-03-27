@@ -133,8 +133,7 @@ typedef enum : NSUInteger {
     UIDocumentMenuDelegate,
     UIDocumentPickerDelegate,
     UIImagePickerControllerDelegate,
-    OWSImagePickerControllerDelegate,
-    OWSPhotoCaptureViewControllerDelegate,
+    SendMediaNavDelegate,
     UINavigationControllerDelegate,
     UITextViewDelegate,
     ConversationCollectionViewDelegate,
@@ -2837,24 +2836,6 @@ typedef enum : NSUInteger {
     [self showApprovalDialogForAttachment:attachment];
 }
 
-#pragma mark - OWSPhotoCaptureViewControllerDelegate
-
-- (void)photoCaptureViewController:(OWSPhotoCaptureViewController *)photoCaptureViewController
-     didFinishProcessingAttachment:(SignalAttachment *)attachment
-{
-    OWSLogDebug(@"");
-    [self dismissViewControllerAnimated:YES
-                             completion:^{
-                                 [self showApprovalDialogForAttachment:attachment];
-                             }];
-}
-
-- (void)photoCaptureViewControllerDidCancel:(OWSPhotoCaptureViewController *)photoCaptureViewController
-{
-    OWSLogDebug(@"");
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
 #pragma mark - UIImagePickerController
 
 /*
@@ -2877,19 +2858,8 @@ typedef enum : NSUInteger {
             UIViewController *pickerModal;
 
             if (SSKFeatureFlags.useCustomPhotoCapture) {
-                OWSPhotoCaptureViewController *captureVC = [OWSPhotoCaptureViewController new];
-                captureVC.delegate = self;
-                OWSNavigationController *navController =
-                    [[OWSNavigationController alloc] initWithRootViewController:captureVC];
-                UINavigationBar *navigationBar = navController.navigationBar;
-                if (![navigationBar isKindOfClass:[OWSNavigationBar class]]) {
-                    OWSFailDebug(@"navigationBar was nil or unexpected class");
-                } else {
-                    OWSNavigationBar *owsNavigationBar = (OWSNavigationBar *)navigationBar;
-                    [owsNavigationBar overrideThemeWithType:NavigationBarThemeOverrideClear];
-                }
-                navController.ows_prefersStatusBarHidden = @(YES);
-
+                SendMediaNavigationController *navController = [SendMediaNavigationController showingCameraFirst];
+                navController.sendMediaNavDelegate = self;
                 pickerModal = navController;
             } else {
                 UIImagePickerController *picker = [OWSImagePickerController new];
@@ -2933,11 +2903,8 @@ typedef enum : NSUInteger {
             return;
         }
 
-        OWSImagePickerGridController *picker = [OWSImagePickerGridController new];
-        picker.delegate = self;
-
-        OWSNavigationController *pickerModal = [[OWSNavigationController alloc] initWithRootViewController:picker];
-        pickerModal.ows_prefersStatusBarHidden = @(YES);
+        SendMediaNavigationController *pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
+        pickerModal.sendMediaNavDelegate = self;
 
         [self dismissKeyBoard];
         [self presentViewController:pickerModal animated:YES completion:nil];
@@ -2960,13 +2927,19 @@ typedef enum : NSUInteger {
     self.view.frame = frame;
 }
 
-#pragma mark - OWSImagePickerControllerDelegate
+#pragma mark - SendMediaNavDelegate
 
-- (void)imagePicker:(OWSImagePickerGridController *)imagePicker
-    didPickImageAttachments:(NSArray<SignalAttachment *> *)attachments
-                messageText:(NSString *_Nullable)messageText
+- (void)sendMediaNavDidCancel:(SendMediaNavigationController *)sendMediaNavigationController
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)sendMediaNav:(SendMediaNavigationController *)sendMediaNavigationController
+    didApproveAttachments:(NSArray<SignalAttachment *> *)attachments
+              messageText:(nullable NSString *)messageText
 {
     [self tryToSendAttachments:attachments messageText:messageText];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - UIImagePickerControllerDelegate
@@ -3943,8 +3916,7 @@ typedef enum : NSUInteger {
     [self scrollToBottomAnimated:NO];
 }
 
-- (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
-      didCancelAttachments:(NSArray<SignalAttachment *> *)attachment
+- (void)attachmentApprovalDidCancel:(AttachmentApprovalViewController *)attachmentApproval
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }

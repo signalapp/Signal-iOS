@@ -30,6 +30,10 @@ public class OrderedDictionary<KeyType: Hashable, ValueType> {
         return keyValueMap[key]
     }
 
+    public func hasValue(forKey key: KeyType) -> Bool {
+        return keyValueMap[key] != nil
+    }
+
     public func append(key: KeyType, value: ValueType) {
         if keyValueMap[key] != nil {
             owsFailDebug("Unexpected duplicate key in key map: \(key)")

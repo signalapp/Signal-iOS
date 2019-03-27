@@ -148,6 +148,7 @@ class PhotoCaptureViewController: OWSViewController {
             button.setImage(imageName: imageName)
         }
     }
+
     private lazy var dismissControl: PhotoControl = {
         return PhotoControl(imageName: "ic_x_with_shadow") { [weak self] in
             self?.didTapClose()

@@ -6,16 +6,19 @@ import Foundation
 import Photos
 import PromiseKit
 
-@objc(OWSImagePickerControllerDelegate)
-protocol ImagePickerControllerDelegate {
-    func imagePicker(_ imagePicker: ImagePickerGridController, didPickImageAttachments attachments: [SignalAttachment], messageText: String?)
+protocol ImagePickerGridControllerDelegate: AnyObject {
+    func imagePickerDidCompleteSelection(_ imagePicker: ImagePickerGridController)
+
+    func imagePicker(_ imagePicker: ImagePickerGridController, isAssetSelected asset: PHAsset) -> Bool
+    func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>)
+    func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset)
+
+    func imagePickerCanSelectAdditionalItems(_ imagePicker: ImagePickerGridController) -> Bool
 }
 
-@objc(OWSImagePickerGridController)
-class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate, PhotoCollectionPickerDelegate, AttachmentApprovalViewControllerDelegate {
+class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate, PhotoCollectionPickerDelegate {
 
-    @objc
-    weak var delegate: ImagePickerControllerDelegate?
+    weak var delegate: ImagePickerGridControllerDelegate?
 
     private let library: PhotoLibrary = PhotoLibrary()
     private var photoCollection: PhotoCollection
@@ -24,12 +27,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     var collectionViewFlowLayout: UICollectionViewFlowLayout
     var titleView: TitleView!
-
-    // We use NSMutableOrderedSet so that we can honor selection order.
-    private let selectedIds = NSMutableOrderedSet()
-
-    // This variable should only be accessed on the main thread.
-    private var assetIdToCommentMap = [String: String]()
 
     init() {
         collectionViewFlowLayout = type(of: self).buildLayout()
@@ -79,10 +76,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         navigationItem.titleView = titleView
         self.titleView = titleView
 
-        let featureFlag_isMultiselectEnabled = true
-        if featureFlag_isMultiselectEnabled {
-            updateSelectButton()
-        }
+        updateSelectButton()
 
         collectionView.backgroundColor = .ows_gray95
 
@@ -109,6 +103,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
+        guard let delegate = delegate else {
+            owsFailDebug("delegate was unexpectedly nil")
+            return
+        }
+
         switch selectionPanGesture.state {
         case .possible:
             break
@@ -121,7 +120,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                 return
             }
             let asset = photoCollectionContents.asset(at: indexPath.item)
-            if selectedIds.contains(asset.localIdentifier) {
+            if delegate.imagePicker(self, isAssetSelected: asset) {
                 selectionPanGestureMode = .deselect
             } else {
                 selectionPanGestureMode = .select
@@ -149,26 +148,28 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
+        guard let delegate = delegate else {
+            owsFailDebug("delegate was unexpectedly nil")
+            return
+        }
+
         let asset = photoCollectionContents.asset(at: indexPath.item)
         switch selectionPanGestureMode {
         case .select:
-            guard canSelectAdditionalItems else {
+            guard delegate.imagePickerCanSelectAdditionalItems(self) else {
                 showTooManySelectedToast()
                 return
             }
 
-            selectedIds.add(asset.localIdentifier)
+            let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset)
+            delegate.imagePicker(self, didSelectAsset: asset, attachmentPromise: attachmentPromise)
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
         case .deselect:
-            selectedIds.remove(asset.localIdentifier)
+            delegate.imagePicker(self, didDeselectAsset: asset)
             collectionView.deselectItem(at: indexPath, animated: true)
         }
 
         updateDoneButton()
-    }
-
-    var canSelectAdditionalItems: Bool {
-        return selectedIds.count <= SignalAttachment.maxAttachmentsAllowed
     }
 
     override func viewWillLayoutSubviews() {
@@ -263,14 +264,18 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
+        guard let delegate = delegate else {
+            owsFailDebug("delegate was unexpectedly nil")
+            return
+        }
+
         collectionView.reloadData()
         collectionView.layoutIfNeeded()
 
         let count = photoCollectionContents.assetCount
         for index in 0..<count {
             let asset = photoCollectionContents.asset(at: index)
-            let assetId = asset.localIdentifier
-            if selectedIds.contains(assetId) {
+            if delegate.imagePicker(self, isAssetSelected: asset) {
                 collectionView.selectItem(at: IndexPath(row: index, section: 0),
                                           animated: false, scrollPosition: [])
             }
@@ -352,79 +357,15 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     func didPressDone(_ sender: Any) {
         Logger.debug("")
 
+        guard let delegate = delegate else {
+            owsFailDebug("delegate was unexpectedly nil")
+            return
+        }
+
         hasPressedDoneSinceAppeared = true
         updateDoneButton()
 
-        // Honor selection order.
-        var assetIdToAssetIndexMap = [String: Int]()
-        let assetCount = photoCollectionContents.assetCount
-        for index in 0..<assetCount {
-            let asset = photoCollectionContents.asset(at: index)
-            let assetId = asset.localIdentifier
-            assetIdToAssetIndexMap[assetId] = index
-        }
-        var assets = [PHAsset]()
-        for selectedIdAny in selectedIds.array {
-            guard let selectedId = selectedIdAny as? String else {
-                owsFailDebug("Invalid asset id: \(selectedIdAny)")
-                continue
-            }
-            guard let assetIndex = assetIdToAssetIndexMap[selectedId] else {
-                owsFailDebug("Missing asset id: \(selectedId)")
-                continue
-            }
-            assets.append(photoCollectionContents.asset(at: assetIndex))
-        }
-
-        complete(withAssets: assets)
-    }
-
-    func complete(withAssets assets: [PHAsset]) {
-
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false) { (modal) in
-                                                        let attachmentPromises: [Promise<SignalAttachment>] = assets.map({
-                                                            return self.photoCollectionContents.outgoingAttachment(for: $0)
-                                                        })
-
-                                                        firstly {
-                                                            when(fulfilled: attachmentPromises)
-                                                            }.map { attachments in
-                                                                Logger.debug("built all attachments")
-
-                                                                DispatchQueue.main.async {
-                                                                    modal.dismiss(completion: {
-                                                                        self.didComplete(withAttachments: attachments)
-                                                                    })
-                                                                }
-                                                            }.catch { error in
-                                                                Logger.error("failed to prepare attachments. error: \(error)")
-                                                                DispatchQueue.main.async {
-                                                                    modal.dismiss(completion: {
-                                                                        OWSAlerts.showAlert(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
-                                                                    })
-                                                                }
-                                                            }.retainUntilComplete()
-        }
-    }
-
-    private func didComplete(withAttachments attachments: [SignalAttachment]) {
-        AssertIsOnMainThread()
-
-        for attachment in attachments {
-            guard let assetId = attachment.assetId else {
-                owsFailDebug("Attachment is missing asset id.")
-                continue
-            }
-            // Link the attachment with its asset to ensure caption continuity.
-            attachment.assetId = assetId
-            // Restore any existing caption for this attachment.
-            attachment.captionText = assetIdToCommentMap[assetId]
-        }
-
-        let vc = AttachmentApprovalViewController(mode: .sharedNavigation, attachments: attachments)
-        vc.approvalDelegate = self
-        navigationController?.pushViewController(vc, animated: true)
+        delegate.imagePickerDidCompleteSelection(self)
     }
 
     var hasPressedDoneSinceAppeared: Bool = false
@@ -465,18 +406,13 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         self.doneButton.isEnabled = false
     }
 
-    func deselectAnySelected() {
+    func clearCollectionViewSelection() {
         guard let collectionView = self.collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
         }
 
-        selectedIds.removeAllObjects()
         collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
-
-        if isInBatchSelectMode {
-            updateDoneButton()
-        }
     }
 
     func showTooManySelectedToast() {
@@ -577,7 +513,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         // Any selections are invalid as they refer to indices in a different collection
-        deselectAnySelected()
+        clearCollectionViewSelection()
 
         photoCollection = collection
         photoCollectionContents = photoCollection.contents()
@@ -605,25 +541,33 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let asset = photoCollectionContents.asset(at: indexPath.item)
+        guard let delegate = delegate else {
+            owsFailDebug("delegate was unexpectedly nil")
+            return
+        }
+
+        let asset: PHAsset = photoCollectionContents.asset(at: indexPath.item)
+        let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset)
+        delegate.imagePicker(self, didSelectAsset: asset, attachmentPromise: attachmentPromise)
 
         if isInBatchSelectMode {
-            let assetId = asset.localIdentifier
-            selectedIds.add(assetId)
             updateDoneButton()
         } else {
             // Don't show "selected" badge unless we're in batch mode
             collectionView.deselectItem(at: indexPath, animated: false)
-            complete(withAssets: [asset])
+            delegate.imagePickerDidCompleteSelection(self)
         }
     }
 
     public override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         Logger.debug("")
+        guard let delegate = delegate else {
+            owsFailDebug("delegate was unexpectedly nil")
+            return
+        }
 
         let asset = photoCollectionContents.asset(at: indexPath.item)
-        let assetId = asset.localIdentifier
-        selectedIds.remove(assetId)
+        delegate.imagePicker(self, didDeselectAsset: asset)
 
         if isInBatchSelectMode {
             updateDoneButton()
@@ -635,68 +579,26 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let delegate = delegate else {
+            return UICollectionViewCell(forAutoLayout: ())
+        }
+
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoGridViewCell.reuseIdentifier, for: indexPath) as? PhotoGridViewCell else {
             owsFail("cell was unexpectedly nil")
         }
+
         cell.loadingColor = UIColor(white: 0.2, alpha: 1)
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
         cell.configure(item: assetItem)
 
-        let assetId = assetItem.asset.localIdentifier
-        let isSelected = selectedIds.contains(assetId)
-        cell.isSelected = isSelected
+        let isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
+        if isSelected {
+            cell.isSelected = isSelected
+        } else {
+            cell.isSelected = isSelected
+        }
 
         return cell
-    }
-
-    // MARK: - AttachmentApprovalViewControllerDelegate
-
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
-        self.dismiss(animated: true) {
-            self.delegate?.imagePicker(self, didPickImageAttachments: attachments, messageText: messageText)
-        }
-    }
-
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didCancelAttachments attachments: [SignalAttachment]) {
-        navigationController?.popToViewController(self, animated: true)
-    }
-
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, addMoreToAttachments attachments: [SignalAttachment]) {
-        // If we re-enter image picking via "add more" button, do so in batch mode.
-        isInBatchSelectMode = true
-
-        // clear selection
-        deselectAnySelected()
-
-        // removing-and-readding accomplishes two things
-        // 1. respect items removed from the rail while in the approval view
-        // 2. in the case of the user adding more to what was a single item
-        //    which was not selected in batch mode, ensure that item is now
-        //    part of the "batch selection"
-        for previouslySelected in attachments {
-            guard let assetId = previouslySelected.assetId else {
-                owsFailDebug("assetId was unexpectedly nil")
-                continue
-            }
-
-            selectedIds.add(assetId as Any)
-        }
-
-        navigationController?.popToViewController(self, animated: true)
-    }
-
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, changedCaptionOfAttachment attachment: SignalAttachment) {
-        AssertIsOnMainThread()
-
-        guard let assetId = attachment.assetId else {
-            owsFailDebug("Attachment missing source id.")
-            return
-        }
-        guard let captionText = attachment.captionText, captionText.count > 0 else {
-            assetIdToCommentMap.removeValue(forKey: assetId)
-            return
-        }
-        assetIdToCommentMap[assetId] = captionText
     }
 }
 
