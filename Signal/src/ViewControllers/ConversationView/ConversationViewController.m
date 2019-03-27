@@ -2933,22 +2933,11 @@ typedef enum : NSUInteger {
             return;
         }
 
-        UIViewController *pickerModal;
-        if (SignalAttachment.isMultiSendEnabled) {
-            OWSImagePickerGridController *picker = [OWSImagePickerGridController new];
-            picker.delegate = self;
+        OWSImagePickerGridController *picker = [OWSImagePickerGridController new];
+        picker.delegate = self;
 
-            OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:picker];
-            modal.ows_prefersStatusBarHidden = @(YES);
-            pickerModal = modal;
-        } else {
-            UIImagePickerController *picker = [OWSImagePickerController new];
-            picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-            picker.delegate = self;
-            picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
-
-            pickerModal = picker;
-        }
+        OWSNavigationController *pickerModal = [[OWSNavigationController alloc] initWithRootViewController:picker];
+        pickerModal.ows_prefersStatusBarHidden = @(YES);
 
         [self dismissKeyBoard];
         [self presentViewController:pickerModal animated:YES completion:nil];
@@ -3060,11 +3049,8 @@ typedef enum : NSUInteger {
                                  }];
     } else {
         // Non-Video image picked from library
-        if (SignalAttachment.isMultiSendEnabled) {
-            OWSFailDebug(@"Only use UIImagePicker for camera/video capture. Picking media from UIImagePicker is not "
-                         @"supported. ");
-        }
-
+        OWSFailDebug(
+            @"Only use UIImagePicker for camera/video capture. Picking media from UIImagePicker is not supported. ");
 
         // To avoid re-encoding GIF and PNG's as JPEG we have to get the raw data of
         // the selected item vs. using the UIImagePickerControllerOriginalImage
