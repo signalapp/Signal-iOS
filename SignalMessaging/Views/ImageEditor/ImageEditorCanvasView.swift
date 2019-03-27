@@ -634,6 +634,7 @@ public class ImageEditorCanvasView: UIView {
         imageLayer.contentsScale = dstScale * transform.scaling
         contentView.layer.addSublayer(imageLayer)
 
+        var layers = [CALayer]()
         for item in model.items() {
             guard let layer = layerForItem(item: item,
                                            model: model,
@@ -643,6 +644,15 @@ public class ImageEditorCanvasView: UIView {
                                             continue
             }
             layer.contentsScale = dstScale * transform.scaling * item.outputScale()
+            layers.append(layer)
+        }
+        // UIView.renderAsImage() doesn't honor zPosition of layers,
+        // so sort the item layers to ensure they are added in the
+        // correct order.
+        let sortedLayers = layers.sorted(by: { (left, right) -> Bool in
+            return left.zPosition < right.zPosition
+        })
+        for layer in sortedLayers {
             contentView.layer.addSublayer(layer)
         }
 
