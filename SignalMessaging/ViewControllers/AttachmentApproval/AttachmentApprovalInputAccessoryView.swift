@@ -101,11 +101,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
 
     // MARK: 
 
-    public var shouldHideControls = false {
-        didSet {
-            updateContents()
-        }
-    }
+    private var shouldHideControls = false
 
     private func updateContents() {
         var hasCurrentCaption = false
@@ -135,6 +131,10 @@ class AttachmentApprovalInputAccessoryView: UIView {
             if !attachmentCaptionToolbar.textView.isFirstResponder {
                 attachmentCaptionToolbar.textView.becomeFirstResponder()
             }
+        } else {
+            if attachmentCaptionToolbar.textView.isFirstResponder {
+                attachmentCaptionToolbar.textView.resignFirstResponder()
+            }
         }
         // NOTE: We don't automatically make attachmentTextToolbar.textView
         // first responder;
@@ -143,9 +143,18 @@ class AttachmentApprovalInputAccessoryView: UIView {
     }
 
     public func update(isEditingCaptions: Bool,
-                       currentAttachmentItem: SignalAttachmentItem?) {
+                       currentAttachmentItem: SignalAttachmentItem?,
+                       shouldHideControls: Bool) {
+        // De-bounce
+        guard self.isEditingCaptions != isEditingCaptions ||
+            self.currentAttachmentItem != currentAttachmentItem ||
+            self.shouldHideControls != shouldHideControls else {
+            return
+        }
+
         self.isEditingCaptions = isEditingCaptions
         self.currentAttachmentItem = currentAttachmentItem
+        self.shouldHideControls = shouldHideControls
 
         updateContents()
     }

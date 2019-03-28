@@ -184,7 +184,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     private func updateContents() {
         updateNavigationBar()
         updateInputAccessory()
-        updateControlVisibility()
 
         touchInterceptorView.isHidden = !isEditingCaptions
     }
@@ -206,7 +205,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             currentPageViewController = pageViewControllers.first
         }
         let currentAttachmentItem: SignalAttachmentItem? = currentPageViewController?.attachmentItem
-        bottomToolView.update(isEditingCaptions: isEditingCaptions, currentAttachmentItem: currentAttachmentItem)
+
+        bottomToolView.update(isEditingCaptions: isEditingCaptions,
+                              currentAttachmentItem: currentAttachmentItem,
+                              shouldHideControls: shouldHideControls)
     }
 
     // MARK: - Navigation Bar
@@ -327,15 +329,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return pageViewController.shouldHideControls
     }
 
-    private func updateControlVisibility() {
-        let hasPresentedView = self.presentedViewController != nil
-
-        if !shouldHideControls, !isFirstResponder, !hasPresentedView {
-            becomeFirstResponder()
-        }
-        bottomToolView.shouldHideControls = shouldHideControls
-    }
-
     // MARK: - View Helpers
 
     func remove(attachmentItem: SignalAttachmentItem) {
@@ -411,8 +404,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                 updateMediaRail()
             }
         }
-
-        updateContents()
     }
 
     // MARK: - UIPageViewControllerDataSource
@@ -461,6 +452,18 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     public var pageViewControllers: [AttachmentPrepViewController] {
         return super.viewControllers!.map { $0 as! AttachmentPrepViewController }
+    }
+
+    @objc
+    public override func setViewControllers(_ viewControllers: [UIViewController]?, direction: UIPageViewController.NavigationDirection, animated: Bool, completion: ((Bool) -> Void)? = nil) {
+        super.setViewControllers(viewControllers,
+                                 direction: direction,
+                                 animated: animated) { [weak self] (finished) in
+                                    if let completion = completion {
+                                        completion(finished)
+                                    }
+                                    self?.updateContents()
+        }
     }
 
     var currentItem: SignalAttachmentItem! {
@@ -682,7 +685,7 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     }
 
     func prepViewControllerUpdateControls() {
-        updateControlVisibility()
+        updateInputAccessory()
     }
 }
 
