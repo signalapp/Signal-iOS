@@ -22,6 +22,6 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var useCustomPhotoCapture: Bool {
-        return false
+        return true
     }
 }

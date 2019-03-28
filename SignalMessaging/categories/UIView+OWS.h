@@ -43,6 +43,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (NSLayoutConstraint *)autoPinToSquareAspectRatio;
 - (NSLayoutConstraint *)autoPinToAspectRatioWithSize:(CGSize)size;
 - (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio;
+- (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio relation:(NSLayoutRelation)relation;
 
 #pragma mark - Content Hugging and Compression Resistance
 

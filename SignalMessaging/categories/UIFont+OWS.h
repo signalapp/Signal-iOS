@@ -56,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIFont *)ows_italic;
 - (UIFont *)ows_bold;
 - (UIFont *)ows_mediumWeight;
+- (UIFont *)ows_monospaced;
 
 @end
 

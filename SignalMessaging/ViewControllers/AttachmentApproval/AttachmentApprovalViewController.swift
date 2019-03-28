@@ -10,9 +10,16 @@ import PromiseKit
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: class {
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?)
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didCancelAttachments attachments: [SignalAttachment])
-    @objc optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, addMoreToAttachments attachments: [SignalAttachment])
-    @objc optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, changedCaptionOfAttachment attachment: SignalAttachment)
+    func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController)
+
+    @objc
+    optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment)
+
+    @objc
+    optional func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController)
+
+    @objc
+    optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, changedCaptionOfAttachment attachment: SignalAttachment)
 }
 
 // MARK: -
@@ -363,6 +370,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         },
                        completion: { _ in
                         self.attachmentItemCollection.remove(item: attachmentItem)
+                        self.approvalDelegate?.attachmentApproval?(self, didRemoveAttachment: attachmentItem.attachment)
                         self.updateMediaRail()
         })
     }
@@ -629,7 +637,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     private func cancelPressed() {
-        self.approvalDelegate?.attachmentApproval(self, didCancelAttachments: attachments)
+        self.approvalDelegate?.attachmentApprovalDidCancel(self)
     }
 
     @objc func didTapCaption(sender: UIButton) {
@@ -668,7 +676,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
     }
 
     func attachmentTextToolbarDidAddMore(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        self.approvalDelegate?.attachmentApproval?(self, addMoreToAttachments: attachments)
+        self.approvalDelegate?.attachmentApprovalDidTapAddMore?(self)
     }
 }
 
