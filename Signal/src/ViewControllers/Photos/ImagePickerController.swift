@@ -8,6 +8,7 @@ import PromiseKit
 
 protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePickerDidCompleteSelection(_ imagePicker: ImagePickerGridController)
+    func imagePickerDidCancel(_ imagePicker: ImagePickerGridController)
 
     func imagePicker(_ imagePicker: ImagePickerGridController, isAssetSelected asset: PHAsset) -> Bool
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>)
@@ -273,7 +274,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     @objc
     func didPressCancel(sender: UIBarButtonItem) {
-        self.dismiss(animated: true)
+        self.delegate?.imagePickerDidCancel(self)
     }
 
     // MARK: - Layout

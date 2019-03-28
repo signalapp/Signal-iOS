@@ -214,6 +214,31 @@ class SendMediaNavigationController: OWSNavigationController {
         pushViewController(approvalViewController, animated: true)
         updateButtons()
     }
+
+    private func didRequestExit(dontAbandonText: String) {
+        if attachmentDraftCollection.count == 0 {
+            self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
+        } else {
+            let alertTitle = NSLocalizedString("SEND_MEDIA_ABANDON_TITLE", comment: "alert title when user attempts to leave the send media flow when they have an in-progress album")
+
+            let alert = UIAlertController(title: alertTitle, message: nil, preferredStyle: .alert)
+
+            let confirmAbandonText = NSLocalizedString("SEND_MEDIA_CONFIRM_ABANDON_ALBUM", comment: "alert action, confirming the user wants to exit the media flow and abandon any photos they've taken")
+            let confirmAbandonAction = UIAlertAction(title: confirmAbandonText,
+                                                     style: .destructive,
+                                                     handler: { [weak self] _ in
+                                                        guard let self = self else { return }
+                                                        self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
+            })
+            alert.addAction(confirmAbandonAction)
+            let dontAbandonAction = UIAlertAction(title: dontAbandonText,
+                                                  style: .default,
+                                                  handler: { _ in  })
+            alert.addAction(dontAbandonAction)
+
+            self.presentAlert(alert)
+        }
+    }
 }
 
 extension SendMediaNavigationController: UINavigationControllerDelegate {
@@ -266,7 +291,8 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController) {
-        self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
+        let dontAbandonText = NSLocalizedString("SEND_MEDIA_RETURN_TO_CAMERA", comment: "alert action when the user decides not to cancel the media flow after all.")
+        didRequestExit(dontAbandonText: dontAbandonText)
     }
 }
 
@@ -274,6 +300,11 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 
     func imagePickerDidCompleteSelection(_ imagePicker: ImagePickerGridController) {
         showApprovalAfterProcessingAnyMediaLibrarySelections()
+    }
+
+    func imagePickerDidCancel(_ imagePicker: ImagePickerGridController) {
+        let dontAbandonText = NSLocalizedString("SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY", comment: "alert action when the user decides not to cancel the media flow after all.")
+        didRequestExit(dontAbandonText: dontAbandonText)
     }
 
     func showApprovalAfterProcessingAnyMediaLibrarySelections() {
