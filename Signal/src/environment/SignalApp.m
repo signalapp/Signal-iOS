@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-- (void)presentConversationAndShowFirstUnreadMessageForThreadId:(NSString *)threadId animated:(BOOL)isAnimated
+- (void)presentConversationAndScrollToFirstUnreadMessageForThreadId:(NSString *)threadId animated:(BOOL)isAnimated
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(threadId.length > 0);
