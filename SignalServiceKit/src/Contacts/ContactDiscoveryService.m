@@ -624,6 +624,15 @@ NSError *ContactDiscoveryServiceErrorMakeWithReason(NSInteger code, NSString *re
     NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
     [dateFormatter setTimeZone:timeZone];
     [dateFormatter setDateFormat:@"yyy-MM-dd'T'HH:mm:ss.SSSSSS"];
+
+    // Specify parsing locale
+    // from: https://developer.apple.com/library/archive/qa/qa1480/_index.html
+    // Q:  I'm using NSDateFormatter to parse an Internet-style date, but this fails for some users in some regions.
+    // I've set a specific date format string; shouldn't that force NSDateFormatter to work independently of the user's
+    // region settings? A: No. While setting a date format string will appear to work for most users, it's not the right
+    // solution to this problem. There are many places where format strings behave in unexpected ways. [...]
+    NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    [dateFormatter setLocale:enUSPOSIXLocale];
     NSDate *timestampDate = [dateFormatter dateFromString:signatureBodyEntity.timestamp];
     if (!timestampDate) {
         OWSFailDebug(@"Could not parse signature body timestamp: %@", signatureBodyEntity.timestamp);
