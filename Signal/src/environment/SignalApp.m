@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     DispatchMainThreadSafe(^{
         UIViewController *frontmostVC = [[UIApplication sharedApplication] frontmostViewController];
-
+        
         if ([frontmostVC isKindOfClass:[ConversationViewController class]]) {
             ConversationViewController *conversationVC = (ConversationViewController *)frontmostVC;
             if ([conversationVC.thread.uniqueId isEqualToString:thread.uniqueId]) {
@@ -117,8 +117,37 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
         }
-
+        
         [self.homeViewController presentThread:thread action:action focusMessageId:focusMessageId animated:isAnimated];
+    });
+}
+
+- (void)presentConversationForThreadAndShowFirstUnreadMessage:(TSThread *)thread animated:(BOOL)isAnimated
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"");
+
+    if (!thread) {
+        OWSFailDebug(@"Can't present nil thread.");
+        return;
+    }
+
+    DispatchMainThreadSafe(^{
+        UIViewController *frontmostVC = [[UIApplication sharedApplication] frontmostViewController];
+
+        if ([frontmostVC isKindOfClass:[ConversationViewController class]]) {
+            ConversationViewController *conversationVC = (ConversationViewController *)frontmostVC;
+            if ([conversationVC.thread.uniqueId isEqualToString:thread.uniqueId]) {
+                [conversationVC scrollToFirstUnreadMessage:isAnimated];
+                return;
+            }
+        }
+
+        [self.homeViewController presentThread:thread
+                                        action:ConversationViewActionNone
+                                focusMessageId:nil
+                                      animated:isAnimated];
     });
 }
 

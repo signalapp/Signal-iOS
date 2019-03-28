@@ -46,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
                       focusMessageId:(nullable NSString *)focusMessageId
                             animated:(BOOL)isAnimated;
 
+- (void)presentConversationForThreadAndShowFirstUnreadMessage:(TSThread *)thread animated:(BOOL)isAnimated;
+
 #pragma mark - Methods
 
 + (void)resetAppData;
