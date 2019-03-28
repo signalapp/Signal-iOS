@@ -229,6 +229,12 @@ NS_ASSUME_NONNULL_BEGIN
     return derivedFont;
 }
 
+- (UIFont *)ows_monospaced
+{
+    return [self.class ows_monospacedDigitFontWithSize:self.pointSize];
+}
+
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -2,8 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMath.h"
 #import "UIView+OWS.h"
+#import "OWSMath.h"
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
@@ -149,6 +149,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio
 {
+    return [self autoPinToAspectRatio:ratio relation:NSLayoutRelationEqual];
+}
+
+- (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio relation:(NSLayoutRelation)relation
+{
     // Clamp to ensure view has reasonable aspect ratio.
     CGFloat clampedRatio = CGFloatClamp(ratio, 0.05f, 95.0f);
     if (clampedRatio != ratio) {
@@ -158,7 +163,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     self.translatesAutoresizingMaskIntoConstraints = NO;
     NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:self
                                                                   attribute:NSLayoutAttributeWidth
-                                                                  relatedBy:NSLayoutRelationEqual
+                                                                  relatedBy:relation
                                                                      toItem:self
                                                                   attribute:NSLayoutAttributeHeight
                                                                  multiplier:clampedRatio

@@ -13,6 +13,7 @@ protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>)
     func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset)
 
+    var isInBatchSelectMode: Bool { get }
     func imagePickerCanSelectAdditionalItems(_ imagePicker: ImagePickerGridController) -> Bool
 }
 
@@ -76,8 +77,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         navigationItem.titleView = titleView
         self.titleView = titleView
 
-        updateSelectButton()
-
         collectionView.backgroundColor = .ows_gray95
 
         let selectionPanGesture = DirectionalPanGestureRecognizer(direction: [.horizontal], target: self, action: #selector(didPanSelection))
@@ -94,10 +93,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     @objc
     func didPanSelection(_ selectionPanGesture: UIPanGestureRecognizer) {
-        guard isInBatchSelectMode else {
-            return
-        }
-
         guard let collectionView = collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
@@ -105,6 +100,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         guard let delegate = delegate else {
             owsFailDebug("delegate was unexpectedly nil")
+            return
+        }
+
+        guard delegate.isInBatchSelectMode else {
             return
         }
 
@@ -138,11 +137,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     func tryToToggleBatchSelect(at indexPath: IndexPath) {
-        guard isInBatchSelectMode else {
-            owsFailDebug("isInBatchSelectMode was unexpectedly false")
-            return
-        }
-
         guard let collectionView = collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
@@ -150,6 +144,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         guard let delegate = delegate else {
             owsFailDebug("delegate was unexpectedly nil")
+            return
+        }
+
+        guard delegate.isInBatchSelectMode else {
+            owsFailDebug("isInBatchSelectMode was unexpectedly false")
             return
         }
 
@@ -168,8 +167,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             delegate.imagePicker(self, didDeselectAsset: asset)
             collectionView.deselectItem(at: indexPath, animated: true)
         }
-
-        updateDoneButton()
     }
 
     override func viewWillLayoutSubviews() {
@@ -180,12 +177,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     var hasEverAppeared: Bool = false
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        if let navBar = self.navigationController?.navigationBar as? OWSNavigationBar {
-            navBar.overrideTheme(type: .alwaysDark)
-        } else {
-            owsFailDebug("Invalid nav bar.")
-        }
 
         // Determine the size of the thumbnails to request
         let scale = UIScreen.main.scale
@@ -217,10 +208,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         super.viewDidAppear(animated)
 
         hasEverAppeared = true
-        // done button may have been disable from the last time we hit "Done"
-        // make sure to re-enable it if appropriate upon returning to the view
-        hasPressedDoneSinceAppeared = false
-        updateDoneButton()
 
         // Since we're presenting *over* the ConversationVC, we need to `becomeFirstResponder`.
         //
@@ -332,78 +319,18 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     // MARK: - Batch Selection
 
-    lazy var doneButton: UIBarButtonItem = {
-        return UIBarButtonItem(barButtonSystemItem: .done,
-                               target: self,
-                               action: #selector(didPressDone))
-    }()
-
-    lazy var selectButton: UIBarButtonItem = {
-        return UIBarButtonItem(title: NSLocalizedString("BUTTON_SELECT", comment: "Button text to enable batch selection mode"),
-                               style: .plain,
-                               target: self,
-                               action: #selector(didTapSelect))
-    }()
-
-    var isInBatchSelectMode = false {
-        didSet {
-            collectionView!.allowsMultipleSelection = isInBatchSelectMode
-            updateSelectButton()
-            updateDoneButton()
-        }
-    }
-
-    @objc
-    func didPressDone(_ sender: Any) {
-        Logger.debug("")
-
+    func batchSelectModeDidChange() {
         guard let delegate = delegate else {
-            owsFailDebug("delegate was unexpectedly nil")
             return
         }
 
-        hasPressedDoneSinceAppeared = true
-        updateDoneButton()
-
-        delegate.imagePickerDidCompleteSelection(self)
-    }
-
-    var hasPressedDoneSinceAppeared: Bool = false
-    func updateDoneButton() {
-        guard let collectionView = self.collectionView else {
+        guard let collectionView = collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
         }
 
-        guard !hasPressedDoneSinceAppeared else {
-            doneButton.isEnabled = false
-            return
-        }
-
-        if let count = collectionView.indexPathsForSelectedItems?.count, count > 0 {
-            doneButton.isEnabled = true
-        } else {
-            doneButton.isEnabled = false
-        }
-    }
-
-    func updateSelectButton() {
-        guard !isShowingCollectionPickerController else {
-            navigationItem.rightBarButtonItem = nil
-            return
-        }
-
-        let button = isInBatchSelectMode ? doneButton : selectButton
-        button.tintColor = .ows_gray05
-        navigationItem.rightBarButtonItem = button
-    }
-
-    @objc
-    func didTapSelect(_ sender: Any) {
-        isInBatchSelectMode = true
-
-        // disabled until at least one item is selected
-        self.doneButton.isEnabled = false
+        collectionView.allowsMultipleSelection = delegate.isInBatchSelectMode
+        collectionView.reloadData()
     }
 
     func clearCollectionViewSelection() {
@@ -477,9 +404,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
             collectionPickerView.superview?.layoutIfNeeded()
-
-            self.updateSelectButton()
-
             self.titleView.rotateIcon(.up)
         }.retainUntilComplete()
     }
@@ -494,9 +418,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
             collectionPickerController.view.frame = self.view.frame.offsetBy(dx: 0, dy: self.view.frame.height)
-
-            self.updateSelectButton()
-
             self.titleView.rotateIcon(.down)
         }.done { _ in
             collectionPickerController.view.removeFromSuperview()
@@ -550,9 +471,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset)
         delegate.imagePicker(self, didSelectAsset: asset, attachmentPromise: attachmentPromise)
 
-        if isInBatchSelectMode {
-            updateDoneButton()
-        } else {
+        if !delegate.isInBatchSelectMode {
             // Don't show "selected" badge unless we're in batch mode
             collectionView.deselectItem(at: indexPath, animated: false)
             delegate.imagePickerDidCompleteSelection(self)
@@ -568,10 +487,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         let asset = photoCollectionContents.asset(at: indexPath.item)
         delegate.imagePicker(self, didDeselectAsset: asset)
-
-        if isInBatchSelectMode {
-            updateDoneButton()
-        }
     }
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
