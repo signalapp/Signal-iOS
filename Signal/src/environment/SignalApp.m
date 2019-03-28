@@ -122,14 +122,16 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-- (void)presentConversationForThreadAndShowFirstUnreadMessage:(TSThread *)thread animated:(BOOL)isAnimated
+- (void)presentConversationAndShowFirstUnreadMessageForThreadId:(NSString *)threadId animated:(BOOL)isAnimated
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(threadId.length > 0);
 
     OWSLogInfo(@"");
 
-    if (!thread) {
-        OWSFailDebug(@"Can't present nil thread.");
+    TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
+    if (thread == nil) {
+        OWSFailDebug(@"unable to find thread with id: %@", threadId);
         return;
     }
 

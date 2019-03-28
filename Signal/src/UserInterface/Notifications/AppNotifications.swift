@@ -648,7 +648,7 @@ class NotificationActionHandler {
         // can be visible to the user immediately upon opening the app, rather than having to watch
         // it animate in from the homescreen.
         let shouldAnimate = UIApplication.shared.applicationState == .active
-        signalApp.presentConversation(forThreadId: threadId, animated: shouldAnimate)
+        signalApp.presentConversationAndShowFirstUnreadMessage(forThreadId: threadId, animated: shouldAnimate)
         return Promise.value(())
     }
 
