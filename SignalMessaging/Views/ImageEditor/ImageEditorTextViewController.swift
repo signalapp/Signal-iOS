@@ -239,6 +239,11 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         return true
     }
 
+    @objc
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
+
     // MARK: - Pinch Gesture
 
     private var pinchFontStart: UIFont?

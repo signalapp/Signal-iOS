@@ -328,7 +328,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     private func updateControlVisibility() {
-        if !shouldHideControls, !isFirstResponder {
+        let hasPresentedView = self.presentedViewController != nil
+
+        if !shouldHideControls, !isFirstResponder, !hasPresentedView {
             becomeFirstResponder()
         }
         bottomToolView.shouldHideControls = shouldHideControls
