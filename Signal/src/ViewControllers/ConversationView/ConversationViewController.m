@@ -752,7 +752,7 @@ typedef enum : NSUInteger {
 
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
-        [self scrollToDefaultPosition];
+        [self scrollToDefaultPosition:NO];
     } else if (self.menuActionsViewController != nil) {
         [self scrollToMenuActionInteraction:NO];
     }
@@ -807,7 +807,7 @@ typedef enum : NSUInteger {
     return [NSIndexPath indexPathForRow:row inSection:0];
 }
 
-- (void)scrollToDefaultPosition
+- (void)scrollToDefaultPosition:(BOOL)isAnimated
 {
     if (self.isUserScrolling) {
         return;
@@ -824,14 +824,14 @@ typedef enum : NSUInteger {
 
     if (indexPath) {
         if (indexPath.section == 0 && indexPath.row == 0) {
-            [self.collectionView setContentOffset:CGPointZero animated:NO];
+            [self.collectionView setContentOffset:CGPointZero animated:isAnimated];
         } else {
             [self.collectionView scrollToItemAtIndexPath:indexPath
                                         atScrollPosition:UICollectionViewScrollPositionTop
-                                                animated:NO];
+                                                animated:isAnimated];
         }
     } else {
-        [self scrollToBottomAnimated:NO];
+        [self scrollToBottomAnimated:isAnimated];
     }
 }
 
@@ -3899,7 +3899,7 @@ typedef enum : NSUInteger {
 
         // Adjust content offset to prevent the presented keyboard from obscuring content.
         if (!self.viewHasEverAppeared) {
-            [self scrollToDefaultPosition];
+            [self scrollToDefaultPosition:NO];
         } else if (wasScrolledToBottom) {
             // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
             [self scrollToBottomAnimated:NO];
@@ -4024,6 +4024,11 @@ typedef enum : NSUInteger {
 
     [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:animated];
     [self didScrollToBottom];
+}
+
+- (void)scrollToFirstUnreadMessage:(BOOL)isAnimated
+{
+    [self scrollToDefaultPosition:isAnimated];
 }
 
 #pragma mark - UIScrollViewDelegate

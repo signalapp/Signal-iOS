@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
@@ -24,6 +24,8 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
             focusMessageId:(nullable NSString *)focusMessageId;
 
 - (void)popKeyBoard;
+
+- (void)scrollToFirstUnreadMessage:(BOOL)isAnimated;
 
 #pragma mark 3D Touch Methods
 
