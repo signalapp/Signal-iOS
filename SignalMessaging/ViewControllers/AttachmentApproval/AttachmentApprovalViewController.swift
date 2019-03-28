@@ -9,17 +9,19 @@ import PromiseKit
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: class {
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?)
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
+                            didApproveAttachments attachments: [SignalAttachment], messageText: String?)
+
     func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController)
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
+                            didChangeMessageText newMessageText: String?)
 
     @objc
     optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment)
 
     @objc
     optional func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController)
-
-    @objc
-    optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, changedCaptionOfAttachment attachment: SignalAttachment)
 }
 
 // MARK: -
@@ -214,6 +216,15 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         let currentAttachmentItem: SignalAttachmentItem? = currentPageViewController?.attachmentItem
         bottomToolView.update(isEditingCaptions: isEditingCaptions, currentAttachmentItem: currentAttachmentItem)
+    }
+
+    public var messageText: String? {
+        get {
+            return attachmentTextToolbar.messageText
+        }
+        set {
+            attachmentTextToolbar.messageText = newValue
+        }
     }
 
     // MARK: - Navigation Bar
@@ -677,6 +688,10 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
 
     func attachmentTextToolbarDidAddMore(_ attachmentTextToolbar: AttachmentTextToolbar) {
         self.approvalDelegate?.attachmentApprovalDidTapAddMore?(self)
+    }
+
+    func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar) {
+        approvalDelegate?.attachmentApproval(self, didChangeMessageText: attachmentTextToolbar.messageText)
     }
 }
 

@@ -2939,7 +2939,24 @@ typedef enum : NSUInteger {
               messageText:(nullable NSString *)messageText
 {
     [self tryToSendAttachments:attachments messageText:messageText];
+    [self.inputToolbar clearTextMessageAnimated:NO];
+
+    // we want to already be at the bottom when the user returns, rather than have to watch
+    // the new message scroll into view.
+    [self scrollToBottomAnimated:NO];
+
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (nullable NSString *)sendMediaNavInitialMessageText:(SendMediaNavigationController *)sendMediaNavigationController
+{
+    return self.inputToolbar.messageText;
+}
+
+- (void)sendMediaNav:(SendMediaNavigationController *)sendMediaNavigationController
+    didChangeMessageText:(nullable NSString *)messageText
+{
+    [self.inputToolbar setMessageText:messageText animated:NO];
 }
 
 #pragma mark - UIImagePickerControllerDelegate
@@ -3908,7 +3925,9 @@ typedef enum : NSUInteger {
                messageText:(NSString *_Nullable)messageText
 {
     [self tryToSendAttachments:attachments messageText:messageText];
+    [self.inputToolbar clearTextMessageAnimated:NO];
     [self dismissViewControllerAnimated:YES completion:nil];
+
     // We always want to scroll to the bottom of the conversation after the local user
     // sends a message.  Normally, this is taken care of in yapDatabaseModified:, but
     // we don't listen to db modifications when this view isn't visible, i.e. when the
@@ -3920,6 +3939,14 @@ typedef enum : NSUInteger {
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
+
+- (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
+      didChangeMessageText:(nullable NSString *)newMessageText
+{
+    [self.inputToolbar setMessageText:newMessageText animated:NO];
+}
+
+#pragma mark -
 
 - (void)showErrorAlertForAttachment:(SignalAttachment *_Nullable)attachment
 {

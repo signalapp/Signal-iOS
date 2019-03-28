@@ -10,6 +10,9 @@ import PromiseKit
 protocol SendMediaNavDelegate: AnyObject {
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController)
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?)
+
+    func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String?
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?)
 }
 
 @objc
@@ -208,8 +211,14 @@ class SendMediaNavigationController: OWSNavigationController {
     }()
 
     private func pushApprovalViewController() {
+        guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
+            owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
+            return
+        }
+
         let approvalViewController = AttachmentApprovalViewController(mode: .sharedNavigation, attachments: self.attachments)
         approvalViewController.approvalDelegate = self
+        approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
         pushViewController(approvalViewController, animated: true)
         updateButtons()
@@ -361,6 +370,10 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 }
 
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
+        sendMediaNavDelegate?.sendMediaNav(self, didChangeMessageText: newMessageText)
+    }
+
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
         guard let removedDraft = attachmentDraftCollection.attachmentDrafts.first(where: { $0.attachment == attachment}) else {
             owsFailDebug("removedDraft was unexpectedly nil")
