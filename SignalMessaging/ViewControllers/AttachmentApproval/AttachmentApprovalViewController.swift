@@ -206,6 +206,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         let currentAttachmentItem: SignalAttachmentItem? = currentPageViewController?.attachmentItem
 
+        let hasPresentedView = self.presentedViewController != nil
+        let isToolbarFirstResponder = bottomToolView.hasFirstResponder
+        if !shouldHideControls, !isFirstResponder, !hasPresentedView, !isToolbarFirstResponder {
+            becomeFirstResponder()
+        }
+
         bottomToolView.update(isEditingCaptions: isEditingCaptions,
                               currentAttachmentItem: currentAttachmentItem,
                               shouldHideControls: shouldHideControls)

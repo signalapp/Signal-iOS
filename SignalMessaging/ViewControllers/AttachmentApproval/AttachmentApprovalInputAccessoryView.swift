@@ -120,6 +120,12 @@ class AttachmentApprovalInputAccessoryView: UIView {
         currentCaptionWrapper.isHidden = isEditingCaptions || !hasCurrentCaption
         attachmentTextToolbar.isHidden = isEditingCaptions
 
+        updateFirstResponder()
+
+        layoutSubviews()
+    }
+
+    private func updateFirstResponder() {
         if (shouldHideControls) {
             if attachmentCaptionToolbar.textView.isFirstResponder {
                 attachmentCaptionToolbar.textView.resignFirstResponder()
@@ -138,8 +144,6 @@ class AttachmentApprovalInputAccessoryView: UIView {
         }
         // NOTE: We don't automatically make attachmentTextToolbar.textView
         // first responder;
-
-        layoutSubviews()
     }
 
     public func update(isEditingCaptions: Bool,
@@ -149,7 +153,9 @@ class AttachmentApprovalInputAccessoryView: UIView {
         guard self.isEditingCaptions != isEditingCaptions ||
             self.currentAttachmentItem != currentAttachmentItem ||
             self.shouldHideControls != shouldHideControls else {
-            return
+
+                updateFirstResponder()
+                return
         }
 
         self.isEditingCaptions = isEditingCaptions
@@ -167,6 +173,12 @@ class AttachmentApprovalInputAccessoryView: UIView {
             // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
             return CGSize.zero
         }
+    }
+
+    public var hasFirstResponder: Bool {
+        return (isFirstResponder ||
+            attachmentCaptionToolbar.textView.isFirstResponder ||
+            attachmentTextToolbar.textView.isFirstResponder)
     }
 }
 
