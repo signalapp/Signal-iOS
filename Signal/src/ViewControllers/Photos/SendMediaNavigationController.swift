@@ -10,6 +10,9 @@ import PromiseKit
 protocol SendMediaNavDelegate: AnyObject {
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController)
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?)
+
+    func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String?
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?)
 }
 
 @objc
@@ -18,8 +21,6 @@ class SendMediaNavigationController: OWSNavigationController {
     // MARK: - Overrides
 
     override var prefersStatusBarHidden: Bool { return true }
-
-    var messageText: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,21 +54,19 @@ class SendMediaNavigationController: OWSNavigationController {
     public weak var sendMediaNavDelegate: SendMediaNavDelegate?
 
     @objc
-    public class func showingCameraFirst(messageText: String) -> SendMediaNavigationController {
+    public class func showingCameraFirst() -> SendMediaNavigationController {
         let navController = SendMediaNavigationController()
         navController.setViewControllers([navController.captureViewController], animated: false)
         navController.updateButtons()
-        navController.messageText = messageText
 
         return navController
     }
 
     @objc
-    public class func showingMediaLibraryFirst(messageText: String) -> SendMediaNavigationController {
+    public class func showingMediaLibraryFirst() -> SendMediaNavigationController {
         let navController = SendMediaNavigationController()
         navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
         navController.updateButtons()
-        navController.messageText = messageText
 
         return navController
     }
@@ -212,9 +211,14 @@ class SendMediaNavigationController: OWSNavigationController {
     }()
 
     private func pushApprovalViewController() {
+        guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
+            owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
+            return
+        }
+
         let approvalViewController = AttachmentApprovalViewController(mode: .sharedNavigation, attachments: self.attachments)
         approvalViewController.approvalDelegate = self
-        approvalViewController.messageText = messageText
+        approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
         pushViewController(approvalViewController, animated: true)
         updateButtons()
@@ -367,7 +371,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
-        self.messageText = newMessageText
+        sendMediaNavDelegate?.sendMediaNav(self, didChangeMessageText: newMessageText)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
