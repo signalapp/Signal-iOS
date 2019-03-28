@@ -310,6 +310,12 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     [self cancelShareExperience];
 }
 
+- (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
+      didChangeMessageText:(nullable NSString *)newMessageText
+{
+    // no-op
+}
+
 #pragma mark - MessageApprovalViewControllerDelegate
 
 - (void)messageApproval:(MessageApprovalViewController *)approvalViewController

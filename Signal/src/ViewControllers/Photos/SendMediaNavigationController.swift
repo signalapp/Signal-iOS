@@ -19,6 +19,8 @@ class SendMediaNavigationController: OWSNavigationController {
 
     override var prefersStatusBarHidden: Bool { return true }
 
+    var messageText: String?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -51,19 +53,21 @@ class SendMediaNavigationController: OWSNavigationController {
     public weak var sendMediaNavDelegate: SendMediaNavDelegate?
 
     @objc
-    public class func showingCameraFirst() -> SendMediaNavigationController {
+    public class func showingCameraFirst(messageText: String) -> SendMediaNavigationController {
         let navController = SendMediaNavigationController()
         navController.setViewControllers([navController.captureViewController], animated: false)
         navController.updateButtons()
+        navController.messageText = messageText
 
         return navController
     }
 
     @objc
-    public class func showingMediaLibraryFirst() -> SendMediaNavigationController {
+    public class func showingMediaLibraryFirst(messageText: String) -> SendMediaNavigationController {
         let navController = SendMediaNavigationController()
         navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
         navController.updateButtons()
+        navController.messageText = messageText
 
         return navController
     }
@@ -210,6 +214,7 @@ class SendMediaNavigationController: OWSNavigationController {
     private func pushApprovalViewController() {
         let approvalViewController = AttachmentApprovalViewController(mode: .sharedNavigation, attachments: self.attachments)
         approvalViewController.approvalDelegate = self
+        approvalViewController.messageText = messageText
 
         pushViewController(approvalViewController, animated: true)
         updateButtons()
@@ -361,6 +366,10 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 }
 
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
+        self.messageText = newMessageText
+    }
+
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
         guard let removedDraft = attachmentDraftCollection.attachmentDrafts.first(where: { $0.attachment == attachment}) else {
             owsFailDebug("removedDraft was unexpectedly nil")

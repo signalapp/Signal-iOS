@@ -2858,7 +2858,8 @@ typedef enum : NSUInteger {
             UIViewController *pickerModal;
 
             if (SSKFeatureFlags.useCustomPhotoCapture) {
-                SendMediaNavigationController *navController = [SendMediaNavigationController showingCameraFirst];
+                SendMediaNavigationController *navController =
+                    [SendMediaNavigationController showingCameraFirstWithMessageText:self.inputToolbar.messageText];
                 navController.sendMediaNavDelegate = self;
                 pickerModal = navController;
             } else {
@@ -2903,7 +2904,8 @@ typedef enum : NSUInteger {
             return;
         }
 
-        SendMediaNavigationController *pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
+        SendMediaNavigationController *pickerModal =
+            [SendMediaNavigationController showingMediaLibraryFirstWithMessageText:self.inputToolbar.messageText];
         pickerModal.sendMediaNavDelegate = self;
 
         [self dismissKeyBoard];
@@ -3920,6 +3922,14 @@ typedef enum : NSUInteger {
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
+
+- (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
+      didChangeMessageText:(nullable NSString *)newMessageText
+{
+    [self.inputToolbar setMessageText:newMessageText animated:NO];
+}
+
+#pragma mark -
 
 - (void)showErrorAlertForAttachment:(SignalAttachment *_Nullable)attachment
 {

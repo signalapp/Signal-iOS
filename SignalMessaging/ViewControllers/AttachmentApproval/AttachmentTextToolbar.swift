@@ -13,6 +13,7 @@ protocol AttachmentTextToolbarDelegate: class {
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidAddMore(_ attachmentTextToolbar: AttachmentTextToolbar)
+    func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar)
 }
 
 // MARK: -
@@ -228,6 +229,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     public func textViewDidChange(_ textView: UITextView) {
         updateHeight(textView: textView)
+        attachmentTextToolbarDelegate?.attachmentTextToolbarDidChange(self)
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
