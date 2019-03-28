@@ -101,11 +101,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
 
     // MARK: 
 
-    public var shouldHideControls = false {
-        didSet {
-            updateContents()
-        }
-    }
+    private var shouldHideControls = false
 
     private func updateContents() {
         var hasCurrentCaption = false
@@ -124,6 +120,12 @@ class AttachmentApprovalInputAccessoryView: UIView {
         currentCaptionWrapper.isHidden = isEditingCaptions || !hasCurrentCaption
         attachmentTextToolbar.isHidden = isEditingCaptions
 
+        updateFirstResponder()
+
+        layoutSubviews()
+    }
+
+    private func updateFirstResponder() {
         if (shouldHideControls) {
             if attachmentCaptionToolbar.textView.isFirstResponder {
                 attachmentCaptionToolbar.textView.resignFirstResponder()
@@ -135,17 +137,30 @@ class AttachmentApprovalInputAccessoryView: UIView {
             if !attachmentCaptionToolbar.textView.isFirstResponder {
                 attachmentCaptionToolbar.textView.becomeFirstResponder()
             }
+        } else {
+            if attachmentCaptionToolbar.textView.isFirstResponder {
+                attachmentCaptionToolbar.textView.resignFirstResponder()
+            }
         }
         // NOTE: We don't automatically make attachmentTextToolbar.textView
         // first responder;
-
-        layoutSubviews()
     }
 
     public func update(isEditingCaptions: Bool,
-                       currentAttachmentItem: SignalAttachmentItem?) {
+                       currentAttachmentItem: SignalAttachmentItem?,
+                       shouldHideControls: Bool) {
+        // De-bounce
+        guard self.isEditingCaptions != isEditingCaptions ||
+            self.currentAttachmentItem != currentAttachmentItem ||
+            self.shouldHideControls != shouldHideControls else {
+
+                updateFirstResponder()
+                return
+        }
+
         self.isEditingCaptions = isEditingCaptions
         self.currentAttachmentItem = currentAttachmentItem
+        self.shouldHideControls = shouldHideControls
 
         updateContents()
     }
@@ -158,6 +173,12 @@ class AttachmentApprovalInputAccessoryView: UIView {
             // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
             return CGSize.zero
         }
+    }
+
+    public var hasFirstResponder: Bool {
+        return (isFirstResponder ||
+            attachmentCaptionToolbar.textView.isFirstResponder ||
+            attachmentTextToolbar.textView.isFirstResponder)
     }
 }
 
