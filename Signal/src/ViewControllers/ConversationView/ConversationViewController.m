@@ -4210,7 +4210,16 @@ typedef enum : NSUInteger {
 
     // restore first responder to VC
     [self becomeFirstResponder];
-    [self reloadInputViews];
+    if (@available(iOS 10, *)) {
+        [self reloadInputViews];
+    } else {
+        // We want to change the inputAccessoryView from SearchResults -> MessageInput
+        // reloading too soon on an old iOS9 device caused the inputAccessoryView to go from
+        // SearchResults -> MessageInput -> SearchResults
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self reloadInputViews];
+        });
+    }
 }
 
 #pragma mark ConversationSearchControllerDelegate
