@@ -315,36 +315,30 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 // TODO: This method contains view-specific logic and probably belongs in NotificationsManager, not in SSK.
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
-{    
-    NSString *_Nullable attachmentDescription = nil;
-    if ([self hasAttachments]) {
-        NSString *attachmentId = self.attachmentIds[0];
-        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
-        if ([OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType]) {
-            // Handle oversize text attachments.
-            if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-                NSData *_Nullable data = [NSData dataWithContentsOfFile:attachmentStream.originalFilePath];
-                if (data) {
-                    NSString *_Nullable text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                    if (text) {
-                        return text.filterStringForDisplay;
-                    }
-                }
-            }
-            
-            return @"";
-        } else if (attachment) {
-            attachmentDescription = attachment.description;
-        } else {
-            attachmentDescription = NSLocalizedString(@"UNKNOWN_ATTACHMENT_LABEL",
-                @"In Inbox view, last message label for thread with corrupted attachment.");
-        }
-    }
-
+{
     NSString *_Nullable bodyDescription = nil;
     if (self.body.length > 0) {
         bodyDescription = self.body;
+    }
+
+    if (bodyDescription == nil) {
+        TSAttachment *_Nullable oversizeTextAttachment = [self oversizeTextAttachmentWithTransaction:transaction];
+        if ([oversizeTextAttachment isKindOfClass:[TSAttachmentStream class]]) {
+            TSAttachmentStream *oversizeTextAttachmentStream = (TSAttachmentStream *)oversizeTextAttachment;
+            NSData *_Nullable data = [NSData dataWithContentsOfFile:oversizeTextAttachmentStream.originalFilePath];
+            if (data) {
+                NSString *_Nullable text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                if (text) {
+                    bodyDescription = text.filterStringForDisplay;
+                }
+            }
+        }
+    }
+
+    NSString *_Nullable attachmentDescription = nil;
+    TSAttachment *_Nullable mediaAttachment = [self mediaAttachmentsWithTransaction:transaction].firstObject;
+    if (mediaAttachment != nil) {
+        attachmentDescription = mediaAttachment.description;
     }
 
     if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
