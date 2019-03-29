@@ -516,7 +516,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         parameters = @{ @"reason": limitedReason };
     }
-    NSString *path = [NSString stringWithFormat:@"/v1/directory/feedback-v2/%@", status];
+    NSString *path = [NSString stringWithFormat:@"/v1/directory/feedback-v3/%@", status];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
 }
 
