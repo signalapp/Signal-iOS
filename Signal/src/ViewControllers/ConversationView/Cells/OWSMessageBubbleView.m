@@ -708,10 +708,12 @@ NS_ASSUME_NONNULL_BEGIN
         initWithString:text
             attributes:@{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor }];
     if (searchText.length >= ConversationSearchController.kMinimumSearchTextLength) {
+        NSString *searchableText = [FullTextSearchFinder normalizeWithText:searchText];
         NSError *error;
-        NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:searchText
-                                                                          options:NSRegularExpressionCaseInsensitive
-                                                                            error:&error];
+        NSRegularExpression *regex =
+            [[NSRegularExpression alloc] initWithPattern:[NSRegularExpression escapedPatternForString:searchableText]
+                                                 options:NSRegularExpressionCaseInsensitive
+                                                   error:&error];
         OWSAssertDebug(error == nil);
         for (NSTextCheckingResult *match in
             [regex matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {

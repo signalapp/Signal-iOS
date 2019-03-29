@@ -138,6 +138,7 @@ public class FullTextSearchFinder: NSObject {
     // This is a hot method, especially while running large migrations.
     // Changes to it should go through a profiler to make sure large migrations
     // aren't adversely affected.
+    @objc
     public class func normalize(text: String) -> String {
         // 1. Filter out invalid characters.
         let filtered = text.removeCharacters(characterSet: charactersToRemove)
