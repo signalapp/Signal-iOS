@@ -459,7 +459,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Привязать устройство";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ мог переустановить Signal или сменить устройство. Сверьте ваши коды безопасности для того, чтобы убедиться в конфиденциальности общения.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ мог(-ла) переустановить Signal или сменить устройство. Сверьте ваши коды безопасности для того, чтобы убедиться в конфиденциальности общения.";
 
 /* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Код безопасности с %@ изменился";
@@ -940,7 +940,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Неизвестная ошибка.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Код безопасности изменился";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Код безопасности изменился.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Незарегистрированный пользователь: %@";
@@ -1674,7 +1674,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Сбросить проверку";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Это не код безопасности для %@. Убедитесь, что подтверждаете соединение с верным пользователем.";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Это не код безопасности для %@. Убедитесь, что вы подтверждаете верного пользователя.";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Содержимое буфера обмена не является кодом безопасности для данного собеседника.";
@@ -1908,10 +1908,10 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Отправить в любом случае";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Наш код безопасности:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Наш код безопасности Signal:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Код безопасности с пользователем %@ изменился. Возможно, вы хотите его подтвердить.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Код безопасности с %@ изменился. Возможно, вы хотите его подтвердить.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Отсканируйте QR-код на устройстве пользователя.";
@@ -2325,7 +2325,7 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Коды безопасности совпадают!";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Верифицировать код безопасности";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Подтвердить код безопасности";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ дней";
@@ -2484,7 +2484,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Добро пожаловать в видеозвонки!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "В скором времени Signal будет работать только на iOS 10 и выше. Пожалуйста, обновите iOS, перейдя в приложение Настройки >> Основные >> Обновление ПО.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Обновите IOS";
@@ -2505,10 +2505,10 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Состояние проверки изменено.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Посмотреть номер безопасности";
+"VERIFY_PRIVACY" = "Просмотреть код безопасности";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "Просмотр кодов безопасности";
+"VERIFY_PRIVACY_MULTIPLE" = "Проверить коды безопасности";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Проведите для отмены";
