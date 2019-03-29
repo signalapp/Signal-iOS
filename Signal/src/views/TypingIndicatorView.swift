@@ -38,7 +38,30 @@
         self.axis = .horizontal
         self.spacing = kDotMaxHSpacing
         self.alignment = .center
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didBecomeActive),
+                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               object: nil)
     }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    // MARK: - Notifications
+
+    @objc func didBecomeActive() {
+        AssertIsOnMainThread()
+
+        // CoreAnimation animations are stopped in the background, so ensure
+        // animations are restored if necessary.
+        if isAnimating {
+            startAnimation()
+        }
+    }
+
+    // MARK: -
 
     @objc
     public override func sizeThatFits(_ size: CGSize) -> CGSize {
@@ -49,8 +72,12 @@
         return [dot1, dot2, dot3]
     }
 
+    private var isAnimating = false
+
     @objc
     public func startAnimation() {
+        isAnimating = true
+
         for dot in dots() {
             dot.startAnimation()
         }
@@ -58,6 +85,8 @@
 
     @objc
     public func stopAnimation() {
+        isAnimating = false
+
         for dot in dots() {
             dot.stopAnimation()
         }
