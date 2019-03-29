@@ -3903,7 +3903,7 @@ typedef enum : NSUInteger {
         } else if (wasScrolledToBottom) {
             // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
             [self scrollToBottomAnimated:NO];
-        } else {
+        } else if (self.isViewCompletelyAppeared) {
             // If we were scrolled away from the bottom, shift the content in lockstep with the
             // keyboard, up to the limits of the content bounds.
             CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
