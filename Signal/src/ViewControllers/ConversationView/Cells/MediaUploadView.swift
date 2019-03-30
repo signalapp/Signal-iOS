@@ -110,7 +110,7 @@ public class MediaUploadView: UIView {
         bezierPath2.append(UIBezierPath(ovalIn: outerCircleBounds))
         shapeLayer2.path = bezierPath2.cgPath
         shapeLayer2.fillColor = UIColor(white: 1.0, alpha: 0.4).cgColor
-        shapeLayer2.fillRule = kCAFillRuleEvenOdd
+        shapeLayer2.fillRule = CAShapeLayerFillRule.evenOdd
 
         CATransaction.commit()
     }

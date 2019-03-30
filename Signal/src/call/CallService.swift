@@ -1831,7 +1831,7 @@ private class SignalCallData: NSObject {
     func removeObserver(_ observer: CallServiceObserver) {
         AssertIsOnMainThread()
 
-        while let index = observers.index(where: { $0.value === observer }) {
+        while let index = observers.firstIndex(where: { $0.value === observer }) {
             observers.remove(at: index)
         }
     }

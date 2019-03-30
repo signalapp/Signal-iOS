@@ -58,7 +58,7 @@ public class OWSVideoPlayer: NSObject {
 
         if item.currentTime() == item.duration {
             // Rewind for repeated plays, but only if it previously played to end.
-            avPlayer.seek(to: kCMTimeZero)
+            avPlayer.seek(to: CMTime.zero)
         }
 
         avPlayer.play()
@@ -67,7 +67,7 @@ public class OWSVideoPlayer: NSObject {
     @objc
     public func stop() {
         avPlayer.pause()
-        avPlayer.seek(to: kCMTimeZero)
+        avPlayer.seek(to: CMTime.zero)
         audioSession.endAudioActivity(self.audioActivity)
     }
 

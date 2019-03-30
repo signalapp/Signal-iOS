@@ -866,7 +866,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                                 isConvertibleToTextMessage: isConvertibleToTextMessage))
                 }
             } else if let image = value as? UIImage {
-                if let data = UIImagePNGRepresentation(image) {
+                if let data = image.pngData() {
                     let tempFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: "png")
                     do {
                         let url = NSURL.fileURL(withPath: tempFilePath)

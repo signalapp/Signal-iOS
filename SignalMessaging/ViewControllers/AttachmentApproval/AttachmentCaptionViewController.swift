@@ -103,7 +103,7 @@ class AttachmentCaptionViewController: OWSViewController {
         let backgroundView = UIView()
         backgroundView.backgroundColor = UIColor(white: 0, alpha: 0.5)
         view.addSubview(backgroundView)
-        view.sendSubview(toBack: backgroundView)
+        view.sendSubviewToBack(backgroundView)
         backgroundView.autoPinEdge(toSuperviewEdge: .leading)
         backgroundView.autoPinEdge(toSuperviewEdge: .trailing)
         backgroundView.autoPinEdge(toSuperviewEdge: .bottom)

@@ -63,7 +63,7 @@ class SAELoadViewController: UIViewController {
 
         self.view.backgroundColor = UIColor.ows_signalBrandBlue
 
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
         self.activityIndicator = activityIndicator
         self.view.addSubview(activityIndicator)
         activityIndicator.autoCenterInSuperview()

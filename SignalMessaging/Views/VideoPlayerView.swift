@@ -106,7 +106,7 @@ public class PlayerProgressBar: UIView {
 
         // Background
         backgroundColor = UIColor.lightGray.withAlphaComponent(0.5)
-        if !UIAccessibilityIsReduceTransparencyEnabled() {
+        if !UIAccessibility.isReduceTransparencyEnabled {
             addSubview(blurEffectView)
             blurEffectView.ows_autoPinToSuperviewEdges()
         }

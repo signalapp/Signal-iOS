@@ -124,7 +124,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                     }
 
                     // Don't use receiver when video is enabled. Only bluetooth or speaker
-                    return portDescription.portType != AVAudioSessionPortBuiltInMic
+                    return convertFromAVAudioSessionPort(portDescription.portType) != convertFromAVAudioSessionPort(AVAudioSession.Port.builtInMic)
                 }
             }
             return Set(appropriateForVideo)
@@ -602,7 +602,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     internal func updateLocalVideoLayout() {
         if !localVideoView.isHidden {
-            localVideoView.superview?.bringSubview(toFront: localVideoView)
+            localVideoView.superview?.bringSubviewToFront(localVideoView)
         }
 
         updateCallUI(callState: call.state)
@@ -1224,4 +1224,9 @@ extension CallViewController: CallVideoHintViewDelegate {
         self.hasUserDismissedVideoHint = true
         updateRemoteVideoLayout()
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVAudioSessionPort(_ input: AVAudioSession.Port) -> String {
+	return input.rawValue
 }

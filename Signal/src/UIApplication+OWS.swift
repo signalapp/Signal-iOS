@@ -27,7 +27,7 @@ import Foundation
     }
 
     @objc public func openSystemSettings() {
-        openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+        openURL(URL(string: UIApplication.openSettingsURLString)!)
     }
 
 }

@@ -282,8 +282,8 @@ class MediaGalleryNavigationController: OWSNavigationController {
         presentationView.isHidden = true
         presentationView.clipsToBounds = true
         presentationView.layer.allowsEdgeAntialiasing = true
-        presentationView.layer.minificationFilter = kCAFilterTrilinear
-        presentationView.layer.magnificationFilter = kCAFilterTrilinear
+        presentationView.layer.minificationFilter = CALayerContentsFilter.trilinear
+        presentationView.layer.magnificationFilter = CALayerContentsFilter.trilinear
         presentationView.contentMode = .scaleAspectFit
 
         guard let navigationBar = self.navigationBar as? OWSNavigationBar else {
@@ -980,13 +980,13 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         if let completionBlock = completion {
             Bench(title: "calculating changes for collectionView") {
                 // FIXME can we avoid this index offset?
-                let dateIndices = newDates.map { sectionDates.index(of: $0)! + 1 }
+                let dateIndices = newDates.map { sectionDates.firstIndex(of: $0)! + 1 }
                 let addedSections: IndexSet = IndexSet(dateIndices)
 
                 let addedItems: [IndexPath] = newGalleryItems.map { galleryItem in
-                    let sectionIdx = sectionDates.index(of: galleryItem.galleryDate)!
+                    let sectionIdx = sectionDates.firstIndex(of: galleryItem.galleryDate)!
                     let section = sections[galleryItem.galleryDate]!
-                    let itemIdx = section.index(of: galleryItem)!
+                    let itemIdx = section.firstIndex(of: galleryItem)!
 
                     // FIXME can we avoid this index offset?
                     return IndexPath(item: itemIdx, section: sectionIdx + 1)
@@ -1032,14 +1032,14 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         let originalSectionDates = self.sectionDates
 
         for item in items {
-            guard let itemIndex = galleryItems.index(of: item) else {
+            guard let itemIndex = galleryItems.firstIndex(of: item) else {
                 owsFailDebug("removing unknown item.")
                 return
             }
 
             self.galleryItems.remove(at: itemIndex)
 
-            guard let sectionIndex = sectionDates.index(where: { $0 == item.galleryDate }) else {
+            guard let sectionIndex = sectionDates.firstIndex(where: { $0 == item.galleryDate }) else {
                 owsFailDebug("item with unknown date.")
                 return
             }
@@ -1049,13 +1049,13 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                 return
             }
 
-            guard let sectionRowIndex = sectionItems.index(of: item) else {
+            guard let sectionRowIndex = sectionItems.firstIndex(of: item) else {
                 owsFailDebug("item with unknown sectionRowIndex")
                 return
             }
 
             // We need to calculate the index of the deleted item with respect to it's original position.
-            guard let originalSectionIndex = originalSectionDates.index(where: { $0 == item.galleryDate }) else {
+            guard let originalSectionIndex = originalSectionDates.firstIndex(where: { $0 == item.galleryDate }) else {
                 owsFailDebug("item with unknown date.")
                 return
             }
@@ -1065,7 +1065,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                 return
             }
 
-            guard let originalSectionRowIndex = originalSectionItems.index(of: item) else {
+            guard let originalSectionRowIndex = originalSectionItems.firstIndex(of: item) else {
                 owsFailDebug("item with unknown sectionRowIndex")
                 return
             }
@@ -1095,7 +1095,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
         self.ensureGalleryItemsLoaded(.after, item: currentItem, amount: kGallerySwipeLoadBatchSize)
 
-        guard let currentIndex = galleryItems.index(of: currentItem) else {
+        guard let currentIndex = galleryItems.firstIndex(of: currentItem) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return nil
         }
@@ -1119,7 +1119,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
         self.ensureGalleryItemsLoaded(.before, item: currentItem, amount: kGallerySwipeLoadBatchSize)
 
-        guard let currentIndex = galleryItems.index(of: currentItem) else {
+        guard let currentIndex = galleryItems.firstIndex(of: currentItem) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return nil
         }

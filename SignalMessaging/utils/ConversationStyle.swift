@@ -72,7 +72,7 @@ public class ConversationStyle: NSObject {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(uiContentSizeCategoryDidChange),
-                                               name: NSNotification.Name.UIContentSizeCategoryDidChange,
+                                               name: UIContentSizeCategory.didChangeNotification,
                                                object: nil)
     }
 

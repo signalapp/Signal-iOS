@@ -142,11 +142,11 @@ public class LongTextViewController: OWSViewController {
         //
         // UITextView’s linkTextAttributes property has type [String : Any]! but should be [NSAttributedStringKey : Any]! in Swift 4.
         let linkTextAttributes: [String: Any] = [
-            NSAttributedStringKey.foregroundColor.rawValue: Theme.primaryColor,
-            NSAttributedStringKey.underlineColor.rawValue: Theme.primaryColor,
-            NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue
+            NSAttributedString.Key.foregroundColor.rawValue: Theme.primaryColor,
+            NSAttributedString.Key.underlineColor.rawValue: Theme.primaryColor,
+            NSAttributedString.Key.underlineStyle.rawValue: NSUnderlineStyle.single.rawValue
         ]
-        messageTextView.linkTextAttributes = linkTextAttributes
+        messageTextView.linkTextAttributes = convertToOptionalNSAttributedStringKeyDictionary(linkTextAttributes)
 
         view.addSubview(messageTextView)
         messageTextView.autoPinEdge(toSuperviewEdge: .top)
@@ -172,4 +172,10 @@ public class LongTextViewController: OWSViewController {
     @objc func shareButtonPressed() {
         AttachmentSharing.showShareUI(forText: fullText)
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
 }

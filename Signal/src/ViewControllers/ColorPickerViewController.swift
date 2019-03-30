@@ -285,7 +285,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
         let kRowLength = 4
         let rows: [UIView] = colorViews.chunked(by: kRowLength).map { colorViewsInRow in
             let row = UIStackView(arrangedSubviews: colorViewsInRow)
-            row.distribution = UIStackViewDistribution.equalSpacing
+            row.distribution = UIStackView.Distribution.equalSpacing
             return row
         }
         let rowsStackView = UIStackView(arrangedSubviews: rows)

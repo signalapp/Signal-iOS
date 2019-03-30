@@ -699,7 +699,7 @@ public class OWSLinkPreview: MTLModel {
                 let maxImageSize: CGFloat = 1024
                 let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
                 guard shouldResize else {
-                    guard let dstData = UIImageJPEGRepresentation(srcImage, 0.8) else {
+                    guard let dstData = srcImage.jpegData(compressionQuality: 0.8) else {
                         Logger.error("Could not write resized image.")
                         return Promise(error: LinkPreviewError.invalidContent)
                     }
@@ -710,7 +710,7 @@ public class OWSLinkPreview: MTLModel {
                     Logger.error("Could not resize image.")
                     return Promise(error: LinkPreviewError.invalidContent)
                 }
-                guard let dstData = UIImageJPEGRepresentation(dstImage, 0.8) else {
+                guard let dstData = dstImage.jpegData(compressionQuality: 0.8) else {
                     Logger.error("Could not write resized image.")
                     return Promise(error: LinkPreviewError.invalidContent)
                 }

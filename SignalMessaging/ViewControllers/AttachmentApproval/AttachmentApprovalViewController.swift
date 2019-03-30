@@ -67,7 +67,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.attachmentItemCollection = AttachmentItemCollection(attachmentItems: attachmentItems)
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
-                   options: [UIPageViewControllerOptionInterPageSpacingKey: kSpacingBetweenItems])
+                   options: convertToOptionalUIPageViewControllerOptionsKeyDictionary([convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing): kSpacingBetweenItems]))
         self.dataSource = self
         self.delegate = self
 
@@ -516,7 +516,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return viewController
     }
 
-    private func setCurrentItem(_ item: SignalAttachmentItem, direction: UIPageViewControllerNavigationDirection, animated isAnimated: Bool) {
+    private func setCurrentItem(_ item: SignalAttachmentItem, direction: UIPageViewController.NavigationDirection, animated isAnimated: Bool) {
         guard let page = self.buildPage(item: item) else {
             owsFailDebug("unexpectedly unable to build new page")
             return
@@ -586,10 +586,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             let isLossy: Bool = attachmentItem.attachment.mimeType.caseInsensitiveCompare(OWSMimeTypeImageJpeg) == .orderedSame
             if isLossy {
                 dataUTI = kUTTypeJPEG as String
-                return UIImageJPEGRepresentation(dstImage, 0.9)
+                return dstImage.jpegData(compressionQuality: 0.9)
             } else {
                 dataUTI = kUTTypePNG as String
-                return UIImagePNGRepresentation(dstImage)
+                return dstImage.pngData()
             }
             }() else {
                 owsFailDebug("Could not export for output.")
@@ -620,7 +620,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     func attachmentItem(before currentItem: SignalAttachmentItem) -> SignalAttachmentItem? {
-        guard let currentIndex = attachmentItems.index(of: currentItem) else {
+        guard let currentIndex = attachmentItems.firstIndex(of: currentItem) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return nil
         }
@@ -635,7 +635,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     func attachmentItem(after currentItem: SignalAttachmentItem) -> SignalAttachmentItem? {
-        guard let currentIndex = attachmentItems.index(of: currentItem) else {
+        guard let currentIndex = attachmentItems.firstIndex(of: currentItem) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return nil
         }
@@ -747,17 +747,17 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
             return
         }
 
-        guard let currentIndex = attachmentItems.index(of: currentItem) else {
+        guard let currentIndex = attachmentItems.firstIndex(of: currentItem) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return
         }
 
-        guard let targetIndex = attachmentItems.index(of: targetItem) else {
+        guard let targetIndex = attachmentItems.firstIndex(of: targetItem) else {
             owsFailDebug("targetIndex was unexpectedly nil")
             return
         }
 
-        let direction: UIPageViewControllerNavigationDirection = currentIndex < targetIndex ? .forward : .reverse
+        let direction: UIPageViewController.NavigationDirection = currentIndex < targetIndex ? .forward : .reverse
 
         self.setCurrentItem(targetItem, direction: direction, animated: true)
     }
@@ -791,4 +791,15 @@ extension AttachmentApprovalViewController: AttachmentApprovalInputAccessoryView
     public func attachmentApprovalInputStopEditingCaptions() {
         isEditingCaptions = false
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalUIPageViewControllerOptionsKeyDictionary(_ input: [String: Any]?) -> [UIPageViewController.OptionsKey: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIPageViewController.OptionsKey(rawValue: key), value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIPageViewControllerOptionsKey(_ input: UIPageViewController.OptionsKey) -> String {
+	return input.rawValue
 }

@@ -113,7 +113,7 @@ public class ConversationHeaderView: UIStackView {
 
     public override var intrinsicContentSize: CGSize {
         // Grow to fill as much of the navbar as possible.
-        return UILayoutFittingExpandedSize
+        return UIView.layoutFittingExpandedSize
     }
 
     @objc

@@ -52,7 +52,7 @@ enum NotificationHapticFeedbackType {
 }
 
 extension NotificationHapticFeedbackType {
-    var uiNotificationFeedbackType: UINotificationFeedbackType {
+    var uiNotificationFeedbackType: UINotificationFeedbackGenerator.FeedbackType {
         switch self {
         case .error: return .error
         case .success: return .success

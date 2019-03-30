@@ -13,7 +13,7 @@ public extension YapDatabaseConnection {
     }
 
     func readWritePromise(_ block: @escaping (YapDatabaseReadWriteTransaction) -> Void) -> Promise<Void> {
-        return Promise { resolver in
+        return Promise<Any> { resolver in
             self.asyncReadWrite(block, completionBlock: resolver.fulfill)
         }
     }

@@ -44,7 +44,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         let instructionsTextHeader = NSLocalizedString("REMINDER_2FA_BODY_HEADER", comment: "Body header for when user is periodically prompted to enter their registration lock PIN")
         let instructionsTextBody = NSLocalizedString("REMINDER_2FA_BODY", comment: "Body text for when user is periodically prompted to enter their registration lock PIN")
 
-        let attributes = [NSAttributedStringKey.font: pinEntryView.boldLabelFont]
+        let attributes = [NSAttributedString.Key.font: pinEntryView.boldLabelFont]
 
         let attributedInstructionsText = NSAttributedString(string: instructionsTextHeader, attributes: attributes).rtlSafeAppend(" ").rtlSafeAppend(instructionsTextBody)
 

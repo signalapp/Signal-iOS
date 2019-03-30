@@ -649,7 +649,7 @@ extension UIDeviceOrientation: CustomStringConvertible {
     }
 }
 
-extension UIImageOrientation: CustomStringConvertible {
+extension UIImage.Orientation: CustomStringConvertible {
     public var description: String {
         switch self {
         case .up:

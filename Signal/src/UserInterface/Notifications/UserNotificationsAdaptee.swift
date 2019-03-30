@@ -281,8 +281,13 @@ extension OWSSound {
     func notificationSound(isQuiet: Bool) -> UNNotificationSound {
         guard let filename = OWSSounds.filename(for: self, quiet: isQuiet) else {
             owsFailDebug("filename was unexpectedly nil")
-            return UNNotificationSound.default()
+            return UNNotificationSound.default
         }
-        return UNNotificationSound(named: filename)
+        return UNNotificationSound(named: convertToUNNotificationSoundName(filename))
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUNNotificationSoundName(_ input: String) -> UNNotificationSoundName {
+	return UNNotificationSoundName(rawValue: input)
 }

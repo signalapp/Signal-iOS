@@ -120,7 +120,7 @@ import PromiseKit
     public class func record(forFileUrl fileUrl: URL,
                              recordName: String) -> CKRecord {
         let recordType = signalBackupRecordType
-        let recordID = CKRecordID(recordName: recordName)
+        let recordID = CKRecord.ID(recordName: recordName)
         let record = CKRecord(recordType: recordType, recordID: recordID)
         let asset = CKAsset(fileURL: fileUrl)
         record[payloadKey] = asset
@@ -234,7 +234,7 @@ import PromiseKit
                                               success: @escaping () -> Void,
                                               failure: @escaping (Error) -> Void) {
 
-        let recordIDs = recordNames.map { CKRecordID(recordName: $0) }
+        let recordIDs = recordNames.map { CKRecord.ID(recordName: $0) }
         let deleteOperation = CKModifyRecordsOperation(recordsToSave: nil, recordIDsToDelete: recordIDs)
         deleteOperation.modifyRecordsCompletionBlock = { (records, recordIds, error) in
 
@@ -277,7 +277,7 @@ import PromiseKit
 
         let (promise, resolver) = Promise<CKRecord?>.pending()
 
-        let recordId = CKRecordID(recordName: recordName)
+        let recordId = CKRecord.ID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
         // Don't download the file; we're just using the fetch to check whether or
         // not this record already exists.
@@ -386,7 +386,7 @@ import PromiseKit
     private class func fetchAllRecordNamesStep(recipientId: String?,
                                                query: CKQuery,
                                                previousRecordNames: [String],
-                                               cursor: CKQueryCursor?,
+                                               cursor: CKQueryOperation.Cursor?,
                                                remainingRetries: Int,
                                                success: @escaping ([String]) -> Void,
                                                failure: @escaping (Error) -> Void) {
@@ -489,7 +489,7 @@ import PromiseKit
                                  remainingRetries: maxRetries)
             .then { (asset) -> Promise<Data> in
                 do {
-                    let data = try Data(contentsOf: asset.fileURL)
+                    let data = try Data(contentsOf: asset.fileURL!)
                     return Promise.value(data)
                 } catch {
                     Logger.error("couldn't load asset file: \(error).")
@@ -512,7 +512,7 @@ import PromiseKit
                                  remainingRetries: maxRetries)
             .then { (asset) -> Promise<Void> in
                 do {
-                    try FileManager.default.copyItem(at: asset.fileURL, to: toFileUrl)
+                    try FileManager.default.copyItem(at: asset.fileURL!, to: toFileUrl)
                     return Promise.value(())
                 } catch {
                     Logger.error("couldn't copy asset file: \(error).")
@@ -533,7 +533,7 @@ import PromiseKit
 
         let (promise, resolver) = Promise<CKAsset>.pending()
 
-        let recordId = CKRecordID(recordName: recordName)
+        let recordId = CKRecord.ID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
         // Download all keys for this record.
         fetchOperation.perRecordCompletionBlock = { (record, recordId, error) in

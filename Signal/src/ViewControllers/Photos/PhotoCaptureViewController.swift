@@ -245,7 +245,7 @@ class PhotoCaptureViewController: OWSViewController {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didChangeDeviceOrientation),
-                                               name: .UIDeviceOrientationDidChange,
+                                               name: UIDevice.orientationDidChangeNotification,
                                                object: UIDevice.current)
     }
 

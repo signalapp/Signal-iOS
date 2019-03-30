@@ -32,8 +32,8 @@ public class AvatarImageView: UIImageView {
     func configureView() {
         self.autoPinToSquareAspectRatio()
 
-        self.layer.minificationFilter = kCAFilterTrilinear
-        self.layer.magnificationFilter = kCAFilterTrilinear
+        self.layer.minificationFilter = CALayerContentsFilter.trilinear
+        self.layer.magnificationFilter = CALayerContentsFilter.trilinear
         self.layer.masksToBounds = true
 
         self.layer.addSublayer(self.shadowLayer)
@@ -57,7 +57,7 @@ public class AvatarImageView: UIImageView {
         // This can be any color since the fill should be clipped.
         self.shadowLayer.fillColor = UIColor.black.cgColor
         self.shadowLayer.path = shadowPath.cgPath
-        self.shadowLayer.fillRule = kCAFillRuleEvenOdd
+        self.shadowLayer.fillRule = CAShapeLayerFillRule.evenOdd
         self.shadowLayer.shadowColor = (Theme.isDarkThemeEnabled ? UIColor.white : UIColor.black).cgColor
         self.shadowLayer.shadowRadius = 0.5
         self.shadowLayer.shadowOpacity = 0.15
@@ -203,14 +203,14 @@ public class AvatarImageButton: UIButton {
         // This can be any color since the fill should be clipped.
         shadowLayer.fillColor = UIColor.black.cgColor
         shadowLayer.path = shadowPath.cgPath
-        shadowLayer.fillRule = kCAFillRuleEvenOdd
+        shadowLayer.fillRule = CAShapeLayerFillRule.evenOdd
         shadowLayer.shadowColor = (Theme.isDarkThemeEnabled ? UIColor.white : UIColor.black).cgColor
         shadowLayer.shadowRadius = 0.5
         shadowLayer.shadowOpacity = 0.15
         shadowLayer.shadowOffset = .zero
     }
 
-    override public func setImage(_ image: UIImage?, for state: UIControlState) {
+    override public func setImage(_ image: UIImage?, for state: UIControl.State) {
         ensureViewConfigured()
         super.setImage(image, for: state)
     }
@@ -226,8 +226,8 @@ public class AvatarImageButton: UIButton {
 
         autoPinToSquareAspectRatio()
 
-        layer.minificationFilter = kCAFilterTrilinear
-        layer.magnificationFilter = kCAFilterTrilinear
+        layer.minificationFilter = CALayerContentsFilter.trilinear
+        layer.magnificationFilter = CALayerContentsFilter.trilinear
         layer.masksToBounds = true
         layer.addSublayer(shadowLayer)
 

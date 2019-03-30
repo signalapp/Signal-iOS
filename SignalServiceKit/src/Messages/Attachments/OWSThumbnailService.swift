@@ -164,7 +164,7 @@ private struct OWSThumbnailRequest {
         } else {
             throw OWSThumbnailError.assertionFailure(description: "Invalid attachment type.")
         }
-        guard let thumbnailData = UIImageJPEGRepresentation(thumbnailImage, 0.85) else {
+        guard let thumbnailData = thumbnailImage.jpegData(compressionQuality: 0.85) else {
             throw OWSThumbnailError.failure(description: "Could not convert thumbnail to JPEG.")
         }
         do {

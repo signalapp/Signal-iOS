@@ -48,7 +48,7 @@ public class OWSNavigationBar: UINavigationBar {
         applyTheme()
 
         NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: .UIApplicationDidChangeStatusBarFrame, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: UIApplication.didChangeStatusBarFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
                                                name: .ThemeDidChange,
@@ -75,7 +75,7 @@ public class OWSNavigationBar: UINavigationBar {
             return
         }
 
-        if UIAccessibilityIsReduceTransparencyEnabled() {
+        if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
             let color = Theme.navbarBackgroundColor
             let backgroundImage = UIImage(color: color)
@@ -213,7 +213,7 @@ public class OWSNavigationBar: UINavigationBar {
         respectsTheme = false
 
         barStyle = .black
-        titleTextAttributes = [NSAttributedStringKey.foregroundColor: Theme.darkThemePrimaryColor]
+        titleTextAttributes = [NSAttributedString.Key.foregroundColor: Theme.darkThemePrimaryColor]
         barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
         tintColor = Theme.darkThemePrimaryColor
 

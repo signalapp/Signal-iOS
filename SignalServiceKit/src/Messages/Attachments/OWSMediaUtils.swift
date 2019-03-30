@@ -50,7 +50,7 @@ public enum OWSMediaError: Error {
         let generator = AVAssetImageGenerator(asset: asset)
         generator.maximumSize = maxSize
         generator.appliesPreferredTrackTransform = true
-        let time: CMTime = CMTimeMake(1, 60)
+        let time: CMTime = CMTimeMake(value: 1, timescale: 60)
         let cgImage = try generator.copyCGImage(at: time, actualTime: nil)
         let image = UIImage(cgImage: cgImage)
         return image

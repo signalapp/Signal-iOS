@@ -49,7 +49,7 @@ class ImageEditorTest: SignalBaseTest {
 
     private func writeDummyImage() -> String {
         let image = UIImage.init(color: .red, size: CGSize(width: 1, height: 1))
-        guard let data = UIImagePNGRepresentation(image) else {
+        guard let data = image.pngData() else {
             owsFail("Couldn't export dummy image.")
         }
         let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: "png")

@@ -83,7 +83,7 @@ public class AccountManager: NSObject {
 
     private func registerForTextSecure(verificationCode: String,
                                        pin: String?) -> Promise<Void> {
-        return Promise { resolver in
+        return Promise<Any> { resolver in
             tsAccountManager.verifyAccount(withCode: verificationCode,
                                            pin: pin,
                                            success: resolver.fulfill,
@@ -106,7 +106,7 @@ public class AccountManager: NSObject {
     // MARK: Message Delivery
 
     func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
-        return Promise { resolver in
+        return Promise<Any> { resolver in
             tsAccountManager.registerForPushNotifications(pushToken: pushToken,
                                                           voipToken: voipToken,
                                                           success: resolver.fulfill,

@@ -48,7 +48,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return currentViewController.galleryItemBox.value
     }
 
-    public func setCurrentItem(_ item: MediaGalleryItem, direction: UIPageViewControllerNavigationDirection, animated isAnimated: Bool) {
+    public func setCurrentItem(_ item: MediaGalleryItem, direction: UIPageViewController.NavigationDirection, animated isAnimated: Bool) {
         guard let galleryPage = self.buildGalleryPage(galleryItem: item) else {
             owsFailDebug("unexpectedly unable to build new gallery page")
             return
@@ -77,7 +77,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
-                   options: [UIPageViewControllerOptionInterPageSpacingKey: kSpacingBetweenItems])
+                   options: convertToOptionalUIPageViewControllerOptionsKeyDictionary([convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing): kSpacingBetweenItems]))
 
         self.dataSource = self
         self.delegate = self
@@ -800,7 +800,7 @@ extension MediaPageViewController: GalleryRailViewDelegate {
             return
         }
 
-        let direction: UIPageViewControllerNavigationDirection
+        let direction: UIPageViewController.NavigationDirection
         direction = currentItem.albumIndex < targetItem.albumIndex ? .forward : .reverse
 
         self.setCurrentItem(targetItem, direction: direction, animated: true)
@@ -828,4 +828,15 @@ extension MediaPageViewController: CaptionContainerViewDelegate {
 
         captionContainerView.isHidden = true
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalUIPageViewControllerOptionsKeyDictionary(_ input: [String: Any]?) -> [UIPageViewController.OptionsKey: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIPageViewController.OptionsKey(rawValue: key), value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIPageViewControllerOptionsKey(_ input: UIPageViewController.OptionsKey) -> String {
+	return input.rawValue
 }
