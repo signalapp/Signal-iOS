@@ -23,7 +23,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     enum ShareViewControllerError: Error {
         case assertionError(description: String)
         case unsupportedMedia
-        case notRegistered()
+        case notRegistered
         case obsoleteShare
     }
 
@@ -475,7 +475,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // If root view is an error view, do nothing.
             return
         }
-        throw ShareViewControllerError.notRegistered()
+        throw ShareViewControllerError.notRegistered
     }
 
     // MARK: ShareViewDelegate, SAEFailedViewDelegate
