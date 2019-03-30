@@ -488,6 +488,7 @@
 		4C4BC6C32102D697004040C9 /* ContactDiscoveryOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */; };
 		4C5250D221E7BD7D00CE3D95 /* PhoneNumberValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5250D121E7BD7D00CE3D95 /* PhoneNumberValidator.swift */; };
 		4C5250D421E7C51900CE3D95 /* PhoneNumberValidatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5250D321E7C51900CE3D95 /* PhoneNumberValidatorTest.swift */; };
+		4C586926224FAB83003FD070 /* AVAudioSession+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C586925224FAB83003FD070 /* AVAudioSession+OWS.m */; };
 		4C618199219DF03A009BD6B5 /* OWSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C618198219DF03A009BD6B5 /* OWSButton.swift */; };
 		4C61819F219E1796009BD6B5 /* typing-animation-dark.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4C61819E219E1795009BD6B5 /* typing-animation-dark.gif */; };
 		4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C63CBFF210A620B003AE45C /* SignalTSan.supp */; };
@@ -1239,6 +1240,8 @@
 		4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContactDiscoveryOperationTest.swift; path = contact/ContactDiscoveryOperationTest.swift; sourceTree = "<group>"; };
 		4C5250D121E7BD7D00CE3D95 /* PhoneNumberValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberValidator.swift; sourceTree = "<group>"; };
 		4C5250D321E7C51900CE3D95 /* PhoneNumberValidatorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberValidatorTest.swift; sourceTree = "<group>"; };
+		4C586924224FAB83003FD070 /* AVAudioSession+OWS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AVAudioSession+OWS.h"; path = "util/UI Categories/AVAudioSession+OWS.h"; sourceTree = "<group>"; };
+		4C586925224FAB83003FD070 /* AVAudioSession+OWS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "AVAudioSession+OWS.m"; path = "util/UI Categories/AVAudioSession+OWS.m"; sourceTree = "<group>"; };
 		4C618198219DF03A009BD6B5 /* OWSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSButton.swift; sourceTree = "<group>"; };
 		4C61819E219E1795009BD6B5 /* typing-animation-dark.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "typing-animation-dark.gif"; sourceTree = "<group>"; };
 		4C63CBFF210A620B003AE45C /* SignalTSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalTSan.supp; sourceTree = "<group>"; };
@@ -2692,6 +2695,8 @@
 				EF764C331DB67CC5000D9A87 /* UIViewController+Permissions.h */,
 				EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */,
 				45B5360D206DD8BB00D61655 /* UIResponder+OWS.swift */,
+				4C586924224FAB83003FD070 /* AVAudioSession+OWS.h */,
+				4C586925224FAB83003FD070 /* AVAudioSession+OWS.m */,
 			);
 			name = "UI Categories";
 			path = ..;
@@ -3661,6 +3666,7 @@
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				34EA69402194933900702471 /* MediaDownloadView.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
+				4C586926224FAB83003FD070 /* AVAudioSession+OWS.m in Sources */,
 				3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */,
 				34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */,
 				4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */,

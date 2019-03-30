@@ -534,8 +534,7 @@ protocol CallAudioServiceDelegate: class {
                 if oldOptions != options {
                     Logger.debug("audio session changed options: \(oldOptions) -> \(options) ")
                 }
-                try avAudioSession.setCategory(category, with: options)
-
+                try avAudioSession.ows_setCategory(category, with: options)
             }
         } catch {
             let message = "failed to set category: \(category) mode: \(String(describing: mode)), options: \(options) with error: \(error)"
