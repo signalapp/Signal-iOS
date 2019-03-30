@@ -124,7 +124,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                     }
 
                     // Don't use receiver when video is enabled. Only bluetooth or speaker
-                    return convertFromAVAudioSessionPort(portDescription.portType) != convertFromAVAudioSessionPort(AVAudioSession.Port.builtInMic)
+                    return portDescription.portType != AVAudioSession.Port.builtInMic
                 }
             }
             return Set(appropriateForVideo)
@@ -1224,9 +1224,4 @@ extension CallViewController: CallVideoHintViewDelegate {
         self.hasUserDismissedVideoHint = true
         updateRemoteVideoLayout()
     }
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-private func convertFromAVAudioSessionPort(_ input: AVAudioSession.Port) -> String {
-	return input.rawValue
 }

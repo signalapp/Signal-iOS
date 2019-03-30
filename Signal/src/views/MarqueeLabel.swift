@@ -1089,20 +1089,19 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
     }
 
     private func timingFunctionForAnimationCurve(_ curve: UIView.AnimationCurve) -> CAMediaTimingFunction {
-        let timingFunction: String?
-
+        let timingFunction: CAMediaTimingFunctionName
         switch curve {
         case .easeIn:
-            timingFunction = convertFromCAMediaTimingFunctionName(CAMediaTimingFunctionName.easeIn)
+            timingFunction = .easeIn
         case .easeInOut:
-            timingFunction = convertFromCAMediaTimingFunctionName(CAMediaTimingFunctionName.easeInEaseOut)
+            timingFunction = .easeInEaseOut
         case .easeOut:
-            timingFunction = convertFromCAMediaTimingFunctionName(CAMediaTimingFunctionName.easeOut)
+            timingFunction = .easeOut
         default:
-            timingFunction = convertFromCAMediaTimingFunctionName(CAMediaTimingFunctionName.linear)
+            timingFunction = .linear
         }
 
-        return CAMediaTimingFunction(name: convertToCAMediaTimingFunctionName(timingFunction!))
+        return CAMediaTimingFunction(name: timingFunction)
     }
 
     private func transactionDurationType(_ labelType: MarqueeType, interval: CGFloat, delay: CGFloat) -> TimeInterval {
@@ -1839,14 +1838,4 @@ fileprivate extension CAMediaTimingFunction {
 
         return pointArray
     }
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-private func convertFromCAMediaTimingFunctionName(_ input: CAMediaTimingFunctionName) -> String {
-	return input.rawValue
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-private func convertToCAMediaTimingFunctionName(_ input: String) -> CAMediaTimingFunctionName {
-	return CAMediaTimingFunctionName(rawValue: input)
 }

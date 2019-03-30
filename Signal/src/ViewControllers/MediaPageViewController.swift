@@ -75,9 +75,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         let kSpacingBetweenItems: CGFloat = 20
 
+        let options: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
-                   options: convertToOptionalUIPageViewControllerOptionsKeyDictionary([convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing): kSpacingBetweenItems]))
+                   options: options)
 
         self.dataSource = self
         self.delegate = self
@@ -828,15 +829,4 @@ extension MediaPageViewController: CaptionContainerViewDelegate {
 
         captionContainerView.isHidden = true
     }
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-private func convertToOptionalUIPageViewControllerOptionsKeyDictionary(_ input: [String: Any]?) -> [UIPageViewController.OptionsKey: Any]? {
-	guard let input = input else { return nil }
-	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIPageViewController.OptionsKey(rawValue: key), value)})
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-private func convertFromUIPageViewControllerOptionsKey(_ input: UIPageViewController.OptionsKey) -> String {
-	return input.rawValue
 }

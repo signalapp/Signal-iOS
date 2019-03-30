@@ -65,9 +65,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.mode = mode
         let attachmentItems = attachments.map { SignalAttachmentItem(attachment: $0 )}
         self.attachmentItemCollection = AttachmentItemCollection(attachmentItems: attachmentItems)
+
+        let options: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
-                   options: convertToOptionalUIPageViewControllerOptionsKeyDictionary([convertFromUIPageViewControllerOptionsKey(UIPageViewController.OptionsKey.interPageSpacing): kSpacingBetweenItems]))
+                   options: options)
         self.dataSource = self
         self.delegate = self
 
@@ -791,15 +793,4 @@ extension AttachmentApprovalViewController: AttachmentApprovalInputAccessoryView
     public func attachmentApprovalInputStopEditingCaptions() {
         isEditingCaptions = false
     }
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-private func convertToOptionalUIPageViewControllerOptionsKeyDictionary(_ input: [String: Any]?) -> [UIPageViewController.OptionsKey: Any]? {
-	guard let input = input else { return nil }
-	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIPageViewController.OptionsKey(rawValue: key), value)})
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-private func convertFromUIPageViewControllerOptionsKey(_ input: UIPageViewController.OptionsKey) -> String {
-	return input.rawValue
 }

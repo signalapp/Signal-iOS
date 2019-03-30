@@ -106,19 +106,19 @@ public class OWSAudioSession: NSObject {
             // session handling.
         } else if aggregateBehaviors.contains(.playAndRecord) {
             assert(avAudioSession.recordPermission == .granted)
-            try avAudioSession.setCategory(AVAudioSession.Category(rawValue: convertFromAVAudioSessionCategory(AVAudioSession.Category.record)))
+            try avAudioSession.setCategory(.record)
         } else if aggregateBehaviors.contains(.audioMessagePlayback) {
             if self.device.proximityState {
                 Logger.debug("proximityState: true")
 
-                try avAudioSession.setCategory(AVAudioSession.Category(rawValue: convertFromAVAudioSessionCategory(AVAudioSession.Category.playAndRecord)))
+                try avAudioSession.setCategory(.playAndRecord)
                 try avAudioSession.overrideOutputAudioPort(.none)
             } else {
                 Logger.debug("proximityState: false")
-                try avAudioSession.setCategory(AVAudioSession.Category(rawValue: convertFromAVAudioSessionCategory(AVAudioSession.Category.playback)))
+                try avAudioSession.setCategory(.playback)
             }
         } else if aggregateBehaviors.contains(.playback) {
-            try avAudioSession.setCategory(AVAudioSession.Category(rawValue: convertFromAVAudioSessionCategory(AVAudioSession.Category.playback)))
+            try avAudioSession.setCategory(.playback)
         } else {
             ensureAudioSessionActivationStateAfterDelay()
         }
@@ -214,9 +214,4 @@ public class OWSAudioSession: NSObject {
             rtcAudioSession.isAudioEnabled = newValue
         }
     }
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-private func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
-	return input.rawValue
 }

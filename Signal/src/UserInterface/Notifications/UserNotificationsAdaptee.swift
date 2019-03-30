@@ -283,11 +283,6 @@ extension OWSSound {
             owsFailDebug("filename was unexpectedly nil")
             return UNNotificationSound.default
         }
-        return UNNotificationSound(named: convertToUNNotificationSoundName(filename))
+        return UNNotificationSound(named: UNNotificationSoundName(rawValue: filename))
     }
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-private func convertToUNNotificationSoundName(_ input: String) -> UNNotificationSoundName {
-	return UNNotificationSoundName(rawValue: input)
 }
