@@ -349,7 +349,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             path.append(UIBezierPath(rect: cellRect))
 
             layer.path = path.cgPath
-            layer.fillRule = CAShapeLayerFillRule.evenOdd
+            layer.fillRule = .evenOdd
             layer.fillColor = UIColor.black.cgColor
             layer.opacity = 0.7
         }

@@ -17,8 +17,8 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         let heroImage = UIImage(named: "onboarding_splash_hero")
         let heroImageView = UIImageView(image: heroImage)
         heroImageView.contentMode = .scaleAspectFit
-        heroImageView.layer.minificationFilter = CALayerContentsFilter.trilinear
-        heroImageView.layer.magnificationFilter = CALayerContentsFilter.trilinear
+        heroImageView.layer.minificationFilter = .trilinear
+        heroImageView.layer.magnificationFilter = .trilinear
         heroImageView.setCompressionResistanceLow()
         heroImageView.setContentHuggingVerticalLow()
         heroImageView.accessibilityIdentifier = "onboarding.splash." + "heroImageView"

@@ -282,8 +282,8 @@ class MediaGalleryNavigationController: OWSNavigationController {
         presentationView.isHidden = true
         presentationView.clipsToBounds = true
         presentationView.layer.allowsEdgeAntialiasing = true
-        presentationView.layer.minificationFilter = CALayerContentsFilter.trilinear
-        presentationView.layer.magnificationFilter = CALayerContentsFilter.trilinear
+        presentationView.layer.minificationFilter = .trilinear
+        presentationView.layer.magnificationFilter = .trilinear
         presentationView.contentMode = .scaleAspectFit
 
         guard let navigationBar = self.navigationBar as? OWSNavigationBar else {

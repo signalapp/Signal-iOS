@@ -204,8 +204,8 @@ public class ConversationMediaView: UIView {
         animatedImageView.contentMode = .scaleAspectFill
         // Use trilinear filters for better scaling quality at
         // some performance cost.
-        animatedImageView.layer.minificationFilter = CALayerContentsFilter.trilinear
-        animatedImageView.layer.magnificationFilter = CALayerContentsFilter.trilinear
+        animatedImageView.layer.minificationFilter = .trilinear
+        animatedImageView.layer.magnificationFilter = .trilinear
         animatedImageView.backgroundColor = Theme.offBackgroundColor
         addSubview(animatedImageView)
         animatedImageView.autoPinEdgesToSuperviewEdges()
@@ -263,8 +263,8 @@ public class ConversationMediaView: UIView {
         stillImageView.contentMode = .scaleAspectFill
         // Use trilinear filters for better scaling quality at
         // some performance cost.
-        stillImageView.layer.minificationFilter = CALayerContentsFilter.trilinear
-        stillImageView.layer.magnificationFilter = CALayerContentsFilter.trilinear
+        stillImageView.layer.minificationFilter = .trilinear
+        stillImageView.layer.magnificationFilter = .trilinear
         stillImageView.backgroundColor = Theme.offBackgroundColor
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
@@ -318,8 +318,8 @@ public class ConversationMediaView: UIView {
         stillImageView.contentMode = .scaleAspectFill
         // Use trilinear filters for better scaling quality at
         // some performance cost.
-        stillImageView.layer.minificationFilter = CALayerContentsFilter.trilinear
-        stillImageView.layer.magnificationFilter = CALayerContentsFilter.trilinear
+        stillImageView.layer.minificationFilter = .trilinear
+        stillImageView.layer.magnificationFilter = .trilinear
         stillImageView.backgroundColor = Theme.offBackgroundColor
 
         addSubview(stillImageView)
