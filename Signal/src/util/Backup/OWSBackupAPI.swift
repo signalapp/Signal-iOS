@@ -484,17 +484,13 @@ import PromiseKit
     }
 
     public class func downloadDataFromCloud(recordName: String) -> Promise<Data> {
-
         return downloadFromCloud(recordName: recordName,
                                  remainingRetries: maxRetries)
-            .then { (asset) -> Promise<Data> in
-                do {
-                    let data = try Data(contentsOf: asset.fileURL!)
-                    return Promise.value(data)
-                } catch {
-                    Logger.error("couldn't load asset file: \(error).")
-                    return Promise(error: invalidServiceResponseError())
+            .map { (asset) -> Data in
+                guard let fileURL = asset.fileURL else {
+                    throw invalidServiceResponseError()
                 }
+                return try Data(contentsOf: fileURL)
         }
     }
 
@@ -510,14 +506,11 @@ import PromiseKit
 
         return downloadFromCloud(recordName: recordName,
                                  remainingRetries: maxRetries)
-            .then { (asset) -> Promise<Void> in
-                do {
-                    try FileManager.default.copyItem(at: asset.fileURL!, to: toFileUrl)
-                    return Promise.value(())
-                } catch {
-                    Logger.error("couldn't copy asset file: \(error).")
-                    return Promise(error: invalidServiceResponseError())
+            .done { asset in
+                guard let fileURL = asset.fileURL else {
+                    throw invalidServiceResponseError()
                 }
+                try FileManager.default.copyItem(at: fileURL, to: toFileUrl)
         }
     }
 
