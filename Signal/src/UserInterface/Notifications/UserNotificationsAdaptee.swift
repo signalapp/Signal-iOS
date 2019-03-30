@@ -288,6 +288,6 @@ extension OWSSound {
 }
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToUNNotificationSoundName(_ input: String) -> UNNotificationSoundName {
+private func convertToUNNotificationSoundName(_ input: String) -> UNNotificationSoundName {
 	return UNNotificationSoundName(rawValue: input)
 }

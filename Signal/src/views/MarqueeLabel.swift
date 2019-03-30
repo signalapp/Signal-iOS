@@ -245,7 +245,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
         get {
             switch speed {
             case .duration(let duration): return duration
-            case .rate(_): return 0.0
+            case .rate: return 0.0
             }
         }
         set {
@@ -257,7 +257,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
     @IBInspectable open var scrollRate: CGFloat {
         get {
             switch speed {
-            case .duration(_): return 0.0
+            case .duration: return 0.0
             case .rate(let rate): return rate
             }
         }
@@ -1139,11 +1139,11 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
         return CAReplicatorLayer.self
     }
 
-    fileprivate weak var repliLayer: CAReplicatorLayer? {
+    fileprivate var repliLayer: CAReplicatorLayer? {
         return self.layer as? CAReplicatorLayer
     }
 
-    fileprivate weak var maskLayer: CAGradientLayer? {
+    fileprivate var maskLayer: CAGradientLayer? {
         return self.layer.mask as! CAGradientLayer?
     }
 
@@ -1168,7 +1168,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
     }
 
     class fileprivate func notifyController(_ controller: UIViewController, message: MarqueeKeys) {
-        NotificationCenter.default.post(name: Notification.Name(rawValue: message.rawValue), object: nil, userInfo: ["controller" : controller])
+        NotificationCenter.default.post(name: Notification.Name(rawValue: message.rawValue), object: nil, userInfo: ["controller": controller])
     }
 
     @objc public func restartForViewController(_ notification: Notification) {
@@ -1705,8 +1705,8 @@ public struct EdgeFade: OptionSet {
 }
 
 // Define helpful typealiases
-fileprivate typealias MLAnimationCompletionBlock = (_ finished: Bool) -> Void
-fileprivate typealias MLAnimation = (anim: CAKeyframeAnimation, duration: CGFloat)
+private typealias MLAnimationCompletionBlock = (_ finished: Bool) -> Void
+private typealias MLAnimation = (anim: CAKeyframeAnimation, duration: CGFloat)
 
 private class GradientSetupAnimation: CABasicAnimation {
 }
@@ -1842,11 +1842,11 @@ fileprivate extension CAMediaTimingFunction {
 }
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromCAMediaTimingFunctionName(_ input: CAMediaTimingFunctionName) -> String {
+private func convertFromCAMediaTimingFunctionName(_ input: CAMediaTimingFunctionName) -> String {
 	return input.rawValue
 }
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToCAMediaTimingFunctionName(_ input: String) -> CAMediaTimingFunctionName {
+private func convertToCAMediaTimingFunctionName(_ input: String) -> CAMediaTimingFunctionName {
 	return CAMediaTimingFunctionName(rawValue: input)
 }

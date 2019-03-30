@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -550,21 +550,21 @@ protocol CallAudioServiceDelegate: class {
 }
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromAVAudioSessionPort(_ input: AVAudioSession.Port) -> String {
+private func convertFromAVAudioSessionPort(_ input: AVAudioSession.Port) -> String {
 	return input.rawValue
 }
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
+private func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
 	return input.rawValue
 }
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromAVAudioSessionMode(_ input: AVAudioSession.Mode) -> String {
+private func convertFromAVAudioSessionMode(_ input: AVAudioSession.Mode) -> String {
 	return input.rawValue
 }
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertToAVAudioSessionCategory(_ input: String) -> AVAudioSession.Category {
+private func convertToAVAudioSessionCategory(_ input: String) -> AVAudioSession.Category {
 	return AVAudioSession.Category(rawValue: input)
 }

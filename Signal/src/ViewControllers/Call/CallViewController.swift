@@ -1227,6 +1227,6 @@ extension CallViewController: CallVideoHintViewDelegate {
 }
 
 // Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromAVAudioSessionPort(_ input: AVAudioSession.Port) -> String {
+private func convertFromAVAudioSessionPort(_ input: AVAudioSession.Port) -> String {
 	return input.rawValue
 }
