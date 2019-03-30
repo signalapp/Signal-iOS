@@ -201,7 +201,7 @@ protocol CallAudioServiceDelegate: class {
 
     private func updateIsSpeakerphoneEnabled() {
         let value = avAudioSession.currentRoute.outputs.contains { (portDescription: AVAudioSessionPortDescription) -> Bool in
-            return portDescription.portName == .builtInSpeaker
+            return portDescription.portType == .builtInSpeaker
         }
         DispatchQueue.main.async {
             self.isSpeakerphoneEnabled = value
