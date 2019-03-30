@@ -137,16 +137,12 @@ public class LongTextViewController: OWSViewController {
             messageTextView.text = ""
         }
 
-        // RADAR #18669
-        // https://github.com/lionheart/openradar-mirror/issues/18669
-        //
-        // UITextView’s linkTextAttributes property has type [String : Any]! but should be [NSAttributedStringKey : Any]! in Swift 4.
-        let linkTextAttributes: [String: Any] = [
-            NSAttributedString.Key.foregroundColor.rawValue: Theme.primaryColor,
-            NSAttributedString.Key.underlineColor.rawValue: Theme.primaryColor,
-            NSAttributedString.Key.underlineStyle.rawValue: NSUnderlineStyle.single.rawValue
+        let linkTextAttributes: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key.foregroundColor: Theme.primaryColor,
+            NSAttributedString.Key.underlineColor: Theme.primaryColor,
+            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
         ]
-        messageTextView.linkTextAttributes = convertToOptionalNSAttributedStringKeyDictionary(linkTextAttributes)
+        messageTextView.linkTextAttributes = linkTextAttributes
 
         view.addSubview(messageTextView)
         messageTextView.autoPinEdge(toSuperviewEdge: .top)
@@ -172,10 +168,4 @@ public class LongTextViewController: OWSViewController {
     @objc func shareButtonPressed() {
         AttachmentSharing.showShareUI(forText: fullText)
     }
-}
-
-// Helper function inserted by Swift 4.2 migrator.
-private func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
-	guard let input = input else { return nil }
-	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
 }
