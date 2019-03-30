@@ -380,7 +380,7 @@ public class ConversationMediaView: UIView {
     private func configure(forError error: MediaError) {
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
         let icon: UIImage
-        switch (error) {
+        switch error {
         case .failed:
             guard let asset = UIImage(named: "media_retry") else {
                 owsFailDebug("Missing image")

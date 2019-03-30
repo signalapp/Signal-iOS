@@ -1050,7 +1050,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
         let adjustedColors: [CGColor]
         let trailingFadeNeeded = self.labelShouldScroll()
 
-        switch (type) {
+        switch type {
         case .continuousReverse, .rightLeft:
             adjustedColors = [(trailingFadeNeeded ? transparent : opaque), opaque, opaque, opaque]
 
@@ -1105,7 +1105,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
     }
 
     private func transactionDurationType(_ labelType: MarqueeType, interval: CGFloat, delay: CGFloat) -> TimeInterval {
-        switch (labelType) {
+        switch labelType {
         case .leftRight, .rightLeft:
             return TimeInterval(2.0 * (delay + interval))
         default:
