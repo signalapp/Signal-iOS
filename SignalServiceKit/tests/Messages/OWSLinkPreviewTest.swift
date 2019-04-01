@@ -213,11 +213,11 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let expectation = self.expectation(description: "link download and parsing")
 
         OWSLinkPreview.tryToBuildPreviewInfo(previewUrl: "https://www.youtube.com/watch?v=tP-Ipsat90c")
-            .done { (draft) in
+            .done { (draft: OWSLinkPreviewDraft) in
                 XCTAssertNotNil(draft)
 
                 XCTAssertEqual(draft.title, "Randomness is Random - Numberphile")
-                XCTAssertNotNil(draft.imageFilePath)
+                XCTAssertNotNil(draft.jpegImageData)
 
                 expectation.fulfill()
             }.catch { (error) in

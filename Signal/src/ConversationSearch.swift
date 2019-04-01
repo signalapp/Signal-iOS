@@ -82,11 +82,12 @@ extension ConversationSearchController: UISearchResultsUpdating {
     public func updateSearchResults(for searchController: UISearchController) {
         Logger.verbose("searchBar.text: \( searchController.searchBar.text ?? "<blank>")")
 
-        guard let searchText = searchController.searchBar.text?.stripped else {
+        guard let rawSearchText = searchController.searchBar.text?.stripped else {
             self.resultsBar.updateResults(resultSet: nil)
             self.delegate?.conversationSearchController(self, didUpdateSearchResults: nil)
             return
         }
+        let searchText = FullTextSearchFinder.normalize(text: rawSearchText)
         BenchManager.startEvent(title: "Conversation Search", eventId: searchText)
 
         guard searchText.count >= ConversationSearchController.kMinimumSearchTextLength else {

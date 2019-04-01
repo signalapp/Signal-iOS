@@ -751,7 +751,7 @@ typedef enum : NSUInteger {
 
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
-        [self scrollToDefaultPosition];
+        [self scrollToDefaultPosition:NO];
     } else if (self.menuActionsViewController != nil) {
         [self scrollToMenuActionInteraction:NO];
     }
@@ -806,7 +806,7 @@ typedef enum : NSUInteger {
     return [NSIndexPath indexPathForRow:row inSection:0];
 }
 
-- (void)scrollToDefaultPosition
+- (void)scrollToDefaultPosition:(BOOL)isAnimated
 {
     if (self.isUserScrolling) {
         return;
@@ -823,14 +823,14 @@ typedef enum : NSUInteger {
 
     if (indexPath) {
         if (indexPath.section == 0 && indexPath.row == 0) {
-            [self.collectionView setContentOffset:CGPointZero animated:NO];
+            [self.collectionView setContentOffset:CGPointZero animated:isAnimated];
         } else {
             [self.collectionView scrollToItemAtIndexPath:indexPath
                                         atScrollPosition:UICollectionViewScrollPositionTop
-                                                animated:NO];
+                                                animated:isAnimated];
         }
     } else {
-        [self scrollToBottomAnimated:NO];
+        [self scrollToBottomAnimated:isAnimated];
     }
 }
 
@@ -3875,11 +3875,11 @@ typedef enum : NSUInteger {
 
         // Adjust content offset to prevent the presented keyboard from obscuring content.
         if (!self.viewHasEverAppeared) {
-            [self scrollToDefaultPosition];
+            [self scrollToDefaultPosition:NO];
         } else if (wasScrolledToBottom) {
             // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
             [self scrollToBottomAnimated:NO];
-        } else {
+        } else if (self.isViewCompletelyAppeared) {
             // If we were scrolled away from the bottom, shift the content in lockstep with the
             // keyboard, up to the limits of the content bounds.
             CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
@@ -4009,6 +4009,11 @@ typedef enum : NSUInteger {
 
     [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:animated];
     [self didScrollToBottom];
+}
+
+- (void)scrollToFirstUnreadMessage:(BOOL)isAnimated
+{
+    [self scrollToDefaultPosition:isAnimated];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -4190,7 +4195,16 @@ typedef enum : NSUInteger {
 
     // restore first responder to VC
     [self becomeFirstResponder];
-    [self reloadInputViews];
+    if (@available(iOS 10, *)) {
+        [self reloadInputViews];
+    } else {
+        // We want to change the inputAccessoryView from SearchResults -> MessageInput
+        // reloading too soon on an old iOS9 device caused the inputAccessoryView to go from
+        // SearchResults -> MessageInput -> SearchResults
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self reloadInputViews];
+        });
+    }
 }
 
 #pragma mark ConversationSearchControllerDelegate

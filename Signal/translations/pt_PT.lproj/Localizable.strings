@@ -684,10 +684,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "A optimizar a base de dados";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = " Há %@h atrás";
+"DATE_HOURS_AGO_FORMAT" = " Há %@h";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "Há %@min atrás";
+"DATE_MINUTES_AGO_FORMAT" = "Há %@min";
 
 /* The present; the current time. */
 "DATE_NOW" = "Agora";
@@ -2484,7 +2484,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Olá videochamadas seguras!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "O Signal brevemente irá requerer o iOS 10 ou superior. Por favor atualize em Definições >> Geral >> Atualização de Software.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Atualizar iOS";

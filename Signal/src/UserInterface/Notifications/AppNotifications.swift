@@ -137,8 +137,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     @objc
     public override init() {
-        let userNotificationsFeatureEnabled = true
-        if userNotificationsFeatureEnabled, #available(iOS 10, *) {
+        if #available(iOS 10, *) {
             self.adaptee = UserNotificationPresenterAdaptee()
         } else {
             self.adaptee = LegacyNotificationPresenterAdaptee()
@@ -648,7 +647,7 @@ class NotificationActionHandler {
         // can be visible to the user immediately upon opening the app, rather than having to watch
         // it animate in from the homescreen.
         let shouldAnimate = UIApplication.shared.applicationState == .active
-        signalApp.presentConversation(forThreadId: threadId, animated: shouldAnimate)
+        signalApp.presentConversationAndScrollToFirstUnreadMessage(forThreadId: threadId, animated: shouldAnimate)
         return Promise.value(())
     }
 

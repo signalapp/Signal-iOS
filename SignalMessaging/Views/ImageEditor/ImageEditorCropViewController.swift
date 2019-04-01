@@ -242,6 +242,11 @@ class ImageEditorCropViewController: OWSViewController {
         return true
     }
 
+    @objc
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
+
     private static let desiredCornerSize: CGFloat = 24
     private static let minCropSize: CGFloat = desiredCornerSize * 2
     private var cornerSize = CGSize.zero
@@ -405,10 +410,6 @@ class ImageEditorCropViewController: OWSViewController {
 
         // De-conflict the gestures; the pan gesture has priority.
         panGestureRecognizer.shouldBeRequiredToFail(by: pinchGestureRecognizer)
-    }
-
-    override public var canBecomeFirstResponder: Bool {
-        return true
     }
 
     // MARK: - Gestures
