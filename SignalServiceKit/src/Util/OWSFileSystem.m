@@ -348,14 +348,6 @@ NSString *OWSTemporaryDirectory(void)
         dirPath = [NSTemporaryDirectory() stringByAppendingPathComponent:dirName];
         BOOL success = [OWSFileSystem ensureDirectoryExists:dirPath fileProtectionType:NSFileProtectionComplete];
         OWSCAssert(success);
-
-        // On launch, clear old temp directories.
-        //
-        // NOTE: ClearOldTemporaryDirectoriesSync() will call this function
-        // OWSTemporaryDirectory(), but there's no risk of deadlock;
-        // ClearOldTemporaryDirectories() calls ClearOldTemporaryDirectoriesSync()
-        // after a long delay.
-        ClearOldTemporaryDirectories();
     });
     return dirPath;
 }
