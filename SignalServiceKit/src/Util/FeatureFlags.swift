@@ -9,6 +9,11 @@ import Foundation
 @objc(SSKFeatureFlags)
 public class FeatureFlags: NSObject {
 
+    @objc
+    public static var conversationSearch: Bool {
+        return false
+    }
+
     /// iOS has long supported sending oversized text as a sidecar attachment. The other clients
     /// simply displayed it as a text attachment. As part of the new cross-client long-text feature,
     /// we want to be able to display long text with attachments as well. Existing iOS clients
