@@ -569,7 +569,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.voiceMemoUI = [UIView new];
     self.voiceMemoUI.backgroundColor = Theme.toolbarBackgroundColor;
     [self addSubview:self.voiceMemoUI];
-    self.voiceMemoUI.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+    [self.voiceMemoUI autoPinEdgesToSuperviewEdges];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoUI);
 
     self.voiceMemoContentView = [UIView new];
@@ -671,8 +671,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.recordingLabel autoPinLeadingToTrailingEdgeOfView:imageView offset:5.f];
     [cancelLabel autoVCenterInSuperview];
     [cancelLabel autoHCenterInSuperview];
-    [self.voiceMemoUI setNeedsLayout];
-    [self.voiceMemoUI layoutSubviews];
+    [self.voiceMemoUI layoutIfNeeded];
 
     // Slide in the "slide to cancel" label.
     CGRect cancelLabelStartFrame = cancelLabel.frame;
