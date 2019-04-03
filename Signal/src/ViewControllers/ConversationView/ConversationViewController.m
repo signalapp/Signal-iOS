@@ -2977,6 +2977,13 @@ typedef enum : NSUInteger {
     didPickImageAttachments:(NSArray<SignalAttachment *> *)attachments
                 messageText:(NSString *_Nullable)messageText
 {
+    OWSAssertDebug(self.isFirstResponder);
+    if (@available(iOS 10, *)) {
+        // do nothing
+    } else {
+        [self reloadInputViews];
+    }
+
     [self tryToSendAttachments:attachments messageText:messageText];
 }
 
