@@ -484,19 +484,6 @@ const CGFloat kMaxTextViewHeight = 98;
                 // This is okay because there's only space on screen to perform the
                 // gesture in one direction.
                 CGFloat xOffset = fabs(self.voiceMemoGestureStartLocation.x - location.x);
-                // The lower this value, the easier it is to cancel by accident.
-                // The higher this value, the harder it is to cancel.
-                const CGFloat kCancelOffsetPoints = 100.f;
-                CGFloat cancelAlpha = xOffset / kCancelOffsetPoints;
-                BOOL isCancelled = cancelAlpha >= 1.f;
-                if (isCancelled) {
-                    self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
-                    [self.inputToolbarDelegate voiceMemoGestureDidCancel];
-                    break;
-                } else {
-                    [self.inputToolbarDelegate voiceMemoGestureDidUpdateCancelWithRatioComplete:cancelAlpha];
-                }
-
                 CGFloat yOffset = fabs(self.voiceMemoGestureStartLocation.y - location.y);
 
                 // require a certain threshold before we consider the user to be
@@ -524,6 +511,19 @@ const CGFloat kMaxTextViewHeight = 98;
                     }
                 } else {
                     [self.voiceMemoLockView updateWithRatioComplete:lockAlpha];
+
+                    // The lower this value, the easier it is to cancel by accident.
+                    // The higher this value, the harder it is to cancel.
+                    const CGFloat kCancelOffsetPoints = 100.f;
+                    CGFloat cancelAlpha = xOffset / kCancelOffsetPoints;
+                    BOOL isCancelled = cancelAlpha >= 1.f;
+                    if (isCancelled) {
+                        self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
+                        [self.inputToolbarDelegate voiceMemoGestureDidCancel];
+                        break;
+                    } else {
+                        [self.inputToolbarDelegate voiceMemoGestureDidUpdateCancelWithRatioComplete:cancelAlpha];
+                    }
                 }
             }
             break;
