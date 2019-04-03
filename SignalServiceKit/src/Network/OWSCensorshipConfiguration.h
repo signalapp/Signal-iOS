@@ -1,14 +1,15 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class AFSecurityPolicy;
 
-extern NSString *const OWSCensorshipConfiguration_SouqFrontingHost;
-extern NSString *const OWSCensorshipConfiguration_YahooViewFrontingHost;
-extern NSString *const OWSCensorshipConfiguration_DefaultFrontingHost;
+extern NSString *const OWSFrontingHost_GoogleEgypt;
+extern NSString *const OWSFrontingHost_GoogleUAE;
+extern NSString *const OWSFrontingHost_GoogleOman;
+extern NSString *const OWSFrontingHost_GoogleQatar;
 
 @interface OWSCensorshipConfiguration : NSObject
 
