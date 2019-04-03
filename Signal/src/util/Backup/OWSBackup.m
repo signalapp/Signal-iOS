@@ -138,9 +138,11 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 
 - (void)setup
 {
-    if (OWSBackup.isFeatureEnabled) {
-        [OWSBackupAPI setup];
+    if (!OWSBackup.isFeatureEnabled) {
+        return;
     }
+
+    [OWSBackupAPI setup];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
