@@ -1233,10 +1233,19 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             });
         };
 
-        NSURL *avatarUrlPath =
-            [NSURL URLWithString:userProfile.avatarUrlPath relativeToURL:self.avatarHTTPManager.baseURL];
-        NSURLRequest *request = [NSURLRequest requestWithURL:avatarUrlPath];
-        NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
+        NSURL *avatarUrl = [NSURL URLWithString:userProfile.avatarUrlPath relativeToURL:self.avatarHTTPManager.baseURL];
+        NSError *serializationError;
+        NSMutableURLRequest *request =
+            [self.avatarHTTPManager.requestSerializer requestWithMethod:@"GET"
+                                                              URLString:avatarUrl.absoluteString
+                                                             parameters:nil
+                                                                  error:&serializationError];
+        if (serializationError) {
+            OWSFailDebug(@"serializationError: %@", serializationError);
+            return;
+        }
+
+        __block NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
             progress:^(NSProgress *_Nonnull downloadProgress) {
                 OWSLogVerbose(
                     @"Downloading avatar for %@ %f", userProfile.recipientId, downloadProgress.fractionCompleted);
