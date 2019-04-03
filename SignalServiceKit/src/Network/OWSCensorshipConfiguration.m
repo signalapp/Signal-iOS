@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSCensorshipConfiguration.h"
@@ -11,9 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const OWSCensorshipConfiguration_SouqFrontingHost = @"cms.souqcdn.com";
-NSString *const OWSCensorshipConfiguration_YahooViewFrontingHost = @"view.yahoo.com";
-NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipConfiguration_YahooViewFrontingHost;
+NSString *const OWSFrontingHost_GoogleEgypt = @"www.google.com.eg";
+NSString *const OWSFrontingHost_GoogleUAE = @"www.google.ae";
+NSString *const OWSFrontingHost_GoogleOman = @"www.google.com.om";
+NSString *const OWSFrontingHost_GoogleQatar = @"www.google.com.qa";
+NSString *const OWSFrontingHost_Default = @"www.google.com";
 
 @implementation OWSCensorshipConfiguration
 
@@ -24,7 +26,6 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
     if (countryCode.length == 0) {
         return nil;
     }
-
 
     return [self censorshipConfigurationWithCountryCode:countryCode];
 }
@@ -45,10 +46,9 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
         baseURL = [NSURL URLWithString:frontingURLString];
         securityPolicy = [self securityPolicyForDomain:(NSString *)specifiedDomain];
     } else {
-        NSString *frontingURLString =
-            [NSString stringWithFormat:@"https://%@", OWSCensorshipConfiguration_DefaultFrontingHost];
+        NSString *frontingURLString = [NSString stringWithFormat:@"https://%@", OWSFrontingHost_Default];
         baseURL = [NSURL URLWithString:frontingURLString];
-        securityPolicy = [self securityPolicyForDomain:OWSCensorshipConfiguration_DefaultFrontingHost];
+        securityPolicy = [self securityPolicyForDomain:OWSFrontingHost_Default];
     }
 
     OWSAssertDebug(baseURL);
@@ -135,13 +135,17 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
 // If the security policy requires new certificates, include them in the SSK bundle
 + (AFSecurityPolicy *)securityPolicyForDomain:(NSString *)domain
 {
-    if ([domain isEqualToString:OWSCensorshipConfiguration_SouqFrontingHost]) {
-        return [self souqPinningPolicy];
-    } else if ([domain isEqualToString:OWSCensorshipConfiguration_YahooViewFrontingHost]) {
-        return [self yahooViewPinningPolicy];
+    if ([domain isEqualToString:OWSFrontingHost_GoogleEgypt]) {
+        return self.googlePinningPolicy;
+    } else if ([domain isEqualToString:OWSFrontingHost_GoogleQatar]) {
+        return self.googlePinningPolicy;
+    } else if ([domain isEqualToString:OWSFrontingHost_GoogleOman]) {
+        return self.googlePinningPolicy;
+    } else if ([domain isEqualToString:OWSFrontingHost_GoogleUAE]) {
+        return self.googlePinningPolicy;
     } else {
         OWSFailDebug(@"unknown pinning domain.");
-        return [self yahooViewPinningPolicy];
+        return self.googlePinningPolicy;
     }
 }
 
@@ -197,7 +201,7 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
     return certData;
 }
 
-+ (AFSecurityPolicy *)yahooViewPinningPolicy
++ (AFSecurityPolicy *)yahooViewPinningPolicy_deprecated
 {
     static AFSecurityPolicy *securityPolicy = nil;
     static dispatch_once_t onceToken;
@@ -209,7 +213,7 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
     return securityPolicy;
 }
 
-+ (AFSecurityPolicy *)souqPinningPolicy
++ (AFSecurityPolicy *)souqPinningPolicy_deprecated
 {
     static AFSecurityPolicy *securityPolicy = nil;
     static dispatch_once_t onceToken;
@@ -221,7 +225,7 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
     return securityPolicy;
 }
 
-+ (AFSecurityPolicy *)googlePinningPolicy_deprecated
++ (AFSecurityPolicy *)googlePinningPolicy
 {
     static AFSecurityPolicy *securityPolicy = nil;
     static dispatch_once_t onceToken;
