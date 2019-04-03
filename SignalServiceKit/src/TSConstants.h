@@ -29,8 +29,8 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureServerURL @"https://textsecure-service.whispersystems.org/"
 #define textSecureCDNServerURL @"https://cdn.signal.org"
 // Use same reflector for service and CDN
-#define textSecureServiceReflectorHost @"textsecure-service-reflected.whispersystems.org"
-#define textSecureCDNReflectorHost @"textsecure-service-reflected.whispersystems.org"
+#define textSecureServiceReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net"
+#define textSecureCDNReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net"
 #define contactDiscoveryURL @"https://api.directory.signal.org"
 #define kUDTrustRoot @"BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF"
 #define USING_PRODUCTION_SERVICE
