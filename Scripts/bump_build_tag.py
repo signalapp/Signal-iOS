@@ -200,5 +200,7 @@ if __name__ == '__main__':
     execute_command(command)
     command = ['git', 'commit', '-m', '"Bump build to %s."' % new_build_version]
     execute_command(command)
+    command = ['git', 'tag', new_build_version]
+    execute_command(command)
     
         
