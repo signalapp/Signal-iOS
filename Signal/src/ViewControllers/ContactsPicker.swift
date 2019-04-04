@@ -124,7 +124,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
         // Auto size cells for dynamic type
         tableView.estimatedRowHeight = 60.0
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
 
         tableView.allowsMultipleSelection = allowsMultipleSelection
@@ -136,7 +136,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         reloadContacts()
         updateSearchResults(searchText: "")
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: UIContentSizeCategory.didChangeNotification, object: nil)
     }
 
     @objc
@@ -172,7 +172,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 let title = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE", comment: "Alert title when contacts disabled while trying to invite contacts to signal")
                 let body = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY", comment: "Alert body when contacts disabled while trying to invite contacts to signal")
 
-                let alert = UIAlertController(title: title, message: body, preferredStyle: UIAlertControllerStyle.alert)
+                let alert = UIAlertController(title: title, message: body, preferredStyle: .alert)
 
                 let dismissText = CommonStrings.cancelButton
 

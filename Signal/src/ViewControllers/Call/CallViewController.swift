@@ -124,7 +124,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                     }
 
                     // Don't use receiver when video is enabled. Only bluetooth or speaker
-                    return portDescription.portType != AVAudioSessionPortBuiltInMic
+                    return portDescription.portType != AVAudioSession.Port.builtInMic
                 }
             }
             return Set(appropriateForVideo)
@@ -602,7 +602,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     internal func updateLocalVideoLayout() {
         if !localVideoView.isHidden {
-            localVideoView.superview?.bringSubview(toFront: localVideoView)
+            localVideoView.superview?.bringSubviewToFront(localVideoView)
         }
 
         updateCallUI(callState: call.state)

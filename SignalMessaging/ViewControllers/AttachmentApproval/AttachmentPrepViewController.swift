@@ -78,7 +78,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         scrollView.showsVerticalScrollIndicator = false
 
         // Panning should stop pretty soon after the user stops scrolling
-        scrollView.decelerationRate = UIScrollViewDecelerationRateFast
+        scrollView.decelerationRate = UIScrollView.DecelerationRate.fast
 
         // We want scroll view content up and behind the system status bar content
         // but we want other content (e.g. bar buttons) to respect the top layout guide.

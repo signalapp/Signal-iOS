@@ -64,7 +64,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         blockListCache = BlockListCache()
         blockListCache.startObservingAndSyncState(delegate: self)
 
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
         tableView.separatorColor = Theme.cellSeparatorColor
 
@@ -272,7 +272,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 if let messageSnippet = searchResult.snippet {
                     overrideSnippet = NSAttributedString(string: messageSnippet,
                                                          attributes: [
-                                                            NSAttributedStringKey.foregroundColor: Theme.secondaryColor
+                                                            NSAttributedString.Key.foregroundColor: Theme.secondaryColor
                     ])
                 } else {
                     owsFailDebug("message search result is missing message snippet")
@@ -296,7 +296,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         guard nil != self.tableView(tableView, titleForHeaderInSection: section) else {
             return 0
         }
-        return UITableViewAutomaticDimension
+        return UITableView.automaticDimension
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -433,7 +433,7 @@ class EmptySearchResultCell: UITableViewCell {
     static let reuseIdentifier = "EmptySearchResultCell"
 
     let messageLabel: UILabel
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         self.messageLabel = UILabel()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 

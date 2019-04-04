@@ -320,7 +320,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             // Show no action buttons for contacts without a phone number.
             break
         case .unknown:
-            let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+            let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
             topView.addSubview(activityIndicator)
             activityIndicator.autoPinEdge(.top, to: .bottom, of: lastView, withOffset: 10)
             activityIndicator.autoHCenterInSuperview()

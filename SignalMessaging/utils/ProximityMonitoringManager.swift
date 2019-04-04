@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 @objc
@@ -52,7 +52,7 @@ public class OWSProximityMonitoringManagerImpl: NSObject, OWSProximityMonitoring
 
     @objc
     public func setup() {
-        NotificationCenter.default.addObserver(self, selector: #selector(proximitySensorStateDidChange(notification:)), name: .UIDeviceProximityStateDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(proximitySensorStateDidChange(notification:)), name: UIDevice.proximityStateDidChangeNotification, object: nil)
     }
 
     @objc

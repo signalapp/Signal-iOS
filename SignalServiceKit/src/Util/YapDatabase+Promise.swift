@@ -14,12 +14,12 @@ public extension YapDatabaseConnection {
 
     func readWritePromise(_ block: @escaping (YapDatabaseReadWriteTransaction) -> Void) -> Promise<Void> {
         return Promise { resolver in
-            self.asyncReadWrite(block, completionBlock: resolver.fulfill)
+            self.asyncReadWrite(block, completionBlock: { resolver.fulfill(()) })
         }
     }
 
     func read(_ block: @escaping (YapDatabaseReadTransaction) throws -> Void) throws {
-        var errorToRaise: Error? = nil
+        var errorToRaise: Error?
 
         read { transaction in
             do {
@@ -35,7 +35,7 @@ public extension YapDatabaseConnection {
     }
 
     func readWrite(_ block: @escaping (YapDatabaseReadWriteTransaction) throws -> Void) throws {
-        var errorToRaise: Error? = nil
+        var errorToRaise: Error?
 
         readWrite { transaction in
             do {

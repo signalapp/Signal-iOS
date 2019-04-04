@@ -6,6 +6,7 @@
 #import <UIKit/UIKit.h>
 
 // Separate iOS Frameworks from other imports.
+#import "AVAudioSession+OWS.h"
 #import "AppSettingsViewController.h"
 #import "AttachmentUploadView.h"
 #import "AvatarViewHelper.h"

@@ -470,8 +470,8 @@ public class ImageEditorCanvasView: UIView {
 
         shapeLayer.path = bezierPath.cgPath
         shapeLayer.fillColor = nil
-        shapeLayer.lineCap = kCALineCapRound
-        shapeLayer.lineJoin = kCALineJoinRound
+        shapeLayer.lineCap = CAShapeLayerLineCap.round
+        shapeLayer.lineJoin = CAShapeLayerLineJoin.round
         shapeLayer.zPosition = zPositionForItem(item: item, model: model, zPositionBase: brushLayerZ)
 
         return shapeLayer
@@ -503,8 +503,8 @@ public class ImageEditorCanvasView: UIView {
         let text = item.text.filterForDisplay ?? ""
         let attributedString = NSAttributedString(string: text,
                                                   attributes: [
-                                                    NSAttributedStringKey.font: item.font.withSize(fontSize),
-                                                    NSAttributedStringKey.foregroundColor: item.color.color
+                                                    NSAttributedString.Key.font: item.font.withSize(fontSize),
+                                                    NSAttributedString.Key.foregroundColor: item.color.color
             ])
         let layer = EditorTextLayer(itemId: item.itemId)
         layer.string = attributedString
@@ -512,7 +512,7 @@ public class ImageEditorCanvasView: UIView {
         layer.font = CGFont(item.font.fontName as CFString)
         layer.fontSize = fontSize
         layer.isWrapped = true
-        layer.alignmentMode = kCAAlignmentCenter
+        layer.alignmentMode = CATextLayerAlignmentMode.center
         // I don't think we need to enable allowsFontSubpixelQuantization
         // or set truncationMode.
 

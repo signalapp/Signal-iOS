@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,9 +10,9 @@ public extension MessageSender {
     /**
      * Wrap message sending in a Promise for easier callback chaining.
      */
-    public func sendPromise(message: TSOutgoingMessage) -> Promise<Void> {
+    func sendPromise(message: TSOutgoingMessage) -> Promise<Void> {
         let promise: Promise<Void> = Promise { resolver in
-            self.send(message, success: resolver.fulfill, failure: resolver.reject)
+            self.send(message, success: { resolver.fulfill(()) }, failure: resolver.reject)
         }
 
         // Ensure sends complete before they're GC'd.

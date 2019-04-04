@@ -111,7 +111,7 @@ class SendMediaNavigationController: OWSNavigationController {
     func fadeTo(viewControllers: [UIViewController]) {
         let transition: CATransition = CATransition()
         transition.duration = 0.1
-        transition.type = kCATransitionFade
+        transition.type = CATransitionType.fade
         view.layer.add(transition, forKey: nil)
         setViewControllers(viewControllers, animated: false)
     }

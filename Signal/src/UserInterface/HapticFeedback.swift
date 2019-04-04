@@ -51,8 +51,9 @@ enum NotificationHapticFeedbackType {
     case error, success, warning
 }
 
+@available(iOS 10.0, *)
 extension NotificationHapticFeedbackType {
-    var uiNotificationFeedbackType: UINotificationFeedbackType {
+    var uiNotificationFeedbackType: UINotificationFeedbackGenerator.FeedbackType {
         switch self {
         case .error: return .error
         case .success: return .success

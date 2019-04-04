@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -58,7 +58,7 @@ public class OWSVideoPlayer: NSObject {
 
         if item.currentTime() == item.duration {
             // Rewind for repeated plays, but only if it previously played to end.
-            avPlayer.seek(to: kCMTimeZero)
+            avPlayer.seek(to: CMTime.zero)
         }
 
         avPlayer.play()
@@ -67,7 +67,7 @@ public class OWSVideoPlayer: NSObject {
     @objc
     public func stop() {
         avPlayer.pause()
-        avPlayer.seek(to: kCMTimeZero)
+        avPlayer.seek(to: CMTime.zero)
         audioSession.endAudioActivity(self.audioActivity)
     }
 

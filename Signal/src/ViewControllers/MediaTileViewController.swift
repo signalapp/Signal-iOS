@@ -95,8 +95,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         collectionView.backgroundColor = Theme.darkThemeBackgroundColor
 
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
-        collectionView.register(MediaGallerySectionHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier)
-        collectionView.register(MediaGalleryStaticHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier)
+        collectionView.register(MediaGallerySectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier)
+        collectionView.register(MediaGalleryStaticHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier)
 
         collectionView.delegate = self
 
@@ -113,10 +113,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
     }
 
     private func indexPath(galleryItem: MediaGalleryItem) -> IndexPath? {
-        guard let sectionIdx = galleryDates.index(of: galleryItem.galleryDate) else {
+        guard let sectionIdx = galleryDates.firstIndex(of: galleryItem.galleryDate) else {
             return nil
         }
-        guard let rowIdx = galleryItems[galleryItem.galleryDate]!.index(of: galleryItem) else {
+        guard let rowIdx = galleryItems[galleryItem.galleryDate]!.firstIndex(of: galleryItem) else {
             return nil
         }
 
@@ -311,7 +311,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
             return sectionHeader
         }
 
-        if (kind == UICollectionElementKindSectionHeader) {
+        if (kind == UICollectionView.elementKindSectionHeader) {
             switch indexPath.section {
             case kLoadOlderSectionIdx:
                 guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier, for: indexPath) as? MediaGalleryStaticHeader else {

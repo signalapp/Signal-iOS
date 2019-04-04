@@ -80,7 +80,7 @@ class AttachmentItemCollection {
     }
 
     func itemAfter(item: SignalAttachmentItem) -> SignalAttachmentItem? {
-        guard let currentIndex = attachmentItems.index(of: item) else {
+        guard let currentIndex = attachmentItems.firstIndex(of: item) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return nil
         }
@@ -91,7 +91,7 @@ class AttachmentItemCollection {
     }
 
     func itemBefore(item: SignalAttachmentItem) -> SignalAttachmentItem? {
-        guard let currentIndex = attachmentItems.index(of: item) else {
+        guard let currentIndex = attachmentItems.firstIndex(of: item) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return nil
         }

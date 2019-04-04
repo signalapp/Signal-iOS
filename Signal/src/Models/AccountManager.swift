@@ -86,7 +86,7 @@ public class AccountManager: NSObject {
         return Promise { resolver in
             tsAccountManager.verifyAccount(withCode: verificationCode,
                                            pin: pin,
-                                           success: resolver.fulfill,
+                                           success: { resolver.fulfill(()) },
                                            failure: resolver.reject)
         }
     }
@@ -109,7 +109,7 @@ public class AccountManager: NSObject {
         return Promise { resolver in
             tsAccountManager.registerForPushNotifications(pushToken: pushToken,
                                                           voipToken: voipToken,
-                                                          success: resolver.fulfill,
+                                                          success: { resolver.fulfill(()) },
                                                           failure: resolver.reject)
         }
     }

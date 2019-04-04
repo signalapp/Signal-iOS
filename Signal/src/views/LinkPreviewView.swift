@@ -715,7 +715,7 @@ public class LinkPreviewView: UIStackView {
         let activityIndicatorStyle: UIActivityIndicatorView.Style = (Theme.isDarkThemeEnabled
             ? .white
             : .gray)
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: activityIndicatorStyle)
+        let activityIndicator = UIActivityIndicatorView(style: activityIndicatorStyle)
         activityIndicator.startAnimating()
         addArrangedSubview(activityIndicator)
         let activityIndicatorSize: CGFloat = 25

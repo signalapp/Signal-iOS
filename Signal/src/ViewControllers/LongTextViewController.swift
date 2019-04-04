@@ -137,14 +137,10 @@ public class LongTextViewController: OWSViewController {
             messageTextView.text = ""
         }
 
-        // RADAR #18669
-        // https://github.com/lionheart/openradar-mirror/issues/18669
-        //
-        // UITextView’s linkTextAttributes property has type [String : Any]! but should be [NSAttributedStringKey : Any]! in Swift 4.
-        let linkTextAttributes: [String: Any] = [
-            NSAttributedStringKey.foregroundColor.rawValue: Theme.primaryColor,
-            NSAttributedStringKey.underlineColor.rawValue: Theme.primaryColor,
-            NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue
+        let linkTextAttributes: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key.foregroundColor: Theme.primaryColor,
+            NSAttributedString.Key.underlineColor: Theme.primaryColor,
+            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
         ]
         messageTextView.linkTextAttributes = linkTextAttributes
 

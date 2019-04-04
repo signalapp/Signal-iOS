@@ -72,7 +72,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             // do nothing
         } else {
             // must assign titleView frame manually on older iOS
-            titleView.frame = CGRect(origin: .zero, size: titleView.systemLayoutSizeFitting(UILayoutFittingCompressedSize))
+            titleView.frame = CGRect(origin: .zero, size: titleView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize))
         }
 
         navigationItem.titleView = titleView
@@ -393,7 +393,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         assert(self.collectionPickerController == nil)
         self.collectionPickerController = collectionPickerController
 
-        addChildViewController(collectionPickerController)
+        addChild(collectionPickerController)
 
         view.addSubview(collectionPickerView)
         collectionPickerView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
@@ -422,7 +422,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             self.titleView.rotateIcon(.down)
         }.done { _ in
             collectionPickerController.view.removeFromSuperview()
-            collectionPickerController.removeFromParentViewController()
+            collectionPickerController.removeFromParent()
         }.retainUntilComplete()
     }
 

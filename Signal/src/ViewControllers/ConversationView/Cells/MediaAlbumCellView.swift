@@ -157,7 +157,7 @@ public class MediaAlbumCellView: UIStackView {
                 // the "more" item, if any.
                 continue
             }
-            guard let index = itemViews.index(of: itemView) else {
+            guard let index = itemViews.firstIndex(of: itemView) else {
                 owsFailDebug("Couldn't determine index of item view.")
                 continue
             }
@@ -188,14 +188,14 @@ public class MediaAlbumCellView: UIStackView {
     }
 
     private func newRow(rowViews: [ConversationMediaView],
-                        axis: UILayoutConstraintAxis,
+                        axis: NSLayoutConstraint.Axis,
                         viewSize: CGFloat) -> UIStackView {
         autoSet(viewSize: viewSize, ofViews: rowViews)
         return newRow(rowViews: rowViews, axis: axis)
     }
 
     private func newRow(rowViews: [ConversationMediaView],
-                        axis: UILayoutConstraintAxis) -> UIStackView {
+                        axis: NSLayoutConstraint.Axis) -> UIStackView {
         let stackView = UIStackView(arrangedSubviews: rowViews)
         stackView.axis = axis
         stackView.spacing = MediaAlbumCellView.kSpacingPts

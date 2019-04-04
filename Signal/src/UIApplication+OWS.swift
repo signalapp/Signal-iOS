@@ -1,16 +1,16 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc public extension UIApplication {
 
-    @objc public var frontmostViewControllerIgnoringAlerts: UIViewController? {
+    public var frontmostViewControllerIgnoringAlerts: UIViewController? {
         return findFrontmostViewController(ignoringAlerts: true)
     }
 
-    @objc public var frontmostViewController: UIViewController? {
+    public var frontmostViewController: UIViewController? {
         return findFrontmostViewController(ignoringAlerts: false)
     }
 
@@ -26,8 +26,8 @@ import Foundation
         return viewController.findFrontmostViewController(ignoringAlerts)
     }
 
-    @objc public func openSystemSettings() {
-        openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+    public func openSystemSettings() {
+        openURL(URL(string: UIApplication.openSettingsURLString)!)
     }
 
 }

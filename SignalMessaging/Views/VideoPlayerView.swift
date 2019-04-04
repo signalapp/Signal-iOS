@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -106,7 +106,7 @@ public class PlayerProgressBar: UIView {
 
         // Background
         backgroundColor = UIColor.lightGray.withAlphaComponent(0.5)
-        if !UIAccessibilityIsReduceTransparencyEnabled() {
+        if !UIAccessibility.isReduceTransparencyEnabled {
             addSubview(blurEffectView)
             blurEffectView.ows_autoPinToSuperviewEdges()
         }

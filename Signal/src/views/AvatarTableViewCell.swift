@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -26,7 +26,7 @@ public class AvatarTableViewCell: UITableViewCell {
     }
 
     @objc
-    public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         self.avatarView =  AvatarImageView()
         avatarView.autoSetDimensions(to: CGSize(width: CGFloat(kStandardAvatarSize), height: CGFloat(kStandardAvatarSize)))
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -36,12 +36,12 @@ final class ContactsPickerTest: SignalBaseTest {
         let collatedContacts = contactsPicker.collatedContacts([emailOnlyContactB, emailOnlyContactD])
 
         let sectionTitles = contactsPicker.collationForTests.sectionTitles
-        if let bIndex = sectionTitles.index(of: "B") {
+        if let bIndex = sectionTitles.firstIndex(of: "B") {
             let bSectionContacts = collatedContacts[bIndex]
             XCTAssertEqual(bSectionContacts.first, emailOnlyContactB)
         }
 
-        if let dIndex = sectionTitles.index(of: "D") {
+        if let dIndex = sectionTitles.firstIndex(of: "D") {
             let dSectionContacts = collatedContacts[dIndex]
             XCTAssertEqual(dSectionContacts.first, emailOnlyContactD)
         }
@@ -58,7 +58,7 @@ final class ContactsPickerTest: SignalBaseTest {
         let collatedContacts = contactsPicker.collatedContacts([nameAndEmailContact])
 
         let sectionTitles = contactsPicker.collationForTests.sectionTitles
-        if let aIndex = sectionTitles.index(of: "A") {
+        if let aIndex = sectionTitles.firstIndex(of: "A") {
             let aSectionContacts = collatedContacts[aIndex]
             XCTAssertEqual(aSectionContacts.first, nameAndEmailContact)
         }

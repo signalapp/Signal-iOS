@@ -105,7 +105,7 @@ public class MediaDownloadView: UIView {
         shapeLayer1.path = bezierPath1.cgPath
         let fillColor1: UIColor = UIColor(white: 1.0, alpha: 0.4)
         shapeLayer1.fillColor = fillColor1.cgColor
-        shapeLayer1.fillRule = kCAFillRuleEvenOdd
+        shapeLayer1.fillRule = .evenOdd
 
         let bezierPath2 = UIBezierPath()
         bezierPath2.addArc(withCenter: center, radius: outerRadius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
