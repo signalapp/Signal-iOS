@@ -29,4 +29,13 @@ public class FeatureFlags: NSObject {
     public static var useCustomPhotoCapture: Bool {
         return true
     }
+
+    @objc
+    public static var useGRDB: Bool {
+        if OWSIsDebugBuild() {
+            return true
+        } else {
+            return false
+        }
+    }
 }
