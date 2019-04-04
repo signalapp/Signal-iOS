@@ -60,9 +60,15 @@ def main():
         '2.34.0.10', '2.34.0.11', '2.34.0.12', '2.34.0.13', '2.34.0.15', '2.34.0.16', '2.34.0.17', '2.34.0.18', '2.34.0.19', '2.34.0.20', '2.34.0.6', '2.34.0.7', '2.34.0.8', '2.34.0.9',
         '2.37.3.0',
         '2.37.4.0',
+        # these were internal release only tags, now we include "-internal" in the tag name to avoid this
         '2.38.0.2.1',
         '2.38.0.3.1',
-        '2.38.0.4.1'
+        '2.38.0.4.1',
+        # the work in these tags was moved to the 2.38.1 release instead
+        '2.38.0.12',
+        '2.38.0.13',
+        '2.38.0.14',
+        # 
     ]
     tags_of_concern = [tag for tag in tags_of_concern if tag not in tags_to_ignore]
 

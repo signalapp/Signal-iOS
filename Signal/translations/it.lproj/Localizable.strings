@@ -15,7 +15,7 @@
 "ACTION_SEND_MESSAGE" = "Invia messaggio";
 
 /* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Condivi contatto";
+"ACTION_SHARE_CONTACT" = "Condividi contatto";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Videochiamata";

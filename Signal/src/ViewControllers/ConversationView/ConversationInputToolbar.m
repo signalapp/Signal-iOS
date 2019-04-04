@@ -484,19 +484,6 @@ const CGFloat kMaxTextViewHeight = 98;
                 // This is okay because there's only space on screen to perform the
                 // gesture in one direction.
                 CGFloat xOffset = fabs(self.voiceMemoGestureStartLocation.x - location.x);
-                // The lower this value, the easier it is to cancel by accident.
-                // The higher this value, the harder it is to cancel.
-                const CGFloat kCancelOffsetPoints = 100.f;
-                CGFloat cancelAlpha = xOffset / kCancelOffsetPoints;
-                BOOL isCancelled = cancelAlpha >= 1.f;
-                if (isCancelled) {
-                    self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
-                    [self.inputToolbarDelegate voiceMemoGestureDidCancel];
-                    break;
-                } else {
-                    [self.inputToolbarDelegate voiceMemoGestureDidUpdateCancelWithRatioComplete:cancelAlpha];
-                }
-
                 CGFloat yOffset = fabs(self.voiceMemoGestureStartLocation.y - location.y);
 
                 // require a certain threshold before we consider the user to be
@@ -524,6 +511,19 @@ const CGFloat kMaxTextViewHeight = 98;
                     }
                 } else {
                     [self.voiceMemoLockView updateWithRatioComplete:lockAlpha];
+
+                    // The lower this value, the easier it is to cancel by accident.
+                    // The higher this value, the harder it is to cancel.
+                    const CGFloat kCancelOffsetPoints = 100.f;
+                    CGFloat cancelAlpha = xOffset / kCancelOffsetPoints;
+                    BOOL isCancelled = cancelAlpha >= 1.f;
+                    if (isCancelled) {
+                        self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
+                        [self.inputToolbarDelegate voiceMemoGestureDidCancel];
+                        break;
+                    } else {
+                        [self.inputToolbarDelegate voiceMemoGestureDidUpdateCancelWithRatioComplete:cancelAlpha];
+                    }
                 }
             }
             break;
@@ -569,7 +569,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.voiceMemoUI = [UIView new];
     self.voiceMemoUI.backgroundColor = Theme.toolbarBackgroundColor;
     [self addSubview:self.voiceMemoUI];
-    self.voiceMemoUI.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+    [self.voiceMemoUI autoPinEdgesToSuperviewEdges];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoUI);
 
     self.voiceMemoContentView = [UIView new];
@@ -671,8 +671,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.recordingLabel autoPinLeadingToTrailingEdgeOfView:imageView offset:5.f];
     [cancelLabel autoVCenterInSuperview];
     [cancelLabel autoHCenterInSuperview];
-    [self.voiceMemoUI setNeedsLayout];
-    [self.voiceMemoUI layoutSubviews];
+    [self.voiceMemoUI layoutIfNeeded];
 
     // Slide in the "slide to cancel" label.
     CGRect cancelLabelStartFrame = cancelLabel.frame;
