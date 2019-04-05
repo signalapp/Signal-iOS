@@ -34,6 +34,9 @@ def shared_pods
   # forked third party pods
   ###
 
+  # pod 'GRDBCipher', path: '../GRDB.swift'
+  pod 'GRDBCipher', git: 'https://github.com/signalapp/GRDB.swift', branch: 'signal-release'
+
   # Includes some soon to be released "unencrypted header" changes required for the Share Extension
   pod 'SQLCipher', ">= 4.0.1"
 

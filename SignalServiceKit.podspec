@@ -52,6 +52,7 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'SwiftProtobuf'
   s.dependency 'SignalCoreKit'
   s.dependency 'SignalMetadataKit'
+  s.dependency 'GRDBCipher'
 
   s.dependency 'PromiseKit', "~> 6.0"
 
