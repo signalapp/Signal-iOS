@@ -2595,7 +2595,7 @@ typedef enum : NSUInteger {
 {
     CGFloat inset = -(self.collectionView.contentInset.bottom + self.bottomLayoutGuide.length);
     self.scrollDownButtonButtomConstraint.constant = inset;
-    [self.view setNeedsLayout];
+    [self.scrollDownButton.superview setNeedsLayout];
 }
 
 - (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
@@ -3886,17 +3886,9 @@ typedef enum : NSUInteger {
         // RADAR: #36297652
         [self updateScrollDownButtonLayout];
 
-        [self.scrollDownButton setNeedsLayout];
-        [self.scrollDownButton layoutIfNeeded];
-        // HACK: I've made the assumption that we are already in the context of an animation, in which case the
-        // above should be sufficient to smoothly move the scrollDown button in step with the keyboard presentation
-        // animation. Yet, setting the constraint doesn't animate the movement of the button - it "jumps" to it's final
-        // position. So here we manually lay out the scroll down button frame (seemingly redundantly), which allows it
-        // to be smoothly animated.
-        CGRect newButtonFrame = self.scrollDownButton.frame;
-        newButtonFrame.origin.y
-            = self.scrollDownButton.superview.height - (newInsets.bottom + self.scrollDownButton.height);
-        self.scrollDownButton.frame = newButtonFrame;
+        // Update the layout of the scroll down button immediately.
+        // This change might be animated by the keyboard notification.
+        [self.scrollDownButton.superview layoutIfNeeded];
 
         // Adjust content offset to prevent the presented keyboard from obscuring content.
         if (!self.viewHasEverAppeared) {
