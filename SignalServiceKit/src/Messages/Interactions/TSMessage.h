@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class OWSContact;
 @class OWSLinkPreview;
+@class SDSAnyReadTransaction;
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
@@ -58,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
 - (nullable NSString *)oversizeTextWithTransaction:(YapDatabaseReadTransaction *)transaction;
-- (nullable NSString *)bodyTextWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (nullable NSString *)bodyTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction;
 

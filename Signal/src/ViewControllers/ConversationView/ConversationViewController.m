@@ -178,7 +178,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, nullable) UIBarButtonItem *customBackButton;
 
-@property (nonatomic) BOOL showLoadMoreHeader;
+@property (nonatomic, readonly) BOOL showLoadMoreHeader;
 @property (nonatomic) UILabel *loadMoreHeader;
 @property (nonatomic) uint64_t lastVisibleSortId;
 
@@ -325,6 +325,11 @@ typedef enum : NSUInteger {
     return SSKEnvironment.shared.tsAccountManager;
 }
 
+- (SDSDatabaseStorage *)dbStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -423,7 +428,7 @@ typedef enum : NSUInteger {
         if (self.isGroupConversation) {
             // Reload all cells if this is a group conversation,
             // since we may need to update the sender names on the messages.
-            [self resetContentAndLayout];
+            [self resetContentAndLayoutWithSneakyTransaction];
         }
     }
 }
@@ -527,7 +532,7 @@ typedef enum : NSUInteger {
     }
 
     OWSLogVerbose(@"reloading conversation view contents.");
-    [self resetContentAndLayout];
+    [self resetContentAndLayoutWithSneakyTransaction];
 }
 
 - (BOOL)userLeftGroup
@@ -634,7 +639,9 @@ typedef enum : NSUInteger {
     [self.loadMoreHeader autoSetDimension:ALDimensionHeight toSize:kLoadMoreHeaderHeight];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _loadMoreHeader);
 
-    [self updateShowLoadMoreHeader];
+    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+        [self updateShowLoadMoreHeaderWithTransaction:transaction];
+    }];
 }
 
 - (BOOL)becomeFirstResponder
@@ -742,12 +749,12 @@ typedef enum : NSUInteger {
     // unless it ever becomes possible to load this VC without going via the HomeViewController.
     [self.contactsManager requestSystemContactsOnce];
 
-    [self updateDisappearingMessagesConfiguration];
+    [self updateDisappearingMessagesConfigurationWithSneakyTransaction];
 
     [self updateBarButtonItems];
     [self updateNavigationTitle];
 
-    [self resetContentAndLayout];
+    [self resetContentAndLayoutWithSneakyTransaction];
 
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
@@ -756,7 +763,7 @@ typedef enum : NSUInteger {
         [self scrollToMenuActionInteraction:NO];
     }
 
-    [self updateLastVisibleSortId];
+    [self updateLastVisibleSortIdWithSneakyTransaction];
 
     if (!self.viewHasEverAppeared) {
         NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
@@ -852,12 +859,19 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)resetContentAndLayout
+- (void)resetContentAndLayoutWithSneakyTransaction
+{
+    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+        [self resetContentAndLayoutWithTransaction:transaction];
+    }];
+}
+
+- (void)resetContentAndLayoutWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     self.scrollContinuity = kScrollContinuityBottom;
     // Avoid layout corrupt issues and out-of-date message subtitles.
     self.lastReloadDate = [NSDate new];
-    [self.conversationViewModel viewDidResetContentAndLayout];
+    [self.conversationViewModel viewDidResetContentAndLayoutWithTransaction:transaction];
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
 
@@ -1731,38 +1745,46 @@ typedef enum : NSUInteger {
     }
     CGSize screenSize = UIScreen.mainScreen.bounds.size;
     CGFloat loadMoreThreshold = MAX(screenSize.width, screenSize.height);
-    if (self.collectionView.contentOffset.y < loadMoreThreshold) {
-        [self.conversationViewModel loadAnotherPageOfMessages];
-    }
+
+    [BenchManager
+        benchWithTitle:@"loading more interactions"
+                 block:^{
+                     if (self.collectionView.contentOffset.y < loadMoreThreshold) {
+                         [self.dbStorage
+                             uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+                                 [self.conversationViewModel loadAnotherPageOfMessagesWithTransaction:transaction];
+                             }];
+                     }
+                 }];
 }
 
-- (void)updateShowLoadMoreHeader
+- (void)updateShowLoadMoreHeaderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(self.conversationViewModel);
+    BOOL newValue = self.conversationViewModel.canLoadMoreItems;
+    BOOL valueChanged = _showLoadMoreHeader != newValue;
 
-    self.showLoadMoreHeader = self.conversationViewModel.canLoadMoreItems;
-}
+    _showLoadMoreHeader = newValue;
 
-- (void)setShowLoadMoreHeader:(BOOL)showLoadMoreHeader
-{
-    BOOL valueChanged = _showLoadMoreHeader != showLoadMoreHeader;
-
-    _showLoadMoreHeader = showLoadMoreHeader;
-
-    self.loadMoreHeader.hidden = !showLoadMoreHeader;
-    self.loadMoreHeader.userInteractionEnabled = showLoadMoreHeader;
+    self.loadMoreHeader.hidden = !newValue;
+    self.loadMoreHeader.userInteractionEnabled = newValue;
 
     if (valueChanged) {
-        [self resetContentAndLayout];
+        [self resetContentAndLayoutWithTransaction:transaction];
     }
 }
 
-- (void)updateDisappearingMessagesConfiguration
+- (void)updateDisappearingMessagesConfigurationWithSneakyTransaction
 {
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        self.disappearingMessagesConfiguration =
-            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
     }];
+}
+
+- (void)updateDisappearingMessagesConfigurationWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    self.disappearingMessagesConfiguration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
 }
 
 - (void)setDisappearingMessagesConfiguration:
@@ -2477,8 +2499,13 @@ typedef enum : NSUInteger {
     OWSAssertDebug(quotedReply.timestamp > 0);
     OWSAssertDebug(quotedReply.authorId.length > 0);
 
-    NSIndexPath *_Nullable indexPath = [self.conversationViewModel ensureLoadWindowContainsQuotedReply:quotedReply];
-    if (!indexPath) {
+    __block NSIndexPath *_Nullable indexPath;
+    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+        indexPath =
+            [self.conversationViewModel ensureLoadWindowContainsQuotedReply:quotedReply transaction:transaction];
+    }];
+
+    if (quotedReply.isRemotelySourced || !indexPath) {
         [self presentRemotelySourcedQuotedReplyToast];
         return;
     }
@@ -3496,8 +3523,19 @@ typedef enum : NSUInteger {
     self.hasUnreadMessages = NO;
 }
 
-- (void)updateLastVisibleSortId
+- (void)updateLastVisibleSortIdWithSneakyTransaction
 {
+    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+        [self updateLastVisibleSortIdWithTransaction:transaction];
+    }];
+}
+
+- (void)updateLastVisibleSortIdWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    if (!transaction.transitional_yapTransaction) {
+        return;
+    }
+
     id<ConversationViewItem> _Nullable lastVisibleViewItem = [self lastVisibleViewItem];
     if (lastVisibleViewItem) {
         uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
@@ -3507,10 +3545,8 @@ typedef enum : NSUInteger {
     [self ensureScrollDownButton];
 
     __block NSUInteger numberOfUnreadMessages;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        numberOfUnreadMessages =
-            [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
-    }];
+    numberOfUnreadMessages = [[transaction.transitional_yapTransaction ext:TSUnreadDatabaseViewExtensionName]
+        numberOfItemsInGroup:self.thread.uniqueId];
     self.hasUnreadMessages = numberOfUnreadMessages > 0;
 }
 
@@ -3529,7 +3565,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self updateLastVisibleSortId];
+    [self updateLastVisibleSortIdWithSneakyTransaction];
 
     uint64_t lastVisibleSortId = self.lastVisibleSortId;
 
@@ -4040,7 +4076,13 @@ typedef enum : NSUInteger {
     // Constantly try to update the lastKnownDistanceFromBottom.
     [self updateLastKnownDistanceFromBottom];
 
-    [self updateLastVisibleSortId];
+    // `scrollViewDidScroll:` is called whenever the user scrolls or whenever we programmatically
+    //  set collectionView.contentOffset.
+    // Since the latter sometimes occurs within a transaction, we dispatch to avoid any chance
+    // of deadlock.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateLastVisibleSortIdWithSneakyTransaction];
+    });
 
     [self.autoLoadMoreTimer invalidate];
     self.autoLoadMoreTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
@@ -4088,7 +4130,7 @@ typedef enum : NSUInteger {
 {
     [self.conversationStyle updateProperties];
     [self.headerView updateAvatar];
-    [self resetContentAndLayout];
+    [self resetContentAndLayoutWithSneakyTransaction];
 }
 
 - (void)groupWasUpdated:(TSGroupModel *)groupModel
@@ -4248,7 +4290,12 @@ typedef enum : NSUInteger {
 
 - (void)scrollToInteractionId:(NSString *)interactionId
 {
-    NSIndexPath *_Nullable indexPath = [self.conversationViewModel ensureLoadWindowContainsInteractionId:interactionId];
+    __block NSIndexPath *_Nullable indexPath;
+    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+        indexPath =
+            [self.conversationViewModel ensureLoadWindowContainsInteractionId:interactionId transaction:transaction];
+    }];
+
     if (!indexPath) {
         OWSFailDebug(@"unable to find indexPath");
         return;
@@ -4509,7 +4556,7 @@ typedef enum : NSUInteger {
         [self resetForSizeOrOrientationChange];
     }
 
-    [self updateLastVisibleSortId];
+    [self updateLastVisibleSortIdWithSneakyTransaction];
 }
 
 #pragma mark - View Items
@@ -4831,7 +4878,15 @@ typedef enum : NSUInteger {
     // ENDHACK to work around radar #28167779
 }
 
+- (void)conversationViewModelDidUpdateWithSneakyTransaction:(ConversationUpdate *)conversationUpdate
+{
+    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+        [self conversationViewModelDidUpdate:conversationUpdate transaction:transaction];
+    }];
+}
+
 - (void)conversationViewModelDidUpdate:(ConversationUpdate *)conversationUpdate
+                           transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(conversationUpdate);
@@ -4847,20 +4902,19 @@ typedef enum : NSUInteger {
     [self updateNavigationBarSubtitleLabel];
     [self dismissMenuActionsIfNecessary];
 
-    if (self.isGroupConversation) {
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [self.thread reloadWithTransaction:transaction];
-        }];
-        [self updateNavigationTitle];
+    if (transaction.transitional_yapTransaction != nil) {
+        if (self.isGroupConversation) {
+            [self.thread reloadWithTransaction:transaction.transitional_yapTransaction];
+            [self updateNavigationTitle];
+        }
+        [self updateDisappearingMessagesConfigurationWithTransaction:transaction.transitional_yapTransaction];
     }
-
-    [self updateDisappearingMessagesConfiguration];
 
     if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Minor) {
         return;
     } else if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Reload) {
-        [self resetContentAndLayout];
-        [self updateLastVisibleSortId];
+        [self resetContentAndLayoutWithTransaction:transaction];
+        [self updateLastVisibleSortIdWithTransaction:transaction];
         return;
     }
 
@@ -4926,7 +4980,7 @@ typedef enum : NSUInteger {
             OWSLogInfo(@"performBatchUpdates did not finish");
         }
 
-        [self updateLastVisibleSortId];
+        [self updateLastVisibleSortIdWithTransaction:transaction];
 
         if (scrollToBottom) {
             [self scrollToBottomAnimated:NO];
@@ -5034,7 +5088,7 @@ typedef enum : NSUInteger {
     [self scrollToUnreadIndicatorAnimated];
 }
 
-- (void)conversationViewModelRangeDidChange
+- (void)conversationViewModelRangeDidChangeWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertIsOnMainThread();
 
@@ -5042,7 +5096,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self updateShowLoadMoreHeader];
+    [self updateShowLoadMoreHeaderWithTransaction:transaction];
 }
 
 - (void)conversationViewModelDidReset

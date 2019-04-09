@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ConversationStyle;
 @class ConversationViewModel;
 @class OWSQuotedReplyModel;
+@class SDSAnyReadTransaction;
 @class TSOutgoingMessage;
 @class TSThread;
 @class ThreadDynamicInteractions;
@@ -76,12 +77,15 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 @protocol ConversationViewModelDelegate <NSObject>
 
 - (void)conversationViewModelWillUpdate;
-- (void)conversationViewModelDidUpdate:(ConversationUpdate *)conversationUpdate;
+
+- (void)conversationViewModelDidUpdate:(ConversationUpdate *)conversationUpdate
+                           transaction:(SDSAnyReadTransaction *)transaction;
+- (void)conversationViewModelDidUpdateWithSneakyTransaction:(ConversationUpdate *)conversationUpdate;
 
 - (void)conversationViewModelWillLoadMoreItems;
 - (void)conversationViewModelDidLoadMoreItems;
 - (void)conversationViewModelDidLoadPrevPage;
-- (void)conversationViewModelRangeDidChange;
+- (void)conversationViewModelRangeDidChangeWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 // Called after the view model recovers from a severe error
 // to prod the view to reset its scroll state, etc.
@@ -108,16 +112,19 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 
 - (void)clearUnreadMessagesIndicator;
 
-- (void)loadAnotherPageOfMessages;
+- (void)loadAnotherPageOfMessagesWithTransaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)viewDidResetContentAndLayout;
+- (void)viewDidResetContentAndLayoutWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)viewDidLoad;
 
 - (BOOL)canLoadMoreItems;
 
-- (nullable NSIndexPath *)ensureLoadWindowContainsQuotedReply:(OWSQuotedReplyModel *)quotedReply;
-- (nullable NSIndexPath *)ensureLoadWindowContainsInteractionId:(NSString *)interactionId;
+- (nullable NSIndexPath *)ensureLoadWindowContainsQuotedReply:(OWSQuotedReplyModel *)quotedReply
+                                                  transaction:(SDSAnyReadTransaction *)transaction;
+
+- (nullable NSIndexPath *)ensureLoadWindowContainsInteractionId:(NSString *)interactionId
+                                                    transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)appendUnsavedOutgoingTextMessage:(TSOutgoingMessage *)outgoingMessage;
 

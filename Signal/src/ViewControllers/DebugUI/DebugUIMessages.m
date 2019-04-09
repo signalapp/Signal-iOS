@@ -199,6 +199,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:1000 thread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Create 1k fake text messages"
+                        actionBlock:^{
+                            [DebugUIMessages sendFakeMessages:1 * 1000 thread:thread isTextOnly:YES];
+                        }],
         [OWSTableItem itemWithTitle:@"Create 10k fake messages"
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:10 * 1000 thread:thread];
@@ -2009,11 +2013,11 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSAssertDebug(messageToQuote);
                 OWSLogVerbose(@"%@", label);
                 [DDLog flushLog];
-                id<ConversationViewItem> viewItem =
-                    [[ConversationInteractionViewItem alloc] initWithInteraction:messageToQuote
-                                                                   isGroupThread:thread.isGroupThread
-                                                                     transaction:transaction
-                                                               conversationStyle:conversationStyle];
+                id<ConversationViewItem> viewItem = [[ConversationInteractionViewItem alloc]
+                    initWithInteraction:messageToQuote
+                          isGroupThread:thread.isGroupThread
+                            transaction:[[SDSAnyReadTransaction alloc] initWithTransitional_yapTransaction:transaction]
+                      conversationStyle:conversationStyle];
                 quotedMessage = [
                     [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
                     buildQuotedMessageForSending];
@@ -2030,11 +2034,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                   transaction:transaction];
                 OWSAssertDebug(messageToQuote);
 
-                id<ConversationViewItem> viewItem =
-                    [[ConversationInteractionViewItem alloc] initWithInteraction:messageToQuote
-                                                                   isGroupThread:thread.isGroupThread
-                                                                     transaction:transaction
-                                                               conversationStyle:conversationStyle];
+                id<ConversationViewItem> viewItem = [[ConversationInteractionViewItem alloc]
+                    initWithInteraction:messageToQuote
+                          isGroupThread:thread.isGroupThread
+                            transaction:[[SDSAnyReadTransaction alloc] initWithTransitional_yapTransaction:transaction]
+                      conversationStyle:conversationStyle];
                 quotedMessage = [
                     [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
                     buildQuotedMessageForSending];
@@ -3798,13 +3802,14 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             }
             case 2: {
                 UInt32 filesize = 64;
+                // MJKFOO
                 TSAttachmentPointer *pointer =
                     [[TSAttachmentPointer alloc] initWithServerId:237391539706350548
                                                               key:[self createRandomNSDataOfSize:filesize]
                                                            digest:nil
                                                         byteCount:filesize
-                                                      contentType:@"audio/mp3"
-                                                   sourceFilename:@"test.mp3"
+                                                      contentType:@"image/jpg"
+                                                   sourceFilename:@"test.jpg"
                                                           caption:nil
                                                    albumMessageId:nil
                                                    attachmentType:TSAttachmentTypeDefault
@@ -3831,10 +3836,10 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                 break;
             }
             case 3: {
-                NSString *filename = @"test.mp3";
+                NSString *filename = @"test.jpg";
                 UInt32 filesize = 16;
 
-                TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3"
+                TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"audio/jpg"
                                                                                              byteCount:filesize
                                                                                         sourceFilename:filename
                                                                                                caption:nil

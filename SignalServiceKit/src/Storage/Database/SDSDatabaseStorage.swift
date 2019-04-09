@@ -12,6 +12,8 @@ public class SDSDatabaseStorage: NSObject {
     @objc
     public static let shared: SDSDatabaseStorage = try! SDSDatabaseStorage(raisingErrors: ())
 
+    static public var shouldLogDBQueries: Bool = false
+
     @available(*, unavailable, message:"use other constructor instead.")
     override init() {
         fatalError("unavailable")
@@ -24,12 +26,27 @@ public class SDSDatabaseStorage: NSObject {
     @objc
     required init(raisingErrors: ()) throws {
         if FeatureFlags.useGRDB {
-            let dbDir: URL = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true).appendingPathComponent("grdb_database", isDirectory: true)
+            let baseDir: URL
+
+            if FeatureFlags.grdbMigratesFreshDBEveryLaunch {
+                baseDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true).appendingPathComponent(UUID().uuidString, isDirectory: true)
+            } else {
+                baseDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true)
+            }
+            let dbDir: URL = baseDir.appendingPathComponent("grdb_database", isDirectory: true)
+
             // crash if we can't read the DB.
             adapter = try! GRDBDatabaseStorageAdapter(dbDir: dbDir)
         } else {
             adapter = YAPDBStorageAdapter()
         }
+    }
+
+    // `grdbStorage` is useful as an "escape hatch" while we're migrating to GRDB.
+    // When an adapter needs to access the backing grdb store directly.
+    public var grdbStorage: GRDBDatabaseStorageAdapter {
+        assert(FeatureFlags.useGRDB)
+        return adapter as! GRDBDatabaseStorageAdapter
     }
 
     // MARK: -
@@ -132,6 +149,10 @@ public struct GRDBDatabaseStorageAdapter {
         let dbURL = dbDir.appendingPathComponent("signal.sqlite", isDirectory: false)
         storage = try Storage(dbURL: dbURL, keyServiceName: keyServiceName, keyName: keyName)
 
+        // Schema migrations are currently simple and fast. If they grow to become long-running,
+        // we'll want to ensure that it doesn't block app launch to avoid 0x8badfood.
+        try migrator.migrate(pool)
+
         let mutatingSelf = self
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             do {
@@ -151,6 +172,42 @@ public struct GRDBDatabaseStorageAdapter {
             Logger.debug("verified storage: \(someCount)")
         }
     }
+
+    lazy var migrator: DatabaseMigrator = {
+        var migrator = DatabaseMigrator()
+        migrator.registerMigration("createInteractions") { db in
+            try db.create(table: ThreadRecord.databaseTableName) { t in
+                let cn = ThreadRecord.columnName
+
+                t.autoIncrementedPrimaryKey(cn(.id))
+                t.column(cn(.uniqueId), .text).indexed().notNull()
+                t.column(cn(.shouldBeVisible), .boolean).notNull()
+                t.column(cn(.creationDate), .datetime).notNull()
+                // TODO `check`/`validate` in enum
+                t.column(cn(.threadType), .integer).notNull()
+            }
+
+            try db.create(table: InteractionRecord.databaseTableName) { t in
+                let cn = InteractionRecord.columnName
+
+                t.autoIncrementedPrimaryKey(cn(.id))
+                t.column(cn(.uniqueId), .text).notNull().indexed()
+                t.column(cn(.threadUniqueId), .text).notNull().indexed()
+                t.column(cn(.senderTimestamp), .integer).notNull()
+                // TODO `check`/`validate` in enum
+                t.column(cn(.interactionType), .integer).notNull()
+                t.column(cn(.messageBody), .text)
+            }
+
+            try db.create(index: "index_interactions_on_id_and_threadUniqueId",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.id),
+                            InteractionRecord.columnName(.threadUniqueId)
+                ])
+        }
+        return migrator
+    }()
 }
 
 extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
@@ -186,7 +243,11 @@ private struct Storage {
         var configuration = Configuration()
         configuration.readonly = false
         configuration.foreignKeysEnabled = true // Default is already true
-        // configuration.trace = { print($0) }     // Prints all SQL statements
+        configuration.trace = {
+            if SDSDatabaseStorage.shouldLogDBQueries {
+                print($0)  // Prints all SQL statements
+            }
+        }
         configuration.label = "Modern (GRDB) Storage"      // Useful when your app opens multiple databases
         configuration.maximumReaderCount = 10   // The default is 5
 
