@@ -702,7 +702,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
             if (self.tsAccountManager.isRegisteredAndReady) {
                 [self.tsAccountManager setIsDeregistered:YES];
             } else {
-                OWSFailDebug(@"Ignoring auth failure; not registered and ready.");
+                OWSLogWarn(@"Ignoring auth failure; not registered and ready.");
             }
         }
     }
