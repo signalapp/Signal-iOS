@@ -3885,6 +3885,8 @@ typedef enum : NSUInteger {
         // RADAR: #36297652
         [self updateScrollDownButtonLayout];
 
+        // Update the layout of the scroll down button immediately.
+        // This change might be animated by the keyboard notification.
         [self.view layoutSubviews];
 
         // Adjust content offset to prevent the presented keyboard from obscuring content.
