@@ -2595,6 +2595,7 @@ typedef enum : NSUInteger {
 {
     CGFloat inset = -(self.collectionView.contentInset.bottom + self.bottomLayoutGuide.length);
     self.scrollDownButtonButtomConstraint.constant = inset;
+    [self.scrollDownButton.superview setNeedsLayout];
 }
 
 - (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
@@ -3887,7 +3888,7 @@ typedef enum : NSUInteger {
 
         // Update the layout of the scroll down button immediately.
         // This change might be animated by the keyboard notification.
-        [self.view layoutSubviews];
+        [self.scrollDownButton.superview layoutIfNeeded];
 
         // Adjust content offset to prevent the presented keyboard from obscuring content.
         if (!self.viewHasEverAppeared) {
@@ -5157,7 +5158,6 @@ typedef enum : NSUInteger {
 
     // Scroll button layout depends on input toolbar size.
     [self updateScrollDownButtonLayout];
-    [self.view setNeedsLayout];
 }
 
 @end
