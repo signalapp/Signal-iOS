@@ -3849,6 +3849,24 @@ typedef enum : NSUInteger {
     // Therefore, we only zero out the contentInsetBottom if the inputAccessoryView is nil.
     if (self.inputAccessoryView == nil || keyboardContentOverlap > 0) {
         self.contentInsetBottom = keyboardContentOverlap;
+    } else if (!CurrentAppContext().isAppForegroundAndActive) {
+        // If app is not active, we'll dismiss the keyboard
+        // so only reserve enough space for the input accessory
+        // view.  Otherwise, the content will animate into place
+        // when the app returns from the background.
+        //
+        // NOTE: There are two separate cases. If the keyboard is
+        //       dismissed, the inputAccessoryView grows to allow
+        //       space for the notch.  In this case, we need to
+        //       subtract bottomLayoutGuide.  However, if the
+        //       keyboard is presented we don't want to do that.
+        //       I don't see a simple, safe way to distinguish
+        //       these two cases.  Therefore, I'm _always_
+        //       subtracting bottomLayoutGuide.  This will cause
+        //       a slight animation when returning to the app
+        //       but it will "match" the presentation animation
+        //       of the input accessory.
+        self.contentInsetBottom = MAX(0, self.inputAccessoryView.height - self.bottomLayoutGuide.length);
     }
 
     newInsets.top = 0 + self.extraContentInsetPadding;
