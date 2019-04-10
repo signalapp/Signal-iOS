@@ -104,7 +104,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 {
     return
         [[OWSPrimaryStorage dbReadConnection] boolForKey:kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
-                                            inCollection:kOWSPrimaryStorage_OWSSignalService];
+                                            inCollection:kOWSPrimaryStorage_OWSSignalService
+                                            defaultValue:NO];
 }
 
 - (void)setIsCensorshipCircumventionManuallyActivated:(BOOL)value
@@ -119,7 +120,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (BOOL)isCensorshipCircumventionManuallyDisabled
 {
     return [[OWSPrimaryStorage dbReadConnection] boolForKey:kOWSPrimaryStorage_isCensorshipCircumventionManuallyDisabled
-                                               inCollection:kOWSPrimaryStorage_OWSSignalService];
+                                               inCollection:kOWSPrimaryStorage_OWSSignalService
+                                               defaultValue:NO];
 }
 
 - (void)setIsCensorshipCircumventionManuallyDisabled:(BOOL)value
