@@ -2016,7 +2016,8 @@ NS_ASSUME_NONNULL_BEGIN
                 id<ConversationViewItem> viewItem = [[ConversationInteractionViewItem alloc]
                     initWithInteraction:messageToQuote
                           isGroupThread:thread.isGroupThread
-                            transaction:[[SDSAnyReadTransaction alloc] initWithTransitional_yapTransaction:transaction]
+                            transaction:[[SDSAnyReadTransaction alloc]
+                                            initWithTransitional_yapReadTransaction:transaction]
                       conversationStyle:conversationStyle];
                 quotedMessage = [
                     [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
@@ -2037,7 +2038,8 @@ NS_ASSUME_NONNULL_BEGIN
                 id<ConversationViewItem> viewItem = [[ConversationInteractionViewItem alloc]
                     initWithInteraction:messageToQuote
                           isGroupThread:thread.isGroupThread
-                            transaction:[[SDSAnyReadTransaction alloc] initWithTransitional_yapTransaction:transaction]
+                            transaction:[[SDSAnyReadTransaction alloc]
+                                            initWithTransitional_yapReadTransaction:transaction]
                       conversationStyle:conversationStyle];
                 quotedMessage = [
                     [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]

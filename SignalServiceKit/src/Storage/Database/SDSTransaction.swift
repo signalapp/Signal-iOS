@@ -11,7 +11,7 @@ import GRDBCipher
 // passed through an adapter which will be backed by either YapDB or GRDB
 //
 // To faciliate a gradual migration to GRDB features without breaking existing Yap functionality
-// there are backdoors like `transitional_yapTransaction` which will unwrap
+// there are backdoors like `transitional_yapReadTransaction` which will unwrap
 // the underlying YapDatabaseRead/WriteTransaction.
 @objc
 public class SDSAnyReadTransaction: NSObject {

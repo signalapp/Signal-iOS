@@ -302,8 +302,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (nullable NSString *)bodyTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSString *_Nullable oversizeText;
-    if (transaction.transitional_yapTransaction != nil) {
-        oversizeText = [self oversizeTextWithTransaction:transaction.transitional_yapTransaction];
+    if (transaction.transitional_yapReadTransaction != nil) {
+        oversizeText = [self oversizeTextWithTransaction:transaction.transitional_yapReadTransaction];
     }
     if (oversizeText) {
         return oversizeText;

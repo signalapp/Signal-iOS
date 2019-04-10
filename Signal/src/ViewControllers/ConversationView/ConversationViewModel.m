@@ -1288,9 +1288,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         [interactionIds addObject:interaction.uniqueId];
     }
 
-    if (transaction.transitional_yapTransaction) {
+    if (transaction.transitional_yapReadTransaction) {
         OWSContactOffersInteraction *_Nullable offers =
-            [self tryToBuildContactOffersInteractionWithTransaction:transaction.transitional_yapTransaction
+            [self tryToBuildContactOffersInteractionWithTransaction:transaction.transitional_yapReadTransaction
                                                  loadedInteractions:interactions
                                                    canLoadMoreItems:canLoadMoreItems];
         if (offers && [interactionIds containsObject:offers.beforeInteractionId]) {
@@ -1625,11 +1625,11 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     }
 
     TSInteraction *_Nullable quotedInteraction;
-    if (transaction.transitional_yapTransaction != nil) {
+    if (transaction.transitional_yapReadTransaction != nil) {
         quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedReply.timestamp
                                                                   authorId:quotedReply.authorId
                                                             threadUniqueId:self.thread.uniqueId
-                                                               transaction:transaction.transitional_yapTransaction];
+                                                               transaction:transaction.transitional_yapReadTransaction];
     }
 
     if (!quotedInteraction) {

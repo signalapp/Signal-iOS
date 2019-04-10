@@ -41,7 +41,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     public class func fetch(uniqueId: String, transaction: SDSAnyReadTransaction) throws -> TSInteraction? {
-        switch transaction.transaction {
+        switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return YAPDBInteractionFinderAdapter.fetch(uniqueId: uniqueId, transaction: yapRead)
         case .grdbRead(let grdbRead):
@@ -52,7 +52,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     // MARK: - instance methods
 
     public func mostRecentInteraction(transaction: SDSAnyReadTransaction) throws -> TSInteraction? {
-        switch transaction.transaction {
+        switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.mostRecentInteraction(transaction: yapRead)
         case .grdbRead(let grdbRead):
@@ -62,7 +62,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
     public func sortIndex(interactionUniqueId: String, transaction: SDSAnyReadTransaction) throws -> UInt? {
         return try Bench(title: "sortIndex") {
-            switch transaction.transaction {
+            switch transaction.readTransaction {
             case .yapRead(let yapRead):
                 return yapAdapter.sortIndex(interactionUniqueId: interactionUniqueId, transaction: yapRead)
             case .grdbRead(let grdbRead):
@@ -72,7 +72,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     public func count(transaction: SDSAnyReadTransaction) throws -> UInt {
-        switch transaction.transaction {
+        switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.count(transaction: yapRead)
         case .grdbRead(let grdbRead):
@@ -81,7 +81,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     public func enumerateInteractionIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {
-        switch transaction.transaction {
+        switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return try yapAdapter.enumerateInteractionIds(transaction: yapRead, block: block)
         case .grdbRead(let grdbRead):
