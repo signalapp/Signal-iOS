@@ -138,10 +138,17 @@ NS_ASSUME_NONNULL_BEGIN
         @"Table header for the 'censorship circumvention' section.");
     BOOL isAnySocketOpen = TSSocketManager.shared.highestSocketState == OWSWebSocketStateOpen;
     if (OWSSignalService.sharedInstance.hasCensoredPhoneNumber) {
-        censorshipSection.footerTitle
-            = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED",
+        if (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyDisabled) {
+            censorshipSection.footerTitle
+                = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED",
+                    @"Table footer for the 'censorship circumvention' section shown when censorship circumvention has "
+                    @"been manually disabled.");
+        } else {
+            censorshipSection.footerTitle = NSLocalizedString(
+                @"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED",
                 @"Table footer for the 'censorship circumvention' section shown when censorship circumvention has been "
                 @"auto-enabled based on local phone number.");
+        }
     } else if (isAnySocketOpen) {
         censorshipSection.footerTitle
             = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED",
@@ -170,20 +177,22 @@ NS_ASSUME_NONNULL_BEGIN
     //      censorship circumvention unnecessarily, e.g. if they just don't have a valid
     //      internet connection.
     OWSTableSwitchBlock isCensorshipCircumventionOnBlock = ^{
-        if (OWSSignalService.sharedInstance.hasCensoredPhoneNumber) {
-            return YES;
-        } else {
-            return OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated;
-        }
+        return OWSSignalService.sharedInstance.isCensorshipCircumventionActive;
     };
     Reachability *reachability = self.reachability;
     OWSTableSwitchBlock isManualCensorshipCircumventionOnEnabledBlock = ^{
-        BOOL isAnySocketOpen = TSSocketManager.shared.highestSocketState == OWSWebSocketStateOpen;
-        BOOL value = (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated
-            || (!OWSSignalService.sharedInstance.hasCensoredPhoneNumber && !isAnySocketOpen
-                   && reachability.isReachable));
-        return value;
+        OWSSignalService *service = OWSSignalService.sharedInstance;
+        if (service.isCensorshipCircumventionActive) {
+            return YES;
+        } else if (service.hasCensoredPhoneNumber && service.isCensorshipCircumventionManuallyDisabled) {
+            return YES;
+        } else if (TSSocketManager.shared.highestSocketState == OWSWebSocketStateOpen) {
+            return NO;
+        } else {
+            return reachability.isReachable;
+        }
     };
+
     [censorshipSection
         addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION",
                                                      @"Label for the  'manual censorship circumvention' switch.")
@@ -286,7 +295,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didToggleEnableCensorshipCircumventionSwitch:(UISwitch *)sender
 {
-    OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated = sender.isOn;
+    OWSSignalService *service = OWSSignalService.sharedInstance;
+    if (sender.isOn) {
+        service.isCensorshipCircumventionManuallyDisabled = NO;
+        service.isCensorshipCircumventionManuallyActivated = YES;
+    } else {
+        service.isCensorshipCircumventionManuallyDisabled = YES;
+        service.isCensorshipCircumventionManuallyActivated = NO;
+    }
 
     [self updateTableContents];
 }
