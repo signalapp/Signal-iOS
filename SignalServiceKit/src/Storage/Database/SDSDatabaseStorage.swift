@@ -175,17 +175,8 @@ public struct GRDBDatabaseStorageAdapter {
 
     lazy var migrator: DatabaseMigrator = {
         var migrator = DatabaseMigrator()
-        migrator.registerMigration("createInteractions") { db in
-            try db.create(table: ThreadRecord.databaseTableName) { t in
-                let cn = ThreadRecord.columnName
-
-                t.autoIncrementedPrimaryKey(cn(.id))
-                t.column(cn(.uniqueId), .text).indexed().notNull()
-                t.column(cn(.shouldBeVisible), .boolean).notNull()
-                t.column(cn(.creationDate), .datetime).notNull()
-                // TODO `check`/`validate` in enum
-                t.column(cn(.threadType), .integer).notNull()
-            }
+        migrator.registerMigration("create initial schema") { db in
+            try TSThread.table.createTable(database: db)
 
             try db.create(table: InteractionRecord.databaseTableName) { t in
                 let cn = InteractionRecord.columnName

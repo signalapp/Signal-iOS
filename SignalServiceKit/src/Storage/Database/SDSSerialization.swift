@@ -43,8 +43,6 @@ public class SDSSerialization: NSObject {
         let tableMetadata = entity.serializableColumnTableMetadata()
 
         do {
-           try tableMetadata.ensureTableExists(database: database)
-
             if try exists(tableMetadata: tableMetadata,
                           uniqueIdColumnName: entity.uniqueIdColumnName(),
                           uniqueIdColumnValue: entity.uniqueIdColumnValue(),
@@ -63,7 +61,7 @@ public class SDSSerialization: NSObject {
         }
     }
 
-    fileprivate class func insert(entity: SDSSerializable,
+    public class func insert(entity: SDSSerializable,
                                   database: Database) throws {
 
         let tableMetadata = entity.serializableColumnTableMetadata()

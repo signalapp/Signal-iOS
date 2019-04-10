@@ -111,30 +111,9 @@ extension OWS115GRDBMigration {
 
     private func migrateThreads(threadFinder: LegacyThreadFinder, modernDb: Database) throws {
         try Bench(title: "Migrate Threads", memorySamplerRatio: 0.02) { memorySampler in
-                let cn = ThreadRecord.columnName
-                let insertStatement = try modernDb.makeUpdateStatement(sql: """
-                    INSERT INTO threads (
-                        \(cn(.uniqueId)),
-                        \(cn(.shouldBeVisible)),
-                        \(cn(.creationDate)),
-                        \(cn(.threadType))
-                    )
-                    VALUES (?, ?, ?, ?)
-                    """)
-
-                try threadFinder.enumerateThreads { legacyThread in
-                    guard let uniqueId = legacyThread.uniqueId else {
-                        owsFailDebug("uniqueId was unexpectedly nil")
-                        throw OWSErrorMakeAssertionError("thread.uniqueId was unexpectedly nil")
-                    }
-
-                    let threadType: ThreadRecordType = legacyThread.isGroupThread() ? .group : .contact
-                    insertStatement.unsafeSetArguments([uniqueId,
-                                                        legacyThread.shouldThreadBeVisible,
-                                                        legacyThread.creationDate,
-                                                        threadType])
-                    try insertStatement.execute()
-                    memorySampler.sample()
+            try threadFinder.enumerateThreads { legacyThread in
+                try SDSSerialization.insert(entity: legacyThread, database: modernDb)
+                memorySampler.sample()
             }
         }
     }

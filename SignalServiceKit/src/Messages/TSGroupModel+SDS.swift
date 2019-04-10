@@ -23,7 +23,7 @@ extension TSGroupModel {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    static let table = SDSTableMetadata(tableName: "model_TSGroupModel", columns: [
+    public static let table = SDSTableMetadata(tableName: "model_TSGroupModel", columns: [
         recordTypeColumn,
         uniqueIdColumn,
         groupIdColumn,

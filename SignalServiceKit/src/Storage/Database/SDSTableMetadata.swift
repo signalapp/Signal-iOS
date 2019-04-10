@@ -83,37 +83,7 @@ public class SDSTableMetadata: NSObject {
 
     private var hasCheckedTable = false
 
-    // This method can only be called on the main thread, but it avoids
-    // a transaction altogether.
-    public func ensureTableExistsIfNecessary(databaseStorage: SDSDatabaseStorage) {
-        AssertIsOnMainThread()
-
-        guard !hasCheckedTable else {
-            return
-        }
-        hasCheckedTable = true
-
-        databaseStorage.writeSwallowingErrors { (transaction) in
-            do {
-                try self.ensureTableExists(transaction: transaction)
-            } catch let error {
-                // TODO:
-                owsFail("Table creation failed: \(error)")
-            }
-        }
-    }
-
-    // This method can only be called on the main thread, but it avoids
-    // a transaction altogether.
-    public func ensureTableExists(transaction: SDSAnyWriteTransaction) throws {
-        guard let database = transaction.transitional_grdbWriteTransaction else {
-            throw SDSError.invalidTransaction
-        }
-
-        try ensureTableExists(database: database)
-    }
-
-    public func ensureTableExists(database: Database) throws {
+    public func createTable(database: Database) throws {
         // TODO: Assert that table name is valid.
 
         try database.create(table: tableName, ifNotExists: true) { (table) in

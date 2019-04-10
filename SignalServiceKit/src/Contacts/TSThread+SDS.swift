@@ -31,7 +31,7 @@ extension TSThread {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    static let table = SDSTableMetadata(tableName: "model_TSThread", columns: [
+    public static let table = SDSTableMetadata(tableName: "model_TSThread", columns: [
         recordTypeColumn,
         uniqueIdColumn,
         archivalDateColumn,
