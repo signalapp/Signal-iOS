@@ -38,22 +38,27 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
     OWSAssertDebug(countryMetadadata);
 
     NSString *_Nullable specifiedDomain = countryMetadadata.frontingDomain;
-
-    NSURL *baseURL;
-    AFSecurityPolicy *securityPolicy;
-    if (specifiedDomain.length > 0) {
-        NSString *frontingURLString = [NSString stringWithFormat:@"https://%@", specifiedDomain];
-        baseURL = [NSURL URLWithString:frontingURLString];
-        securityPolicy = [self securityPolicyForDomain:(NSString *)specifiedDomain];
-    } else {
-        NSString *frontingURLString = [NSString stringWithFormat:@"https://%@", OWSFrontingHost_Default];
-        baseURL = [NSURL URLWithString:frontingURLString];
-        securityPolicy = [self securityPolicyForDomain:OWSFrontingHost_Default];
+    if (specifiedDomain.length == 0) {
+        return self.defaultConfiguration;
     }
 
-    OWSAssertDebug(baseURL);
+    NSString *frontingURLString = [NSString stringWithFormat:@"https://%@", specifiedDomain];
+    NSURL *_Nullable baseURL = [NSURL URLWithString:frontingURLString];
+    if (baseURL == nil) {
+        OWSFailDebug(@"baseURL was unexpectedly nil with specifiedDomain: %@", specifiedDomain);
+        return self.defaultConfiguration;
+    }
+    AFSecurityPolicy *securityPolicy = [self securityPolicyForDomain:specifiedDomain];
     OWSAssertDebug(securityPolicy);
 
+    return [[OWSCensorshipConfiguration alloc] initWithDomainFrontBaseURL:baseURL securityPolicy:securityPolicy];
+}
+
++ (instancetype)defaultConfiguration
+{
+    NSString *frontingURLString = [NSString stringWithFormat:@"https://%@", OWSFrontingHost_Default];
+    NSURL *baseURL = [NSURL URLWithString:frontingURLString];
+    AFSecurityPolicy *securityPolicy = [self securityPolicyForDomain:OWSFrontingHost_Default];
 
     return [[OWSCensorshipConfiguration alloc] initWithDomainFrontBaseURL:baseURL securityPolicy:securityPolicy];
 }
@@ -107,7 +112,6 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
     };
 }
 
-// Returns nil if the phone number is not known to be censored
 + (BOOL)isCensoredPhoneNumber:(NSString *)e164PhoneNumber;
 {
     return [self censoredCountryCodeWithPhoneNumber:e164PhoneNumber].length > 0;

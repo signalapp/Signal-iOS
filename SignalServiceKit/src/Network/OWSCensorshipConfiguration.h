@@ -19,6 +19,7 @@ extern NSString *const OWSFrontingHost_GoogleQatar;
 // returns best censorship configuration for country code. Will return a default if one hasn't
 // been specifically configured.
 + (instancetype)censorshipConfigurationWithCountryCode:(NSString *)countryCode;
++ (instancetype)defaultConfiguration;
 
 + (BOOL)isCensoredPhoneNumber:(NSString *)e164PhoneNumber;
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface YapDatabaseConnection (OWS)
 
 - (BOOL)hasObjectForKey:(NSString *)key inCollection:(NSString *)collection;
-- (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection;
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(BOOL)defaultValue;
 - (double)doubleForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(double)defaultValue;
 - (int)intForKey:(NSString *)key inCollection:(NSString *)collection;
