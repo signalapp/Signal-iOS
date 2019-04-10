@@ -496,10 +496,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
+    @objc
     public func cancelNotifications(threadId: String) {
         self.adaptee.cancelNotifications(threadId: threadId)
     }
 
+    @objc
     public func clearAllNotifications() {
         adaptee.clearAllNotifications()
     }

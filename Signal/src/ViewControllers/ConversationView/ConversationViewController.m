@@ -325,6 +325,11 @@ typedef enum : NSUInteger {
     return SSKEnvironment.shared.tsAccountManager;
 }
 
+- (OWSNotificationPresenter *)notificationPresenter
+{
+    return AppEnvironment.shared.notificationPresenter;
+}
+
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -1186,6 +1191,13 @@ typedef enum : NSUInteger {
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+
+    // We don't present incoming message notifications for the presented
+    // conversation. But there's a narrow window *while* the conversationVC
+    // is being presented where a message notification for the not-quite-yet
+    // presented conversation can be shown. If that happens, dismiss it as soon
+    // as we enter the conversation.
+    [self.notificationPresenter cancelNotificationsWithThreadId:self.thread.uniqueId];
 
     // recover status bar when returning from PhotoPicker, which is dark (uses light status bar)
     [self setNeedsStatusBarAppearanceUpdate];
