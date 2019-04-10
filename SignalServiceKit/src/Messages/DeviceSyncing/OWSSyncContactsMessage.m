@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncContactsMessage.h"
@@ -14,10 +14,9 @@
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
+#import <Contacts/Contacts.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-
-@import Contacts;
 
 NS_ASSUME_NONNULL_BEGIN
 

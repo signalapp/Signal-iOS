@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackupExportJob.h"
 #import "OWSBackupIO.h"
 #import "OWSDatabaseMigration.h"
 #import "Signal-Swift.h"
+#import <CloudKit/CloudKit.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -17,8 +18,6 @@
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSThread.h>
-
-@import CloudKit;
 
 NS_ASSUME_NONNULL_BEGIN
 

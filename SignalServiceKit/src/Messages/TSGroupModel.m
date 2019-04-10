@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSGroupModel.h"
@@ -29,10 +29,35 @@ const int32_t kGroupIdLength = 16;
     OWSAssertDebug(memberIds);
     OWSAssertDebug(groupId.length == kGroupIdLength);
 
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
     _groupName              = title;
     _groupMemberIds         = [memberIds copy];
     _groupImage = image; // image is stored in DB
     _groupId                = groupId;
+
+    return self;
+}
+
+- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
+                         groupId:(NSData *)groupId
+                  groupMemberIds:(NSArray<NSString *> *)groupMemberIds
+                       groupName:(nullable NSString *)groupName
+{
+    OWSAssertDebug(groupMemberIds);
+    OWSAssertDebug(groupId.length == kGroupIdLength);
+
+    self = [super initWithUniqueId:uniqueId];
+    if (!self) {
+        return self;
+    }
+
+    _groupId = groupId;
+    _groupMemberIds = [groupMemberIds copy];
+    _groupName = groupName;
 
     return self;
 }

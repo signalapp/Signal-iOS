@@ -3,12 +3,11 @@
 //
 
 #import "OWSAddToContactViewController.h"
+#import <ContactsUI/ContactsUI.h>
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
-
-@import ContactsUI;
 
 NS_ASSUME_NONNULL_BEGIN
 

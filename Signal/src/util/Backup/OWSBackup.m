@@ -7,12 +7,11 @@
 #import "OWSBackupIO.h"
 #import "OWSBackupImportJob.h"
 #import "Signal-Swift.h"
+#import <CloudKit/CloudKit.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
-
-@import CloudKit;
 
 NS_ASSUME_NONNULL_BEGIN
 

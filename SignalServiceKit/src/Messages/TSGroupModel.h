@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsManagerProtocol.h"
@@ -22,6 +22,11 @@ extern const int32_t kGroupIdLength;
                     memberIds:(NSArray<NSString *> *)memberIds
                         image:(nullable UIImage *)image
                       groupId:(NSData *)groupId;
+
+- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
+                         groupId:(NSData *)groupId
+                  groupMemberIds:(NSArray<NSString *> *)groupMemberIds
+                       groupName:(nullable NSString *)groupName;
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;

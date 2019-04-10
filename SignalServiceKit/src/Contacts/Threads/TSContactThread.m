@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSContactThread.h"
@@ -16,6 +16,37 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const TSContactThreadPrefix = @"c";
 
 @implementation TSContactThread
+
+- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
+                             archivalDate:(nullable NSDate *)archivalDate
+                archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+                    conversationColorName:(NSString *)conversationColorName
+                             creationDate:(NSDate *)creationDate
+    isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+                          lastMessageDate:(nullable NSDate *)lastMessageDate
+                             messageDraft:(nullable NSString *)messageDraft
+                           mutedUntilDate:(nullable NSDate *)mutedUntilDate
+                    shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+                       hasDismissedOffers:(BOOL)hasDismissedOffers
+{
+    self = [super initWithUniqueId:uniqueId
+                                 archivalDate:archivalDate
+                    archivedAsOfMessageSortId:archivedAsOfMessageSortId
+                        conversationColorName:conversationColorName
+                                 creationDate:creationDate
+        isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
+                              lastMessageDate:lastMessageDate
+                                 messageDraft:messageDraft
+                               mutedUntilDate:mutedUntilDate
+                        shouldThreadBeVisible:shouldThreadBeVisible];
+    if (!self) {
+        return self;
+    }
+
+    _hasDismissedOffers = hasDismissedOffers;
+
+    return self;
+}
 
 - (instancetype)initWithContactId:(NSString *)contactId {
     NSString *uniqueIdentifier = [[self class] threadIdFromContactId:contactId];

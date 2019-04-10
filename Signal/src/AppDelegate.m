@@ -15,6 +15,7 @@
 #import "SignalApp.h"
 #import "SignalsNavigationController.h"
 #import "ViewControllerUtils.h"
+#import <Intents/Intents.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/AppSetup.h>
@@ -44,11 +45,9 @@
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
+#import <WebRTC/WebRTC.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/utsname.h>
-
-@import WebRTC;
-@import Intents;
 
 NSString *const AppDelegateStoryboardMain = @"Main";
 

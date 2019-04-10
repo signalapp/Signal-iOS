@@ -1,0 +1,8 @@
+{
+	"nsnumber_types": {
+		"TSThread.archivedAsOfMessageSortId": "Bool"
+	},
+	"properties_to_ignore": [
+		"TSGroupModel.groupImage"
+	]
+}

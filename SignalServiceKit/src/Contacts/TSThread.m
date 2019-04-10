@@ -97,6 +97,34 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     return self;
 }
 
+- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
+                             archivalDate:(nullable NSDate *)archivalDate
+                archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+                    conversationColorName:(NSString *)conversationColorName
+                             creationDate:(NSDate *)creationDate
+    isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+                          lastMessageDate:(nullable NSDate *)lastMessageDate
+                             messageDraft:(nullable NSString *)messageDraft
+                           mutedUntilDate:(nullable NSDate *)mutedUntilDate
+                    shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+{
+    self = [super initWithUniqueId:uniqueId];
+
+    if (self) {
+        _archivalDate = archivalDate;
+        _archivedAsOfMessageSortId = archivedAsOfMessageSortId;
+        _conversationColorName = conversationColorName;
+        _creationDate = creationDate;
+        _isArchivedByLegacyTimestampForSorting = isArchivedByLegacyTimestampForSorting;
+        _lastMessageDate = lastMessageDate;
+        _messageDraft = messageDraft;
+        _mutedUntilDate = mutedUntilDate;
+        _shouldThreadBeVisible = shouldThreadBeVisible;
+    }
+
+    return self;
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];

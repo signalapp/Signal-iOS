@@ -46,6 +46,7 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <ContactsUI/CNContactViewController.h>
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <Photos/Photos.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
@@ -87,8 +88,6 @@
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
-
-@import Photos;
 
 NS_ASSUME_NONNULL_BEGIN
 
