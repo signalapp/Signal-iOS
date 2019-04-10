@@ -28,6 +28,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class OWSLinkPreview;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
+@class SDSAnyReadTransaction;
 @class TSAttachment;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
@@ -161,7 +162,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
-                        transaction:(YapDatabaseReadTransaction *)transaction
+                        transaction:(SDSAnyReadTransaction *)transaction
                   conversationStyle:(ConversationStyle *)conversationStyle;
 
 @end

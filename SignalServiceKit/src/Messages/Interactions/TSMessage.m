@@ -299,9 +299,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return text.filterStringForDisplay;
 }
 
-- (nullable NSString *)bodyTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSString *)bodyTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *_Nullable oversizeText = [self oversizeTextWithTransaction:transaction];
+    NSString *_Nullable oversizeText;
+    if (transaction.transitional_yapTransaction != nil) {
+        oversizeText = [self oversizeTextWithTransaction:transaction.transitional_yapTransaction];
+    }
     if (oversizeText) {
         return oversizeText;
     }

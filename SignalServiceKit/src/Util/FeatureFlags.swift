@@ -38,4 +38,9 @@ public class FeatureFlags: NSObject {
             return false
         }
     }
+
+    // Temporary flag helpful for development, where blowing away GRDB and re-running
+    // the migration every launch is helpful.
+    public
+    static let grdbMigratesFreshDBEveryLaunch = false
 }

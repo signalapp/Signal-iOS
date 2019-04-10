@@ -50,3 +50,20 @@ public extension YapDatabaseConnection {
         }
     }
 }
+
+public extension YapDatabaseReadTransaction {
+    func enumerateKeysAndObjects(inCollection collection: String?, using block: @escaping (String, Any, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {
+        var errorToRaise: Error?
+        self.enumerateKeysAndObjects(inCollection: collection) { key, obj, stopPtr in
+            do {
+                try block(key, obj, stopPtr)
+            } catch {
+                stopPtr.pointee = true
+                errorToRaise = error
+            }
+        }
+        if let errorToRaise = errorToRaise {
+            throw errorToRaise
+        }
+    }
+}

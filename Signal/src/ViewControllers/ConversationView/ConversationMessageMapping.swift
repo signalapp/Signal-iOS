@@ -6,12 +6,12 @@ import Foundation
 
 @objc
 public class ConversationMessageMapping: NSObject {
-    private let viewName: String
-    private let group: String?
 
     // The desired number of the items to load BEFORE the pivot (see below).
     @objc
-    public var desiredLength: UInt
+    public private(set) var desiredLength: UInt
+
+    private let interactionFinder: InteractionFinder
 
     typealias ItemId = String
 
@@ -77,9 +77,8 @@ public class ConversationMessageMapping: NSObject {
     public var canLoadMore = false
 
     @objc
-    public required init(group: String?, desiredLength: UInt) {
-        self.viewName = TSMessageDatabaseViewExtensionName
-        self.group = group
+    public required init(threadUniqueId: String, desiredLength: UInt) {
+        self.interactionFinder = InteractionFinder(threadUniqueId: threadUniqueId)
         self.desiredLength = desiredLength
     }
 
@@ -96,38 +95,19 @@ public class ConversationMessageMapping: NSObject {
     // This method can be used to extend the desired length
     // and update.
     @objc
-    public func update(withDesiredLength desiredLength: UInt, transaction: YapDatabaseReadTransaction) {
+    public func update(withDesiredLength desiredLength: UInt, transaction: SDSAnyReadTransaction) throws {
         assert(desiredLength >= self.desiredLength)
 
         self.desiredLength = desiredLength
 
-        update(transaction: transaction)
+        try update(transaction: transaction)
     }
 
     // This is the core method of the class. It updates the state to
     // reflect the latest database state & the current desired length.
     @objc
-    public func update(transaction: YapDatabaseReadTransaction) {
+    public func update(transaction: SDSAnyReadTransaction) throws {
         AssertIsOnMainThread()
-
-        guard let view = transaction.ext(viewName) as? YapDatabaseAutoViewTransaction else {
-            owsFailDebug("Could not load view.")
-            return
-        }
-        guard let group = group else {
-            owsFailDebug("No group.")
-            return
-        }
-
-        // Deserializing interactions is expensive, so we only
-        // do that when necessary.
-        let sortIdForItemId: (String) -> UInt64? = { (itemId) in
-            guard let interaction = TSInteraction.fetch(uniqueId: itemId, transaction: transaction) else {
-                owsFailDebug("Could not load interaction.")
-                return nil
-            }
-            return interaction.sortId
-        }
 
         // If we have a "pivot", load all items AFTER the pivot and up to minDesiredLength items BEFORE the pivot.
         // If we do not have a "pivot", load up to minDesiredLength BEFORE the pivot.
@@ -139,9 +119,7 @@ public class ConversationMessageMapping: NSObject {
         var afterPivotCount: UInt = 0
         var beforePivotCount: UInt = 0
         // (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block;
-        view.enumerateKeys(inGroup: group, with: NSEnumerationOptions.reverse) { (_, key, _, stop) in
-            let itemId = key
-
+        try interactionFinder.enumerateInteractionIds(transaction: transaction) { itemId, stopPtr in
             // Load "uncounted" items after the pivot if possible.
             //
             // As an optimization, we can skip this check (which requires
@@ -149,7 +127,7 @@ public class ConversationMessageMapping: NSObject {
             // e.g. after we "pass" the pivot.
             if beforePivotCount == 0,
                 let pivotSortId = self.pivotSortId {
-                if let sortId = sortIdForItemId(itemId) {
+                if let sortId = try self.interactionFinder.sortIndex(interactionUniqueId: itemId, transaction: transaction) {
                     let isAfterPivot = sortId > pivotSortId
                     if isAfterPivot {
                         newItemIds.append(itemId)
@@ -165,7 +143,7 @@ public class ConversationMessageMapping: NSObject {
             if beforePivotCount >= desiredLength {
                 // Overflow
                 canLoadMore = true
-                stop.pointee = true
+                stopPtr.pointee = true
             } else {
                 newItemIds.append(itemId)
                 beforePivotCount += 1
@@ -195,12 +173,12 @@ public class ConversationMessageMapping: NSObject {
         if shouldSetPivot {
             if let newLastItemId = newItemIds.first {
                 // newItemIds is in reverse order, so its "first" element is actually last.
-                if let sortId = sortIdForItemId(newLastItemId) {
+                if let sortId = try interactionFinder.sortIndex(interactionUniqueId: newLastItemId, transaction: transaction) {
                     // Update the pivot.
                     if self.pivotSortId != nil {
                         self.desiredLength += afterPivotCount
                     }
-                    self.pivotSortId = sortId
+                    self.pivotSortId = UInt64(sortId)
                 } else {
                     owsFailDebug("Could not determine sort id for interaction: \(newLastItemId)")
                 }
@@ -211,41 +189,28 @@ public class ConversationMessageMapping: NSObject {
     // Tries to ensure that the load window includes a given item.
     // On success, returns the index path of that item.
     // On failure, returns nil.
-    @objc(ensureLoadWindowContainsUniqueId:transaction:)
+    @objc(ensureLoadWindowContainsUniqueId:transaction:error:)
     public func ensureLoadWindowContains(uniqueId: String,
-                                         transaction: YapDatabaseReadTransaction) -> IndexPath? {
+                                         transaction: SDSAnyReadTransaction) throws -> IndexPath {
         if let oldIndex = loadedUniqueIds().firstIndex(of: uniqueId) {
             return IndexPath(row: oldIndex, section: 0)
         }
-        guard let view = transaction.ext(viewName) as? YapDatabaseAutoViewTransaction else {
-            owsFailDebug("Could not load view.")
-            return nil
-        }
-        guard let group = group else {
-            owsFailDebug("No group.")
-            return nil
+
+        guard let index = try interactionFinder.sortIndex(interactionUniqueId: uniqueId, transaction: transaction) else {
+            throw assertionError("could not find interaction")
         }
 
-        let indexPtr: UnsafeMutablePointer<UInt> = UnsafeMutablePointer<UInt>.allocate(capacity: 1)
-        let wasFound = view.getGroup(nil, index: indexPtr, forKey: uniqueId, inCollection: TSInteraction.collection())
-        guard wasFound else {
-            owsFailDebug("Could not find interaction.")
-            return nil
-        }
-        let index = indexPtr.pointee
-        let threadInteractionCount = view.numberOfItems(inGroup: group)
+        let threadInteractionCount = try interactionFinder.count(transaction: transaction)
         guard index < threadInteractionCount else {
-            owsFailDebug("Invalid index.")
-            return nil
+            throw assertionError("invalid index")
         }
         // This math doesn't take into account the number of items loaded _after_ the pivot.
         // That's fine; it's okay to load too many interactions here.
         let desiredWindowSize: UInt = threadInteractionCount - index
-        self.update(withDesiredLength: desiredWindowSize, transaction: transaction)
+        try self.update(withDesiredLength: desiredWindowSize, transaction: transaction)
 
         guard let newIndex = loadedUniqueIds().firstIndex(of: uniqueId) else {
-            owsFailDebug("Couldn't find interaction.")
-            return nil
+            throw assertionError("couldn't find new index")
         }
         return IndexPath(row: newIndex, section: 0)
     }
@@ -268,10 +233,10 @@ public class ConversationMessageMapping: NSObject {
 
     // Updates and then calculates which items were inserted, removed or modified.
     @objc
-    public func updateAndCalculateDiff(transaction: YapDatabaseReadTransaction,
-                                       notifications: [NSNotification]) -> ConversationMessageMappingDiff? {
+    public func updateAndCalculateDiff(transaction: SDSAnyReadTransaction,
+                                       notifications: [NSNotification]) throws -> ConversationMessageMappingDiff {
         let oldItemIds = Set(self.itemIds)
-        self.update(transaction: transaction)
+        try self.update(transaction: transaction)
         let newItemIds = Set(self.itemIds)
 
         let removedItemIds = oldItemIds.subtracting(newItemIds)
@@ -292,6 +257,9 @@ public class ConversationMessageMapping: NSObject {
     // structure or semantics of these notifications, we'll need to update this
     // code to reflect that.
     private func updatedItemIds(for notifications: [NSNotification]) -> Set<String> {
+        // We'll move this into the Yap adapter when addressing updates/observation
+        let viewName: String = TSMessageDatabaseViewExtensionName
+
         var updatedItemIds = Set<String>()
         for notification in notifications {
             // Unpack the YDB notification, looking for row changes.
@@ -329,5 +297,9 @@ public class ConversationMessageMapping: NSObject {
         }
 
         return updatedItemIds
+    }
+
+    private func assertionError(_ description: String) -> Error {
+        return OWSErrorMakeAssertionError(description)
     }
 }

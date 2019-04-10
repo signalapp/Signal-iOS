@@ -205,7 +205,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in
-        if let bodyText = message.bodyText(with: transaction) {
+        if let bodyText = message.bodyText(with: SDSAnyReadTransaction(transitional_yapTransaction: transaction)) {
             return bodyText
         }
         return ""
