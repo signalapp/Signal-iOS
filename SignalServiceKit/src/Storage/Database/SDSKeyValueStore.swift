@@ -44,7 +44,7 @@ public class SDSKeyValueStore: NSObject {
     @objc
     public func ensureTableExists() {
         databaseStorage.writeSwallowingErrors { (transaction) in
-            transaction.ensureTableExists(self.tableMetadata)
+            self.tableMetadata.ensureTableExists(transaction)
         }
     }
 
