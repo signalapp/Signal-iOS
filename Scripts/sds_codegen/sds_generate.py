@@ -439,20 +439,19 @@ extension %s {
     public func anySave(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            self.save(with: ydbTransaction)
+            save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             SDSSerialization.save(entity: self, transaction: grdbTransaction)
         }
     }
-    
+
     @objc
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
-        if let grdbTransaction = transaction.transitional_grdbWriteTransaction {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            remove(with: ydbTransaction)
+        case .grdbWrite(let grdbTransaction):
             SDSSerialization.delete(entity: self, transaction: grdbTransaction)
-        } else if let ydbTransaction = transaction.transitional_yapWriteTransaction {
-            self.remove(with: ydbTransaction)
-        } else {
-            owsFailDebug("Invalid transaction")
         }
     }
 }
