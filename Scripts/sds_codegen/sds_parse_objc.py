@@ -102,6 +102,8 @@ class Namespace:
 
 split_objc_ast_prefix_regex = re.compile(r'^([ |\-`]*)(.+)$')
 
+# The AST emitted by clang uses punctuation to indicate the AST hierarchy. 
+# This function strips that out.
 def split_objc_ast_prefix(line):
     match = split_objc_ast_prefix_regex.search(line)
     if match is None:
@@ -504,6 +506,7 @@ def process_objc(file_path, swift_bridging_path, intermediates):
     module_header_dir_path = gather_module_headers('Pods')
     pch_include = get_pch_include(file_path)
     
+    # These clang args can be found by building our workspace and looking at how XCode invokes clang.
     clang_args = '-arch arm64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu11 -fobjc-arc -fobjc-weak -fmodules -gmodules -fmodules-prune-interval=86400 -fmodules-prune-after=345600 -Wnon-modular-include-in-framework-module -Werror=non-modular-include-in-framework-module -fapplication-extension -Wno-trigraphs -fpascal-strings -O0 -fno-common -Wno-missing-field-initializers -Wno-missing-prototypes -Werror=return-type -Wdocumentation -Wunreachable-code -Wno-implicit-atomic-properties -Werror=deprecated-objc-isa-usage -Wno-objc-interface-ivars -Werror=objc-root-class -Wno-arc-repeated-use-of-weak -Wimplicit-retain-self -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wconditional-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wno-float-conversion -Wnon-literal-null-conversion -Wobjc-literal-conversion -Wshorten-64-to-32 -Wpointer-sign -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wdeprecated-implementations'.split(' ')
     
     # TODO: We'll never repro the correct search paths, so clang will always emit errors.
@@ -594,6 +597,16 @@ if __name__ == "__main__":
     src_path = os.path.abspath(args.src_path)
     swift_bridging_path = os.path.abspath(args.swift_bridging_path)
 
+
+    # SDS code generation uses clang to parse the AST of Objective-C files.
+    # We're parsing these files outside the context of an XCode workspace, 
+    # so many things won't work - unless do some legwork.
+    #
+    # * Compiling of dependencies.
+    # * Workspace include and framework search paths.
+    # * Auto-generated files, like -Swift.h bridging headers.
+    # * .pch files.
+
     if os.path.isfile(src_path):
         process_file(src_path, swift_bridging_path, args.intermediates)
     else:
@@ -601,13 +614,6 @@ if __name__ == "__main__":
             for filename in filenames:
                 file_path = os.path.abspath(os.path.join(rootdir, filename))
                 process_file(file_path, swift_bridging_path, args.intermediates)
-            # print 'file_extension:', file_extension
-            # process_if_appropriate(file_path)
-
-    # print 'git clang-format...'
-    # print commands.getoutput('git clang-format')
-
-    # check_diff_for_keywords()
 
 
 # TODO: We can't access ivars from Swift without public property accessors.

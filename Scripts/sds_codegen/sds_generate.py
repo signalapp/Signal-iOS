@@ -21,6 +21,10 @@ from sds_common import fail
 # [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
 # [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
 
+# We consider any subclass of TSYapDatabaseObject to be a "serializable model".
+#
+# We treat direct subclasses of TSYapDatabaseObject as "roots" of the model class hierarchy.
+# Only root models do deserialization.
 BASE_MODEL_CLASS_NAME = 'TSYapDatabaseObject'
 
 def to_swift_identifer_name(identifer_name):
@@ -72,7 +76,12 @@ class TypeInfo:
 
     def swift_type(self):
         return self._swift_type
-            
+
+    # This defines the mapping of Swift types to database column types. 
+    # We'll be iterating on this mapping. 
+    # Note that we currently store all sub-models and collections (e.g. [String]) as a blob.
+    #
+    # TODO:
     def database_column_type(self):
         if self.should_use_blob:
             return '.blob'
@@ -100,6 +109,7 @@ class TypeInfo:
             return False
         return self.is_numeric()
                   
+    # This defines how to deserialize database column values to Swift values, using SDSDeserializer.
     def deserializer_invocation(self, column_index_name, value_name, is_optional):
         if self.should_use_blob:
             accessor_name = 'optionalBlob' if is_optional else 'blob'
@@ -235,7 +245,7 @@ def properties_and_inherited_properties(clazz):
     return result
 
 
-def process_class(clazz):
+def generate_swift_extensions_for_model(clazz):
     print '\t', 'processing', clazz.__dict__
     
     if clazz.name == BASE_MODEL_CLASS_NAME:
@@ -292,18 +302,6 @@ extension %s: SDSSerializable {
     }
 }
 ''' % ( str(clazz.name), )
-
-#     swift_body += '''
-# // MARK: - SDSSerializable
-#
-# @objc
-# extension %s: SDSSerializable {
-#     public var serializer: SDSSerializer {
-#         return %sSerializer(model: self)
-#     }
-# }
-# ''' % ( str(clazz.name), str(clazz.name), )
-
 
     
     if not has_sds_superclass:
@@ -652,13 +650,15 @@ class %sSerializer: SDSSerializer {
 def process_class_map(class_map):
     print 'processing', class_map
     for clazz in class_map.values():
-        process_class(clazz)
+        generate_swift_extensions_for_model(clazz)
 
 
 # ---- Record Type Map
 
 record_type_map = {}
 
+# It's critical that our "record type" values are consistent, even if we add/remove/rename model classes. 
+# Therefore we persist the mapping of known classes in a JSON file that is under source control.
 def update_record_type_map(record_type_swift_path, record_type_json_path):
     record_type_map_filepath = record_type_json_path
 
@@ -823,6 +823,9 @@ def parse_config_json(config_json_path):
     configuration_json = json_data
 
 
+# We often use nullable NSNumber * for optional numerics (bool, int, int64, double, etc.). 
+# There's now way to infer which type we're boxing in NSNumber. 
+# Therefore, we need to specify that in the configuration JSON.
 def swift_type_for_nsnumber(property):
     nsnumber_types = configuration_json.get('nsnumber_types')
     if nsnumber_types is None:
@@ -834,6 +837,12 @@ def swift_type_for_nsnumber(property):
     return swift_type    
 
 
+
+# Some properties shouldn't get serialized. 
+# For now, there's just one: TSGroupModel.groupImage which is a UIImage.
+# We might end up extending the serialization to handle images. 
+# Or we might store these as Data/NSData/blob. 
+# TODO:
 def should_ignore_property(property):
     properties_to_ignore = configuration_json.get('properties_to_ignore')
     if properties_to_ignore is None:
@@ -871,6 +880,7 @@ if __name__ == "__main__":
     record_type_swift_path = os.path.abspath(args.record_type_swift_path)
     record_type_json_path = os.path.abspath(args.record_type_json_path)
     config_json_path = os.path.abspath(args.config_json_path)
+    
     
     # We control the code generation process using a JSON config file.
     print

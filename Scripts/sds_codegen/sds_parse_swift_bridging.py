@@ -15,6 +15,10 @@ import tempfile
 import shutil
 
  
+
+# We need to generate fake -Swift.h bridging headers that declare the Swift
+# types that our Objective-C files might use. This script does that.
+ 
 def ows_getoutput(cmd):
     proc = subprocess.Popen(cmd,
         stdout = subprocess.PIPE,
@@ -82,6 +86,14 @@ def process_file(file_path, namespace, intermediates):
     filename = os.path.basename(file_path)
     if not filename.endswith('.swift'):
         return
+
+    command = [
+        'which',
+        'sourcekitten',
+        ]
+    exit_code, output, error_output = ows_getoutput(command)
+    if exit_code != 0:
+        fail('Missing sourcekitten. Install with homebrew?')
     
     print 'Extracting Swift Bridging Info For:', file_path
     command = [
