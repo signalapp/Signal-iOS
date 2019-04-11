@@ -509,6 +509,17 @@ def process_objc(file_path, swift_bridging_path, intermediates):
     # These clang args can be found by building our workspace and looking at how XCode invokes clang.
     clang_args = '-arch arm64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu11 -fobjc-arc -fobjc-weak -fmodules -gmodules -fmodules-prune-interval=86400 -fmodules-prune-after=345600 -Wnon-modular-include-in-framework-module -Werror=non-modular-include-in-framework-module -fapplication-extension -Wno-trigraphs -fpascal-strings -O0 -fno-common -Wno-missing-field-initializers -Wno-missing-prototypes -Werror=return-type -Wdocumentation -Wunreachable-code -Wno-implicit-atomic-properties -Werror=deprecated-objc-isa-usage -Wno-objc-interface-ivars -Werror=objc-root-class -Wno-arc-repeated-use-of-weak -Wimplicit-retain-self -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wconditional-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wno-float-conversion -Wnon-literal-null-conversion -Wobjc-literal-conversion -Wshorten-64-to-32 -Wpointer-sign -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wdeprecated-implementations'.split(' ')
     
+    command = [
+        'xcrun', 
+        '--show-sdk-path', 
+        '--sdk', 
+        'iphoneos',
+    ]
+    exit_code, output, error_output = ows_getoutput(command)
+    if int(exit_code) != 0:
+        fail('Could not find iOS SDK.')
+    iphoneos_sdk_path = output.strip()
+    
     # TODO: We'll never repro the correct search paths, so clang will always emit errors.
     #       We'll want to ignore these errors without silently failing.
     command = [
@@ -520,7 +531,7 @@ def process_objc(file_path, swift_bridging_path, intermediates):
         '-fobjc-arc',
         ] + clang_args + [
         '-isysroot',
-        '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk',
+        iphoneos_sdk_path,
         ] + find_header_include_paths('SignalServiceKit/src') + [
         ] + find_header_include_paths('SignalMessaging') + [
         # ] + find_header_include_paths('Pods') + [
