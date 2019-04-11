@@ -18,6 +18,7 @@ public class SDSDeserializer {
 
     public func blob(at index: Int32) throws -> Data {
         guard let value = try optionalBlob(at: index) else {
+            owsFailDebug("Missing required filed: \(index)")
             throw SDSError.missingRequiredField
         }
         return value
@@ -37,6 +38,7 @@ public class SDSDeserializer {
                return Data()
             }
         default:
+            owsFailDebug("Unexpected type: \(columnType)")
             throw SDSError.unexpectedType
         }
     }
@@ -45,6 +47,7 @@ public class SDSDeserializer {
 
     public func string(at index: Int32) throws -> String {
         guard let value = try optionalString(at: index) else {
+            owsFailDebug("Missing required filed: \(index)")
             throw SDSError.missingRequiredField
         }
         return value
@@ -58,6 +61,7 @@ public class SDSDeserializer {
         case SQLITE_TEXT:
             return String(cString: sqlite3_column_text(sqliteStatement, index))
         default:
+            owsFailDebug("Unexpected type: \(columnType)")
             throw SDSError.unexpectedType
         }
     }
@@ -66,6 +70,7 @@ public class SDSDeserializer {
 
     public func int64(at index: Int32) throws -> Int64 {
         guard let value = try optionalInt64(at: index) else {
+            owsFailDebug("Missing required filed: \(index)")
             throw SDSError.missingRequiredField
         }
         return value
@@ -79,6 +84,7 @@ public class SDSDeserializer {
         case SQLITE_INTEGER:
             return sqlite3_column_int64(sqliteStatement, index)
         default:
+            owsFailDebug("Unexpected type: \(columnType)")
             throw SDSError.unexpectedType
         }
     }
@@ -87,6 +93,7 @@ public class SDSDeserializer {
 
     public func int(at index: Int32) throws -> Int {
         guard let value = try optionalInt(at: index) else {
+            owsFailDebug("Missing required filed: \(index)")
             throw SDSError.missingRequiredField
         }
         return value
@@ -100,6 +107,7 @@ public class SDSDeserializer {
         case SQLITE_INTEGER:
             return Int(sqlite3_column_int(sqliteStatement, index))
         default:
+            owsFailDebug("Unexpected type: \(columnType)")
             throw SDSError.unexpectedType
         }
     }
@@ -108,6 +116,7 @@ public class SDSDeserializer {
 
     public func bool(at index: Int32) throws -> Bool {
         guard let value = try optionalBool(at: index) else {
+            owsFailDebug("Missing required filed: \(index)")
             throw SDSError.missingRequiredField
         }
         return value
@@ -128,6 +137,7 @@ public class SDSDeserializer {
         case SQLITE_INTEGER:
             return sqlite3_column_int(sqliteStatement, index) > 0
         default:
+            owsFailDebug("Unexpected type: \(columnType)")
             throw SDSError.unexpectedType
         }
     }
@@ -136,6 +146,7 @@ public class SDSDeserializer {
 
     public func date(at index: Int32) throws -> Date {
         guard let value = try optionalDate(at: index) else {
+            owsFailDebug("Missing required filed: \(index)")
             throw SDSError.missingRequiredField
         }
         return value
@@ -146,11 +157,15 @@ public class SDSDeserializer {
         switch columnType {
         case SQLITE_NULL:
             return nil
-        case SQLITE_INTEGER:
-            // TODO: Revisit Date persistence.
-            let value = UInt64(sqlite3_column_int64(sqliteStatement, index))
-            return NSDate.ows_date(withMillisecondsSince1970: value)
+        case SQLITE_TEXT:
+            let dateString = String(cString: sqlite3_column_text(sqliteStatement, index))
+            guard let date = Date.fromDatabaseValue(dateString.databaseValue) else {
+                owsFailDebug("Invalid value.")
+                throw SDSError.invalidValue
+            }
+            return date
         default:
+            owsFailDebug("Unexpected type: \(columnType)")
             throw SDSError.unexpectedType
         }
     }
@@ -167,6 +182,7 @@ public class SDSDeserializer {
     public class func unarchive<T>(_ encoded: Data) throws -> T {
         do {
             guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
+                owsFailDebug("Invalid value.")
                 throw SDSError.invalidValue
             }
             return decoded

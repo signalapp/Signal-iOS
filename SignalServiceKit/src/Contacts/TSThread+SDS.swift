@@ -85,6 +85,7 @@ extension TSThreadSerializer {
         let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
         let recordTypeValue = try deserializer.int(at: 0)
         guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
+            owsFailDebug("Invalid recordType: \(recordTypeValue)")
             throw SDSError.invalidResult
         }
         switch recordType {

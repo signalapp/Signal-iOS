@@ -23,6 +23,10 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
               hasDismissedOffers:(BOOL)hasDismissedOffers
 NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:shouldThreadBeVisible:hasDismissedOffers:));
 
+// TODO: We might want to make this initializer private once we
+//       convert getOrCreateThreadWithContactId to take "any" transaction.
+- (instancetype)initWithContactId:(NSString *)contactId;
+
 @property (nonatomic) BOOL hasDismissedOffers;
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId NS_SWIFT_NAME(getOrCreateThread(contactId:));

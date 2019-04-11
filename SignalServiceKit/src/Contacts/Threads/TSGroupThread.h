@@ -30,6 +30,10 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 
 @property (nonatomic, strong) TSGroupModel *groupModel;
 
+// TODO: We might want to make this initializer private once we
+//       convert getOrCreateThreadWithContactId to take "any" transaction.
+- (instancetype)initWithGroupModel:(TSGroupModel *)groupModel;
+
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;

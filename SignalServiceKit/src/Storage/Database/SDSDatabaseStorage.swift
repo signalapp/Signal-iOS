@@ -25,21 +25,37 @@ public class SDSDatabaseStorage: NSObject {
 
     @objc
     required init(raisingErrors: ()) throws {
+        adapter = SDSDatabaseStorage.createDefaultStorage()
+    }
+
+    required init(adapter: SDSDatabaseStorageAdapter, raisingErrors: ()) throws {
+        self.adapter = adapter
+    }
+
+    class func createDefaultStorage() -> SDSDatabaseStorageAdapter {
         if FeatureFlags.useGRDB {
-            let baseDir: URL
-
-            if FeatureFlags.grdbMigratesFreshDBEveryLaunch {
-                baseDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true).appendingPathComponent(UUID().uuidString, isDirectory: true)
-            } else {
-                baseDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true)
-            }
-            let dbDir: URL = baseDir.appendingPathComponent("grdb_database", isDirectory: true)
-
-            // crash if we can't read the DB.
-            adapter = try! GRDBDatabaseStorageAdapter(dbDir: dbDir)
+            return createGrdbStorage()
         } else {
-            adapter = YAPDBStorageAdapter()
+            return createYapStorage()
         }
+    }
+
+    class func createGrdbStorage(isTemp: Bool = false) -> GRDBDatabaseStorageAdapter {
+        let baseDir: URL
+
+        if isTemp || FeatureFlags.grdbMigratesFreshDBEveryLaunch {
+            baseDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true).appendingPathComponent(UUID().uuidString, isDirectory: true)
+        } else {
+            baseDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true)
+        }
+        let dbDir: URL = baseDir.appendingPathComponent("grdb_database", isDirectory: true)
+
+        // crash if we can't read the DB.
+        return try! GRDBDatabaseStorageAdapter(dbDir: dbDir)
+    }
+
+    class func createYapStorage() -> YAPDBStorageAdapter {
+        return YAPDBStorageAdapter()
     }
 
     // `grdbStorage` is useful as an "escape hatch" while we're migrating to GRDB.
@@ -106,7 +122,7 @@ protocol SDSDatabaseStorageAdapter {
     func write(block: @escaping (SDSAnyWriteTransaction) -> Void) throws
 }
 
-private struct YAPDBStorageAdapter {
+struct YAPDBStorageAdapter {
     var storage: OWSPrimaryStorage {
         return OWSPrimaryStorage.shared()
     }
