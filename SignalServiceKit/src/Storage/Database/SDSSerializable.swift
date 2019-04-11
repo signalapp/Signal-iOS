@@ -6,25 +6,22 @@ import Foundation
 import GRDBCipher
 import SignalCoreKit
 
-@objc
 public protocol SDSSerializable {
+    var serializer: SDSSerializer { get }
+}
+
+public protocol SDSSerializer {
     func serializableColumnTableMetadata() -> SDSTableMetadata
 
     func insertColumnNames() -> [String]
 
-    // In practice, these values should all be DatabaseValueConvertible,
-    // but that protocol is not @objc.
-    func insertColumnValues() -> [Any]
+    func insertColumnValues() -> [DatabaseValueConvertible]
 
     func updateColumnNames() -> [String]
 
-    // In practice, these values should all be DatabaseValueConvertible,
-    // but that protocol is not @objc.
-    func updateColumnValues() -> [Any]
+    func updateColumnValues() -> [DatabaseValueConvertible]
 
     func uniqueIdColumnName() -> String
 
-    // In practice, these values should all be DatabaseValueConvertible,
-    // but that protocol is not @objc.
-    func uniqueIdColumnValue() -> Any
+    func uniqueIdColumnValue() -> DatabaseValueConvertible
 }

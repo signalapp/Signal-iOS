@@ -176,7 +176,7 @@ public struct GRDBDatabaseStorageAdapter {
     lazy var migrator: DatabaseMigrator = {
         var migrator = DatabaseMigrator()
         migrator.registerMigration("create initial schema") { db in
-            try TSThread.table.createTable(database: db)
+            try TSThreadSerializer.table.createTable(database: db)
 
             try db.create(table: InteractionRecord.databaseTableName) { t in
                 let cn = InteractionRecord.columnName

@@ -8,8 +8,7 @@ import SignalCoreKit
 
 @objc
 public extension TSYapDatabaseObject {
-    
-    @objc
+
     func save_grdb(transaction: SDSAnyWriteTransaction) {
         guard let entity = self as? SDSSerializable else {
             owsFail("Invalid entity type.")
@@ -27,29 +26,19 @@ public extension TSYapDatabaseObject {
 public class SDSSerialization: NSObject {
 
     // MARK: - Save (Upsert)
-
-    @objc
-    public class func save(entity: SDSSerializable,
-                           transaction: SDSAnyWriteTransaction) {
-        guard let database = transaction.transitional_grdbWriteTransaction else {
-            owsFail("Invalid transaction")
-        }
-        save(entity: entity, database: database)
-    }
-
     class func save(entity: SDSSerializable,
                     database: Database) {
-
-        let tableMetadata = entity.serializableColumnTableMetadata()
+        let serializer = entity.serializer
+        let tableMetadata = serializer.serializableColumnTableMetadata()
 
         do {
             if try exists(tableMetadata: tableMetadata,
-                          uniqueIdColumnName: entity.uniqueIdColumnName(),
-                          uniqueIdColumnValue: entity.uniqueIdColumnValue(),
+                          uniqueIdColumnName: serializer.uniqueIdColumnName(),
+                          uniqueIdColumnValue: serializer.uniqueIdColumnValue(),
                           database: database) {
                 try update(entity: entity,
-                           uniqueIdColumnName: entity.uniqueIdColumnName(),
-                           uniqueIdColumnValue: entity.uniqueIdColumnValue(),
+                           uniqueIdColumnName: serializer.uniqueIdColumnName(),
+                           uniqueIdColumnValue: serializer.uniqueIdColumnValue(),
                            database: database)
             } else {
                 try insert(entity: entity,
@@ -63,11 +52,11 @@ public class SDSSerialization: NSObject {
 
     public class func insert(entity: SDSSerializable,
                                   database: Database) throws {
-
-        let tableMetadata = entity.serializableColumnTableMetadata()
+        let serializer = entity.serializer
+        let tableMetadata = serializer.serializableColumnTableMetadata()
         let tableName = tableMetadata.tableName
-        let columnNames: [String] = entity.insertColumnNames()
-        let columnValues = entity.insertColumnValues()
+        let columnNames: [String] = serializer.insertColumnNames()
+        let columnValues: [DatabaseValueConvertible] = serializer.insertColumnValues()
         let columnsSQL = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
         let valuesSQL = databaseQuestionMarks(count: columnValues.count)
         let sql: String = "INSERT INTO \(tableName.quotedDatabaseIdentifier) (\(columnsSQL)) VALUES (\(valuesSQL))"
@@ -83,13 +72,13 @@ public class SDSSerialization: NSObject {
 
     fileprivate class func update(entity: SDSSerializable,
                                   uniqueIdColumnName: String,
-                                  uniqueIdColumnValue: Any,
+                                  uniqueIdColumnValue: DatabaseValueConvertible,
                                   database: Database) throws {
-
-        let tableMetadata = entity.serializableColumnTableMetadata()
+        let serializer = entity.serializer
+        let tableMetadata = serializer.serializableColumnTableMetadata()
         let tableName = tableMetadata.tableName
-        let columnNames: [String] = entity.updateColumnNames()
-        let columnValues = entity.updateColumnValues()
+        let columnNames: [String] = serializer.updateColumnNames()
+        let columnValues = serializer.updateColumnValues()
         let updateSQL = columnNames.map { "\($0.quotedDatabaseIdentifier)=?" }.joined(separator: ", ")
         let whereSQL = "\(uniqueIdColumnName.quotedDatabaseIdentifier)=?"
         let sql: String = "UPDATE \(tableName.quotedDatabaseIdentifier) SET \(updateSQL) WHERE \(whereSQL)"
@@ -105,7 +94,7 @@ public class SDSSerialization: NSObject {
 
     fileprivate class func exists(tableMetadata: SDSTableMetadata,
                                   uniqueIdColumnName: String,
-                                  uniqueIdColumnValue: Any,
+                                  uniqueIdColumnValue: DatabaseValueConvertible,
                                   database: Database) throws -> Bool {
 
         let query = existsQuery(tableMetadata: tableMetadata,

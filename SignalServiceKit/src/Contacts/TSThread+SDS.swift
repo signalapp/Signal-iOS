@@ -11,7 +11,20 @@ import SignalCoreKit
 
 // MARK: - Table Metadata
 
-extension TSThread {
+extension TSThread: SDSSerializable {
+    public var serializer: SDSSerializer {
+        switch self {
+        case let contactThread as TSContactThread:
+            return TSContactThreadSerializer(model: contactThread)
+        case let groupThread as TSGroupThread:
+            return TSGroupThreadSerializer(model: groupThread)
+        default:
+            owsFail("unexpected type: \(type(of: self))")
+        }
+    }
+}
+
+extension TSThreadSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -51,7 +64,7 @@ extension TSThread {
 
 // MARK: - Deserialization
 
-extension TSThread {
+extension TSThreadSerializer {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
@@ -133,16 +146,15 @@ extension TSThread {
 //       We might want only the former.  Or we might take a "connection" if we
 //       end up having that class.
 @objc
-extension TSThread {
-    @objc
+extension TSThreadSerializer {
     public class func fetchAll(databaseStorage: SDSDatabaseStorage) -> [TSThread] {
         var result = [TSThread]()
         databaseStorage.readSwallowingErrors { (transaction) in
             guard let database = transaction.transitional_grdbReadTransaction else {
                 owsFail("Invalid transaction")
             }
-            result += SDSSerialization.fetchAll(tableMetadata: TSThread.table,
-                                                uniqueIdColumnName: TSThread.uniqueIdColumn.columnName,
+            result += SDSSerialization.fetchAll(tableMetadata: TSThreadSerializer.table,
+                                                uniqueIdColumnName: TSThreadSerializer.uniqueIdColumn.columnName,
                                                 database: database,
                                                 deserialize: { (statement) in
                                                     return try sdsDeserialize(statement: statement)
@@ -151,13 +163,12 @@ extension TSThread {
         return result
     }
 
-    @objc
     public class func fetchAll(transaction: SDSAnyReadTransaction) -> [TSThread] {
         guard let database = transaction.transitional_grdbReadTransaction else {
             owsFail("Invalid transaction")
         }
-        return SDSSerialization.fetchAll(tableMetadata: TSThread.table,
-                                         uniqueIdColumnName: TSThread.uniqueIdColumn.columnName,
+        return SDSSerialization.fetchAll(tableMetadata: TSThreadSerializer.table,
+                                         uniqueIdColumnName: TSThreadSerializer.uniqueIdColumn.columnName,
                                          database: database,
                                          deserialize: { (statement) in
                                             return try sdsDeserialize(statement: statement)
@@ -181,15 +192,19 @@ extension TSThread {
 }
 */
 
-// MARK: - SDSSerializable
+// MARK: - SDSSerializer
 
-// The SDSSerializable protocol specifies how to insert and update the
+// The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-@objc
-extension TSThread: SDSSerializable {
+class TSThreadSerializer: SDSSerializer {
+
+    private let model: TSThread
+    public required init(model: TSThread) {
+        self.model = model
+    }
 
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return TSThread.table
+        return TSThreadSerializer.table
     }
 
     public func insertColumnNames() -> [String] {
@@ -199,16 +214,14 @@ extension TSThread: SDSSerializable {
         // * "unique id"
         // * ...all columns that we set when updating.
         return [
-            TSThread.recordTypeColumn.columnName,
+            TSThreadSerializer.recordTypeColumn.columnName,
             uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
-    // In practice, these values should all be DatabaseValueConvertible,
-    // but that protocol is not @objc.
-    public func insertColumnValues() -> [Any] {
-        let result: [Any] = [
+    public func insertColumnValues() -> [DatabaseValueConvertible] {
+        let result: [DatabaseValueConvertible] = [
             SDSRecordType.thread.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
@@ -221,31 +234,29 @@ extension TSThread: SDSSerializable {
 
     public func updateColumnNames() -> [String] {
         return [
-            TSThread.archivalDateColumn,
-            TSThread.archivedAsOfMessageSortIdColumn,
-            TSThread.conversationColorNameColumn,
-            TSThread.creationDateColumn,
-            TSThread.isArchivedByLegacyTimestampForSortingColumn,
-            TSThread.lastMessageDateColumn,
-            TSThread.messageDraftColumn,
-            TSThread.mutedUntilDateColumn,
-            TSThread.shouldThreadBeVisibleColumn
+            TSThreadSerializer.archivalDateColumn,
+            TSThreadSerializer.archivedAsOfMessageSortIdColumn,
+            TSThreadSerializer.conversationColorNameColumn,
+            TSThreadSerializer.creationDateColumn,
+            TSThreadSerializer.isArchivedByLegacyTimestampForSortingColumn,
+            TSThreadSerializer.lastMessageDateColumn,
+            TSThreadSerializer.messageDraftColumn,
+            TSThreadSerializer.mutedUntilDateColumn,
+            TSThreadSerializer.shouldThreadBeVisibleColumn
             ].map { $0.columnName }
     }
 
-    // In practice, these values should all be DatabaseValueConvertible,
-    // but that protocol is not @objc.
-    public func updateColumnValues() -> [Any] {
-        let result: [Any] = [
-            self.archivalDate ?? DatabaseValue.null,
-            self.archivedAsOfMessageSortId ?? DatabaseValue.null,
-            self.conversationColorName,
-            self.creationDate,
-            self.isArchivedByLegacyTimestampForSorting,
-            self.lastMessageDate ?? DatabaseValue.null,
-            self.messageDraft ?? DatabaseValue.null,
-            self.mutedUntilDate ?? DatabaseValue.null,
-            self.shouldThreadBeVisible
+    public func updateColumnValues() -> [DatabaseValueConvertible] {
+        let result: [DatabaseValueConvertible] = [
+            self.model.archivalDate ?? DatabaseValue.null,
+            self.model.archivedAsOfMessageSortId ?? DatabaseValue.null,
+            DatabaseValue.null, // FIXME: self.model.conversationColorName must conform to DatabaseValueConvertible
+            self.model.creationDate,
+            self.model.isArchivedByLegacyTimestampForSorting,
+            self.model.lastMessageDate ?? DatabaseValue.null,
+            self.model.messageDraft ?? DatabaseValue.null,
+            self.model.mutedUntilDate ?? DatabaseValue.null,
+            self.model.shouldThreadBeVisible
 
         ]
         if OWSIsDebugBuild() {
@@ -257,15 +268,13 @@ extension TSThread: SDSSerializable {
     }
 
     public func uniqueIdColumnName() -> String {
-        return TSThread.uniqueIdColumn.columnName
+        return TSThreadSerializer.uniqueIdColumn.columnName
     }
 
-    // In practice, these values should all be DatabaseValueConvertible,
-    // but that protocol is not @objc.
-    //
     // TODO: uniqueId is currently an optional on our models.
     //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> Any {
-        return uniqueId
+    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
+        // FIXME remove force unwrap
+        return model.uniqueId!
     }
 }

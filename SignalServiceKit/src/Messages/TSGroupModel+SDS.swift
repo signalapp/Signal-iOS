@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // MARK: - Table Metadata
 
-extension TSGroupModel {
+class TSGroupModelSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -31,11 +31,15 @@ extension TSGroupModel {
         groupNameColumn
         ])
 
+    private let model: TSGroupModel
+    init(model: TSGroupModel) {
+        self.model = model
+    }
 }
 
 // MARK: - Deserialization
 
-extension TSGroupModel {
+extension TSGroupModelSerializer {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
@@ -83,16 +87,15 @@ extension TSGroupModel {
 //       We might want only the former.  Or we might take a "connection" if we
 //       end up having that class.
 @objc
-extension TSGroupModel {
-    @objc
+extension TSGroupModelSerializer {
     public class func fetchAll(databaseStorage: SDSDatabaseStorage) -> [TSGroupModel] {
         var result = [TSGroupModel]()
         databaseStorage.readSwallowingErrors { (transaction) in
             guard let database = transaction.transitional_grdbReadTransaction else {
                 owsFail("Invalid transaction")
             }
-            result += SDSSerialization.fetchAll(tableMetadata: TSGroupModel.table,
-                                                uniqueIdColumnName: TSGroupModel.uniqueIdColumn.columnName,
+            result += SDSSerialization.fetchAll(tableMetadata: TSGroupModelSerializer.table,
+                                                uniqueIdColumnName: TSGroupModelSerializer.uniqueIdColumn.columnName,
                                                 database: database,
                                                 deserialize: { (statement) in
                                                     return try sdsDeserialize(statement: statement)
@@ -101,13 +104,12 @@ extension TSGroupModel {
         return result
     }
 
-    @objc
     public class func fetchAll(transaction: SDSAnyReadTransaction) -> [TSGroupModel] {
         guard let database = transaction.transitional_grdbReadTransaction else {
             owsFail("Invalid transaction")
         }
-        return SDSSerialization.fetchAll(tableMetadata: TSGroupModel.table,
-                                         uniqueIdColumnName: TSGroupModel.uniqueIdColumn.columnName,
+        return SDSSerialization.fetchAll(tableMetadata: TSGroupModelSerializer.table,
+                                         uniqueIdColumnName: TSGroupModelSerializer.uniqueIdColumn.columnName,
                                          database: database,
                                          deserialize: { (statement) in
                                             return try sdsDeserialize(statement: statement)
@@ -131,15 +133,14 @@ extension TSGroupModel {
 }
 */
 
-// MARK: - SDSSerializable
+// MARK: - SDSSerializer
 
-// The SDSSerializable protocol specifies how to insert and update the
+// The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-@objc
-extension TSGroupModel: SDSSerializable {
+extension TSGroupModelSerializer: SDSSerializer {
 
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return TSGroupModel.table
+        return TSGroupModelSerializer.table
     }
 
     public func insertColumnNames() -> [String] {
@@ -149,16 +150,14 @@ extension TSGroupModel: SDSSerializable {
         // * "unique id"
         // * ...all columns that we set when updating.
         return [
-            TSGroupModel.recordTypeColumn.columnName,
+            TSGroupModelSerializer.recordTypeColumn.columnName,
             uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
-    // In practice, these values should all be DatabaseValueConvertible,
-    // but that protocol is not @objc.
-    public func insertColumnValues() -> [Any] {
-        let result: [Any] = [
+    public func insertColumnValues() -> [DatabaseValueConvertible] {
+        let result: [DatabaseValueConvertible] = [
             SDSRecordType.groupModel.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
@@ -171,19 +170,17 @@ extension TSGroupModel: SDSSerializable {
 
     public func updateColumnNames() -> [String] {
         return [
-            TSGroupModel.groupIdColumn,
-            TSGroupModel.groupMemberIdsColumn,
-            TSGroupModel.groupNameColumn
+            TSGroupModelSerializer.groupIdColumn,
+            TSGroupModelSerializer.groupMemberIdsColumn,
+            TSGroupModelSerializer.groupNameColumn
             ].map { $0.columnName }
     }
 
-    // In practice, these values should all be DatabaseValueConvertible,
-    // but that protocol is not @objc.
-    public func updateColumnValues() -> [Any] {
-        let result: [Any] = [
-            self.groupId,
-            self.groupMemberIds,
-            self.groupName ?? DatabaseValue.null
+    public func updateColumnValues() -> [DatabaseValueConvertible] {
+        let result: [DatabaseValueConvertible] = [
+            self.model.groupId,
+            DatabaseValue.null, // FIXME self.model.groupMemberIds must conform to DatabaseValueConvertible
+            self.model.groupName ?? DatabaseValue.null
 
         ]
         if OWSIsDebugBuild() {
@@ -195,7 +192,7 @@ extension TSGroupModel: SDSSerializable {
     }
 
     public func uniqueIdColumnName() -> String {
-        return TSGroupModel.uniqueIdColumn.columnName
+        return TSGroupModelSerializer.uniqueIdColumn.columnName
     }
 
     // In practice, these values should all be DatabaseValueConvertible,
@@ -203,7 +200,8 @@ extension TSGroupModel: SDSSerializable {
     //
     // TODO: uniqueId is currently an optional on our models.
     //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> Any {
-        return uniqueId
+    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
+        // FIXME remove force unwrap
+        return model.uniqueId!
     }
 }
