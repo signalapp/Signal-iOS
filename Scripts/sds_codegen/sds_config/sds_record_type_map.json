@@ -9,6 +9,7 @@
     "OWSContactAddress": 60, 
     "OWSContactEmail": 21, 
     "OWSContactName": 42, 
+    "OWSContactOffersInteraction": 69, 
     "OWSContactPhoneNumber": 47, 
     "OWSContacts": 8, 
     "OWSDisappearingConfigurationUpdateInfoMessage": 68, 
@@ -67,5 +68,6 @@
     "TSQuotedMessage": 14, 
     "TSRecipientReadReceipt": 37, 
     "TSThread": 9, 
+    "TSUnreadIndicatorInteraction": 70, 
     "TSYapDatabaseObject": 7
 }

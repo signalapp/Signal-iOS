@@ -438,12 +438,11 @@ extension %s {
 
     @objc
     public func anySave(transaction: SDSAnyWriteTransaction) {
-        if let grdbTransaction = transaction.transitional_grdbWriteTransaction {
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
-        } else if let ydbTransaction = transaction.transitional_yapWriteTransaction {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
             self.save(with: ydbTransaction)
-        } else {
-            owsFailDebug("Invalid transaction")
+        case .grdbWrite(let grdbTransaction):
+            SDSSerialization.save(entity: self, transaction: grdbTransaction)
         }
     }
 }
@@ -669,7 +668,10 @@ def update_record_type_map(record_type_swift_path, record_type_json_path):
         record_type_map.update(json_data)
     
     max_record_type = 0
-    for record_type in record_type_map.values():
+    for class_name in record_type_map:
+        if class_name.startswith('#'):
+            continue
+        record_type = record_type_map[class_name]
         max_record_type = max(max_record_type, record_type)
     
     for clazz in global_class_map.values():

@@ -144,12 +144,11 @@ extension TSThread {
 
     @objc
     public func anySave(transaction: SDSAnyWriteTransaction) {
-        if let grdbTransaction = transaction.transitional_grdbWriteTransaction {
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
-        } else if let ydbTransaction = transaction.transitional_yapWriteTransaction {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
             self.save(with: ydbTransaction)
-        } else {
-            owsFailDebug("Invalid transaction")
+        case .grdbWrite(let grdbTransaction):
+            SDSSerialization.save(entity: self, transaction: grdbTransaction)
         }
     }
 }

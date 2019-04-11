@@ -1,5 +1,5 @@
 //
-//  Copyright © 2019 Signal. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -26,6 +26,7 @@ public enum SDSRecordType: UInt {
     case outgoingNullMessage = 12
     case disappearingMessagesConfigurationMessage = 13
     case quotedMessage = 14
+    case unreadIndicatorInteraction = 70
     case unknownContactBlockOfferMessage = 15
     case endSessionMessage = 17
     case sSKEnvironment = 19
@@ -66,6 +67,7 @@ public enum SDSRecordType: UInt {
     case blockingManager = 54
     case call = 55
     case outgoingMessage = 56
+    case contactOffersInteraction = 69
     case incompleteCallsJob = 57
     case failedAttachmentDownloadsJob = 58
     case dynamicOutgoingMessage = 59
