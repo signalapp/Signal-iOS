@@ -13,32 +13,31 @@ import SignalCoreKit
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSGroupThreadSerializer: TSThreadSerializer {
+class TSGroupThreadSerializer: SDSSerializer {
 
     private let model: TSGroupThread
-    required init(model: TSGroupThread) {
+    public required init(model: TSGroupThread) {
         self.model = model
-        super.init(model: model)
     }
 
-    public required init(model: TSThread) {
-        fatalError("init(model:) has not been implemented")
+    public func serializableColumnTableMetadata() -> SDSTableMetadata {
+        return TSThreadSerializer.table
     }
 
-    public override func insertColumnNames() -> [String] {
+    public func insertColumnNames() -> [String] {
         // When we insert a new row, we include the following columns:
         //
         // * "record type"
         // * "unique id"
         // * ...all columns that we set when updating.
         return [
-            TSGroupThreadSerializer.recordTypeColumn.columnName,
+            TSThreadSerializer.recordTypeColumn.columnName,
             uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
-    public override func insertColumnValues() -> [DatabaseValueConvertible] {
+    public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
             SDSRecordType.groupThread.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
@@ -50,7 +49,7 @@ class TSGroupThreadSerializer: TSThreadSerializer {
         return result
     }
 
-    public override func updateColumnNames() -> [String] {
+    public func updateColumnNames() -> [String] {
         return [
             TSThreadSerializer.archivalDateColumn,
             TSThreadSerializer.archivedAsOfMessageSortIdColumn,
@@ -65,18 +64,18 @@ class TSGroupThreadSerializer: TSThreadSerializer {
             ].map { $0.columnName }
     }
 
-    public override func updateColumnValues() -> [DatabaseValueConvertible] {
+    public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
             self.model.archivalDate ?? DatabaseValue.null,
             self.model.archivedAsOfMessageSortId ?? DatabaseValue.null,
-            DatabaseValue.null, // FIXME self.model.conversationColorName must conform to DatabaseValueConvertible
+            self.model.conversationColorName.rawValue,
             self.model.creationDate,
             self.model.isArchivedByLegacyTimestampForSorting,
             self.model.lastMessageDate ?? DatabaseValue.null,
             self.model.messageDraft ?? DatabaseValue.null,
             self.model.mutedUntilDate ?? DatabaseValue.null,
             self.model.shouldThreadBeVisible,
-            DatabaseValue.null // FIXME self.model.groupModel must conform to DatabaseValueConvertible
+            SDSDeserializer.archive(self.model.groupModel) ?? DatabaseValue.null
 
         ]
         if OWSIsDebugBuild() {
@@ -85,5 +84,16 @@ class TSGroupThreadSerializer: TSThreadSerializer {
             }
         }
         return result
+    }
+
+    public func uniqueIdColumnName() -> String {
+        return TSThreadSerializer.uniqueIdColumn.columnName
+    }
+
+    // TODO: uniqueId is currently an optional on our models.
+    //       We should probably make the return type here String?
+    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
+        // FIXME remove force unwrap
+        return model.uniqueId!
     }
 }

@@ -26,17 +26,17 @@ REPO_ROOT=`git rev-parse --show-toplevel`
 # stubs for each swift class.  This is analogous to a very simplified 
 # version of the "-Swift.h" files used by Swift for bridging.
 # $REPO_ROOT/Scripts/sds_codegen/sds_parse_swift_bridging.py --src-path  . --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes --intermediates
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_swift_bridging.py --src-path  . --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+# $REPO_ROOT/Scripts/sds_codegen/sds_parse_swift_bridging.py --src-path  . --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
 
 
 
 # We parse Obj-C source files (.m only, not .mm yet) to extract simple class descriptions (class name, base class, property names and types, etc.)
 #
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Storage/TSYapDatabaseObject.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Contacts/TSThread.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Contacts/Threads/TSContactThread.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Contacts/Threads/TSGroupThread.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Messages/TSGroupModel.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+# $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Storage/TSYapDatabaseObject.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+# $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Contacts/TSThread.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+# $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Contacts/Threads/TSContactThread.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+# $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Contacts/Threads/TSGroupThread.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+# $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Messages/TSGroupModel.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
 
 
 

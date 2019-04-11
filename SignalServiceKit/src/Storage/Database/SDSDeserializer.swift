@@ -157,6 +157,13 @@ public class SDSDeserializer {
 
     // MARK: - Archive
 
+    public class func archive(_ value: Any?) -> Data? {
+        guard let value = value else {
+            return nil
+        }
+        return NSKeyedArchiver.archivedData(withRootObject: value)
+    }
+
     public class func unarchive<T>(_ encoded: Data) throws -> T {
         do {
             guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
