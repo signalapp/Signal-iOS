@@ -10,6 +10,7 @@ import SignalCoreKit
 public class SDSSerialization: NSObject {
 
     // MARK: - Save (Upsert)
+
     class func save(entity: SDSSerializable,
                     transaction: GRDBWriteTransaction) {
         let serializer = entity.serializer
@@ -36,7 +37,7 @@ public class SDSSerialization: NSObject {
     }
 
     public class func insert(entity: SDSSerializable,
-                                  database: Database) throws {
+                             database: Database) throws {
         let serializer = entity.serializer
         let tableMetadata = serializer.serializableColumnTableMetadata()
         let tableName = tableMetadata.tableName
@@ -112,6 +113,43 @@ public class SDSSerialization: NSObject {
         return "SELECT 1 FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier)=?"
     }
 
+    // MARK: - Remove
+
+    class func delete(entity: SDSSerializable,
+                    transaction: GRDBWriteTransaction) {
+        let serializer = entity.serializer
+        let database = transaction.database
+
+        do {
+            try delete(entity: entity,
+                       uniqueIdColumnName: serializer.uniqueIdColumnName(),
+                       uniqueIdColumnValue: serializer.uniqueIdColumnValue(),
+                       database: database)
+        } catch let error {
+            // TODO:
+            owsFail("Write failed: \(error)")
+        }
+    }
+
+    fileprivate class func delete(entity: SDSSerializable,
+                                  uniqueIdColumnName: String,
+                                  uniqueIdColumnValue: DatabaseValueConvertible,
+                                  database: Database) throws {
+        let serializer = entity.serializer
+        let tableMetadata = serializer.serializableColumnTableMetadata()
+        let tableName = tableMetadata.tableName
+        let whereSQL = "\(uniqueIdColumnName.quotedDatabaseIdentifier)=?"
+        let sql: String = "DELETE FROM \(tableName.quotedDatabaseIdentifier) WHERE \(whereSQL)"
+
+        let statement = try database.cachedUpdateStatement(sql: sql)
+        guard let arguments = StatementArguments([uniqueIdColumnValue]) else {
+            owsFail("Could not convert values.")
+        }
+        // TODO: We could use setArgumentsWithValidation for more safety.
+        statement.unsafeSetArguments(arguments)
+        try statement.execute()
+    }
+
     // MARK: - Fetch (Read)
 
     // Add: fetchOne, fetchCursor, fetchWhere, etc.
@@ -148,7 +186,7 @@ public class SDSSerialization: NSObject {
                     let entity = try deserialize(statement)
                     entities.append(entity)
                     continue
-//                    return true
+                //                    return true
                 case let code:
                     // TODO: ?
                     owsFailDebug("Code: \(code)")
