@@ -20,7 +20,9 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
         let contactThread = TSContactThread(contactId: contactId)
 
         try! storage.write { (transaction) in
+            XCTAssertEqual(0, TSThread.anyFetchAll(transaction: transaction).count)
             contactThread.anySave(transaction: transaction)
+            XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
         }
 
         XCTAssertEqual(1, TSThread.anyFetchAll(databaseStorage: storage).count)
@@ -33,9 +35,27 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
         let groupThread = TSGroupThread(groupModel: groupModel)
 
         try! storage.write { (transaction) in
+            XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
             groupThread.anySave(transaction: transaction)
+            XCTAssertEqual(2, TSThread.anyFetchAll(transaction: transaction).count)
         }
 
         XCTAssertEqual(2, TSThread.anyFetchAll(databaseStorage: storage).count)
+
+        try! storage.write { (transaction) in
+            XCTAssertEqual(2, TSThread.anyFetchAll(transaction: transaction).count)
+            contactThread.anyRemove(transaction: transaction)
+            XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
+        }
+
+        XCTAssertEqual(1, TSThread.anyFetchAll(databaseStorage: storage).count)
+
+        try! storage.write { (transaction) in
+            XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
+            groupThread.anyRemove(transaction: transaction)
+            XCTAssertEqual(0, TSThread.anyFetchAll(transaction: transaction).count)
+        }
+
+        XCTAssertEqual(0, TSThread.anyFetchAll(databaseStorage: storage).count)
     }
 }
