@@ -7,6 +7,23 @@ import GRDBCipher
 
 // MARK: - Any*Transaction
 
+@objc
+public class GRDBReadTransaction: NSObject {
+    public let database: Database
+
+    init(database: Database) {
+        self.database = database
+    }
+}
+
+// MARK: -
+
+@objc
+public class GRDBWriteTransaction: GRDBReadTransaction {
+}
+
+// MARK: -
+
 // Type erased transactions are generated at the top level (by DatabaseStorage) and can then be
 // passed through an adapter which will be backed by either YapDB or GRDB
 //
@@ -17,7 +34,7 @@ import GRDBCipher
 public class SDSAnyReadTransaction: NSObject {
     public enum ReadTransactionType {
         case yapRead(_ transaction: YapDatabaseReadTransaction)
-        case grdbRead(_ transaction: Database)
+        case grdbRead(_ transaction: GRDBReadTransaction)
     }
 
     public let readTransaction: ReadTransactionType
@@ -46,12 +63,12 @@ public class SDSAnyReadTransaction: NSObject {
         }
     }
 
-    public var transitional_grdbReadTransaction: Database? {
+    public var transitional_grdbReadTransaction: GRDBReadTransaction? {
         switch readTransaction {
         case .yapRead:
             return nil
-        case .grdbRead(let database):
-            return database
+        case .grdbRead(let transaction):
+            return transaction
         }
     }
 }
@@ -60,7 +77,7 @@ public class SDSAnyReadTransaction: NSObject {
 public class SDSAnyWriteTransaction: SDSAnyReadTransaction {
     public enum WriteTransactionType {
         case yapWrite(_ transaction: YapDatabaseReadWriteTransaction)
-        case grdbWrite(_ transaction: Database)
+        case grdbWrite(_ transaction: GRDBWriteTransaction)
     }
 
     let writeTransaction: WriteTransactionType
@@ -72,8 +89,8 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction {
         switch writeTransaction {
         case .yapWrite(let yapWrite):
             readTransaction = ReadTransactionType.yapRead(yapWrite)
-        case .grdbWrite(let database):
-            readTransaction = ReadTransactionType.grdbRead(database)
+        case .grdbWrite(let transaction):
+            readTransaction = ReadTransactionType.grdbRead(transaction)
         }
 
         super.init(readTransaction)
@@ -101,12 +118,12 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction {
         }
     }
 
-    public var transitional_grdbWriteTransaction: Database? {
+    public var transitional_grdbWriteTransaction: GRDBWriteTransaction? {
         switch writeTransaction {
         case .yapWrite:
             return nil
-        case .grdbWrite(let database):
-            return database
+        case .grdbWrite(let transaction):
+            return transaction
         }
     }
 }

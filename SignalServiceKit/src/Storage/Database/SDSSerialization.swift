@@ -7,29 +7,14 @@ import GRDBCipher
 import SignalCoreKit
 
 @objc
-public extension TSYapDatabaseObject {
-
-    func save_grdb(transaction: SDSAnyWriteTransaction) {
-        guard let entity = self as? SDSSerializable else {
-            owsFail("Invalid entity type.")
-        }
-        guard let database = transaction.transitional_grdbWriteTransaction else {
-            owsFail("Invalid transaction")
-        }
-        SDSSerialization.save(entity: entity, database: database)
-    }
-}
-
-// MARK: -
-
-@objc
 public class SDSSerialization: NSObject {
 
     // MARK: - Save (Upsert)
     class func save(entity: SDSSerializable,
-                    database: Database) {
+                    transaction: GRDBWriteTransaction) {
         let serializer = entity.serializer
         let tableMetadata = serializer.serializableColumnTableMetadata()
+        let database = transaction.database
 
         do {
             if try exists(tableMetadata: tableMetadata,
@@ -132,9 +117,11 @@ public class SDSSerialization: NSObject {
     // Add: fetchOne, fetchCursor, fetchWhere, etc.
     public class func fetchAll<T>(tableMetadata: SDSTableMetadata,
                                   uniqueIdColumnName: String,
-                                  database: Database,
+                                  transaction: GRDBReadTransaction,
                                   deserialize: (SelectStatement) throws -> T) -> [T] {
         Logger.verbose("")
+
+        let database = transaction.database
 
         // TODO: This assumes the table has already been made.
 

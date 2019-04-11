@@ -205,19 +205,19 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     func uiRead(block: @escaping (SDSAnyReadTransaction) -> Void) throws {
         // TODO this should be based on a snapshot
         try pool.read { database in
-            block(SDSAnyReadTransaction(.grdbRead(database)))
+            block(SDSAnyReadTransaction(.grdbRead(GRDBReadTransaction(database: database))))
         }
     }
 
     func read(block: @escaping (SDSAnyReadTransaction) -> Void) throws {
         try pool.read { database in
-            block(SDSAnyReadTransaction(.grdbRead(database)))
+            block(SDSAnyReadTransaction(.grdbRead(GRDBReadTransaction(database: database))))
         }
     }
 
     func write(block: @escaping (SDSAnyWriteTransaction) -> Void) throws {
         try pool.write { database in
-            block(SDSAnyWriteTransaction(.grdbWrite(database)))
+            block(SDSAnyWriteTransaction(.grdbWrite(GRDBWriteTransaction(database: database))))
         }
     }
 }

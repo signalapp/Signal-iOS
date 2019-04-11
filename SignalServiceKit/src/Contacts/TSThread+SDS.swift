@@ -136,6 +136,25 @@ extension TSThreadSerializer {
     }
 }
 
+// MARK: - Save
+
+@objc
+extension TSThread {
+
+    @objc
+    public func anySave(transaction: SDSAnyWriteTransaction) {
+        if let grdbTransaction = transaction.transitional_grdbWriteTransaction {
+            SDSSerialization.save(entity: self, transaction: grdbTransaction)
+        } else if let ydbTransaction = transaction.transitional_yapWriteTransaction {
+            self.save(with: ydbTransaction)
+        } else {
+            owsFailDebug("Invalid transaction")
+        }
+    }
+}
+
+// TODO: Add remove/delete method.
+
 // MARK: - Fetch
 
 // This category defines various fetch methods.
@@ -152,33 +171,36 @@ extension TSThreadSerializer {
 @objc
 extension TSThread {
     @objc
-    public class func fetchAll(databaseStorage: SDSDatabaseStorage) -> [TSThread] {
+    public class func anyFetchAll(databaseStorage: SDSDatabaseStorage) -> [TSThread] {
         var result = [TSThread]()
         databaseStorage.readSwallowingErrors { (transaction) in
-            guard let database = transaction.transitional_grdbReadTransaction else {
-                owsFail("Invalid transaction")
-            }
-            result += SDSSerialization.fetchAll(tableMetadata: TSThreadSerializer.table,
-                                                uniqueIdColumnName: TSThreadSerializer.uniqueIdColumn.columnName,
-                                                database: database,
-                                                deserialize: { (statement) in
-                                                    return try TSThreadSerializer.sdsDeserialize(statement: statement)
-            })
+            result += anyFetchAll(transaction: transaction)
         }
         return result
     }
 
     @objc
-    public class func fetchAll(transaction: SDSAnyReadTransaction) -> [TSThread] {
-        guard let database = transaction.transitional_grdbReadTransaction else {
-            owsFail("Invalid transaction")
+    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSThread] {
+        var result = [TSThread]()
+        if let grdbTransaction = transaction.transitional_grdbReadTransaction {
+            result += SDSSerialization.fetchAll(tableMetadata: TSThreadSerializer.table,
+                                                uniqueIdColumnName: TSThreadSerializer.uniqueIdColumn.columnName,
+                                                transaction: grdbTransaction,
+                                                deserialize: { (statement) in
+                                                    return try TSThreadSerializer.sdsDeserialize(statement: statement)
+            })
+        } else if let ydbTransaction = transaction.transitional_yapReadTransaction {
+            TSThread.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
+                guard let model = object as? TSThread else {
+                    owsFailDebug("unexpected object: \(type(of: object))")
+                    return
+                }
+                result.append(model)
+            }
+        } else {
+            owsFailDebug("Invalid transaction")
         }
-        return SDSSerialization.fetchAll(tableMetadata: TSThreadSerializer.table,
-                                         uniqueIdColumnName: TSThreadSerializer.uniqueIdColumn.columnName,
-                                         database: database,
-                                         deserialize: { (statement) in
-                                            return try TSThreadSerializer.sdsDeserialize(statement: statement)
-        })
+        return result
     }
 }
 
