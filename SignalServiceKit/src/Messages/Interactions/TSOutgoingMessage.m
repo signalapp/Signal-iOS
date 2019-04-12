@@ -97,6 +97,66 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 @implementation TSOutgoingMessage
 
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(unsigned long long)expireStartedAt
+                       expiresAt:(unsigned long long)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                   schemaVersion:(NSUInteger)schemaVersion
+           attachmentFilenameMap:(NSDictionary<NSString *, NSString *> *)attachmentFilenameMap
+                   customMessage:(NSString *)customMessage
+                groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
+           hasLegacyMessageState:(BOOL)hasLegacyMessageState
+             hasSyncedTranscript:(BOOL)hasSyncedTranscript
+              isFromLinkedDevice:(BOOL)isFromLinkedDevice
+                  isVoiceMessage:(BOOL)isVoiceMessage
+              legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
+              legacyWasDelivered:(BOOL)legacyWasDelivered
+           mostRecentFailureText:(NSString *)mostRecentFailureText
+               recipientStateMap:
+                   (nullable NSDictionary<NSString *, TSOutgoingMessageRecipientState *> *)recipientStateMap
+{
+    self = [super initWithUniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId
+                     attachmentIds:attachmentIds
+                              body:body
+                      contactShare:contactShare
+                   expireStartedAt:expireStartedAt
+                         expiresAt:expiresAt
+                  expiresInSeconds:expiresInSeconds
+                       linkPreview:linkPreview
+                     quotedMessage:quotedMessage
+                     schemaVersion:schemaVersion];
+
+    if (self) {
+        _attachmentFilenameMap
+            = attachmentFilenameMap ? [attachmentFilenameMap mutableCopy] : [NSMutableDictionary new];
+        _customMessage = customMessage;
+        _groupMetaMessage = groupMetaMessage;
+        _hasLegacyMessageState = hasLegacyMessageState;
+        _hasSyncedTranscript = hasSyncedTranscript;
+        _isFromLinkedDevice = isFromLinkedDevice;
+        _isVoiceMessage = isVoiceMessage;
+        _legacyMessageState = legacyMessageState;
+        _legacyWasDelivered = legacyWasDelivered;
+        _mostRecentFailureText = mostRecentFailureText;
+        _recipientStateMap = recipientStateMap;
+    }
+
+    return self;
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];

@@ -1,14 +1,14 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactOffersCell.h"
 #import "ConversationViewItem.h"
 #import "Signal-Swift.h"
-#import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
+#import <SignalServiceKit/OWSContactOffersInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

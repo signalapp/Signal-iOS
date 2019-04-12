@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/TSInteraction.h>
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 // MJK TODO should be safe to remove this timestamp param
-- (instancetype)initInteractionWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
                                   timestamp:(uint64_t)timestamp
                                      thread:(TSThread *)thread
                               hasBlockOffer:(BOOL)hasBlockOffer
@@ -32,6 +32,19 @@ NS_ASSUME_NONNULL_BEGIN
               hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
                                 recipientId:(NSString *)recipientId
                         beforeInteractionId:(NSString *)beforeInteractionId NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+             beforeInteractionId:(NSString *)beforeInteractionId
+           hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
+   hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
+                   hasBlockOffer:(BOOL)hasBlockOffer
+                     recipientId:(NSString *)recipientId
+NS_DESIGNATED_INITIALIZER
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:beforeInteractionId:hasAddToContactsOffer:hasAddToProfileWhitelistOffer:hasBlockOffer:recipientId:));
 
 @end
 

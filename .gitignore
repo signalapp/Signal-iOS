@@ -31,3 +31,4 @@ Index/
 # Python
 *.pyc
 *.sdsjson
+Scripts/sds_codegen/sds_intermediates/*

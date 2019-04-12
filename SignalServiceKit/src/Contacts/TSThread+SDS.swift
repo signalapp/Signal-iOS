@@ -34,15 +34,17 @@ extension TSThreadSerializer {
     // where this model (and any subclasses) are persisted.
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 1)
+    // Base class properties
     static let archivalDateColumn = SDSColumnMetadata(columnName: "archivalDate", columnType: .int64, isOptional: true, columnIndex: 2)
     static let archivedAsOfMessageSortIdColumn = SDSColumnMetadata(columnName: "archivedAsOfMessageSortId", columnType: .int, isOptional: true, columnIndex: 3)
-    static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .unicodeString, columnIndex: 4)
+    static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .int, columnIndex: 4)
     static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .int64, columnIndex: 5)
     static let isArchivedByLegacyTimestampForSortingColumn = SDSColumnMetadata(columnName: "isArchivedByLegacyTimestampForSorting", columnType: .int, columnIndex: 6)
     static let lastMessageDateColumn = SDSColumnMetadata(columnName: "lastMessageDate", columnType: .int64, isOptional: true, columnIndex: 7)
     static let messageDraftColumn = SDSColumnMetadata(columnName: "messageDraft", columnType: .unicodeString, isOptional: true, columnIndex: 8)
     static let mutedUntilDateColumn = SDSColumnMetadata(columnName: "mutedUntilDate", columnType: .int64, isOptional: true, columnIndex: 9)
     static let shouldThreadBeVisibleColumn = SDSColumnMetadata(columnName: "shouldThreadBeVisible", columnType: .int, columnIndex: 10)
+    // Subclass properties
     static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true, columnIndex: 11)
     static let hasDismissedOffersColumn = SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true, columnIndex: 12)
 
@@ -90,7 +92,8 @@ extension TSThreadSerializer {
         }
         switch recordType {
         case .groupThread:
-            let uniqueId = try deserializer.optionalString(at: uniqueIdColumn.columnIndex)
+
+            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let archivalDate = try deserializer.optionalDate(at: archivalDateColumn.columnIndex)
             let archivedAsOfMessageSortId = try deserializer.optionalBoolAsNSNumber(at: archivedAsOfMessageSortIdColumn.columnIndex)
             let conversationColorName = try deserializer.string(at: conversationColorNameColumn.columnIndex)
@@ -103,9 +106,37 @@ extension TSThreadSerializer {
             let groupModelSerialized: Data = try deserializer.blob(at: groupModelColumn.columnIndex)
             let groupModel: TSGroupModel = try SDSDeserializer.unarchive(groupModelSerialized)
 
-            return TSGroupThread(uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, groupModel: groupModel)
+/* Suggested Initializer
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                     archivalDate:(nullable NSDate *)archivalDate
+        archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+            conversationColorName:(NSString *)conversationColorName
+                     creationDate:(NSDate *)creationDate
+isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+                  lastMessageDate:(nullable NSDate *)lastMessageDate
+                     messageDraft:(nullable NSString *)messageDraft
+                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
+            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+                       groupModel:(TSGroupModel *)groupModel
+NS_DESIGNATED_INITIALIZER
+NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:shouldThreadBeVisible:groupModel:));
+*/
+            return TSGroupThread(uniqueId: uniqueId,
+                                 archivalDate: archivalDate,
+                                 archivedAsOfMessageSortId: archivedAsOfMessageSortId,
+                                 conversationColorName: conversationColorName,
+                                 creationDate: creationDate,
+                                 isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
+                                 lastMessageDate: lastMessageDate,
+                                 messageDraft: messageDraft,
+                                 mutedUntilDate: mutedUntilDate,
+                                 shouldThreadBeVisible: shouldThreadBeVisible,
+                                 groupModel: groupModel)
+
         case .contactThread:
-            let uniqueId = try deserializer.optionalString(at: uniqueIdColumn.columnIndex)
+
+            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let archivalDate = try deserializer.optionalDate(at: archivalDateColumn.columnIndex)
             let archivedAsOfMessageSortId = try deserializer.optionalBoolAsNSNumber(at: archivedAsOfMessageSortIdColumn.columnIndex)
             let conversationColorName = try deserializer.string(at: conversationColorNameColumn.columnIndex)
@@ -117,9 +148,37 @@ extension TSThreadSerializer {
             let shouldThreadBeVisible = try deserializer.bool(at: shouldThreadBeVisibleColumn.columnIndex)
             let hasDismissedOffers = try deserializer.bool(at: hasDismissedOffersColumn.columnIndex)
 
-            return TSContactThread(uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, hasDismissedOffers: hasDismissedOffers)
+/* Suggested Initializer
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                     archivalDate:(nullable NSDate *)archivalDate
+        archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+            conversationColorName:(NSString *)conversationColorName
+                     creationDate:(NSDate *)creationDate
+isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+                  lastMessageDate:(nullable NSDate *)lastMessageDate
+                     messageDraft:(nullable NSString *)messageDraft
+                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
+            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+               hasDismissedOffers:(BOOL)hasDismissedOffers
+NS_DESIGNATED_INITIALIZER
+NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:shouldThreadBeVisible:hasDismissedOffers:));
+*/
+            return TSContactThread(uniqueId: uniqueId,
+                                   archivalDate: archivalDate,
+                                   archivedAsOfMessageSortId: archivedAsOfMessageSortId,
+                                   conversationColorName: conversationColorName,
+                                   creationDate: creationDate,
+                                   isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
+                                   lastMessageDate: lastMessageDate,
+                                   messageDraft: messageDraft,
+                                   mutedUntilDate: mutedUntilDate,
+                                   shouldThreadBeVisible: shouldThreadBeVisible,
+                                   hasDismissedOffers: hasDismissedOffers)
+
         case .thread:
-            let uniqueId = try deserializer.optionalString(at: uniqueIdColumn.columnIndex)
+
+            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let archivalDate = try deserializer.optionalDate(at: archivalDateColumn.columnIndex)
             let archivedAsOfMessageSortId = try deserializer.optionalBoolAsNSNumber(at: archivedAsOfMessageSortIdColumn.columnIndex)
             let conversationColorName = try deserializer.string(at: conversationColorNameColumn.columnIndex)
@@ -130,7 +189,32 @@ extension TSThreadSerializer {
             let mutedUntilDate = try deserializer.optionalDate(at: mutedUntilDateColumn.columnIndex)
             let shouldThreadBeVisible = try deserializer.bool(at: shouldThreadBeVisibleColumn.columnIndex)
 
-            return TSThread(uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible)
+/* Suggested Initializer
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                     archivalDate:(nullable NSDate *)archivalDate
+        archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+            conversationColorName:(NSString *)conversationColorName
+                     creationDate:(NSDate *)creationDate
+isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+                  lastMessageDate:(nullable NSDate *)lastMessageDate
+                     messageDraft:(nullable NSString *)messageDraft
+                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
+            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+NS_DESIGNATED_INITIALIZER
+NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:shouldThreadBeVisible:));
+*/
+            return TSThread(uniqueId: uniqueId,
+                            archivalDate: archivalDate,
+                            archivedAsOfMessageSortId: archivedAsOfMessageSortId,
+                            conversationColorName: conversationColorName,
+                            creationDate: creationDate,
+                            isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
+                            lastMessageDate: lastMessageDate,
+                            messageDraft: messageDraft,
+                            mutedUntilDate: mutedUntilDate,
+                            shouldThreadBeVisible: shouldThreadBeVisible)
+
         default:
             owsFail("Invalid record type \(recordType)")
         }

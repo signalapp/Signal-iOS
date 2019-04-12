@@ -97,6 +97,52 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return [self initWithTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
 }
 
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(unsigned long long)expireStartedAt
+                       expiresAt:(unsigned long long)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                   schemaVersion:(unsigned long)schemaVersion
+       errorMessageSchemaVersion:(unsigned long)errorMessageSchemaVersion
+                       errorType:(enum TSErrorMessageType)errorType
+                            read:(BOOL)read
+                     recipientId:(nullable NSString *)recipientId
+{
+    self = [super initWithUniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId
+                     attachmentIds:attachmentIds
+                              body:body
+                      contactShare:contactShare
+                   expireStartedAt:expireStartedAt
+                         expiresAt:expiresAt
+                  expiresInSeconds:expiresInSeconds
+                       linkPreview:linkPreview
+                     quotedMessage:quotedMessage
+                     schemaVersion:schemaVersion];
+    
+    if (!self) {
+        return self;
+    }
+    
+    _errorType = errorType;
+    _recipientId = recipientId;
+    _errorMessageSchemaVersion = errorMessageSchemaVersion;
+    _read = read;
+    
+    return self;
+}
+
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_Error;

@@ -45,6 +45,26 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (instancetype)initWithAttachmentId:(nullable NSString *)attachmentId
+                         contentType:(NSString *)contentType
+                      sourceFilename:(NSString *)sourceFilename
+        thumbnailAttachmentPointerId:(nullable NSString *)thumbnailAttachmentPointerId
+         thumbnailAttachmentStreamId:(nullable NSString *)thumbnailAttachmentStreamId
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _attachmentId = attachmentId;
+    _contentType = contentType;
+    _sourceFilename = sourceFilename;
+    _thumbnailAttachmentPointerId = thumbnailAttachmentPointerId;
+    _thumbnailAttachmentStreamId = thumbnailAttachmentStreamId;
+
+    return self;
+}
+
 @end
 
 @interface TSQuotedMessage ()

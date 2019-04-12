@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint32_t configurationDurationSeconds;
 
 @end
+
+#pragma mark -
 
 @implementation OWSDisappearingConfigurationUpdateInfoMessage
 
@@ -38,6 +40,65 @@ NS_ASSUME_NONNULL_BEGIN
     _createdByRemoteName = remoteName;
     _createdInExistingGroup = createdInExistingGroup;
 
+    return self;
+}
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(unsigned long long)expireStartedAt
+                       expiresAt:(unsigned long long)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                   schemaVersion:(NSUInteger)schemaVersion
+                   customMessage:(nullable NSString *)customMessage
+        infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
+                     messageType:(enum TSInfoMessageType)messageType
+                            read:(BOOL)read
+         unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
+    configurationDurationSeconds:(unsigned int)configurationDurationSeconds
+          configurationIsEnabled:(BOOL)configurationIsEnabled
+             createdByRemoteName:(nullable NSString *)createdByRemoteName
+          createdInExistingGroup:(BOOL)createdInExistingGroup
+{
+    self = [super initWithUniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId
+                     attachmentIds:attachmentIds
+                              body:body
+                      contactShare:contactShare
+                   expireStartedAt:expireStartedAt
+                         expiresAt:expiresAt
+                  expiresInSeconds:expiresInSeconds
+                       linkPreview:linkPreview
+                     quotedMessage:quotedMessage
+                     schemaVersion:schemaVersion
+                     customMessage:customMessage
+          infoMessageSchemaVersion:infoMessageSchemaVersion
+                       messageType:messageType
+                              read:read
+           unregisteredRecipientId:unregisteredRecipientId];
+    if (!self) {
+        return self;
+    }
+    
+    _configurationIsEnabled = configurationIsEnabled;
+    _configurationDurationSeconds = configurationDurationSeconds;
+    
+    // At most one should be set
+    OWSAssertDebug(!createdByRemoteName || !createdInExistingGroup);
+    
+    _createdByRemoteName = createdByRemoteName;
+    _createdInExistingGroup = createdInExistingGroup;
+    
     return self;
 }
 

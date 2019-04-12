@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSUnreadIndicatorInteraction.h"
@@ -10,6 +10,18 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
 @implementation TSUnreadIndicatorInteraction
 #pragma clang diagnostic pop
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                        receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                                     sortId:(uint64_t)sortId
+                                  timestamp:(uint64_t)timestamp
+                             uniqueThreadId:(NSString *)uniqueThreadId {
+    return [super initWithUniqueId:uniqueId
+                          receivedAtTimestamp:receivedAtTimestamp
+                                       sortId:sortId
+                                    timestamp:timestamp
+                               uniqueThreadId:uniqueThreadId];
+}
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {

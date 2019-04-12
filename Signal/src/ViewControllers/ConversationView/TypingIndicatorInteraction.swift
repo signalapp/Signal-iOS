@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -38,7 +38,7 @@ public class TypingIndicatorInteraction: TSInteraction {
     public init(thread: TSThread, timestamp: UInt64, recipientId: String) {
         self.recipientId = recipientId
 
-        super.init(interactionWithUniqueId: TypingIndicatorInteraction.TypingIndicatorId,
+        super.init(uniqueId: TypingIndicatorInteraction.TypingIndicatorId,
             timestamp: timestamp, in: thread)
     }
 

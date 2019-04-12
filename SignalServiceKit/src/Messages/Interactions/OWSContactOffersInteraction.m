@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactOffersInteraction.h"
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initInteractionWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
                                   timestamp:(uint64_t)timestamp
                                      thread:(TSThread *)thread
                               hasBlockOffer:(BOOL)hasBlockOffer
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 recipientId:(NSString *)recipientId
                         beforeInteractionId:(NSString *)beforeInteractionId
 {
-    self = [super initInteractionWithUniqueId:uniqueId timestamp:timestamp inThread:thread];
+    self = [super initWithUniqueId:uniqueId timestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;
@@ -44,6 +44,37 @@ NS_ASSUME_NONNULL_BEGIN
     _beforeInteractionId = beforeInteractionId;
 
     return self;
+}
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+             beforeInteractionId:(NSString *)beforeInteractionId
+           hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
+   hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
+                   hasBlockOffer:(BOOL)hasBlockOffer
+                     recipientId:(NSString *)recipientId
+{
+    self = [super initWithUniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId];
+    
+    if (!self) {
+        return self;
+    }
+    
+    _hasBlockOffer = hasBlockOffer;
+    _hasAddToContactsOffer = hasAddToContactsOffer;
+    _hasAddToProfileWhitelistOffer = hasAddToProfileWhitelistOffer;
+    OWSAssertDebug(recipientId.length > 0);
+    _recipientId = recipientId;
+    _beforeInteractionId = beforeInteractionId;
+    
+    return self;    
 }
 
 - (BOOL)shouldUseReceiptDateForSorting

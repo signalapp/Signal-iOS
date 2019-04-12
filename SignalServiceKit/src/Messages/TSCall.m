@@ -71,6 +71,32 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     return self;
 }
 
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                        receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                                     sortId:(uint64_t)sortId
+                                  timestamp:(uint64_t)timestamp
+                             uniqueThreadId:(NSString *)uniqueThreadId
+                          callSchemaVersion:(NSUInteger)callSchemaVersion
+                                   callType:(RPRecentCallType)callType
+                                       read:(BOOL)read
+{
+    self = [super initWithUniqueId:uniqueId
+                          receivedAtTimestamp:receivedAtTimestamp
+                                       sortId:sortId
+                                    timestamp:timestamp
+                               uniqueThreadId:uniqueThreadId];
+    
+    if (!self) {
+        return self;
+    }
+    
+    _callSchemaVersion = TSCallCurrentSchemaVersion;
+    _callType = callType;
+    _read = read;
+    
+    return self;
+}
+
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];

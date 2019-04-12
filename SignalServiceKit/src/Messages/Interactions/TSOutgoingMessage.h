@@ -98,6 +98,34 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(unsigned long long)expireStartedAt
+                       expiresAt:(unsigned long long)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                   schemaVersion:(NSUInteger)schemaVersion
+           attachmentFilenameMap:(NSDictionary<NSString *, NSString *> *)attachmentFilenameMap
+                   customMessage:(NSString *)customMessage
+                groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
+           hasLegacyMessageState:(BOOL)hasLegacyMessageState
+             hasSyncedTranscript:(BOOL)hasSyncedTranscript
+              isFromLinkedDevice:(BOOL)isFromLinkedDevice
+                  isVoiceMessage:(BOOL)isVoiceMessage
+              legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
+              legacyWasDelivered:(BOOL)legacyWasDelivered
+           mostRecentFailureText:(NSString *)mostRecentFailureText
+               recipientStateMap:
+                   (nullable NSDictionary<NSString *, TSOutgoingMessageRecipientState *> *)recipientStateMap
+    NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread

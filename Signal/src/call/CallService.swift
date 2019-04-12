@@ -454,7 +454,7 @@ private class SignalCallData: NSObject {
         self.callData = callData
 
         // MJK TODO remove this timestamp param
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeOutgoingIncomplete, in: call.thread)
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: .outgoingIncomplete, in: call.thread)
         callRecord.save()
         call.callRecord = callRecord
 
@@ -613,7 +613,7 @@ private class SignalCallData: NSObject {
             // MJK TODO remove this timestamp param
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                      withCallNumber: call.thread.contactIdentifier(),
-                                     callType: RPRecentCallTypeIncomingMissed,
+                                     callType: .incomingMissed,
                                      in: call.thread)
         }
 
@@ -623,15 +623,15 @@ private class SignalCallData: NSObject {
         }
 
         switch callRecord.callType {
-        case RPRecentCallTypeIncomingMissed:
+        case .incomingMissed:
             callRecord.save()
             callUIAdapter.reportMissedCall(call)
-        case RPRecentCallTypeIncomingIncomplete, RPRecentCallTypeIncoming:
-            callRecord.updateCallType(RPRecentCallTypeIncomingMissed)
+        case .incomingIncomplete, .incoming:
+            callRecord.updateCallType(.incomingMissed)
             callUIAdapter.reportMissedCall(call)
-        case RPRecentCallTypeOutgoingIncomplete:
-            callRecord.updateCallType(RPRecentCallTypeOutgoingMissed)
-        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity, RPRecentCallTypeIncomingDeclined, RPRecentCallTypeOutgoingMissed, RPRecentCallTypeOutgoing:
+        case .outgoingIncomplete:
+            callRecord.updateCallType(.outgoingMissed)
+        case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing:
             owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
             callRecord.save()
         default:
@@ -683,7 +683,7 @@ private class SignalCallData: NSObject {
 
         call.state = .remoteBusy
         assert(call.callRecord != nil)
-        call.callRecord?.updateCallType(RPRecentCallTypeOutgoingMissed)
+        call.callRecord?.updateCallType(.outgoingMissed)
 
         callUIAdapter.remoteBusy(call)
         terminateCall()
@@ -722,7 +722,7 @@ private class SignalCallData: NSObject {
             // MJK TODO remove this timestamp param
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                     withCallNumber: thread.contactIdentifier(),
-                                    callType: RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity,
+                                    callType: .incomingMissedBecauseOfChangedIdentity,
                                     in: thread)
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
@@ -1150,7 +1150,7 @@ private class SignalCallData: NSObject {
         Logger.info("\(call.identifiersForLogs).")
 
         // MJK TODO remove this timestamp param
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingIncomplete, in: call.thread)
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: .incomingIncomplete, in: call.thread)
         callRecord.save()
         call.callRecord = callRecord
 
@@ -1237,10 +1237,10 @@ private class SignalCallData: NSObject {
 
         if let callRecord = call.callRecord {
             owsFailDebug("Not expecting callrecord to already be set")
-            callRecord.updateCallType(RPRecentCallTypeIncomingDeclined)
+            callRecord.updateCallType(.incomingDeclined)
         } else {
             // MJK TODO remove this timestamp param
-            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingDeclined, in: call.thread)
+            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: .incomingDeclined, in: call.thread)
             callRecord.save()
             call.callRecord = callRecord
         }
@@ -1276,8 +1276,8 @@ private class SignalCallData: NSObject {
         call.state = .localHangup
 
         if let callRecord = call.callRecord {
-            if callRecord.callType == RPRecentCallTypeOutgoingIncomplete {
-                callRecord.updateCallType(RPRecentCallTypeOutgoingMissed)
+            if callRecord.callType == .outgoingIncomplete {
+                callRecord.updateCallType(.outgoingMissed)
             }
         } else {
             owsFailDebug("missing call record")
@@ -1940,22 +1940,22 @@ private class SignalCallData: NSObject {
 extension RPRecentCallType: CustomStringConvertible {
     public var description: String {
         switch self {
-        case RPRecentCallTypeIncoming:
-            return "RPRecentCallTypeIncoming"
-        case RPRecentCallTypeOutgoing:
-            return "RPRecentCallTypeOutgoing"
-        case RPRecentCallTypeIncomingMissed:
-            return "RPRecentCallTypeIncomingMissed"
-        case RPRecentCallTypeOutgoingIncomplete:
-            return "RPRecentCallTypeOutgoingIncomplete"
-        case RPRecentCallTypeIncomingIncomplete:
-            return "RPRecentCallTypeIncomingIncomplete"
-        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
-            return "RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity"
-        case RPRecentCallTypeIncomingDeclined:
-            return "RPRecentCallTypeIncomingDeclined"
-        case RPRecentCallTypeOutgoingMissed:
-            return "RPRecentCallTypeOutgoingMissed"
+        case .incoming:
+            return ".incoming"
+        case .outgoing:
+            return ".outgoing"
+        case .incomingMissed:
+            return ".incomingMissed"
+        case .outgoingIncomplete:
+            return ".outgoingIncomplete"
+        case .incomingIncomplete:
+            return ".incomingIncomplete"
+        case .incomingMissedBecauseOfChangedIdentity:
+            return ".incomingMissedBecauseOfChangedIdentity"
+        case .incomingDeclined:
+            return ".incomingDeclined"
+        case .outgoingMissed:
+            return ".outgoingMissed"
         default:
             owsFailDebug("unexpected RPRecentCallType: \(self)")
             return "RPRecentCallTypeUnknown"

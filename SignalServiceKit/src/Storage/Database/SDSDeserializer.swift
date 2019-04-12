@@ -99,6 +99,13 @@ public class SDSDeserializer {
         return value
     }
 
+    public func optionalInt64AsNSNumber(at index: Int32) throws -> NSNumber? {
+        guard let value = try optionalInt64(at: index) else {
+            return nil
+        }
+        return NSNumber(value: value)
+    }
+
     public func optionalInt(at index: Int32) throws -> Int? {
         let columnType = sqlite3_column_type(sqliteStatement, index)
         switch columnType {
@@ -106,6 +113,36 @@ public class SDSDeserializer {
             return nil
         case SQLITE_INTEGER:
             return Int(sqlite3_column_int(sqliteStatement, index))
+        default:
+            owsFailDebug("Unexpected type: \(columnType)")
+            throw SDSError.unexpectedType
+        }
+    }
+
+    // MARK: - UInt64
+
+    public func uint64(at index: Int32) throws -> UInt64 {
+        guard let value = try optionalUInt64(at: index) else {
+            owsFailDebug("Missing required filed: \(index)")
+            throw SDSError.missingRequiredField
+        }
+        return value
+    }
+
+    public func optionalUInt64AsNSNumber(at index: Int32) throws -> NSNumber? {
+        guard let value = try optionalUInt64(at: index) else {
+            return nil
+        }
+        return NSNumber(value: value)
+    }
+
+    public func optionalUInt64(at index: Int32) throws -> UInt64? {
+        let columnType = sqlite3_column_type(sqliteStatement, index)
+        switch columnType {
+        case SQLITE_NULL:
+            return nil
+        case SQLITE_INTEGER:
+            return UInt64(sqlite3_column_int64(sqliteStatement, index))
         default:
             owsFailDebug("Unexpected type: \(columnType)")
             throw SDSError.unexpectedType
@@ -177,6 +214,13 @@ public class SDSDeserializer {
             return nil
         }
         return NSKeyedArchiver.archivedData(withRootObject: value)
+    }
+
+    public class func optionalUnarchive<T>(_ encoded: Data?) throws -> T? {
+        guard let encoded = encoded else {
+            return nil
+        }
+        return try unarchive(encoded)
     }
 
     public class func unarchive<T>(_ encoded: Data) throws -> T {
