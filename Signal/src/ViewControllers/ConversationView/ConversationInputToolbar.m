@@ -291,9 +291,26 @@ const CGFloat kMaxTextViewHeight = 98;
 
     self.inputTextView.text = value;
 
-    [self ensureShouldShowVoiceMemoButtonAnimated:isAnimated doLayout:YES];
+    // It's important that we set the textViewHeight before
+    // doing any animation in `ensureShouldShowVoiceMemoButtonAnimated`
+    // Otherwise, the resultant keyboard frame posted in `keyboardWillChangeFrame`
+    // could reflect the inputTextView height *before* the new text was set.
+    //
+    // This bug was surfaced to the user as:
+    //  - have a quoted reply draft in the input toolbar
+    //  - type a multiline message
+    //  - hit send
+    //  - quoted reply preview and message text is cleared
+    //  - input toolbar is shrunk to it's expected empty-text height
+    //  - *but* the conversation's bottom content inset was too large. Specifically, it was
+    //    still sized as if the input textview was multiple lines.
+    // Presumably this bug only surfaced when an animation coincides with more complicated layout
+    // changes (in this case while simultaneous with removing quoted reply subviews, hiding the
+    // wrapper view *and* changing the height of the input textView
     [self ensureTextViewHeight];
     [self updateInputLinkPreview];
+
+    [self ensureShouldShowVoiceMemoButtonAnimated:isAnimated doLayout:YES];
 }
 
 - (void)ensureTextViewHeight
