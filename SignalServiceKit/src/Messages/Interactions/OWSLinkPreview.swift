@@ -311,7 +311,12 @@ public class OWSLinkPreview: MTLModel {
         // Instagram
         "instagram.com",
         "www.instagram.com",
-        "m.instagram.com"
+        "m.instagram.com",
+
+        // Pinterest
+        "pinterest.com",
+        "www.pinterest.com",
+        "pin.it"
     ]
 
     // For media domains, we DO NOT require an exact match - subdomains are allowed.
@@ -327,7 +332,10 @@ public class OWSLinkPreview: MTLModel {
 
         // Instagram
         "cdninstagram.com",
-        "fbcdn.net"
+        "fbcdn.net",
+
+        // Pinterest
+        "pinimg.com"
     ]
 
     private static let protocolWhitelist = [

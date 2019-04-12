@@ -130,6 +130,9 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_web_button_share_sheet"))
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_share_sheet&igshid=94c7ihqjfmbm"))
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://imgur.com/gallery/igHOwDM"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://pinterest.com/something"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.pinterest.com/something"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://pin.it/something"))
 
         // Strip trailing commas.
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://imgur.com/gallery/igHOwDM,"))
@@ -171,6 +174,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com"))
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com"))
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://i.imgur.com/PYiyLv1.jpg?fbplay"))
+        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://pinimg.com/something"))
     }
 
     func testPreviewUrlForMessageBodyText() {
