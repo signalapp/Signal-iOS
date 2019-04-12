@@ -18,6 +18,10 @@ protocol SendMediaNavDelegate: AnyObject {
 @objc
 class SendMediaNavigationController: OWSNavigationController {
 
+    // This is a sensitive constant, if you change it make sure to check
+    // on iPhone5, 6, 6+, X, layouts.
+    static let bottomButtonsCenterOffset: CGFloat = -50
+
     // MARK: - Overrides
 
     override var prefersStatusBarHidden: Bool { return true }
@@ -27,24 +31,26 @@ class SendMediaNavigationController: OWSNavigationController {
 
         self.delegate = self
 
+        let bottomButtonsCenterOffset = SendMediaNavigationController.bottomButtonsCenterOffset
+
         view.addSubview(batchModeButton)
         batchModeButton.setCompressionResistanceHigh()
-        batchModeButton.autoPinEdge(toSuperviewMargin: .bottom)
+        batchModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
         batchModeButton.autoPinEdge(toSuperviewMargin: .trailing)
 
         view.addSubview(doneButton)
         doneButton.setCompressionResistanceHigh()
-        doneButton.autoPinEdge(toSuperviewMargin: .bottom)
+        doneButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
         doneButton.autoPinEdge(toSuperviewMargin: .trailing)
 
         view.addSubview(cameraModeButton)
         cameraModeButton.setCompressionResistanceHigh()
-        cameraModeButton.autoPinEdge(toSuperviewMargin: .bottom)
+        cameraModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
         cameraModeButton.autoPinEdge(toSuperviewMargin: .leading)
 
         view.addSubview(mediaLibraryModeButton)
         mediaLibraryModeButton.setCompressionResistanceHigh()
-        mediaLibraryModeButton.autoPinEdge(toSuperviewMargin: .bottom)
+        mediaLibraryModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
         mediaLibraryModeButton.autoPinEdge(toSuperviewMargin: .leading)
     }
 
@@ -439,7 +445,7 @@ private struct AttachmentDraftCollection {
         return AttachmentDraftCollection(attachmentDrafts: [])
     }
 
-    // MARK -
+    // MARK: -
 
     var count: Int {
         return attachmentDrafts.count

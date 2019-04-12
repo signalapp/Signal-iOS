@@ -88,7 +88,7 @@ class PhotoCaptureViewController: OWSViewController {
         return true
     }
 
-    // MARK -
+    // MARK: -
     var isRecordingMovie: Bool = false
     let recordingTimerView = RecordingTimerView()
 
@@ -325,8 +325,7 @@ class PhotoCaptureViewController: OWSViewController {
 
         view.addSubview(captureButton)
         captureButton.autoHCenterInSuperview()
-
-        captureButton.autoPinEdge(toSuperviewMargin: .bottom, withInset: 10)
+        captureButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
     }
 
     private func showFailureUI(error: Error) {
@@ -425,7 +424,7 @@ class CaptureButton: UIView {
     weak var delegate: CaptureButtonDelegate?
 
     let defaultDiameter: CGFloat = ScaleFromIPhone5To7Plus(60, 80)
-    let recordingDiameter: CGFloat = ScaleFromIPhone5To7Plus(90, 120)
+    let recordingDiameter: CGFloat = ScaleFromIPhone5To7Plus(68, 120)
     var innerButtonSizeConstraints: [NSLayoutConstraint]!
     var zoomIndicatorSizeConstraints: [NSLayoutConstraint]!
 
