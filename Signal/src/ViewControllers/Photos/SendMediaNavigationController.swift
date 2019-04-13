@@ -139,6 +139,7 @@ class SendMediaNavigationController: OWSNavigationController {
     private lazy var doneButton: DoneButton = {
         let button = DoneButton()
         button.delegate = self
+        button.setShadow()
 
         return button
     }()
@@ -153,6 +154,7 @@ class SendMediaNavigationController: OWSNavigationController {
         button.layer.cornerRadius = width / 2
         button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         button.backgroundColor = .ows_white
+        button.setShadow()
 
         return button
     }()
@@ -167,6 +169,7 @@ class SendMediaNavigationController: OWSNavigationController {
         button.layer.cornerRadius = width / 2
         button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         button.backgroundColor = .ows_white
+        button.setShadow()
 
         return button
     }()
@@ -181,6 +184,7 @@ class SendMediaNavigationController: OWSNavigationController {
         button.layer.cornerRadius = width / 2
         button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         button.backgroundColor = .ows_white
+        button.setShadow()
 
         return button
     }()
@@ -641,5 +645,14 @@ private class DoneButton: UIView {
     @objc
     func didTap(tapGesture: UITapGestureRecognizer) {
         delegate?.doneButtonWasTapped(self)
+    }
+}
+
+extension UIView {
+    func setShadow(radius: CGFloat = 2.0, opacity: CGFloat = 0.66, offset: CGPoint = .zero, color: CGColor = UIColor.black.cgColor) {
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowRadius = 2.0
+        layer.shadowOpacity = 0.66
+        layer.shadowOffset = .zero
     }
 }
