@@ -2950,13 +2950,6 @@ typedef enum : NSUInteger {
     didApproveAttachments:(NSArray<SignalAttachment *> *)attachments
               messageText:(nullable NSString *)messageText
 {
-    OWSAssertDebug(self.isFirstResponder);
-    if (@available(iOS 10, *)) {
-        // do nothing
-    } else {
-        [self reloadInputViews];
-    }
-
     [self tryToSendAttachments:attachments messageText:messageText];
     [self.inputToolbar clearTextMessageAnimated:NO];
 
@@ -2964,7 +2957,15 @@ typedef enum : NSUInteger {
     // the new message scroll into view.
     [self scrollToBottomAnimated:NO];
 
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES
+                             completion:^{
+                                 OWSAssertDebug(self.isFirstResponder);
+                                 if (@available(iOS 10, *)) {
+                                     // do nothing
+                                 } else {
+                                     [self reloadInputViews];
+                                 }
+                             }];
 }
 
 - (nullable NSString *)sendMediaNavInitialMessageText:(SendMediaNavigationController *)sendMediaNavigationController
