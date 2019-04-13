@@ -6,7 +6,6 @@ import Foundation
 import AVFoundation
 import PromiseKit
 
-@objc(OWSPhotoCaptureViewControllerDelegate)
 protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didFinishProcessingAttachment attachment: SignalAttachment)
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController)
@@ -31,10 +30,8 @@ extension PhotoCaptureError: LocalizedError {
     }
 }
 
-@objc(OWSPhotoCaptureViewController)
 class PhotoCaptureViewController: OWSViewController {
 
-    @objc
     weak var delegate: PhotoCaptureViewControllerDelegate?
 
     private var photoCapture: PhotoCapture!
@@ -373,8 +370,9 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     func photoCaptureDidCompleteVideo(_ photoCapture: PhotoCapture) {
-        // Stop counting, but keep visible
+        isRecordingMovie = false
         recordingTimerView.stopCounting()
+        updateNavigationItems()
     }
 
     func photoCaptureDidCancelVideo(_ photoCapture: PhotoCapture) {
