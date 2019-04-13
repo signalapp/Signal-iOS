@@ -259,6 +259,13 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
                 owsFailDebug("unexpected navigationBar: \(navigationBar)")
             }
         }
+
+        if viewController is PhotoCaptureViewController && !isInBatchSelectMode {
+            // We're either showing the captureView for the first time or the user is navigating "back"
+            // indicating they want to "retake". We should discard any current image.
+            discardCameraDraft()
+        }
+
         self.updateButtons(topViewController: viewController)
     }
 
@@ -304,6 +311,14 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController) {
         let dontAbandonText = NSLocalizedString("SEND_MEDIA_RETURN_TO_CAMERA", comment: "alert action when the user decides not to cancel the media flow after all.")
         didRequestExit(dontAbandonText: dontAbandonText)
+    }
+
+    func discardCameraDraft() {
+        assert(attachmentDraftCollection.cameraAttachments.count <= 1)
+        if let lastCameraAttachment = attachmentDraftCollection.cameraAttachments.last {
+            attachmentDraftCollection.remove(attachment: lastCameraAttachment)
+        }
+        assert(attachmentDraftCollection.cameraAttachments.count == 0)
     }
 }
 
@@ -453,6 +468,17 @@ private struct AttachmentDraftCollection {
                 return pickerAttachment
             case .camera:
                 return nil
+            }
+        }
+    }
+
+    var cameraAttachments: [SignalAttachment] {
+        return attachmentDrafts.compactMap { attachmentDraft in
+            switch attachmentDraft.source {
+            case .picker:
+                return nil
+            case .camera(let cameraAttachment):
+                return cameraAttachment
             }
         }
     }
