@@ -90,6 +90,11 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
+- (void)ensureLocalProfileCached
+{
+    // Do nothing.
+}
+
 @end
 
 #endif

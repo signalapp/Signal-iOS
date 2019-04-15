@@ -40,10 +40,10 @@ public class SDSDatabaseStorage: NSObject {
         }
     }
 
-    class func createGrdbStorage(isTemp: Bool = false) -> GRDBDatabaseStorageAdapter {
+    class func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
         let baseDir: URL
 
-        if isTemp || FeatureFlags.grdbMigratesFreshDBEveryLaunch {
+        if FeatureFlags.grdbMigratesFreshDBEveryLaunch {
             baseDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true).appendingPathComponent(UUID().uuidString, isDirectory: true)
         } else {
             baseDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true)

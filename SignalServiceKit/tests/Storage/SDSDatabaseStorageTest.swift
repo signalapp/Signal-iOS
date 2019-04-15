@@ -8,8 +8,11 @@ import XCTest
 
 class SDSDatabaseStorageTest: SSKBaseTestSwift {
 
+    func test_simple2() {
+    }
+
     func test_simple() {
-        let storage = try! SDSDatabaseStorage(adapter: SDSDatabaseStorage.createGrdbStorage(isTemp: true), raisingErrors: ())
+        let storage = try! SDSDatabaseStorage(adapter: SDSDatabaseStorage.createGrdbStorage(), raisingErrors: ())
 
         XCTAssertEqual(0, TSThread.anyFetchAll(databaseStorage: storage).count)
 
