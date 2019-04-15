@@ -19,6 +19,10 @@ public class SDSDatabaseStorage: NSObject {
         fatalError("unavailable")
     }
 
+    private var hasPendingCrossProcessWrite = false
+
+    private let crossProcess = SDSCrossProcess()
+
     // MARK: - Initialization / Setup
 
     let adapter: SDSDatabaseStorageAdapter
@@ -26,10 +30,18 @@ public class SDSDatabaseStorage: NSObject {
     @objc
     required init(raisingErrors: ()) throws {
         adapter = SDSDatabaseStorage.createDefaultStorage()
+
+        super.init()
+
+        addObservers()
     }
 
     required init(adapter: SDSDatabaseStorageAdapter, raisingErrors: ()) throws {
         self.adapter = adapter
+
+        super.init()
+
+        addObservers()
     }
 
     class func createDefaultStorage() -> SDSDatabaseStorageAdapter {
@@ -38,6 +50,29 @@ public class SDSDatabaseStorage: NSObject {
         } else {
             return createYapStorage()
         }
+    }
+
+    private func addObservers() {
+        // Cross process writes
+        if FeatureFlags.useGRDB {
+            weak var weakSelf = self
+            crossProcess.callback = {
+                DispatchQueue.main.async {
+                    weakSelf?.handleCrossProcessWrite()
+                }
+            }
+
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(didBecomeActive),
+                                                   name: UIApplication.didBecomeActiveNotification,
+                                                   object: nil)
+        }
+    }
+
+    deinit {
+        Logger.verbose("")
+
+        NotificationCenter.default.removeObserver(self)
     }
 
     class func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
@@ -77,6 +112,8 @@ public class SDSDatabaseStorage: NSObject {
 
     public func write(block: @escaping (SDSAnyWriteTransaction) -> Void) throws {
         try adapter.write(block: block)
+
+        self.notifyCrossProcessWrite()
     }
 
     // MARK: - Error Swallowing
@@ -112,6 +149,72 @@ public class SDSDatabaseStorage: NSObject {
             try write(block: block)
         } catch {
             owsFailDebug("error: \(error)")
+        }
+    }
+
+    // MARK: - Cross Process Notifications
+
+    private func handleCrossProcessWrite() {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        guard CurrentAppContext().isMainApp else {
+            return
+        }
+
+        //
+        if CurrentAppContext().isMainAppAndActive {
+            // If already active, update immediately.
+            postCrossProcessNotification()
+        } else {
+            // If not active, set flag to update when we become active.
+            hasPendingCrossProcessWrite = true
+        }
+    }
+
+    private func notifyCrossProcessWrite() {
+        Logger.info("")
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            self.crossProcess.notifyChanged()
+        }
+    }
+
+    @objc func didBecomeActive() {
+        AssertIsOnMainThread()
+
+        guard hasPendingCrossProcessWrite else {
+            return
+        }
+        hasPendingCrossProcessWrite = false
+
+        postCrossProcessNotification()
+    }
+
+    @objc
+    public static let didReceiveCrossProcessNotification = Notification.Name("didReceiveCrossProcessNotification")
+
+    private func postCrossProcessNotification() {
+        Logger.info("")
+
+        DispatchQueue.global().async {
+            DispatchQueue.main.async {
+                // TODO: The observers of this notification will inevitably do
+                //       expensive work.  It'd be nice to only fire this event
+                //       if this had any effect, if the state of the database
+                //       has changed.
+                //
+                //       In the meantime, most (all?) cross process write notifications
+                //       will be delivered to the main app while it is inactive. By
+                //       de-bouncing notifications while inactive and only updating
+                //       once when we become active, we should be able to effectively
+                //       skip most of the perf cost.
+                NotificationCenter.default.post(name: SDSDatabaseStorage.didReceiveCrossProcessNotification, object: nil, userInfo: nil)
+            }
         }
     }
 }
