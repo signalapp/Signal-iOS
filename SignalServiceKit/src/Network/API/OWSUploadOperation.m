@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUploadOperation.h"
@@ -10,10 +10,13 @@
 #import "OWSError.h"
 #import "OWSOperation.h"
 #import "OWSRequestFactory.h"
+#import "OWSUploadV2.h"
 #import "SSKEnvironment.h"
 #import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -82,104 +85,27 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     
     [self fireNotificationWithProgress:0];
 
-    OWSLogDebug(@"alloc attachment: %@", self.attachmentId);
-    TSRequest *request = [OWSRequestFactory allocAttachmentRequest];
-    [self.networkManager makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                OWSLogError(@"unexpected response from server: %@", responseObject);
-                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
+    OWSAttachmentUploadV2 *upload = [OWSAttachmentUploadV2 new];
+    [[upload uploadAttachmentToService:attachmentStream
+                         progressBlock:^(NSProgress *uploadProgress) {
+                             [self fireNotificationWithProgress:uploadProgress.fractionCompleted];
+                         }]
+            .thenInBackground(^{
+                attachmentStream.encryptionKey = upload.encryptionKey;
+                attachmentStream.digest = upload.digest;
+                attachmentStream.serverId = upload.serverId;
+                attachmentStream.isUploaded = YES;
+                [attachmentStream saveAsyncWithCompletionBlock:^{
+                    [self reportSuccess];
+                }];
+            })
+            .catchInBackground(^(NSError *error) {
+                OWSLogError(@"Failed: %@", error);
+
                 error.isRetryable = YES;
+
                 [self reportError:error];
-                return;
-            }
-
-            NSDictionary *responseDict = (NSDictionary *)responseObject;
-            UInt64 serverId = ((NSDecimalNumber *)[responseDict objectForKey:@"id"]).unsignedLongLongValue;
-            NSString *location = [responseDict objectForKey:@"location"];
-
-            dispatch_async([OWSDispatch attachmentsQueue], ^{
-                [self uploadWithServerId:serverId location:location attachmentStream:attachmentStream];
-            });
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            OWSLogError(@"Failed to allocate attachment with error: %@", error);
-            error.isRetryable = YES;
-            [self reportError:error];
-        }];
-}
-
-- (void)uploadWithServerId:(UInt64)serverId
-                  location:(NSString *)location
-          attachmentStream:(TSAttachmentStream *)attachmentStream
-{
-    OWSLogDebug(@"started uploading data for attachment: %@", self.attachmentId);
-    NSError *error;
-    NSData *attachmentData = [attachmentStream readDataFromFileWithError:&error];
-    if (error) {
-        OWSLogError(@"Failed to read attachment data with error: %@", error);
-        error.isRetryable = YES;
-        [self reportError:error];
-        return;
-    }
-
-    NSData *encryptionKey;
-    NSData *digest;
-    NSData *_Nullable encryptedAttachmentData =
-        [Cryptography encryptAttachmentData:attachmentData outKey:&encryptionKey outDigest:&digest];
-    if (!encryptedAttachmentData) {
-        OWSFailDebug(@"could not encrypt attachment data.");
-        error = OWSErrorMakeFailedToSendOutgoingMessageError();
-        error.isRetryable = YES;
-        [self reportError:error];
-        return;
-    }
-    attachmentStream.encryptionKey = encryptionKey;
-    attachmentStream.digest = digest;
-
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:location]];
-    request.HTTPMethod = @"PUT";
-    [request setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
-
-    AFURLSessionManager *manager = [[AFURLSessionManager alloc]
-        initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-
-    NSURLSessionUploadTask *uploadTask;
-    uploadTask = [manager uploadTaskWithRequest:request
-        fromData:encryptedAttachmentData
-        progress:^(NSProgress *_Nonnull uploadProgress) {
-            [self fireNotificationWithProgress:uploadProgress.fractionCompleted];
-        }
-        completionHandler:^(NSURLResponse *_Nonnull response, id _Nullable responseObject, NSError *_Nullable error) {
-            OWSAssertIsOnMainThread();
-            if (error) {
-                error.isRetryable = YES;
-                [self reportError:error];
-                return;
-            }
-
-            NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
-            BOOL isValidResponse = (statusCode >= 200) && (statusCode < 400);
-            if (!isValidResponse) {
-                OWSLogError(@"Unexpected server response: %d", (int)statusCode);
-                NSError *invalidResponseError = OWSErrorMakeUnableToProcessServerResponseError();
-                invalidResponseError.isRetryable = YES;
-                [self reportError:invalidResponseError];
-                return;
-            }
-
-            OWSLogInfo(@"Uploaded attachment: %p serverId: %llu, byteCount: %u",
-                attachmentStream.uniqueId,
-                attachmentStream.serverId,
-                attachmentStream.byteCount);
-            attachmentStream.serverId = serverId;
-            attachmentStream.isUploaded = YES;
-            [attachmentStream saveAsyncWithCompletionBlock:^{
-                [self reportSuccess];
-            }];
-        }];
-
-    [uploadTask resume];
+            }) retainUntilComplete];
 }
 
 - (void)fireNotificationWithProgress:(CGFloat)aProgress

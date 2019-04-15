@@ -414,8 +414,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSAssertDebug(encryptedAvatarData.length > 0);
     }
 
-    [[OWSUploadV2 uploadAvatarToService:encryptedAvatarData clearLocalAvatar:clearLocalAvatar]
-            .thenInBackground(^(OWSUploadV2 *upload) {
+    OWSAvatarUploadV2 *upload = [OWSAvatarUploadV2 new];
+    [[upload uploadAvatarToService:encryptedAvatarData
+                  clearLocalAvatar:clearLocalAvatar
+                     progressBlock:^(NSProgress *progress){
+                         // Do nothing.
+                     }]
+            .thenInBackground(^{
                 OWSLogVerbose(@"Upload complete.");
 
                 successBlock(upload.urlPath);

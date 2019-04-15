@@ -7,14 +7,35 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class AnyPromise;
+@class TSAttachmentStream;
+
+typedef void (^UploadProgressBlock)(NSProgress *progress);
 
 // This class can be safely accessed and used from any thread.
-@interface OWSUploadV2 : NSObject
+@interface OWSAvatarUploadV2 : NSObject
 
+// This is set on success for non-nil uploads.
 @property (nonatomic, nullable) NSString *urlPath;
 
-// On success, yields an instance of OWSUploadV2.
-+ (AnyPromise *)uploadAvatarToService:(NSData *_Nullable)avatarData clearLocalAvatar:(dispatch_block_t)clearLocalAvatar;
+- (AnyPromise *)uploadAvatarToService:(NSData *_Nullable)avatarData
+                     clearLocalAvatar:(dispatch_block_t)clearLocalAvatar
+                        progressBlock:(UploadProgressBlock)progressBlock;
+
+@end
+
+#pragma mark -
+
+// This class can be safely accessed and used from any thread.
+@interface OWSAttachmentUploadV2 : NSObject
+
+
+// These properties are set on success.
+@property (nonatomic, nullable) NSData *encryptionKey;
+@property (nonatomic, nullable) NSData *digest;
+@property (nonatomic) UInt64 serverId;
+
+- (AnyPromise *)uploadAttachmentToService:(TSAttachmentStream *)attachmentStream
+                            progressBlock:(UploadProgressBlock)progressBlock;
 
 @end
 

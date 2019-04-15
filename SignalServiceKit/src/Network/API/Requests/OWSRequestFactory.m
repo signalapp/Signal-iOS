@@ -141,8 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)allocAttachmentRequest
 {
-    NSString *path = [NSString stringWithFormat:@"%@", textSecureAttachmentsAPI];
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v2/attachments/form/upload"] method:@"GET" parameters:@{}];
 }
 
 + (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId
