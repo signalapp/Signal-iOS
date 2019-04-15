@@ -166,7 +166,7 @@ public class SDSDatabaseStorage: NSObject {
         //
         if CurrentAppContext().isMainAppAndActive {
             // If already active, update immediately.
-            handleCrossProcessNotification()
+            postCrossProcessNotification()
         } else {
             // If not active, set flag to update when we become active.
             hasPendingCrossProcessWrite = true
@@ -192,13 +192,13 @@ public class SDSDatabaseStorage: NSObject {
         }
         hasPendingCrossProcessWrite = false
 
-        handleCrossProcessNotification()
+        postCrossProcessNotification()
     }
 
     @objc
     public static let didReceiveCrossProcessNotification = Notification.Name("didReceiveCrossProcessNotification")
 
-    private func handleCrossProcessNotification() {
+    private func postCrossProcessNotification() {
         Logger.info("")
 
         DispatchQueue.global().async {
