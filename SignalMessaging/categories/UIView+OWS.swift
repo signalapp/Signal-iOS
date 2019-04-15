@@ -126,6 +126,13 @@ extension UIView {
         constraints.append(subview.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
         return constraints
     }
+
+    func setShadow(radius: CGFloat = 2.0, opacity: CGFloat = 0.66, offset: CGPoint = .zero, color: CGColor = UIColor.black.cgColor) {
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowRadius = 2.0
+        layer.shadowOpacity = 0.66
+        layer.shadowOffset = .zero
+    }
 }
 
 // MARK: -
