@@ -130,7 +130,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     return OWSInteractionType_Call;
 }
 
-- (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     // We don't actually use the `transaction` but other sibling classes do.
     switch (_callType) {

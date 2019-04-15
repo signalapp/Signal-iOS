@@ -159,7 +159,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return OWSInteractionType_Error;
 }
 
-- (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     switch (_errorType) {
         case TSErrorMessageNoSession:
@@ -176,19 +176,20 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
             return NSLocalizedString(@"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY", @"");
         case TSErrorMessageNonBlockingIdentityChange: {
             if (self.recipientId) {
-                NSString *messageFormat = NSLocalizedString(@"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT",
-                    @"Shown when signal users safety numbers changed, embeds the user's {{name or phone number}}");
+                if (transaction.transitional_yapReadTransaction) {
+                    NSString *messageFormat = NSLocalizedString(@"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT",
+                        @"Shown when signal users safety numbers changed, embeds the user's {{name or phone number}}");
 
-                NSString *recipientDisplayName =
-                    [SSKEnvironment.shared.contactsManager displayNameForPhoneIdentifier:self.recipientId
-                                                                             transaction:transaction];
-                return [NSString stringWithFormat:messageFormat, recipientDisplayName];
+                    NSString *recipientDisplayName = [SSKEnvironment.shared.contactsManager
+                        displayNameForPhoneIdentifier:self.recipientId
+                                          transaction:transaction.transitional_yapReadTransaction];
+                    return [NSString stringWithFormat:messageFormat, recipientDisplayName];
+                }
             } else {
                 // recipientId will be nil for legacy errors
                 return NSLocalizedString(
                     @"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE", @"Shown when signal users safety numbers changed");
             }
-            break;
         }
         case TSErrorMessageUnknownContactBlockOffer:
             return NSLocalizedString(@"UNKNOWN_CONTACT_BLOCK_OFFER",
@@ -197,9 +198,10 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
             return NSLocalizedString(@"GROUP_CREATION_FAILED",
                 @"Message shown in conversation view that indicates there were issues with group creation.");
         default:
-            return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
+            OWSFailDebug(@"failure: unknown error type");
             break;
     }
+    return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
 }
 
 + (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope

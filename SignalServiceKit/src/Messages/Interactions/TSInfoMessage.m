@@ -6,6 +6,7 @@
 #import "ContactsManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -173,7 +174,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     return OWSInteractionType_Info;
 }
 
-- (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     switch (_messageType) {
         case TSInfoMessageTypeSessionDidEnd:
@@ -182,13 +183,16 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
             return NSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);
         case TSInfoMessageUserNotRegistered:
             if (self.unregisteredRecipientId.length > 0) {
-                id<ContactsManagerProtocol> contactsManager = SSKEnvironment.shared.contactsManager;
-                NSString *recipientName = [contactsManager displayNameForPhoneIdentifier:self.unregisteredRecipientId
-                                                                             transaction:transaction];
-                return [NSString stringWithFormat:NSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
-                                                      @"Format string for 'unregistered user' error. Embeds {{the "
-                                                      @"unregistered user's name or signal id}}."),
-                                 recipientName];
+                if (transaction.transitional_yapReadTransaction) {
+                    id<ContactsManagerProtocol> contactsManager = SSKEnvironment.shared.contactsManager;
+                    NSString *recipientName =
+                        [contactsManager displayNameForPhoneIdentifier:self.unregisteredRecipientId
+                                                           transaction:transaction.transitional_yapReadTransaction];
+                    return [NSString stringWithFormat:NSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
+                                                          @"Format string for 'unregistered user' error. Embeds {{the "
+                                                          @"unregistered user's name or signal id}}."),
+                                     recipientName];
+                }
             } else {
                 return NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_INSECURE", nil);
             }

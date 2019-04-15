@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -29,8 +29,8 @@ public class ThreadViewModel: NSObject {
         self.isGroupThread = thread.isGroupThread()
         self.name = thread.name()
         self.isMuted = thread.isMuted
-        self.lastMessageText = thread.lastMessageText(transaction: transaction)
-        let lastInteraction = thread.lastInteractionForInbox(transaction: transaction)
+        self.lastMessageText = thread.lastMessageText(transaction: SDSAnyReadTransaction(transitional_yapReadTransaction: transaction))
+        let lastInteraction = thread.lastInteractionForInbox(transaction: SDSAnyReadTransaction(transitional_yapReadTransaction: transaction))
         self.lastMessageForInbox = lastInteraction
         self.lastMessageDate = lastInteraction?.receivedAtDate() ?? thread.creationDate
 

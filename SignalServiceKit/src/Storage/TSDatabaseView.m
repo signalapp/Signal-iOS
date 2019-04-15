@@ -11,6 +11,7 @@
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
@@ -330,12 +331,14 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         TSThread *thread2 = (TSThread *)object2;
         if ([group isEqualToString:TSArchiveGroup] || [group isEqualToString:TSInboxGroup]) {
 
-            TSInteraction *_Nullable lastInteractionForInbox1 =
-                [thread1 lastInteractionForInboxWithTransaction:transaction];
+            TSInteraction *_Nullable lastInteractionForInbox1 = [thread1
+                lastInteractionForInboxWithTransaction:[[SDSAnyReadTransaction alloc]
+                                                           initWithTransitional_yapReadTransaction:transaction]];
             NSDate *date1 = lastInteractionForInbox1 ? lastInteractionForInbox1.receivedAtDate : thread1.creationDate;
 
-            TSInteraction *_Nullable lastInteractionForInbox2 =
-                [thread2 lastInteractionForInboxWithTransaction:transaction];
+            TSInteraction *_Nullable lastInteractionForInbox2 = [thread2
+                lastInteractionForInboxWithTransaction:[[SDSAnyReadTransaction alloc]
+                                                           initWithTransitional_yapReadTransaction:transaction]];
             NSDate *date2 = lastInteractionForInbox2 ? lastInteractionForInbox2.receivedAtDate : thread2.creationDate;
 
             return [date1 compare:date2];
