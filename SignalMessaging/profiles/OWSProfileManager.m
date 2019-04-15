@@ -23,6 +23,7 @@
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSRequestBuilder.h>
 #import <SignalServiceKit/OWSSignalService.h>
+#import <SignalServiceKit/OWSUploadV2.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
@@ -407,120 +408,23 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         [userProfile updateWithAvatarUrlPath:nil avatarFileName:nil dbConnection:self.dbConnection completion:nil];
     };
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
-        TSRequest *formRequest = [OWSRequestFactory profileAvatarUploadFormRequest];
+    NSData *_Nullable encryptedAvatarData;
+    if (avatarData) {
+        encryptedAvatarData = [self encryptProfileData:avatarData];
+        OWSAssertDebug(encryptedAvatarData.length > 0);
+    }
 
-        [self.networkManager makeRequest:formRequest
-            success:^(NSURLSessionDataTask *task, id formResponseObject) {
-                if (avatarData == nil) {
-                    OWSLogDebug(@"successfully cleared avatar");
-                    clearLocalAvatar();
-                    successBlock(nil);
-                    return;
-                }
+    [[OWSUploadV2 uploadAvatarToService:encryptedAvatarData clearLocalAvatar:clearLocalAvatar]
+            .thenInBackground(^(OWSUploadV2 *upload) {
+                OWSLogVerbose(@"Upload complete.");
 
-                if (![formResponseObject isKindOfClass:[NSDictionary class]]) {
-                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidResponse]);
-                    return failureBlock(
-                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
-                }
-                NSDictionary *responseMap = formResponseObject;
-                OWSLogError(@"responseObject: %@", formResponseObject);
+                successBlock(upload.urlPath);
+            })
+            .catchInBackground(^(NSError *error) {
+                OWSLogError(@"Failed: %@", error);
 
-                NSString *formAcl = responseMap[@"acl"];
-                if (![formAcl isKindOfClass:[NSString class]] || formAcl.length < 1) {
-                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidAcl]);
-                    return failureBlock(
-                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
-                }
-                NSString *formKey = responseMap[@"key"];
-                if (![formKey isKindOfClass:[NSString class]] || formKey.length < 1) {
-                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidKey]);
-                    return failureBlock(
-                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
-                }
-                NSString *formPolicy = responseMap[@"policy"];
-                if (![formPolicy isKindOfClass:[NSString class]] || formPolicy.length < 1) {
-                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidPolicy]);
-                    return failureBlock(
-                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
-                }
-                NSString *formAlgorithm = responseMap[@"algorithm"];
-                if (![formAlgorithm isKindOfClass:[NSString class]] || formAlgorithm.length < 1) {
-                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidAlgorithm]);
-                    return failureBlock(
-                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
-                }
-                NSString *formCredential = responseMap[@"credential"];
-                if (![formCredential isKindOfClass:[NSString class]] || formCredential.length < 1) {
-                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidCredential]);
-                    return failureBlock(
-                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
-                }
-                NSString *formDate = responseMap[@"date"];
-                if (![formDate isKindOfClass:[NSString class]] || formDate.length < 1) {
-                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidDate]);
-                    return failureBlock(
-                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
-                }
-                NSString *formSignature = responseMap[@"signature"];
-                if (![formSignature isKindOfClass:[NSString class]] || formSignature.length < 1) {
-                    OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidSignature]);
-                    return failureBlock(
-                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
-                }
-
-                [self.avatarHTTPManager POST:@""
-                    parameters:nil
-                    constructingBodyWithBlock:^(id<AFMultipartFormData> _Nonnull formData) {
-                        NSData * (^formDataForString)(NSString *formString) = ^(NSString *formString) {
-                            return [formString dataUsingEncoding:NSUTF8StringEncoding];
-                        };
-
-                        // We have to build up the form manually vs. simply passing in a paramaters dict
-                        // because AWS is sensitive to the order of the form params (at least the "key"
-                        // field must occur early on).
-                        // For consistency, all fields are ordered here in a known working order.
-                        [formData appendPartWithFormData:formDataForString(formKey) name:@"key"];
-                        [formData appendPartWithFormData:formDataForString(formAcl) name:@"acl"];
-                        [formData appendPartWithFormData:formDataForString(formAlgorithm) name:@"x-amz-algorithm"];
-                        [formData appendPartWithFormData:formDataForString(formCredential) name:@"x-amz-credential"];
-                        [formData appendPartWithFormData:formDataForString(formDate) name:@"x-amz-date"];
-                        [formData appendPartWithFormData:formDataForString(formPolicy) name:@"policy"];
-                        [formData appendPartWithFormData:formDataForString(formSignature) name:@"x-amz-signature"];
-                        [formData appendPartWithFormData:formDataForString(OWSMimeTypeApplicationOctetStream)
-                                                    name:@"Content-Type"];
-                        NSData *encryptedAvatarData = [self encryptProfileData:avatarData];
-                        OWSAssertDebug(encryptedAvatarData.length > 0);
-                        [formData appendPartWithFormData:encryptedAvatarData name:@"file"];
-
-                        OWSLogVerbose(@"constructed body");
-                    }
-                    progress:^(NSProgress *_Nonnull uploadProgress) {
-                        OWSLogVerbose(@"avatar upload progress: %.2f%%", uploadProgress.fractionCompleted * 100);
-                    }
-                    success:^(NSURLSessionDataTask *_Nonnull uploadTask, id _Nullable responseObject) {
-                        OWSLogInfo(@"successfully uploaded avatar with key: %@", formKey);
-                        successBlock(formKey);
-                    }
-                    failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *error) {
-                        OWSLogError(@"uploading avatar failed with error: %@", error);
-                        clearLocalAvatar();
-                        return failureBlock(error);
-                    }];
-            }
-            failure:^(NSURLSessionDataTask *task, NSError *error) {
-                // Only clear the local avatar if we have a response. Otherwise, we
-                // had a network failure and probably didn't reach the service.
-                if (task.response != nil) {
-                    clearLocalAvatar();
-                }
-
-                OWSLogError(@"Failed to get profile avatar upload form: %@", error);
-                return failureBlock(error);
-            }];
-    });
+                failureBlock(error);
+            }) retainUntilComplete];
 }
 
 - (void)updateServiceWithProfileName:(nullable NSString *)localProfileName
