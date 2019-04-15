@@ -24,9 +24,9 @@ pid_t localPid(void)
 
 #pragma mark -
 
-@interface SDSCrossProcess () {
-    int notifyToken;
-}
+@interface SDSCrossProcess ()
+
+@property (nonatomic) int notifyToken;
 
 @end
 
@@ -37,7 +37,7 @@ pid_t localPid(void)
 - (id)init
 {
     if (self = [super init]) {
-        notifyToken = NOTIFY_TOKEN_INVALID;
+        self.notifyToken = NOTIFY_TOKEN_INVALID;
 
         [self start];
     }
@@ -55,9 +55,11 @@ pid_t localPid(void)
 
     __weak SDSCrossProcess *weakSelf = self;
     const char *name = [[self notificationName] cStringUsingEncoding:NSUTF8StringEncoding];
+    int notifyToken;
     notify_register_dispatch(name, &notifyToken, dispatch_get_main_queue(), ^(int token) {
         [weakSelf handleNotification:token];
     });
+    self.notifyToken = notifyToken;
 }
 
 - (void)handleNotification:(int)token
@@ -80,23 +82,23 @@ pid_t localPid(void)
 
 - (void)stop
 {
-    if (!notify_is_valid_token(notifyToken)) {
+    if (!notify_is_valid_token(self.notifyToken)) {
         return;
     }
 
-    notify_cancel(notifyToken);
-    notifyToken = NOTIFY_TOKEN_INVALID;
+    notify_cancel(self.notifyToken);
+    self.notifyToken = NOTIFY_TOKEN_INVALID;
 }
 
 - (void)notifyChanged
 {
-    if (!notify_is_valid_token(notifyToken)) {
+    if (!notify_is_valid_token(self.notifyToken)) {
         [self start];
     }
 
     const char *name = [[self notificationName] cStringUsingEncoding:NSUTF8StringEncoding];
     // notify_get_state() & notify_set_state() are vulnerable to races.
-    notify_set_state(notifyToken, localPid());
+    notify_set_state(self.notifyToken, localPid());
     notify_post(name);
 }
 

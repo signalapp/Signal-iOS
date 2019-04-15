@@ -55,10 +55,9 @@ public class SDSDatabaseStorage: NSObject {
     private func addObservers() {
         // Cross process writes
         if FeatureFlags.useGRDB {
-            weak var weakSelf = self
-            crossProcess.callback = {
+            crossProcess.callback = { [weak self] in
                 DispatchQueue.main.async {
-                    weakSelf?.handleCrossProcessWrite()
+                    self?.handleCrossProcessWrite()
                 }
             }
 
@@ -201,21 +200,17 @@ public class SDSDatabaseStorage: NSObject {
     private func postCrossProcessNotification() {
         Logger.info("")
 
-        DispatchQueue.global().async {
-            DispatchQueue.main.async {
-                // TODO: The observers of this notification will inevitably do
-                //       expensive work.  It'd be nice to only fire this event
-                //       if this had any effect, if the state of the database
-                //       has changed.
-                //
-                //       In the meantime, most (all?) cross process write notifications
-                //       will be delivered to the main app while it is inactive. By
-                //       de-bouncing notifications while inactive and only updating
-                //       once when we become active, we should be able to effectively
-                //       skip most of the perf cost.
-                NotificationCenter.default.post(name: SDSDatabaseStorage.didReceiveCrossProcessNotification, object: nil, userInfo: nil)
-            }
-        }
+        // TODO: The observers of this notification will inevitably do
+        //       expensive work.  It'd be nice to only fire this event
+        //       if this had any effect, if the state of the database
+        //       has changed.
+        //
+        //       In the meantime, most (all?) cross process write notifications
+        //       will be delivered to the main app while it is inactive. By
+        //       de-bouncing notifications while inactive and only updating
+        //       once when we become active, we should be able to effectively
+        //       skip most of the perf cost.
+        NotificationCenter.default.postNotificationNameAsync(SDSDatabaseStorage.didReceiveCrossProcessNotification, object: nil)
     }
 }
 
