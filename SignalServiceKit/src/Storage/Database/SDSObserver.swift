@@ -57,7 +57,7 @@ public class SDSObserver: NSObject {
                               callback : @escaping () -> Void) -> SDSObserver? {
         AssertIsOnMainThread()
 
-        tableMetadata.ensureTableExistsIfNecessary(databaseStorage: databaseStorage)
+//        tableMetadata.ensureTableExistsIfNecessary(databaseStorage: databaseStorage)
 
         // TODO: Reconcile this with SDSDatabaseStorage.
 

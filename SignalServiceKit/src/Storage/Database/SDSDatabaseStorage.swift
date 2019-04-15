@@ -30,10 +30,18 @@ public class SDSDatabaseStorage: NSObject {
     @objc
     required init(raisingErrors: ()) throws {
         adapter = SDSDatabaseStorage.createDefaultStorage()
+
+        super.init()
+
+        addObservers()
     }
 
     required init(adapter: SDSDatabaseStorageAdapter, raisingErrors: ()) throws {
         self.adapter = adapter
+
+        super.init()
+
+        addObservers()
     }
 
     class func createDefaultStorage() -> SDSDatabaseStorageAdapter {
@@ -42,9 +50,9 @@ public class SDSDatabaseStorage: NSObject {
         } else {
             return createYapStorage()
         }
+    }
 
-        super.init()
-
+    private func addObservers() {
         // Cross process writes
         if FeatureFlags.useGRDB {
             weak var weakSelf = self
