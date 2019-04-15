@@ -23,6 +23,7 @@
 #import "TSThread.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
@@ -99,7 +100,6 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 {
     return SSKEnvironment.shared.networkManager;
 }
-
 
 #pragma mark -
 
@@ -373,63 +373,28 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     if (attachmentPointer.serverId < 100) {
         OWSLogError(@"Suspicious attachment id: %llu", (unsigned long long)attachmentPointer.serverId);
     }
-    TSRequest *request = [OWSRequestFactory attachmentRequestWithAttachmentId:attachmentPointer.serverId];
-
-    [self.networkManager makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                OWSLogError(@"Failed retrieval of attachment. Response had unexpected format.");
-                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                return markAndHandleFailure(error);
+    dispatch_async([OWSDispatch attachmentsQueue], ^{
+        [self downloadJob:job
+            success:^(NSString *encryptedDataFilePath) {
+                [self decryptAttachmentPath:encryptedDataFilePath
+                          attachmentPointer:attachmentPointer
+                                    success:markAndHandleSuccess
+                                    failure:markAndHandleFailure];
             }
-            NSString *location = [(NSDictionary *)responseObject objectForKey:@"location"];
-            if (!location) {
-                OWSLogError(@"Failed retrieval of attachment. Response had no location.");
-                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                return markAndHandleFailure(error);
-            }
-
-            dispatch_async([OWSDispatch attachmentsQueue], ^{
-                [self downloadFromLocation:location
-                    job:job
-                    success:^(NSString *encryptedDataFilePath) {
-                        [self decryptAttachmentPath:encryptedDataFilePath
-                                  attachmentPointer:attachmentPointer
-                                            success:markAndHandleSuccess
-                                            failure:markAndHandleFailure];
-                    }
-                    failure:^(NSURLSessionTask *_Nullable task, NSError *error) {
-                        if (attachmentPointer.serverId < 100) {
-                            // This looks like the symptom of the "frequent 404
-                            // downloading attachments with low server ids".
-                            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-                            NSInteger statusCode = [httpResponse statusCode];
-                            OWSFailDebug(@"%d Failure with suspicious attachment id: %llu, %@",
-                                (int)statusCode,
-                                (unsigned long long)attachmentPointer.serverId,
-                                error);
-                        }
-                        markAndHandleFailure(error);
-                    }];
-            });
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError([OWSAnalyticsEvents errorAttachmentRequestFailed]);
-            }
-            OWSLogError(@"Failed retrieval of attachment with error: %@", error);
-            if (attachmentPointer.serverId < 100) {
-                // This _shouldn't_ be the symptom of the "frequent 404
-                // downloading attachments with low server ids".
-                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-                NSInteger statusCode = [httpResponse statusCode];
-                OWSFailDebug(@"%d Failure with suspicious attachment id: %llu, %@",
-                    (int)statusCode,
-                    (unsigned long long)attachmentPointer.serverId,
-                    error);
-            }
-            return markAndHandleFailure(error);
-        }];
+            failure:^(NSURLSessionTask *_Nullable task, NSError *error) {
+                if (attachmentPointer.serverId < 100) {
+                    // This looks like the symptom of the "frequent 404
+                    // downloading attachments with low server ids".
+                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+                    NSInteger statusCode = [httpResponse statusCode];
+                    OWSFailDebug(@"%d Failure with suspicious attachment id: %llu, %@",
+                        (int)statusCode,
+                        (unsigned long long)attachmentPointer.serverId,
+                        error);
+                }
+                markAndHandleFailure(error);
+            }];
+    });
 }
 
 - (void)decryptAttachmentPath:(NSString *)encryptedDataFilePath
@@ -515,19 +480,24 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     return _serialQueue;
 }
 
-- (void)downloadFromLocation:(NSString *)location
-                         job:(OWSAttachmentDownloadJob *)job
-                     success:(void (^)(NSString *encryptedDataPath))successHandler
-                     failure:(void (^)(NSURLSessionTask *_Nullable task, NSError *error))failureHandlerParam
+- (void)downloadJob:(OWSAttachmentDownloadJob *)job
+            success:(void (^)(NSString *encryptedDataPath))successHandler
+            failure:(void (^)(NSURLSessionTask *_Nullable task, NSError *error))failureHandlerParam
 {
     OWSAssertDebug(job);
+
     TSAttachmentPointer *attachmentPointer = job.attachmentPointer;
 
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    AFHTTPSessionManager *manager = [OWSSignalService sharedInstance].CDNSessionManager;
     manager.requestSerializer = [AFHTTPRequestSerializer serializer];
     [manager.requestSerializer setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+
+    NSString *urlPath = [NSString stringWithFormat:@"attachments/%llu", attachmentPointer.serverId];
+    OWSLogVerbose(@"urlPath: %@", urlPath);
+    NSURL *url = [[NSURL alloc] initWithString:urlPath relativeToURL:manager.baseURL];
+    OWSLogVerbose(@"url.absoluteString: %@", url.absoluteString);
 
     // We want to avoid large downloads from a compromised or buggy service.
     const long kMaxDownloadSize = 150 * 1024 * 1024;
@@ -551,7 +521,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     NSString *method = @"GET";
     NSError *serializationError = nil;
     NSMutableURLRequest *request = [manager.requestSerializer requestWithMethod:method
-                                                                      URLString:location
+                                                                      URLString:url.absoluteString
                                                                      parameters:nil
                                                                           error:&serializationError];
     if (serializationError) {
