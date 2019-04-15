@@ -91,13 +91,12 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                              [self fireNotificationWithProgress:uploadProgress.fractionCompleted];
                          }]
             .thenInBackground(^{
-                attachmentStream.encryptionKey = upload.encryptionKey;
-                attachmentStream.digest = upload.digest;
-                attachmentStream.serverId = upload.serverId;
-                attachmentStream.isUploaded = YES;
-                [attachmentStream saveAsyncWithCompletionBlock:^{
-                    [self reportSuccess];
-                }];
+                [attachmentStream updateAsUploadedWithEncryptionKey:upload.encryptionKey
+                                                             digest:upload.digest
+                                                           serverId:upload.serverId
+                                                         completion:^{
+                                                             [self reportSuccess];
+                                                         }];
             })
             .catchInBackground(^(NSError *error) {
                 OWSLogError(@"Failed: %@", error);

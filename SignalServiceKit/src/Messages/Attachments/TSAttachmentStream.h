@@ -127,6 +127,11 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 
 #pragma mark - Update With... Methods
 
+- (void)updateAsUploadedWithEncryptionKey:(NSData *)encryptionKey
+                                   digest:(NSData *)digest
+                                 serverId:(UInt64)serverId
+                               completion:(dispatch_block_t)completion;
+
 - (nullable TSAttachmentStream *)cloneAsThumbnail;
 
 #pragma mark - Protobuf

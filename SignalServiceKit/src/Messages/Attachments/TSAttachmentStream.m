@@ -847,6 +847,28 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 #pragma mark - Update With... Methods
 
+- (void)updateAsUploadedWithEncryptionKey:(NSData *)encryptionKey
+                                   digest:(NSData *)digest
+                                 serverId:(UInt64)serverId
+                               completion:(dispatch_block_t)completion
+{
+    OWSAssertDebug(encryptionKey.length > 0);
+    OWSAssertDebug(digest.length > 0);
+    OWSAssertDebug(serverId > 0);
+
+    [[self dbReadWriteConnection]
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [self applyChangeToSelfAndLatestCopy:transaction
+                                     changeBlock:^(TSAttachmentStream *attachment) {
+                                         [attachment setEncryptionKey:encryptionKey];
+                                         [attachment setDigest:digest];
+                                         [attachment setServerId:serverId];
+                                         [attachment setIsUploaded:YES];
+                                     }];
+        }
+                completionBlock:completion];
+}
+
 - (nullable TSAttachmentStream *)cloneAsThumbnail
 {
     if (!self.isValidVisualMedia) {
