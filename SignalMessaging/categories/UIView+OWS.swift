@@ -5,7 +5,7 @@
 import Foundation
 
 public extension UIEdgeInsets {
-    public init(top: CGFloat, leading: CGFloat, bottom: CGFloat, trailing: CGFloat) {
+    init(top: CGFloat, leading: CGFloat, bottom: CGFloat, trailing: CGFloat) {
         self.init(top: top,
                   left: CurrentAppContext().isRTL ? trailing : leading,
                   bottom: bottom,
@@ -17,8 +17,7 @@ public extension UIEdgeInsets {
 
 @objc
 public extension UINavigationController {
-    @objc
-    public func pushViewController(_ viewController: UIViewController,
+    func pushViewController(_ viewController: UIViewController,
                                    animated: Bool,
                                    completion: (() -> Void)?) {
         CATransaction.begin()
@@ -27,8 +26,7 @@ public extension UINavigationController {
         CATransaction.commit()
     }
 
-    @objc
-    public func popViewController(animated: Bool,
+    func popViewController(animated: Bool,
                                   completion: (() -> Void)?) {
         CATransaction.begin()
         CATransaction.setCompletionBlock(completion)
@@ -36,8 +34,7 @@ public extension UINavigationController {
         CATransaction.commit()
     }
 
-    @objc
-    public func popToViewController(_ viewController: UIViewController,
+    func popToViewController(_ viewController: UIViewController,
                                     animated: Bool,
                                     completion: (() -> Void)?) {
         CATransaction.begin()
@@ -49,12 +46,13 @@ public extension UINavigationController {
 
 // MARK: -
 
-extension UIView {
-    public func renderAsImage() -> UIImage? {
+@objc
+public extension UIView {
+    func renderAsImage() -> UIImage? {
         return renderAsImage(opaque: false, scale: UIScreen.main.scale)
     }
 
-    public func renderAsImage(opaque: Bool, scale: CGFloat) -> UIImage? {
+    func renderAsImage(opaque: Bool, scale: CGFloat) -> UIImage? {
         if #available(iOS 10, *) {
             let format = UIGraphicsImageRendererFormat()
             format.scale = scale
@@ -77,38 +75,33 @@ extension UIView {
         }
     }
 
-    @objc
-    public class func spacer(withWidth width: CGFloat) -> UIView {
+    class func spacer(withWidth width: CGFloat) -> UIView {
         let view = UIView()
         view.autoSetDimension(.width, toSize: width)
         return view
     }
 
-    @objc
-    public class func spacer(withHeight height: CGFloat) -> UIView {
+    class func spacer(withHeight height: CGFloat) -> UIView {
         let view = UIView()
         view.autoSetDimension(.height, toSize: height)
         return view
     }
 
-    @objc
-    public class func hStretchingSpacer() -> UIView {
+    class func hStretchingSpacer() -> UIView {
         let view = UIView()
         view.setContentHuggingHorizontalLow()
         view.setCompressionResistanceHorizontalLow()
         return view
     }
 
-    @objc
-    public class func vStretchingSpacer() -> UIView {
+    class func vStretchingSpacer() -> UIView {
         let view = UIView()
         view.setContentHuggingVerticalLow()
         view.setCompressionResistanceVerticalLow()
         return view
     }
 
-    @objc
-    public func applyScaleAspectFitLayout(subview: UIView, aspectRatio: CGFloat) -> [NSLayoutConstraint] {
+    func applyScaleAspectFitLayout(subview: UIView, aspectRatio: CGFloat) -> [NSLayoutConstraint] {
         guard subviews.contains(subview) else {
             owsFailDebug("Not a subview.")
             return []
@@ -126,18 +119,24 @@ extension UIView {
         constraints.append(subview.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
         return constraints
     }
+
+    func setShadow(radius: CGFloat = 2.0, opacity: CGFloat = 0.66, offset: CGPoint = .zero, color: CGColor = UIColor.black.cgColor) {
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowRadius = 2.0
+        layer.shadowOpacity = 0.66
+        layer.shadowOffset = .zero
+    }
 }
 
 // MARK: -
 
+@objc
 public extension UIViewController {
-    @objc
-    public func presentAlert(_ alert: UIAlertController) {
+    func presentAlert(_ alert: UIAlertController) {
         self.presentAlert(alert, animated: true)
     }
 
-    @objc
-    public func presentAlert(_ alert: UIAlertController, animated: Bool) {
+    func presentAlert(_ alert: UIAlertController, animated: Bool) {
         self.present(alert,
                      animated: animated,
                      completion: {
@@ -145,8 +144,7 @@ public extension UIViewController {
         })
     }
 
-    @objc
-    public func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
+    func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
         self.present(alert,
                      animated: true,
                      completion: {
@@ -160,32 +158,32 @@ public extension UIViewController {
 // MARK: -
 
 public extension CGFloat {
-    public func clamp(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
+    func clamp(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
         return CGFloatClamp(self, minValue, maxValue)
     }
 
-    public func clamp01() -> CGFloat {
+    func clamp01() -> CGFloat {
         return CGFloatClamp01(self)
     }
 
     // Linear interpolation
-    public func lerp(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
+    func lerp(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
         return CGFloatLerp(minValue, maxValue, self)
     }
 
     // Inverse linear interpolation
-    public func inverseLerp(_ minValue: CGFloat, _ maxValue: CGFloat, shouldClamp: Bool = false) -> CGFloat {
+    func inverseLerp(_ minValue: CGFloat, _ maxValue: CGFloat, shouldClamp: Bool = false) -> CGFloat {
         let value = CGFloatInverseLerp(self, minValue, maxValue)
         return (shouldClamp ? CGFloatClamp01(value) : value)
     }
 
-    public static let halfPi: CGFloat = CGFloat.pi * 0.5
+    static let halfPi: CGFloat = CGFloat.pi * 0.5
 
-    public func fuzzyEquals(_ other: CGFloat, tolerance: CGFloat = 0.001) -> Bool {
+    func fuzzyEquals(_ other: CGFloat, tolerance: CGFloat = 0.001) -> Bool {
         return abs(self - other) < tolerance
     }
 
-    public var square: CGFloat {
+    var square: CGFloat {
         return self * self
     }
 }
@@ -193,7 +191,7 @@ public extension CGFloat {
 // MARK: -
 
 public extension Int {
-    public func clamp(_ minValue: Int, _ maxValue: Int) -> Int {
+    func clamp(_ minValue: Int, _ maxValue: Int) -> Int {
         assert(minValue <= maxValue)
 
         return Swift.max(minValue, Swift.min(maxValue, self))
@@ -203,75 +201,75 @@ public extension Int {
 // MARK: -
 
 public extension CGPoint {
-    public func toUnitCoordinates(viewBounds: CGRect, shouldClamp: Bool) -> CGPoint {
+    func toUnitCoordinates(viewBounds: CGRect, shouldClamp: Bool) -> CGPoint {
         return CGPoint(x: (x - viewBounds.origin.x).inverseLerp(0, viewBounds.width, shouldClamp: shouldClamp),
                        y: (y - viewBounds.origin.y).inverseLerp(0, viewBounds.height, shouldClamp: shouldClamp))
     }
 
-    public func toUnitCoordinates(viewSize: CGSize, shouldClamp: Bool) -> CGPoint {
+    func toUnitCoordinates(viewSize: CGSize, shouldClamp: Bool) -> CGPoint {
         return toUnitCoordinates(viewBounds: CGRect(origin: .zero, size: viewSize), shouldClamp: shouldClamp)
     }
 
-    public func fromUnitCoordinates(viewBounds: CGRect) -> CGPoint {
+    func fromUnitCoordinates(viewBounds: CGRect) -> CGPoint {
         return CGPoint(x: viewBounds.origin.x + x.lerp(0, viewBounds.size.width),
                        y: viewBounds.origin.y + y.lerp(0, viewBounds.size.height))
     }
 
-    public func fromUnitCoordinates(viewSize: CGSize) -> CGPoint {
+    func fromUnitCoordinates(viewSize: CGSize) -> CGPoint {
         return fromUnitCoordinates(viewBounds: CGRect(origin: .zero, size: viewSize))
     }
 
-    public func inverse() -> CGPoint {
+    func inverse() -> CGPoint {
         return CGPoint(x: -x, y: -y)
     }
 
-    public func plus(_ value: CGPoint) -> CGPoint {
+    func plus(_ value: CGPoint) -> CGPoint {
         return CGPointAdd(self, value)
     }
 
-    public func minus(_ value: CGPoint) -> CGPoint {
+    func minus(_ value: CGPoint) -> CGPoint {
         return CGPointSubtract(self, value)
     }
 
-    public func times(_ value: CGFloat) -> CGPoint {
+    func times(_ value: CGFloat) -> CGPoint {
         return CGPoint(x: x * value, y: y * value)
     }
 
-    public func min(_ value: CGPoint) -> CGPoint {
+    func min(_ value: CGPoint) -> CGPoint {
         // We use "Swift" to disambiguate the global function min() from this method.
         return CGPoint(x: Swift.min(x, value.x),
                        y: Swift.min(y, value.y))
     }
 
-    public func max(_ value: CGPoint) -> CGPoint {
+    func max(_ value: CGPoint) -> CGPoint {
         // We use "Swift" to disambiguate the global function max() from this method.
         return CGPoint(x: Swift.max(x, value.x),
                        y: Swift.max(y, value.y))
     }
 
-    public var length: CGFloat {
+    var length: CGFloat {
         return sqrt(x * x + y * y)
     }
 
-    public static let unit: CGPoint = CGPoint(x: 1.0, y: 1.0)
+    static let unit: CGPoint = CGPoint(x: 1.0, y: 1.0)
 
-    public static let unitMidpoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
+    static let unitMidpoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
 
-    public func applyingInverse(_ transform: CGAffineTransform) -> CGPoint {
+    func applyingInverse(_ transform: CGAffineTransform) -> CGPoint {
         return applying(transform.inverted())
     }
 
-    public func fuzzyEquals(_ other: CGPoint, tolerance: CGFloat = 0.001) -> Bool {
+    func fuzzyEquals(_ other: CGPoint, tolerance: CGFloat = 0.001) -> Bool {
         return (x.fuzzyEquals(other.x, tolerance: tolerance) &&
             y.fuzzyEquals(other.y, tolerance: tolerance))
     }
 
-    public static func tan(angle: CGFloat) -> CGPoint {
+    static func tan(angle: CGFloat) -> CGPoint {
         return CGPoint(x: sin(angle),
                        y: cos(angle))
     }
 
-    public func clamp(_ rect: CGRect) -> CGPoint {
+    func clamp(_ rect: CGRect) -> CGPoint {
         return CGPoint(x: x.clamp(rect.minX, rect.maxX),
                        y: y.clamp(rect.minY, rect.maxY))
     }
@@ -300,23 +298,23 @@ public extension CGSize {
 // MARK: -
 
 public extension CGRect {
-    public var center: CGPoint {
+    var center: CGPoint {
         return CGPoint(x: midX, y: midY)
     }
 
-    public var topLeft: CGPoint {
+    var topLeft: CGPoint {
         return origin
     }
 
-    public var topRight: CGPoint {
+    var topRight: CGPoint {
         return CGPoint(x: maxX, y: minY)
     }
 
-    public var bottomLeft: CGPoint {
+    var bottomLeft: CGPoint {
         return CGPoint(x: minX, y: maxY)
     }
 
-    public var bottomRight: CGPoint {
+    var bottomRight: CGPoint {
         return CGPoint(x: maxX, y: maxY)
     }
 }
@@ -324,23 +322,23 @@ public extension CGRect {
 // MARK: -
 
 public extension CGAffineTransform {
-    public static func translate(_ point: CGPoint) -> CGAffineTransform {
+    static func translate(_ point: CGPoint) -> CGAffineTransform {
         return CGAffineTransform(translationX: point.x, y: point.y)
     }
 
-    public static func scale(_ scaling: CGFloat) -> CGAffineTransform {
+    static func scale(_ scaling: CGFloat) -> CGAffineTransform {
         return CGAffineTransform(scaleX: scaling, y: scaling)
     }
 
-    public func translate(_ point: CGPoint) -> CGAffineTransform {
+    func translate(_ point: CGPoint) -> CGAffineTransform {
         return translatedBy(x: point.x, y: point.y)
     }
 
-    public func scale(_ scaling: CGFloat) -> CGAffineTransform {
+    func scale(_ scaling: CGFloat) -> CGAffineTransform {
         return scaledBy(x: scaling, y: scaling)
     }
 
-    public func rotate(_ angleRadians: CGFloat) -> CGAffineTransform {
+    func rotate(_ angleRadians: CGFloat) -> CGAffineTransform {
         return rotated(by: angleRadians)
     }
 }
@@ -348,7 +346,7 @@ public extension CGAffineTransform {
 // MARK: -
 
 public extension UIBezierPath {
-    public func addRegion(withPoints points: [CGPoint]) {
+    func addRegion(withPoints points: [CGPoint]) {
         guard let first = points.first else {
             owsFailDebug("No points.")
             return
@@ -363,37 +361,33 @@ public extension UIBezierPath {
 
 // MARK: -
 
+@objc
 public extension UIBarButtonItem {
-    @objc
-    public convenience init(image: UIImage?, style: UIBarButtonItem.Style, target: Any?, action: Selector?, accessibilityIdentifier: String) {
+    convenience init(image: UIImage?, style: UIBarButtonItem.Style, target: Any?, action: Selector?, accessibilityIdentifier: String) {
         self.init(image: image, style: style, target: target, action: action)
 
         self.accessibilityIdentifier = accessibilityIdentifier
     }
 
-    @objc
-    public convenience init(image: UIImage?, landscapeImagePhone: UIImage?, style: UIBarButtonItem.Style, target: Any?, action: Selector?, accessibilityIdentifier: String) {
+    convenience init(image: UIImage?, landscapeImagePhone: UIImage?, style: UIBarButtonItem.Style, target: Any?, action: Selector?, accessibilityIdentifier: String) {
         self.init(image: image, landscapeImagePhone: landscapeImagePhone, style: style, target: target, action: action)
 
         self.accessibilityIdentifier = accessibilityIdentifier
     }
 
-    @objc
-    public convenience init(title: String?, style: UIBarButtonItem.Style, target: Any?, action: Selector?, accessibilityIdentifier: String) {
+    convenience init(title: String?, style: UIBarButtonItem.Style, target: Any?, action: Selector?, accessibilityIdentifier: String) {
         self.init(title: title, style: style, target: target, action: action)
 
         self.accessibilityIdentifier = accessibilityIdentifier
     }
 
-    @objc
-    public convenience init(barButtonSystemItem systemItem: UIBarButtonItem.SystemItem, target: Any?, action: Selector?, accessibilityIdentifier: String) {
+    convenience init(barButtonSystemItem systemItem: UIBarButtonItem.SystemItem, target: Any?, action: Selector?, accessibilityIdentifier: String) {
         self.init(barButtonSystemItem: systemItem, target: target, action: action)
 
         self.accessibilityIdentifier = accessibilityIdentifier
     }
 
-    @objc
-    public convenience init(customView: UIView, accessibilityIdentifier: String) {
+    convenience init(customView: UIView, accessibilityIdentifier: String) {
         self.init(customView: customView)
 
         self.accessibilityIdentifier = accessibilityIdentifier

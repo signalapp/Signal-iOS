@@ -6,7 +6,6 @@ import Foundation
 import AVFoundation
 import PromiseKit
 
-@objc(OWSPhotoCaptureViewControllerDelegate)
 protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didFinishProcessingAttachment attachment: SignalAttachment)
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController)
@@ -31,10 +30,8 @@ extension PhotoCaptureError: LocalizedError {
     }
 }
 
-@objc(OWSPhotoCaptureViewController)
 class PhotoCaptureViewController: OWSViewController {
 
-    @objc
     weak var delegate: PhotoCaptureViewControllerDelegate?
 
     private var photoCapture: PhotoCapture!
@@ -88,7 +85,7 @@ class PhotoCaptureViewController: OWSViewController {
         return true
     }
 
-    // MARK -
+    // MARK: -
     var isRecordingMovie: Bool = false
     let recordingTimerView = RecordingTimerView()
 
@@ -325,8 +322,7 @@ class PhotoCaptureViewController: OWSViewController {
 
         view.addSubview(captureButton)
         captureButton.autoHCenterInSuperview()
-
-        captureButton.autoPinEdge(toSuperviewMargin: .bottom, withInset: 10)
+        captureButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
     }
 
     private func showFailureUI(error: Error) {
@@ -374,8 +370,9 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     func photoCaptureDidCompleteVideo(_ photoCapture: PhotoCapture) {
-        // Stop counting, but keep visible
+        isRecordingMovie = false
         recordingTimerView.stopCounting()
+        updateNavigationItems()
     }
 
     func photoCaptureDidCancelVideo(_ photoCapture: PhotoCapture) {
@@ -425,7 +422,7 @@ class CaptureButton: UIView {
     weak var delegate: CaptureButtonDelegate?
 
     let defaultDiameter: CGFloat = ScaleFromIPhone5To7Plus(60, 80)
-    let recordingDiameter: CGFloat = ScaleFromIPhone5To7Plus(90, 120)
+    let recordingDiameter: CGFloat = ScaleFromIPhone5To7Plus(68, 120)
     var innerButtonSizeConstraints: [NSLayoutConstraint]!
     var zoomIndicatorSizeConstraints: [NSLayoutConstraint]!
 

@@ -58,9 +58,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         view.backgroundColor = .ows_gray95
 
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop,
-                                           target: self,
-                                           action: #selector(didPressCancel))
+        // The PhotoCaptureVC needs a shadow behind it's cancel button, so we use a custom icon.
+        // This VC has a visible navbar so doesn't need the shadow, but because the user can
+        // quickly toggle between the Capture and the Picker VC's, we use the same custom "X"
+        // icon here rather than the system "stop" icon so that the spacing matches exactly.
+        // Otherwise there's a noticable shift in the icon placement.
+        let cancelImage = UIImage(imageLiteralResourceName: "ic_x_with_shadow")
+        let cancelButton = UIBarButtonItem(image: cancelImage, style: .plain, target: self, action: #selector(didPressCancel))
+
         cancelButton.tintColor = .ows_gray05
         navigationItem.leftBarButtonItem = cancelButton
 
