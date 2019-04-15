@@ -1152,7 +1152,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
             let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
             let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.string(at: customMessageColumn.columnIndex)
+            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
             let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
             guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
                throw SDSError.invalidValue
@@ -1166,7 +1166,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                throw SDSError.invalidValue
             }
             let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.string(at: mostRecentFailureTextColumn.columnIndex)
+            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
             let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
             let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
 
@@ -1187,7 +1187,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
             attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(NSString *)customMessage
+                    customMessage:(nullable NSString *)customMessage
                  groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
             hasLegacyMessageState:(BOOL)hasLegacyMessageState
               hasSyncedTranscript:(BOOL)hasSyncedTranscript
@@ -1195,7 +1195,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                    isVoiceMessage:(BOOL)isVoiceMessage
                legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
                legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(NSString *)mostRecentFailureText
+            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
                 recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
 NS_DESIGNATED_INITIALIZER
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
@@ -1248,7 +1248,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
             let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
             let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.string(at: customMessageColumn.columnIndex)
+            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
             let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
             guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
                throw SDSError.invalidValue
@@ -1262,7 +1262,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                throw SDSError.invalidValue
             }
             let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.string(at: mostRecentFailureTextColumn.columnIndex)
+            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
             let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
             let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
 
@@ -1283,7 +1283,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
             attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(NSString *)customMessage
+                    customMessage:(nullable NSString *)customMessage
                  groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
             hasLegacyMessageState:(BOOL)hasLegacyMessageState
               hasSyncedTranscript:(BOOL)hasSyncedTranscript
@@ -1291,7 +1291,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                    isVoiceMessage:(BOOL)isVoiceMessage
                legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
                legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(NSString *)mostRecentFailureText
+            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
                 recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
 NS_DESIGNATED_INITIALIZER
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
@@ -1344,7 +1344,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
             let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
             let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.string(at: customMessageColumn.columnIndex)
+            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
             let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
             guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
                throw SDSError.invalidValue
@@ -1358,7 +1358,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                throw SDSError.invalidValue
             }
             let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.string(at: mostRecentFailureTextColumn.columnIndex)
+            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
             let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
             let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
 
@@ -1379,7 +1379,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
             attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(NSString *)customMessage
+                    customMessage:(nullable NSString *)customMessage
                  groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
             hasLegacyMessageState:(BOOL)hasLegacyMessageState
               hasSyncedTranscript:(BOOL)hasSyncedTranscript
@@ -1387,7 +1387,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                    isVoiceMessage:(BOOL)isVoiceMessage
                legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
                legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(NSString *)mostRecentFailureText
+            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
                 recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
 NS_DESIGNATED_INITIALIZER
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
@@ -1440,7 +1440,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
             let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
             let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.string(at: customMessageColumn.columnIndex)
+            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
             let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
             guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
                throw SDSError.invalidValue
@@ -1454,7 +1454,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                throw SDSError.invalidValue
             }
             let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.string(at: mostRecentFailureTextColumn.columnIndex)
+            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
             let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
             let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
 
@@ -1475,7 +1475,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
             attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(NSString *)customMessage
+                    customMessage:(nullable NSString *)customMessage
                  groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
             hasLegacyMessageState:(BOOL)hasLegacyMessageState
               hasSyncedTranscript:(BOOL)hasSyncedTranscript
@@ -1483,7 +1483,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                    isVoiceMessage:(BOOL)isVoiceMessage
                legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
                legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(NSString *)mostRecentFailureText
+            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
                 recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
 NS_DESIGNATED_INITIALIZER
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
@@ -1536,7 +1536,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
             let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
             let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.string(at: customMessageColumn.columnIndex)
+            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
             let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
             guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
                throw SDSError.invalidValue
@@ -1550,7 +1550,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                throw SDSError.invalidValue
             }
             let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.string(at: mostRecentFailureTextColumn.columnIndex)
+            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
             let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
             let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
 
@@ -1571,7 +1571,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
             attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(NSString *)customMessage
+                    customMessage:(nullable NSString *)customMessage
                  groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
             hasLegacyMessageState:(BOOL)hasLegacyMessageState
               hasSyncedTranscript:(BOOL)hasSyncedTranscript
@@ -1579,7 +1579,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                    isVoiceMessage:(BOOL)isVoiceMessage
                legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
                legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(NSString *)mostRecentFailureText
+            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
                 recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
 NS_DESIGNATED_INITIALIZER
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));

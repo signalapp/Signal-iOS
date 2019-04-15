@@ -94,7 +94,7 @@ class TSOutgoingMessageSerializer: SDSSerializer {
             SDSDeserializer.archive(self.model.quotedMessage) ?? DatabaseValue.null,
             self.model.schemaVersion,
             SDSDeserializer.archive(self.model.attachmentFilenameMap) ?? DatabaseValue.null,
-            self.model.customMessage,
+            self.model.customMessage ?? DatabaseValue.null,
             self.model.groupMetaMessage.rawValue,
             self.model.hasLegacyMessageState,
             self.model.hasSyncedTranscript,
@@ -102,7 +102,7 @@ class TSOutgoingMessageSerializer: SDSSerializer {
             self.model.isVoiceMessage,
             self.model.legacyMessageState.rawValue,
             self.model.legacyWasDelivered,
-            self.model.mostRecentFailureText,
+            self.model.mostRecentFailureText ?? DatabaseValue.null,
             SDSDeserializer.archive(self.model.recipientStateMap) ?? DatabaseValue.null,
 
         ]

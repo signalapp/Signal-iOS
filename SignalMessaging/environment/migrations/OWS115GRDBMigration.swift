@@ -79,28 +79,9 @@ extension OWS115GRDBMigration {
     private func migrateInteractions(interactionFinder: LegacyInteractionFinder, modernDb: Database) throws {
         try Bench(title: "Migrate Interactions", memorySamplerRatio: 0.001) { memorySampler in
             var i = 0
-
-            let cn = InteractionRecord.columnName
-            let insertStatement = try modernDb.makeUpdateStatement(sql: """
-                INSERT INTO interactions (
-                    \(cn(.uniqueId)),
-                    \(cn(.threadUniqueId)),
-                    \(cn(.senderTimestamp)),
-                    \(cn(.interactionType)),
-                    \(cn(.messageBody))
-                )
-                VALUES (?, ?, ?, ?, ?)
-                """)
-
             try interactionFinder.enumerateInteractions { legacyInteraction in
+                try SDSSerialization.insert(entity: legacyInteraction, database: modernDb)
                 i += 1
-                let messageBody: String? = (legacyInteraction as? TSMessage)?.body
-                insertStatement.unsafeSetArguments([legacyInteraction.uniqueId,
-                                                    legacyInteraction.uniqueThreadId,
-                                                    legacyInteraction.timestamp,
-                                                    InteractionRecordType(owsInteractionType: legacyInteraction.interactionType()),
-                                                    messageBody])
-                try insertStatement.execute()
                 if (i % 500 == 0) {
                     Logger.debug("saved \(i) interactions")
                 }

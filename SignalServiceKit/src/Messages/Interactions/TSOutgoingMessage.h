@@ -113,7 +113,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
            attachmentFilenameMap:(NSDictionary<NSString *, NSString *> *)attachmentFilenameMap
-                   customMessage:(NSString *)customMessage
+                   customMessage:(nullable NSString *)customMessage
                 groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
            hasLegacyMessageState:(BOOL)hasLegacyMessageState
              hasSyncedTranscript:(BOOL)hasSyncedTranscript
@@ -121,7 +121,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                   isVoiceMessage:(BOOL)isVoiceMessage
               legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
-           mostRecentFailureText:(NSString *)mostRecentFailureText
+           mostRecentFailureText:(nullable NSString *)mostRecentFailureText
                recipientStateMap:
                    (nullable NSDictionary<NSString *, TSOutgoingMessageRecipientState *> *)recipientStateMap
     NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
@@ -153,8 +153,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @property (readonly) BOOL wasSentToAnyRecipient;
 
 @property (atomic, readonly) BOOL hasSyncedTranscript;
-@property (atomic, readonly) NSString *customMessage;
-@property (atomic, readonly) NSString *mostRecentFailureText;
+@property (atomic, readonly, nullable) NSString *customMessage;
+@property (atomic, readonly, nullable) NSString *mostRecentFailureText;
 // A map of attachment id-to-"source" filename.
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *attachmentFilenameMap;
 

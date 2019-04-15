@@ -80,8 +80,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 @interface TSOutgoingMessage ()
 
 @property (atomic) BOOL hasSyncedTranscript;
-@property (atomic) NSString *customMessage;
-@property (atomic) NSString *mostRecentFailureText;
+@property (atomic, nullable) NSString *customMessage;
+@property (atomic, nullable) NSString *mostRecentFailureText;
 @property (atomic) BOOL isFromLinkedDevice;
 @property (atomic) TSGroupMetaMessage groupMetaMessage;
 
@@ -112,7 +112,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
            attachmentFilenameMap:(NSDictionary<NSString *, NSString *> *)attachmentFilenameMap
-                   customMessage:(NSString *)customMessage
+                   customMessage:(nullable NSString *)customMessage
                 groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
            hasLegacyMessageState:(BOOL)hasLegacyMessageState
              hasSyncedTranscript:(BOOL)hasSyncedTranscript
@@ -120,7 +120,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                   isVoiceMessage:(BOOL)isVoiceMessage
               legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
-           mostRecentFailureText:(NSString *)mostRecentFailureText
+           mostRecentFailureText:(nullable NSString *)mostRecentFailureText
                recipientStateMap:
                    (nullable NSDictionary<NSString *, TSOutgoingMessageRecipientState *> *)recipientStateMap
 {

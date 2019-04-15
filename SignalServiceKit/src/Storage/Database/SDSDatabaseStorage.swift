@@ -293,18 +293,6 @@ public struct GRDBDatabaseStorageAdapter {
             try TSThreadSerializer.table.createTable(database: db)
             try TSInteractionSerializer.table.createTable(database: db)
 
-            try db.create(table: InteractionRecord.databaseTableName) { t in
-                let cn = InteractionRecord.columnName
-
-                t.autoIncrementedPrimaryKey(cn(.id))
-                t.column(cn(.uniqueId), .text).notNull().indexed()
-                t.column(cn(.threadUniqueId), .text).notNull().indexed()
-                t.column(cn(.senderTimestamp), .integer).notNull()
-                // TODO `check`/`validate` in enum
-                t.column(cn(.interactionType), .integer).notNull()
-                t.column(cn(.messageBody), .text)
-            }
-
             try db.create(index: "index_interactions_on_id_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,
                           columns: [
