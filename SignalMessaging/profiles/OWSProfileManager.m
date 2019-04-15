@@ -408,28 +408,30 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         [userProfile updateWithAvatarUrlPath:nil avatarFileName:nil dbConnection:self.dbConnection completion:nil];
     };
 
-    NSData *_Nullable encryptedAvatarData;
-    if (avatarData) {
-        encryptedAvatarData = [self encryptProfileData:avatarData];
-        OWSAssertDebug(encryptedAvatarData.length > 0);
-    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSData *_Nullable encryptedAvatarData;
+        if (avatarData) {
+            encryptedAvatarData = [self encryptProfileData:avatarData];
+            OWSAssertDebug(encryptedAvatarData.length > 0);
+        }
 
-    OWSAvatarUploadV2 *upload = [OWSAvatarUploadV2 new];
-    [[upload uploadAvatarToService:encryptedAvatarData
-                  clearLocalAvatar:clearLocalAvatar
-                     progressBlock:^(NSProgress *progress){
-                         // Do nothing.
-                     }]
-            .thenInBackground(^{
-                OWSLogVerbose(@"Upload complete.");
+        OWSAvatarUploadV2 *upload = [OWSAvatarUploadV2 new];
+        [[upload uploadAvatarToService:encryptedAvatarData
+                      clearLocalAvatar:clearLocalAvatar
+                         progressBlock:^(NSProgress *progress){
+                             // Do nothing.
+                         }]
+                .thenInBackground(^{
+                    OWSLogVerbose(@"Upload complete.");
 
-                successBlock(upload.urlPath);
-            })
-            .catchInBackground(^(NSError *error) {
-                OWSLogError(@"Failed: %@", error);
+                    successBlock(upload.urlPath);
+                })
+                .catchInBackground(^(NSError *error) {
+                    OWSLogError(@"Failed: %@", error);
 
-                failureBlock(error);
-            }) retainUntilComplete];
+                    failureBlock(error);
+                }) retainUntilComplete];
+    });
 }
 
 - (void)updateServiceWithProfileName:(nullable NSString *)localProfileName
