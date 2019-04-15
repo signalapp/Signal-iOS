@@ -282,7 +282,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ ត្រូវបានបើកសោរ។";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "សមាជិកក្នុងក្រុមអាចបបញ្ជូលអ្នកក្នុងក្រុមនេះម្តងទៀត";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "ហាមឃាត់";
@@ -309,7 +309,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "ហៅម្តងទៀត";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "អ្នកអាចបើកការអនុញ្ញាតចូលទៅប្រើប្រាស់មីក្រូហ្វូន នៅក្នុងការកំណត់របស់ iOS app ដើម្បីអាចធ្វើការហៅ និងថតសារជាសំឡេងក្នុង Signal";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "ទាមទារចូលប្រើប្រាស់ម៉ៃក្រូហ្វូន";
@@ -1072,7 +1072,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@, %@ and %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "ចាប់ផ្តើមការសន្ទនាលើកដំបូងនៅទីនេះ។";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "គ្មានលទ្ធផលក្នងការស្វែងរកសំរាប់ %@";
@@ -1084,7 +1084,7 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "អ្នកមិនអាចចែករំលែកលើសពី %@ ។";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "បរាជ័យក្នុងការជ្រើសរើសឯកសារភ្ជាប់។";
@@ -1376,7 +1376,7 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "អ្នកអាចបើកការអនុញ្ញាតចូលប្រើប្រាស់កាមេរ៉ា​ក្នុងការកំណត់របស់​ iOS ដើម្បើហៅជាវីដេអូក្នុង​ Signal។";
 
 /* Alert title
    Alert title when camera is not authorized */
@@ -1991,6 +1991,18 @@
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "អញ្ជើញតាមសារ SMS៖ %@";
 
+/* alert title when user attempts to leave the send media flow when they have an in-progress album */
+"SEND_MEDIA_ABANDON_TITLE" = "Discard Media?";
+
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Return to Media Library";
+
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "អញ្ជើញមិត្តភក្តិតាម SMS ដែលមិនមានសុវត្ថិភាព?";
 
@@ -2020,6 +2032,9 @@
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "ការចៀសវាងការឃ្លាំមើល ត្រូវបានដំណើរការ ផ្អែកលើលេខទូរស័ព្ទរបស់គណនីអ្នក។";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "You have manually disabled censorship circumvention.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "ការចៀសវាងការឃ្លាំមើល អាចត្រូវបានដំណើរការ ពេលភ្ជាប់អ៊ីនធើណេតតែប៉ុណ្ណោះ។";
@@ -2377,9 +2392,6 @@
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "បិទបណ្ណសារ";
-
-/* In Inbox view, last message label for thread with corrupted attachment. */
-"UNKNOWN_ATTACHMENT_LABEL" = "ឯកសារភ្ជាប់មិនស្គាល់";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "អ្នកប្រើប្រាស់មិននៅក្នុងបញ្ជីទំនាក់ទំនងទេ។ តើអ្នកចង់ហាមឃាត់អ្នកប្រើប្រាស់នេះទេ?";

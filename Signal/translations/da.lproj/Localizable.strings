@@ -96,7 +96,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Tilføj en billedtekst...";
 
 /* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Billedtekst";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Fil type: %@";
@@ -351,7 +351,7 @@
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Afvis opkald";
 
 /* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tap here to turn on your video";
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tap her for at tænde video";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Afslut opkald";
@@ -564,13 +564,13 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Slet samtale?";
 
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
+"CONVERSATION_SEARCH_NO_RESULTS" = "Ingen resultater";
 
 /* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 match";
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 resultat";
 
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%daf %d matcher";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Samtale indstillingér";
@@ -624,7 +624,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Opret ny kontakt";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
+"CONVERSATION_SETTINGS_SEARCH" = "Søg samtale";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tryk for at ændre";
@@ -1509,7 +1509,7 @@
 "ONBOARDING_2FA_TITLE" = "Registreringslås";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
+"ONBOARDING_CAPTCHA_TITLE" = "Tilføj lidt personlighed til dine meddelelser";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Giv tilladelse";
@@ -1521,7 +1521,7 @@
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Ikke nu";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal can let you know when you get a message (and who it is from)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Signal kan gøre opmærksom på når du modtager en meddelelse (og hvem den er fra)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Indtast dit telefonnummer for at komme i gang";
@@ -1530,7 +1530,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ugyldigt nummer";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Signal profiles are end-to-end encrypted and the Signal service never has access to this information.";
+"ONBOARDING_PROFILE_EXPLANATION" = "Signal profiler er end-to-end krypteret, og Signal´s service kan ikke tilgå informationerne";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Dit navn";
@@ -1641,13 +1641,13 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Arbejdsfax";
 
 /* alert title, generic error preventing user from capturing a photo */
-"PHOTO_CAPTURE_GENERIC_ERROR" = "Unable to capture image.";
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Ikke muligt at tage billede";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Unable to capture image.";
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Ikke muligt at tage billede";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Failed to configure camera.";
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Fejl ved konfiguration af kamera";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Unavngivet album";
@@ -1991,6 +1991,18 @@
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invitér via SMS: %@";
 
+/* alert title when user attempts to leave the send media flow when they have an in-progress album */
+"SEND_MEDIA_ABANDON_TITLE" = "Discard Media?";
+
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Return to Media Library";
+
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Invitér en ven via ukrypteret SMS?";
 
@@ -2020,6 +2032,9 @@
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censur omgåelse er blevet aktiveret baseret på din kontos telefonnummer.";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "You have manually disabled censorship circumvention.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censuromgåelse kan kun aktiveres, når den er tilsluttet internettet.";
@@ -2378,9 +2393,6 @@
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Til indbakke";
 
-/* In Inbox view, last message label for thread with corrupted attachment. */
-"UNKNOWN_ATTACHMENT_LABEL" = "Ukendt vedhæftning";
-
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Bruger er ikke i dine kontakter. Vil du blokere denne bruger?";
 
@@ -2484,7 +2496,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hej sikre videoopkald!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal vil snart kræve IOS 10 eller nyere. Opdater venligst i Indstillinger -> Generelt -> Software opdatering";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Opgrader iOS";

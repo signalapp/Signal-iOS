@@ -249,10 +249,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blocked Users";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Kilidi aç";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Existing members will be able to add you to the group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Mövcud üzvlər səni yenə də qrupa əlavə edə biləcəklər.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Unblock This Group?";
@@ -516,10 +516,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "Middle Name";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Prefix";
+"CONTACT_FIELD_NAME_PREFIX" = "Prefiks";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Suffix";
+"CONTACT_FIELD_NAME_SUFFIX" = "Sufiks";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Organization";
@@ -690,7 +690,7 @@
 "DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "İndi";
 
 /* The current day. */
 "DATE_TODAY" = "Bu gün";
@@ -1276,7 +1276,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Read";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Göndərilir";
 
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Sent";
@@ -1467,7 +1467,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Nəzərində Saxla";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
@@ -1536,7 +1536,7 @@
 "ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Your Name";
 
 /* Title of the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_TITLE" = "Set up your profile";
+"ONBOARDING_PROFILE_TITLE" = "Profilini quraşdır";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Terms & Privacy Policy";
@@ -1608,7 +1608,7 @@
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
 
 /* Label for 'Home' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME" = "Home";
+"PHONE_NUMBER_TYPE_HOME" = "Ev";
 
 /* Label for 'HomeFAX' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME_FAX" = "Home Fax";
@@ -1620,10 +1620,10 @@
 "PHONE_NUMBER_TYPE_MAIN" = "Main";
 
 /* Label for 'Mobile' phone numbers. */
-"PHONE_NUMBER_TYPE_MOBILE" = "Mobile";
+"PHONE_NUMBER_TYPE_MOBILE" = "Mobil";
 
 /* Label for 'Other' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER" = "Other";
+"PHONE_NUMBER_TYPE_OTHER" = "Digər";
 
 /* Label for 'Other FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_OTHER_FAX" = "Other Fax";
@@ -1635,7 +1635,7 @@
 "PHONE_NUMBER_TYPE_UNKNOWN" = "Unknown";
 
 /* Label for 'Work' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK" = "Work";
+"PHONE_NUMBER_TYPE_WORK" = "İş";
 
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Work Fax";
@@ -1737,7 +1737,7 @@
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap here to learn more.";
 
 /* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profile Name";
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profil Adı";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Yaddaşa yaz";
@@ -1991,6 +1991,18 @@
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invite via SMS: %@";
 
+/* alert title when user attempts to leave the send media flow when they have an in-progress album */
+"SEND_MEDIA_ABANDON_TITLE" = "Discard Media?";
+
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Return to Media Library";
+
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Təhlükəsiz olmayan SMS-lə dostu dəvət edək?";
 
@@ -2020,6 +2032,9 @@
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censorship circumvention has been activated based on your account's phone number.";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "You have manually disabled censorship circumvention.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censorship circumvention can only be activated when connected to the internet.";
@@ -2316,7 +2331,7 @@
 "SMS_INVITE_BODY" = "Səni Signalı yükləməyə dəvət edirəm! Link belədir:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "Heç biri";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
@@ -2377,9 +2392,6 @@
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Arxivləşdirmə";
-
-/* In Inbox view, last message label for thread with corrupted attachment. */
-"UNKNOWN_ATTACHMENT_LABEL" = "Bilinməyən qoşma";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "User not in your contacts. Would you like to block this user?";
