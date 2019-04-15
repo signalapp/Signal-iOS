@@ -259,21 +259,23 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction
 {
-    @synchronized(self)
-    {
-        uint32_t registrationID = [[transaction objectForKey:TSAccountManager_LocalRegistrationIdKey
-                                                inCollection:TSAccountManager_UserAccountCollection] unsignedIntValue];
+    // Unlike other methods in this class, there's no need for a `@synchronized` block
+    // here, since we're already in a write transaction, and all writes occur on a serial queue.
+    //
+    // Since other code in this class which uses @synchronized(self) also needs to open write
+    // transaction, using @synchronized(self) here, inside of a WriteTransaction risks deadlock.
+    uint32_t registrationID = [[transaction objectForKey:TSAccountManager_LocalRegistrationIdKey
+                                            inCollection:TSAccountManager_UserAccountCollection] unsignedIntValue];
 
-        if (registrationID == 0) {
-            registrationID = (uint32_t)arc4random_uniform(16380) + 1;
-            OWSLogWarn(@"Generated a new registrationID: %u", registrationID);
+    if (registrationID == 0) {
+        registrationID = (uint32_t)arc4random_uniform(16380) + 1;
+        OWSLogWarn(@"Generated a new registrationID: %u", registrationID);
 
-            [transaction setObject:[NSNumber numberWithUnsignedInteger:registrationID]
-                            forKey:TSAccountManager_LocalRegistrationIdKey
-                      inCollection:TSAccountManager_UserAccountCollection];
-        }
-        return registrationID;
+        [transaction setObject:[NSNumber numberWithUnsignedInteger:registrationID]
+                        forKey:TSAccountManager_LocalRegistrationIdKey
+                  inCollection:TSAccountManager_UserAccountCollection];
     }
+    return registrationID;
 }
 
 - (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
