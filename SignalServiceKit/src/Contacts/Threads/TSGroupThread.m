@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSGroupThread.h"
@@ -17,6 +17,44 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 @implementation TSGroupThread
 
 #define TSGroupThreadPrefix @"g"
+
+- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
+                             archivalDate:(nullable NSDate *)archivalDate
+                archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+                    conversationColorName:(NSString *)conversationColorName
+                             creationDate:(NSDate *)creationDate
+    isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+                          lastMessageDate:(nullable NSDate *)lastMessageDate
+                             messageDraft:(nullable NSString *)messageDraft
+                           mutedUntilDate:(nullable NSDate *)mutedUntilDate
+                    shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+                               groupModel:(TSGroupModel *)groupModel
+{
+    OWSAssertDebug(groupModel);
+    OWSAssertDebug(groupModel.groupId.length > 0);
+    OWSAssertDebug(groupModel.groupMemberIds.count > 0);
+    for (NSString *recipientId in groupModel.groupMemberIds) {
+        OWSAssertDebug(recipientId.length > 0);
+    }
+
+    self = [super initWithUniqueId:uniqueId
+                                 archivalDate:archivalDate
+                    archivedAsOfMessageSortId:archivedAsOfMessageSortId
+                        conversationColorName:conversationColorName
+                                 creationDate:creationDate
+        isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
+                              lastMessageDate:lastMessageDate
+                                 messageDraft:messageDraft
+                               mutedUntilDate:mutedUntilDate
+                        shouldThreadBeVisible:shouldThreadBeVisible];
+    if (!self) {
+        return self;
+    }
+
+    _groupModel = groupModel;
+
+    return self;
+}
 
 - (instancetype)initWithGroupModel:(TSGroupModel *)groupModel
 {

@@ -46,6 +46,7 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <ContactsUI/CNContactViewController.h>
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <Photos/Photos.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
@@ -87,8 +88,6 @@
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
-
-@import Photos;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -3532,7 +3531,7 @@ typedef enum : NSUInteger {
 
 - (void)updateLastVisibleSortIdWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    if (!transaction.transitional_yapTransaction) {
+    if (!transaction.transitional_yapReadTransaction) {
         return;
     }
 
@@ -3545,7 +3544,7 @@ typedef enum : NSUInteger {
     [self ensureScrollDownButton];
 
     __block NSUInteger numberOfUnreadMessages;
-    numberOfUnreadMessages = [[transaction.transitional_yapTransaction ext:TSUnreadDatabaseViewExtensionName]
+    numberOfUnreadMessages = [[transaction.transitional_yapReadTransaction ext:TSUnreadDatabaseViewExtensionName]
         numberOfItemsInGroup:self.thread.uniqueId];
     self.hasUnreadMessages = numberOfUnreadMessages > 0;
 }
@@ -4902,12 +4901,12 @@ typedef enum : NSUInteger {
     [self updateNavigationBarSubtitleLabel];
     [self dismissMenuActionsIfNecessary];
 
-    if (transaction.transitional_yapTransaction != nil) {
+    if (transaction.transitional_yapReadTransaction != nil) {
         if (self.isGroupConversation) {
-            [self.thread reloadWithTransaction:transaction.transitional_yapTransaction];
+            [self.thread reloadWithTransaction:transaction.transitional_yapReadTransaction];
             [self updateNavigationTitle];
         }
-        [self updateDisappearingMessagesConfigurationWithTransaction:transaction.transitional_yapTransaction];
+        [self updateDisappearingMessagesConfigurationWithTransaction:transaction.transitional_yapReadTransaction];
     }
 
     if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Minor) {

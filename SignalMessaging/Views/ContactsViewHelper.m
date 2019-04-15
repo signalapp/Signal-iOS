@@ -5,6 +5,7 @@
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "UIUtil.h"
+#import <ContactsUI/ContactsUI.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
@@ -14,8 +15,6 @@
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSAccountManager.h>
-
-@import ContactsUI;
 
 NS_ASSUME_NONNULL_BEGIN
 

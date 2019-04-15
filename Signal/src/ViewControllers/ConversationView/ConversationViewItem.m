@@ -140,8 +140,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     _isGroupThread = isGroupThread;
     _conversationStyle = conversationStyle;
 
-    if (transaction.transitional_yapTransaction) {
-        [self updateAuthorConversationColorNameWithTransaction:transaction.transitional_yapTransaction];
+    if (transaction.transitional_yapReadTransaction) {
+        [self updateAuthorConversationColorNameWithTransaction:transaction.transitional_yapReadTransaction];
     }
 
     [self ensureViewState:transaction];
@@ -173,7 +173,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     [self clearCachedLayoutState];
 
-    [self ensureViewState:[[SDSAnyReadTransaction alloc] initWithTransitional_yapTransaction:transaction]];
+    [self ensureViewState:[[SDSAnyReadTransaction alloc] initWithTransitional_yapReadTransaction:transaction]];
 }
 
 - (void)updateAuthorConversationColorNameWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -582,9 +582,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSInteractionType_Error:
         case OWSInteractionType_Info:
         case OWSInteractionType_Call:
-            if (transaction.transitional_yapTransaction) {
+            if (transaction.transitional_yapReadTransaction) {
                 self.systemMessageText =
-                    [self systemMessageTextWithTransaction:transaction.transitional_yapTransaction];
+                    [self systemMessageTextWithTransaction:transaction.transitional_yapReadTransaction];
                 OWSAssertDebug(self.systemMessageText.length > 0);
             }
             return;
@@ -602,11 +602,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.hasViewState = YES;
 
     TSMessage *message = (TSMessage *)self.interaction;
-    if (transaction.transitional_yapTransaction != nil) {
+    if (transaction.transitional_yapReadTransaction != nil) {
         if (message.contactShare) {
             self.contactShare =
                 [[ContactShareViewModel alloc] initWithContactShareRecord:message.contactShare
-                                                              transaction:transaction.transitional_yapTransaction];
+                                                              transaction:transaction.transitional_yapReadTransaction];
             self.messageCellType = OWSMessageCellType_ContactShare;
             return;
         }
@@ -614,11 +614,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     // Check for quoted replies _before_ media album handling,
     // since that logic may exit early.
-    if (transaction.transitional_yapTransaction != nil) {
+    if (transaction.transitional_yapReadTransaction != nil) {
         if (message.quotedMessage) {
             self.quotedReply =
                 [OWSQuotedReplyModel quotedReplyWithQuotedMessage:message.quotedMessage
-                                                      transaction:transaction.transitional_yapTransaction];
+                                                      transaction:transaction.transitional_yapReadTransaction];
 
             if (self.quotedReply.body.length > 0) {
                 self.displayableQuotedText =
@@ -627,9 +627,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
     }
 
-    if (transaction.transitional_yapTransaction != nil) {
+    if (transaction.transitional_yapReadTransaction != nil) {
         TSAttachment *_Nullable oversizeTextAttachment =
-            [message oversizeTextAttachmentWithTransaction:transaction.transitional_yapTransaction];
+            [message oversizeTextAttachmentWithTransaction:transaction.transitional_yapReadTransaction];
         if ([oversizeTextAttachment isKindOfClass:[TSAttachmentStream class]]) {
             TSAttachmentStream *oversizeTextAttachmentStream = (TSAttachmentStream *)oversizeTextAttachment;
             self.displayableBodyText = [self displayableBodyTextForOversizeTextAttachment:oversizeTextAttachmentStream
@@ -654,9 +654,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
     }
 
-    if (transaction.transitional_yapTransaction != nil) {
+    if (transaction.transitional_yapReadTransaction != nil) {
         NSArray<TSAttachment *> *mediaAttachments =
-            [message mediaAttachmentsWithTransaction:transaction.transitional_yapTransaction];
+            [message mediaAttachmentsWithTransaction:transaction.transitional_yapReadTransaction];
         NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems = [self albumItemsForMediaAttachments:mediaAttachments];
         if (mediaAlbumItems.count > 0) {
             if (mediaAlbumItems.count == 1) {
@@ -709,21 +709,22 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         if (self.messageCellType == OWSMessageCellType_Unknown) {
             OWSAssertDebug(message.attachmentIds.count == 0
                 || (message.attachmentIds.count == 1
-                       && (transaction.transitional_yapTransaction != nil &&
-                              [message oversizeTextAttachmentWithTransaction:transaction.transitional_yapTransaction]
+                       && (transaction.transitional_yapReadTransaction != nil &&
+                              [message
+                                  oversizeTextAttachmentWithTransaction:transaction.transitional_yapReadTransaction]
                                   != nil)));
             self.messageCellType = OWSMessageCellType_TextOnlyMessage;
         }
         OWSAssertDebug(self.displayableBodyText);
     }
 
-    if (transaction.transitional_yapTransaction != nil) {
+    if (transaction.transitional_yapReadTransaction != nil) {
         if (self.hasBodyText && message.linkPreview) {
             self.linkPreview = message.linkPreview;
             if (message.linkPreview.imageAttachmentId.length > 0) {
                 TSAttachment *_Nullable linkPreviewAttachment =
                     [TSAttachment fetchObjectWithUniqueID:message.linkPreview.imageAttachmentId
-                                              transaction:transaction.transitional_yapTransaction];
+                                              transaction:transaction.transitional_yapReadTransaction];
                 if (!linkPreviewAttachment) {
                     OWSFailDebug(@"Could not load link preview image attachment.");
                 } else if (!linkPreviewAttachment.isImage) {

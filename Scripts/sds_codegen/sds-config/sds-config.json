@@ -1,0 +1,11 @@
+{
+	"nsnumber_types": {
+		"TSThread.archivedAsOfMessageSortId": "Bool"
+	},
+	"properties_to_ignore": [
+		"TSGroupModel.groupImage"
+	],
+	"enum_properties": [
+		"TSThread.conversationColorName"
+	]
+}

@@ -8,10 +8,9 @@
 #import "SSKEnvironment.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
+#import <Contacts/Contacts.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSString+OWS.h>
-
-@import Contacts;
 
 NS_ASSUME_NONNULL_BEGIN
 

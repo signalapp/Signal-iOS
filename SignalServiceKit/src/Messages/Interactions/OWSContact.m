@@ -11,10 +11,9 @@
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
+#import <Contacts/Contacts.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
-
-@import Contacts;
 
 NS_ASSUME_NONNULL_BEGIN
 

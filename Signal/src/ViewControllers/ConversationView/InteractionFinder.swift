@@ -41,51 +41,51 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     public class func fetch(uniqueId: String, transaction: SDSAnyReadTransaction) throws -> TSInteraction? {
-        switch transaction.transaction {
+        switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return YAPDBInteractionFinderAdapter.fetch(uniqueId: uniqueId, transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try GRDBInteractionFinderAdapter.fetch(uniqueId: uniqueId, transaction: grdbRead)
+            return try GRDBInteractionFinderAdapter.fetch(uniqueId: uniqueId, transaction: grdbRead.database)
         }
     }
 
     // MARK: - instance methods
 
     public func mostRecentInteraction(transaction: SDSAnyReadTransaction) throws -> TSInteraction? {
-        switch transaction.transaction {
+        switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.mostRecentInteraction(transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.mostRecentInteraction(transaction: grdbRead)
+            return try grdbAdapter.mostRecentInteraction(transaction: grdbRead.database)
         }
     }
 
     public func sortIndex(interactionUniqueId: String, transaction: SDSAnyReadTransaction) throws -> UInt? {
         return try Bench(title: "sortIndex") {
-            switch transaction.transaction {
+            switch transaction.readTransaction {
             case .yapRead(let yapRead):
                 return yapAdapter.sortIndex(interactionUniqueId: interactionUniqueId, transaction: yapRead)
             case .grdbRead(let grdbRead):
-                return try grdbAdapter.sortIndex(interactionUniqueId: interactionUniqueId, transaction: grdbRead)
+                return try grdbAdapter.sortIndex(interactionUniqueId: interactionUniqueId, transaction: grdbRead.database)
             }
         }
     }
 
     public func count(transaction: SDSAnyReadTransaction) throws -> UInt {
-        switch transaction.transaction {
+        switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.count(transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.count(transaction: grdbRead)
+            return try grdbAdapter.count(transaction: grdbRead.database)
         }
     }
 
     public func enumerateInteractionIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {
-        switch transaction.transaction {
+        switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return try yapAdapter.enumerateInteractionIds(transaction: yapRead, block: block)
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.enumerateInteractionIds(transaction: grdbRead, block: block)
+            return try grdbAdapter.enumerateInteractionIds(transaction: grdbRead.database, block: block)
         }
     }
 }

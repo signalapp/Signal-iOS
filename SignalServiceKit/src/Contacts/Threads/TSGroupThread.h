@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSGroupModel.h"
@@ -15,7 +15,24 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 
 @interface TSGroupThread : TSThread
 
+- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
+                    archivalDate:(nullable NSDate *)archivalDate
+       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+           conversationColorName:(NSString *)conversationColorName
+                    creationDate:(NSDate *)creationDate
+isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+                 lastMessageDate:(nullable NSDate *)lastMessageDate
+                    messageDraft:(nullable NSString *)messageDraft
+                  mutedUntilDate:(nullable NSDate *)mutedUntilDate
+           shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+                      groupModel:(TSGroupModel *)groupModel
+NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:shouldThreadBeVisible:groupModel:));
+
 @property (nonatomic, strong) TSGroupModel *groupModel;
+
+// TODO: We might want to make this initializer private once we
+//       convert getOrCreateThreadWithContactId to take "any" transaction.
+- (instancetype)initWithGroupModel:(TSGroupModel *)groupModel;
 
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel

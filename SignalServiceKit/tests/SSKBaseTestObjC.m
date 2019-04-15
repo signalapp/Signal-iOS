@@ -1,13 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKBaseTestObjC.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import "TestAppContext.h"
-
-@import CocoaLumberjack;
+#import <CocoaLumberjack/CocoaLumberjack.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
 
 NS_ASSUME_NONNULL_BEGIN

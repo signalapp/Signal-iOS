@@ -6,10 +6,9 @@
 #import "OWSBackup.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
+#import <CloudKit/CloudKit.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
-
-@import CloudKit;
 
 NS_ASSUME_NONNULL_BEGIN
 

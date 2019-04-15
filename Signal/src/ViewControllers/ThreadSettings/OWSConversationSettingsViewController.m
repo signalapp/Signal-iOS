@@ -15,6 +15,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "UpdateGroupViewController.h"
+#import <ContactsUI/ContactsUI.h>
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/Environment.h>
@@ -32,8 +33,6 @@
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
-
-@import ContactsUI;
 
 NS_ASSUME_NONNULL_BEGIN
 

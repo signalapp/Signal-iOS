@@ -38,6 +38,18 @@ extern ConversationColorName const kConversationColorName_Default;
 @property (nonatomic, readonly) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
 
+- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
+                    archivalDate:(nullable NSDate *)archivalDate
+       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+           conversationColorName:(NSString *)conversationColorName
+                    creationDate:(NSDate *)creationDate
+isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+                 lastMessageDate:(nullable NSDate *)lastMessageDate
+                    messageDraft:(nullable NSString *)messageDraft
+                  mutedUntilDate:(nullable NSDate *)mutedUntilDate
+           shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:shouldThreadBeVisible:));
+
 /**
  *  Whether the object is a group thread or not.
  *

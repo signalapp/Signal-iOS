@@ -25,21 +25,37 @@ public class SDSDatabaseStorage: NSObject {
 
     @objc
     required init(raisingErrors: ()) throws {
+        adapter = SDSDatabaseStorage.createDefaultStorage()
+    }
+
+    required init(adapter: SDSDatabaseStorageAdapter, raisingErrors: ()) throws {
+        self.adapter = adapter
+    }
+
+    class func createDefaultStorage() -> SDSDatabaseStorageAdapter {
         if FeatureFlags.useGRDB {
-            let baseDir: URL
-
-            if FeatureFlags.grdbMigratesFreshDBEveryLaunch {
-                baseDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true).appendingPathComponent(UUID().uuidString, isDirectory: true)
-            } else {
-                baseDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true)
-            }
-            let dbDir: URL = baseDir.appendingPathComponent("grdb_database", isDirectory: true)
-
-            // crash if we can't read the DB.
-            adapter = try! GRDBDatabaseStorageAdapter(dbDir: dbDir)
+            return createGrdbStorage()
         } else {
-            adapter = YAPDBStorageAdapter()
+            return createYapStorage()
         }
+    }
+
+    class func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
+        let baseDir: URL
+
+        if FeatureFlags.grdbMigratesFreshDBEveryLaunch {
+            baseDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true).appendingPathComponent(UUID().uuidString, isDirectory: true)
+        } else {
+            baseDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true)
+        }
+        let dbDir: URL = baseDir.appendingPathComponent("grdb_database", isDirectory: true)
+
+        // crash if we can't read the DB.
+        return try! GRDBDatabaseStorageAdapter(dbDir: dbDir)
+    }
+
+    class func createYapStorage() -> YAPDBStorageAdapter {
+        return YAPDBStorageAdapter()
     }
 
     // `grdbStorage` is useful as an "escape hatch" while we're migrating to GRDB.
@@ -106,7 +122,7 @@ protocol SDSDatabaseStorageAdapter {
     func write(block: @escaping (SDSAnyWriteTransaction) -> Void) throws
 }
 
-private struct YAPDBStorageAdapter {
+struct YAPDBStorageAdapter {
     var storage: OWSPrimaryStorage {
         return OWSPrimaryStorage.shared()
     }
@@ -175,17 +191,8 @@ public struct GRDBDatabaseStorageAdapter {
 
     lazy var migrator: DatabaseMigrator = {
         var migrator = DatabaseMigrator()
-        migrator.registerMigration("createInteractions") { db in
-            try db.create(table: ThreadRecord.databaseTableName) { t in
-                let cn = ThreadRecord.columnName
-
-                t.autoIncrementedPrimaryKey(cn(.id))
-                t.column(cn(.uniqueId), .text).indexed().notNull()
-                t.column(cn(.shouldBeVisible), .boolean).notNull()
-                t.column(cn(.creationDate), .datetime).notNull()
-                // TODO `check`/`validate` in enum
-                t.column(cn(.threadType), .integer).notNull()
-            }
+        migrator.registerMigration("create initial schema") { db in
+            try TSThreadSerializer.table.createTable(database: db)
 
             try db.create(table: InteractionRecord.databaseTableName) { t in
                 let cn = InteractionRecord.columnName
@@ -214,19 +221,19 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     func uiRead(block: @escaping (SDSAnyReadTransaction) -> Void) throws {
         // TODO this should be based on a snapshot
         try pool.read { database in
-            block(SDSAnyReadTransaction(.grdbRead(database)))
+            block(SDSAnyReadTransaction(.grdbRead(GRDBReadTransaction(database: database))))
         }
     }
 
     func read(block: @escaping (SDSAnyReadTransaction) -> Void) throws {
         try pool.read { database in
-            block(SDSAnyReadTransaction(.grdbRead(database)))
+            block(SDSAnyReadTransaction(.grdbRead(GRDBReadTransaction(database: database))))
         }
     }
 
     func write(block: @escaping (SDSAnyWriteTransaction) -> Void) throws {
         try pool.write { database in
-            block(SDSAnyWriteTransaction(.grdbWrite(database)))
+            block(SDSAnyWriteTransaction(.grdbWrite(GRDBWriteTransaction(database: database))))
         }
     }
 }
