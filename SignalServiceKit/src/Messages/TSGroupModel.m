@@ -42,15 +42,14 @@ const int32_t kGroupIdLength = 16;
     return self;
 }
 
-- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
-                         groupId:(NSData *)groupId
-                  groupMemberIds:(NSArray<NSString *> *)groupMemberIds
-                       groupName:(nullable NSString *)groupName
+- (instancetype)initWithGroupId:(NSData *)groupId
+                 groupMemberIds:(NSArray<NSString *> *)groupMemberIds
+                      groupName:(nullable NSString *)groupName
 {
     OWSAssertDebug(groupMemberIds);
     OWSAssertDebug(groupId.length == kGroupIdLength);
 
-    self = [super initWithUniqueId:uniqueId];
+    self = [super init];
     if (!self) {
         return self;
     }

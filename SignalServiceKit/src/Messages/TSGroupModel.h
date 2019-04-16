@@ -3,13 +3,13 @@
 //
 
 #import "ContactsManagerProtocol.h"
-#import "TSYapDatabaseObject.h"
+#import <Mantle/MTLModel+NSCoding.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 extern const int32_t kGroupIdLength;
 
-@interface TSGroupModel : TSYapDatabaseObject
+@interface TSGroupModel : MTLModel
 
 @property (nonatomic) NSArray<NSString *> *groupMemberIds;
 @property (nullable, readonly, nonatomic) NSString *groupName;
@@ -23,10 +23,9 @@ extern const int32_t kGroupIdLength;
                         image:(nullable UIImage *)image
                       groupId:(NSData *)groupId;
 
-- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
-                         groupId:(NSData *)groupId
-                  groupMemberIds:(NSArray<NSString *> *)groupMemberIds
-                       groupName:(nullable NSString *)groupName;
+- (instancetype)initWithGroupId:(NSData *)groupId
+                 groupMemberIds:(NSArray<NSString *> *)groupMemberIds
+                      groupName:(nullable NSString *)groupName;
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;

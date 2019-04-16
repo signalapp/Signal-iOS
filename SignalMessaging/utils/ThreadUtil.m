@@ -3,11 +3,9 @@
 //
 
 #import "ThreadUtil.h"
-#import "OWSContactOffersInteraction.h"
 #import "OWSContactsManager.h"
 #import "OWSQuotedReplyModel.h"
 #import "OWSUnreadIndicator.h"
-#import "TSUnreadIndicatorInteraction.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/OWSProfileManager.h>
@@ -23,6 +21,8 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
+#import <SignalServiceKit/OWSContactOffersInteraction.h>
+#import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyErrorMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
