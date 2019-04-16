@@ -504,6 +504,9 @@ extension %s: SDSSerializable {
         switch self {''' % str(clazz.name)
 
         for subclass in reversed(all_descendents_of_class(clazz)):
+            if should_ignore_class(subclass):
+                continue
+            
             swift_body += '''
         case let model as %s:
             assert(type(of: model) == %s.self)

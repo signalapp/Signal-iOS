@@ -23,42 +23,6 @@ extension TSInteraction: SDSSerializable {
         case let model as TSCall:
             assert(type(of: model) == TSCall.self)
             return TSCallSerializer(model: model)
-        case let model as OWSDynamicOutgoingMessage:
-            assert(type(of: model) == OWSDynamicOutgoingMessage.self)
-            return OWSDynamicOutgoingMessageSerializer(model: model)
-        case let model as OWSProfileKeyMessage:
-            assert(type(of: model) == OWSProfileKeyMessage.self)
-            return OWSProfileKeyMessageSerializer(model: model)
-        case let model as OWSOutgoingCallMessage:
-            assert(type(of: model) == OWSOutgoingCallMessage.self)
-            return OWSOutgoingCallMessageSerializer(model: model)
-        case let model as OWSSyncGroupsRequestMessage:
-            assert(type(of: model) == OWSSyncGroupsRequestMessage.self)
-            return OWSSyncGroupsRequestMessageSerializer(model: model)
-        case let model as OWSSyncContactsMessage:
-            assert(type(of: model) == OWSSyncContactsMessage.self)
-            return OWSSyncContactsMessageSerializer(model: model)
-        case let model as OWSSyncConfigurationMessage:
-            assert(type(of: model) == OWSSyncConfigurationMessage.self)
-            return OWSSyncConfigurationMessageSerializer(model: model)
-        case let model as OWSSyncGroupsMessage:
-            assert(type(of: model) == OWSSyncGroupsMessage.self)
-            return OWSSyncGroupsMessageSerializer(model: model)
-        case let model as OWSOutgoingSentMessageTranscript:
-            assert(type(of: model) == OWSOutgoingSentMessageTranscript.self)
-            return OWSOutgoingSentMessageTranscriptSerializer(model: model)
-        case let model as OWSOutgoingSyncMessage:
-            assert(type(of: model) == OWSOutgoingSyncMessage.self)
-            return OWSOutgoingSyncMessageSerializer(model: model)
-        case let model as OWSEndSessionMessage:
-            assert(type(of: model) == OWSEndSessionMessage.self)
-            return OWSEndSessionMessageSerializer(model: model)
-        case let model as OWSDisappearingMessagesConfigurationMessage:
-            assert(type(of: model) == OWSDisappearingMessagesConfigurationMessage.self)
-            return OWSDisappearingMessagesConfigurationMessageSerializer(model: model)
-        case let model as OWSOutgoingNullMessage:
-            assert(type(of: model) == OWSOutgoingNullMessage.self)
-            return OWSOutgoingNullMessageSerializer(model: model)
         case let model as TSOutgoingMessage:
             assert(type(of: model) == TSOutgoingMessage.self)
             return TSOutgoingMessageSerializer(model: model)

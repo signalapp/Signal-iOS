@@ -142,4 +142,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface TSInvalidIdentityKeyReceivingErrorMessage (SDS)
+
+@property (nonatomic, readonly, copy) NSString *authorId;
+
+@property (atomic, readonly, nullable) NSData *envelopeData;
+
+@end
+
+#pragma mark -
+
 NS_ASSUME_NONNULL_END
