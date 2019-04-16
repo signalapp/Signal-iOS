@@ -82,8 +82,6 @@ public class SDSTableMetadata: NSObject {
 
     // MARK: - Table Creation
 
-    private var hasCheckedTable = false
-
     public func createTable(database: Database) throws {
         // TODO: Assert that table name is valid.
 
