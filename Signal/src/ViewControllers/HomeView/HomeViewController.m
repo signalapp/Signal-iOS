@@ -827,19 +827,6 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
-    __block BOOL hasAnyMessages;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
-    }];
-    if (hasAnyMessages) {
-        [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateReminderViews];
-            });
-        }];
-    }
-
     self.isViewVisible = YES;
 
     BOOL isShowingSearchResults = !self.searchResultsController.view.hidden;
@@ -939,15 +926,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
     [self updateViewState];
 
-    // If the user hasn't already granted contact access
-    // we don't want to request until they receive a message.
-    __block BOOL hasAnyMessages;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
-    }];
-    if (hasAnyMessages) {
-        [self.contactsManager requestSystemContactsOnce];
-    }
+    [self.contactsManager requestSystemContactsOnce];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -955,29 +934,9 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self updateViewState];
 }
 
-- (BOOL)hasAnyMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    return [TSThread numberOfKeysInCollectionWithTransaction:transaction] > 0;
-}
-
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     [self updateShouldObserveDBModifications];
-
-    // It's possible a thread was created while we where in the background. But since we don't honor contact
-    // requests unless the app is in the foregrond, we must check again here upon becoming active.
-    __block BOOL hasAnyMessages;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
-    }];
-    
-    if (hasAnyMessages) {
-        [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateReminderViews];
-            });
-        }];
-    }
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -1566,17 +1525,6 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
         [self updateViewState];
 
         return;
-    }
-
-    // If the user hasn't already granted contact access
-    // we don't want to request until they receive a message.
-    __block BOOL hasAnyMessages;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
-    }];
-
-    if (hasAnyMessages) {
-        [self.contactsManager requestSystemContactsOnce];
     }
 
     NSArray *sectionChanges = nil;
