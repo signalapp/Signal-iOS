@@ -185,7 +185,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                 success:^(NSURLSessionDataTask *task, id formResponseObject) {
                     OWSAvatarUploadV2 *_Nullable strongSelf = weakSelf;
                     if (!strongSelf) {
-                        return;
+                        return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
                     }
 
                     if (avatarData == nil) {
@@ -224,12 +224,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                            urlPath:(NSString *)urlPath
                      progressBlock:(UploadProgressBlock)progressBlock
 {
-    if (![formResponseObject isKindOfClass:[NSDictionary class]]) {
-        OWSLogError(@"Invalid upload form.");
-        return [AnyPromise
-            promiseWithValue:OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Invalid upload form.")];
-    }
-
     OWSUploadForm *_Nullable form = [OWSUploadForm parse:formResponseObject];
     if (!form) {
         return [AnyPromise
@@ -245,7 +239,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
             constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
                 OWSAvatarUploadV2 *_Nullable strongSelf = weakSelf;
                 if (!strongSelf) {
-                    return;
+                    return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
                 }
 
                 // We have to build up the form manually vs. simply passing in a paramaters dict
@@ -354,7 +348,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                 success:^(NSURLSessionDataTask *task, id formResponseObject) {
                     OWSAttachmentUploadV2 *_Nullable strongSelf = weakSelf;
                     if (!strongSelf) {
-                        return;
+                        return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
                     }
 
                     [[strongSelf parseFormAndUpload:formResponseObject
@@ -382,7 +376,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                            urlPath:(NSString *)urlPath
                      progressBlock:(UploadProgressBlock)progressBlock
 {
-
     OWSUploadForm *_Nullable form = [OWSUploadForm parse:formResponseObject];
     if (!form) {
         return [AnyPromise
@@ -403,7 +396,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
             constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
                 OWSAttachmentUploadV2 *_Nullable strongSelf = weakSelf;
                 if (!strongSelf) {
-                    return;
+                    return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
                 }
 
                 // We have to build up the form manually vs. simply passing in a paramaters dict
@@ -433,7 +426,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
             success:^(NSURLSessionDataTask *uploadTask, id _Nullable responseObject) {
                 OWSAttachmentUploadV2 *_Nullable strongSelf = weakSelf;
                 if (!strongSelf) {
-                    return;
+                    return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
                 }
 
                 OWSLogInfo(@"Upload succeeded with key: %@", form.formKey);
