@@ -72,13 +72,13 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 }
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                        receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                                     sortId:(uint64_t)sortId
-                                  timestamp:(uint64_t)timestamp
-                             uniqueThreadId:(NSString *)uniqueThreadId
-                          callSchemaVersion:(NSUInteger)callSchemaVersion
-                                   callType:(RPRecentCallType)callType
-                                       read:(BOOL)read
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+               callSchemaVersion:(NSUInteger)callSchemaVersion
+                        callType:(RPRecentCallType)callType
+                            read:(BOOL)read
 {
     self = [super initWithUniqueId:uniqueId
                           receivedAtTimestamp:receivedAtTimestamp

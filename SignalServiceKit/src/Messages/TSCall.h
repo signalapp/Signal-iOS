@@ -35,13 +35,13 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
                          inThread:(TSContactThread *)thread NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                        receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                                     sortId:(uint64_t)sortId
-                                  timestamp:(uint64_t)timestamp
-                             uniqueThreadId:(NSString *)uniqueThreadId
-                          callSchemaVersion:(NSUInteger)callSchemaVersion
-                                   callType:(RPRecentCallType)callType
-                                       read:(BOOL)read NS_DESIGNATED_INITIALIZER;
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+               callSchemaVersion:(NSUInteger)callSchemaVersion
+                        callType:(RPRecentCallType)callType
+                            read:(BOOL)read NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

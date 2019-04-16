@@ -890,6 +890,7 @@ class %sSerializer: SDSSerializer {
 
     swift_body = sds_common.clean_up_generated_swift(swift_body)
     
+    # Add some random whitespace to trigger the auto-formatter.
     swift_body = swift_body + (' ' * random.randint(1, 100))
 
     with open(swift_filepath, 'wt') as f:
