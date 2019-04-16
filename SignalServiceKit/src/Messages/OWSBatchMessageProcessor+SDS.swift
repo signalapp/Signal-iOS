@@ -128,58 +128,64 @@ extension OWSMessageContentJob {
     }
 }
 
-// TODO: Add remove/delete method.
+// MARK: - OWSMessageContentJobCursor
 
-// MARK: - Fetch
+@objc
+public class OWSMessageContentJobCursor: NSObject {
+    private let cursor: SDSCursor<OWSMessageContentJob>
 
-// This category defines various fetch methods.
-//
+    init(cursor: SDSCursor<OWSMessageContentJob>) {
+        self.cursor = cursor
+    }
+
+    // TODO: Revisit error handling in this class.
+    public func next() throws -> OWSMessageContentJob? {
+        return try cursor.next()
+    }
+
+    public func all() throws -> [OWSMessageContentJob] {
+        return try cursor.all()
+    }
+}
+
+// MARK: - Obj-C Fetch
+
 // TODO: We may eventually want to define some combination of:
 //
 // * fetchCursor, fetchOne, fetchAll, etc. (ala GRDB)
 // * Optional "where clause" parameters for filtering.
 // * Async flavors with completions.
 //
-// TODO: I've defined flavors that take a read transation or SDSDatabaseStorage.
-//       We might want only the former.  Or we might take a "connection" if we
-//       end up having that class.
+// TODO: I've defined flavors that take a read transaction.
+//       Or we might take a "connection" if we end up having that class.
 @objc
 extension OWSMessageContentJob {
-    @objc
-    public class func anyFetchAll(databaseStorage: SDSDatabaseStorage) -> [OWSMessageContentJob] {
-        var result = [OWSMessageContentJob]()
-        databaseStorage.readSwallowingErrors { (transaction) in
-            result += anyFetchAll(transaction: transaction)
-        }
-        return result
-    }
-
-    @objc
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSMessageContentJob] {
-        var result = [OWSMessageContentJob]()
-        if let grdbTransaction = transaction.transitional_grdbReadTransaction {
-            result += SDSSerialization.fetchAll(tableMetadata: OWSMessageContentJobSerializer.table,
-                                                uniqueIdColumnName: OWSMessageContentJobSerializer.uniqueIdColumn.columnName,
-                                                transaction: grdbTransaction,
-                                                deserialize: { (statement) in
-                                                    return try OWSMessageContentJobSerializer.sdsDeserialize(statement: statement)
-            })
-        } else if let ydbTransaction = transaction.transitional_yapReadTransaction {
-            OWSMessageContentJob.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
-                guard let model = object as? OWSMessageContentJob else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                result.append(model)
-            }
-        } else {
-            owsFailDebug("Invalid transaction")
-        }
-        return result
+    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSMessageContentJobCursor {
+        return OWSMessageContentJobCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSMessageContentJobSerializer.table,
+                                                                   transaction: transaction,
+                                                                   deserialize: OWSMessageContentJobSerializer.sdsDeserialize))
     }
 }
 
-// TODO: Add remove/delete method.
+// MARK: - Swift Fetch
+
+extension OWSMessageContentJob {
+    public class func grdbFetchCursor(sql: String,
+                                      arguments: [DatabaseValueConvertible]?,
+                                      transaction: GRDBReadTransaction) -> OWSMessageContentJobCursor {
+        var statementArguments: StatementArguments?
+        if let arguments = arguments {
+            guard let statementArgs = StatementArguments(arguments) else {
+                owsFail("Could not convert arguments.")
+            }
+            statementArguments = statementArgs
+        }
+        return OWSMessageContentJobCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
+                                                             arguments: statementArguments,
+                                                             transaction: transaction,
+                                                                   deserialize: OWSMessageContentJobSerializer.sdsDeserialize))
+    }
+}
 
 // MARK: - SDSSerializer
 

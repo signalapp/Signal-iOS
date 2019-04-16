@@ -119,58 +119,64 @@ extension TSRecipientReadReceipt {
     }
 }
 
-// TODO: Add remove/delete method.
+// MARK: - TSRecipientReadReceiptCursor
 
-// MARK: - Fetch
+@objc
+public class TSRecipientReadReceiptCursor: NSObject {
+    private let cursor: SDSCursor<TSRecipientReadReceipt>
 
-// This category defines various fetch methods.
-//
+    init(cursor: SDSCursor<TSRecipientReadReceipt>) {
+        self.cursor = cursor
+    }
+
+    // TODO: Revisit error handling in this class.
+    public func next() throws -> TSRecipientReadReceipt? {
+        return try cursor.next()
+    }
+
+    public func all() throws -> [TSRecipientReadReceipt] {
+        return try cursor.all()
+    }
+}
+
+// MARK: - Obj-C Fetch
+
 // TODO: We may eventually want to define some combination of:
 //
 // * fetchCursor, fetchOne, fetchAll, etc. (ala GRDB)
 // * Optional "where clause" parameters for filtering.
 // * Async flavors with completions.
 //
-// TODO: I've defined flavors that take a read transation or SDSDatabaseStorage.
-//       We might want only the former.  Or we might take a "connection" if we
-//       end up having that class.
+// TODO: I've defined flavors that take a read transaction.
+//       Or we might take a "connection" if we end up having that class.
 @objc
 extension TSRecipientReadReceipt {
-    @objc
-    public class func anyFetchAll(databaseStorage: SDSDatabaseStorage) -> [TSRecipientReadReceipt] {
-        var result = [TSRecipientReadReceipt]()
-        databaseStorage.readSwallowingErrors { (transaction) in
-            result += anyFetchAll(transaction: transaction)
-        }
-        return result
-    }
-
-    @objc
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSRecipientReadReceipt] {
-        var result = [TSRecipientReadReceipt]()
-        if let grdbTransaction = transaction.transitional_grdbReadTransaction {
-            result += SDSSerialization.fetchAll(tableMetadata: TSRecipientReadReceiptSerializer.table,
-                                                uniqueIdColumnName: TSRecipientReadReceiptSerializer.uniqueIdColumn.columnName,
-                                                transaction: grdbTransaction,
-                                                deserialize: { (statement) in
-                                                    return try TSRecipientReadReceiptSerializer.sdsDeserialize(statement: statement)
-            })
-        } else if let ydbTransaction = transaction.transitional_yapReadTransaction {
-            TSRecipientReadReceipt.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
-                guard let model = object as? TSRecipientReadReceipt else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                result.append(model)
-            }
-        } else {
-            owsFailDebug("Invalid transaction")
-        }
-        return result
+    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSRecipientReadReceiptCursor {
+        return TSRecipientReadReceiptCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: TSRecipientReadReceiptSerializer.table,
+                                                                   transaction: transaction,
+                                                                   deserialize: TSRecipientReadReceiptSerializer.sdsDeserialize))
     }
 }
 
-// TODO: Add remove/delete method.
+// MARK: - Swift Fetch
+
+extension TSRecipientReadReceipt {
+    public class func grdbFetchCursor(sql: String,
+                                      arguments: [DatabaseValueConvertible]?,
+                                      transaction: GRDBReadTransaction) -> TSRecipientReadReceiptCursor {
+        var statementArguments: StatementArguments?
+        if let arguments = arguments {
+            guard let statementArgs = StatementArguments(arguments) else {
+                owsFail("Could not convert arguments.")
+            }
+            statementArguments = statementArgs
+        }
+        return TSRecipientReadReceiptCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
+                                                             arguments: statementArguments,
+                                                             transaction: transaction,
+                                                                   deserialize: TSRecipientReadReceiptSerializer.sdsDeserialize))
+    }
+}
 
 // MARK: - SDSSerializer
 

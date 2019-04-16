@@ -152,11 +152,22 @@ public class SDSSerialization: NSObject {
 
     // MARK: - Fetch (Read)
 
-    // Add: fetchOne, fetchCursor, fetchWhere, etc.
-    public class func fetchAll<T>(tableMetadata: SDSTableMetadata,
-                                  uniqueIdColumnName: String,
-                                  transaction: GRDBReadTransaction,
-                                  deserialize: (SelectStatement) throws -> T) -> [T] {
+    public class func fetchCursor<T>(tableMetadata: SDSTableMetadata,
+                                     transaction: GRDBReadTransaction,
+                                     deserialize: @escaping (SelectStatement) throws -> T) -> SDSCursor<T> {
+        let columnNames: [String] = tableMetadata.selectColumnNames
+        let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
+        let tableName: String = tableMetadata.tableName
+        // TODO: ORDER BY?
+        let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier)"
+
+        return fetchCursor(sql: sql, arguments: nil, transaction: transaction, deserialize: deserialize)
+    }
+
+    public class func fetchCursor<T>(sql: String,
+                                     arguments: StatementArguments?,
+                                     transaction: GRDBReadTransaction,
+                                     deserialize: @escaping (SelectStatement) throws -> T) -> SDSCursor<T> {
         Logger.verbose("")
 
         let database = transaction.database
@@ -164,39 +175,16 @@ public class SDSSerialization: NSObject {
         // TODO: This assumes the table has already been made.
 
         do {
-            let columnNames: [String] = tableMetadata.selectColumnNames
-            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
-            let tableName: String = tableMetadata.tableName
-            // TODO: ORDER BY?
-            let query: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier)"
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: query)
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+
+            if let arguments = arguments {
+                statement.unsafeSetArguments(arguments)
+            }
 
             let sqliteStatement: SQLiteStatement = statement.sqliteStatement
 
-            var entities = [T]()
-            var done = false
-            repeat {
-                switch sqlite3_step(sqliteStatement) {
-                case SQLITE_DONE:
-                    Logger.verbose("SQLITE_DONE")
-                    done = true
-                    break
-                case SQLITE_ROW:
-                    Logger.verbose("SQLITE_ROW")
-                    let entity = try deserialize(statement)
-                    entities.append(entity)
-                    continue
-                case let code:
-                    // TODO: ?
-                    owsFailDebug("Code: \(code)")
-                    // TODO: Rework error handling.
-                    //                throw DatabaseError(resultCode: code, message: statement.database.lastErrorMessage, sql: statement.sql, arguments: statement.arguments)
-                    done = true
-                    break
-                }
-            } while !done
-
-            return entities
+            let cursor = SDSCursor<T>(statement: statement, sqliteStatement: sqliteStatement, deserialize: deserialize)
+            return cursor
         } catch let error {
             // TODO:
             //            throw DatabaseError(resultCode: code, message: statement.database.lastErrorMessage, sql: statement.sql, arguments: statement.arguments)

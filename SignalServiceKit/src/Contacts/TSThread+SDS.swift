@@ -249,58 +249,64 @@ extension TSThread {
     }
 }
 
-// TODO: Add remove/delete method.
+// MARK: - TSThreadCursor
 
-// MARK: - Fetch
+@objc
+public class TSThreadCursor: NSObject {
+    private let cursor: SDSCursor<TSThread>
 
-// This category defines various fetch methods.
-//
+    init(cursor: SDSCursor<TSThread>) {
+        self.cursor = cursor
+    }
+
+    // TODO: Revisit error handling in this class.
+    public func next() throws -> TSThread? {
+        return try cursor.next()
+    }
+
+    public func all() throws -> [TSThread] {
+        return try cursor.all()
+    }
+}
+
+// MARK: - Obj-C Fetch
+
 // TODO: We may eventually want to define some combination of:
 //
 // * fetchCursor, fetchOne, fetchAll, etc. (ala GRDB)
 // * Optional "where clause" parameters for filtering.
 // * Async flavors with completions.
 //
-// TODO: I've defined flavors that take a read transation or SDSDatabaseStorage.
-//       We might want only the former.  Or we might take a "connection" if we
-//       end up having that class.
+// TODO: I've defined flavors that take a read transaction.
+//       Or we might take a "connection" if we end up having that class.
 @objc
 extension TSThread {
-    @objc
-    public class func anyFetchAll(databaseStorage: SDSDatabaseStorage) -> [TSThread] {
-        var result = [TSThread]()
-        databaseStorage.readSwallowingErrors { (transaction) in
-            result += anyFetchAll(transaction: transaction)
-        }
-        return result
-    }
-
-    @objc
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSThread] {
-        var result = [TSThread]()
-        if let grdbTransaction = transaction.transitional_grdbReadTransaction {
-            result += SDSSerialization.fetchAll(tableMetadata: TSThreadSerializer.table,
-                                                uniqueIdColumnName: TSThreadSerializer.uniqueIdColumn.columnName,
-                                                transaction: grdbTransaction,
-                                                deserialize: { (statement) in
-                                                    return try TSThreadSerializer.sdsDeserialize(statement: statement)
-            })
-        } else if let ydbTransaction = transaction.transitional_yapReadTransaction {
-            TSThread.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
-                guard let model = object as? TSThread else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                result.append(model)
-            }
-        } else {
-            owsFailDebug("Invalid transaction")
-        }
-        return result
+    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSThreadCursor {
+        return TSThreadCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: TSThreadSerializer.table,
+                                                                   transaction: transaction,
+                                                                   deserialize: TSThreadSerializer.sdsDeserialize))
     }
 }
 
-// TODO: Add remove/delete method.
+// MARK: - Swift Fetch
+
+extension TSThread {
+    public class func grdbFetchCursor(sql: String,
+                                      arguments: [DatabaseValueConvertible]?,
+                                      transaction: GRDBReadTransaction) -> TSThreadCursor {
+        var statementArguments: StatementArguments?
+        if let arguments = arguments {
+            guard let statementArgs = StatementArguments(arguments) else {
+                owsFail("Could not convert arguments.")
+            }
+            statementArguments = statementArgs
+        }
+        return TSThreadCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
+                                                             arguments: statementArguments,
+                                                             transaction: transaction,
+                                                                   deserialize: TSThreadSerializer.sdsDeserialize))
+    }
+}
 
 // MARK: - SDSSerializer
 

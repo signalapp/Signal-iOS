@@ -338,58 +338,64 @@ extension TSAttachment {
     }
 }
 
-// TODO: Add remove/delete method.
+// MARK: - TSAttachmentCursor
 
-// MARK: - Fetch
+@objc
+public class TSAttachmentCursor: NSObject {
+    private let cursor: SDSCursor<TSAttachment>
 
-// This category defines various fetch methods.
-//
+    init(cursor: SDSCursor<TSAttachment>) {
+        self.cursor = cursor
+    }
+
+    // TODO: Revisit error handling in this class.
+    public func next() throws -> TSAttachment? {
+        return try cursor.next()
+    }
+
+    public func all() throws -> [TSAttachment] {
+        return try cursor.all()
+    }
+}
+
+// MARK: - Obj-C Fetch
+
 // TODO: We may eventually want to define some combination of:
 //
 // * fetchCursor, fetchOne, fetchAll, etc. (ala GRDB)
 // * Optional "where clause" parameters for filtering.
 // * Async flavors with completions.
 //
-// TODO: I've defined flavors that take a read transation or SDSDatabaseStorage.
-//       We might want only the former.  Or we might take a "connection" if we
-//       end up having that class.
+// TODO: I've defined flavors that take a read transaction.
+//       Or we might take a "connection" if we end up having that class.
 @objc
 extension TSAttachment {
-    @objc
-    public class func anyFetchAll(databaseStorage: SDSDatabaseStorage) -> [TSAttachment] {
-        var result = [TSAttachment]()
-        databaseStorage.readSwallowingErrors { (transaction) in
-            result += anyFetchAll(transaction: transaction)
-        }
-        return result
-    }
-
-    @objc
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
-        var result = [TSAttachment]()
-        if let grdbTransaction = transaction.transitional_grdbReadTransaction {
-            result += SDSSerialization.fetchAll(tableMetadata: TSAttachmentSerializer.table,
-                                                uniqueIdColumnName: TSAttachmentSerializer.uniqueIdColumn.columnName,
-                                                transaction: grdbTransaction,
-                                                deserialize: { (statement) in
-                                                    return try TSAttachmentSerializer.sdsDeserialize(statement: statement)
-            })
-        } else if let ydbTransaction = transaction.transitional_yapReadTransaction {
-            TSAttachment.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
-                guard let model = object as? TSAttachment else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                result.append(model)
-            }
-        } else {
-            owsFailDebug("Invalid transaction")
-        }
-        return result
+    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSAttachmentCursor {
+        return TSAttachmentCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: TSAttachmentSerializer.table,
+                                                                   transaction: transaction,
+                                                                   deserialize: TSAttachmentSerializer.sdsDeserialize))
     }
 }
 
-// TODO: Add remove/delete method.
+// MARK: - Swift Fetch
+
+extension TSAttachment {
+    public class func grdbFetchCursor(sql: String,
+                                      arguments: [DatabaseValueConvertible]?,
+                                      transaction: GRDBReadTransaction) -> TSAttachmentCursor {
+        var statementArguments: StatementArguments?
+        if let arguments = arguments {
+            guard let statementArgs = StatementArguments(arguments) else {
+                owsFail("Could not convert arguments.")
+            }
+            statementArguments = statementArgs
+        }
+        return TSAttachmentCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
+                                                             arguments: statementArguments,
+                                                             transaction: transaction,
+                                                                   deserialize: TSAttachmentSerializer.sdsDeserialize))
+    }
+}
 
 // MARK: - SDSSerializer
 
