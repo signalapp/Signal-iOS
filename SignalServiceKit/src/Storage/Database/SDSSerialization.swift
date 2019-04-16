@@ -186,7 +186,6 @@ public class SDSSerialization: NSObject {
                     let entity = try deserialize(statement)
                     entities.append(entity)
                     continue
-                //                    return true
                 case let code:
                     // TODO: ?
                     owsFailDebug("Code: \(code)")
