@@ -1,11 +1,26 @@
 {
 	"nsnumber_types": {
-		"TSThread.archivedAsOfMessageSortId": "Bool"
+		"TSThread.archivedAsOfMessageSortId": "Bool",
+		"TSIncomingMessage.serverTimestamp": "UInt64",
+		"TSOutgoingMessageRecipientState.deliveryTimestamp": "UInt64",
+		"TSOutgoingMessageRecipientState.readTimestamp": "UInt64",
+		"TSAttachmentStream.cachedAudioDurationSeconds": "Double",
+		"TSAttachmentStream.cachedImageWidth": "Double",
+		"TSAttachmentStream.cachedImageHeight": "Double",
+		"TSAttachmentStream.isValidImageCached": "Bool",
+		"TSAttachmentStream.isValidVideoCached": "Bool"
 	},
 	"properties_to_ignore": [
 		"TSGroupModel.groupImage"
 	],
+	"class_to_skip_serialization": [],
 	"enum_properties": [
 		"TSThread.conversationColorName"
-	]
+	],
+	"custom_accessors": {
+		"TSInfoMessage.read": "wasRead",
+		"TSErrorMessage.read": "wasRead",
+		"TSIncomingMessage.read": "wasRead",
+		"TSCall.read": "wasRead"
+	}
 }

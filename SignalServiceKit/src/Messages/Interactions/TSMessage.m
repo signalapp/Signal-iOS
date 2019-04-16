@@ -86,6 +86,45 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return self;
 }
 
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(unsigned long long)expireStartedAt
+                       expiresAt:(unsigned long long)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                   schemaVersion:(unsigned long)schemaVersion
+{
+    self = [super initWithUniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId];
+    
+    if (!self) {
+        return self;
+    }
+    
+    _schemaVersion = OWSMessageSchemaVersion;
+    
+    _body = body;
+    _attachmentIds = attachmentIds ? [attachmentIds mutableCopy] : [NSMutableArray new];
+    _expiresInSeconds = expiresInSeconds;
+    _expireStartedAt = expireStartedAt;
+    [self updateExpiresAt];
+    _quotedMessage = quotedMessage;
+    _contactShare = contactShare;
+    _linkPreview = linkPreview;
+    
+    return self;
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];

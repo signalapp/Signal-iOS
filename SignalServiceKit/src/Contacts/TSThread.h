@@ -41,7 +41,7 @@ extern ConversationColorName const kConversationColorName_Default;
 - (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
                     archivalDate:(nullable NSDate *)archivalDate
        archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
-           conversationColorName:(NSString *)conversationColorName
+           conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(NSDate *)creationDate
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
                  lastMessageDate:(nullable NSDate *)lastMessageDate

@@ -148,6 +148,83 @@ def process_objc_ast(namespace, file_path, raw_ast):
             # print 'implementation', line
             process_objc_implementation(namespace, file_path, lines, prefix, remainder)
         # TODO: Category impl.
+        elif remainder.startswith('TypedefDecl '):
+            # `-ObjCImplementationDecl 0x112510f20 <line:24:1, line:87:1> line:24:17 ObjCMessage
+            # print 'implementation', line
+            process_objc_type_declaration(namespace, file_path, lines, prefix, remainder)
+        elif remainder.startswith('EnumDecl '):
+            # `-ObjCImplementationDecl 0x112510f20 <line:24:1, line:87:1> line:24:17 ObjCMessage
+            # print 'implementation', line
+            process_objc_enum_declaration(namespace, file_path, lines, prefix, remainder)
+
+
+# |-EnumDecl 0x7fd576047310 </Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFAvailability.h:127:43, /Users/matthew/code/workspace/ows/Signal-iOS-2/SignalServiceKit/src/Messages/TSCall.h:12:29> col:29 RPRecentCallType 'NSUInteger':'unsigned long'
+# | `-EnumExtensibilityAttr 0x7fd5760473f0 </Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFAvailability.h:116:45, col:68> Open
+# |-TypedefDecl 0x7fd576047488 </Users/matthew/code/workspace/ows/Signal-iOS-2/SignalServiceKit/src/Messages/TSCall.h:12:1, col:29> col:29 referenced RPRecentCallType 'enum RPRecentCallType':'enum RPRecentCallType'
+# | `-ElaboratedType 0x7fd576047430 'enum RPRecentCallType' sugar
+# |   `-EnumType 0x7fd5760473d0 'enum RPRecentCallType'
+# |     `-Enum 0x7fd576047518 'RPRecentCallType'
+# |-EnumDecl 0x7fd576047518 prev 0x7fd576047310 </Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/CoreFoundation.framework/Headers/CFAvailability.h:127:90,
+process_objc_enum_declaration_regex = re.compile(r"^.+? ([^ ]+) '([^']+)':'([^']+)'$")
+# process_objc_enum_declaration_regex = re.compile(r"^.+?'([^']+)'(:'([^']+)')?$")
+
+enum_type_map = {}
+
+def process_objc_enum_declaration(namespace, file_path, lines, prefix, remainder):
+    print '\t', 'enum_declaration', remainder
+    
+    match = process_objc_enum_declaration_regex.search(remainder)
+    if match is None:
+        print 'file_path:', file_path
+        print 'Could not match line:', remainder
+        return
+    type1 = get_match_group(match, 1)
+    type2 = get_match_group(match, 2)
+    type3 = get_match_group(match, 3)
+
+    # print 'enum?', type1, type2, type3
+
+    if type1.startswith('line:'):
+        print 'Ignoring invalid enum(1):', type1, type2, type3
+        return
+    if type1 in enum_type_map:
+        return
+    enum_type_map[type1] = type2
+    print 'enum_type_map', enum_type_map
+    
+
+# |-TypedefDecl 0x7f8d8fb44748 <line:12:1, line:22:3> col:3 referenced RPRecentCallType 'enum RPRecentCallType':'RPRecentCallType'
+process_objc_type_declaration_regex = re.compile(r"^.+?'([^']+)'(:'([^']+)')?$")
+
+def process_objc_type_declaration(namespace, file_path, lines, prefix, remainder):
+    print '\t', 'type_declaration', remainder
+    
+    match = process_objc_type_declaration_regex.search(remainder)
+    if match is None:
+        print 'file_path:', file_path
+        fail('Could not match line:', remainder)
+    type1 = get_match_group(match, 1)
+    type2 = get_match_group(match, 2)
+    type3 = get_match_group(match, 3)
+
+    if type1 is None or type3 is None:
+        return
+    is_enum = (type1 == 'enum ' + type3)
+    if not is_enum:
+        return
+    
+    # print 'Enum:', type3
+    
+    if type3.startswith('line:'):
+        print 'Ignoring invalid enum(2):', type1, type2, type3
+        return
+    if type3 not in enum_type_map:
+        print 'Enum has unknown type:', type3
+        enum_type = 'NSUInteger'
+    else:
+        enum_type = enum_type_map[type3]
+    enum_type_map[type3] = enum_type
+    
 
 # |-ObjCInterfaceDecl 0x10f5d2b60 <SignalDataStoreCommon/ObjCBaseModel.h:15:1, col:8> col:8 SDSDataStore
 # |-ObjCInterfaceDecl 0x10f5d2c10 <line:17:1, line:29:2> line:17:12 ObjCBaseModel
@@ -293,6 +370,7 @@ def process_objc_property_impl(clazz, prefix, file_path, line, remainder):
             print '\t\t', name         
         fail("Can't find property:", property_name)
     else:
+        print 'property synthesized', line
         property.is_synthesized = True
 
 
@@ -304,6 +382,8 @@ def process_objc_property_impl(clazz, prefix, file_path, line, remainder):
 # | |-ObjCPropertyDecl 0x7faf139af8e0 <line:37:1, col:28> col:28 shouldThreadBeVisible 'BOOL':'bool' assign readwrite nonatomic unsafe_unretained
 process_objc_property_regex = re.compile(r"^.+<.+> col:\d+(.+?)'(.+?)'(:'(.+)')?(.+)$")
 
+
+# This convenience function handles None results and strips.
 def get_match_group(match, index):
     group = match.group(index)
     if group is None:
@@ -329,13 +409,23 @@ def process_objc_property(clazz, prefix, file_path, line, remainder):
     property_type = property_type_2
     if len(property_type_2) < 1:
         property_type = property_type_1
-    if property_type_1 == 'BOOL':
+        
+    primitive_types = (
+        'BOOL',
+        'NSInteger',
+        'NSUInteger',
+    )
+    if property_type_1 in primitive_types:
         property_type = property_type_1
+    # property_type = property_type_1
+        
+    # print '\t', 'property_type', property_type, 'property_type1', property_type_1, 'property_type2', property_type_2
     
     property = clazz.get_property(property_name)
     if property is None:
         
         property = ParsedProperty(property_name, property_type, is_optional)
+        # print 'property found', line
         clazz.add_property(property)
     else:
         if property.name != property_name:
@@ -374,6 +464,7 @@ def emit_output(file_path, namespace):
                 'name': property.name,
                 'objc_type': property.objc_type,
                 'is_optional': property.is_optional,
+                'class_name': class_name,
                 # This might not be necessary, thanks to is_synthesized
                 # 'is_readonly': (not property.is_not_readonly),
             }
@@ -388,7 +479,15 @@ def emit_output(file_path, namespace):
         if clazz.super_class_name is not None:
             class_dict['super_class_name'] = clazz.super_class_name
         classes.append(class_dict)
-    return json.dumps(classes, sort_keys=True, indent=4)
+        
+    enums = enum_type_map
+    
+    root = {
+        'classes': classes,
+        'enums': enums,
+    }
+    
+    return json.dumps(root, sort_keys=True, indent=4)
 
 
 # We need to include search paths for every

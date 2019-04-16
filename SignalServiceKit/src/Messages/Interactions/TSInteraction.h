@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSYapDatabaseObject.h"
@@ -27,18 +27,29 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 @end
 
+#pragma mark -
+
 @interface TSInteraction : TSYapDatabaseObject
 
-- (instancetype)initInteractionWithUniqueId:(NSString *)uniqueId
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
                                   timestamp:(uint64_t)timestamp
                                    inThread:(TSThread *)thread;
+
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:));
 
 @property (nonatomic, readonly) NSString *uniqueThreadId;
 @property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
+
 - (NSDate *)receivedAtDate;
 
 - (OWSInteractionType)interactionType;

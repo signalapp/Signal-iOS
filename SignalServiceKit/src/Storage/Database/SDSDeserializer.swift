@@ -99,6 +99,13 @@ public class SDSDeserializer {
         return value
     }
 
+    public func optionalInt64AsNSNumber(at index: Int32) throws -> NSNumber? {
+        guard let value = try optionalInt64(at: index) else {
+            return nil
+        }
+        return NSNumber(value: value)
+    }
+
     public func optionalInt(at index: Int32) throws -> Int? {
         let columnType = sqlite3_column_type(sqliteStatement, index)
         switch columnType {
@@ -112,8 +119,38 @@ public class SDSDeserializer {
         }
     }
 
-    // MARK: - Bool
+    // MARK: - UInt64
 
+    public func uint64(at index: Int32) throws -> UInt64 {
+        guard let value = try optionalUInt64(at: index) else {
+            owsFailDebug("Missing required filed: \(index)")
+            throw SDSError.missingRequiredField
+        }
+        return value
+    }
+
+    public func optionalUInt64AsNSNumber(at index: Int32) throws -> NSNumber? {
+        guard let value = try optionalUInt64(at: index) else {
+            return nil
+        }
+        return NSNumber(value: value)
+    }
+
+    public func optionalUInt64(at index: Int32) throws -> UInt64? {
+        let columnType = sqlite3_column_type(sqliteStatement, index)
+        switch columnType {
+        case SQLITE_NULL:
+            return nil
+        case SQLITE_INTEGER:
+            return UInt64(sqlite3_column_int64(sqliteStatement, index))
+        default:
+            owsFailDebug("Unexpected type: \(columnType)")
+            throw SDSError.unexpectedType
+        }
+    }
+    
+    // MARK: - Bool
+    
     public func bool(at index: Int32) throws -> Bool {
         guard let value = try optionalBool(at: index) else {
             owsFailDebug("Missing required filed: \(index)")
@@ -121,14 +158,14 @@ public class SDSDeserializer {
         }
         return value
     }
-
+    
     public func optionalBoolAsNSNumber(at index: Int32) throws -> NSNumber? {
         guard let value = try optionalBool(at: index) else {
             return nil
         }
         return NSNumber(value: value)
     }
-
+    
     public func optionalBool(at index: Int32) throws -> Bool? {
         let columnType = sqlite3_column_type(sqliteStatement, index)
         switch columnType {
@@ -136,6 +173,36 @@ public class SDSDeserializer {
             return nil
         case SQLITE_INTEGER:
             return sqlite3_column_int(sqliteStatement, index) > 0
+        default:
+            owsFailDebug("Unexpected type: \(columnType)")
+            throw SDSError.unexpectedType
+        }
+    }
+    
+    // MARK: - Bool
+    
+    public func double(at index: Int32) throws -> Double {
+        guard let value = try optionalDouble(at: index) else {
+            owsFailDebug("Missing required filed: \(index)")
+            throw SDSError.missingRequiredField
+        }
+        return value
+    }
+    
+    public func optionalDoubleAsNSNumber(at index: Int32) throws -> NSNumber? {
+        guard let value = try optionalDouble(at: index) else {
+            return nil
+        }
+        return NSNumber(value: value)
+    }
+    
+    public func optionalDouble(at index: Int32) throws -> Double? {
+        let columnType = sqlite3_column_type(sqliteStatement, index)
+        switch columnType {
+        case SQLITE_NULL:
+            return nil
+        case SQLITE_FLOAT:
+            return sqlite3_column_double(sqliteStatement, index)
         default:
             owsFailDebug("Unexpected type: \(columnType)")
             throw SDSError.unexpectedType
@@ -177,6 +244,13 @@ public class SDSDeserializer {
             return nil
         }
         return NSKeyedArchiver.archivedData(withRootObject: value)
+    }
+
+    public class func optionalUnarchive<T>(_ encoded: Data?) throws -> T? {
+        guard let encoded = encoded else {
+            return nil
+        }
+        return try unarchive(encoded)
     }
 
     public class func unarchive<T>(_ encoded: Data) throws -> T {

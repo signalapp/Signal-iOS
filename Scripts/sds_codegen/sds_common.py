@@ -38,3 +38,10 @@ def clean_up_generated_swift(text):
         text = text.replace('\n\n\n', '\n\n')
     # Ensure there's a trailing newline.
     return text.strip() + '\n'
+    
+    
+def pretty_module_path(path):
+    path = os.path.abspath(path)
+    if path.startswith(git_repo_path):
+       path = path[len(git_repo_path):] 
+    return path

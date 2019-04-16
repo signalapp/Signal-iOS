@@ -23,6 +23,8 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 @end
 
+#pragma mark -
+
 @implementation TSAttachment
 
 // This constructor is used for new instances of TSAttachmentPointer,
@@ -192,6 +194,43 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     if (_contentType.length < 1) {
         OWSLogWarn(@"legacy attachment has invalid content type");
 
+        _contentType = OWSMimeTypeApplicationOctetStream;
+    }
+
+    return self;
+}
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                  albumMessageId:(nullable NSString *)albumMessageId
+         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
+                  attachmentType:(enum TSAttachmentType)attachmentType
+                       byteCount:(unsigned int)byteCount
+                         caption:(nullable NSString *)caption
+                     contentType:(NSString *)contentType
+                   encryptionKey:(nullable NSData *)encryptionKey
+                    isDownloaded:(BOOL)isDownloaded
+                        serverId:(unsigned long long)serverId
+                  sourceFilename:(nullable NSString *)sourceFilename
+{
+    self = [super initWithUniqueId:uniqueId];
+    if (!self) {
+        return self;
+    }
+    
+    _albumMessageId = albumMessageId;
+    _attachmentSchemaVersion = attachmentSchemaVersion;
+    _attachmentType = attachmentType;
+    _byteCount = byteCount;
+    _caption = caption;
+    _contentType = contentType;
+    _encryptionKey = encryptionKey;
+    _isDownloaded = isDownloaded;
+    _serverId = serverId;
+    _sourceFilename = sourceFilename;
+    
+    if (_contentType.length < 1) {
+        OWSLogWarn(@"legacy attachment has invalid content type");
+        
         _contentType = OWSMimeTypeApplicationOctetStream;
     }
 

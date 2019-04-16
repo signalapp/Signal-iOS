@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
@@ -24,14 +24,16 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 
 @property (nonatomic, readonly, copy) NSString *authorId;
 
+@property (atomic, nullable) NSData *envelopeData;
+
 @end
+
+#pragma mark -
 
 @implementation TSInvalidIdentityKeyReceivingErrorMessage {
     // Not using a property declaration in order to exclude from DB serialization
     SSKProtoEnvelope *_Nullable _envelope;
 }
-
-@synthesize envelopeData = _envelopeData;
 
 #ifdef DEBUG
 // We no longer create these messages, but they might exist on legacy clients so it's useful to be able to

@@ -177,16 +177,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 return nil
         }
 
-        // GRDB CLEANUP: eventually we won't need this thread record, but currently it's the only way to assign a uniqueThreadId to an interaction.
-        guard let threadRecord = try ThreadRecord.fetchOne(transaction,
-                                                           sql: "SELECT * FROM  \(ThreadRecord.databaseTableName) WHERE  \(ThreadRecord.columnName(.uniqueId)) = ?",
-            arguments: [interactionRecord.threadUniqueId]) else {
-                throw assertionError("thread record was unexpectedly nil")
-        }
-
-        let thread = TSThread.fromRecord(threadRecord)
-
-        return TSInteraction.fromRecord(interactionRecord, thread: thread)
+        return TSInteraction.fromRecord(interactionRecord)
     }
 
     // MARK: - instance methods
@@ -203,15 +194,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 return nil
         }
 
-        guard let threadRecord = try ThreadRecord.fetchOne(transaction,
-                                                           sql: "SELECT * FROM  \(ThreadRecord.databaseTableName) WHERE  \(ThreadRecord.columnName(.uniqueId)) = ?",
-            arguments: [interactionRecord.threadUniqueId]) else {
-                throw assertionError("thread record was unexpectedly nil")
-        }
-
-        let thread = TSThread.fromRecord(threadRecord)
-
-        return TSInteraction.fromRecord(interactionRecord, thread: thread)
+        return TSInteraction.fromRecord(interactionRecord)
     }
 
     func sortIndex(interactionUniqueId: String, transaction: Database) throws -> UInt? {

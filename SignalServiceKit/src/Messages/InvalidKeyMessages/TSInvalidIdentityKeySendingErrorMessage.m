@@ -24,12 +24,63 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
 
 @end
 
+#pragma mark -
+
 // DEPRECATED - we no longer create new instances of this class (as of  mid-2017); However, existing instances may
 // exist, so we should keep this class around to honor their old behavior.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
 @implementation TSInvalidIdentityKeySendingErrorMessage
 #pragma clang diagnostic pop
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(unsigned long long)expireStartedAt
+                       expiresAt:(unsigned long long)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                   schemaVersion:(NSUInteger)schemaVersion
+       errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
+                       errorType:(enum TSErrorMessageType)errorType
+                            read:(BOOL)read
+                     recipientId:(nullable NSString *)recipientId
+                       messageId:(NSString *)messageId
+                    preKeyBundle:(PreKeyBundle *)preKeyBundle
+{
+    self = [self initWithUniqueId:uniqueId
+              receivedAtTimestamp:receivedAtTimestamp
+                           sortId:sortId
+                        timestamp:timestamp
+                   uniqueThreadId:uniqueThreadId
+                    attachmentIds:attachmentIds
+                             body:body
+                     contactShare:contactShare
+                  expireStartedAt:expireStartedAt
+                        expiresAt:expiresAt
+                 expiresInSeconds:expiresInSeconds
+                      linkPreview:linkPreview
+                    quotedMessage:quotedMessage
+                    schemaVersion:schemaVersion
+        errorMessageSchemaVersion:errorMessageSchemaVersion
+                        errorType:errorType
+                             read:read
+                      recipientId:recipientId];
+    if (!self) {
+        return self;
+    }
+    
+    _messageId = messageId;
+    _preKeyBundle = preKeyBundle;
+    
+    return self;
+}
 
 - (void)throws_acceptNewIdentityKey
 {

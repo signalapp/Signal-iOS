@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadTracking.h"
@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSContactThread;
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, RPRecentCallType) {
     RPRecentCallTypeIncoming = 1,
     RPRecentCallTypeOutgoing,
     RPRecentCallTypeIncomingMissed,
@@ -19,7 +19,7 @@ typedef enum {
     RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity,
     RPRecentCallTypeIncomingDeclined,
     RPRecentCallTypeOutgoingMissed,
-} RPRecentCallType;
+};
 
 NSString *NSStringFromCallType(RPRecentCallType callType);
 
@@ -33,6 +33,15 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
                    withCallNumber:(NSString *)contactNumber
                          callType:(RPRecentCallType)callType
                          inThread:(TSContactThread *)thread NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+               callSchemaVersion:(NSUInteger)callSchemaVersion
+                        callType:(RPRecentCallType)callType
+                            read:(BOOL)read NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

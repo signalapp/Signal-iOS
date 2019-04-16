@@ -211,12 +211,12 @@ protocol CallObserver: class {
 
         // Mark incomplete calls as completed if call has connected.
         if state == .connected &&
-            callRecord.callType == RPRecentCallTypeOutgoingIncomplete {
-            callRecord.updateCallType(RPRecentCallTypeOutgoing)
+            callRecord.callType == .outgoingIncomplete {
+            callRecord.updateCallType(.outgoing)
         }
         if state == .connected &&
-            callRecord.callType == RPRecentCallTypeIncomingIncomplete {
-            callRecord.updateCallType(RPRecentCallTypeIncoming)
+            callRecord.callType == .incomingIncomplete {
+            callRecord.updateCallType(.incoming)
         }
     }
 

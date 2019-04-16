@@ -25,28 +25,28 @@ REPO_ROOT=`git rev-parse --show-toplevel`
 # and generates fake Obj-c headers (.h) that @interface and @protocol
 # stubs for each swift class.  This is analogous to a very simplified 
 # version of the "-Swift.h" files used by Swift for bridging.
-# $REPO_ROOT/Scripts/sds_codegen/sds_parse_swift_bridging.py --src-path  . --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes --intermediates
 $REPO_ROOT/Scripts/sds_codegen/sds_parse_swift_bridging.py --src-path  . --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
-
 
 
 # We parse Obj-C source files (.m only, not .mm yet) to extract simple class descriptions (class name, base class, property names and types, etc.)
 #
+# Common
 $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Storage/TSYapDatabaseObject.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+
+# Threads
 $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Contacts/TSThread.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
 $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Contacts/Threads/TSContactThread.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
 $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Contacts/Threads/TSGroupThread.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Messages/TSGroupModel.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
 
-
+# Interactions
+$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path Signal/src/ViewControllers/ConversationView/TypingIndicatorInteraction.swift --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Messages --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
 
 # We parse Swift source files to extract simple class descriptions (class name, base class, property names and types, etc.)
 #
 # NOTE: This script isn't working yet.
 #
 # $REPO_ROOT/Scripts/sds_codegen/sds_parse_swift.py --src-path SignalDataStoreCommon/
-
-
 
 # We generate Swift extensions to handle serialization, etc. for models.
 $REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalServiceKit/  --search-path . --record-type-swift-path SignalServiceKit/src/Storage/Database/SDSRecordType.swift  --record-type-json-path $REPO_ROOT/Scripts/sds_codegen/sds_config/sds_record_type_map.json --config-json-path $REPO_ROOT/Scripts/sds_codegen/sds-config/sds-config.json

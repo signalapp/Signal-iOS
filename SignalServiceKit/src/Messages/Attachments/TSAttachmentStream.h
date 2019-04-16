@@ -31,6 +31,29 @@ typedef void (^OWSThumbnailFailure)(void);
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                  albumMessageId:(nullable NSString *)albumMessageId
+         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
+                  attachmentType:(enum TSAttachmentType)attachmentType
+                       byteCount:(unsigned int)byteCount
+                         caption:(nullable NSString *)caption
+                     contentType:(NSString *)contentType
+                   encryptionKey:(nullable NSData *)encryptionKey
+                    isDownloaded:(BOOL)isDownloaded
+                        serverId:(unsigned long long)serverId
+                  sourceFilename:(nullable NSString *)sourceFilename
+      cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
+               cachedImageHeight:(nullable NSNumber *)cachedImageHeight
+                cachedImageWidth:(nullable NSNumber *)cachedImageWidth
+               creationTimestamp:(NSDate *)creationTimestamp
+                          digest:(nullable NSData *)digest
+                      isUploaded:(BOOL)isUploaded
+              isValidImageCached:(nullable NSNumber *)isValidImageCached
+              isValidVideoCached:(nullable NSNumber *)isValidVideoCached
+           localRelativeFilePath:(nullable NSString *)localRelativeFilePath
+NS_DESIGNATED_INITIALIZER
+NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
+
 // Though now required, `digest` may be null for pre-existing records or from
 // messages received from other clients
 @property (nullable, nonatomic) NSData *digest;

@@ -9,12 +9,12 @@
 #import "OWSQuotedReplyModel.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/OWSContactOffersInteraction.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSDatabaseView.h>
@@ -1203,7 +1203,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     // value doesn't matter.
     NSString *uniqueId = @"contact-offers";
     OWSContactOffersInteraction *offersMessage =
-        [[OWSContactOffersInteraction alloc] initInteractionWithUniqueId:uniqueId
+        [[OWSContactOffersInteraction alloc] initWithUniqueId:uniqueId
                                                                timestamp:contactOffersTimestamp
                                                                   thread:thread
                                                            hasBlockOffer:shouldHaveBlockOffer

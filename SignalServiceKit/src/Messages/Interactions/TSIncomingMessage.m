@@ -79,6 +79,53 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(unsigned long long)expireStartedAt
+                       expiresAt:(unsigned long long)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                   schemaVersion:(NSUInteger)schemaVersion
+                        authorId:(NSString *)authorId
+                            read:(BOOL)read
+                 serverTimestamp:(nullable NSNumber *)serverTimestamp
+                  sourceDeviceId:(unsigned int)sourceDeviceId
+                 wasReceivedByUD:(BOOL)wasReceivedByUD
+{
+    self = [super initWithUniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId
+                     attachmentIds:attachmentIds
+                              body:body
+                      contactShare:contactShare
+                   expireStartedAt:expireStartedAt
+                         expiresAt:expiresAt
+                  expiresInSeconds:expiresInSeconds
+                       linkPreview:linkPreview
+                     quotedMessage:quotedMessage
+                     schemaVersion:schemaVersion];
+
+    if (self) {
+        _authorId = authorId;
+        _read = read;
+        _serverTimestamp = serverTimestamp;
+        _sourceDeviceId = sourceDeviceId;
+        _wasReceivedByUD = wasReceivedByUD;
+    }
+
+    return self;
+}
+
 + (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId
                                        timestamp:(uint64_t)timestamp
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction

@@ -19,6 +19,29 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeySendingErrorMessage :
 
 @property (nonatomic, readonly) NSString *messageId;
 
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(unsigned long long)expireStartedAt
+                       expiresAt:(unsigned long long)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                   schemaVersion:(NSUInteger)schemaVersion
+       errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
+                       errorType:(enum TSErrorMessageType)errorType
+                            read:(BOOL)read
+                     recipientId:(nullable NSString *)recipientId
+                       messageId:(NSString *)messageId
+                    preKeyBundle:(PreKeyBundle *)preKeyBundle
+NS_DESIGNATED_INITIALIZER
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:messageId:preKeyBundle:));
+
 @end
 
 NS_ASSUME_NONNULL_END

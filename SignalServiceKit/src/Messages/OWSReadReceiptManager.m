@@ -26,16 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMarkedAsReadNotification";
 
-@interface TSRecipientReadReceipt : TSYapDatabaseObject
-
-@property (nonatomic, readonly) uint64_t sentTimestamp;
-// Map of "recipient id"-to-"read timestamp".
-@property (nonatomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientMap;
-
-@end
-
-#pragma mark -
-
 @implementation TSRecipientReadReceipt
 
 + (NSString *)collection
@@ -54,6 +44,22 @@ NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMar
         _recipientMap = [NSDictionary new];
     }
 
+    return self;
+}
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                    recipientMap:(NSDictionary<NSString *,NSNumber *> *)recipientMap
+                   sentTimestamp:(unsigned long long)sentTimestamp
+{
+    OWSAssertDebug(sentTimestamp > 0);
+    
+    self = [super initWithUniqueId:uniqueId];
+    
+    if (self) {
+        _sentTimestamp = sentTimestamp;
+        _recipientMap = recipientMap;
+    }
+    
     return self;
 }
 
