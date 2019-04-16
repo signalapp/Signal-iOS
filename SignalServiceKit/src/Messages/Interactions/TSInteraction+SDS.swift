@@ -2187,19 +2187,13 @@ extension TSInteraction {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSInteractionCursor {
         return TSInteractionCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: TSInteractionSerializer.table,
                                                                    transaction: transaction,
-                                                                   deserialize: deserializeBlock()))
+                                                                   deserialize: TSInteractionSerializer.sdsDeserialize))
     }
 }
 
 // MARK: - Swift Fetch
 
 extension TSInteraction {
-    fileprivate class func deserializeBlock() -> (SelectStatement) throws -> TSInteraction {
-        return { (statement) in
-            return try TSInteractionSerializer.sdsDeserialize(statement: statement)
-         }
-     }
-
     public class func grdbFetchCursor(sql: String,
                                       arguments: [DatabaseValueConvertible]?,
                                       transaction: GRDBReadTransaction) -> TSInteractionCursor {
@@ -2213,7 +2207,7 @@ extension TSInteraction {
         return TSInteractionCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
                                                              arguments: statementArguments,
                                                              transaction: transaction,
-                                                                   deserialize: deserializeBlock()))
+                                                                   deserialize: TSInteractionSerializer.sdsDeserialize))
     }
 }
 

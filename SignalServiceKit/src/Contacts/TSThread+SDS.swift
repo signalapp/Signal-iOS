@@ -284,19 +284,13 @@ extension TSThread {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSThreadCursor {
         return TSThreadCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: TSThreadSerializer.table,
                                                                    transaction: transaction,
-                                                                   deserialize: deserializeBlock()))
+                                                                   deserialize: TSThreadSerializer.sdsDeserialize))
     }
 }
 
 // MARK: - Swift Fetch
 
 extension TSThread {
-    fileprivate class func deserializeBlock() -> (SelectStatement) throws -> TSThread {
-        return { (statement) in
-            return try TSThreadSerializer.sdsDeserialize(statement: statement)
-         }
-     }
-
     public class func grdbFetchCursor(sql: String,
                                       arguments: [DatabaseValueConvertible]?,
                                       transaction: GRDBReadTransaction) -> TSThreadCursor {
@@ -310,7 +304,7 @@ extension TSThread {
         return TSThreadCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
                                                              arguments: statementArguments,
                                                              transaction: transaction,
-                                                                   deserialize: deserializeBlock()))
+                                                                   deserialize: TSThreadSerializer.sdsDeserialize))
     }
 }
 

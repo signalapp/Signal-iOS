@@ -738,10 +738,10 @@ extension %s {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> %sCursor {
         return %sCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: %sSerializer.table,
                                                                    transaction: transaction,
-                                                                   deserialize: deserializeBlock()))
+                                                                   deserialize: %sSerializer.sdsDeserialize))
     }
 }
-''' % ( ( str(clazz.name), ) * 4 )
+''' % ( ( str(clazz.name), ) * 5 )
 
         # ---- Fetch ----
 
@@ -749,12 +749,6 @@ extension %s {
 // MARK: - Swift Fetch
 
 extension %s {
-    fileprivate class func deserializeBlock() -> (SelectStatement) throws -> %s {
-        return { (statement) in
-            return try %sSerializer.sdsDeserialize(statement: statement)
-         }
-     }
-
     public class func grdbFetchCursor(sql: String,
                                       arguments: [DatabaseValueConvertible]?,
                                       transaction: GRDBReadTransaction) -> %sCursor {
@@ -768,11 +762,11 @@ extension %s {
         return %sCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
                                                              arguments: statementArguments,
                                                              transaction: transaction,
-                                                                   deserialize: deserializeBlock()))
+                                                                   deserialize: %sSerializer.sdsDeserialize))
     }
 }
 
-''' % ( ( str(clazz.name), ) * 5 )
+''' % ( ( str(clazz.name), ) * 4 )
 
 
     # ---- SDSSerializable ----
