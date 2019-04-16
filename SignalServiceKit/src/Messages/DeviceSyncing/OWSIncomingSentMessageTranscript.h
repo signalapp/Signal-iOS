@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class MessageSticker;
 @class OWSContact;
 @class OWSLinkPreview;
 @class SSKProtoAttachmentPointer;
@@ -37,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contact;
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
+@property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 @property (nonatomic, readonly) BOOL isRecipientUpdate;
 
 // If either nonUdRecipientIds or udRecipientIds is nil,

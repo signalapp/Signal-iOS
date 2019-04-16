@@ -93,6 +93,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
@@ -114,6 +115,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
                        linkPreview:linkPreview
+                    messageSticker:messageSticker
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion
          errorMessageSchemaVersion:errorMessageSchemaVersion

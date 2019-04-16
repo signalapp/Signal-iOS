@@ -2804,6 +2804,148 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageSticker
+
+@objc public class SSKProtoDataMessageSticker: NSObject {
+
+    // MARK: - SSKProtoDataMessageStickerBuilder
+
+    @objc public class func builder(packID: Data, packKey: Data, stickerID: UInt32, data: SSKProtoAttachmentPointer) -> SSKProtoDataMessageStickerBuilder {
+        return SSKProtoDataMessageStickerBuilder(packID: packID, packKey: packKey, stickerID: stickerID, data: data)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoDataMessageStickerBuilder {
+        let builder = SSKProtoDataMessageStickerBuilder(packID: packID, packKey: packKey, stickerID: stickerID, data: data)
+        return builder
+    }
+
+    @objc public class SSKProtoDataMessageStickerBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.Sticker()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(packID: Data, packKey: Data, stickerID: UInt32, data: SSKProtoAttachmentPointer) {
+            super.init()
+
+            setPackID(packID)
+            setPackKey(packKey)
+            setStickerID(stickerID)
+            setData(data)
+        }
+
+        @objc public func setPackID(_ valueParam: Data) {
+            proto.packID = valueParam
+        }
+
+        @objc public func setPackKey(_ valueParam: Data) {
+            proto.packKey = valueParam
+        }
+
+        @objc public func setStickerID(_ valueParam: UInt32) {
+            proto.stickerID = valueParam
+        }
+
+        @objc public func setData(_ valueParam: SSKProtoAttachmentPointer) {
+            proto.data = valueParam.proto
+        }
+
+        @objc public func build() throws -> SSKProtoDataMessageSticker {
+            return try SSKProtoDataMessageSticker.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageSticker.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Sticker
+
+    @objc public let packID: Data
+
+    @objc public let packKey: Data
+
+    @objc public let stickerID: UInt32
+
+    @objc public let data: SSKProtoAttachmentPointer
+
+    private init(proto: SignalServiceProtos_DataMessage.Sticker,
+                 packID: Data,
+                 packKey: Data,
+                 stickerID: UInt32,
+                 data: SSKProtoAttachmentPointer) {
+        self.proto = proto
+        self.packID = packID
+        self.packKey = packKey
+        self.stickerID = stickerID
+        self.data = data
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageSticker {
+        let proto = try SignalServiceProtos_DataMessage.Sticker(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Sticker) throws -> SSKProtoDataMessageSticker {
+        guard proto.hasPackID else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: packID")
+        }
+        let packID = proto.packID
+
+        guard proto.hasPackKey else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: packKey")
+        }
+        let packKey = proto.packKey
+
+        guard proto.hasStickerID else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: stickerID")
+        }
+        let stickerID = proto.stickerID
+
+        guard proto.hasData else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: data")
+        }
+        let data = try SSKProtoAttachmentPointer.parseProto(proto.data)
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessageSticker -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessageSticker -
+
+        let result = SSKProtoDataMessageSticker(proto: proto,
+                                                packID: packID,
+                                                packKey: packKey,
+                                                stickerID: stickerID,
+                                                data: data)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessageSticker {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoDataMessageSticker? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessage
 
 @objc public class SSKProtoDataMessage: NSObject {
@@ -2865,6 +3007,9 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
         }
         builder.setContact(contact)
         builder.setPreview(preview)
+        if let _value = sticker {
+            builder.setSticker(_value)
+        }
         return builder
     }
 
@@ -2932,6 +3077,10 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
             proto.preview = wrappedItems.map { $0.proto }
         }
 
+        @objc public func setSticker(_ valueParam: SSKProtoDataMessageSticker) {
+            proto.sticker = valueParam.proto
+        }
+
         @objc public func build() throws -> SSKProtoDataMessage {
             return try SSKProtoDataMessage.parseProto(proto)
         }
@@ -2952,6 +3101,8 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
     @objc public let contact: [SSKProtoDataMessageContact]
 
     @objc public let preview: [SSKProtoDataMessagePreview]
+
+    @objc public let sticker: SSKProtoDataMessageSticker?
 
     @objc public var body: String? {
         guard proto.hasBody else {
@@ -2999,13 +3150,15 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
                  group: SSKProtoGroupContext?,
                  quote: SSKProtoDataMessageQuote?,
                  contact: [SSKProtoDataMessageContact],
-                 preview: [SSKProtoDataMessagePreview]) {
+                 preview: [SSKProtoDataMessagePreview],
+                 sticker: SSKProtoDataMessageSticker?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
         self.quote = quote
         self.contact = contact
         self.preview = preview
+        self.sticker = sticker
     }
 
     @objc
@@ -3038,6 +3191,11 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
         var preview: [SSKProtoDataMessagePreview] = []
         preview = try proto.preview.map { try SSKProtoDataMessagePreview.parseProto($0) }
 
+        var sticker: SSKProtoDataMessageSticker? = nil
+        if proto.hasSticker {
+            sticker = try SSKProtoDataMessageSticker.parseProto(proto.sticker)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -3047,7 +3205,8 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
                                          group: group,
                                          quote: quote,
                                          contact: contact,
-                                         preview: preview)
+                                         preview: preview,
+                                         sticker: sticker)
         return result
     }
 

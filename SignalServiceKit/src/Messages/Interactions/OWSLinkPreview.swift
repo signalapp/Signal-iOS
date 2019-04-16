@@ -217,7 +217,7 @@ public class OWSLinkPreview: MTLModel {
 
         let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
         do {
-            try jpegImageData.write(to: NSURL.fileURL(withPath: filePath), options: .atomicWrite)
+            try jpegImageData.write(to: NSURL.fileURL(withPath: filePath))
         } catch let error as NSError {
             owsFailDebug("file write failed: \(filePath), \(error)")
             return nil

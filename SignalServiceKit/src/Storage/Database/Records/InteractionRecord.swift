@@ -124,6 +124,7 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
     // MJK - I think this property won't be required with GRDB
     public let legacyWasDelivered: Bool?
     public let linkPreview: Data?
+    public let messageSticker: Data?
     // MJK: rename this column to be clear that it's about info messages only
     public let messageType: TSInfoMessageType?
     public let mostRecentFailureText: String?
@@ -178,6 +179,7 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
         case legacyMessageState
         case legacyWasDelivered
         case linkPreview
+        case messageSticker
         case messageType
         case mostRecentFailureText
         case quotedMessage
@@ -212,6 +214,13 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
 
     public var decodedLinkPreview: OWSLinkPreview? {
         guard let encoded = self.linkPreview else {
+            return nil
+        }
+        return try! SDSDeserializer.unarchive(encoded)
+    }
+
+    public var decodedMessageSticker: MessageSticker? {
+        guard let encoded = self.messageSticker else {
             return nil
         }
         return try! SDSDeserializer.unarchive(encoded)
@@ -271,6 +280,7 @@ public extension TSInteraction {
                                                                  expiresAt: record.expiresAt!,
                                                                  expiresInSeconds: record.expiresInSeconds!,
                                                                  linkPreview: record.decodedLinkPreview,
+                                                                 messageSticker: record.decodedMessageSticker,
                                                                  quotedMessage: record.decodedQuotedMessage,
                                                                  schemaVersion: record.schemaVersion!,
                                                                  customMessage: record.customMessage,
@@ -297,6 +307,7 @@ public extension TSInteraction {
                                                      expiresAt: record.expiresAt!,
                                                      expiresInSeconds: record.expiresInSeconds!,
                                                      linkPreview: record.decodedLinkPreview,
+                                                     messageSticker: record.decodedMessageSticker,
                                                      quotedMessage: record.decodedQuotedMessage,
                                                      schemaVersion: record.schemaVersion!,
                                                      customMessage: record.customMessage,
@@ -331,6 +342,7 @@ public extension TSInteraction {
                                   expiresAt: record.expiresAt!,
                                   expiresInSeconds: record.expiresInSeconds!,
                                   linkPreview: record.decodedLinkPreview,
+                                  messageSticker: record.decodedMessageSticker,
                                   quotedMessage: record.decodedQuotedMessage,
                                   schemaVersion: record.schemaVersion!,
                                   errorMessageSchemaVersion: record.errorMessageSchemaVersion!,
@@ -352,6 +364,7 @@ public extension TSInteraction {
                                      expiresAt: record.expiresAt!,
                                      expiresInSeconds: record.expiresInSeconds!,
                                      linkPreview: record.decodedLinkPreview,
+                                     messageSticker: record.decodedMessageSticker,
                                      quotedMessage: record.decodedQuotedMessage,
                                      schemaVersion: record.schemaVersion!,
                                      authorId: record.authorId!,
@@ -372,6 +385,7 @@ public extension TSInteraction {
                                  expiresAt: record.expiresAt!,
                                  expiresInSeconds: record.expiresInSeconds!,
                                  linkPreview: record.decodedLinkPreview,
+                                 messageSticker: record.decodedMessageSticker,
                                  quotedMessage: record.decodedQuotedMessage,
                                  schemaVersion: record.schemaVersion!,
                                  customMessage: record.customMessage,
@@ -395,6 +409,7 @@ public extension TSInteraction {
                              expiresAt: record.expiresAt!,
                              expiresInSeconds: record.expiresInSeconds!,
                              linkPreview: record.decodedLinkPreview,
+                             messageSticker: record.decodedMessageSticker,
                              quotedMessage: record.decodedQuotedMessage,
                              schemaVersion: record.schemaVersion!)
         case .outgoingMessage:
@@ -410,6 +425,7 @@ public extension TSInteraction {
                                      expiresAt: record.expiresAt!,
                                      expiresInSeconds: record.expiresInSeconds!,
                                      linkPreview: record.decodedLinkPreview,
+                                     messageSticker: record.decodedMessageSticker,
                                      quotedMessage: record.decodedQuotedMessage,
                                      schemaVersion: record.schemaVersion!,
                                      attachmentFilenameMap: record.decodedAttachmentFilenameMap!,

@@ -50,6 +50,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @property (nonatomic, nullable) OWSLinkPreview *linkPreview;
 
+@property (nonatomic, nullable) MessageSticker *messageSticker;
+
 @end
 
 #pragma mark -
@@ -65,6 +67,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
+                          messageSticker:(nullable MessageSticker *)messageSticker
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
@@ -82,6 +85,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _quotedMessage = quotedMessage;
     _contactShare = contactShare;
     _linkPreview = linkPreview;
+    _messageSticker = messageSticker;
 
     return self;
 }
@@ -105,6 +109,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
 {
@@ -125,6 +130,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _expiresAt = expiresAt;
     _expiresInSeconds = expiresInSeconds;
     _linkPreview = linkPreview;
+    _messageSticker = messageSticker;
     _quotedMessage = quotedMessage;
     _schemaVersion = schemaVersion;
 
@@ -257,6 +263,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (self.linkPreview.imageAttachmentId) {
         [result addObject:self.linkPreview.imageAttachmentId];
+    }
+
+    if (self.messageSticker.attachmentId) {
+        [result addObject:self.messageSticker.attachmentId];
     }
 
     return [result copy];
@@ -503,6 +513,18 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSMessage *message) {
                                  [message setLinkPreview:linkPreview];
+                             }];
+}
+
+- (void)updateWithMessageSticker:(MessageSticker *)messageSticker
+                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
+{
+    OWSAssertDebug(messageSticker);
+    OWSAssertDebug(transaction);
+
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSMessage *message) {
+                                 [message setMessageSticker:messageSticker];
                              }];
 }
 

@@ -184,7 +184,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                        contactShare:nil
-                                                        linkPreview:nil];
+                                                        linkPreview:nil
+                                                     messageSticker:nil];
 
     [BenchManager
         benchAsyncWithTitle:@"Saving outgoing message"
@@ -238,7 +239,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
                                                        contactShare:contactShare
-                                                        linkPreview:nil];
+                                                        linkPreview:nil
+                                                     messageSticker:nil];
 
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [message saveWithTransaction:transaction];
@@ -360,7 +362,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
                                                        contactShare:contactShare
-                                                        linkPreview:nil];
+                                                        linkPreview:nil
+                                                     messageSticker:nil];
 
     [messageSender sendMessage:message
         success:^{

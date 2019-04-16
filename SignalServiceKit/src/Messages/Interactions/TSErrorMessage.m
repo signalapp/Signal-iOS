@@ -61,7 +61,8 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                            expireStartedAt:0
                              quotedMessage:nil
                               contactShare:nil
-                               linkPreview:nil];
+                               linkPreview:nil
+                            messageSticker:nil];
 
     if (!self) {
         return self;
@@ -116,6 +117,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
@@ -135,6 +137,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
                        linkPreview:linkPreview
+                    messageSticker:messageSticker
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion];
 

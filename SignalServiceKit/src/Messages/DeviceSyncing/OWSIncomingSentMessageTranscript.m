@@ -65,6 +65,14 @@ NS_ASSUME_NONNULL_BEGIN
         if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
             OWSLogError(@"linkPreviewError: %@", linkPreviewError);
         }
+
+        NSError *messageStickerError;
+        _messageSticker = [MessageSticker buildValidatedMessageStickerWithDataMessage:_dataMessage
+                                                                          transaction:transaction
+                                                                                error:&messageStickerError];
+        if (messageStickerError && ![MessageSticker isNoStickerError:messageStickerError]) {
+            OWSFailDebug(@"messageStickerError: %@", messageStickerError);
+        }
     }
 
     if (sentProto.unidentifiedStatus.count > 0) {

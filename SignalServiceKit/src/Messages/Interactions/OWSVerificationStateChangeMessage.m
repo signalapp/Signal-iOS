@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
                    customMessage:(nullable NSString *)customMessage
@@ -71,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
                        linkPreview:linkPreview
+                    messageSticker:messageSticker
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion
                      customMessage:customMessage
