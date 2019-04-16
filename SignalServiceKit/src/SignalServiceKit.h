@@ -16,3 +16,7 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
+#import <SignalServiceKit/TSAttachment.h>
+#import <SignalServiceKit/OWSBatchMessageProcessor.h>
+#import <SignalServiceKit/OWSReadReceiptManager.h>
+#import <SignalServiceKit/OWSMessageReceiver.h>

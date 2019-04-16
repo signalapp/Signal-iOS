@@ -122,4 +122,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface TSInvalidIdentityKeySendingErrorMessage (SDS)
+
+@property (nonatomic, readonly) PreKeyBundle *preKeyBundle;
+
+@end
+
+#pragma mark -
+
 NS_ASSUME_NONNULL_END
