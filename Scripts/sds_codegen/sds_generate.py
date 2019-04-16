@@ -431,18 +431,27 @@ extension %sSerializer {
         # ---- Fetch ----
 
         swift_body += '''
-// MARK: - Save
+// MARK: - Save/Remove/Update
 
 @objc
 extension %s {
-
     @objc
     public func anySave(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            self.save(with: ydbTransaction)
+            save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             SDSSerialization.save(entity: self, transaction: grdbTransaction)
+        }
+    }
+
+    @objc
+    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            remove(with: ydbTransaction)
+        case .grdbWrite(let grdbTransaction):
+            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
         }
     }
 }
