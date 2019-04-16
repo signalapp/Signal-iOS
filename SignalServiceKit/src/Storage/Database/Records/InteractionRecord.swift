@@ -247,20 +247,6 @@ public extension TSInteraction {
             fatalError("wrong record type")
         case .addToProfileWhitelistOfferMessage:
             fatalError("wrong record type")
-        case .attachmentInfo:
-            fatalError("wrong record type")
-        case .batchMessageProcessor:
-            fatalError("wrong record type")
-        case .blockingManager:
-            fatalError("wrong record type")
-        case .contact:
-            fatalError("wrong record type")
-        case .contactAddress:
-            fatalError("wrong record type")
-        case .contactEmail:
-            fatalError("wrong record type")
-        case .contactName:
-            fatalError("wrong record type")
         case .contactOffersInteraction:
             return OWSContactOffersInteraction(uniqueId: record.uniqueId,
                                                receivedAtTimestamp: record.receivedAtTimestamp,
@@ -272,10 +258,6 @@ public extension TSInteraction {
                                                hasAddToProfileWhitelistOffer: record.hasAddToProfileWhitelistOffer!,
                                                hasBlockOffer: record.hasBlockOffer!,
                                                recipientId: record.recipientId!)
-        case .contactPhoneNumber:
-            fatalError("wrong record type")
-        case .contacts:
-            fatalError("wrong record type")
         case .disappearingConfigurationUpdateInfoMessage:
             return OWSDisappearingConfigurationUpdateInfoMessage(uniqueId: record.uniqueId,
                                                                  receivedAtTimestamp: record.receivedAtTimestamp,
@@ -326,10 +308,6 @@ public extension TSInteraction {
                                                                legacyWasDelivered: record.legacyWasDelivered!,
                                                                mostRecentFailureText: record.mostRecentFailureText,
                                                                recipientStateMap: record.decodedRecipientStateMap)
-        case .disappearingMessagesFinder:
-            fatalError("wrong record type")
-        case .disappearingMessagesJob:
-            fatalError("wrong record type")
         case .dynamicOutgoingMessage:
             return OWSDynamicOutgoingMessage(uniqueId: record.uniqueId,
                                              receivedAtTimestamp: record.receivedAtTimestamp,
@@ -356,50 +334,8 @@ public extension TSInteraction {
                                              legacyWasDelivered: record.legacyWasDelivered!,
                                              mostRecentFailureText: record.mostRecentFailureText,
                                              recipientStateMap: record.decodedRecipientStateMap)
-        case .failedAttachmentDownloadsJob:
-            fatalError("wrong record type")
-        case .failedMessagesJob:
-            fatalError("wrong record type")
-        case .identityManager:
-            fatalError("wrong record type")
-        case .incompleteCallsJob:
-            fatalError("wrong record type")
-        case .messageContentJob:
-            fatalError("wrong record type")
-        case .messageContentJobFinder:
-            fatalError("wrong record type")
-        case .messageContentQueue:
-            fatalError("wrong record type")
-        case .messageDecryptJob:
-            fatalError("wrong record type")
-        case .messageDecryptJobFinder:
-            fatalError("wrong record type")
-        case .messageDecryptQueue:
-            fatalError("wrong record type")
-        case .messageDecryptResult:
-            fatalError("wrong record type")
-        case .messageDecrypter:
-            fatalError("wrong record type")
-        case .messageManager:
-            fatalError("wrong record type")
-        case .messageReceiver:
-            fatalError("wrong record type")
-        case .messageSender:
-            fatalError("wrong record type")
-        case .messageServiceParams:
-            fatalError("wrong record type")
-        case .messageUtils:
-            fatalError("wrong record type")
-        case .outgoingAttachmentInfo:
-            fatalError("wrong record type")
-        case .outgoingReceiptManager:
-            fatalError("wrong record type")
         case .outgoingSentMessageTranscript:
             fatalError("TODO?")
-        case .readReceiptManager:
-            fatalError("wrong record type")
-        case .sendMessageOperation:
-            fatalError("wrong record type")
         case .syncConfigurationMessage:
             fatalError("TODO?")
         case .syncContactsMessage:
@@ -431,8 +367,6 @@ public extension TSInteraction {
                                                      isLocalChange: record.isLocalChange!,
                                                      recipientId: record.recipientId!,
                                                      verificationState: record.verificationState!)
-        case .outgoingMessagePreparer:
-            fatalError("wrong record type")
         case .call:
             return TSCall(uniqueId: record.uniqueId,
                           receivedAtTimestamp: record.receivedAtTimestamp,
@@ -463,8 +397,6 @@ public extension TSInteraction {
                                   errorType: record.errorType!,
                                   read: record.read!,
                                   recipientId: record.recipientId)
-        case .groupModel:
-            fatalError("wrong record type")
         case .groupThread:
             fatalError("wrong record type")
         case .incomingMessage:
@@ -551,10 +483,6 @@ public extension TSInteraction {
                                      legacyWasDelivered: record.legacyWasDelivered!,
                                      mostRecentFailureText: record.mostRecentFailureText,
                                      recipientStateMap: record.decodedRecipientStateMap)
-        case .outgoingMessageRecipientState:
-            fatalError("wrong record type")
-        case .quotedMessage:
-            fatalError("wrong record type")
         case .recipientReadReceipt:
             fatalError("TODO?")
         case .thread:
@@ -565,8 +493,6 @@ public extension TSInteraction {
                                                 sortId: record.sortId,
                                                 timestamp: record.timestamp,
                                                 uniqueThreadId: record.threadUniqueId)
-        case .yapDatabaseObject:
-            fatalError("wrong record type")
         @unknown default:
             fatalError("TODO?")
         }

@@ -419,13 +419,13 @@ def process_objc_property(clazz, prefix, file_path, line, remainder):
         property_type = property_type_1
     # property_type = property_type_1
         
-    print '\t', 'property_type', property_type, 'property_type1', property_type_1, 'property_type2', property_type_2
+    # print '\t', 'property_type', property_type, 'property_type1', property_type_1, 'property_type2', property_type_2
     
     property = clazz.get_property(property_name)
     if property is None:
         
         property = ParsedProperty(property_name, property_type, is_optional)
-        print 'property found', line
+        # print 'property found', line
         clazz.add_property(property)
     else:
         if property.name != property_name:

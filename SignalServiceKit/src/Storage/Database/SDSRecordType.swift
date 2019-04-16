@@ -1,5 +1,5 @@
 //
-//  Copyright © 2019 Signal. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,74 +11,38 @@ import SignalCoreKit
 
 @objc
 public enum SDSRecordType: UInt {
-    case addToContactsOfferMessage = 41
-    case addToProfileWhitelistOfferMessage = 43
-    case attachmentDownloadJob = 67
-    case attachmentDownloads = 56
-    case attachmentInfo = 24
-    case batchMessageProcessor = 30
-    case blockingManager = 52
-    case contact = 1
-    case contactAddress = 21
-    case contactEmail = 6
-    case contactName = 8
-    case contactOffersInteraction = 9
-    case contactPhoneNumber = 20
-    case contacts = 13
-    case disappearingConfigurationUpdateInfoMessage = 27
-    case disappearingMessagesConfigurationMessage = 17
-    case disappearingMessagesFinder = 57
-    case disappearingMessagesJob = 47
-    case dynamicOutgoingMessage = 14
-    case failedAttachmentDownloadsJob = 65
-    case failedMessagesJob = 54
-    case identityManager = 42
-    case incompleteCallsJob = 64
-    case messageContentJob = 55
-    case messageContentJobFinder = 34
-    case messageContentQueue = 50
-    case messageDecryptJob = 49
-    case messageDecryptJobFinder = 51
-    case messageDecryptQueue = 35
-    case messageDecryptResult = 61
-    case messageDecrypter = 32
-    case messageManager = 63
-    case messageReceiver = 62
-    case messageSender = 69
-    case messageServiceParams = 44
-    case messageUtils = 31
-    case outgoingAttachmentInfo = 39
-    case outgoingNullMessage = 36
-    case outgoingReceiptManager = 29
-    case outgoingSentMessageTranscript = 28
-    case readReceiptManager = 48
-    case sendMessageOperation = 70
-    case syncConfigurationMessage = 58
-    case syncContactsMessage = 68
-    case syncGroupsRequestMessage = 46
-    case unknownContactBlockOfferMessage = 38
-    case verificationStateChangeMessage = 2
-    case outgoingMessagePreparer = 45
-    case attachment = 40
-    case attachmentPointer = 37
-    case attachmentStream = 60
-    case call = 5
-    case contactThread = 26
-    case errorMessage = 10
-    case groupModel = 3
-    case groupThread = 19
-    case incomingMessage = 4
-    case infoMessage = 23
-    case interaction = 16
-    case invalidIdentityKeyErrorMessage = 59
-    case invalidIdentityKeyReceivingErrorMessage = 33
-    case invalidIdentityKeySendingErrorMessage = 66
-    case message = 25
-    case outgoingMessage = 7
-    case outgoingMessageRecipientState = 12
-    case quotedMessage = 18
-    case recipientReadReceipt = 53
-    case thread = 15
-    case unreadIndicatorInteraction = 22
-    case yapDatabaseObject = 11
+    case addToContactsOfferMessage = 30
+    case addToProfileWhitelistOfferMessage = 11
+    case contactOffersInteraction = 27
+    case disappearingConfigurationUpdateInfoMessage = 34
+    case disappearingMessagesConfigurationMessage = 5
+    case dynamicOutgoingMessage = 28
+    case messageContentJob = 19
+    case messageDecryptJob = 13
+    case outgoingNullMessage = 4
+    case outgoingSentMessageTranscript = 1
+    case outgoingSyncMessage = 10
+    case syncConfigurationMessage = 21
+    case syncContactsMessage = 32
+    case syncGroupsRequestMessage = 12
+    case unknownContactBlockOfferMessage = 8
+    case verificationStateChangeMessage = 18
+    case attachment = 9
+    case attachmentPointer = 6
+    case attachmentStream = 23
+    case call = 25
+    case contactThread = 33
+    case errorMessage = 14
+    case groupThread = 31
+    case incomingMessage = 24
+    case infoMessage = 15
+    case interaction = 20
+    case invalidIdentityKeyErrorMessage = 22
+    case invalidIdentityKeyReceivingErrorMessage = 2
+    case invalidIdentityKeySendingErrorMessage = 29
+    case message = 16
+    case outgoingMessage = 26
+    case recipientReadReceipt = 17
+    case thread = 3
+    case unreadIndicatorInteraction = 7
 }

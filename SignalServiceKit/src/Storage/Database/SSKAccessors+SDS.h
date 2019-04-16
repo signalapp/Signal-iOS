@@ -130,4 +130,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface OWSOutgoingSentMessageTranscript (SDS)
+
+@property (nonatomic, readonly) TSOutgoingMessage *message;
+
+@property (nonatomic, readonly, nullable) NSString *sentRecipientId;
+
+@property (nonatomic, readonly) BOOL isRecipientUpdate;
+
+@end
+
+#pragma mark -
+
 NS_ASSUME_NONNULL_END

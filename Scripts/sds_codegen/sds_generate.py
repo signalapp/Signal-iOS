@@ -11,7 +11,7 @@ import re
 import json
 import sds_common
 from sds_common import fail
-
+import random
 
 # TODO: We should probably generate a class that knows how to set up 
 #       the database.  It would:
@@ -114,12 +114,16 @@ class ParsedClass:
      
      def is_sds_model(self):
          if self.super_class_name is None:
+             print 'is_sds_model (1):', self.name, self.super_class_name
              return False
          if not self.super_class_name in global_class_map:
+             print 'is_sds_model (2):', self.name, self.super_class_name
              return False
          if self.super_class_name == BASE_MODEL_CLASS_NAME:
+             print 'is_sds_model (3):', self.name, self.super_class_name
              return True
          super_class = global_class_map[self.super_class_name]
+         print 'is_sds_model (4):', self.name, self.super_class_name
          return super_class.is_sds_model()
      
      def has_sds_superclass(self):
@@ -245,7 +249,7 @@ class TypeInfo:
 
         # Special case this oddball type.
         if value_name == 'conversationColorName':
-            value_statement = 'let %s = %s' % ( value_name, value_expr, )
+            value_statement = 'let %s = ConversationColorName(rawValue: %s)' % ( value_name, value_expr, )
         elif self.should_use_blob:
             blob_name = '%sSerialized' % ( str(value_name), )
             if is_optional:
@@ -372,7 +376,7 @@ class ParsedProperty:
         if swift_primitive is not None:
             return TypeInfo(swift_primitive, objc_type)
         
-        print 'objc_type', objc_type
+        # print 'objc_type', objc_type
         if objc_type in ('struct CGSize',):
             objc_type = objc_type[len('struct '):]
             swift_type = objc_type
@@ -885,6 +889,8 @@ class %sSerializer: SDSSerializer {
     print 'Writing:', swift_filepath
 
     swift_body = sds_common.clean_up_generated_swift(swift_body)
+    
+    swift_body = swift_body + (' ' * random.randint(1, 100))
 
     with open(swift_filepath, 'wt') as f:
         f.write(swift_body)
@@ -903,6 +909,8 @@ record_type_map = {}
 # It's critical that our "record type" values are consistent, even if we add/remove/rename model classes. 
 # Therefore we persist the mapping of known classes in a JSON file that is under source control.
 def update_record_type_map(record_type_swift_path, record_type_json_path):
+    print 'update_record_type_map'
+    
     record_type_map_filepath = record_type_json_path
 
     if os.path.exists(record_type_map_filepath):
@@ -920,6 +928,20 @@ def update_record_type_map(record_type_swift_path, record_type_json_path):
     
     for clazz in global_class_map.values():
         if clazz.name not in record_type_map:
+            
+            if clazz.name == BASE_MODEL_CLASS_NAME:
+                print 'Ignoring class (1):', clazz.name 
+                continue
+            if should_ignore_class(clazz):
+                print 'Ignoring class (2):', clazz.name 
+                continue
+    
+            if not clazz.is_sds_model():
+                # Only write serialization extensions for SDS models.
+                print 'Ignoring class (3):', clazz.name 
+                continue
+            
+            
             max_record_type = int(max_record_type) + 1
             record_type = max_record_type
             record_type_map[clazz.name] = record_type
@@ -1044,12 +1066,14 @@ def try_to_parse_file(file_path):
     _, file_extension = os.path.splitext(filename)
     if filename.endswith(sds_common.SDS_JSON_FILE_EXTENSION):
         # print 'filename:', filename
+        print '\t', 'found', file_path
         return parse_sds_json(file_path)
     else:   
         return {}
         
 
 def find_sds_intermediary_files_in_path(path):
+    print 'find_sds_intermediary_files_in_path', path
     class_map = {}
     if os.path.isfile(path):
         class_map.update(try_to_parse_file(path))
@@ -1190,11 +1214,12 @@ if __name__ == "__main__":
     print 'Parsing Global Class Map'
     global_class_map.update(find_sds_intermediary_files_in_path(search_path))
     print 'global_class_map', global_class_map
+
+    update_subclass_map()
     
     print
     print 'Parsing Record Type Map'
     update_record_type_map(record_type_swift_path, record_type_json_path)
-    update_subclass_map()
 
     print
     print 'Processing'
