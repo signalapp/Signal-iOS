@@ -32,14 +32,14 @@ class OWSDisappearingConfigurationUpdateInfoMessageSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.disappearingConfigurationUpdateInfoMessage.rawValue,
+            SDSRecordType.disappearingConfigurationUpdateInfoMessage.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -72,7 +72,7 @@ class OWSDisappearingConfigurationUpdateInfoMessageSerializer: SDSSerializer {
             TSInteractionSerializer.configurationDurationSecondsColumn,
             TSInteractionSerializer.configurationIsEnabledColumn,
             TSInteractionSerializer.createdByRemoteNameColumn,
-            TSInteractionSerializer.createdInExistingGroupColumn,
+            TSInteractionSerializer.createdInExistingGroupColumn
             ].map { $0.columnName }
     }
 
@@ -99,7 +99,7 @@ class OWSDisappearingConfigurationUpdateInfoMessageSerializer: SDSSerializer {
             self.model.configurationDurationSeconds,
             self.model.configurationIsEnabled,
             self.model.createdByRemoteName ?? DatabaseValue.null,
-            self.model.createdInExistingGroup,
+            self.model.createdInExistingGroup
 
         ]
         if OWSIsDebugBuild() {

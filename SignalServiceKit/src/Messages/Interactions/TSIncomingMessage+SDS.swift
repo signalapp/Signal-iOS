@@ -32,14 +32,14 @@ class TSIncomingMessageSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.incomingMessage.rawValue,
+            SDSRecordType.incomingMessage.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -68,7 +68,7 @@ class TSIncomingMessageSerializer: SDSSerializer {
             TSInteractionSerializer.readColumn,
             TSInteractionSerializer.serverTimestampColumn,
             TSInteractionSerializer.sourceDeviceIdColumn,
-            TSInteractionSerializer.wasReceivedByUDColumn,
+            TSInteractionSerializer.wasReceivedByUDColumn
             ].map { $0.columnName }
     }
 
@@ -91,7 +91,7 @@ class TSIncomingMessageSerializer: SDSSerializer {
             self.model.wasRead,
             self.model.serverTimestamp ?? DatabaseValue.null,
             self.model.sourceDeviceId,
-            self.model.wasReceivedByUD,
+            self.model.wasReceivedByUD
 
         ]
         if OWSIsDebugBuild() {

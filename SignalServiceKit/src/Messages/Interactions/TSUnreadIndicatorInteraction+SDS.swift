@@ -32,14 +32,14 @@ class TSUnreadIndicatorInteractionSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.unreadIndicatorInteraction.rawValue,
+            SDSRecordType.unreadIndicatorInteraction.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -54,7 +54,7 @@ class TSUnreadIndicatorInteractionSerializer: SDSSerializer {
             TSInteractionSerializer.receivedAtTimestampColumn,
             TSInteractionSerializer.sortIdColumn,
             TSInteractionSerializer.timestampColumn,
-            TSInteractionSerializer.uniqueThreadIdColumn,
+            TSInteractionSerializer.uniqueThreadIdColumn
             ].map { $0.columnName }
     }
 
@@ -63,7 +63,7 @@ class TSUnreadIndicatorInteractionSerializer: SDSSerializer {
             self.model.receivedAtTimestamp,
             self.model.sortId,
             self.model.timestamp,
-            self.model.uniqueThreadId,
+            self.model.uniqueThreadId
 
         ]
         if OWSIsDebugBuild() {

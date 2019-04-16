@@ -32,14 +32,14 @@ class TSCallSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.call.rawValue,
+            SDSRecordType.call.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -57,7 +57,7 @@ class TSCallSerializer: SDSSerializer {
             TSInteractionSerializer.uniqueThreadIdColumn,
             TSInteractionSerializer.callSchemaVersionColumn,
             TSInteractionSerializer.callTypeColumn,
-            TSInteractionSerializer.readColumn,
+            TSInteractionSerializer.readColumn
             ].map { $0.columnName }
     }
 
@@ -69,7 +69,7 @@ class TSCallSerializer: SDSSerializer {
             self.model.uniqueThreadId,
             self.model.callSchemaVersion,
             self.model.callType.rawValue,
-            self.model.wasRead,
+            self.model.wasRead
 
         ]
         if OWSIsDebugBuild() {

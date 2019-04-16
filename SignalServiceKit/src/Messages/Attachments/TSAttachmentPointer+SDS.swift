@@ -32,14 +32,14 @@ class TSAttachmentPointerSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSAttachmentSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.attachmentPointer.rawValue,
+            SDSRecordType.attachmentPointer.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -66,7 +66,7 @@ class TSAttachmentPointerSerializer: SDSSerializer {
             TSAttachmentSerializer.mediaSizeColumn,
             TSAttachmentSerializer.mostRecentFailureLocalizedTextColumn,
             TSAttachmentSerializer.pointerTypeColumn,
-            TSAttachmentSerializer.stateColumn,
+            TSAttachmentSerializer.stateColumn
             ].map { $0.columnName }
     }
 
@@ -87,7 +87,7 @@ class TSAttachmentPointerSerializer: SDSSerializer {
             SDSDeserializer.archive(self.model.mediaSize) ?? DatabaseValue.null,
             self.model.mostRecentFailureLocalizedText ?? DatabaseValue.null,
             self.model.pointerType.rawValue,
-            self.model.state.rawValue,
+            self.model.state.rawValue
 
         ]
         if OWSIsDebugBuild() {

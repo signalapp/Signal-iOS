@@ -32,14 +32,14 @@ class OWSDisappearingMessagesConfigurationMessageSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.disappearingMessagesConfigurationMessage.rawValue,
+            SDSRecordType.disappearingMessagesConfigurationMessage.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -74,7 +74,7 @@ class OWSDisappearingMessagesConfigurationMessageSerializer: SDSSerializer {
             TSInteractionSerializer.legacyMessageStateColumn,
             TSInteractionSerializer.legacyWasDeliveredColumn,
             TSInteractionSerializer.mostRecentFailureTextColumn,
-            TSInteractionSerializer.recipientStateMapColumn,
+            TSInteractionSerializer.recipientStateMapColumn
             ].map { $0.columnName }
     }
 
@@ -103,7 +103,7 @@ class OWSDisappearingMessagesConfigurationMessageSerializer: SDSSerializer {
             self.model.legacyMessageState.rawValue,
             self.model.legacyWasDelivered,
             self.model.mostRecentFailureText ?? DatabaseValue.null,
-            SDSDeserializer.archive(self.model.recipientStateMap) ?? DatabaseValue.null,
+            SDSDeserializer.archive(self.model.recipientStateMap) ?? DatabaseValue.null
 
         ]
         if OWSIsDebugBuild() {

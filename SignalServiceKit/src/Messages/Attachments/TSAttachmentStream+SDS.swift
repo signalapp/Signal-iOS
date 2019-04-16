@@ -32,14 +32,14 @@ class TSAttachmentStreamSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSAttachmentSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.attachmentStream.rawValue,
+            SDSRecordType.attachmentStream.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -69,7 +69,7 @@ class TSAttachmentStreamSerializer: SDSSerializer {
             TSAttachmentSerializer.isUploadedColumn,
             TSAttachmentSerializer.isValidImageCachedColumn,
             TSAttachmentSerializer.isValidVideoCachedColumn,
-            TSAttachmentSerializer.localRelativeFilePathColumn,
+            TSAttachmentSerializer.localRelativeFilePathColumn
             ].map { $0.columnName }
     }
 
@@ -93,7 +93,7 @@ class TSAttachmentStreamSerializer: SDSSerializer {
             self.model.isUploaded,
             self.model.isValidImageCached ?? DatabaseValue.null,
             self.model.isValidVideoCached ?? DatabaseValue.null,
-            self.model.localRelativeFilePath ?? DatabaseValue.null,
+            self.model.localRelativeFilePath ?? DatabaseValue.null
 
         ]
         if OWSIsDebugBuild() {

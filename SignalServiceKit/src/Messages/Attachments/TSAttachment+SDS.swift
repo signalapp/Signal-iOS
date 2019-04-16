@@ -92,7 +92,7 @@ extension TSAttachmentSerializer {
         mediaSizeColumn,
         mostRecentFailureLocalizedTextColumn,
         pointerTypeColumn,
-        stateColumn,
+        stateColumn
         ])
 
 }
@@ -414,14 +414,14 @@ class TSAttachmentSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSAttachmentSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.attachment.rawValue,
+            SDSRecordType.attachment.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -442,7 +442,7 @@ class TSAttachmentSerializer: SDSSerializer {
             TSAttachmentSerializer.encryptionKeyColumn,
             TSAttachmentSerializer.isDownloadedColumn,
             TSAttachmentSerializer.serverIdColumn,
-            TSAttachmentSerializer.sourceFilenameColumn,
+            TSAttachmentSerializer.sourceFilenameColumn
             ].map { $0.columnName }
     }
 
@@ -457,7 +457,7 @@ class TSAttachmentSerializer: SDSSerializer {
             self.model.encryptionKey ?? DatabaseValue.null,
             self.model.isDownloaded,
             self.model.serverId,
-            self.model.sourceFilename ?? DatabaseValue.null,
+            self.model.sourceFilename ?? DatabaseValue.null
 
         ]
         if OWSIsDebugBuild() {

@@ -32,14 +32,14 @@ class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.unknownContactBlockOfferMessage.rawValue,
+            SDSRecordType.unknownContactBlockOfferMessage.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -68,7 +68,7 @@ class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
             TSInteractionSerializer.errorTypeColumn,
             TSInteractionSerializer.readColumn,
             TSInteractionSerializer.recipientIdColumn,
-            TSInteractionSerializer.contactIdColumn,
+            TSInteractionSerializer.contactIdColumn
             ].map { $0.columnName }
     }
 
@@ -91,7 +91,7 @@ class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
             self.model.errorType.rawValue,
             self.model.wasRead,
             self.model.recipientId ?? DatabaseValue.null,
-            self.model.contactId,
+            self.model.contactId
 
         ]
         if OWSIsDebugBuild() {

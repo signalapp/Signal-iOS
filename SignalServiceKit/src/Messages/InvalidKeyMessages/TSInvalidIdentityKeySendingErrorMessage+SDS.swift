@@ -32,14 +32,14 @@ class TSInvalidIdentityKeySendingErrorMessageSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue,
+            SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -69,7 +69,7 @@ class TSInvalidIdentityKeySendingErrorMessageSerializer: SDSSerializer {
             TSInteractionSerializer.readColumn,
             TSInteractionSerializer.recipientIdColumn,
             TSInteractionSerializer.messageIdColumn,
-            TSInteractionSerializer.preKeyBundleColumn,
+            TSInteractionSerializer.preKeyBundleColumn
             ].map { $0.columnName }
     }
 
@@ -93,7 +93,7 @@ class TSInvalidIdentityKeySendingErrorMessageSerializer: SDSSerializer {
             self.model.wasRead,
             self.model.recipientId ?? DatabaseValue.null,
             self.model.messageId,
-            SDSDeserializer.archive(self.model.preKeyBundle) ?? DatabaseValue.null,
+            SDSDeserializer.archive(self.model.preKeyBundle) ?? DatabaseValue.null
 
         ]
         if OWSIsDebugBuild() {

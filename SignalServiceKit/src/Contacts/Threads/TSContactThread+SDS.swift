@@ -32,14 +32,14 @@ class TSContactThreadSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSThreadSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.contactThread.rawValue,
+            SDSRecordType.contactThread.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -60,7 +60,7 @@ class TSContactThreadSerializer: SDSSerializer {
             TSThreadSerializer.messageDraftColumn,
             TSThreadSerializer.mutedUntilDateColumn,
             TSThreadSerializer.shouldThreadBeVisibleColumn,
-            TSThreadSerializer.hasDismissedOffersColumn,
+            TSThreadSerializer.hasDismissedOffersColumn
             ].map { $0.columnName }
     }
 
@@ -75,7 +75,7 @@ class TSContactThreadSerializer: SDSSerializer {
             self.model.messageDraft ?? DatabaseValue.null,
             self.model.mutedUntilDate ?? DatabaseValue.null,
             self.model.shouldThreadBeVisible,
-            self.model.hasDismissedOffers,
+            self.model.hasDismissedOffers
 
         ]
         if OWSIsDebugBuild() {

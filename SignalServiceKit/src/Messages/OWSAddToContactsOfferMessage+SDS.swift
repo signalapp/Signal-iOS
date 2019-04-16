@@ -32,14 +32,14 @@ class OWSAddToContactsOfferMessageSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.addToContactsOfferMessage.rawValue,
+            SDSRecordType.addToContactsOfferMessage.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -69,7 +69,7 @@ class OWSAddToContactsOfferMessageSerializer: SDSSerializer {
             TSInteractionSerializer.messageTypeColumn,
             TSInteractionSerializer.readColumn,
             TSInteractionSerializer.unregisteredRecipientIdColumn,
-            TSInteractionSerializer.contactIdColumn,
+            TSInteractionSerializer.contactIdColumn
             ].map { $0.columnName }
     }
 
@@ -93,7 +93,7 @@ class OWSAddToContactsOfferMessageSerializer: SDSSerializer {
             self.model.messageType.rawValue,
             self.model.wasRead,
             self.model.unregisteredRecipientId ?? DatabaseValue.null,
-            self.model.contactId,
+            self.model.contactId
 
         ]
         if OWSIsDebugBuild() {

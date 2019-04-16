@@ -32,14 +32,14 @@ class TSGroupThreadSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSThreadSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.groupThread.rawValue,
+            SDSRecordType.groupThread.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -60,7 +60,7 @@ class TSGroupThreadSerializer: SDSSerializer {
             TSThreadSerializer.messageDraftColumn,
             TSThreadSerializer.mutedUntilDateColumn,
             TSThreadSerializer.shouldThreadBeVisibleColumn,
-            TSThreadSerializer.groupModelColumn,
+            TSThreadSerializer.groupModelColumn
             ].map { $0.columnName }
     }
 
@@ -75,7 +75,7 @@ class TSGroupThreadSerializer: SDSSerializer {
             self.model.messageDraft ?? DatabaseValue.null,
             self.model.mutedUntilDate ?? DatabaseValue.null,
             self.model.shouldThreadBeVisible,
-            SDSDeserializer.archive(self.model.groupModel) ?? DatabaseValue.null,
+            SDSDeserializer.archive(self.model.groupModel) ?? DatabaseValue.null
 
         ]
         if OWSIsDebugBuild() {

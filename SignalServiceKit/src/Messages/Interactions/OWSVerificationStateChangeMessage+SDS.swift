@@ -32,14 +32,14 @@ class OWSVerificationStateChangeMessageSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.verificationStateChangeMessage.rawValue,
+            SDSRecordType.verificationStateChangeMessage.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -71,7 +71,7 @@ class OWSVerificationStateChangeMessageSerializer: SDSSerializer {
             TSInteractionSerializer.unregisteredRecipientIdColumn,
             TSInteractionSerializer.isLocalChangeColumn,
             TSInteractionSerializer.recipientIdColumn,
-            TSInteractionSerializer.verificationStateColumn,
+            TSInteractionSerializer.verificationStateColumn
             ].map { $0.columnName }
     }
 
@@ -97,7 +97,7 @@ class OWSVerificationStateChangeMessageSerializer: SDSSerializer {
             self.model.unregisteredRecipientId ?? DatabaseValue.null,
             self.model.isLocalChange,
             self.model.recipientId,
-            self.model.verificationState.rawValue,
+            self.model.verificationState.rawValue
 
         ]
         if OWSIsDebugBuild() {

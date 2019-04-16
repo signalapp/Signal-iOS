@@ -41,7 +41,7 @@ extension TSRecipientReadReceiptSerializer {
         recordTypeColumn,
         uniqueIdColumn,
         recipientMapColumn,
-        sentTimestampColumn,
+        sentTimestampColumn
         ])
 
 }
@@ -195,14 +195,14 @@ class TSRecipientReadReceiptSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSRecipientReadReceiptSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.recipientReadReceipt.rawValue,
+            SDSRecordType.recipientReadReceipt.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -215,14 +215,14 @@ class TSRecipientReadReceiptSerializer: SDSSerializer {
     public func updateColumnNames() -> [String] {
         return [
             TSRecipientReadReceiptSerializer.recipientMapColumn,
-            TSRecipientReadReceiptSerializer.sentTimestampColumn,
+            TSRecipientReadReceiptSerializer.sentTimestampColumn
             ].map { $0.columnName }
     }
 
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
             SDSDeserializer.archive(self.model.recipientMap) ?? DatabaseValue.null,
-            self.model.sentTimestamp,
+            self.model.sentTimestamp
 
         ]
         if OWSIsDebugBuild() {

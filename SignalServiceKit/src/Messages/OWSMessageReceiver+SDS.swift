@@ -41,7 +41,7 @@ extension OWSMessageDecryptJobSerializer {
         recordTypeColumn,
         uniqueIdColumn,
         createdAtColumn,
-        envelopeDataColumn,
+        envelopeDataColumn
         ])
 
 }
@@ -194,14 +194,14 @@ class OWSMessageDecryptJobSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             OWSMessageDecryptJobSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.messageDecryptJob.rawValue,
+            SDSRecordType.messageDecryptJob.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -214,14 +214,14 @@ class OWSMessageDecryptJobSerializer: SDSSerializer {
     public func updateColumnNames() -> [String] {
         return [
             OWSMessageDecryptJobSerializer.createdAtColumn,
-            OWSMessageDecryptJobSerializer.envelopeDataColumn,
+            OWSMessageDecryptJobSerializer.envelopeDataColumn
             ].map { $0.columnName }
     }
 
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
             self.model.createdAt,
-            self.model.envelopeData,
+            self.model.envelopeData
 
         ]
         if OWSIsDebugBuild() {

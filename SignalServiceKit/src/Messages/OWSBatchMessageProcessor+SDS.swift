@@ -45,7 +45,7 @@ extension OWSMessageContentJobSerializer {
         createdAtColumn,
         envelopeDataColumn,
         plaintextDataColumn,
-        wasReceivedByUDColumn,
+        wasReceivedByUDColumn
         ])
 
 }
@@ -204,14 +204,14 @@ class OWSMessageContentJobSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             OWSMessageContentJobSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.messageContentJob.rawValue,
+            SDSRecordType.messageContentJob.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -226,7 +226,7 @@ class OWSMessageContentJobSerializer: SDSSerializer {
             OWSMessageContentJobSerializer.createdAtColumn,
             OWSMessageContentJobSerializer.envelopeDataColumn,
             OWSMessageContentJobSerializer.plaintextDataColumn,
-            OWSMessageContentJobSerializer.wasReceivedByUDColumn,
+            OWSMessageContentJobSerializer.wasReceivedByUDColumn
             ].map { $0.columnName }
     }
 
@@ -235,7 +235,7 @@ class OWSMessageContentJobSerializer: SDSSerializer {
             self.model.createdAt,
             self.model.envelopeData,
             self.model.plaintextData ?? DatabaseValue.null,
-            self.model.wasReceivedByUD,
+            self.model.wasReceivedByUD
 
         ]
         if OWSIsDebugBuild() {

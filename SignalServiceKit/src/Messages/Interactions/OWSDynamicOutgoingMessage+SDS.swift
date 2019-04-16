@@ -32,14 +32,14 @@ class OWSDynamicOutgoingMessageSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.dynamicOutgoingMessage.rawValue,
+            SDSRecordType.dynamicOutgoingMessage.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -74,7 +74,7 @@ class OWSDynamicOutgoingMessageSerializer: SDSSerializer {
             TSInteractionSerializer.legacyMessageStateColumn,
             TSInteractionSerializer.legacyWasDeliveredColumn,
             TSInteractionSerializer.mostRecentFailureTextColumn,
-            TSInteractionSerializer.recipientStateMapColumn,
+            TSInteractionSerializer.recipientStateMapColumn
             ].map { $0.columnName }
     }
 
@@ -103,7 +103,7 @@ class OWSDynamicOutgoingMessageSerializer: SDSSerializer {
             self.model.legacyMessageState.rawValue,
             self.model.legacyWasDelivered,
             self.model.mostRecentFailureText ?? DatabaseValue.null,
-            SDSDeserializer.archive(self.model.recipientStateMap) ?? DatabaseValue.null,
+            SDSDeserializer.archive(self.model.recipientStateMap) ?? DatabaseValue.null
 
         ]
         if OWSIsDebugBuild() {
