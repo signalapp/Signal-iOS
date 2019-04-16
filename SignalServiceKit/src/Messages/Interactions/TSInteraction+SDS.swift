@@ -155,20 +155,19 @@ extension TSInteractionSerializer {
     static let legacyWasDeliveredColumn = SDSColumnMetadata(columnName: "legacyWasDelivered", columnType: .int, isOptional: true, columnIndex: 37)
     static let linkPreviewColumn = SDSColumnMetadata(columnName: "linkPreview", columnType: .blob, isOptional: true, columnIndex: 38)
     static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 39)
-    static let messageStickerColumn = SDSColumnMetadata(columnName: "messageSticker", columnType: .blob, isOptional: true, columnIndex: 40)
-    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 41)
-    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 42)
-    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 43)
-    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 44)
-    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 45)
-    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 46)
-    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 47)
-    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 48)
-    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 49)
-    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int, isOptional: true, columnIndex: 50)
-    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 51)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 52)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 53)
+    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 40)
+    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 41)
+    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 42)
+    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 43)
+    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 44)
+    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 45)
+    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 46)
+    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 47)
+    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 48)
+    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int, isOptional: true, columnIndex: 49)
+    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 50)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 51)
+    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 52)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -213,7 +212,6 @@ extension TSInteractionSerializer {
         legacyWasDeliveredColumn,
         linkPreviewColumn,
         messageIdColumn,
-        messageStickerColumn,
         messageTypeColumn,
         mostRecentFailureTextColumn,
         preKeyBundleColumn,
@@ -295,8 +293,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -315,11 +311,10 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:));
 */
             return TSMessage(uniqueId: uniqueId,
                              receivedAtTimestamp: receivedAtTimestamp,
@@ -333,7 +328,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                              expiresAt: expiresAt,
                              expiresInSeconds: expiresInSeconds,
                              linkPreview: linkPreview,
-                             messageSticker: messageSticker,
                              quotedMessage: quotedMessage,
                              schemaVersion: schemaVersion)
 
@@ -354,8 +348,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -381,7 +373,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
         errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
@@ -389,7 +380,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                              read:(BOOL)read
                       recipientId:(nullable NSString *)recipientId
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:));
 */
             return TSErrorMessage(uniqueId: uniqueId,
                                   receivedAtTimestamp: receivedAtTimestamp,
@@ -403,7 +394,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                   expiresAt: expiresAt,
                                   expiresInSeconds: expiresInSeconds,
                                   linkPreview: linkPreview,
-                                  messageSticker: messageSticker,
                                   quotedMessage: quotedMessage,
                                   schemaVersion: schemaVersion,
                                   errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -428,8 +418,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -456,7 +444,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
         errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
@@ -465,7 +452,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                       recipientId:(nullable NSString *)recipientId
                         contactId:(NSString *)contactId
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:contactId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:contactId:));
 */
             return OWSUnknownContactBlockOfferMessage(uniqueId: uniqueId,
                                                       receivedAtTimestamp: receivedAtTimestamp,
@@ -479,7 +466,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                                       expiresAt: expiresAt,
                                                       expiresInSeconds: expiresInSeconds,
                                                       linkPreview: linkPreview,
-                                                      messageSticker: messageSticker,
                                                       quotedMessage: quotedMessage,
                                                       schemaVersion: schemaVersion,
                                                       errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -505,8 +491,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -532,7 +516,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
         errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
@@ -540,7 +523,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                              read:(BOOL)read
                       recipientId:(nullable NSString *)recipientId
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:));
 */
             return TSInvalidIdentityKeyErrorMessage(uniqueId: uniqueId,
                                                     receivedAtTimestamp: receivedAtTimestamp,
@@ -554,7 +537,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
                                                     linkPreview: linkPreview,
-                                                    messageSticker: messageSticker,
                                                     quotedMessage: quotedMessage,
                                                     schemaVersion: schemaVersion,
                                                     errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -579,8 +561,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -608,7 +588,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
         errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
@@ -618,7 +597,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                          authorId:(NSString *)authorId
                      envelopeData:(nullable NSData *)envelopeData
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:authorId:envelopeData:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:authorId:envelopeData:));
 */
             return TSInvalidIdentityKeyReceivingErrorMessage(uniqueId: uniqueId,
                                                              receivedAtTimestamp: receivedAtTimestamp,
@@ -632,7 +611,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                                              expiresAt: expiresAt,
                                                              expiresInSeconds: expiresInSeconds,
                                                              linkPreview: linkPreview,
-                                                             messageSticker: messageSticker,
                                                              quotedMessage: quotedMessage,
                                                              schemaVersion: schemaVersion,
                                                              errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -659,8 +637,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -689,7 +665,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
         errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
@@ -699,7 +674,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         messageId:(NSString *)messageId
                      preKeyBundle:(PreKeyBundle *)preKeyBundle
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:messageId:preKeyBundle:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:messageId:preKeyBundle:));
 */
             return TSInvalidIdentityKeySendingErrorMessage(uniqueId: uniqueId,
                                                            receivedAtTimestamp: receivedAtTimestamp,
@@ -713,7 +688,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                                            expiresAt: expiresAt,
                                                            expiresInSeconds: expiresInSeconds,
                                                            linkPreview: linkPreview,
-                                                           messageSticker: messageSticker,
                                                            quotedMessage: quotedMessage,
                                                            schemaVersion: schemaVersion,
                                                            errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -740,8 +714,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -768,7 +740,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
                     customMessage:(nullable NSString *)customMessage
@@ -777,7 +748,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                              read:(BOOL)read
           unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:));
 */
             return TSInfoMessage(uniqueId: uniqueId,
                                  receivedAtTimestamp: receivedAtTimestamp,
@@ -791,7 +762,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                  expiresAt: expiresAt,
                                  expiresInSeconds: expiresInSeconds,
                                  linkPreview: linkPreview,
-                                 messageSticker: messageSticker,
                                  quotedMessage: quotedMessage,
                                  schemaVersion: schemaVersion,
                                  customMessage: customMessage,
@@ -817,8 +787,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -846,7 +814,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
                     customMessage:(nullable NSString *)customMessage
@@ -856,7 +823,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
           unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                         contactId:(NSString *)contactId
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:contactId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:contactId:));
 */
             return OWSAddToProfileWhitelistOfferMessage(uniqueId: uniqueId,
                                                         receivedAtTimestamp: receivedAtTimestamp,
@@ -870,7 +837,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                                         expiresAt: expiresAt,
                                                         expiresInSeconds: expiresInSeconds,
                                                         linkPreview: linkPreview,
-                                                        messageSticker: messageSticker,
                                                         quotedMessage: quotedMessage,
                                                         schemaVersion: schemaVersion,
                                                         customMessage: customMessage,
@@ -897,8 +863,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -931,7 +895,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
                     customMessage:(nullable NSString *)customMessage
@@ -943,7 +906,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                       recipientId:(NSString *)recipientId
                 verificationState:(enum OWSVerificationState)verificationState
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:isLocalChange:recipientId:verificationState:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:isLocalChange:recipientId:verificationState:));
 */
             return OWSVerificationStateChangeMessage(uniqueId: uniqueId,
                                                      receivedAtTimestamp: receivedAtTimestamp,
@@ -957,7 +920,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
                                                      linkPreview: linkPreview,
-                                                     messageSticker: messageSticker,
                                                      quotedMessage: quotedMessage,
                                                      schemaVersion: schemaVersion,
                                                      customMessage: customMessage,
@@ -986,8 +948,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -1015,7 +975,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
                     customMessage:(nullable NSString *)customMessage
@@ -1025,7 +984,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
           unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                         contactId:(NSString *)contactId
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:contactId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:contactId:));
 */
             return OWSAddToContactsOfferMessage(uniqueId: uniqueId,
                                                 receivedAtTimestamp: receivedAtTimestamp,
@@ -1039,7 +998,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                                 expiresAt: expiresAt,
                                                 expiresInSeconds: expiresInSeconds,
                                                 linkPreview: linkPreview,
-                                                messageSticker: messageSticker,
                                                 quotedMessage: quotedMessage,
                                                 schemaVersion: schemaVersion,
                                                 customMessage: customMessage,
@@ -1066,8 +1024,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -1098,7 +1054,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
                     customMessage:(nullable NSString *)customMessage
@@ -1111,7 +1066,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
               createdByRemoteName:(nullable NSString *)createdByRemoteName
            createdInExistingGroup:(BOOL)createdInExistingGroup
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:configurationDurationSeconds:configurationIsEnabled:createdByRemoteName:createdInExistingGroup:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:configurationDurationSeconds:configurationIsEnabled:createdByRemoteName:createdInExistingGroup:));
 */
             return OWSDisappearingConfigurationUpdateInfoMessage(uniqueId: uniqueId,
                                                                  receivedAtTimestamp: receivedAtTimestamp,
@@ -1125,7 +1080,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                                                  expiresAt: expiresAt,
                                                                  expiresInSeconds: expiresInSeconds,
                                                                  linkPreview: linkPreview,
-                                                                 messageSticker: messageSticker,
                                                                  quotedMessage: quotedMessage,
                                                                  schemaVersion: schemaVersion,
                                                                  customMessage: customMessage,
@@ -1155,8 +1109,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -1180,7 +1132,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
                          authorId:(NSString *)authorId
@@ -1189,7 +1140,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                    sourceDeviceId:(unsigned int)sourceDeviceId
                   wasReceivedByUD:(BOOL)wasReceivedByUD
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:authorId:read:serverTimestamp:sourceDeviceId:wasReceivedByUD:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:authorId:read:serverTimestamp:sourceDeviceId:wasReceivedByUD:));
 */
             return TSIncomingMessage(uniqueId: uniqueId,
                                      receivedAtTimestamp: receivedAtTimestamp,
@@ -1203,7 +1154,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
                                      linkPreview: linkPreview,
-                                     messageSticker: messageSticker,
                                      quotedMessage: quotedMessage,
                                      schemaVersion: schemaVersion,
                                      authorId: authorId,
@@ -1229,8 +1179,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -1268,7 +1216,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         expiresAt:(unsigned long long)expiresAt
                  expiresInSeconds:(unsigned int)expiresInSeconds
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                   messageSticker:(nullable MessageSticker *)messageSticker
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                     schemaVersion:(NSUInteger)schemaVersion
             attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
@@ -1283,7 +1230,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             mostRecentFailureText:(nullable NSString *)mostRecentFailureText
                 recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
 */
             return TSOutgoingMessage(uniqueId: uniqueId,
                                      receivedAtTimestamp: receivedAtTimestamp,
@@ -1297,7 +1244,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
                                      linkPreview: linkPreview,
-                                     messageSticker: messageSticker,
                                      quotedMessage: quotedMessage,
                                      schemaVersion: schemaVersion,
                                      attachmentFilenameMap: attachmentFilenameMap,
