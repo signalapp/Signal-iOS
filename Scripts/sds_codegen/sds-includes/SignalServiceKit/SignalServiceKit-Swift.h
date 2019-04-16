@@ -112,6 +112,9 @@
 @interface OWSUnknownContactBlockOfferMessageSerializer : NSObject
 @end
 
+@interface TSRecipientReadReceiptCursor : NSObject
+@end
+
 @interface TSRecipientReadReceiptSerializer : NSObject
 @end
 
@@ -121,16 +124,37 @@
 @interface OWSMessageSend : NSObject
 @end
 
+@interface OWSMessageContentJobCursor : NSObject
+@end
+
 @interface OWSMessageContentJobSerializer : NSObject
+@end
+
+@interface OWSMessageDecryptJobCursor : NSObject
 @end
 
 @interface OWSMessageDecryptJobSerializer : NSObject
 @end
 
+@interface OWSSyncConfigurationMessageSerializer : NSObject
+@end
+
+@interface OWSOutgoingSentMessageTranscriptSerializer : NSObject
+@end
+
 @interface OWSSyncGroupsRequestMessageSerializer : NSObject
 @end
 
+@interface OWSOutgoingSyncMessageSerializer : NSObject
+@end
+
+@interface OWSSyncContactsMessageSerializer : NSObject
+@end
+
 @interface OWSVerificationStateChangeMessageSerializer : NSObject
+@end
+
+@interface TSInteractionCursor : NSObject
 @end
 
 @interface TSInteractionSerializer : NSObject
@@ -172,6 +196,18 @@
 @interface TSOutgoingMessageSerializer : NSObject
 @end
 
+@interface StickerPackMetadata : NSObject
+@end
+
+@interface StickerMetadata : NSObject
+@end
+
+@interface MessageStickerDraft : NSObject
+@end
+
+@interface MessageSticker : NSObject
+@end
+
 @interface OWSDisappearingConfigurationUpdateInfoMessageSerializer : NSObject
 @end
 
@@ -197,6 +233,9 @@
 @end
 
 @interface OWSMediaUtils : NSObject
+@end
+
+@interface TSAttachmentCursor : NSObject
 @end
 
 @interface TSAttachmentSerializer : NSObject
@@ -296,6 +335,9 @@
 @end
 
 @interface SSKProtoDataMessagePreview : NSObject
+@end
+
+@interface SSKProtoDataMessageSticker : NSObject
 @end
 
 @interface SSKProtoDataMessage : NSObject
@@ -400,6 +442,9 @@
 @interface CDSFeedbackOperation : NSObject
 @end
 
+@interface TSThreadCursor : NSObject
+@end
+
 @interface TSThreadSerializer : NSObject
 @end
 
@@ -473,6 +518,9 @@
 @end
 
 @interface SDSDatabaseStorage : NSObject
+@end
+
+@interface SDSCursor : NSObject
 @end
 
 @interface GRDBReadTransaction : NSObject

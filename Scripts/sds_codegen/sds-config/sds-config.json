@@ -11,9 +11,19 @@
 		"TSAttachmentStream.isValidVideoCached": "Bool"
 	},
 	"properties_to_ignore": [
-		"TSGroupModel.groupImage"
+		"OWSDynamicOutgoingMessage.block"
 	],
-	"class_to_skip_serialization": [],
+	"class_to_skip_serialization": [
+		"OWSOutgoingSyncMessage",
+		"OWSEndSessionMessage",
+		"OWSDynamicOutgoingMessage",
+		"OWSDisappearingMessagesConfigurationMessage",
+		"OWSSyncGroupsRequestMessage",
+		"OWSProfileKeyMessage",
+		"OWSOutgoingNullMessage",
+		"OWSOutgoingCallMessage",
+		"OWSReceiptsForSenderMessage"
+	],
 	"enum_properties": [
 		"TSThread.conversationColorName"
 	],

@@ -62,12 +62,15 @@ class TSInvalidIdentityKeyReceivingErrorMessageSerializer: SDSSerializer {
             TSInteractionSerializer.expiresAtColumn,
             TSInteractionSerializer.expiresInSecondsColumn,
             TSInteractionSerializer.linkPreviewColumn,
+            TSInteractionSerializer.messageStickerColumn,
             TSInteractionSerializer.quotedMessageColumn,
             TSInteractionSerializer.schemaVersionColumn,
             TSInteractionSerializer.errorMessageSchemaVersionColumn,
             TSInteractionSerializer.errorTypeColumn,
             TSInteractionSerializer.readColumn,
-            TSInteractionSerializer.recipientIdColumn
+            TSInteractionSerializer.recipientIdColumn,
+            TSInteractionSerializer.authorIdColumn,
+            TSInteractionSerializer.envelopeDataColumn
             ].map { $0.columnName }
     }
 
@@ -84,12 +87,15 @@ class TSInvalidIdentityKeyReceivingErrorMessageSerializer: SDSSerializer {
             self.model.expiresAt,
             self.model.expiresInSeconds,
             SDSDeserializer.archive(self.model.linkPreview) ?? DatabaseValue.null,
+            SDSDeserializer.archive(self.model.messageSticker) ?? DatabaseValue.null,
             SDSDeserializer.archive(self.model.quotedMessage) ?? DatabaseValue.null,
             self.model.schemaVersion,
             self.model.errorMessageSchemaVersion,
             self.model.errorType.rawValue,
             self.model.wasRead,
-            self.model.recipientId ?? DatabaseValue.null
+            self.model.recipientId ?? DatabaseValue.null,
+            self.model.authorId,
+            self.model.envelopeData ?? DatabaseValue.null
 
         ]
         if OWSIsDebugBuild() {
