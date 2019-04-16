@@ -13,9 +13,7 @@
 	"properties_to_ignore": [
 		"TSGroupModel.groupImage"
 	],
-	"class_to_skip_serialization": [
-		"TSGroupModel"
-	],
+	"class_to_skip_serialization": [],
 	"enum_properties": [
 		"TSThread.conversationColorName"
 	],
