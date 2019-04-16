@@ -163,8 +163,11 @@ class TypeInfo:
     # Note that we currently store all sub-models and collections (e.g. [String]) as a blob.
     #
     # TODO:
-    def database_column_type(self):
-        if self.should_use_blob:
+    def database_column_type(self, value_name):
+        # Special case this oddball type.
+        if value_name == 'conversationColorName':
+            return '.unicodeString'
+        elif self.should_use_blob:
             return '.blob'
         elif self.is_enum:
             return '.int'
@@ -376,7 +379,7 @@ class ParsedProperty:
         # return self.objc_type
 
     def database_column_type(self):
-        return self.type_info().database_column_type()
+        return self.type_info().database_column_type(self.name)
 
     def should_ignore_property(self):
         return should_ignore_property(self)
@@ -458,14 +461,16 @@ import SignalCoreKit
 
 extension %s: SDSSerializable {
     public var serializer: SDSSerializer {
-        // To support models with a rich class hierarchy,
-        // we need to do a "depth first" search by type.
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
         switch self {''' % str(clazz.name)
 
         for subclass in reversed(all_descendents_of_class(clazz)):
             swift_body += '''
         case let model as %s:
-            return %sSerializer(model: model)''' % ( str(subclass.name), str(subclass.name), )
+            assert(type(of: model) == %s.self)
+            return %sSerializer(model: model)''' % ( str(subclass.name), str(subclass.name), str(subclass.name), )
 
         swift_body += '''
         default:
@@ -503,6 +508,7 @@ extension %sSerializer {
             is_optional = property.is_optional or force_optional
             optional_split = ', isOptional: true' if is_optional else ''
             
+            # print 'property', property.name
             # print 'property', property.swift_type_safe()
             database_column_type = property.database_column_type()
             

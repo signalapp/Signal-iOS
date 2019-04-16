@@ -11,18 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation TSUnreadIndicatorInteraction
 #pragma clang diagnostic pop
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                        receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                                     sortId:(uint64_t)sortId
-                                  timestamp:(uint64_t)timestamp
-                             uniqueThreadId:(NSString *)uniqueThreadId {
-    return [super initWithUniqueId:uniqueId
-                          receivedAtTimestamp:receivedAtTimestamp
-                                       sortId:sortId
-                                    timestamp:timestamp
-                               uniqueThreadId:uniqueThreadId];
-}
-
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     return [super initWithCoder:coder];

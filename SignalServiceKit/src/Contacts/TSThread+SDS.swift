@@ -13,12 +13,15 @@ import SignalCoreKit
 
 extension TSThread: SDSSerializable {
     public var serializer: SDSSerializer {
-        // To support models with a rich class hierarchy,
-        // we need to do a "depth first" search by type.
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
         switch self {
         case let model as TSContactThread:
+            assert(type(of: model) == TSContactThread.self)
             return TSContactThreadSerializer(model: model)
         case let model as TSGroupThread:
+            assert(type(of: model) == TSGroupThread.self)
             return TSGroupThreadSerializer(model: model)
         default:
             return TSThreadSerializer(model: self)
@@ -37,7 +40,7 @@ extension TSThreadSerializer {
     // Base class properties
     static let archivalDateColumn = SDSColumnMetadata(columnName: "archivalDate", columnType: .int64, isOptional: true, columnIndex: 2)
     static let archivedAsOfMessageSortIdColumn = SDSColumnMetadata(columnName: "archivedAsOfMessageSortId", columnType: .int, isOptional: true, columnIndex: 3)
-    static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .int, columnIndex: 4)
+    static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .unicodeString, columnIndex: 4)
     static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .int64, columnIndex: 5)
     static let isArchivedByLegacyTimestampForSortingColumn = SDSColumnMetadata(columnName: "isArchivedByLegacyTimestampForSorting", columnType: .int, columnIndex: 6)
     static let lastMessageDateColumn = SDSColumnMetadata(columnName: "lastMessageDate", columnType: .int64, isOptional: true, columnIndex: 7)
@@ -63,7 +66,7 @@ extension TSThreadSerializer {
         mutedUntilDateColumn,
         shouldThreadBeVisibleColumn,
         groupModelColumn,
-        hasDismissedOffersColumn,
+        hasDismissedOffersColumn
         ])
 
 }
@@ -322,14 +325,14 @@ class TSThreadSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSThreadSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.thread.rawValue,
+            SDSRecordType.thread.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -349,7 +352,7 @@ class TSThreadSerializer: SDSSerializer {
             TSThreadSerializer.lastMessageDateColumn,
             TSThreadSerializer.messageDraftColumn,
             TSThreadSerializer.mutedUntilDateColumn,
-            TSThreadSerializer.shouldThreadBeVisibleColumn,
+            TSThreadSerializer.shouldThreadBeVisibleColumn
             ].map { $0.columnName }
     }
 
@@ -363,7 +366,7 @@ class TSThreadSerializer: SDSSerializer {
             self.model.lastMessageDate ?? DatabaseValue.null,
             self.model.messageDraft ?? DatabaseValue.null,
             self.model.mutedUntilDate ?? DatabaseValue.null,
-            self.model.shouldThreadBeVisible,
+            self.model.shouldThreadBeVisible
 
         ]
         if OWSIsDebugBuild() {

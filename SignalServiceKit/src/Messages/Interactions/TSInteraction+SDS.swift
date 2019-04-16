@@ -13,32 +13,45 @@ import SignalCoreKit
 
 extension TSInteraction: SDSSerializable {
     public var serializer: SDSSerializer {
-        // To support models with a rich class hierarchy,
-        // we need to do a "depth first" search by type.
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
         switch self {
         case let model as OWSDisappearingConfigurationUpdateInfoMessage:
+            assert(type(of: model) == OWSDisappearingConfigurationUpdateInfoMessage.self)
             return OWSDisappearingConfigurationUpdateInfoMessageSerializer(model: model)
         case let model as OWSVerificationStateChangeMessage:
+            assert(type(of: model) == OWSVerificationStateChangeMessage.self)
             return OWSVerificationStateChangeMessageSerializer(model: model)
         case let model as TSInfoMessage:
+            assert(type(of: model) == TSInfoMessage.self)
             return TSInfoMessageSerializer(model: model)
         case let model as TSErrorMessage:
+            assert(type(of: model) == TSErrorMessage.self)
             return TSErrorMessageSerializer(model: model)
         case let model as OWSDisappearingMessagesConfigurationMessage:
+            assert(type(of: model) == OWSDisappearingMessagesConfigurationMessage.self)
             return OWSDisappearingMessagesConfigurationMessageSerializer(model: model)
         case let model as OWSDynamicOutgoingMessage:
+            assert(type(of: model) == OWSDynamicOutgoingMessage.self)
             return OWSDynamicOutgoingMessageSerializer(model: model)
         case let model as TSOutgoingMessage:
+            assert(type(of: model) == TSOutgoingMessage.self)
             return TSOutgoingMessageSerializer(model: model)
         case let model as TSIncomingMessage:
+            assert(type(of: model) == TSIncomingMessage.self)
             return TSIncomingMessageSerializer(model: model)
         case let model as TSMessage:
+            assert(type(of: model) == TSMessage.self)
             return TSMessageSerializer(model: model)
         case let model as TSUnreadIndicatorInteraction:
+            assert(type(of: model) == TSUnreadIndicatorInteraction.self)
             return TSUnreadIndicatorInteractionSerializer(model: model)
         case let model as OWSContactOffersInteraction:
+            assert(type(of: model) == OWSContactOffersInteraction.self)
             return OWSContactOffersInteractionSerializer(model: model)
         case let model as TSCall:
+            assert(type(of: model) == TSCall.self)
             return TSCallSerializer(model: model)
         default:
             return TSInteractionSerializer(model: self)
@@ -155,7 +168,7 @@ extension TSInteractionSerializer {
         sourceDeviceIdColumn,
         unregisteredRecipientIdColumn,
         verificationStateColumn,
-        wasReceivedByUDColumn,
+        wasReceivedByUDColumn
         ])
 
 }
@@ -1139,14 +1152,14 @@ class TSInteractionSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.interaction.rawValue,
+            SDSRecordType.interaction.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -1161,7 +1174,7 @@ class TSInteractionSerializer: SDSSerializer {
             TSInteractionSerializer.receivedAtTimestampColumn,
             TSInteractionSerializer.sortIdColumn,
             TSInteractionSerializer.timestampColumn,
-            TSInteractionSerializer.uniqueThreadIdColumn,
+            TSInteractionSerializer.uniqueThreadIdColumn
             ].map { $0.columnName }
     }
 
@@ -1170,7 +1183,7 @@ class TSInteractionSerializer: SDSSerializer {
             self.model.receivedAtTimestamp,
             self.model.sortId,
             self.model.timestamp,
-            self.model.uniqueThreadId,
+            self.model.uniqueThreadId
 
         ]
         if OWSIsDebugBuild() {
