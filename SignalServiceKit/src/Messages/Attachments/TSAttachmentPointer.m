@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-
 @interface TSAttachmentPointer ()
 
 // Optional property.  Only set for attachments which need "lazy backup restore."
@@ -103,6 +102,49 @@ NS_ASSUME_NONNULL_BEGIN
     _mediaSize = (attachmentStream.shouldHaveImageSize ? attachmentStream.cachedMediaSize : CGSizeZero);
 
     return self;
+}
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                  albumMessageId:(nullable NSString *)albumMessageId
+         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
+                  attachmentType:(enum TSAttachmentType)attachmentType
+                       byteCount:(unsigned int)byteCount
+                         caption:(nullable NSString *)caption
+                     contentType:(NSString *)contentType
+                   encryptionKey:(nullable NSData *)encryptionKey
+                    isDownloaded:(BOOL)isDownloaded
+                        serverId:(unsigned long long)serverId
+                  sourceFilename:(nullable NSString *)sourceFilename
+                          digest:(nullable NSData *)digest
+           lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
+                       mediaSize:(CGSize)mediaSize
+  mostRecentFailureLocalizedText:(nullable NSString *)mostRecentFailureLocalizedText
+                     pointerType:(enum TSAttachmentPointerType)pointerType
+                           state:(enum TSAttachmentPointerState)state
+{
+    self = [super initWithUniqueId:uniqueId
+                    albumMessageId:albumMessageId
+           attachmentSchemaVersion:attachmentSchemaVersion
+                    attachmentType:attachmentType
+                         byteCount:byteCount
+                           caption:caption
+                       contentType:contentType
+                     encryptionKey:encryptionKey
+                      isDownloaded:isDownloaded
+                          serverId:serverId
+                    sourceFilename:sourceFilename];
+    if (!self) {
+        return self;
+    }
+    
+    _digest = digest;
+    _lazyRestoreFragmentId = lazyRestoreFragmentId;
+    _mediaSize = mediaSize;
+    _mostRecentFailureLocalizedText = mostRecentFailureLocalizedText;
+    _pointerType = pointerType;
+    _state = state;
+    
+    return self;    
 }
 
 + (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto

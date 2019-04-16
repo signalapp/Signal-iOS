@@ -164,6 +164,7 @@ class TypeInfo:
     #
     # TODO:
     def database_column_type(self, value_name):
+        # print 'self._swift_type', self._swift_type, self._objc_type
         # Special case this oddball type.
         if value_name == 'conversationColorName':
             return '.unicodeString'
@@ -181,6 +182,8 @@ class TypeInfo:
             return '.int'
         elif self._swift_type == 'UInt32':
             return '.int'
+        elif self._swift_type in ('Double', 'Float'):
+            return '.double'
         elif self.is_numeric():
             return '.int64'
         else:
@@ -197,6 +200,8 @@ class TypeInfo:
             'Int',
             'Int32',
             'UInt32',
+            'Double',
+            'Float'
         )
 
     def should_cast_to_swift(self):
@@ -227,13 +232,15 @@ class TypeInfo:
             accessor_name = 'optionalInt64AsNSNumber' if is_optional else 'int64'
         elif self._swift_type == 'UInt64':
             accessor_name = 'optionalUInt64AsNSNumber' if is_optional else 'uint64'
+        elif self._swift_type in ('Double', 'Float'):
+            accessor_name = 'optionalDoubleAsNSNumber' if is_optional else 'double'
         elif self.is_numeric():
             accessor_name = 'optionalInt64' if is_optional else 'int64'
         else:
             fail('Unknown type(2):', self._swift_type)
             
         value_expr = 'try deserializer.%s(at: %s)' % ( accessor_name, str(column_index_name), )
-        if self.should_cast_to_swift():
+        if self.should_cast_to_swift() and not is_optional:
             value_expr = str(self._swift_type) + '(' + value_expr + ')'
 
         # Special case this oddball type.
@@ -280,7 +287,7 @@ class ParsedProperty:
         self.class_name = json_dict.get('class_name')
         self.swift_type = None            
             
-    def try_to_convert_objc_primitive_to_swift(self, objc_type):
+    def try_to_convert_objc_primitive_to_swift(self, objc_type, unpack_nsnumber=True):
         if objc_type is None:
             fail('Missing type')
         elif objc_type == 'NSString *':
@@ -303,31 +310,40 @@ class ParsedProperty:
             return 'UInt64'
         elif objc_type == 'unsigned int':
             return 'UInt32'
+        elif objc_type == 'double':
+            return 'Double'
+        elif objc_type == 'float':
+            return 'Float'
+        elif objc_type == 'CGFloat':
+            return 'Double'
         elif objc_type == 'NSNumber *':
-            return swift_type_for_nsnumber(self)
+            if unpack_nsnumber:
+                return swift_type_for_nsnumber(self)
+            else:
+                return 'NSNumber'
         else:
             return None
     
     
     # NOTE: This method recurses to unpack types like: NSArray<NSArray<SomeClassName *> *> *
-    def convert_objc_class_to_swift(self, objc_type):
+    def convert_objc_class_to_swift(self, objc_type, unpack_nsnumber=True):
         if not objc_type.endswith(' *'):
             return None
         
-        swift_primitive = self.try_to_convert_objc_primitive_to_swift(objc_type)
+        swift_primitive = self.try_to_convert_objc_primitive_to_swift(objc_type, unpack_nsnumber=unpack_nsnumber)
         if swift_primitive is not None:
             return swift_primitive
         
         array_match = re.search(r'^NS(Mutable)?Array<(.+)> \*$', objc_type)
         if array_match is not None:
             split = array_match.group(2)
-            return '[' + self.convert_objc_class_to_swift(split) + ']'
+            return '[' + self.convert_objc_class_to_swift(split, unpack_nsnumber=False) + ']'
         
         dict_match = re.search(r'^NS(Mutable)?Dictionary<(.+),(.+)> \*$', objc_type)
         if dict_match is not None:
             split1 = dict_match.group(2).strip()
             split2 = dict_match.group(3).strip()
-            return '[' + self.convert_objc_class_to_swift(split1) + ': ' + self.convert_objc_class_to_swift(split2) + ']'
+            return '[' + self.convert_objc_class_to_swift(split1, unpack_nsnumber=False) + ': ' + self.convert_objc_class_to_swift(split2, unpack_nsnumber=False) + ']'
         
         swift_type = objc_type[:-len(' *')]
         
@@ -355,6 +371,12 @@ class ParsedProperty:
         swift_primitive = self.try_to_convert_objc_primitive_to_swift(objc_type)
         if swift_primitive is not None:
             return TypeInfo(swift_primitive, objc_type)
+        
+        print 'objc_type', objc_type
+        if objc_type in ('struct CGSize',):
+            objc_type = objc_type[len('struct '):]
+            swift_type = objc_type
+            return TypeInfo(swift_type, objc_type, should_use_blob=True)
 
         swift_type = self.convert_objc_class_to_swift(self.objc_type)
         if swift_type is not None:
@@ -508,7 +530,6 @@ extension %sSerializer {
             is_optional = property.is_optional or force_optional
             optional_split = ', isOptional: true' if is_optional else ''
             
-            # print 'property', property.name
             # print 'property', property.swift_type_safe()
             database_column_type = property.database_column_type()
             

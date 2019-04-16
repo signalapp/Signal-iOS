@@ -115,6 +115,55 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return self;
 }
 
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                  albumMessageId:(nullable NSString *)albumMessageId
+         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
+                  attachmentType:(enum TSAttachmentType)attachmentType
+                       byteCount:(unsigned int)byteCount
+                         caption:(nullable NSString *)caption
+                     contentType:(NSString *)contentType
+                   encryptionKey:(nullable NSData *)encryptionKey
+                    isDownloaded:(BOOL)isDownloaded
+                        serverId:(unsigned long long)serverId
+                  sourceFilename:(nullable NSString *)sourceFilename
+      cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
+               cachedImageHeight:(nullable NSNumber *)cachedImageHeight
+                cachedImageWidth:(nullable NSNumber *)cachedImageWidth
+               creationTimestamp:(NSDate *)creationTimestamp
+                          digest:(nullable NSData *)digest
+                      isUploaded:(BOOL)isUploaded
+              isValidImageCached:(nullable NSNumber *)isValidImageCached
+              isValidVideoCached:(nullable NSNumber *)isValidVideoCached
+           localRelativeFilePath:(nullable NSString *)localRelativeFilePath
+{
+    self = [super initWithUniqueId:uniqueId
+                    albumMessageId:albumMessageId
+           attachmentSchemaVersion:attachmentSchemaVersion
+                    attachmentType:attachmentType
+                         byteCount:byteCount
+                           caption:caption
+                       contentType:contentType
+                     encryptionKey:encryptionKey
+                      isDownloaded:isDownloaded
+                          serverId:serverId
+                    sourceFilename:sourceFilename];
+    if (!self) {
+        return self;
+    }
+    
+    _cachedAudioDurationSeconds = cachedAudioDurationSeconds;
+    _cachedImageHeight = cachedImageHeight;
+    _cachedImageWidth = cachedImageWidth;
+    _creationTimestamp = creationTimestamp;
+    _digest = digest;
+    _isUploaded = isUploaded;
+    _isValidImageCached = isValidImageCached;
+    _isValidVideoCached = isValidVideoCached;
+    _localRelativeFilePath = localRelativeFilePath;
+
+    return self;
+}
+
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
 {
     [super upgradeFromAttachmentSchemaVersion:attachmentSchemaVersion];

@@ -14,6 +14,7 @@ public enum SDSColumnType: Int32 {
     case bool
     case int
     case int64
+    case double
 }
 
 @objc
@@ -109,6 +110,10 @@ public class SDSTableMetadata: NSObject {
                     // TODO: How to make column optional?
                     // TODO: What's the right column type here?
                     table.column(columnMetadata.columnName, .integer)
+                case .double:
+                    // TODO: How to make column optional?
+                    // TODO: What's the right column type here?
+                    table.column(columnMetadata.columnName, .double)
                 }
             }
         }

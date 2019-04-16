@@ -17,7 +17,6 @@
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
-#import "TSYapDatabaseObject.h"
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
@@ -26,27 +25,6 @@
 #import <YapDatabase/YapDatabaseViewTypes.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-#pragma mark - Persisted data model
-
-@interface OWSMessageContentJob : TSYapDatabaseObject
-
-@property (nonatomic, readonly) NSDate *createdAt;
-@property (nonatomic, readonly) NSData *envelopeData;
-@property (nonatomic, readonly, nullable) NSData *plaintextData;
-@property (nonatomic, readonly) BOOL wasReceivedByUD;
-
-- (instancetype)initWithEnvelopeData:(NSData *)envelopeData
-                       plaintextData:(NSData *_Nullable)plaintextData
-                     wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId NS_UNAVAILABLE;
-
-@property (nonatomic, readonly, nullable) SSKProtoEnvelope *envelope;
-
-@end
-
-#pragma mark -
 
 @implementation OWSMessageContentJob
 
@@ -71,6 +49,27 @@ NS_ASSUME_NONNULL_BEGIN
     _wasReceivedByUD = wasReceivedByUD;
     _createdAt = [NSDate new];
 
+    return self;
+}
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       createdAt:(NSDate *)createdAt
+                    envelopeData:(NSData *)envelopeData
+                   plaintextData:(nullable NSData *)plaintextData
+                 wasReceivedByUD:(BOOL)wasReceivedByUD
+{
+    OWSAssertDebug(envelopeData);
+    
+    self = [super initWithUniqueId:uniqueId];
+    if (!self) {
+        return self;
+    }
+    
+    _envelopeData = envelopeData;
+    _plaintextData = plaintextData;
+    _wasReceivedByUD = wasReceivedByUD;
+    _createdAt = createdAt;
+    
     return self;
 }
 

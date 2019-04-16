@@ -66,7 +66,7 @@ extension TSThreadSerializer {
         mutedUntilDateColumn,
         shouldThreadBeVisibleColumn,
         groupModelColumn,
-        hasDismissedOffersColumn
+        hasDismissedOffersColumn,
         ])
 
 }
@@ -325,14 +325,14 @@ class TSThreadSerializer: SDSSerializer {
         // * ...all columns that we set when updating.
         return [
             TSThreadSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
+            uniqueIdColumnName(),
             ] + updateColumnNames()
 
     }
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.thread.rawValue
+            SDSRecordType.thread.rawValue,
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -352,7 +352,7 @@ class TSThreadSerializer: SDSSerializer {
             TSThreadSerializer.lastMessageDateColumn,
             TSThreadSerializer.messageDraftColumn,
             TSThreadSerializer.mutedUntilDateColumn,
-            TSThreadSerializer.shouldThreadBeVisibleColumn
+            TSThreadSerializer.shouldThreadBeVisibleColumn,
             ].map { $0.columnName }
     }
 
@@ -366,7 +366,7 @@ class TSThreadSerializer: SDSSerializer {
             self.model.lastMessageDate ?? DatabaseValue.null,
             self.model.messageDraft ?? DatabaseValue.null,
             self.model.mutedUntilDate ?? DatabaseValue.null,
-            self.model.shouldThreadBeVisible
+            self.model.shouldThreadBeVisible,
 
         ]
         if OWSIsDebugBuild() {
