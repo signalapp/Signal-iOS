@@ -592,11 +592,7 @@ public class SignalAttachment: NSObject {
             owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
-        guard datas.count > 0 else {
-            owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
-            return nil
-        }
-        guard let data = datas[0] as? Data else {
+        guard let data = datas.first else {
             owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }

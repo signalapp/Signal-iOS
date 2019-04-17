@@ -663,10 +663,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         var visualMediaItemProviders = [NSItemProvider]()
         var hasNonVisualMedia = false
         for attachment in attachments {
-            guard let itemProvider = attachment as? NSItemProvider else {
-                owsFailDebug("Unexpected attachment type: \(String(describing: attachment))")
-                continue
-            }
+            let itemProvider: NSItemProvider = attachment
             if isVisualMediaItem(itemProvider: itemProvider) {
                 visualMediaItemProviders.append(itemProvider)
             } else {
