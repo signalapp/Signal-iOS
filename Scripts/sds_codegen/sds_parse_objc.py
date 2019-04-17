@@ -59,6 +59,7 @@ class ParsedClass:
         self.property_map = {}
         self.super_class_name = None
         self.counter = next_counter()
+        self.has_finalize = False
 
     def get_property(self, name):
         return self.property_map.get(name)
@@ -340,8 +341,18 @@ def process_objc_class(namespace, file_path, lines, decl_prefix, decl_remainder,
         elif remainder.startswith('ObjCPropertyImplDecl '):
             # print 'property impl', line
             process_objc_property_impl(clazz, prefix, file_path, line, remainder)
+        elif remainder.startswith('ObjCMethodDecl '):
+            # print 'property impl', line
+            process_objc_method_decl(clazz, prefix, file_path, line, remainder)
 
     return clazz
+
+def process_objc_method_decl(clazz, prefix, file_path, line, remainder):
+    # print '\t\t', 'process_objc_property_impl', remainder
+    
+    has_finalize = remainder.endswith(" - sdsFinalize 'void'")
+    if has_finalize:
+        clazz.has_finalize = True
 
 
 # | |-ObjCPropertyImplDecl 0x1092f6d68 <col:1, col:13> col:13 someSynthesizedProperty synthesize
@@ -477,6 +488,7 @@ def emit_output(file_path, namespace):
             'name': class_name,
             'properties': properties,
             'filepath': sds_common.sds_to_relative_path(file_path),
+            'has_finalize': clazz.has_finalize,
         }
         if clazz.super_class_name is not None:
             class_dict['super_class_name'] = clazz.super_class_name

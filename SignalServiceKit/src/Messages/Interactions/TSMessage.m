@@ -128,12 +128,19 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _quotedMessage = quotedMessage;
     _schemaVersion = schemaVersion;
 
+    [self sdsFinalize];
+
     return self;
 }
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (void)sdsFinalize
+{
+    [self updateExpiresAt];
+}
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
