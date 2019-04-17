@@ -24,6 +24,7 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 @property (atomic, readonly) BOOL isCensorshipCircumventionActive;
 @property (atomic, readonly) BOOL hasCensoredPhoneNumber;
 @property (atomic) BOOL isCensorshipCircumventionManuallyActivated;
+@property (atomic) BOOL isCensorshipCircumventionManuallyDisabled;
 @property (atomic, nullable) NSString *manualCensorshipCircumventionCountryCode;
 
 /// For interacting with the Signal Service

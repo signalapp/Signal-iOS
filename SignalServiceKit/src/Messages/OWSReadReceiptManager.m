@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadReceiptManager.h"
@@ -530,22 +530,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 {
     // We don't need to worry about races around this cached value.
     if (!self.areReadReceiptsEnabledCached) {
-        // Default to NO.
         self.areReadReceiptsEnabledCached = @([self.dbConnection boolForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
-                                                               inCollection:OWSReadReceiptManagerCollection]);
-    }
-
-    return [self.areReadReceiptsEnabledCached boolValue];
-}
-
-- (BOOL)areReadReceiptsEnabledWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    if (!self.areReadReceiptsEnabledCached) {
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-            // Default to NO.
-            self.areReadReceiptsEnabledCached = [transaction objectForKey:OWSReadReceiptManagerAreReadReceiptsEnabled
-                                                             inCollection:OWSReadReceiptManagerCollection];
-        }];
+                                                               inCollection:OWSReadReceiptManagerCollection
+                                                               defaultValue:NO]);
     }
 
     return [self.areReadReceiptsEnabledCached boolValue];

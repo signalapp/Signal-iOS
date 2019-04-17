@@ -329,6 +329,11 @@ typedef enum : NSUInteger {
     return SDSDatabaseStorage.shared;
 }
 
+- (OWSNotificationPresenter *)notificationPresenter
+{
+    return AppEnvironment.shared.notificationPresenter;
+}
+
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -1199,6 +1204,13 @@ typedef enum : NSUInteger {
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+
+    // We don't present incoming message notifications for the presented
+    // conversation. But there's a narrow window *while* the conversationVC
+    // is being presented where a message notification for the not-quite-yet
+    // presented conversation can be shown. If that happens, dismiss it as soon
+    // as we enter the conversation.
+    [self.notificationPresenter cancelNotificationsWithThreadId:self.thread.uniqueId];
 
     // recover status bar when returning from PhotoPicker, which is dark (uses light status bar)
     [self setNeedsStatusBarAppearanceUpdate];
@@ -2621,7 +2633,7 @@ typedef enum : NSUInteger {
 {
     CGFloat inset = -(self.collectionView.contentInset.bottom + self.bottomLayoutGuide.length);
     self.scrollDownButtonButtomConstraint.constant = inset;
-    [self.view setNeedsLayout];
+    [self.scrollDownButton.superview setNeedsLayout];
 }
 
 - (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
@@ -2964,13 +2976,6 @@ typedef enum : NSUInteger {
     didApproveAttachments:(NSArray<SignalAttachment *> *)attachments
               messageText:(nullable NSString *)messageText
 {
-    OWSAssertDebug(self.isFirstResponder);
-    if (@available(iOS 10, *)) {
-        // do nothing
-    } else {
-        [self reloadInputViews];
-    }
-
     [self tryToSendAttachments:attachments messageText:messageText];
     [self.inputToolbar clearTextMessageAnimated:NO];
 
@@ -2978,7 +2983,15 @@ typedef enum : NSUInteger {
     // the new message scroll into view.
     [self scrollToBottomAnimated:NO];
 
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES
+                             completion:^{
+                                 OWSAssertDebug(self.isFirstResponder);
+                                 if (@available(iOS 10, *)) {
+                                     // do nothing
+                                 } else {
+                                     [self reloadInputViews];
+                                 }
+                             }];
 }
 
 - (nullable NSString *)sendMediaNavInitialMessageText:(SendMediaNavigationController *)sendMediaNavigationController
@@ -3884,6 +3897,24 @@ typedef enum : NSUInteger {
     // Therefore, we only zero out the contentInsetBottom if the inputAccessoryView is nil.
     if (self.inputAccessoryView == nil || keyboardContentOverlap > 0) {
         self.contentInsetBottom = keyboardContentOverlap;
+    } else if (!CurrentAppContext().isAppForegroundAndActive) {
+        // If app is not active, we'll dismiss the keyboard
+        // so only reserve enough space for the input accessory
+        // view.  Otherwise, the content will animate into place
+        // when the app returns from the background.
+        //
+        // NOTE: There are two separate cases. If the keyboard is
+        //       dismissed, the inputAccessoryView grows to allow
+        //       space for the notch.  In this case, we need to
+        //       subtract bottomLayoutGuide.  However, if the
+        //       keyboard is presented we don't want to do that.
+        //       I don't see a simple, safe way to distinguish
+        //       these two cases.  Therefore, I'm _always_
+        //       subtracting bottomLayoutGuide.  This will cause
+        //       a slight animation when returning to the app
+        //       but it will "match" the presentation animation
+        //       of the input accessory.
+        self.contentInsetBottom = MAX(0, self.inputAccessoryView.height - self.bottomLayoutGuide.length);
     }
 
     newInsets.top = 0 + self.extraContentInsetPadding;
@@ -3903,17 +3934,9 @@ typedef enum : NSUInteger {
         // RADAR: #36297652
         [self updateScrollDownButtonLayout];
 
-        [self.scrollDownButton setNeedsLayout];
-        [self.scrollDownButton layoutIfNeeded];
-        // HACK: I've made the assumption that we are already in the context of an animation, in which case the
-        // above should be sufficient to smoothly move the scrollDown button in step with the keyboard presentation
-        // animation. Yet, setting the constraint doesn't animate the movement of the button - it "jumps" to it's final
-        // position. So here we manually lay out the scroll down button frame (seemingly redundantly), which allows it
-        // to be smoothly animated.
-        CGRect newButtonFrame = self.scrollDownButton.frame;
-        newButtonFrame.origin.y
-            = self.scrollDownButton.superview.height - (newInsets.bottom + self.scrollDownButton.height);
-        self.scrollDownButton.frame = newButtonFrame;
+        // Update the layout of the scroll down button immediately.
+        // This change might be animated by the keyboard notification.
+        [self.scrollDownButton.superview layoutIfNeeded];
 
         // Adjust content offset to prevent the presented keyboard from obscuring content.
         if (!self.viewHasEverAppeared) {

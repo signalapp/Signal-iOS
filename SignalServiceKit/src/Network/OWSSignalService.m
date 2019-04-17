@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const kOWSPrimaryStorage_OWSSignalService = @"kTSStorageManager_OWSSignalService";
 NSString *const kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
     = @"kTSStorageManager_isCensorshipCircumventionManuallyActivated";
+NSString *const kOWSPrimaryStorage_isCensorshipCircumventionManuallyDisabled
+    = @"kTSStorageManager_isCensorshipCircumventionManuallyDisabled";
 NSString *const kOWSPrimaryStorage_ManualCensorshipCircumventionDomain
     = @"kTSStorageManager_ManualCensorshipCircumventionDomain";
 NSString *const kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
@@ -27,8 +29,6 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     @"kNSNotificationName_IsCensorshipCircumventionActiveDidChange";
 
 @interface OWSSignalService ()
-
-@property (nonatomic, nullable, readonly) OWSCensorshipConfiguration *censorshipConfiguration;
 
 @property (atomic) BOOL hasCensoredPhoneNumber;
 
@@ -104,7 +104,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 {
     return
         [[OWSPrimaryStorage dbReadConnection] boolForKey:kOWSPrimaryStorage_isCensorshipCircumventionManuallyActivated
-                                            inCollection:kOWSPrimaryStorage_OWSSignalService];
+                                            inCollection:kOWSPrimaryStorage_OWSSignalService
+                                            defaultValue:NO];
 }
 
 - (void)setIsCensorshipCircumventionManuallyActivated:(BOOL)value
@@ -116,10 +117,34 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     [self updateIsCensorshipCircumventionActive];
 }
 
+- (BOOL)isCensorshipCircumventionManuallyDisabled
+{
+    return [[OWSPrimaryStorage dbReadConnection] boolForKey:kOWSPrimaryStorage_isCensorshipCircumventionManuallyDisabled
+                                               inCollection:kOWSPrimaryStorage_OWSSignalService
+                                               defaultValue:NO];
+}
+
+- (void)setIsCensorshipCircumventionManuallyDisabled:(BOOL)value
+{
+    [[OWSPrimaryStorage dbReadWriteConnection] setObject:@(value)
+                                                  forKey:kOWSPrimaryStorage_isCensorshipCircumventionManuallyDisabled
+                                            inCollection:kOWSPrimaryStorage_OWSSignalService];
+
+    [self updateIsCensorshipCircumventionActive];
+}
+
+
 - (void)updateIsCensorshipCircumventionActive
 {
-    self.isCensorshipCircumventionActive
-        = (self.isCensorshipCircumventionManuallyActivated || self.hasCensoredPhoneNumber);
+    if (self.isCensorshipCircumventionManuallyDisabled) {
+        self.isCensorshipCircumventionActive = NO;
+    } else if (self.isCensorshipCircumventionManuallyActivated) {
+        self.isCensorshipCircumventionActive = YES;
+    } else if (self.hasCensoredPhoneNumber) {
+        self.isCensorshipCircumventionActive = YES;
+    } else {
+        self.isCensorshipCircumventionActive = NO;
+    }
 }
 
 - (void)setIsCensorshipCircumventionActive:(BOOL)isCensorshipCircumventionActive
@@ -150,8 +175,9 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)buildSignalServiceSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        OWSLogInfo(@"using reflector HTTPSessionManager via: %@", self.censorshipConfiguration.domainFrontBaseURL);
-        return self.reflectorSignalServiceSessionManager;
+        OWSCensorshipConfiguration *censorshipConfiguration = [self buildCensorshipConfiguration];
+        OWSLogInfo(@"using reflector HTTPSessionManager via: %@", censorshipConfiguration.domainFrontBaseURL);
+        return [self reflectorSignalServiceSessionManagerWithCensorshipConfiguration:censorshipConfiguration];
     } else {
         return self.defaultSignalServiceSessionManager;
     }
@@ -174,10 +200,9 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     return sessionManager;
 }
 
-- (AFHTTPSessionManager *)reflectorSignalServiceSessionManager
+- (AFHTTPSessionManager *)reflectorSignalServiceSessionManagerWithCensorshipConfiguration:
+    (OWSCensorshipConfiguration *)censorshipConfiguration
 {
-    OWSCensorshipConfiguration *censorshipConfiguration = self.censorshipConfiguration;
-
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:censorshipConfiguration.domainFrontBaseURL
@@ -186,7 +211,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     sessionManager.securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy;
 
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
-    [sessionManager.requestSerializer setValue:self.censorshipConfiguration.signalServiceReflectorHost forHTTPHeaderField:@"Host"];
+    [sessionManager.requestSerializer setValue:censorshipConfiguration.signalServiceReflectorHost
+                            forHTTPHeaderField:@"Host"];
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
     // Disable default cookie handling for all requests.
     sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
@@ -199,8 +225,9 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)CDNSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        OWSLogInfo(@"using reflector CDNSessionManager via: %@", self.censorshipConfiguration.domainFrontBaseURL);
-        return self.reflectorCDNSessionManager;
+        OWSCensorshipConfiguration *censorshipConfiguration = [self buildCensorshipConfiguration];
+        OWSLogInfo(@"using reflector CDNSessionManager via: %@", censorshipConfiguration.domainFrontBaseURL);
+        return [self reflectorCDNSessionManagerWithCensorshipConfiguration:censorshipConfiguration];
     } else {
         return self.defaultCDNSessionManager;
     }
@@ -223,11 +250,10 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     return sessionManager;
 }
 
-- (AFHTTPSessionManager *)reflectorCDNSessionManager
+- (AFHTTPSessionManager *)reflectorCDNSessionManagerWithCensorshipConfiguration:
+    (OWSCensorshipConfiguration *)censorshipConfiguration
 {
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
-
-    OWSCensorshipConfiguration *censorshipConfiguration = self.censorshipConfiguration;
 
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:censorshipConfiguration.domainFrontBaseURL
@@ -257,8 +283,10 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 #pragma mark - Manual Censorship Circumvention
 
-- (nullable OWSCensorshipConfiguration *)censorshipConfiguration
+- (OWSCensorshipConfiguration *)buildCensorshipConfiguration
 {
+    OWSAssertDebug(self.isCensorshipCircumventionActive);
+
     if (self.isCensorshipCircumventionManuallyActivated) {
         NSString *countryCode = self.manualCensorshipCircumventionCountryCode;
         if (countryCode.length == 0) {
@@ -272,9 +300,13 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
         return configuration;
     }
 
-    OWSCensorshipConfiguration *configuration =
+    OWSCensorshipConfiguration *_Nullable configuration =
         [OWSCensorshipConfiguration censorshipConfigurationWithPhoneNumber:TSAccountManager.localNumber];
-    return configuration;
+    if (configuration != nil) {
+        return configuration;
+    }
+
+    return OWSCensorshipConfiguration.defaultConfiguration;
 }
 
 - (nullable NSString *)manualCensorshipCircumventionCountryCode

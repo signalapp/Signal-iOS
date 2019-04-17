@@ -36,14 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [self objectForKey:key inCollection:collection ofExpectedType:[NSString class]];
 }
 
-- (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection
-{
-    OWSAssertDebug(key.length > 0);
-    OWSAssertDebug(collection.length > 0);
-
-    return [self boolForKey:key inCollection:collection defaultValue:NO];
-}
-
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(BOOL)defaultValue
 {
     OWSAssertDebug(key.length > 0);

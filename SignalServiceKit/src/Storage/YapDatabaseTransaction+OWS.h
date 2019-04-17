@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YapDatabaseReadTransaction (OWS)
 
-- (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection;
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(BOOL)defaultValue;
 - (int)intForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable NSDate *)dateForKey:(NSString *)key inCollection:(NSString *)collection;
