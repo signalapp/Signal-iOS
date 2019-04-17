@@ -10,7 +10,9 @@ protocol InteractionFinderAdapter {
 
     static func fetch(uniqueId: String, transaction: ReadTransaction) throws -> TSInteraction?
 
-    func mostRecentInteraction(transaction: ReadTransaction) throws -> TSInteraction?
+    func mostRecentInteraction(transaction: ReadTransaction) -> TSInteraction?
+    func mostRecentInteractionForInbox(transaction: ReadTransaction) -> TSInteraction?
+
     func sortIndex(interactionUniqueId: String, transaction: ReadTransaction) throws -> UInt?
     func count(transaction: ReadTransaction) throws -> UInt
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
@@ -45,18 +47,29 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             return YAPDBInteractionFinderAdapter.fetch(uniqueId: uniqueId, transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try GRDBInteractionFinderAdapter.fetch(uniqueId: uniqueId, transaction: grdbRead.database)
+            return try GRDBInteractionFinderAdapter.fetch(uniqueId: uniqueId, transaction: grdbRead)
         }
     }
 
     // MARK: - instance methods
 
-    public func mostRecentInteraction(transaction: SDSAnyReadTransaction) throws -> TSInteraction? {
+    @objc
+    public func mostRecentInteraction(transaction: SDSAnyReadTransaction) -> TSInteraction? {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.mostRecentInteraction(transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.mostRecentInteraction(transaction: grdbRead.database)
+            return grdbAdapter.mostRecentInteraction(transaction: grdbRead)
+        }
+    }
+
+    @objc
+    func mostRecentInteractionForInbox(transaction: SDSAnyReadTransaction) -> TSInteraction? {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return yapAdapter.mostRecentInteractionForInbox(transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.mostRecentInteractionForInbox(transaction: grdbRead)
         }
     }
 
@@ -66,7 +79,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             case .yapRead(let yapRead):
                 return yapAdapter.sortIndex(interactionUniqueId: interactionUniqueId, transaction: yapRead)
             case .grdbRead(let grdbRead):
-                return try grdbAdapter.sortIndex(interactionUniqueId: interactionUniqueId, transaction: grdbRead.database)
+                return try grdbAdapter.sortIndex(interactionUniqueId: interactionUniqueId, transaction: grdbRead)
             }
         }
     }
@@ -76,7 +89,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             return yapAdapter.count(transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.count(transaction: grdbRead.database)
+            return try grdbAdapter.count(transaction: grdbRead)
         }
     }
 
@@ -85,7 +98,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             return try yapAdapter.enumerateInteractionIds(transaction: yapRead, block: block)
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.enumerateInteractionIds(transaction: grdbRead.database, block: block)
+            return try grdbAdapter.enumerateInteractionIds(transaction: grdbRead, block: block)
         }
     }
 }
@@ -110,6 +123,32 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     func mostRecentInteraction(transaction: YapDatabaseReadTransaction) -> TSInteraction? {
         return ext(transaction).lastObject(inGroup: threadUniqueId) as? TSInteraction
+    }
+
+    func mostRecentInteractionForInbox(transaction: YapDatabaseReadTransaction) -> TSInteraction? {
+        var last: TSInteraction?
+        var missedCount: UInt = 0
+        ext(transaction).enumerateKeysAndObjects(inGroup: threadUniqueId, with: NSEnumerationOptions.reverse) { (_, _, object, _, stopPtr) in
+            guard let interaction = object as? TSInteraction else {
+                owsFailDebug("unexpected interaction: \(type(of: object))")
+                return
+            }
+            if TSThread.shouldInteractionAppear(inInbox: interaction) {
+                last = interaction
+                stopPtr.pointee = true
+            }
+
+            missedCount += 1
+            // For long ignored threads, with lots of SN changes this can get really slow.
+            // I see this in development because I have a lot of long forgotten threads with
+            // members who's test devices are constantly reinstalled. We could add a
+            // purpose-built DB view, but I think in the real world this is rare to be a
+            // hotspot.
+            if (missedCount > 50) {
+                Logger.warn("found last interaction for inbox after skipping \(missedCount) items")
+            }
+        }
+        return last
     }
 
     func count(transaction: YapDatabaseReadTransaction) -> UInt {
@@ -157,7 +196,8 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 }
 
 struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
-    typealias ReadTransaction = Database
+
+    typealias ReadTransaction = GRDBReadTransaction
 
     let threadUniqueId: String
 
@@ -167,12 +207,9 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     // MARK: - static methods
 
-    static let cn = InteractionRecord.columnName
-    let cn = InteractionRecord.columnName
-
-    static func fetch(uniqueId: String, transaction: Database) throws -> TSInteraction? {
-        guard let interactionRecord = try InteractionRecord.fetchOne(transaction,
-                                                                     sql: "SELECT * FROM \(InteractionRecord.databaseTableName) WHERE \(cn(.uniqueId)) = ?",
+    static func fetch(uniqueId: String, transaction: GRDBReadTransaction) throws -> TSInteraction? {
+        guard let interactionRecord = try InteractionRecord.fetchOne(transaction.database,
+                                                                     sql: "SELECT * FROM \(InteractionRecord.databaseTableName) WHERE \(interactionColumn: .uniqueId) = ?",
             arguments: [uniqueId]) else {
                 return nil
         }
@@ -182,13 +219,13 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     // MARK: - instance methods
 
-    func mostRecentInteraction(transaction: Database) throws -> TSInteraction? {
-        guard let interactionRecord = try InteractionRecord.fetchOne(transaction,
+    func mostRecentInteraction(transaction: GRDBReadTransaction) -> TSInteraction? {
+        guard let interactionRecord = try! InteractionRecord.fetchOne(transaction.database,
                                                                      sql: """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
-            WHERE \(cn(.threadUniqueId)) = ?
-            ORDER BY \(cn(.id)) DESC
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            ORDER BY \(interactionColumn: .id) DESC
             """,
             arguments: [threadUniqueId]) else {
                 return nil
@@ -197,29 +234,46 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         return TSInteraction.fromRecord(interactionRecord)
     }
 
-    func sortIndex(interactionUniqueId: String, transaction: Database) throws -> UInt? {
-        return try UInt.fetchOne(transaction,
+    func mostRecentInteractionForInbox(transaction: GRDBReadTransaction) -> TSInteraction? {
+        guard let interactionRecord = try! InteractionRecord.fetchOne(transaction.database,
+                                                                     sql: """
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .errorType) IS NOT ?
+            AND \(interactionColumn: .messageType) IS NOT ?
+            ORDER BY \(interactionColumn: .id) DESC
+            """,
+            arguments: [threadUniqueId, TSErrorMessageType.nonBlockingIdentityChange, TSInfoMessageType.verificationStateChange]) else {
+                return nil
+        }
+
+        return TSInteraction.fromRecord(interactionRecord)
+    }
+
+    func sortIndex(interactionUniqueId: String, transaction: GRDBReadTransaction) throws -> UInt? {
+        return try UInt.fetchOne(transaction.database,
                                  sql: """
             SELECT rowNumber
             FROM (
                 SELECT
-                    ROW_NUMBER() OVER (ORDER BY \(cn(.id))) as rowNumber,
-                    \(cn(.id)),
-                    \(cn(.uniqueId))
+                    ROW_NUMBER() OVER (ORDER BY \(interactionColumn: .id)) as rowNumber,
+                    \(interactionColumn: .id),
+                    \(interactionColumn: .uniqueId)
                 FROM \(InteractionRecord.databaseTableName)
-                WHERE \(cn(.threadUniqueId)) = ?
+                WHERE \(interactionColumn: .threadUniqueId) = ?
             )
-            WHERE \(cn(.uniqueId)) = ?
+            WHERE \(interactionColumn: .uniqueId) = ?
             """,
             arguments: [threadUniqueId, interactionUniqueId])
     }
 
-    func count(transaction: Database) throws -> UInt {
-        guard let count = try UInt.fetchOne(transaction,
+    func count(transaction: GRDBReadTransaction) throws -> UInt {
+        guard let count = try UInt.fetchOne(transaction.database,
                                             sql: """
             SELECT COUNT(*)
             FROM \(InteractionRecord.databaseTableName)
-            WHERE \(cn(.threadUniqueId)) = ?
+            WHERE \(interactionColumn: .threadUniqueId) = ?
             """,
             arguments: [threadUniqueId]) else {
                 throw assertionError("count was unexpectedly nil")
@@ -227,15 +281,15 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         return count
     }
 
-    func enumerateInteractionIds(transaction: Database, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {
+    func enumerateInteractionIds(transaction: GRDBReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {
         var stop: ObjCBool = false
 
-        try String.fetchCursor(transaction,
+        try String.fetchCursor(transaction.database,
                            sql: """
-            SELECT \(cn(.uniqueId))
+            SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
-            WHERE \(cn(.threadUniqueId)) = ?
-            ORDER BY \(cn(.id)) DESC
+            WHERE \(interactionColumn: .threadUniqueId)) = ?
+            ORDER BY \(interactionColumn: .id) DESC
 """,
             arguments: [threadUniqueId]).forEach { (uniqueId: String) -> Void in
 

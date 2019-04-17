@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyReadTransaction;
 @class TSThread;
 
 typedef NS_ENUM(NSInteger, OWSInteractionType) {
@@ -23,7 +24,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 @protocol OWSPreviewText
 
-- (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 BOOL IsNoteToSelfEnabled(void);
 
 @class OWSDisappearingMessagesConfiguration;
+@class SDSAnyReadTransaction;
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 
@@ -123,10 +124,10 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  *
  *  @return Thread preview string.
  */
-- (NSString *)lastMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)lastMessageTextWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(lastMessageText(transaction:));
 
-- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(lastInteractionForInbox(transaction:));
 
 /**
@@ -192,6 +193,8 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 #pragma mark - Update With... Methods
 
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
++ (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction;
 
 @end
 

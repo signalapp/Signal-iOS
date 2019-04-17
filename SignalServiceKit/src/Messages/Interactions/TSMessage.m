@@ -373,7 +373,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 }
 
 // TODO: This method contains view-specific logic and probably belongs in NotificationsManager, not in SSK.
-- (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSString *_Nullable bodyDescription = nil;
     if (self.body.length > 0) {
@@ -381,7 +381,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     if (bodyDescription == nil) {
-        TSAttachment *_Nullable oversizeTextAttachment = [self oversizeTextAttachmentWithTransaction:transaction];
+        TSAttachment *_Nullable oversizeTextAttachment;
+        if (transaction.transitional_yapReadTransaction) {
+            oversizeTextAttachment =
+                [self oversizeTextAttachmentWithTransaction:transaction.transitional_yapReadTransaction];
+        }
         if ([oversizeTextAttachment isKindOfClass:[TSAttachmentStream class]]) {
             TSAttachmentStream *oversizeTextAttachmentStream = (TSAttachmentStream *)oversizeTextAttachment;
             NSData *_Nullable data = [NSData dataWithContentsOfFile:oversizeTextAttachmentStream.originalFilePath];
@@ -395,7 +399,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     NSString *_Nullable attachmentDescription = nil;
-    TSAttachment *_Nullable mediaAttachment = [self mediaAttachmentsWithTransaction:transaction].firstObject;
+
+    TSAttachment *_Nullable mediaAttachment;
+    if (transaction.transitional_yapReadTransaction) {
+        mediaAttachment =
+            [self mediaAttachmentsWithTransaction:transaction.transitional_yapReadTransaction].firstObject;
+    }
     if (mediaAttachment != nil) {
         attachmentDescription = mediaAttachment.description;
     }

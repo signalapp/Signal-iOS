@@ -582,11 +582,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSInteractionType_Error:
         case OWSInteractionType_Info:
         case OWSInteractionType_Call:
-            if (transaction.transitional_yapReadTransaction) {
-                self.systemMessageText =
-                    [self systemMessageTextWithTransaction:transaction.transitional_yapReadTransaction];
-                OWSAssertDebug(self.systemMessageText.length > 0);
-            }
+            self.systemMessageText = [self systemMessageTextWithTransaction:transaction];
+            OWSAssertDebug(self.systemMessageText.length > 0);
             return;
         case OWSInteractionType_IncomingMessage:
         case OWSInteractionType_OutgoingMessage:
@@ -810,7 +807,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return mediaAlbumItems;
 }
 
-- (NSString *)systemMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)systemMessageTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 

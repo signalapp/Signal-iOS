@@ -106,7 +106,6 @@ NS_SWIFT_NAME(init(uniqueId:recipientMap:sentTimestamp:));
 - (void)prepareCachedValues;
 
 - (BOOL)areReadReceiptsEnabled;
-- (BOOL)areReadReceiptsEnabledWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (void)setAreReadReceiptsEnabled:(BOOL)value;
 
 @end

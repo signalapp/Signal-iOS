@@ -396,40 +396,14 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     OWSAssertDebug([self unseenMessagesWithTransaction:transaction].count < 1);
 }
 
-- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-
-    __block NSUInteger missedCount = 0;
-    __block TSInteraction *last = nil;
-    [[transaction ext:TSMessageDatabaseViewExtensionName]
-        enumerateKeysAndObjectsInGroup:self.uniqueId
-                           withOptions:NSEnumerationReverse
-                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                OWSAssertDebug([object isKindOfClass:[TSInteraction class]]);
-
-                                missedCount++;
-                                TSInteraction *interaction = (TSInteraction *)object;
-
-                                if ([TSThread shouldInteractionAppearInInbox:interaction]) {
-                                    last = interaction;
-
-                                    // For long ignored threads, with lots of SN changes this can get really slow.
-                                    // I see this in development because I have a lot of long forgotten threads with
-                                    // members who's test devices are constantly reinstalled. We could add a
-                                    // purpose-built DB view, but I think in the real world this is rare to be a
-                                    // hotspot.
-                                    if (missedCount > 50) {
-                                        OWSLogWarn(@"found last interaction for inbox after skipping %lu items",
-                                            (unsigned long)missedCount);
-                                    }
-                                    *stop = YES;
-                                }
-                            }];
-    return last;
+    return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId]
+        mostRecentInteractionForInboxWithTransaction:transaction];
 }
 
-- (NSString *)lastMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)lastMessageTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     TSInteraction *interaction = [self lastInteractionForInboxWithTransaction:transaction];
     if ([interaction conformsToProtocol:@protocol(OWSPreviewText)]) {
@@ -510,7 +484,9 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
         return NO;
     }
 
-    TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
+    TSInteraction *_Nullable latestInteraction =
+        [self lastInteractionForInboxWithTransaction:[[SDSAnyReadTransaction alloc]
+                                                         initWithTransitional_yapReadTransaction:transaction]];
     uint64_t latestSortIdForInbox = latestInteraction ? latestInteraction.sortId : 0;
     return self.archivedAsOfMessageSortId.unsignedLongLongValue >= latestSortIdForInbox;
 }

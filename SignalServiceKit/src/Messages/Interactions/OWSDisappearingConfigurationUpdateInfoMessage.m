@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
--(NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (self.createdInExistingGroup) {
         OWSAssertDebug(self.configurationIsEnabled && self.configurationDurationSeconds > 0);

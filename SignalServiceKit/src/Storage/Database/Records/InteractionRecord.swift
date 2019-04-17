@@ -439,3 +439,9 @@ public extension TSInteraction {
         return interaction
     }
 }
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(interactionColumn: InteractionRecord.CodingKeys) {
+        appendLiteral(InteractionRecord.columnName(interactionColumn))
+    }
+}
