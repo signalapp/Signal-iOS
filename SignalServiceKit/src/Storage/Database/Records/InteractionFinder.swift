@@ -243,8 +243,8 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(cn(.threadUniqueId)) = ?
-            AND \(cn(.errorType)) != ?
-            AND \(cn(.messageType)) != ?
+            AND \(cn(.errorType)) IS NOT ?
+            AND \(cn(.messageType)) IS NOT ?
             ORDER BY \(cn(.id)) DESC
             """,
             arguments: [threadUniqueId, TSErrorMessageType.nonBlockingIdentityChange, TSInfoMessageType.verificationStateChange]) else {
