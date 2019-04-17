@@ -74,6 +74,10 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 }
 #endif
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -89,7 +93,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
-                       errorType:(enum TSErrorMessageType)errorType
+                       errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
                         authorId:(NSString *)authorId
@@ -123,6 +127,10 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (nullable SSKProtoEnvelope *)envelope
 {

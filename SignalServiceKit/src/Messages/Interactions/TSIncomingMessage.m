@@ -79,6 +79,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
@@ -115,16 +118,22 @@ NS_ASSUME_NONNULL_BEGIN
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion];
 
-    if (self) {
-        _authorId = authorId;
-        _read = read;
-        _serverTimestamp = serverTimestamp;
-        _sourceDeviceId = sourceDeviceId;
-        _wasReceivedByUD = wasReceivedByUD;
+    if (!self) {
+        return self;
     }
+
+    _authorId = authorId;
+    _read = read;
+    _serverTimestamp = serverTimestamp;
+    _sourceDeviceId = sourceDeviceId;
+    _wasReceivedByUD = wasReceivedByUD;
 
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 + (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId
                                        timestamp:(uint64_t)timestamp

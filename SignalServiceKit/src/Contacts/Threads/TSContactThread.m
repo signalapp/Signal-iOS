@@ -17,28 +17,33 @@ NSString *const TSContactThreadPrefix = @"c";
 
 @implementation TSContactThread
 
-- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
-                             archivalDate:(nullable NSDate *)archivalDate
-                archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
-                    conversationColorName:(ConversationColorName)conversationColorName
-                             creationDate:(NSDate *)creationDate
-    isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
-                          lastMessageDate:(nullable NSDate *)lastMessageDate
-                             messageDraft:(nullable NSString *)messageDraft
-                           mutedUntilDate:(nullable NSDate *)mutedUntilDate
-                    shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-                       hasDismissedOffers:(BOOL)hasDismissedOffers
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                    archivalDate:(nullable NSDate *)archivalDate
+       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+           conversationColorName:(ConversationColorName)conversationColorName
+                    creationDate:(NSDate *)creationDate
+isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+                 lastMessageDate:(nullable NSDate *)lastMessageDate
+                    messageDraft:(nullable NSString *)messageDraft
+                  mutedUntilDate:(nullable NSDate *)mutedUntilDate
+           shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+              hasDismissedOffers:(BOOL)hasDismissedOffers
 {
     self = [super initWithUniqueId:uniqueId
-                                 archivalDate:archivalDate
-                    archivedAsOfMessageSortId:archivedAsOfMessageSortId
-                        conversationColorName:conversationColorName
-                                 creationDate:creationDate
-        isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
-                              lastMessageDate:lastMessageDate
-                                 messageDraft:messageDraft
-                               mutedUntilDate:mutedUntilDate
-                        shouldThreadBeVisible:shouldThreadBeVisible];
+                      archivalDate:archivalDate
+         archivedAsOfMessageSortId:archivedAsOfMessageSortId
+             conversationColorName:conversationColorName
+                      creationDate:creationDate
+isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
+                   lastMessageDate:lastMessageDate
+                      messageDraft:messageDraft
+                    mutedUntilDate:mutedUntilDate
+             shouldThreadBeVisible:shouldThreadBeVisible];
+
     if (!self) {
         return self;
     }
@@ -47,6 +52,10 @@ NSString *const TSContactThreadPrefix = @"c";
 
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (instancetype)initWithContactId:(NSString *)contactId {
     NSString *uniqueIdentifier = [[self class] threadIdFromContactId:contactId];

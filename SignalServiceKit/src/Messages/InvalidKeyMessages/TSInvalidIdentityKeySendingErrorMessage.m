@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
@@ -33,6 +33,10 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
 @implementation TSInvalidIdentityKeySendingErrorMessage
 #pragma clang diagnostic pop
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -48,39 +52,44 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
-                       errorType:(enum TSErrorMessageType)errorType
+                       errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
                        messageId:(NSString *)messageId
                     preKeyBundle:(PreKeyBundle *)preKeyBundle
 {
-    self = [self initWithUniqueId:uniqueId
-              receivedAtTimestamp:receivedAtTimestamp
-                           sortId:sortId
-                        timestamp:timestamp
-                   uniqueThreadId:uniqueThreadId
-                    attachmentIds:attachmentIds
-                             body:body
-                     contactShare:contactShare
-                  expireStartedAt:expireStartedAt
-                        expiresAt:expiresAt
-                 expiresInSeconds:expiresInSeconds
-                      linkPreview:linkPreview
-                    quotedMessage:quotedMessage
-                    schemaVersion:schemaVersion
-        errorMessageSchemaVersion:errorMessageSchemaVersion
-                        errorType:errorType
-                             read:read
-                      recipientId:recipientId];
+    self = [super initWithUniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId
+                     attachmentIds:attachmentIds
+                              body:body
+                      contactShare:contactShare
+                   expireStartedAt:expireStartedAt
+                         expiresAt:expiresAt
+                  expiresInSeconds:expiresInSeconds
+                       linkPreview:linkPreview
+                     quotedMessage:quotedMessage
+                     schemaVersion:schemaVersion
+         errorMessageSchemaVersion:errorMessageSchemaVersion
+                         errorType:errorType
+                              read:read
+                       recipientId:recipientId];
+
     if (!self) {
         return self;
     }
-    
+
     _messageId = messageId;
     _preKeyBundle = preKeyBundle;
-    
+
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (void)throws_acceptNewIdentityKey
 {

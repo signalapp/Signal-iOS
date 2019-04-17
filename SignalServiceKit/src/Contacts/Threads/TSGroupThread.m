@@ -18,35 +18,33 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 #define TSGroupThreadPrefix @"g"
 
-- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
-                             archivalDate:(nullable NSDate *)archivalDate
-                archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
-                    conversationColorName:(ConversationColorName)conversationColorName
-                             creationDate:(NSDate *)creationDate
-    isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
-                          lastMessageDate:(nullable NSDate *)lastMessageDate
-                             messageDraft:(nullable NSString *)messageDraft
-                           mutedUntilDate:(nullable NSDate *)mutedUntilDate
-                    shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-                               groupModel:(TSGroupModel *)groupModel
-{
-    OWSAssertDebug(groupModel);
-    OWSAssertDebug(groupModel.groupId.length > 0);
-    OWSAssertDebug(groupModel.groupMemberIds.count > 0);
-    for (NSString *recipientId in groupModel.groupMemberIds) {
-        OWSAssertDebug(recipientId.length > 0);
-    }
+// --- CODE GENERATION MARKER
 
+// clang-format off
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                    archivalDate:(nullable NSDate *)archivalDate
+       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+           conversationColorName:(ConversationColorName)conversationColorName
+                    creationDate:(NSDate *)creationDate
+isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
+                 lastMessageDate:(nullable NSDate *)lastMessageDate
+                    messageDraft:(nullable NSString *)messageDraft
+                  mutedUntilDate:(nullable NSDate *)mutedUntilDate
+           shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+                      groupModel:(TSGroupModel *)groupModel
+{
     self = [super initWithUniqueId:uniqueId
-                                 archivalDate:archivalDate
-                    archivedAsOfMessageSortId:archivedAsOfMessageSortId
-                        conversationColorName:conversationColorName
-                                 creationDate:creationDate
-        isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
-                              lastMessageDate:lastMessageDate
-                                 messageDraft:messageDraft
-                               mutedUntilDate:mutedUntilDate
-                        shouldThreadBeVisible:shouldThreadBeVisible];
+                      archivalDate:archivalDate
+         archivedAsOfMessageSortId:archivedAsOfMessageSortId
+             conversationColorName:conversationColorName
+                      creationDate:creationDate
+isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
+                   lastMessageDate:lastMessageDate
+                      messageDraft:messageDraft
+                    mutedUntilDate:mutedUntilDate
+             shouldThreadBeVisible:shouldThreadBeVisible];
+
     if (!self) {
         return self;
     }
@@ -55,6 +53,10 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (instancetype)initWithGroupModel:(TSGroupModel *)groupModel
 {

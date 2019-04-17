@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUnknownContactBlockOfferMessage.h"
@@ -21,6 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSUnknownContactBlockOfferMessage
 #pragma clang diagnostic pop
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -36,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
-                       errorType:(enum TSErrorMessageType)errorType
+                       errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
                        contactId:(NSString *)contactId
@@ -63,11 +67,15 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
-    
+
     _contactId = contactId;
-    
+
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (BOOL)shouldUseReceiptDateForSorting
 {

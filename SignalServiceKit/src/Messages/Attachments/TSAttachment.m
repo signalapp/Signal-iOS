@@ -200,10 +200,14 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     return self;
 }
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
-                  attachmentType:(enum TSAttachmentType)attachmentType
+                  attachmentType:(TSAttachmentType)attachmentType
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
@@ -213,10 +217,11 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
                   sourceFilename:(nullable NSString *)sourceFilename
 {
     self = [super initWithUniqueId:uniqueId];
+
     if (!self) {
         return self;
     }
-    
+
     _albumMessageId = albumMessageId;
     _attachmentSchemaVersion = attachmentSchemaVersion;
     _attachmentType = attachmentType;
@@ -227,15 +232,13 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     _isDownloaded = isDownloaded;
     _serverId = serverId;
     _sourceFilename = sourceFilename;
-    
-    if (_contentType.length < 1) {
-        OWSLogWarn(@"legacy attachment has invalid content type");
-        
-        _contentType = OWSMimeTypeApplicationOctetStream;
-    }
 
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
 {

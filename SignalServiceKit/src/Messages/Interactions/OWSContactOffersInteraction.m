@@ -46,6 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -62,20 +66,23 @@ NS_ASSUME_NONNULL_BEGIN
                             sortId:sortId
                          timestamp:timestamp
                     uniqueThreadId:uniqueThreadId];
-    
+
     if (!self) {
         return self;
     }
-    
-    _hasBlockOffer = hasBlockOffer;
+
+    _beforeInteractionId = beforeInteractionId;
     _hasAddToContactsOffer = hasAddToContactsOffer;
     _hasAddToProfileWhitelistOffer = hasAddToProfileWhitelistOffer;
-    OWSAssertDebug(recipientId.length > 0);
+    _hasBlockOffer = hasBlockOffer;
     _recipientId = recipientId;
-    _beforeInteractionId = beforeInteractionId;
-    
-    return self;    
+
+    return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (BOOL)shouldUseReceiptDateForSorting
 {

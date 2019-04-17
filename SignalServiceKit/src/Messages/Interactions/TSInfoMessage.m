@@ -97,6 +97,10 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     return self;
 }
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -113,33 +117,41 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
                    schemaVersion:(NSUInteger)schemaVersion
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
-                     messageType:(enum TSInfoMessageType)messageType
+                     messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
 {
-    self = [self initWithUniqueId:uniqueId
-              receivedAtTimestamp:receivedAtTimestamp
-                           sortId:sortId
-                        timestamp:timestamp
-                   uniqueThreadId:uniqueThreadId
-                    attachmentIds:attachmentIds
-                             body:body
-                     contactShare:contactShare
-                  expireStartedAt:expireStartedAt
-                        expiresAt:expiresAt
-                 expiresInSeconds:expiresInSeconds
-                      linkPreview:linkPreview
-                    quotedMessage:quotedMessage
-                    schemaVersion:schemaVersion];
-    if (self) {
-        _customMessage = customMessage;
-        _infoMessageSchemaVersion = infoMessageSchemaVersion;
-        _messageType = messageType;
-        _read = read;
-        _unregisteredRecipientId = unregisteredRecipientId;
+    self = [super initWithUniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId
+                     attachmentIds:attachmentIds
+                              body:body
+                      contactShare:contactShare
+                   expireStartedAt:expireStartedAt
+                         expiresAt:expiresAt
+                  expiresInSeconds:expiresInSeconds
+                       linkPreview:linkPreview
+                     quotedMessage:quotedMessage
+                     schemaVersion:schemaVersion];
+
+    if (!self) {
+        return self;
     }
+
+    _customMessage = customMessage;
+    _infoMessageSchemaVersion = infoMessageSchemaVersion;
+    _messageType = messageType;
+    _read = read;
+    _unregisteredRecipientId = unregisteredRecipientId;
+
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread recipientId:(NSString *)recipientId
 {

@@ -47,21 +47,29 @@ NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMar
     return self;
 }
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                     recipientMap:(NSDictionary<NSString *,NSNumber *> *)recipientMap
                    sentTimestamp:(unsigned long long)sentTimestamp
 {
-    OWSAssertDebug(sentTimestamp > 0);
-    
     self = [super initWithUniqueId:uniqueId];
-    
-    if (self) {
-        _sentTimestamp = sentTimestamp;
-        _recipientMap = recipientMap;
+
+    if (!self) {
+        return self;
     }
-    
+
+    _recipientMap = recipientMap;
+    _sentTimestamp = sentTimestamp;
+
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 + (NSString *)uniqueIdForSentTimestamp:(uint64_t)timestamp
 {

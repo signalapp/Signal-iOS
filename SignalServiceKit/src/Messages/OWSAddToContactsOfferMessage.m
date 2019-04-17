@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAddToContactsOfferMessage.h"
@@ -21,6 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSAddToContactsOfferMessage
 #pragma clang diagnostic pop
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -37,38 +41,43 @@ NS_ASSUME_NONNULL_BEGIN
                    schemaVersion:(NSUInteger)schemaVersion
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
-                     messageType:(enum TSInfoMessageType)messageType
+                     messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                        contactId:(NSString *)contactId
 {
-    self = [self initWithUniqueId:uniqueId
-              receivedAtTimestamp:receivedAtTimestamp
-                           sortId:sortId
-                        timestamp:timestamp
-                   uniqueThreadId:uniqueThreadId
-                    attachmentIds:attachmentIds
-                             body:body
-                     contactShare:contactShare
-                  expireStartedAt:expireStartedAt
-                        expiresAt:expiresAt
-                 expiresInSeconds:expiresInSeconds
-                      linkPreview:linkPreview
-                    quotedMessage:quotedMessage
-                    schemaVersion:schemaVersion
-                    customMessage:customMessage
-         infoMessageSchemaVersion:infoMessageSchemaVersion
-                      messageType:messageType
-                             read:read
-          unregisteredRecipientId:unregisteredRecipientId];
+    self = [super initWithUniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId
+                     attachmentIds:attachmentIds
+                              body:body
+                      contactShare:contactShare
+                   expireStartedAt:expireStartedAt
+                         expiresAt:expiresAt
+                  expiresInSeconds:expiresInSeconds
+                       linkPreview:linkPreview
+                     quotedMessage:quotedMessage
+                     schemaVersion:schemaVersion
+                     customMessage:customMessage
+          infoMessageSchemaVersion:infoMessageSchemaVersion
+                       messageType:messageType
+                              read:read
+           unregisteredRecipientId:unregisteredRecipientId];
+
     if (!self) {
         return self;
     }
-    
+
     _contactId = contactId;
-    
+
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 + (instancetype)addToContactsOfferMessageWithTimestamp:(uint64_t)timestamp
                                                 thread:(TSThread *)thread

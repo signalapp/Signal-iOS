@@ -46,7 +46,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
                           sortId:(unsigned long long)sortId
                        timestamp:(unsigned long long)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
-NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:));
 
 // clang-format on

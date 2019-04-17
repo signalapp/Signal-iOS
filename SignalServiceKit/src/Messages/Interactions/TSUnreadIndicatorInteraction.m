@@ -11,6 +11,33 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation TSUnreadIndicatorInteraction
 #pragma clang diagnostic pop
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+{
+    self = [super initWithUniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId];
+
+    if (!self) {
+        return self;
+    }
+
+    return self;
+}
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
+
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     return [super initWithCoder:coder];

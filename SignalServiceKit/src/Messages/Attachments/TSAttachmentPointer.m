@@ -104,10 +104,14 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
-                  attachmentType:(enum TSAttachmentType)attachmentType
+                  attachmentType:(TSAttachmentType)attachmentType
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
@@ -119,8 +123,8 @@ NS_ASSUME_NONNULL_BEGIN
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
   mostRecentFailureLocalizedText:(nullable NSString *)mostRecentFailureLocalizedText
-                     pointerType:(enum TSAttachmentPointerType)pointerType
-                           state:(enum TSAttachmentPointerState)state
+                     pointerType:(TSAttachmentPointerType)pointerType
+                           state:(TSAttachmentPointerState)state
 {
     self = [super initWithUniqueId:uniqueId
                     albumMessageId:albumMessageId
@@ -133,19 +137,24 @@ NS_ASSUME_NONNULL_BEGIN
                       isDownloaded:isDownloaded
                           serverId:serverId
                     sourceFilename:sourceFilename];
+
     if (!self) {
         return self;
     }
-    
+
     _digest = digest;
     _lazyRestoreFragmentId = lazyRestoreFragmentId;
     _mediaSize = mediaSize;
     _mostRecentFailureLocalizedText = mostRecentFailureLocalizedText;
     _pointerType = pointerType;
     _state = state;
-    
-    return self;    
+
+    return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 + (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
                                                 albumMessage:(nullable TSMessage *)albumMessage

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBatchMessageProcessor.h"
@@ -52,26 +52,33 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
                    plaintextData:(nullable NSData *)plaintextData
                  wasReceivedByUD:(BOOL)wasReceivedByUD
 {
-    OWSAssertDebug(envelopeData);
-    
     self = [super initWithUniqueId:uniqueId];
+
     if (!self) {
         return self;
     }
-    
+
+    _createdAt = createdAt;
     _envelopeData = envelopeData;
     _plaintextData = plaintextData;
     _wasReceivedByUD = wasReceivedByUD;
-    _createdAt = createdAt;
-    
+
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {

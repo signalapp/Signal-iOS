@@ -49,6 +49,7 @@ def update_generated_snippet(file_path, marker, snippet):
 
 
 def update_objc_snippet(file_path, snippet):
+    snippet = sds_common.clean_up_generated_objc(snippet)
     update_generated_snippet(file_path, CODE_GEN_SNIPPET_MARKER_OBJC, snippet)
 
 
@@ -442,7 +443,18 @@ class ParsedProperty:
         return self.type_info().swift_type()
 
     def objc_type_safe(self):
-        return self.type_info().objc_type()
+        # Special case this oddball type.
+        # 
+        # TODO: We might want to handle this within TypeInfo.
+        if self.name == 'conversationColorName':
+            return 'ConversationColorName'
+        
+        result = self.type_info().objc_type()
+        
+        if result.startswith('enum '):
+            result = result[len('enum '):]
+        
+        return result
         # if self.objc_type is None:
         #     fail("Don't know Obj-C type for:", self.name)
         # return self.objc_type
@@ -640,6 +652,8 @@ extension %sSerializer {
             
             initializer_params = []
             objc_initializer_params = []
+            objc_super_initializer_args = []
+            objc_initializer_assigns = []
             deserialize_record_type = get_record_type_enum_name(deserialize_class.name)
             swift_body += '''        case .%s:
 ''' % ( str(deserialize_record_type), )
@@ -667,8 +681,14 @@ extension %sSerializer {
                 if property.is_optional:
                     objc_initializer_type = 'nullable ' + objc_initializer_type
                 objc_initializer_params.append('%s:(%s)%s' % ( str(property.name), objc_initializer_type, str(property.name), ) )
-
-            # --- Suggested Initializer
+                
+                is_superclass_property = property.class_name != deserialize_class.name
+                if is_superclass_property:
+                    objc_super_initializer_args.append('%s:%s' % ( str(property.name), str(property.name), ) )
+                else:
+                    objc_initializer_assigns.append('_%s = %s;' % ( str(property.name), str(property.name), ) )
+                
+            # --- Initializer Snippets
 
             h_snippet = ''
             h_snippet += '''
@@ -680,9 +700,48 @@ extension %sSerializer {
                 alignment = max(0, len('- (instancetype)initWithUniqueId') - objc_initializer_param.index(':'))
                 h_snippet += (' ' * alignment) + objc_initializer_param + '\n'
 
-            h_snippet += 'NS_DESIGNATED_INITIALIZER \n'
             h_snippet += 'NS_SWIFT_NAME(init(%s:));\n' % ':'.join([str(property.name) for property in deserialize_properties])
             h_snippet += '''
+// clang-format on
+'''
+            
+            m_snippet = ''
+            m_snippet += '''
+// clang-format off
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+'''
+            for objc_initializer_param in objc_initializer_params[1:]:
+                alignment = max(0, len('- (instancetype)initWithUniqueId') - objc_initializer_param.index(':'))
+                m_snippet += (' ' * alignment) + objc_initializer_param + '\n'
+
+            if len(objc_super_initializer_args) == 1:
+                suffix = '];'
+            else:
+                suffix = ''
+            m_snippet += '''{
+    self = [super initWithUniqueId:uniqueId%s
+''' % (suffix)
+            for index, objc_super_initializer_arg in enumerate(objc_super_initializer_args[1:]):
+                alignment = max(0, len('    self = [super initWithUniqueId') - objc_super_initializer_arg.index(':'))
+                if index == len(objc_super_initializer_args) - 2:
+                    suffix = '];'
+                else:
+                    suffix = ''
+                m_snippet += (' ' * alignment) + objc_super_initializer_arg + suffix + '\n'
+            m_snippet += '''    
+    if (!self) {
+        return self;
+    }
+    
+'''
+            for objc_initializer_assign in objc_initializer_assigns:
+                m_snippet += (' ' * 4) + objc_initializer_assign + '\n'
+
+            m_snippet += '''    
+    return self;
+}
+
 // clang-format on
 '''
             
@@ -690,6 +749,7 @@ extension %sSerializer {
                 m_filepath = deserialize_class.filepath
                 h_filepath = m_filepath[:-2] + '.h'
                 update_objc_snippet(h_filepath, h_snippet)            
+                update_objc_snippet(m_filepath, m_snippet)            
             
             swift_body += '''
 '''

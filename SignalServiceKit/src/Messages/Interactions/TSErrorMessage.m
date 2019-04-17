@@ -97,6 +97,10 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return [self initWithTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
 }
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -110,9 +114,9 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(unsigned long)schemaVersion
-       errorMessageSchemaVersion:(unsigned long)errorMessageSchemaVersion
-                       errorType:(enum TSErrorMessageType)errorType
+                   schemaVersion:(NSUInteger)schemaVersion
+       errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
+                       errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
 {
@@ -130,18 +134,22 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                        linkPreview:linkPreview
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion];
-    
+
     if (!self) {
         return self;
     }
-    
-    _errorType = errorType;
-    _recipientId = recipientId;
+
     _errorMessageSchemaVersion = errorMessageSchemaVersion;
+    _errorType = errorType;
     _read = read;
-    
+    _recipientId = recipientId;
+
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (OWSInteractionType)interactionType
 {

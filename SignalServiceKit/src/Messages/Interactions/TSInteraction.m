@@ -116,14 +116,16 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return self;
 }
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          sortId:(uint64_t)sortId
-                       timestamp:(uint64_t)timestamp
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
 {
-    OWSAssertDebug(timestamp > 0);
-
     self = [super initWithUniqueId:uniqueId];
 
     if (!self) {
@@ -137,6 +139,10 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {

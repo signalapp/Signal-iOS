@@ -53,9 +53,8 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
                        timestamp:(unsigned long long)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                callSchemaVersion:(NSUInteger)callSchemaVersion
-                        callType:(enum RPRecentCallType)callType
+                        callType:(RPRecentCallType)callType
                             read:(BOOL)read
-NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:callSchemaVersion:callType:read:));
 
 // clang-format on

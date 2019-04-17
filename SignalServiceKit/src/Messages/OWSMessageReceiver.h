@@ -27,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
-NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:createdAt:envelopeData:));
 
 // clang-format on

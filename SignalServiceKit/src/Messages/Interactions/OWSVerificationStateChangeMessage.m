@@ -29,6 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -45,15 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
                    schemaVersion:(NSUInteger)schemaVersion
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
-                     messageType:(enum TSInfoMessageType)messageType
+                     messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                    isLocalChange:(BOOL)isLocalChange
                      recipientId:(NSString *)recipientId
-               verificationState:(enum OWSVerificationState)verificationState
+               verificationState:(OWSVerificationState)verificationState
 {
-    OWSAssertDebug(recipientId.length > 0);
-
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
@@ -73,16 +75,21 @@ NS_ASSUME_NONNULL_BEGIN
                        messageType:messageType
                               read:read
            unregisteredRecipientId:unregisteredRecipientId];
+
     if (!self) {
         return self;
     }
 
+    _isLocalChange = isLocalChange;
     _recipientId = recipientId;
     _verificationState = verificationState;
-    _isLocalChange = isLocalChange;
 
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 @end
 

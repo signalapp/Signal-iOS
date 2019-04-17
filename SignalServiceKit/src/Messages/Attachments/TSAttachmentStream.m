@@ -115,10 +115,14 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return self;
 }
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
-                  attachmentType:(enum TSAttachmentType)attachmentType
+                  attachmentType:(TSAttachmentType)attachmentType
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
                      contentType:(NSString *)contentType
@@ -147,10 +151,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                       isDownloaded:isDownloaded
                           serverId:serverId
                     sourceFilename:sourceFilename];
+
     if (!self) {
         return self;
     }
-    
+
     _cachedAudioDurationSeconds = cachedAudioDurationSeconds;
     _cachedImageHeight = cachedImageHeight;
     _cachedImageWidth = cachedImageWidth;
@@ -163,6 +168,10 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
 {

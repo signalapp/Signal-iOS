@@ -47,7 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
    hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
                    hasBlockOffer:(BOOL)hasBlockOffer
                      recipientId:(NSString *)recipientId
-NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:beforeInteractionId:hasAddToContactsOffer:hasAddToProfileWhitelistOffer:hasBlockOffer:recipientId:));
 
 // clang-format on

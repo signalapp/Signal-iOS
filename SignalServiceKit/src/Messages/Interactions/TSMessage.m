@@ -86,6 +86,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return self;
 }
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -99,31 +103,34 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(unsigned long)schemaVersion
+                   schemaVersion:(NSUInteger)schemaVersion
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
                          timestamp:timestamp
                     uniqueThreadId:uniqueThreadId];
-    
+
     if (!self) {
         return self;
     }
-    
-    _schemaVersion = OWSMessageSchemaVersion;
-    
+
+    _attachmentIds = attachmentIds;
     _body = body;
-    _attachmentIds = attachmentIds ? [attachmentIds mutableCopy] : [NSMutableArray new];
-    _expiresInSeconds = expiresInSeconds;
-    _expireStartedAt = expireStartedAt;
-    [self updateExpiresAt];
-    _quotedMessage = quotedMessage;
     _contactShare = contactShare;
+    _expireStartedAt = expireStartedAt;
+    _expiresAt = expiresAt;
+    _expiresInSeconds = expiresInSeconds;
     _linkPreview = linkPreview;
-    
+    _quotedMessage = quotedMessage;
+    _schemaVersion = schemaVersion;
+
     return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {

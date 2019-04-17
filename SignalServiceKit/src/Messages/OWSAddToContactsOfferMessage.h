@@ -30,11 +30,10 @@ __attribute__((deprecated)) @interface OWSAddToContactsOfferMessage : TSInfoMess
                    schemaVersion:(NSUInteger)schemaVersion
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
-                     messageType:(enum TSInfoMessageType)messageType
+                     messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                        contactId:(NSString *)contactId
-NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:contactId:));
 
 // clang-format on

@@ -41,13 +41,12 @@ NS_ASSUME_NONNULL_BEGIN
                    schemaVersion:(NSUInteger)schemaVersion
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
-                     messageType:(enum TSInfoMessageType)messageType
+                     messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                    isLocalChange:(BOOL)isLocalChange
                      recipientId:(NSString *)recipientId
-               verificationState:(enum OWSVerificationState)verificationState
-NS_DESIGNATED_INITIALIZER 
+               verificationState:(OWSVerificationState)verificationState
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:isLocalChange:recipientId:verificationState:));
 
 // clang-format on
