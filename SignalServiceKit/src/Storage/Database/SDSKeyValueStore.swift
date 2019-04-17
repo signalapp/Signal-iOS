@@ -18,51 +18,45 @@ public class SDSKeyValueStore: NSObject {
         return SDSDatabaseStorage.shared
     }
 
-    private let collection: String
+    private var primaryStorage: OWSPrimaryStorage {
+        return OWSPrimaryStorage.shared()
+    }
 
-    private let keyColumn: SDSColumnMetadata
-    private let valueColumn: SDSColumnMetadata
-    private let tableMetadata: SDSTableMetadata
+    private let defaultCollection: String
+
+    private static let collectionColumn = SDSColumnMetadata(columnName: "collection", columnType: .unicodeString, isOptional: false)
+    private static let keyColumn = SDSColumnMetadata(columnName: "key", columnType: .unicodeString, isOptional: false)
+    private static let valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
+    // TODO: For now, store all key-value in a single table.
+    public static let table = SDSTableMetadata(tableName: "keyvalue", columns: [
+        collectionColumn,
+        keyColumn,
+        valueColumn
+        ])
 
     @objc
     public init(collection: String) {
         // TODO: Verify that collection is a valid table name _OR_ convert to valid name.
-        self.collection = collection
-
-        // TODO:
-        keyColumn = SDSColumnMetadata(columnName: "key", columnType: .unicodeString, isOptional: false)
-        valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
-        tableMetadata = SDSTableMetadata(tableName: "keyvalue_\(collection)", columns: [
-            keyColumn,
-            valueColumn
-            ])
+        self.defaultCollection = collection
 
         super.init()
-    }
-
-    // TODO: This method should be invoked on startup, before "database is ready".
-    @objc
-    public func ensureTableExists() {
-        databaseStorage.writeSwallowingErrors { (transaction) in
-            self.tableMetadata.ensureTableExists(transaction)
-        }
     }
 
     // MARK: -
 
     @objc
-    public func getString(_ key: String) -> String? {
-        return read(key)
+    public func getString(_ key: String, collection: String? = nil) -> String? {
+        return read(key, collection: collection)
     }
 
     @objc
-    public func setString(_ value: String, key: String) {
-        write(value as NSString, forKey: key)
+    public func setString(_ value: String, key: String, collection: String? = nil) {
+        write(value as NSString, forKey: key, collection: collection)
     }
 
     @objc
-    public func getBool(_ key: String, defaultValue: Bool = false) -> Bool {
-        if let value: NSNumber = read(key) {
+    public func getBool(_ key: String, defaultValue: Bool = false, collection: String? = nil) -> Bool {
+        if let value: NSNumber = read(key, collection: collection) {
             return value.boolValue
         } else {
             return defaultValue
@@ -70,97 +64,118 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
-    public func setBool(_ value: Bool, key: String) {
-        write(NSNumber(booleanLiteral: value), forKey: key)
+    public func setBool(_ value: Bool, key: String, collection: String? = nil) {
+        write(NSNumber(booleanLiteral: value), forKey: key, collection: collection)
     }
 
     // MARK: -
 
-    private func read<T>(_ key: String) -> T? {
+    private func read<T>(_ key: String, collection collectionParam: String?) -> T? {
+
+        let collection = collectionParam ?? defaultCollection
+
         var result: T?
-
         databaseStorage.readSwallowingErrors { (transaction) in
-            guard let database = transaction.transitional_grdbReadTransaction else {
-                owsFail("Invalid transaction.")
-            }
-
-            var encoded: Data?
-            do {
-                encoded = try Data.fetchOne(database,
-                                            sql: "SELECT \(self.valueColumn.columnName) FROM \(self.tableMetadata.tableName) WHERE \(self.keyColumn.columnName) = ?",
-                arguments: [key])
-            } catch {
-                // This isn't necessarily an error; there may be no matching row.
-                //
-                // TODO: Should we do a 'SELECT COUNT' first so we can distinguish
-                // "not found" from actual errors? Or can we discriminate by error type?
-                //
-                // owsFailDebug("Read failed.")
-                return
-            }
-
-            do {
-                if let encoded = encoded {
-                    guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
-                        owsFailDebug("Could not decode value.")
-                        return
-                    }
-                    result = decoded
+            switch transaction.readTransaction {
+            case .yapRead(let ydbTransaction):
+                let rawObject = ydbTransaction.object(forKey: key, inCollection: collection)
+                guard let object = rawObject as? T else {
+                    owsFailDebug("Value has unexpected type.")
+                    return
                 }
-            } catch {
-                owsFailDebug("Read failed.")
+                result = object
+            case .grdbRead(let grdbTransaction):
+                result = SDSKeyValueStore.read(transaction: grdbTransaction, key: key, collection: collection)
             }
         }
         return result
     }
 
+    private class func read<T>(transaction: GRDBReadTransaction, key: String, collection: String) -> T? {
+        var encoded: Data?
+        do {
+            encoded = try Data.fetchOne(transaction.database,
+                                        sql: "SELECT \(self.valueColumn.columnName) FROM \(self.table.tableName) WHERE \(self.keyColumn.columnName) = ? AND \(collectionColumn.columnName) == ?",
+                arguments: [key, collection])
+        } catch {
+            // This isn't necessarily an error; there may be no matching row.
+            //
+            // TODO: Should we do a 'SELECT COUNT' first so we can distinguish
+            // "not found" from actual errors? Or can we discriminate by error type?
+            //
+            // owsFailDebug("Read failed.")
+            return nil
+        }
+
+        do {
+            if let encoded = encoded {
+                guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
+                    owsFailDebug("Could not decode value.")
+                    return nil
+                }
+                return decoded
+            }
+        } catch {
+            owsFailDebug("Read failed.")
+        }
+
+        return nil
+    }
+
     // TODO: Codable? NSCoding? Other serialization?
-    private func write(_ value: NSCoding?, forKey key: String) {
+    private func write(_ value: NSCoding?, forKey key: String, collection collectionParam: String?) {
+
+        let collection = collectionParam ?? defaultCollection
+
         var encoded: Data?
         if let value = value {
             encoded = NSKeyedArchiver.archivedData(withRootObject: value)
         }
 
         databaseStorage.writeSwallowingErrors { (transaction) in
-            guard let database = transaction.transitional_grdbWriteTransaction else {
-                owsFail("Invalid transaction.")
-            }
-            do {
-                try self.write(database: database, key: key, encoded: encoded)
-            } catch {
-                owsFailDebug("error: \(error)")
+            switch transaction.writeTransaction {
+            case .yapWrite(let ydbTransaction):
+                if let value = value {
+                    ydbTransaction.setObject(value, forKey: key, inCollection: collection)
+                } else {
+                    ydbTransaction.removeObject(forKey: key, inCollection: collection)
+                }
+            case .grdbWrite(let grdbTransaction):
+                do {
+                    try SDSKeyValueStore.write(transaction: grdbTransaction, key: key, collection: collection, encoded: encoded)
+                } catch {
+                    owsFailDebug("error: \(error)")
+                }
             }
         }
     }
 
-    private func write(database: Database, key: String, encoded: Data?) throws {
+    private class func write(transaction: GRDBWriteTransaction, key: String, collection: String, encoded: Data?) throws {
         if let encoded = encoded {
-            let count = try Int.fetchOne(database,
-                                         sql: "SELECT COUNT(*) FROM \(tableMetadata.tableName) WHERE \(keyColumn.columnName) == ?",
+            let count = try Int.fetchOne(transaction.database,
+                                         sql: "SELECT COUNT(*) FROM \(table.tableName) WHERE \(keyColumn.columnName) == ? AND \(collectionColumn.columnName) == ?",
                 arguments: [
-                    key
+                    key, collection
                 ]) ?? 0
             if count > 0 {
-                let sql = "UPDATE \(tableMetadata.tableName) SET \(valueColumn.columnName) = ? WHERE \(keyColumn.columnName) = ?"
-                try update(database: database, sql: sql, arguments: [ encoded, key ])
+                let sql = "UPDATE \(table.tableName) SET \(valueColumn.columnName) = ? WHERE \(keyColumn.columnName) = ? AND \(collectionColumn.columnName) == ?"
+                try update(transaction: transaction, sql: sql, arguments: [ encoded, key, collection ])
             } else {
-                let sql = "INSERT INTO \(tableMetadata.tableName) (\(keyColumn.columnName), \(valueColumn.columnName)) VALUES (?, ?)"
-                try update(database: database, sql: sql, arguments: [ key, encoded ])
+                let sql = "INSERT INTO \(table.tableName) ( \(keyColumn.columnName), \(collectionColumn.columnName), \(valueColumn.columnName) ) VALUES (?, ?, ?)"
+                try update(transaction: transaction, sql: sql, arguments: [ key, collection, encoded ])
             }
         } else {
             // Setting to nil is a delete.
-            let sql = "DELETE FROM \(tableMetadata.tableName) WHERE \(keyColumn.columnName) == ?"
-            try update(database: database, sql: sql, arguments: [ key ])
+            let sql = "DELETE FROM \(table.tableName) WHERE \(keyColumn.columnName) == ? AND  \(collectionColumn.columnName) == ?"
+            try update(transaction: transaction, sql: sql, arguments: [ key, collection ])
         }
     }
 
-    // In practice, arguments should all be DatabaseValueConvertible,
-    // but that protocol is not @objc.
-    private func update(database: Database,
+    private class func update(transaction: GRDBWriteTransaction,
                         sql: String,
-                        arguments: [Any]) throws {
+                        arguments: [DatabaseValueConvertible]) throws {
 
-        let statement = try database.cachedUpdateStatement(sql: sql)
+        let statement = try transaction.database.cachedUpdateStatement(sql: sql)
         guard let statementArguments = StatementArguments(arguments) else {
             owsFail("Could not convert values.")
         }

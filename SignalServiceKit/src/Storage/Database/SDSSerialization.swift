@@ -30,7 +30,7 @@ public class SDSSerialization: NSObject {
                 try insert(entity: entity,
                            database: database)
             }
-        } catch let error {
+        } catch {
             // TODO:
             owsFail("Write failed: \(error)")
         }
@@ -125,7 +125,7 @@ public class SDSSerialization: NSObject {
                        uniqueIdColumnName: serializer.uniqueIdColumnName(),
                        uniqueIdColumnValue: serializer.uniqueIdColumnValue(),
                        database: database)
-        } catch let error {
+        } catch {
             // TODO:
             owsFail("Write failed: \(error)")
         }
@@ -185,7 +185,7 @@ public class SDSSerialization: NSObject {
 
             let cursor = SDSCursor<T>(statement: statement, sqliteStatement: sqliteStatement, deserialize: deserialize)
             return cursor
-        } catch let error {
+        } catch {
             // TODO:
             //            throw DatabaseError(resultCode: code, message: statement.database.lastErrorMessage, sql: statement.sql, arguments: statement.arguments)
             owsFail("Read failed: \(error)")
