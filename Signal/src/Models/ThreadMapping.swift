@@ -5,58 +5,79 @@
 import Foundation
 
 @objc
-public enum MappingChange: Int {
+public enum ThreadMappingChange: Int {
     case delete, insert, update, move
 }
 
 @objc
-public class MappingSectionChange: NSObject {
+public class ThreadMappingSectionChange: NSObject {
 
     @objc
-    public let type: MappingChange
+    public let type: ThreadMappingChange
 
     @objc
     public let index: UInt
 
-    init(type: MappingChange, index: UInt) {
+    init(type: ThreadMappingChange, index: UInt) {
         self.type = type
         self.index = index
     }
 }
 
 @objc
-public class MappingRowChange: NSObject {
+public class ThreadMappingRowChange: NSObject {
 
     @objc
-    public let type: MappingChange
+    public let type: ThreadMappingChange
 
     @objc
     public let uniqueRowId: String
 
+    /// Will be nil for inserts
     @objc
-    public let indexPath: IndexPath?
+    public let oldIndexPath: IndexPath?
 
+    /// Will be nil for deletes
     @objc
     public let newIndexPath: IndexPath?
 
-    init(type: MappingChange, uniqueRowId: String, indexPath: IndexPath?, newIndexPath: IndexPath?) {
+    init(type: ThreadMappingChange, uniqueRowId: String, oldIndexPath: IndexPath?, newIndexPath: IndexPath?) {
+        #if DEBUG
+        switch type {
+        case .delete:
+            assert(oldIndexPath != nil)
+            assert(newIndexPath == nil)
+        case .insert:
+            assert(oldIndexPath == nil)
+            assert(newIndexPath != nil)
+        case .update:
+            assert(oldIndexPath != nil)
+            assert(newIndexPath != nil)
+            assert(oldIndexPath == newIndexPath)
+        case .move:
+            assert(oldIndexPath != nil)
+            assert(newIndexPath != nil)
+            assert(oldIndexPath != newIndexPath)
+        }
+        #endif
+
         self.type = type
         self.uniqueRowId = uniqueRowId
-        self.indexPath = indexPath
+        self.oldIndexPath = oldIndexPath
         self.newIndexPath = newIndexPath
     }
 }
 
 @objc
-public class MappingDiff: NSObject {
+public class ThreadMappingDiff: NSObject {
 
     @objc
-    let sectionChanges: [MappingSectionChange]
+    let sectionChanges: [ThreadMappingSectionChange]
 
     @objc
-    let rowChanges: [MappingRowChange]
+    let rowChanges: [ThreadMappingRowChange]
 
-    init(sectionChanges: [MappingSectionChange], rowChanges: [MappingRowChange]) {
+    init(sectionChanges: [ThreadMappingSectionChange], rowChanges: [ThreadMappingRowChange]) {
         self.sectionChanges = sectionChanges
         self.rowChanges = rowChanges
     }
@@ -69,7 +90,7 @@ class ThreadMapping: NSObject {
 
     private var threads: [TSThread] = []
 
-    private let kSection: Int = 1
+    private let kSection: Int = HomeViewControllerSection.conversations.rawValue
 
     @objc
     let numberOfSections: Int = 1
@@ -127,14 +148,14 @@ class ThreadMapping: NSObject {
     @objc
     func updateAndCalculateDiffSwallowingErrors(isViewingArchive: Bool,
                                                 updatedItemIds: Set<String>,
-                                                transaction: SDSAnyReadTransaction) -> MappingDiff {
+                                                transaction: SDSAnyReadTransaction) -> ThreadMappingDiff {
         do {
             return try updateAndCalculateDiff(isViewingArchive: isViewingArchive,
                                               updatedItemIds: updatedItemIds,
                                               transaction: transaction)
         } catch {
             owsFailDebug("error: \(error)")
-            return MappingDiff(sectionChanges: [], rowChanges: [])
+            return ThreadMappingDiff(sectionChanges: [], rowChanges: [])
         }
     }
 
@@ -145,13 +166,13 @@ class ThreadMapping: NSObject {
     @objc
     func updateAndCalculateDiff(isViewingArchive: Bool,
                                 updatedItemIds: Set<String>,
-                                transaction: SDSAnyReadTransaction) throws -> MappingDiff {
+                                transaction: SDSAnyReadTransaction) throws -> ThreadMappingDiff {
 
         let oldThreadIds: [String] = threads.map { $0.uniqueId! }
         try update(isViewingArchive: isViewingArchive, transaction: transaction)
         let newThreadIds: [String] = threads.map { $0.uniqueId! }
 
-        var rowChanges: [MappingRowChange] = []
+        var rowChanges: [ThreadMappingRowChange] = []
 
         let deletedThreadIds = Set(oldThreadIds).subtracting(newThreadIds)
         for deletedThreadId in deletedThreadIds {
@@ -159,10 +180,10 @@ class ThreadMapping: NSObject {
                 throw assertionError("oldIndex was unexpectedly nil")
             }
             assert(newThreadIds.firstIndexDistance(of: deletedThreadId) == nil)
-            rowChanges.append(MappingRowChange(type: .delete,
-                                               uniqueRowId: deletedThreadId,
-                                               indexPath: IndexPath(row: oldIndex, section: kSection),
-                                               newIndexPath: nil))
+            rowChanges.append(ThreadMappingRowChange(type: .delete,
+                                                     uniqueRowId: deletedThreadId,
+                                                     oldIndexPath: IndexPath(row: oldIndex, section: kSection),
+                                                     newIndexPath: nil))
         }
 
         let insertedThreadIds = Set(newThreadIds).subtracting(oldThreadIds)
@@ -171,9 +192,9 @@ class ThreadMapping: NSObject {
             guard let newIndex = newThreadIds.firstIndexDistance(of: insertedThreadId) else {
                 throw assertionError("newIndex was unexpectedly nil")
             }
-            rowChanges.append(MappingRowChange(type: .insert,
+            rowChanges.append(ThreadMappingRowChange(type: .insert,
                                                uniqueRowId: insertedThreadId,
-                                               indexPath: nil,
+                                               oldIndexPath: nil,
                                                newIndexPath: IndexPath(row: newIndex, section: kSection)))
         }
 
@@ -186,19 +207,19 @@ class ThreadMapping: NSObject {
                 throw assertionError("oldIndex was unexpectedly nil")
             }
             if oldIndex != newIndex {
-                rowChanges.append(MappingRowChange(type: .move,
+                rowChanges.append(ThreadMappingRowChange(type: .move,
                                                    uniqueRowId: updatedThreadId,
-                                                   indexPath: IndexPath(row: oldIndex, section: kSection),
+                                                   oldIndexPath: IndexPath(row: oldIndex, section: kSection),
                                                    newIndexPath: IndexPath(row: newIndex, section: kSection)))
             } else {
-                rowChanges.append(MappingRowChange(type: .update,
+                rowChanges.append(ThreadMappingRowChange(type: .update,
                                                    uniqueRowId: updatedThreadId,
-                                                   indexPath: IndexPath(row: oldIndex, section: kSection),
+                                                   oldIndexPath: IndexPath(row: oldIndex, section: kSection),
                                                    newIndexPath: IndexPath(row: newIndex, section: kSection)))
             }
         }
 
-        return MappingDiff(sectionChanges: [], rowChanges: rowChanges)
+        return ThreadMappingDiff(sectionChanges: [], rowChanges: rowChanges)
     }
 
     // For performance reasons, the database modification notifications are used

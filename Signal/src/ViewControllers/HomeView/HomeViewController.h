@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewController.h"
@@ -7,6 +7,12 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
+    HomeViewControllerSectionReminders,
+    HomeViewControllerSectionConversations,
+    HomeViewControllerSectionArchiveButton,
+};
 
 @class TSThread;
 

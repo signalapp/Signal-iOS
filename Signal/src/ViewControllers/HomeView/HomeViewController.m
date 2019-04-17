@@ -55,12 +55,6 @@ typedef NS_ENUM(NSInteger, HomeViewMode) {
 NSString *const kReminderViewPseudoGroup = @"kReminderViewPseudoGroup";
 NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
-typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
-    HomeViewControllerSectionReminders,
-    HomeViewControllerSectionConversations,
-    HomeViewControllerSectionArchiveButton,
-};
-
 @interface HomeViewController () <UITableViewDelegate,
     UITableViewDataSource,
     UIViewControllerPreviewingDelegate,
@@ -1483,7 +1477,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
         return;
     }
 
-    __block MappingDiff *mappingDiff;
+    __block ThreadMappingDiff *mappingDiff;
     [uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         NSSet<NSString *> *updatedItemIds = [self.threadMapping updatedYapItemIdsForNotifications:notifications];
 
@@ -1510,49 +1504,49 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
     [self.tableView beginUpdates];
 
-    for (MappingSectionChange *sectionChange in mappingDiff.sectionChanges) {
+    for (ThreadMappingSectionChange *sectionChange in mappingDiff.sectionChanges) {
         switch (sectionChange.type) {
-            case MappingChangeDelete: {
+            case ThreadMappingChangeDelete: {
                 [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionChange.index]
                               withRowAnimation:UITableViewRowAnimationAutomatic];
                 break;
             }
-            case MappingChangeInsert: {
+            case ThreadMappingChangeInsert: {
                 [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionChange.index]
                               withRowAnimation:UITableViewRowAnimationAutomatic];
                 break;
             }
-            case MappingChangeUpdate:
-            case MappingChangeMove:
+            case ThreadMappingChangeUpdate:
+            case ThreadMappingChangeMove:
                 break;
         }
     }
 
-    for (MappingRowChange *rowChange in mappingDiff.rowChanges) {
+    for (ThreadMappingRowChange *rowChange in mappingDiff.rowChanges) {
         NSString *key = rowChange.uniqueRowId;
         OWSAssertDebug(key);
         [self.threadViewModelCache removeObjectForKey:key];
 
         switch (rowChange.type) {
-            case MappingChangeDelete: {
-                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
+            case ThreadMappingChangeDelete: {
+                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
                 break;
             }
-            case MappingChangeInsert: {
+            case ThreadMappingChangeInsert: {
                 [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
                 break;
             }
-            case MappingChangeMove: {
-                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
+            case ThreadMappingChangeMove: {
+                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
                 [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
                 break;
             }
-            case MappingChangeUpdate: {
-                [self.tableView reloadRowsAtIndexPaths:@[ rowChange.indexPath ]
+            case ThreadMappingChangeUpdate: {
+                [self.tableView reloadRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
                                       withRowAnimation:UITableViewRowAnimationNone];
                 break;
             }
