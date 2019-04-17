@@ -76,11 +76,11 @@ public class DirectionalPanGestureRecognizer: UIPanGestureRecognizer {
             let vel = velocity(in: view)
             switch direction {
             case .left, .right:
-                if fabs(vel.y) > fabs(vel.x) {
+                if abs(vel.y) > abs(vel.x) {
                     state = .cancelled
                 }
             case .up, .down:
-                if fabs(vel.x) > fabs(vel.y) {
+                if abs(vel.x) > abs(vel.y) {
                     state = .cancelled
                 }
             default:
