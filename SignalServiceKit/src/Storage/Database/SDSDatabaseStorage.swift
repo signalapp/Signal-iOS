@@ -292,6 +292,7 @@ public struct GRDBDatabaseStorageAdapter {
         migrator.registerMigration("create initial schema") { db in
             try TSThreadSerializer.table.createTable(database: db)
             try TSInteractionSerializer.table.createTable(database: db)
+            try SDSKeyValueStore.table.createTable(database: db)
 
             try db.create(index: "index_interactions_on_id_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,

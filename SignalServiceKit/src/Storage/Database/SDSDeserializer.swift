@@ -148,9 +148,9 @@ public class SDSDeserializer {
             throw SDSError.unexpectedType
         }
     }
-    
+
     // MARK: - Bool
-    
+
     public func bool(at index: Int32) throws -> Bool {
         guard let value = try optionalBool(at: index) else {
             owsFailDebug("Missing required filed: \(index)")
@@ -158,14 +158,14 @@ public class SDSDeserializer {
         }
         return value
     }
-    
+
     public func optionalBoolAsNSNumber(at index: Int32) throws -> NSNumber? {
         guard let value = try optionalBool(at: index) else {
             return nil
         }
         return NSNumber(value: value)
     }
-    
+
     public func optionalBool(at index: Int32) throws -> Bool? {
         let columnType = sqlite3_column_type(sqliteStatement, index)
         switch columnType {
@@ -178,9 +178,9 @@ public class SDSDeserializer {
             throw SDSError.unexpectedType
         }
     }
-    
+
     // MARK: - Bool
-    
+
     public func double(at index: Int32) throws -> Double {
         guard let value = try optionalDouble(at: index) else {
             owsFailDebug("Missing required filed: \(index)")
@@ -188,14 +188,14 @@ public class SDSDeserializer {
         }
         return value
     }
-    
+
     public func optionalDoubleAsNSNumber(at index: Int32) throws -> NSNumber? {
         guard let value = try optionalDouble(at: index) else {
             return nil
         }
         return NSNumber(value: value)
     }
-    
+
     public func optionalDouble(at index: Int32) throws -> Double? {
         let columnType = sqlite3_column_type(sqliteStatement, index)
         switch columnType {
@@ -260,7 +260,7 @@ public class SDSDeserializer {
                 throw SDSError.invalidValue
             }
             return decoded
-        } catch let error {
+        } catch {
             owsFailDebug("Read failed: \(error).")
             throw SDSError.invalidValue
         }
