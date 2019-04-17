@@ -15,18 +15,23 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 
 @interface TSGroupThread : TSThread
 
-- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
-                    archivalDate:(nullable NSDate *)archivalDate
-       archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
-           conversationColorName:(ConversationColorName)conversationColorName
-                    creationDate:(NSDate *)creationDate
+// --- CODE GENERATION MARKER
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                     archivalDate:(nullable NSDate *)archivalDate
+        archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
+            conversationColorName:(NSString *)conversationColorName
+                     creationDate:(NSDate *)creationDate
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
-                 lastMessageDate:(nullable NSDate *)lastMessageDate
-                    messageDraft:(nullable NSString *)messageDraft
-                  mutedUntilDate:(nullable NSDate *)mutedUntilDate
-           shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-                      groupModel:(TSGroupModel *)groupModel
+                  lastMessageDate:(nullable NSDate *)lastMessageDate
+                     messageDraft:(nullable NSString *)messageDraft
+                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
+            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+                       groupModel:(TSGroupModel *)groupModel
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:shouldThreadBeVisible:groupModel:));
+
+// --- CODE GENERATION MARKER
 
 @property (nonatomic, strong) TSGroupModel *groupModel;
 

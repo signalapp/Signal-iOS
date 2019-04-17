@@ -27,6 +27,30 @@ import random
 # Only root models do deserialization.
 BASE_MODEL_CLASS_NAME = 'TSYapDatabaseObject'
 
+CODE_GEN_SNIPPET_MARKER_OBJC = '// --- CODE GENERATION MARKER'
+
+def update_generated_snippet(file_path, marker, snippet):
+    # file_path = sds_common.sds_from_relative_path(relative_path)
+    if not os.path.exists(file_path):
+        fail('Missing file:', file_path)
+    
+    with open(file_path, 'rt') as f:
+        text = f.read()
+    
+    start_index = text.find(marker)    
+    end_index = text.rfind(marker)    
+    if start_index < 0 or end_index < 0 or start_index >= end_index:
+        fail('Could not find markers:', file_path)
+    
+    text = text[:start_index].strip() + '\n\n' + marker + '\n\n' + snippet.strip() + '\n\n' + marker + '\n\n' + text[end_index + len(marker):].lstrip()
+        
+    with open(file_path, 'wt') as f:
+        f.write(text)
+
+
+def update_objc_snippet(file_path, snippet):
+    update_generated_snippet(file_path, CODE_GEN_SNIPPET_MARKER_OBJC, snippet)
+
 
 # ---- 
 
@@ -646,19 +670,23 @@ extension %sSerializer {
 
             # --- Suggested Initializer
 
-            swift_body += '''
-/* Suggested Initializer
-
+            h_snippet = ''
+            h_snippet += '''
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
 '''
             for objc_initializer_param in objc_initializer_params[1:]:
                 alignment = max(0, len('- (instancetype)initWithUniqueId:') - objc_initializer_param.index(':'))
-                swift_body += (' ' * alignment) + objc_initializer_param + '\n'
+                h_snippet += (' ' * alignment) + objc_initializer_param + '\n'
 
-            swift_body += 'NS_DESIGNATED_INITIALIZER \n'
-            swift_body += 'NS_SWIFT_NAME(init(%s:));\n' % ':'.join([str(property.name) for property in deserialize_properties])
-                
-            swift_body += '''*/
+            h_snippet += 'NS_DESIGNATED_INITIALIZER \n'
+            h_snippet += 'NS_SWIFT_NAME(init(%s:));\n' % ':'.join([str(property.name) for property in deserialize_properties])
+            
+            if deserialize_class.filepath.endswith('.m'):
+                m_filepath = deserialize_class.filepath
+                h_filepath = m_filepath[:-2] + '.h'
+                update_objc_snippet(h_filepath, h_snippet)            
+            
+            swift_body += '''
 '''
 
             # --- Invoke Initializer
