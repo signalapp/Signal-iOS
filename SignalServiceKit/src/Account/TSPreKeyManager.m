@@ -156,7 +156,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)createPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler
 {
-    OWSAssertDebug(!self.tsAccountManager.isRegisteredAndReady);
+    OWSAssertDebug(self.tsAccountManager.isRegisteredAndReady);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         SSKCreatePreKeysOperation *operation = [SSKCreatePreKeysOperation new];
@@ -177,7 +177,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)rotateSignedPreKeyWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler
 {
-    OWSAssertDebug(!self.tsAccountManager.isRegisteredAndReady);
+    OWSAssertDebug(self.tsAccountManager.isRegisteredAndReady);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         SSKRotateSignedPreKeyOperation *operation = [SSKRotateSignedPreKeyOperation new];
