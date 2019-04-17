@@ -9,7 +9,7 @@ public class AppPreferences: NSObject {
     // Never instantiate this class.
     private override init() {}
 
-    private static let collection = "AppPreferences"
+    private static let store = SDSKeyValueStore(collection: "AppPreferences")
 
     // MARK: -
 
@@ -18,20 +18,10 @@ public class AppPreferences: NSObject {
     @objc
     public static var hasDimissedFirstConversationCue: Bool {
         get {
-            return getBool(key: hasDimissedFirstConversationCueKey)
+            return store.getBool(hasDimissedFirstConversationCueKey)
         }
         set {
-            setBool(newValue, key: hasDimissedFirstConversationCueKey)
+            store.setBool(newValue, key: hasDimissedFirstConversationCueKey)
         }
-    }
-
-    // MARK: -
-
-    private class func getBool(key: String, defaultValue: Bool = false) -> Bool {
-        return OWSPrimaryStorage.dbReadConnection().bool(forKey: key, inCollection: collection, defaultValue: defaultValue)
-    }
-
-    private class func setBool(_ value: Bool, key: String) {
-        OWSPrimaryStorage.dbReadWriteConnection().setBool(value, forKey: key, inCollection: collection)
     }
 }

@@ -22,7 +22,8 @@ public class SDSKeyValueStore: NSObject {
         return OWSPrimaryStorage.shared()
     }
 
-    private let defaultCollection: String
+    // By default, all reads/writes use this collection.
+    public let collection: String
 
     private static let collectionColumn = SDSColumnMetadata(columnName: "collection", columnType: .unicodeString, isOptional: false)
     private static let keyColumn = SDSColumnMetadata(columnName: "key", columnType: .unicodeString, isOptional: false)
@@ -37,7 +38,7 @@ public class SDSKeyValueStore: NSObject {
     @objc
     public init(collection: String) {
         // TODO: Verify that collection is a valid table name _OR_ convert to valid name.
-        self.defaultCollection = collection
+        self.collection = collection
 
         super.init()
     }
@@ -72,7 +73,7 @@ public class SDSKeyValueStore: NSObject {
 
     private func read<T>(_ key: String, collection collectionParam: String?) -> T? {
 
-        let collection = collectionParam ?? defaultCollection
+        let collection = collectionParam ?? self.collection
 
         var result: T?
         databaseStorage.readSwallowingErrors { (transaction) in
@@ -125,7 +126,7 @@ public class SDSKeyValueStore: NSObject {
     // TODO: Codable? NSCoding? Other serialization?
     private func write(_ value: NSCoding?, forKey key: String, collection collectionParam: String?) {
 
-        let collection = collectionParam ?? defaultCollection
+        let collection = collectionParam ?? self.collection
 
         var encoded: Data?
         if let value = value {

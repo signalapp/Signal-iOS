@@ -9,7 +9,7 @@ public class SSKPreferences: NSObject {
     // Never instantiate this class.
     private override init() {}
 
-    private static let collection = "SSKPreferences"
+    private static let store = SDSKeyValueStore(collection: "SSKPreferences")
 
     // MARK: -
 
@@ -18,10 +18,10 @@ public class SSKPreferences: NSObject {
     @objc
     public static var areLinkPreviewsEnabled: Bool {
         get {
-            return getBool(key: areLinkPreviewsEnabledKey, defaultValue: true)
+            return store.getBool(areLinkPreviewsEnabledKey, defaultValue: true)
         }
         set {
-            setBool(newValue, key: areLinkPreviewsEnabledKey)
+            store.setBool(newValue, key: areLinkPreviewsEnabledKey)
 
             SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
         }
@@ -34,10 +34,10 @@ public class SSKPreferences: NSObject {
     @objc
     public static var hasSavedThread: Bool {
         get {
-            return getBool(key: hasSavedThreadKey)
+            return store.getBool(hasSavedThreadKey)
         }
         set {
-            setBool(newValue, key: hasSavedThreadKey)
+            store.setBool(newValue, key: hasSavedThreadKey)
         }
     }
 
@@ -45,16 +45,6 @@ public class SSKPreferences: NSObject {
     public class func setHasSavedThread(value: Bool, transaction: YapDatabaseReadWriteTransaction) {
         transaction.setBool(value,
                             forKey: hasSavedThreadKey,
-                            inCollection: collection)
-    }
-
-    // MARK: -
-
-    private class func getBool(key: String, defaultValue: Bool = false) -> Bool {
-        return OWSPrimaryStorage.dbReadConnection().bool(forKey: key, inCollection: collection, defaultValue: defaultValue)
-    }
-
-    private class func setBool(_ value: Bool, key: String) {
-        OWSPrimaryStorage.dbReadWriteConnection().setBool(value, forKey: key, inCollection: collection)
+                            inCollection: store.collection)
     }
 }
