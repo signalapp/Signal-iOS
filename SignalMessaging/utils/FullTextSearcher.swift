@@ -248,7 +248,7 @@ public class FullTextSearcher: NSObject {
             case let groupThread as TSGroupThread:
                 let sortKey = ConversationSortKey(creationDate: groupThread.creationDate,
                                                   lastMessageReceivedAtDate: groupThread.lastInteractionForInbox(transaction: SDSAnyReadTransaction(transitional_yapReadTransaction: transaction))?.receivedAtDate())
-                let threadViewModel = ThreadViewModel(thread: groupThread, transaction: transaction)
+                let threadViewModel = ThreadViewModel(thread: groupThread, transaction: SDSAnyReadTransaction(transitional_yapReadTransaction: transaction))
                 let searchResult = GroupSearchResult(thread: threadViewModel, sortKey: sortKey)
                 groups.append(searchResult)
             case is TSContactThread:
@@ -285,7 +285,7 @@ public class FullTextSearcher: NSObject {
         self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
 
             if let thread = match as? TSThread {
-                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+                let threadViewModel = ThreadViewModel(thread: thread, transaction: SDSAnyReadTransaction(transitional_yapReadTransaction: transaction))
                 let sortKey = ConversationSortKey(creationDate: thread.creationDate,
                                                   lastMessageReceivedAtDate: thread.lastInteractionForInbox(transaction: SDSAnyReadTransaction(transitional_yapReadTransaction: transaction))?.receivedAtDate())
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
@@ -299,7 +299,7 @@ public class FullTextSearcher: NSObject {
             } else if let message = match as? TSMessage {
                 let thread = message.thread(with: transaction)
 
-                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+                let threadViewModel = ThreadViewModel(thread: thread, transaction: SDSAnyReadTransaction(transitional_yapReadTransaction: transaction))
                 let sortKey = message.sortId
                 let searchResult = ConversationSearchResult(thread: threadViewModel,
                                                             sortKey: sortKey,

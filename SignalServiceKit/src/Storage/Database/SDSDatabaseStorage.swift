@@ -300,6 +300,13 @@ public struct GRDBDatabaseStorageAdapter {
                             InteractionRecord.columnName(.id),
                             InteractionRecord.columnName(.threadUniqueId)
                 ])
+
+            try db.create(index: "index_interactions_on_sortId_and_threadUniqueId",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.sortId),
+                            InteractionRecord.columnName(.threadUniqueId)
+                ])
         }
         return migrator
     }()
