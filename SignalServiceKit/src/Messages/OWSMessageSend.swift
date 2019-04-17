@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -83,13 +83,13 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public func disableUD() {
-        Logger.verbose("\(recipient.recipientId)")
+        Logger.verbose("\(String(describing: recipient.recipientId))")
         udAccess = nil
     }
 
     @objc
     public func setHasUDAuthFailed() {
-        Logger.verbose("\(recipient.recipientId)")
+        Logger.verbose("\(String(describing: recipient.recipientId))")
         // We "fail over" to non-UD sends after auth errors sending via UD.
         disableUD()
     }
