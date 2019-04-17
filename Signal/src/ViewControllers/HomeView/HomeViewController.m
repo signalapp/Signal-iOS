@@ -602,7 +602,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self observeNotifications];
     [self resetMappings];
-    [self updateViewState];
     [self tableViewSetUp];
 
     switch (self.homeViewMode) {
