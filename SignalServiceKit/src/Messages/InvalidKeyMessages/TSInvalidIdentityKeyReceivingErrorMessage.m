@@ -74,6 +74,56 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 }
 #endif
 
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(unsigned long long)expireStartedAt
+                       expiresAt:(unsigned long long)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                   schemaVersion:(NSUInteger)schemaVersion
+       errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
+                       errorType:(enum TSErrorMessageType)errorType
+                            read:(BOOL)read
+                     recipientId:(nullable NSString *)recipientId
+                        authorId:(NSString *)authorId
+                    envelopeData:(nullable NSData *)envelopeData
+{
+    self = [super initWithUniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId
+                     attachmentIds:attachmentIds
+                              body:body
+                      contactShare:contactShare
+                   expireStartedAt:expireStartedAt
+                         expiresAt:expiresAt
+                  expiresInSeconds:expiresInSeconds
+                       linkPreview:linkPreview
+                     quotedMessage:quotedMessage
+                     schemaVersion:schemaVersion
+         errorMessageSchemaVersion:errorMessageSchemaVersion
+                         errorType:errorType
+                              read:read
+                       recipientId:recipientId];
+
+    if (!self) {
+        return self;
+    }
+
+    _authorId = authorId;
+    _envelopeData = envelopeData;
+
+    return self;
+}
+
 - (nullable SSKProtoEnvelope *)envelope
 {
     if (!_envelope) {

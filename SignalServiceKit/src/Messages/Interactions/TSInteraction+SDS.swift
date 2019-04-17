@@ -23,30 +23,6 @@ extension TSInteraction: SDSSerializable {
         case let model as TSCall:
             assert(type(of: model) == TSCall.self)
             return TSCallSerializer(model: model)
-        case let model as OWSDynamicOutgoingMessage:
-            assert(type(of: model) == OWSDynamicOutgoingMessage.self)
-            return OWSDynamicOutgoingMessageSerializer(model: model)
-        case let model as OWSSyncGroupsRequestMessage:
-            assert(type(of: model) == OWSSyncGroupsRequestMessage.self)
-            return OWSSyncGroupsRequestMessageSerializer(model: model)
-        case let model as OWSSyncContactsMessage:
-            assert(type(of: model) == OWSSyncContactsMessage.self)
-            return OWSSyncContactsMessageSerializer(model: model)
-        case let model as OWSSyncConfigurationMessage:
-            assert(type(of: model) == OWSSyncConfigurationMessage.self)
-            return OWSSyncConfigurationMessageSerializer(model: model)
-        case let model as OWSOutgoingSentMessageTranscript:
-            assert(type(of: model) == OWSOutgoingSentMessageTranscript.self)
-            return OWSOutgoingSentMessageTranscriptSerializer(model: model)
-        case let model as OWSOutgoingSyncMessage:
-            assert(type(of: model) == OWSOutgoingSyncMessage.self)
-            return OWSOutgoingSyncMessageSerializer(model: model)
-        case let model as OWSDisappearingMessagesConfigurationMessage:
-            assert(type(of: model) == OWSDisappearingMessagesConfigurationMessage.self)
-            return OWSDisappearingMessagesConfigurationMessageSerializer(model: model)
-        case let model as OWSOutgoingNullMessage:
-            assert(type(of: model) == OWSOutgoingNullMessage.self)
-            return OWSOutgoingNullMessageSerializer(model: model)
         case let model as TSOutgoingMessage:
             assert(type(of: model) == TSOutgoingMessage.self)
             return TSOutgoingMessageSerializer(model: model)
@@ -123,41 +99,39 @@ extension TSInteractionSerializer {
     static let createdByRemoteNameColumn = SDSColumnMetadata(columnName: "createdByRemoteName", columnType: .unicodeString, isOptional: true, columnIndex: 17)
     static let createdInExistingGroupColumn = SDSColumnMetadata(columnName: "createdInExistingGroup", columnType: .int, isOptional: true, columnIndex: 18)
     static let customMessageColumn = SDSColumnMetadata(columnName: "customMessage", columnType: .unicodeString, isOptional: true, columnIndex: 19)
-    static let errorMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "errorMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 20)
-    static let errorTypeColumn = SDSColumnMetadata(columnName: "errorType", columnType: .int, isOptional: true, columnIndex: 21)
-    static let expireStartedAtColumn = SDSColumnMetadata(columnName: "expireStartedAt", columnType: .int64, isOptional: true, columnIndex: 22)
-    static let expiresAtColumn = SDSColumnMetadata(columnName: "expiresAt", columnType: .int64, isOptional: true, columnIndex: 23)
-    static let expiresInSecondsColumn = SDSColumnMetadata(columnName: "expiresInSeconds", columnType: .int, isOptional: true, columnIndex: 24)
-    static let groupMetaMessageColumn = SDSColumnMetadata(columnName: "groupMetaMessage", columnType: .int, isOptional: true, columnIndex: 25)
-    static let hasAddToContactsOfferColumn = SDSColumnMetadata(columnName: "hasAddToContactsOffer", columnType: .int, isOptional: true, columnIndex: 26)
-    static let hasAddToProfileWhitelistOfferColumn = SDSColumnMetadata(columnName: "hasAddToProfileWhitelistOffer", columnType: .int, isOptional: true, columnIndex: 27)
-    static let hasBlockOfferColumn = SDSColumnMetadata(columnName: "hasBlockOffer", columnType: .int, isOptional: true, columnIndex: 28)
-    static let hasLegacyMessageStateColumn = SDSColumnMetadata(columnName: "hasLegacyMessageState", columnType: .int, isOptional: true, columnIndex: 29)
-    static let hasSyncedTranscriptColumn = SDSColumnMetadata(columnName: "hasSyncedTranscript", columnType: .int, isOptional: true, columnIndex: 30)
-    static let infoMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "infoMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 31)
-    static let isFromLinkedDeviceColumn = SDSColumnMetadata(columnName: "isFromLinkedDevice", columnType: .int, isOptional: true, columnIndex: 32)
-    static let isLocalChangeColumn = SDSColumnMetadata(columnName: "isLocalChange", columnType: .int, isOptional: true, columnIndex: 33)
-    static let isRecipientUpdateColumn = SDSColumnMetadata(columnName: "isRecipientUpdate", columnType: .int, isOptional: true, columnIndex: 34)
+    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true, columnIndex: 20)
+    static let errorMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "errorMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 21)
+    static let errorTypeColumn = SDSColumnMetadata(columnName: "errorType", columnType: .int, isOptional: true, columnIndex: 22)
+    static let expireStartedAtColumn = SDSColumnMetadata(columnName: "expireStartedAt", columnType: .int64, isOptional: true, columnIndex: 23)
+    static let expiresAtColumn = SDSColumnMetadata(columnName: "expiresAt", columnType: .int64, isOptional: true, columnIndex: 24)
+    static let expiresInSecondsColumn = SDSColumnMetadata(columnName: "expiresInSeconds", columnType: .int, isOptional: true, columnIndex: 25)
+    static let groupMetaMessageColumn = SDSColumnMetadata(columnName: "groupMetaMessage", columnType: .int, isOptional: true, columnIndex: 26)
+    static let hasAddToContactsOfferColumn = SDSColumnMetadata(columnName: "hasAddToContactsOffer", columnType: .int, isOptional: true, columnIndex: 27)
+    static let hasAddToProfileWhitelistOfferColumn = SDSColumnMetadata(columnName: "hasAddToProfileWhitelistOffer", columnType: .int, isOptional: true, columnIndex: 28)
+    static let hasBlockOfferColumn = SDSColumnMetadata(columnName: "hasBlockOffer", columnType: .int, isOptional: true, columnIndex: 29)
+    static let hasLegacyMessageStateColumn = SDSColumnMetadata(columnName: "hasLegacyMessageState", columnType: .int, isOptional: true, columnIndex: 30)
+    static let hasSyncedTranscriptColumn = SDSColumnMetadata(columnName: "hasSyncedTranscript", columnType: .int, isOptional: true, columnIndex: 31)
+    static let infoMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "infoMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 32)
+    static let isFromLinkedDeviceColumn = SDSColumnMetadata(columnName: "isFromLinkedDevice", columnType: .int, isOptional: true, columnIndex: 33)
+    static let isLocalChangeColumn = SDSColumnMetadata(columnName: "isLocalChange", columnType: .int, isOptional: true, columnIndex: 34)
     static let isVoiceMessageColumn = SDSColumnMetadata(columnName: "isVoiceMessage", columnType: .int, isOptional: true, columnIndex: 35)
     static let legacyMessageStateColumn = SDSColumnMetadata(columnName: "legacyMessageState", columnType: .int, isOptional: true, columnIndex: 36)
     static let legacyWasDeliveredColumn = SDSColumnMetadata(columnName: "legacyWasDelivered", columnType: .int, isOptional: true, columnIndex: 37)
     static let linkPreviewColumn = SDSColumnMetadata(columnName: "linkPreview", columnType: .blob, isOptional: true, columnIndex: 38)
-    static let messageColumn = SDSColumnMetadata(columnName: "message", columnType: .blob, isOptional: true, columnIndex: 39)
-    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 40)
-    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 41)
-    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 42)
-    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 43)
-    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 44)
-    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 45)
-    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 46)
-    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 47)
-    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 48)
-    static let sentRecipientIdColumn = SDSColumnMetadata(columnName: "sentRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 49)
-    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 50)
-    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int, isOptional: true, columnIndex: 51)
-    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 52)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 53)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 54)
+    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 39)
+    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 40)
+    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 41)
+    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 42)
+    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 43)
+    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 44)
+    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 45)
+    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 46)
+    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 47)
+    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 48)
+    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int, isOptional: true, columnIndex: 49)
+    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 50)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 51)
+    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 52)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -182,6 +156,7 @@ extension TSInteractionSerializer {
         createdByRemoteNameColumn,
         createdInExistingGroupColumn,
         customMessageColumn,
+        envelopeDataColumn,
         errorMessageSchemaVersionColumn,
         errorTypeColumn,
         expireStartedAtColumn,
@@ -196,12 +171,10 @@ extension TSInteractionSerializer {
         infoMessageSchemaVersionColumn,
         isFromLinkedDeviceColumn,
         isLocalChangeColumn,
-        isRecipientUpdateColumn,
         isVoiceMessageColumn,
         legacyMessageStateColumn,
         legacyWasDeliveredColumn,
         linkPreviewColumn,
-        messageColumn,
         messageIdColumn,
         messageTypeColumn,
         mostRecentFailureTextColumn,
@@ -211,7 +184,6 @@ extension TSInteractionSerializer {
         recipientIdColumn,
         recipientStateMapColumn,
         schemaVersionColumn,
-        sentRecipientIdColumn,
         serverTimestampColumn,
         sourceDeviceIdColumn,
         unregisteredRecipientIdColumn,
@@ -563,6 +535,8 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
             }
             let read = try deserializer.bool(at: readColumn.columnIndex)
             let recipientId = try deserializer.optionalString(at: recipientIdColumn.columnIndex)
+            let authorId = try deserializer.string(at: authorIdColumn.columnIndex)
+            let envelopeData = try deserializer.optionalBlob(at: envelopeDataColumn.columnIndex)
 
 /* Suggested Initializer
 
@@ -584,8 +558,10 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                         errorType:(enum TSErrorMessageType)errorType
                              read:(BOOL)read
                       recipientId:(nullable NSString *)recipientId
+                         authorId:(NSString *)authorId
+                     envelopeData:(nullable NSData *)envelopeData
 NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:authorId:envelopeData:));
 */
             return TSInvalidIdentityKeyReceivingErrorMessage(uniqueId: uniqueId,
                                                              receivedAtTimestamp: receivedAtTimestamp,
@@ -604,7 +580,9 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                                              errorMessageSchemaVersion: errorMessageSchemaVersion,
                                                              errorType: errorType,
                                                              read: read,
-                                                             recipientId: recipientId)
+                                                             recipientId: recipientId,
+                                                             authorId: authorId,
+                                                             envelopeData: envelopeData)
 
         case .invalidIdentityKeySendingErrorMessage:
 
@@ -1243,784 +1221,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                      legacyWasDelivered: legacyWasDelivered,
                                      mostRecentFailureText: mostRecentFailureText,
                                      recipientStateMap: recipientStateMap)
-
-        case .outgoingNullMessage:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
-            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
-            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
-            let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
-            let body = try deserializer.optionalString(at: bodyColumn.columnIndex)
-            let contactShareSerialized: Data? = try deserializer.optionalBlob(at: contactShareColumn.columnIndex)
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt = try deserializer.uint64(at: expireStartedAtColumn.columnIndex)
-            let expiresAt = try deserializer.uint64(at: expiresAtColumn.columnIndex)
-            let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
-            let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
-            let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
-            let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
-            let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
-            guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
-               throw SDSError.invalidValue
-            }
-            let hasLegacyMessageState = try deserializer.bool(at: hasLegacyMessageStateColumn.columnIndex)
-            let hasSyncedTranscript = try deserializer.bool(at: hasSyncedTranscriptColumn.columnIndex)
-            let isFromLinkedDevice = try deserializer.bool(at: isFromLinkedDeviceColumn.columnIndex)
-            let isVoiceMessage = try deserializer.bool(at: isVoiceMessageColumn.columnIndex)
-            let legacyMessageStateRaw = Int(try deserializer.int(at: legacyMessageStateColumn.columnIndex))
-            guard let legacyMessageState = TSOutgoingMessageState(rawValue: legacyMessageStateRaw) else {
-               throw SDSError.invalidValue
-            }
-            let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
-            let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
-            let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
-
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
-                           sortId:(unsigned long long)sortId
-                        timestamp:(unsigned long long)timestamp
-                   uniqueThreadId:(NSString *)uniqueThreadId
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                             body:(nullable NSString *)body
-                     contactShare:(nullable OWSContact *)contactShare
-                  expireStartedAt:(unsigned long long)expireStartedAt
-                        expiresAt:(unsigned long long)expiresAt
-                 expiresInSeconds:(unsigned int)expiresInSeconds
-                      linkPreview:(nullable OWSLinkPreview *)linkPreview
-                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                    schemaVersion:(NSUInteger)schemaVersion
-            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(nullable NSString *)customMessage
-                 groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
-            hasLegacyMessageState:(BOOL)hasLegacyMessageState
-              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-               isFromLinkedDevice:(BOOL)isFromLinkedDevice
-                   isVoiceMessage:(BOOL)isVoiceMessage
-               legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
-               legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-                recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
-*/
-            return OWSOutgoingNullMessage(uniqueId: uniqueId,
-                                          receivedAtTimestamp: receivedAtTimestamp,
-                                          sortId: sortId,
-                                          timestamp: timestamp,
-                                          uniqueThreadId: uniqueThreadId,
-                                          attachmentIds: attachmentIds,
-                                          body: body,
-                                          contactShare: contactShare,
-                                          expireStartedAt: expireStartedAt,
-                                          expiresAt: expiresAt,
-                                          expiresInSeconds: expiresInSeconds,
-                                          linkPreview: linkPreview,
-                                          quotedMessage: quotedMessage,
-                                          schemaVersion: schemaVersion,
-                                          attachmentFilenameMap: attachmentFilenameMap,
-                                          customMessage: customMessage,
-                                          groupMetaMessage: groupMetaMessage,
-                                          hasLegacyMessageState: hasLegacyMessageState,
-                                          hasSyncedTranscript: hasSyncedTranscript,
-                                          isFromLinkedDevice: isFromLinkedDevice,
-                                          isVoiceMessage: isVoiceMessage,
-                                          legacyMessageState: legacyMessageState,
-                                          legacyWasDelivered: legacyWasDelivered,
-                                          mostRecentFailureText: mostRecentFailureText,
-                                          recipientStateMap: recipientStateMap)
-
-        case .disappearingMessagesConfigurationMessage:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
-            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
-            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
-            let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
-            let body = try deserializer.optionalString(at: bodyColumn.columnIndex)
-            let contactShareSerialized: Data? = try deserializer.optionalBlob(at: contactShareColumn.columnIndex)
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt = try deserializer.uint64(at: expireStartedAtColumn.columnIndex)
-            let expiresAt = try deserializer.uint64(at: expiresAtColumn.columnIndex)
-            let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
-            let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
-            let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
-            let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
-            let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
-            guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
-               throw SDSError.invalidValue
-            }
-            let hasLegacyMessageState = try deserializer.bool(at: hasLegacyMessageStateColumn.columnIndex)
-            let hasSyncedTranscript = try deserializer.bool(at: hasSyncedTranscriptColumn.columnIndex)
-            let isFromLinkedDevice = try deserializer.bool(at: isFromLinkedDeviceColumn.columnIndex)
-            let isVoiceMessage = try deserializer.bool(at: isVoiceMessageColumn.columnIndex)
-            let legacyMessageStateRaw = Int(try deserializer.int(at: legacyMessageStateColumn.columnIndex))
-            guard let legacyMessageState = TSOutgoingMessageState(rawValue: legacyMessageStateRaw) else {
-               throw SDSError.invalidValue
-            }
-            let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
-            let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
-            let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
-
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
-                           sortId:(unsigned long long)sortId
-                        timestamp:(unsigned long long)timestamp
-                   uniqueThreadId:(NSString *)uniqueThreadId
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                             body:(nullable NSString *)body
-                     contactShare:(nullable OWSContact *)contactShare
-                  expireStartedAt:(unsigned long long)expireStartedAt
-                        expiresAt:(unsigned long long)expiresAt
-                 expiresInSeconds:(unsigned int)expiresInSeconds
-                      linkPreview:(nullable OWSLinkPreview *)linkPreview
-                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                    schemaVersion:(NSUInteger)schemaVersion
-            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(nullable NSString *)customMessage
-                 groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
-            hasLegacyMessageState:(BOOL)hasLegacyMessageState
-              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-               isFromLinkedDevice:(BOOL)isFromLinkedDevice
-                   isVoiceMessage:(BOOL)isVoiceMessage
-               legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
-               legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-                recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
-*/
-            return OWSDisappearingMessagesConfigurationMessage(uniqueId: uniqueId,
-                                                               receivedAtTimestamp: receivedAtTimestamp,
-                                                               sortId: sortId,
-                                                               timestamp: timestamp,
-                                                               uniqueThreadId: uniqueThreadId,
-                                                               attachmentIds: attachmentIds,
-                                                               body: body,
-                                                               contactShare: contactShare,
-                                                               expireStartedAt: expireStartedAt,
-                                                               expiresAt: expiresAt,
-                                                               expiresInSeconds: expiresInSeconds,
-                                                               linkPreview: linkPreview,
-                                                               quotedMessage: quotedMessage,
-                                                               schemaVersion: schemaVersion,
-                                                               attachmentFilenameMap: attachmentFilenameMap,
-                                                               customMessage: customMessage,
-                                                               groupMetaMessage: groupMetaMessage,
-                                                               hasLegacyMessageState: hasLegacyMessageState,
-                                                               hasSyncedTranscript: hasSyncedTranscript,
-                                                               isFromLinkedDevice: isFromLinkedDevice,
-                                                               isVoiceMessage: isVoiceMessage,
-                                                               legacyMessageState: legacyMessageState,
-                                                               legacyWasDelivered: legacyWasDelivered,
-                                                               mostRecentFailureText: mostRecentFailureText,
-                                                               recipientStateMap: recipientStateMap)
-
-        case .outgoingSyncMessage:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
-            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
-            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
-            let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
-            let body = try deserializer.optionalString(at: bodyColumn.columnIndex)
-            let contactShareSerialized: Data? = try deserializer.optionalBlob(at: contactShareColumn.columnIndex)
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt = try deserializer.uint64(at: expireStartedAtColumn.columnIndex)
-            let expiresAt = try deserializer.uint64(at: expiresAtColumn.columnIndex)
-            let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
-            let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
-            let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
-            let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
-            let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
-            guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
-               throw SDSError.invalidValue
-            }
-            let hasLegacyMessageState = try deserializer.bool(at: hasLegacyMessageStateColumn.columnIndex)
-            let hasSyncedTranscript = try deserializer.bool(at: hasSyncedTranscriptColumn.columnIndex)
-            let isFromLinkedDevice = try deserializer.bool(at: isFromLinkedDeviceColumn.columnIndex)
-            let isVoiceMessage = try deserializer.bool(at: isVoiceMessageColumn.columnIndex)
-            let legacyMessageStateRaw = Int(try deserializer.int(at: legacyMessageStateColumn.columnIndex))
-            guard let legacyMessageState = TSOutgoingMessageState(rawValue: legacyMessageStateRaw) else {
-               throw SDSError.invalidValue
-            }
-            let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
-            let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
-            let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
-
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
-                           sortId:(unsigned long long)sortId
-                        timestamp:(unsigned long long)timestamp
-                   uniqueThreadId:(NSString *)uniqueThreadId
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                             body:(nullable NSString *)body
-                     contactShare:(nullable OWSContact *)contactShare
-                  expireStartedAt:(unsigned long long)expireStartedAt
-                        expiresAt:(unsigned long long)expiresAt
-                 expiresInSeconds:(unsigned int)expiresInSeconds
-                      linkPreview:(nullable OWSLinkPreview *)linkPreview
-                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                    schemaVersion:(NSUInteger)schemaVersion
-            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(nullable NSString *)customMessage
-                 groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
-            hasLegacyMessageState:(BOOL)hasLegacyMessageState
-              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-               isFromLinkedDevice:(BOOL)isFromLinkedDevice
-                   isVoiceMessage:(BOOL)isVoiceMessage
-               legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
-               legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-                recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
-*/
-            return OWSOutgoingSyncMessage(uniqueId: uniqueId,
-                                          receivedAtTimestamp: receivedAtTimestamp,
-                                          sortId: sortId,
-                                          timestamp: timestamp,
-                                          uniqueThreadId: uniqueThreadId,
-                                          attachmentIds: attachmentIds,
-                                          body: body,
-                                          contactShare: contactShare,
-                                          expireStartedAt: expireStartedAt,
-                                          expiresAt: expiresAt,
-                                          expiresInSeconds: expiresInSeconds,
-                                          linkPreview: linkPreview,
-                                          quotedMessage: quotedMessage,
-                                          schemaVersion: schemaVersion,
-                                          attachmentFilenameMap: attachmentFilenameMap,
-                                          customMessage: customMessage,
-                                          groupMetaMessage: groupMetaMessage,
-                                          hasLegacyMessageState: hasLegacyMessageState,
-                                          hasSyncedTranscript: hasSyncedTranscript,
-                                          isFromLinkedDevice: isFromLinkedDevice,
-                                          isVoiceMessage: isVoiceMessage,
-                                          legacyMessageState: legacyMessageState,
-                                          legacyWasDelivered: legacyWasDelivered,
-                                          mostRecentFailureText: mostRecentFailureText,
-                                          recipientStateMap: recipientStateMap)
-
-        case .outgoingSentMessageTranscript:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
-            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
-            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
-            let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
-            let body = try deserializer.optionalString(at: bodyColumn.columnIndex)
-            let contactShareSerialized: Data? = try deserializer.optionalBlob(at: contactShareColumn.columnIndex)
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt = try deserializer.uint64(at: expireStartedAtColumn.columnIndex)
-            let expiresAt = try deserializer.uint64(at: expiresAtColumn.columnIndex)
-            let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
-            let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
-            let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
-            let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
-            let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
-            guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
-               throw SDSError.invalidValue
-            }
-            let hasLegacyMessageState = try deserializer.bool(at: hasLegacyMessageStateColumn.columnIndex)
-            let hasSyncedTranscript = try deserializer.bool(at: hasSyncedTranscriptColumn.columnIndex)
-            let isFromLinkedDevice = try deserializer.bool(at: isFromLinkedDeviceColumn.columnIndex)
-            let isVoiceMessage = try deserializer.bool(at: isVoiceMessageColumn.columnIndex)
-            let legacyMessageStateRaw = Int(try deserializer.int(at: legacyMessageStateColumn.columnIndex))
-            guard let legacyMessageState = TSOutgoingMessageState(rawValue: legacyMessageStateRaw) else {
-               throw SDSError.invalidValue
-            }
-            let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
-            let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
-            let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
-            let isRecipientUpdate = try deserializer.bool(at: isRecipientUpdateColumn.columnIndex)
-            let messageSerialized: Data = try deserializer.blob(at: messageColumn.columnIndex)
-            let message: TSOutgoingMessage = try SDSDeserializer.unarchive(messageSerialized)
-            let sentRecipientId = try deserializer.optionalString(at: sentRecipientIdColumn.columnIndex)
-
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
-                           sortId:(unsigned long long)sortId
-                        timestamp:(unsigned long long)timestamp
-                   uniqueThreadId:(NSString *)uniqueThreadId
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                             body:(nullable NSString *)body
-                     contactShare:(nullable OWSContact *)contactShare
-                  expireStartedAt:(unsigned long long)expireStartedAt
-                        expiresAt:(unsigned long long)expiresAt
-                 expiresInSeconds:(unsigned int)expiresInSeconds
-                      linkPreview:(nullable OWSLinkPreview *)linkPreview
-                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                    schemaVersion:(NSUInteger)schemaVersion
-            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(nullable NSString *)customMessage
-                 groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
-            hasLegacyMessageState:(BOOL)hasLegacyMessageState
-              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-               isFromLinkedDevice:(BOOL)isFromLinkedDevice
-                   isVoiceMessage:(BOOL)isVoiceMessage
-               legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
-               legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-                recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
-                isRecipientUpdate:(BOOL)isRecipientUpdate
-                          message:(TSOutgoingMessage *)message
-                  sentRecipientId:(nullable NSString *)sentRecipientId
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:isRecipientUpdate:message:sentRecipientId:));
-*/
-            return OWSOutgoingSentMessageTranscript(uniqueId: uniqueId,
-                                                    receivedAtTimestamp: receivedAtTimestamp,
-                                                    sortId: sortId,
-                                                    timestamp: timestamp,
-                                                    uniqueThreadId: uniqueThreadId,
-                                                    attachmentIds: attachmentIds,
-                                                    body: body,
-                                                    contactShare: contactShare,
-                                                    expireStartedAt: expireStartedAt,
-                                                    expiresAt: expiresAt,
-                                                    expiresInSeconds: expiresInSeconds,
-                                                    linkPreview: linkPreview,
-                                                    quotedMessage: quotedMessage,
-                                                    schemaVersion: schemaVersion,
-                                                    attachmentFilenameMap: attachmentFilenameMap,
-                                                    customMessage: customMessage,
-                                                    groupMetaMessage: groupMetaMessage,
-                                                    hasLegacyMessageState: hasLegacyMessageState,
-                                                    hasSyncedTranscript: hasSyncedTranscript,
-                                                    isFromLinkedDevice: isFromLinkedDevice,
-                                                    isVoiceMessage: isVoiceMessage,
-                                                    legacyMessageState: legacyMessageState,
-                                                    legacyWasDelivered: legacyWasDelivered,
-                                                    mostRecentFailureText: mostRecentFailureText,
-                                                    recipientStateMap: recipientStateMap,
-                                                    isRecipientUpdate: isRecipientUpdate,
-                                                    message: message,
-                                                    sentRecipientId: sentRecipientId)
-
-        case .syncConfigurationMessage:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
-            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
-            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
-            let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
-            let body = try deserializer.optionalString(at: bodyColumn.columnIndex)
-            let contactShareSerialized: Data? = try deserializer.optionalBlob(at: contactShareColumn.columnIndex)
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt = try deserializer.uint64(at: expireStartedAtColumn.columnIndex)
-            let expiresAt = try deserializer.uint64(at: expiresAtColumn.columnIndex)
-            let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
-            let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
-            let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
-            let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
-            let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
-            guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
-               throw SDSError.invalidValue
-            }
-            let hasLegacyMessageState = try deserializer.bool(at: hasLegacyMessageStateColumn.columnIndex)
-            let hasSyncedTranscript = try deserializer.bool(at: hasSyncedTranscriptColumn.columnIndex)
-            let isFromLinkedDevice = try deserializer.bool(at: isFromLinkedDeviceColumn.columnIndex)
-            let isVoiceMessage = try deserializer.bool(at: isVoiceMessageColumn.columnIndex)
-            let legacyMessageStateRaw = Int(try deserializer.int(at: legacyMessageStateColumn.columnIndex))
-            guard let legacyMessageState = TSOutgoingMessageState(rawValue: legacyMessageStateRaw) else {
-               throw SDSError.invalidValue
-            }
-            let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
-            let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
-            let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
-
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
-                           sortId:(unsigned long long)sortId
-                        timestamp:(unsigned long long)timestamp
-                   uniqueThreadId:(NSString *)uniqueThreadId
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                             body:(nullable NSString *)body
-                     contactShare:(nullable OWSContact *)contactShare
-                  expireStartedAt:(unsigned long long)expireStartedAt
-                        expiresAt:(unsigned long long)expiresAt
-                 expiresInSeconds:(unsigned int)expiresInSeconds
-                      linkPreview:(nullable OWSLinkPreview *)linkPreview
-                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                    schemaVersion:(NSUInteger)schemaVersion
-            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(nullable NSString *)customMessage
-                 groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
-            hasLegacyMessageState:(BOOL)hasLegacyMessageState
-              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-               isFromLinkedDevice:(BOOL)isFromLinkedDevice
-                   isVoiceMessage:(BOOL)isVoiceMessage
-               legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
-               legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-                recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
-*/
-            return OWSSyncConfigurationMessage(uniqueId: uniqueId,
-                                               receivedAtTimestamp: receivedAtTimestamp,
-                                               sortId: sortId,
-                                               timestamp: timestamp,
-                                               uniqueThreadId: uniqueThreadId,
-                                               attachmentIds: attachmentIds,
-                                               body: body,
-                                               contactShare: contactShare,
-                                               expireStartedAt: expireStartedAt,
-                                               expiresAt: expiresAt,
-                                               expiresInSeconds: expiresInSeconds,
-                                               linkPreview: linkPreview,
-                                               quotedMessage: quotedMessage,
-                                               schemaVersion: schemaVersion,
-                                               attachmentFilenameMap: attachmentFilenameMap,
-                                               customMessage: customMessage,
-                                               groupMetaMessage: groupMetaMessage,
-                                               hasLegacyMessageState: hasLegacyMessageState,
-                                               hasSyncedTranscript: hasSyncedTranscript,
-                                               isFromLinkedDevice: isFromLinkedDevice,
-                                               isVoiceMessage: isVoiceMessage,
-                                               legacyMessageState: legacyMessageState,
-                                               legacyWasDelivered: legacyWasDelivered,
-                                               mostRecentFailureText: mostRecentFailureText,
-                                               recipientStateMap: recipientStateMap)
-
-        case .syncContactsMessage:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
-            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
-            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
-            let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
-            let body = try deserializer.optionalString(at: bodyColumn.columnIndex)
-            let contactShareSerialized: Data? = try deserializer.optionalBlob(at: contactShareColumn.columnIndex)
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt = try deserializer.uint64(at: expireStartedAtColumn.columnIndex)
-            let expiresAt = try deserializer.uint64(at: expiresAtColumn.columnIndex)
-            let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
-            let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
-            let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
-            let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
-            let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
-            guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
-               throw SDSError.invalidValue
-            }
-            let hasLegacyMessageState = try deserializer.bool(at: hasLegacyMessageStateColumn.columnIndex)
-            let hasSyncedTranscript = try deserializer.bool(at: hasSyncedTranscriptColumn.columnIndex)
-            let isFromLinkedDevice = try deserializer.bool(at: isFromLinkedDeviceColumn.columnIndex)
-            let isVoiceMessage = try deserializer.bool(at: isVoiceMessageColumn.columnIndex)
-            let legacyMessageStateRaw = Int(try deserializer.int(at: legacyMessageStateColumn.columnIndex))
-            guard let legacyMessageState = TSOutgoingMessageState(rawValue: legacyMessageStateRaw) else {
-               throw SDSError.invalidValue
-            }
-            let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
-            let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
-            let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
-
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
-                           sortId:(unsigned long long)sortId
-                        timestamp:(unsigned long long)timestamp
-                   uniqueThreadId:(NSString *)uniqueThreadId
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                             body:(nullable NSString *)body
-                     contactShare:(nullable OWSContact *)contactShare
-                  expireStartedAt:(unsigned long long)expireStartedAt
-                        expiresAt:(unsigned long long)expiresAt
-                 expiresInSeconds:(unsigned int)expiresInSeconds
-                      linkPreview:(nullable OWSLinkPreview *)linkPreview
-                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                    schemaVersion:(NSUInteger)schemaVersion
-            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(nullable NSString *)customMessage
-                 groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
-            hasLegacyMessageState:(BOOL)hasLegacyMessageState
-              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-               isFromLinkedDevice:(BOOL)isFromLinkedDevice
-                   isVoiceMessage:(BOOL)isVoiceMessage
-               legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
-               legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-                recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
-*/
-            return OWSSyncContactsMessage(uniqueId: uniqueId,
-                                          receivedAtTimestamp: receivedAtTimestamp,
-                                          sortId: sortId,
-                                          timestamp: timestamp,
-                                          uniqueThreadId: uniqueThreadId,
-                                          attachmentIds: attachmentIds,
-                                          body: body,
-                                          contactShare: contactShare,
-                                          expireStartedAt: expireStartedAt,
-                                          expiresAt: expiresAt,
-                                          expiresInSeconds: expiresInSeconds,
-                                          linkPreview: linkPreview,
-                                          quotedMessage: quotedMessage,
-                                          schemaVersion: schemaVersion,
-                                          attachmentFilenameMap: attachmentFilenameMap,
-                                          customMessage: customMessage,
-                                          groupMetaMessage: groupMetaMessage,
-                                          hasLegacyMessageState: hasLegacyMessageState,
-                                          hasSyncedTranscript: hasSyncedTranscript,
-                                          isFromLinkedDevice: isFromLinkedDevice,
-                                          isVoiceMessage: isVoiceMessage,
-                                          legacyMessageState: legacyMessageState,
-                                          legacyWasDelivered: legacyWasDelivered,
-                                          mostRecentFailureText: mostRecentFailureText,
-                                          recipientStateMap: recipientStateMap)
-
-        case .syncGroupsRequestMessage:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
-            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
-            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
-            let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
-            let body = try deserializer.optionalString(at: bodyColumn.columnIndex)
-            let contactShareSerialized: Data? = try deserializer.optionalBlob(at: contactShareColumn.columnIndex)
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt = try deserializer.uint64(at: expireStartedAtColumn.columnIndex)
-            let expiresAt = try deserializer.uint64(at: expiresAtColumn.columnIndex)
-            let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
-            let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
-            let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
-            let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
-            let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
-            guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
-               throw SDSError.invalidValue
-            }
-            let hasLegacyMessageState = try deserializer.bool(at: hasLegacyMessageStateColumn.columnIndex)
-            let hasSyncedTranscript = try deserializer.bool(at: hasSyncedTranscriptColumn.columnIndex)
-            let isFromLinkedDevice = try deserializer.bool(at: isFromLinkedDeviceColumn.columnIndex)
-            let isVoiceMessage = try deserializer.bool(at: isVoiceMessageColumn.columnIndex)
-            let legacyMessageStateRaw = Int(try deserializer.int(at: legacyMessageStateColumn.columnIndex))
-            guard let legacyMessageState = TSOutgoingMessageState(rawValue: legacyMessageStateRaw) else {
-               throw SDSError.invalidValue
-            }
-            let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
-            let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
-            let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
-
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
-                           sortId:(unsigned long long)sortId
-                        timestamp:(unsigned long long)timestamp
-                   uniqueThreadId:(NSString *)uniqueThreadId
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                             body:(nullable NSString *)body
-                     contactShare:(nullable OWSContact *)contactShare
-                  expireStartedAt:(unsigned long long)expireStartedAt
-                        expiresAt:(unsigned long long)expiresAt
-                 expiresInSeconds:(unsigned int)expiresInSeconds
-                      linkPreview:(nullable OWSLinkPreview *)linkPreview
-                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                    schemaVersion:(NSUInteger)schemaVersion
-            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(nullable NSString *)customMessage
-                 groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
-            hasLegacyMessageState:(BOOL)hasLegacyMessageState
-              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-               isFromLinkedDevice:(BOOL)isFromLinkedDevice
-                   isVoiceMessage:(BOOL)isVoiceMessage
-               legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
-               legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-                recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
-*/
-            return OWSSyncGroupsRequestMessage(uniqueId: uniqueId,
-                                               receivedAtTimestamp: receivedAtTimestamp,
-                                               sortId: sortId,
-                                               timestamp: timestamp,
-                                               uniqueThreadId: uniqueThreadId,
-                                               attachmentIds: attachmentIds,
-                                               body: body,
-                                               contactShare: contactShare,
-                                               expireStartedAt: expireStartedAt,
-                                               expiresAt: expiresAt,
-                                               expiresInSeconds: expiresInSeconds,
-                                               linkPreview: linkPreview,
-                                               quotedMessage: quotedMessage,
-                                               schemaVersion: schemaVersion,
-                                               attachmentFilenameMap: attachmentFilenameMap,
-                                               customMessage: customMessage,
-                                               groupMetaMessage: groupMetaMessage,
-                                               hasLegacyMessageState: hasLegacyMessageState,
-                                               hasSyncedTranscript: hasSyncedTranscript,
-                                               isFromLinkedDevice: isFromLinkedDevice,
-                                               isVoiceMessage: isVoiceMessage,
-                                               legacyMessageState: legacyMessageState,
-                                               legacyWasDelivered: legacyWasDelivered,
-                                               mostRecentFailureText: mostRecentFailureText,
-                                               recipientStateMap: recipientStateMap)
-
-        case .dynamicOutgoingMessage:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
-            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
-            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
-            let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
-            let body = try deserializer.optionalString(at: bodyColumn.columnIndex)
-            let contactShareSerialized: Data? = try deserializer.optionalBlob(at: contactShareColumn.columnIndex)
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt = try deserializer.uint64(at: expireStartedAtColumn.columnIndex)
-            let expiresAt = try deserializer.uint64(at: expiresAtColumn.columnIndex)
-            let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
-            let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
-            let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
-            let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
-            let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
-            guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
-               throw SDSError.invalidValue
-            }
-            let hasLegacyMessageState = try deserializer.bool(at: hasLegacyMessageStateColumn.columnIndex)
-            let hasSyncedTranscript = try deserializer.bool(at: hasSyncedTranscriptColumn.columnIndex)
-            let isFromLinkedDevice = try deserializer.bool(at: isFromLinkedDeviceColumn.columnIndex)
-            let isVoiceMessage = try deserializer.bool(at: isVoiceMessageColumn.columnIndex)
-            let legacyMessageStateRaw = Int(try deserializer.int(at: legacyMessageStateColumn.columnIndex))
-            guard let legacyMessageState = TSOutgoingMessageState(rawValue: legacyMessageStateRaw) else {
-               throw SDSError.invalidValue
-            }
-            let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
-            let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
-            let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
-
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
-                           sortId:(unsigned long long)sortId
-                        timestamp:(unsigned long long)timestamp
-                   uniqueThreadId:(NSString *)uniqueThreadId
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                             body:(nullable NSString *)body
-                     contactShare:(nullable OWSContact *)contactShare
-                  expireStartedAt:(unsigned long long)expireStartedAt
-                        expiresAt:(unsigned long long)expiresAt
-                 expiresInSeconds:(unsigned int)expiresInSeconds
-                      linkPreview:(nullable OWSLinkPreview *)linkPreview
-                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                    schemaVersion:(NSUInteger)schemaVersion
-            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
-                    customMessage:(nullable NSString *)customMessage
-                 groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
-            hasLegacyMessageState:(BOOL)hasLegacyMessageState
-              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-               isFromLinkedDevice:(BOOL)isFromLinkedDevice
-                   isVoiceMessage:(BOOL)isVoiceMessage
-               legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
-               legacyWasDelivered:(BOOL)legacyWasDelivered
-            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-                recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
-*/
-            return OWSDynamicOutgoingMessage(uniqueId: uniqueId,
-                                             receivedAtTimestamp: receivedAtTimestamp,
-                                             sortId: sortId,
-                                             timestamp: timestamp,
-                                             uniqueThreadId: uniqueThreadId,
-                                             attachmentIds: attachmentIds,
-                                             body: body,
-                                             contactShare: contactShare,
-                                             expireStartedAt: expireStartedAt,
-                                             expiresAt: expiresAt,
-                                             expiresInSeconds: expiresInSeconds,
-                                             linkPreview: linkPreview,
-                                             quotedMessage: quotedMessage,
-                                             schemaVersion: schemaVersion,
-                                             attachmentFilenameMap: attachmentFilenameMap,
-                                             customMessage: customMessage,
-                                             groupMetaMessage: groupMetaMessage,
-                                             hasLegacyMessageState: hasLegacyMessageState,
-                                             hasSyncedTranscript: hasSyncedTranscript,
-                                             isFromLinkedDevice: isFromLinkedDevice,
-                                             isVoiceMessage: isVoiceMessage,
-                                             legacyMessageState: legacyMessageState,
-                                             legacyWasDelivered: legacyWasDelivered,
-                                             mostRecentFailureText: mostRecentFailureText,
-                                             recipientStateMap: recipientStateMap)
 
         case .call:
 

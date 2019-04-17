@@ -79,6 +79,9 @@ class ParsedClass:
             root_property_names.add(property.name)
         
         for subclass in all_descendents_of_class(self):
+            if should_ignore_class(subclass):
+                continue
+            
             # print 'properties from subclass:', subclass.name
             for property in subclass.properties():
                 
@@ -143,6 +146,22 @@ class ParsedClass:
          super_class = global_class_map[self.super_class_name]
          return super_class.table_superclass()
     
+    
+     def should_generate_extensions(self):
+        if self.name == BASE_MODEL_CLASS_NAME:
+            print 'Ignoring class (1):', self.name 
+            return False
+        if should_ignore_class(self):
+            print 'Ignoring class (2):', self.name 
+            return False
+    
+        if not self.is_sds_model():
+            # Only write serialization extensions for SDS models.
+            print 'Ignoring class (3):', self.name 
+            return False
+        return True
+        
+        
         
 class TypeInfo:
     def __init__(self, swift_type, objc_type, should_use_blob = False, is_enum = False):
@@ -440,18 +459,10 @@ def properties_and_inherited_properties(clazz):
 def generate_swift_extensions_for_model(clazz):
     print '\t', 'processing', clazz.__dict__
     
-    if clazz.name == BASE_MODEL_CLASS_NAME:
-        print 'Ignoring class (1):', clazz.name 
-        return
-    if should_ignore_class(clazz):
-        print 'Ignoring class (2):', clazz.name 
+    if not clazz.should_generate_extensions():
         return
     
     has_sds_superclass = clazz.has_sds_superclass()
-    if not clazz.is_sds_model():
-        # Only write serialization extensions for SDS models.
-        print 'Ignoring class (3):', clazz.name 
-        return
 
     print '\t', '\t', 'clazz.name', clazz.name, type(clazz.name)
     print '\t', '\t', 'clazz.super_class_name', clazz.super_class_name
@@ -493,6 +504,9 @@ extension %s: SDSSerializable {
         switch self {''' % str(clazz.name)
 
         for subclass in reversed(all_descendents_of_class(clazz)):
+            if should_ignore_class(subclass):
+                continue
+            
             swift_body += '''
         case let model as %s:
             assert(type(of: model) == %s.self)
@@ -597,6 +611,9 @@ extension %sSerializer {
         deserialize_classes = all_descendents_of_class(clazz) + [clazz]
         
         for deserialize_class in deserialize_classes:
+            if should_ignore_class(deserialize_class):
+                continue
+            
             initializer_params = []
             objc_initializer_params = []
             deserialize_record_type = get_record_type_enum_name(deserialize_class.name)
@@ -944,18 +961,8 @@ def update_record_type_map(record_type_swift_path, record_type_json_path):
     for clazz in global_class_map.values():
         if clazz.name not in record_type_map:
             
-            if clazz.name == BASE_MODEL_CLASS_NAME:
-                print 'Ignoring class (1):', clazz.name 
+            if not clazz.should_generate_extensions():
                 continue
-            if should_ignore_class(clazz):
-                print 'Ignoring class (2):', clazz.name 
-                continue
-    
-            if not clazz.is_sds_model():
-                # Only write serialization extensions for SDS models.
-                print 'Ignoring class (3):', clazz.name 
-                continue
-            
             
             max_record_type = int(max_record_type) + 1
             record_type = max_record_type
@@ -1173,7 +1180,15 @@ def should_ignore_class(clazz):
     class_to_skip_serialization = configuration_json.get('class_to_skip_serialization')
     if class_to_skip_serialization is None:
         fail('Configuration JSON is missing list of classes to ignore during serialization.')
-    return clazz.name in class_to_skip_serialization
+    if clazz.name in class_to_skip_serialization:
+        return True
+        
+    if clazz.super_class_name is None:
+         return False
+    if not clazz.super_class_name in global_class_map:
+         return False
+    super_clazz = global_class_map[clazz.super_class_name]
+    return should_ignore_class(super_clazz)
 
 
 def is_flagged_as_enum_property(property):

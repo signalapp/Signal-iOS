@@ -282,66 +282,6 @@ public extension TSInteraction {
                                                                  configurationIsEnabled: record.configurationIsEnabled!,
                                                                  createdByRemoteName: record.createdByRemoteName,
                                                                  createdInExistingGroup: record.createdInExistingGroup!)
-        case .disappearingMessagesConfigurationMessage:
-            return OWSDisappearingMessagesConfigurationMessage(uniqueId: record.uniqueId,
-                                                               receivedAtTimestamp: record.receivedAtTimestamp,
-                                                               sortId: record.sortId,
-                                                               timestamp: record.timestamp,
-                                                               uniqueThreadId: record.threadUniqueId,
-                                                               attachmentIds: record.decodedAttachmentIds!,
-                                                               body: record.body,
-                                                               contactShare: record.decodedContactShare,
-                                                               expireStartedAt: record.expireStartedAt!,
-                                                               expiresAt: record.expiresAt!,
-                                                               expiresInSeconds: record.expiresInSeconds!,
-                                                               linkPreview: record.decodedLinkPreview,
-                                                               quotedMessage: record.decodedQuotedMessage,
-                                                               schemaVersion: record.schemaVersion!,
-                                                               attachmentFilenameMap: record.decodedAttachmentFilenameMap!,
-                                                               customMessage: record.customMessage!,
-                                                               groupMetaMessage: record.groupMetaMessage!,
-                                                               hasLegacyMessageState: record.hasLegacyMessageState!,
-                                                               hasSyncedTranscript: record.hasSyncedTranscript!,
-                                                               isFromLinkedDevice: record.isFromLinkedDevice!,
-                                                               isVoiceMessage: record.isVoiceMessage!,
-                                                               legacyMessageState: record.legacyMessageState!,
-                                                               legacyWasDelivered: record.legacyWasDelivered!,
-                                                               mostRecentFailureText: record.mostRecentFailureText,
-                                                               recipientStateMap: record.decodedRecipientStateMap)
-        case .dynamicOutgoingMessage:
-            return OWSDynamicOutgoingMessage(uniqueId: record.uniqueId,
-                                             receivedAtTimestamp: record.receivedAtTimestamp,
-                                             sortId: record.sortId,
-                                             timestamp: record.timestamp,
-                                             uniqueThreadId: record.threadUniqueId,
-                                             attachmentIds: record.decodedAttachmentIds!,
-                                             body: record.body,
-                                             contactShare: record.decodedContactShare,
-                                             expireStartedAt: record.expireStartedAt!,
-                                             expiresAt: record.expiresAt!,
-                                             expiresInSeconds: record.expiresInSeconds!,
-                                             linkPreview: record.decodedLinkPreview,
-                                             quotedMessage: record.decodedQuotedMessage,
-                                             schemaVersion: record.schemaVersion!,
-                                             attachmentFilenameMap: record.decodedAttachmentFilenameMap!,
-                                             customMessage: record.customMessage,
-                                             groupMetaMessage: record.groupMetaMessage!,
-                                             hasLegacyMessageState: record.hasLegacyMessageState!,
-                                             hasSyncedTranscript: record.hasSyncedTranscript!,
-                                             isFromLinkedDevice: record.isFromLinkedDevice!,
-                                             isVoiceMessage: record.isVoiceMessage!,
-                                             legacyMessageState: record.legacyMessageState!,
-                                             legacyWasDelivered: record.legacyWasDelivered!,
-                                             mostRecentFailureText: record.mostRecentFailureText,
-                                             recipientStateMap: record.decodedRecipientStateMap)
-        case .outgoingSentMessageTranscript:
-            fatalError("TODO?")
-        case .syncConfigurationMessage:
-            fatalError("TODO?")
-        case .syncContactsMessage:
-            fatalError("TODO?")
-        case .syncGroupsRequestMessage:
-            fatalError("TODO?")
         case .unknownContactBlockOfferMessage:
             fatalError("TODO?")
         case .verificationStateChangeMessage:
