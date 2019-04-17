@@ -51,7 +51,11 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
-    public func setString(_ value: String, key: String, collection: String? = nil) {
+    public func setString(_ value: String?, key: String, collection: String? = nil) {
+        guard let value = value else {
+            write(nil, forKey: key, collection: collection)
+            return
+        }
         write(value as NSString, forKey: key, collection: collection)
     }
 
