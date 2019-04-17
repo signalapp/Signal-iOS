@@ -192,7 +192,7 @@ class ImageEditorCropViewController: OWSViewController {
             case .topRight, .bottomRight:
                 cropCornerView.autoPinEdge(toSuperviewEdge: .right)
             default:
-                owsFailDebug("Invalid crop region: \(cropRegion)")
+                owsFailDebug("Invalid crop region: \(String(describing: cropRegion))")
             }
             switch cropCornerView.cropRegion {
             case .topLeft, .topRight:
@@ -200,7 +200,7 @@ class ImageEditorCropViewController: OWSViewController {
             case .bottomLeft, .bottomRight:
                 cropCornerView.autoPinEdge(toSuperviewEdge: .bottom)
             default:
-                owsFailDebug("Invalid crop region: \(cropRegion)")
+                owsFailDebug("Invalid crop region: \(String(describing: cropRegion))")
             }
         }
 

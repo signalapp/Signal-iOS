@@ -114,7 +114,7 @@ public class ProfileFetcherJob: NSObject {
             self.updateProfile(signalServiceProfile: profile)
         }.catch(on: DispatchQueue.global()) { error in
             switch error {
-            case ProfileFetcherJobError.throttled(let lastTimeInterval):
+            case ProfileFetcherJobError.throttled:
                 // skipping
                 break
             case let error as SignalServiceProfile.ValidationError:
