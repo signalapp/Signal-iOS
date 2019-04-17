@@ -78,7 +78,7 @@ class ParsedClass:
          self.name = json_dict.get('name')
          self.super_class_name = json_dict.get('super_class_name')
          self.filepath = sds_common.sds_from_relative_path(json_dict.get('filepath'))
-         self.has_finalize = json_dict.get('has_finalize')
+         self.finalize_method_name = json_dict.get('finalize_method_name')
          self.property_map = {}
          for property_dict in json_dict.get('properties'):
              property = ParsedProperty(property_dict)
@@ -754,10 +754,10 @@ extension %sSerializer {
             for objc_initializer_assign in objc_initializer_assigns:
                 m_snippet += (' ' * 4) + objc_initializer_assign + '\n'
 
-            if deserialize_class.has_finalize:
+            if deserialize_class.finalize_method_name is not None:
                 m_snippet += '''    
-    [self sdsFinalize];
-'''
+    [self %s];
+''' % ( str(deserialize_class.finalize_method_name), )
 
             m_snippet += '''    
     return self;

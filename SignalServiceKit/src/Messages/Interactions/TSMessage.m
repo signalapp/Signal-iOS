@@ -128,7 +128,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _quotedMessage = quotedMessage;
     _schemaVersion = schemaVersion;
 
-    [self sdsFinalize];
+    [self sdsFinalizeMessage];
 
     return self;
 }
@@ -137,7 +137,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 // --- CODE GENERATION MARKER
 
-- (void)sdsFinalize
+- (void)sdsFinalizeMessage
 {
     [self updateExpiresAt];
 }

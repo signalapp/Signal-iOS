@@ -103,12 +103,20 @@ NS_ASSUME_NONNULL_BEGIN
     _createdByRemoteName = createdByRemoteName;
     _createdInExistingGroup = createdInExistingGroup;
 
+    [self sdsFinalizeDisappearingConfigurationUpdateInfoMessage];
+
     return self;
 }
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (void)sdsFinalizeDisappearingConfigurationUpdateInfoMessage
+{
+    // At most one should be set
+    OWSAssertDebug(!self.createdByRemoteName || !self.createdInExistingGroup);
+}
 
 - (BOOL)shouldUseReceiptDateForSorting
 {

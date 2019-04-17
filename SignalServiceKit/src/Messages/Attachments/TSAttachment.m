@@ -236,12 +236,23 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     _serverId = serverId;
     _sourceFilename = sourceFilename;
 
+    [self sdsFinalizeAttachment];
+
     return self;
 }
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (void)sdsFinalizeAttachment
+{
+    if (_contentType.length < 1) {
+        OWSLogWarn(@"legacy attachment has invalid content type");
+
+        _contentType = OWSMimeTypeApplicationOctetStream;
+    }
+}
 
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
 {
