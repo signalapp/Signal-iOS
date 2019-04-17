@@ -175,18 +175,20 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                              selector:@selector(applicationWillResignActive:)
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(uiDatabaseDidUpdateExternally:)
-                                                 name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
-                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(uiDatabaseWillUpdate:)
-                                                 name:OWSUIDatabaseConnectionWillUpdateNotification
-                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(uiDatabaseDidUpdate:)
-                                                 name:OWSUIDatabaseConnectionDidUpdateNotification
-                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+    if (!SSKFeatureFlags.useGRDB) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(uiDatabaseDidUpdateExternally:)
+                                                     name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
+                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(uiDatabaseWillUpdate:)
+                                                     name:OWSUIDatabaseConnectionWillUpdateNotification
+                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(uiDatabaseDidUpdate:)
+                                                     name:OWSUIDatabaseConnectionDidUpdateNotification
+                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+    }
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
                                                  name:RegistrationStateDidChangeNotification
@@ -1454,13 +1456,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)uiDatabaseDidUpdate:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(!SSKFeatureFlags.useGRDB);
 
     if (!self.shouldObserveDBModifications) {
         return;
     }
 
     NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
-
     YapDatabaseConnection *uiDatabaseConnection = OWSPrimaryStorage.sharedManager.uiDatabaseConnection;
     if (![[uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
                                                                           inNotifications:notifications]) {
