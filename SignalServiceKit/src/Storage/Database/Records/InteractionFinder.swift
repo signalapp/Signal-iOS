@@ -207,12 +207,9 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     // MARK: - static methods
 
-    static let cn = InteractionRecord.columnName
-    let cn = InteractionRecord.columnName
-
     static func fetch(uniqueId: String, transaction: GRDBReadTransaction) throws -> TSInteraction? {
         guard let interactionRecord = try InteractionRecord.fetchOne(transaction.database,
-                                                                     sql: "SELECT * FROM \(InteractionRecord.databaseTableName) WHERE \(cn(.uniqueId)) = ?",
+                                                                     sql: "SELECT * FROM \(InteractionRecord.databaseTableName) WHERE \(interactionColumn: .uniqueId) = ?",
             arguments: [uniqueId]) else {
                 return nil
         }
@@ -227,8 +224,8 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                                                                      sql: """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
-            WHERE \(cn(.threadUniqueId)) = ?
-            ORDER BY \(cn(.id)) DESC
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            ORDER BY \(interactionColumn: .id) DESC
             """,
             arguments: [threadUniqueId]) else {
                 return nil
@@ -242,10 +239,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                                                                      sql: """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
-            WHERE \(cn(.threadUniqueId)) = ?
-            AND \(cn(.errorType)) IS NOT ?
-            AND \(cn(.messageType)) IS NOT ?
-            ORDER BY \(cn(.id)) DESC
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .errorType) IS NOT ?
+            AND \(interactionColumn: .messageType) IS NOT ?
+            ORDER BY \(interactionColumn: .id) DESC
             """,
             arguments: [threadUniqueId, TSErrorMessageType.nonBlockingIdentityChange, TSInfoMessageType.verificationStateChange]) else {
                 return nil
@@ -260,13 +257,13 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             SELECT rowNumber
             FROM (
                 SELECT
-                    ROW_NUMBER() OVER (ORDER BY \(cn(.id))) as rowNumber,
-                    \(cn(.id)),
-                    \(cn(.uniqueId))
+                    ROW_NUMBER() OVER (ORDER BY \(interactionColumn: .id)) as rowNumber,
+                    \(interactionColumn: .id),
+                    \(interactionColumn: .uniqueId)
                 FROM \(InteractionRecord.databaseTableName)
-                WHERE \(cn(.threadUniqueId)) = ?
+                WHERE \(interactionColumn: .threadUniqueId) = ?
             )
-            WHERE \(cn(.uniqueId)) = ?
+            WHERE \(interactionColumn: .uniqueId) = ?
             """,
             arguments: [threadUniqueId, interactionUniqueId])
     }
@@ -276,7 +273,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                                             sql: """
             SELECT COUNT(*)
             FROM \(InteractionRecord.databaseTableName)
-            WHERE \(cn(.threadUniqueId)) = ?
+            WHERE \(interactionColumn: .threadUniqueId) = ?
             """,
             arguments: [threadUniqueId]) else {
                 throw assertionError("count was unexpectedly nil")
@@ -289,10 +286,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
         try String.fetchCursor(transaction.database,
                            sql: """
-            SELECT \(cn(.uniqueId))
+            SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
-            WHERE \(cn(.threadUniqueId)) = ?
-            ORDER BY \(cn(.id)) DESC
+            WHERE \(interactionColumn: .threadUniqueId)) = ?
+            ORDER BY \(interactionColumn: .id) DESC
 """,
             arguments: [threadUniqueId]).forEach { (uniqueId: String) -> Void in
 

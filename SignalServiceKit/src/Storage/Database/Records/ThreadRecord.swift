@@ -106,3 +106,9 @@ public struct ThreadRecord: Codable, FetchableRecord, PersistableRecord, TableRe
 }
 
 extension SDSRecordType: Codable { }
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(threadColumn: ThreadRecord.CodingKeys) {
+        appendLiteral(ThreadRecord.columnName(threadColumn))
+    }
+}
