@@ -28,7 +28,7 @@ def sds_from_relative_path(path):
     return os.path.join(git_repo_path, path)
 
 
-def clean_up_generated_swift(text):
+def clean_up_generated_code(text):
     # Remove trailing whitespace.
     lines = text.split('\n')
     lines = [line.rstrip() for line in lines]
@@ -38,7 +38,15 @@ def clean_up_generated_swift(text):
         text = text.replace('\n\n\n', '\n\n')
     # Ensure there's a trailing newline.
     return text.strip() + '\n'
-    
+
+
+def clean_up_generated_swift(text):
+    return clean_up_generated_code(text)
+
+
+def clean_up_generated_objc(text):
+    return clean_up_generated_code(text)
+        
     
 def pretty_module_path(path):
     path = os.path.abspath(path)

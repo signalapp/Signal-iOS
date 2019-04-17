@@ -150,28 +150,6 @@ extension TSAttachmentSerializer {
                throw SDSError.invalidValue
             }
 
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                   albumMessageId:(nullable NSString *)albumMessageId
-          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
-                   attachmentType:(enum TSAttachmentType)attachmentType
-                        byteCount:(unsigned int)byteCount
-                          caption:(nullable NSString *)caption
-                      contentType:(NSString *)contentType
-                    encryptionKey:(nullable NSData *)encryptionKey
-                     isDownloaded:(BOOL)isDownloaded
-                         serverId:(unsigned long long)serverId
-                   sourceFilename:(nullable NSString *)sourceFilename
-                           digest:(nullable NSData *)digest
-            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
-                        mediaSize:(CGSize)mediaSize
-   mostRecentFailureLocalizedText:(nullable NSString *)mostRecentFailureLocalizedText
-                      pointerType:(enum TSAttachmentPointerType)pointerType
-                            state:(enum TSAttachmentPointerState)state
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:digest:lazyRestoreFragmentId:mediaSize:mostRecentFailureLocalizedText:pointerType:state:));
-*/
             return TSAttachmentPointer(uniqueId: uniqueId,
                                        albumMessageId: albumMessageId,
                                        attachmentSchemaVersion: attachmentSchemaVersion,
@@ -216,31 +194,6 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
             let isValidVideoCached = try deserializer.optionalBoolAsNSNumber(at: isValidVideoCachedColumn.columnIndex)
             let localRelativeFilePath = try deserializer.optionalString(at: localRelativeFilePathColumn.columnIndex)
 
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                   albumMessageId:(nullable NSString *)albumMessageId
-          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
-                   attachmentType:(enum TSAttachmentType)attachmentType
-                        byteCount:(unsigned int)byteCount
-                          caption:(nullable NSString *)caption
-                      contentType:(NSString *)contentType
-                    encryptionKey:(nullable NSData *)encryptionKey
-                     isDownloaded:(BOOL)isDownloaded
-                         serverId:(unsigned long long)serverId
-                   sourceFilename:(nullable NSString *)sourceFilename
-       cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
-                cachedImageHeight:(nullable NSNumber *)cachedImageHeight
-                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
-                creationTimestamp:(NSDate *)creationTimestamp
-                           digest:(nullable NSData *)digest
-                       isUploaded:(BOOL)isUploaded
-               isValidImageCached:(nullable NSNumber *)isValidImageCached
-               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
-            localRelativeFilePath:(nullable NSString *)localRelativeFilePath
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
-*/
             return TSAttachmentStream(uniqueId: uniqueId,
                                       albumMessageId: albumMessageId,
                                       attachmentSchemaVersion: attachmentSchemaVersion,
@@ -279,22 +232,6 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
             let serverId = try deserializer.uint64(at: serverIdColumn.columnIndex)
             let sourceFilename = try deserializer.optionalString(at: sourceFilenameColumn.columnIndex)
 
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                   albumMessageId:(nullable NSString *)albumMessageId
-          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
-                   attachmentType:(enum TSAttachmentType)attachmentType
-                        byteCount:(unsigned int)byteCount
-                          caption:(nullable NSString *)caption
-                      contentType:(NSString *)contentType
-                    encryptionKey:(nullable NSData *)encryptionKey
-                     isDownloaded:(BOOL)isDownloaded
-                         serverId:(unsigned long long)serverId
-                   sourceFilename:(nullable NSString *)sourceFilename
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:));
-*/
             return TSAttachment(uniqueId: uniqueId,
                                 albumMessageId: albumMessageId,
                                 attachmentSchemaVersion: attachmentSchemaVersion,

@@ -59,6 +59,7 @@ class ParsedClass:
         self.property_map = {}
         self.super_class_name = None
         self.counter = next_counter()
+        self.finalize_method_name = None
 
     def get_property(self, name):
         return self.property_map.get(name)
@@ -213,7 +214,7 @@ def process_objc_type_declaration(namespace, file_path, lines, prefix, remainder
     if not is_enum:
         return
     
-    # print 'Enum:', type3
+    # print 'type_declaration:', type1, type2, type3
     
     if type3.startswith('line:'):
         print 'Ignoring invalid enum(2):', type1, type2, type3
@@ -340,8 +341,22 @@ def process_objc_class(namespace, file_path, lines, decl_prefix, decl_remainder,
         elif remainder.startswith('ObjCPropertyImplDecl '):
             # print 'property impl', line
             process_objc_property_impl(clazz, prefix, file_path, line, remainder)
+        elif remainder.startswith('ObjCMethodDecl '):
+            # print 'property impl', line
+            process_objc_method_decl(clazz, prefix, file_path, line, remainder)
 
     return clazz
+
+process_objc_method_decl_regex = re.compile(r" - (sdsFinalize[^ ]*?) 'void'$")
+
+def process_objc_method_decl(clazz, prefix, file_path, line, remainder):
+    # print '\t\t', 'process_objc_property_impl', remainder
+    
+    match = process_objc_method_decl_regex.search(remainder)
+    if match is None:
+        return
+    method_name = match.group(1).strip()
+    clazz.finalize_method_name = method_name
 
 
 # | |-ObjCPropertyImplDecl 0x1092f6d68 <col:1, col:13> col:13 someSynthesizedProperty synthesize
@@ -414,12 +429,13 @@ def process_objc_property(clazz, prefix, file_path, line, remainder):
         'BOOL',
         'NSInteger',
         'NSUInteger',
+        'uint64_t',
     )
     if property_type_1 in primitive_types:
         property_type = property_type_1
     # property_type = property_type_1
         
-    # print '\t', 'property_type', property_type, 'property_type1', property_type_1, 'property_type2', property_type_2
+    # print '\t', property_name, 'property_type', property_type, 'property_type1', property_type_1, 'property_type2', property_type_2, 'property_type', property_type
     
     property = clazz.get_property(property_name)
     if property is None:
@@ -451,7 +467,8 @@ def emit_output(file_path, namespace):
         clazz = namespace.upsert_class(class_name)
         if not clazz.is_implemented:
             if not class_name.startswith('NS'):
-                print 'Ignoring class:', class_name
+                # print 'Ignoring class:', class_name
+                pass
             continue
         
         properties = []
@@ -475,6 +492,7 @@ def emit_output(file_path, namespace):
             'name': class_name,
             'properties': properties,
             'filepath': sds_common.sds_to_relative_path(file_path),
+            'finalize_method_name': clazz.finalize_method_name,
         }
         if clazz.super_class_name is not None:
             class_dict['super_class_name'] = clazz.super_class_name
