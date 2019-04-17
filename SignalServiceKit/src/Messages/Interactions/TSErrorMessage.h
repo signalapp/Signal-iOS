@@ -67,8 +67,8 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
                     contactShare:(nullable OWSContact *)contactShare
-                 expireStartedAt:(unsigned long long)expireStartedAt
-                       expiresAt:(unsigned long long)expiresAt
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage

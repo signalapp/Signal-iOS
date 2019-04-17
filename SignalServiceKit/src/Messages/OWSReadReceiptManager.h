@@ -31,7 +31,7 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                     recipientMap:(NSDictionary<NSString *,NSNumber *> *)recipientMap
-                   sentTimestamp:(unsigned long long)sentTimestamp
+                   sentTimestamp:(uint64_t)sentTimestamp
 NS_SWIFT_NAME(init(uniqueId:recipientMap:sentTimestamp:));
 
 // clang-format on

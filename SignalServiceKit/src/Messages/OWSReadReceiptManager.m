@@ -56,7 +56,7 @@ NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMar
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                     recipientMap:(NSDictionary<NSString *,NSNumber *> *)recipientMap
-                   sentTimestamp:(unsigned long long)sentTimestamp
+                   sentTimestamp:(uint64_t)sentTimestamp
 {
     self = [super initWithUniqueId:uniqueId];
 
