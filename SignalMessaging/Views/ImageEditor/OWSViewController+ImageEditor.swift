@@ -6,7 +6,7 @@ import UIKit
 
 public extension NSObject {
 
-    public func navigationBarButton(imageName: String,
+    func navigationBarButton(imageName: String,
                                      selector: Selector) -> UIView {
         let button = OWSButton()
         button.setImage(imageName: imageName)
@@ -24,7 +24,7 @@ public extension NSObject {
 
 public extension UIViewController {
 
-    public func updateNavigationBar(navigationBarItems: [UIView]) {
+    func updateNavigationBar(navigationBarItems: [UIView]) {
         guard navigationBarItems.count > 0 else {
             self.navigationItem.rightBarButtonItems = []
             return

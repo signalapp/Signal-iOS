@@ -3,11 +3,11 @@
 //
 
 public extension CGPoint {
-    public func offsetBy(dx: CGFloat) -> CGPoint {
+    func offsetBy(dx: CGFloat) -> CGPoint {
         return CGPoint(x: x + dx, y: y)
     }
 
-    public func offsetBy(dy: CGFloat) -> CGPoint {
+    func offsetBy(dy: CGFloat) -> CGPoint {
         return CGPoint(x: x, y: y + dy)
     }
 }

@@ -28,7 +28,7 @@ private class Box<A> {
 }
 
 fileprivate extension MediaDetailViewController {
-    fileprivate var galleryItem: MediaGalleryItem {
+    var galleryItem: MediaGalleryItem {
         return self.galleryItemBox.value
     }
 }
