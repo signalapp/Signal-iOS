@@ -56,10 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-// --- CODE GENERATION MARKER
-// --- CODE GENERATION MARKER
-
-
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     return [super initWithCoder:coder];

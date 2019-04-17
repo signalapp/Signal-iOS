@@ -20,9 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
                       isRecipientUpdate:(BOOL)isRecipientUpdate NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-// --- CODE GENERATION MARKER
-// --- CODE GENERATION MARKER
-
 @end
 
 NS_ASSUME_NONNULL_END
