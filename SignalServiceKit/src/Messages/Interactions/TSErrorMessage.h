@@ -52,6 +52,10 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                 failedMessageType:(TSErrorMessageType)errorMessageType
                       recipientId:(nullable NSString *)recipientId NS_DESIGNATED_INITIALIZER;
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -65,13 +69,17 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                   schemaVersion:(unsigned long)schemaVersion
-       errorMessageSchemaVersion:(unsigned long)errorMessageSchemaVersion
+                   schemaVersion:(NSUInteger)schemaVersion
+       errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(enum TSErrorMessageType)errorType
                             read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
-NS_DESIGNATED_INITIALIZER
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 + (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                              withTransaction:(YapDatabaseReadWriteTransaction *)transaction;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSYapDatabaseObject.h"
@@ -24,13 +24,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId NS_UNAVAILABLE;
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
                    plaintextData:(nullable NSData *)plaintextData
                  wasReceivedByUD:(BOOL)wasReceivedByUD
-NS_DESIGNATED_INITIALIZER
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:createdAt:envelopeData:plaintextData:wasReceivedByUD:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 @property (nonatomic, readonly, nullable) SSKProtoEnvelope *envelope;
 

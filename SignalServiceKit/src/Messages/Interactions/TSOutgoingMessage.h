@@ -98,6 +98,10 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview NS_DESIGNATED_INITIALIZER;
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -112,7 +116,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
-           attachmentFilenameMap:(NSDictionary<NSString *, NSString *> *)attachmentFilenameMap
+           attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
                    customMessage:(nullable NSString *)customMessage
                 groupMetaMessage:(enum TSGroupMetaMessage)groupMetaMessage
            hasLegacyMessageState:(BOOL)hasLegacyMessageState
@@ -122,9 +126,13 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
               legacyMessageState:(enum TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-               recipientStateMap:
-                   (nullable NSDictionary<NSString *, TSOutgoingMessageRecipientState *> *)recipientStateMap
-    NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
+               recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
+NS_DESIGNATED_INITIALIZER 
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

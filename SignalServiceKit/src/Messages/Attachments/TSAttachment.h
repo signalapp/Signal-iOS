@@ -83,6 +83,10 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 // that represent downloaded incoming attachments.
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer;
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
@@ -94,8 +98,12 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                     isDownloaded:(BOOL)isDownloaded
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
-NS_DESIGNATED_INITIALIZER
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder;
 

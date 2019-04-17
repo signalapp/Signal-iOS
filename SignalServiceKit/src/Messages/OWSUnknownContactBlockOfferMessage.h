@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSErrorMessage.h"
@@ -11,6 +11,10 @@ NS_ASSUME_NONNULL_BEGIN
 __attribute__((deprecated)) @interface OWSUnknownContactBlockOfferMessage : TSErrorMessage
 
 @property (nonatomic, readonly) NSString *contactId;
+
+// --- CODE GENERATION MARKER
+
+// clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
@@ -31,8 +35,12 @@ __attribute__((deprecated)) @interface OWSUnknownContactBlockOfferMessage : TSEr
                             read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
                        contactId:(NSString *)contactId
-NS_DESIGNATED_INITIALIZER
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:contactId:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 @end
 

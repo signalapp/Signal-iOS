@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
               createdByRemoteName:(nullable NSString *)remoteName
            createdInExistingGroup:(BOOL)createdInExistingGroup;
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
@@ -46,8 +49,14 @@ NS_ASSUME_NONNULL_BEGIN
     configurationDurationSeconds:(unsigned int)configurationDurationSeconds
           configurationIsEnabled:(BOOL)configurationIsEnabled
              createdByRemoteName:(nullable NSString *)createdByRemoteName
-          createdInExistingGroup:(BOOL)createdInExistingGroup NS_DESIGNATED_INITIALIZER
+          createdInExistingGroup:(BOOL)createdInExistingGroup
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:configurationDurationSeconds:configurationIsEnabled:createdByRemoteName:createdInExistingGroup:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSYapDatabaseObject.h"
@@ -22,11 +22,19 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 // Map of "recipient id"-to-"read timestamp".
 @property (nonatomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientMap;
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                     recipientMap:(NSDictionary<NSString *,NSNumber *> *)recipientMap
                    sentTimestamp:(unsigned long long)sentTimestamp
-NS_DESIGNATED_INITIALIZER
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:recipientMap:sentTimestamp:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 @end
 

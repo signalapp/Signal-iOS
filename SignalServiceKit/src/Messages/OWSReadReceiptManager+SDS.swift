@@ -76,14 +76,6 @@ extension TSRecipientReadReceiptSerializer {
             let recipientMap: [String: NSNumber] = try SDSDeserializer.unarchive(recipientMapSerialized)
             let sentTimestamp = try deserializer.uint64(at: sentTimestampColumn.columnIndex)
 
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                     recipientMap:(NSDictionary<NSString *,NSNumber *> *)recipientMap
-                    sentTimestamp:(unsigned long long)sentTimestamp
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:recipientMap:sentTimestamp:));
-*/
             return TSRecipientReadReceipt(uniqueId: uniqueId,
                                           recipientMap: recipientMap,
                                           sentTimestamp: sentTimestamp)

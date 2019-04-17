@@ -672,14 +672,19 @@ extension %sSerializer {
 
             h_snippet = ''
             h_snippet += '''
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
 '''
             for objc_initializer_param in objc_initializer_params[1:]:
-                alignment = max(0, len('- (instancetype)initWithUniqueId:') - objc_initializer_param.index(':'))
+                alignment = max(0, len('- (instancetype)initWithUniqueId') - objc_initializer_param.index(':'))
                 h_snippet += (' ' * alignment) + objc_initializer_param + '\n'
 
             h_snippet += 'NS_DESIGNATED_INITIALIZER \n'
             h_snippet += 'NS_SWIFT_NAME(init(%s:));\n' % ':'.join([str(property.name) for property in deserialize_properties])
+            h_snippet += '''
+// clang-format on
+'''
             
             if deserialize_class.filepath.endswith('.m'):
                 m_filepath = deserialize_class.filepath

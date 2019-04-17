@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeyErrorMessage.h"
@@ -18,6 +18,10 @@ extern NSString *TSInvalidRecipientKey;
 __attribute__((deprecated)) @interface TSInvalidIdentityKeySendingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
 @property (nonatomic, readonly) NSString *messageId;
+
+// --- CODE GENERATION MARKER
+
+// clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
@@ -39,8 +43,12 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeySendingErrorMessage :
                      recipientId:(nullable NSString *)recipientId
                        messageId:(NSString *)messageId
                     preKeyBundle:(PreKeyBundle *)preKeyBundle
-NS_DESIGNATED_INITIALIZER
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:messageId:preKeyBundle:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 @end
 

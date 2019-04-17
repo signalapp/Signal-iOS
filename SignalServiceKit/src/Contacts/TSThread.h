@@ -38,17 +38,26 @@ extern ConversationColorName const kConversationColorName_Default;
 @property (nonatomic, readonly) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
 
-- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
                     archivalDate:(nullable NSDate *)archivalDate
        archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
-           conversationColorName:(ConversationColorName)conversationColorName
+           conversationColorName:(NSString *)conversationColorName
                     creationDate:(NSDate *)creationDate
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:shouldThreadBeVisible:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 /**
  *  Whether the object is a group thread or not.

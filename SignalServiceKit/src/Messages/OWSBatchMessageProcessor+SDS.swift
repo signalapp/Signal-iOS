@@ -81,16 +81,6 @@ extension OWSMessageContentJobSerializer {
             let plaintextData = try deserializer.optionalBlob(at: plaintextDataColumn.columnIndex)
             let wasReceivedByUD = try deserializer.bool(at: wasReceivedByUDColumn.columnIndex)
 
-/* Suggested Initializer
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                        createdAt:(NSDate *)createdAt
-                     envelopeData:(NSData *)envelopeData
-                    plaintextData:(nullable NSData *)plaintextData
-                  wasReceivedByUD:(BOOL)wasReceivedByUD
-NS_DESIGNATED_INITIALIZER
-NS_SWIFT_NAME(init(uniqueId:createdAt:envelopeData:plaintextData:wasReceivedByUD:));
-*/
             return OWSMessageContentJob(uniqueId: uniqueId,
                                         createdAt: createdAt,
                                         envelopeData: envelopeData,

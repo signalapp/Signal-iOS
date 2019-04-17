@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeyErrorMessage.h"
@@ -11,6 +11,10 @@ NS_ASSUME_NONNULL_BEGIN
 // DEPRECATED - we no longer create new instances of this class (as of  mid-2017); However, existing instances may
 // exist, so we should keep this class around to honor their old behavior.
 __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage : TSInvalidIdentityKeyErrorMessage
+
+// --- CODE GENERATION MARKER
+
+// clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
@@ -32,8 +36,12 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                      recipientId:(nullable NSString *)recipientId
                         authorId:(NSString *)authorId
                     envelopeData:(nullable NSData *)envelopeData
-NS_DESIGNATED_INITIALIZER
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:authorId:envelopeData:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 #ifdef DEBUG
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope

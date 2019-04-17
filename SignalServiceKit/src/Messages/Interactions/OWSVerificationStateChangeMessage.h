@@ -21,6 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
                 verificationState:(OWSVerificationState)verificationState
                     isLocalChange:(BOOL)isLocalChange;
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -42,8 +46,13 @@ NS_ASSUME_NONNULL_BEGIN
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                    isLocalChange:(BOOL)isLocalChange
                      recipientId:(NSString *)recipientId
-               verificationState:(enum OWSVerificationState)verificationState NS_DESIGNATED_INITIALIZER
+               verificationState:(enum OWSVerificationState)verificationState
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:isLocalChange:recipientId:verificationState:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 @end
 

@@ -43,6 +43,25 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
                         callType:(RPRecentCallType)callType
                             read:(BOOL)read NS_DESIGNATED_INITIALIZER;
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+               callSchemaVersion:(NSUInteger)callSchemaVersion
+                        callType:(enum RPRecentCallType)callType
+                            read:(BOOL)read
+NS_DESIGNATED_INITIALIZER 
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:callSchemaVersion:callType:read:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
+
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (void)updateCallType:(RPRecentCallType)callType;

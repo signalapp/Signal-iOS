@@ -10,10 +10,14 @@ extern NSString *const TSContactThreadPrefix;
 
 @interface TSContactThread : TSThread
 
-- (instancetype)initWithUniqueId:(nullable NSString *)uniqueId
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
                     archivalDate:(nullable NSDate *)archivalDate
        archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
-           conversationColorName:(ConversationColorName)conversationColorName
+           conversationColorName:(NSString *)conversationColorName
                     creationDate:(NSDate *)creationDate
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
                  lastMessageDate:(nullable NSDate *)lastMessageDate
@@ -21,7 +25,12 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
               hasDismissedOffers:(BOOL)hasDismissedOffers
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:shouldThreadBeVisible:hasDismissedOffers:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 // TODO: We might want to make this initializer private once we
 //       convert getOrCreateThreadWithContactId to take "any" transaction.

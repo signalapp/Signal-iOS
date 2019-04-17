@@ -33,6 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
                                 recipientId:(NSString *)recipientId
                         beforeInteractionId:(NSString *)beforeInteractionId NS_DESIGNATED_INITIALIZER;
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
                           sortId:(unsigned long long)sortId
@@ -43,8 +47,12 @@ NS_ASSUME_NONNULL_BEGIN
    hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
                    hasBlockOffer:(BOOL)hasBlockOffer
                      recipientId:(NSString *)recipientId
-NS_DESIGNATED_INITIALIZER
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:beforeInteractionId:hasAddToContactsOffer:hasAddToProfileWhitelistOffer:hasBlockOffer:recipientId:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 @end
 

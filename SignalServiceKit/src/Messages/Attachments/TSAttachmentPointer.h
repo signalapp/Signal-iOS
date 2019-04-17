@@ -56,6 +56,10 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 
 - (instancetype)initForRestoreWithAttachmentStream:(TSAttachmentStream *)attachmentStream NS_DESIGNATED_INITIALIZER;
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
          attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
@@ -73,8 +77,12 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
   mostRecentFailureLocalizedText:(nullable NSString *)mostRecentFailureLocalizedText
                      pointerType:(enum TSAttachmentPointerType)pointerType
                            state:(enum TSAttachmentPointerState)state
-NS_DESIGNATED_INITIALIZER
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:digest:lazyRestoreFragmentId:mediaSize:mostRecentFailureLocalizedText:pointerType:state:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 + (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
                                                 albumMessage:(nullable TSMessage *)message;

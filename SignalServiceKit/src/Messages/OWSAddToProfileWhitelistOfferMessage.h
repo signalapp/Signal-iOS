@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInfoMessage.h"
@@ -9,6 +9,10 @@ NS_ASSUME_NONNULL_BEGIN
 // This is a deprecated class, we're keeping it around to avoid YapDB serialization errors
 // TODO - remove this class, clean up existing instances, ensure any missed ones don't explode (UnknownDBObject)
 __attribute__((deprecated)) @interface OWSAddToProfileWhitelistOfferMessage : TSInfoMessage
+
+// --- CODE GENERATION MARKER
+
+// clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
@@ -30,8 +34,12 @@ __attribute__((deprecated)) @interface OWSAddToProfileWhitelistOfferMessage : TS
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                        contactId:(NSString *)contactId
-NS_DESIGNATED_INITIALIZER
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:contactId:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 + (instancetype)addToProfileWhitelistOfferMessageWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread;
 

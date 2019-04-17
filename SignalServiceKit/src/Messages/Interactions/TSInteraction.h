@@ -37,12 +37,21 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 
+// --- CODE GENERATION MARKER
+
+// clang-format off
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          sortId:(uint64_t)sortId
-                       timestamp:(uint64_t)timestamp
+             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
+                          sortId:(unsigned long long)sortId
+                       timestamp:(unsigned long long)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
+NS_DESIGNATED_INITIALIZER 
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 @property (nonatomic, readonly) NSString *uniqueThreadId;
 @property (nonatomic, readonly) TSThread *thread;
