@@ -115,7 +115,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return self;
     }
 
-    _attachmentIds = attachmentIds;
+    _attachmentIds = attachmentIds ? [attachmentIds mutableCopy] : [NSMutableArray new];
     _body = body;
     _contactShare = contactShare;
     _expireStartedAt = expireStartedAt;

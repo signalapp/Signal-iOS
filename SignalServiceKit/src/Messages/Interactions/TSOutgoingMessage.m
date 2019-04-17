@@ -146,7 +146,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         return self;
     }
 
-    _attachmentFilenameMap = attachmentFilenameMap;
+    _attachmentFilenameMap = attachmentFilenameMap ? [attachmentFilenameMap mutableCopy] : [NSMutableDictionary new];
     _customMessage = customMessage;
     _groupMetaMessage = groupMetaMessage;
     _hasLegacyMessageState = hasLegacyMessageState;

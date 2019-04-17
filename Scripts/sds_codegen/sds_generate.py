@@ -686,7 +686,12 @@ extension %sSerializer {
                 if is_superclass_property:
                     objc_super_initializer_args.append('%s:%s' % ( str(property.name), str(property.name), ) )
                 else:
-                    objc_initializer_assigns.append('_%s = %s;' % ( str(property.name), str(property.name), ) )
+                    if str(property.objc_type_safe()).startswith('NSMutableArray'):
+                        objc_initializer_assigns.append('_%s = %s ? [%s mutableCopy] : [NSMutableArray new];' % ( str(property.name), str(property.name), str(property.name), ) )
+                    elif str(property.objc_type_safe()).startswith('NSMutableDictionary'):
+                        objc_initializer_assigns.append('_%s = %s ? [%s mutableCopy] : [NSMutableDictionary new];' % ( str(property.name), str(property.name), str(property.name), ) )
+                    else:
+                        objc_initializer_assigns.append('_%s = %s;' % ( str(property.name), str(property.name), ) )
                 
             # --- Initializer Snippets
 
@@ -886,13 +891,6 @@ extension %s {
     has_serializable_superclass = table_superclass.name != clazz.name
     
     override_keyword = ''
-    # protocols = ''
-    # override_keyword = ''
-    # if has_serializable_superclass:
-    #     override_keyword = ' override'
-    # else:
-    #     protocols =  ' : SDSSerializable'
-    
     
     swift_body += '''
 // MARK: - SDSSerializer
