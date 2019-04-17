@@ -213,7 +213,7 @@ def process_objc_type_declaration(namespace, file_path, lines, prefix, remainder
     if not is_enum:
         return
     
-    # print 'Enum:', type3
+    # print 'type_declaration:', type1, type2, type3
     
     if type3.startswith('line:'):
         print 'Ignoring invalid enum(2):', type1, type2, type3
@@ -414,12 +414,13 @@ def process_objc_property(clazz, prefix, file_path, line, remainder):
         'BOOL',
         'NSInteger',
         'NSUInteger',
+        'uint64_t',
     )
     if property_type_1 in primitive_types:
         property_type = property_type_1
     # property_type = property_type_1
         
-    # print '\t', 'property_type', property_type, 'property_type1', property_type_1, 'property_type2', property_type_2
+    # print '\t', property_name, 'property_type', property_type, 'property_type1', property_type_1, 'property_type2', property_type_2, 'property_type', property_type
     
     property = clazz.get_property(property_name)
     if property is None:
@@ -451,7 +452,8 @@ def emit_output(file_path, namespace):
         clazz = namespace.upsert_class(class_name)
         if not clazz.is_implemented:
             if not class_name.startswith('NS'):
-                print 'Ignoring class:', class_name
+                # print 'Ignoring class:', class_name
+                pass
             continue
         
         properties = []
