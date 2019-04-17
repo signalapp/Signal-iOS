@@ -13,16 +13,7 @@ __attribute__((deprecated)) @interface TSUnreadIndicatorInteraction : TSInteract
 
 // --- CODE GENERATION MARKER
 
-// clang-format off
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-             receivedAtTimestamp:(unsigned long long)receivedAtTimestamp
-                          sortId:(unsigned long long)sortId
-                       timestamp:(unsigned long long)timestamp
-                  uniqueThreadId:(NSString *)uniqueThreadId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:));
-
-// clang-format on
 
 // --- CODE GENERATION MARKER
 
