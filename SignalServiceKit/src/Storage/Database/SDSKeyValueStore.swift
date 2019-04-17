@@ -18,10 +18,6 @@ public class SDSKeyValueStore: NSObject {
         return SDSDatabaseStorage.shared
     }
 
-    private var primaryStorage: OWSPrimaryStorage {
-        return OWSPrimaryStorage.shared()
-    }
-
     // By default, all reads/writes use this collection.
     public let collection: String
 
