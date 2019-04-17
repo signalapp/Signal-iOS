@@ -85,33 +85,31 @@ public class SDSTableMetadata: NSObject {
     public func createTable(database: Database) throws {
         // TODO: Assert that table name is valid.
 
-        try database.create(table: tableName, ifNotExists: true) { (table) in
+        try database.create(table: tableName) { (table) in
             // TODO: Do we want this column on every table?
             table.autoIncrementedPrimaryKey("id")
 
             for columnMetadata in self.columns {
+                let column: ColumnDefinition
                 switch columnMetadata.columnType {
                 case .unicodeString:
-                    // TODO: How to make column optional?
-                    table.column(columnMetadata.columnName, .text)
+                    column = table.column(columnMetadata.columnName, .text)
                 case .blob:
-                    // TODO: How to make column optional?
-                    table.column(columnMetadata.columnName, .blob)
-                //                            t.column("email", .text).unique(onConflict: .replace) // <--
+                    column = table.column(columnMetadata.columnName, .blob)
                 case .bool:
-                    // TODO: How to make column optional?
-                    table.column(columnMetadata.columnName, .boolean)
+                    column = table.column(columnMetadata.columnName, .boolean)
                 case .int:
-                    // TODO: How to make column optional?
-                    table.column(columnMetadata.columnName, .integer)
+                    column = table.column(columnMetadata.columnName, .integer)
                 case .int64:
-                    // TODO: How to make column optional?
                     // TODO: What's the right column type here?
-                    table.column(columnMetadata.columnName, .integer)
+                    column = table.column(columnMetadata.columnName, .integer)
                 case .double:
-                    // TODO: How to make column optional?
                     // TODO: What's the right column type here?
-                    table.column(columnMetadata.columnName, .double)
+                    column = table.column(columnMetadata.columnName, .double)
+                }
+
+                if !columnMetadata.isOptional {
+                    column.notNull()
                 }
             }
         }
