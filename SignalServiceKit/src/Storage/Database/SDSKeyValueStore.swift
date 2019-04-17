@@ -46,22 +46,22 @@ public class SDSKeyValueStore: NSObject {
     // MARK: -
 
     @objc
-    public func getString(_ key: String, collection: String? = nil) -> String? {
-        return read(key, collection: collection)
+    public func getString(_ key: String) -> String? {
+        return read(key)
     }
 
     @objc
-    public func setString(_ value: String?, key: String, collection: String? = nil) {
+    public func setString(_ value: String?, key: String) {
         guard let value = value else {
-            write(nil, forKey: key, collection: collection)
+            write(nil, forKey: key)
             return
         }
-        write(value as NSString, forKey: key, collection: collection)
+        write(value as NSString, forKey: key)
     }
 
     @objc
-    public func getBool(_ key: String, defaultValue: Bool = false, collection: String? = nil) -> Bool {
-        if let value: NSNumber = read(key, collection: collection) {
+    public func getBool(_ key: String, defaultValue: Bool = false) -> Bool {
+        if let value: NSNumber = read(key) {
             return value.boolValue
         } else {
             return defaultValue
@@ -69,15 +69,15 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
-    public func setBool(_ value: Bool, key: String, collection: String? = nil) {
-        write(NSNumber(booleanLiteral: value), forKey: key, collection: collection)
+    public func setBool(_ value: Bool, key: String) {
+        write(NSNumber(booleanLiteral: value), forKey: key)
     }
 
     // MARK: -
 
-    private func read<T>(_ key: String, collection collectionParam: String?) -> T? {
+    private func read<T>(_ key: String) -> T? {
 
-        let collection = collectionParam ?? self.collection
+        let collection = self.collection
 
         var result: T?
         databaseStorage.readSwallowingErrors { (transaction) in
@@ -103,12 +103,7 @@ public class SDSKeyValueStore: NSObject {
                                         sql: "SELECT \(self.valueColumn.columnName) FROM \(self.table.tableName) WHERE \(self.keyColumn.columnName) = ? AND \(collectionColumn.columnName) == ?",
                 arguments: [key, collection])
         } catch {
-            // This isn't necessarily an error; there may be no matching row.
-            //
-            // TODO: Should we do a 'SELECT COUNT' first so we can distinguish
-            // "not found" from actual errors? Or can we discriminate by error type?
-            //
-            // owsFailDebug("Read failed.")
+            owsFailDebug("Read failed.")
             return nil
         }
 
@@ -121,16 +116,16 @@ public class SDSKeyValueStore: NSObject {
                 return decoded
             }
         } catch {
-            owsFailDebug("Read failed.")
+            owsFailDebug("Decode failed.")
         }
 
         return nil
     }
 
     // TODO: Codable? NSCoding? Other serialization?
-    private func write(_ value: NSCoding?, forKey key: String, collection collectionParam: String?) {
+    private func write(_ value: NSCoding?, forKey key: String) {
 
-        let collection = collectionParam ?? self.collection
+        let collection = self.collection
 
         var encoded: Data?
         if let value = value {
