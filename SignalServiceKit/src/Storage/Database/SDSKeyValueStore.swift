@@ -178,7 +178,8 @@ public class SDSKeyValueStore: NSObject {
 
         let statement = try transaction.database.cachedUpdateStatement(sql: sql)
         guard let statementArguments = StatementArguments(arguments) else {
-            owsFail("Could not convert values.")
+            owsFailDebug("Could not convert values.")
+            return
         }
         // TODO: We could use setArgumentsWithValidation for more safety.
         statement.unsafeSetArguments(statementArguments)
