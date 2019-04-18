@@ -27,8 +27,7 @@ public class MessageStickerDraft: NSObject {
 @objc
 public class MessageSticker: MTLModel {
     // MTLModel requires default values.
-    @objc
-    public var stickerMetadata = StickerMetadata.defaultValue
+    private var stickerMetadata = StickerMetadata.defaultValue
 
     // MTLModel requires default values.
     @objc

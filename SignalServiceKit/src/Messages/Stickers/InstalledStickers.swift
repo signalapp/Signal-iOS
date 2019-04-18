@@ -19,10 +19,14 @@ public class InstalledStickers: NSObject {
         return operationQueue
     }()
 
-    private override init() {}
+    private override init() {
+        // TODO: Resume sticker and sticker pack downloads when app is ready.
+    }
 
     // MARK: - Paths
 
+    // TODO: Clean up sticker data on orphan data cleaner.
+    // TODO: Clean up sticker data if user deletes all user data.
     @objc
     public class func cacheDirUrl() -> URL {
         var url = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
@@ -137,11 +141,13 @@ public class InstalledStickers: NSObject {
         assert(packId.count > 0)
         assert(packKey.count > 0)
 
+        // TODO: Mark sticker pack as downloading in kv store.
+
         let operation = DownloadStickerPackOperation(packId: packId,
                                                      packKey: packKey,
                                                      success: { (_) in
-                                                        // TODO:
-//                                                        self.installSticker(packId: packId, packKey: packKey, stickerId: stickerId, stickerData: stickerData)
+                                                        // TODO: Mark sticker pack as downloaded in kv store.
+                                                        // TODO: Enqueue all stickers in pack for download.
         },
                                                      failure: { (_) in
                                                         // Do nothing.
