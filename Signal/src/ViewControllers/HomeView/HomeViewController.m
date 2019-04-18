@@ -1505,24 +1505,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self.tableView beginUpdates];
 
-    for (ThreadMappingSectionChange *sectionChange in mappingDiff.sectionChanges) {
-        switch (sectionChange.type) {
-            case ThreadMappingChangeDelete: {
-                [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionChange.index]
-                              withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case ThreadMappingChangeInsert: {
-                [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionChange.index]
-                              withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case ThreadMappingChangeUpdate:
-            case ThreadMappingChangeMove:
-                break;
-        }
-    }
-
+    OWSAssertDebug(mappingDiff.sectionChanges.count == 0);
     for (ThreadMappingRowChange *rowChange in mappingDiff.rowChanges) {
         NSString *key = rowChange.uniqueRowId;
         OWSAssertDebug(key);
