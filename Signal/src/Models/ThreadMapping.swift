@@ -174,8 +174,13 @@ class ThreadMapping: NSObject {
 
         var rowChanges: [ThreadMappingRowChange] = []
 
-        let deletedThreadIds = Set(oldThreadIds).subtracting(newThreadIds)
-        for deletedThreadId in deletedThreadIds {
+        // 1. Deletes - Always perform deletes before inserts and updates.
+        //
+        // NOTE: We use `reversed` to ensure that items
+        //       are deleted in reverse order, to avoid confusion around
+        //       each deletion affecting the indices of subsequent deletions.
+        let deletedThreadIds = oldThreadIds.filter { !newThreadIds.contains($0) }
+        for deletedThreadId in deletedThreadIds.reversed() {
             guard let oldIndex = oldThreadIds.firstIndexDistance(of: deletedThreadId) else {
                 throw assertionError("oldIndex was unexpectedly nil")
             }
@@ -186,7 +191,10 @@ class ThreadMapping: NSObject {
                                                      newIndexPath: nil))
         }
 
-        let insertedThreadIds = Set(newThreadIds).subtracting(oldThreadIds)
+        // 2. Inserts - Always perform inserts before updates.
+        //
+        // NOTE: We DO NOT use `reversed`
+        let insertedThreadIds = newThreadIds.filter { !oldThreadIds.contains($0) }
         for insertedThreadId in insertedThreadIds {
             assert(oldThreadIds.firstIndexDistance(of: insertedThreadId) == nil)
             guard let newIndex = newThreadIds.firstIndexDistance(of: insertedThreadId) else {
