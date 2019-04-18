@@ -119,19 +119,20 @@ extension TSInteractionSerializer {
     static let legacyWasDeliveredColumn = SDSColumnMetadata(columnName: "legacyWasDelivered", columnType: .int, isOptional: true, columnIndex: 37)
     static let linkPreviewColumn = SDSColumnMetadata(columnName: "linkPreview", columnType: .blob, isOptional: true, columnIndex: 38)
     static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 39)
-    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 40)
-    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 41)
-    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 42)
-    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 43)
-    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 44)
-    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 45)
-    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 46)
-    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 47)
-    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 48)
-    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int, isOptional: true, columnIndex: 49)
-    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 50)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 51)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 52)
+    static let messageStickerColumn = SDSColumnMetadata(columnName: "messageSticker", columnType: .blob, isOptional: true, columnIndex: 40)
+    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 41)
+    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 42)
+    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 43)
+    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 44)
+    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 45)
+    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 46)
+    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 47)
+    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 48)
+    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 49)
+    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int, isOptional: true, columnIndex: 50)
+    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 51)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 52)
+    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 53)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -176,6 +177,7 @@ extension TSInteractionSerializer {
         legacyWasDeliveredColumn,
         linkPreviewColumn,
         messageIdColumn,
+        messageStickerColumn,
         messageTypeColumn,
         mostRecentFailureTextColumn,
         preKeyBundleColumn,
@@ -247,6 +249,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -263,6 +267,7 @@ extension TSInteractionSerializer {
                              expiresAt: expiresAt,
                              expiresInSeconds: expiresInSeconds,
                              linkPreview: linkPreview,
+                             messageSticker: messageSticker,
                              quotedMessage: quotedMessage,
                              schemaVersion: schemaVersion)
 
@@ -283,6 +288,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -306,6 +313,7 @@ extension TSInteractionSerializer {
                                   expiresAt: expiresAt,
                                   expiresInSeconds: expiresInSeconds,
                                   linkPreview: linkPreview,
+                                  messageSticker: messageSticker,
                                   quotedMessage: quotedMessage,
                                   schemaVersion: schemaVersion,
                                   errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -330,6 +338,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -354,6 +364,7 @@ extension TSInteractionSerializer {
                                                       expiresAt: expiresAt,
                                                       expiresInSeconds: expiresInSeconds,
                                                       linkPreview: linkPreview,
+                                                      messageSticker: messageSticker,
                                                       quotedMessage: quotedMessage,
                                                       schemaVersion: schemaVersion,
                                                       errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -379,6 +390,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -402,6 +415,7 @@ extension TSInteractionSerializer {
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
                                                     linkPreview: linkPreview,
+                                                    messageSticker: messageSticker,
                                                     quotedMessage: quotedMessage,
                                                     schemaVersion: schemaVersion,
                                                     errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -426,6 +440,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -451,6 +467,7 @@ extension TSInteractionSerializer {
                                                              expiresAt: expiresAt,
                                                              expiresInSeconds: expiresInSeconds,
                                                              linkPreview: linkPreview,
+                                                             messageSticker: messageSticker,
                                                              quotedMessage: quotedMessage,
                                                              schemaVersion: schemaVersion,
                                                              errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -477,6 +494,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -503,6 +522,7 @@ extension TSInteractionSerializer {
                                                            expiresAt: expiresAt,
                                                            expiresInSeconds: expiresInSeconds,
                                                            linkPreview: linkPreview,
+                                                           messageSticker: messageSticker,
                                                            quotedMessage: quotedMessage,
                                                            schemaVersion: schemaVersion,
                                                            errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -529,6 +549,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -553,6 +575,7 @@ extension TSInteractionSerializer {
                                  expiresAt: expiresAt,
                                  expiresInSeconds: expiresInSeconds,
                                  linkPreview: linkPreview,
+                                 messageSticker: messageSticker,
                                  quotedMessage: quotedMessage,
                                  schemaVersion: schemaVersion,
                                  customMessage: customMessage,
@@ -578,6 +601,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -603,6 +628,7 @@ extension TSInteractionSerializer {
                                                         expiresAt: expiresAt,
                                                         expiresInSeconds: expiresInSeconds,
                                                         linkPreview: linkPreview,
+                                                        messageSticker: messageSticker,
                                                         quotedMessage: quotedMessage,
                                                         schemaVersion: schemaVersion,
                                                         customMessage: customMessage,
@@ -629,6 +655,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -659,6 +687,7 @@ extension TSInteractionSerializer {
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
                                                      linkPreview: linkPreview,
+                                                     messageSticker: messageSticker,
                                                      quotedMessage: quotedMessage,
                                                      schemaVersion: schemaVersion,
                                                      customMessage: customMessage,
@@ -687,6 +716,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -712,6 +743,7 @@ extension TSInteractionSerializer {
                                                 expiresAt: expiresAt,
                                                 expiresInSeconds: expiresInSeconds,
                                                 linkPreview: linkPreview,
+                                                messageSticker: messageSticker,
                                                 quotedMessage: quotedMessage,
                                                 schemaVersion: schemaVersion,
                                                 customMessage: customMessage,
@@ -738,6 +770,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -766,6 +800,7 @@ extension TSInteractionSerializer {
                                                                  expiresAt: expiresAt,
                                                                  expiresInSeconds: expiresInSeconds,
                                                                  linkPreview: linkPreview,
+                                                                 messageSticker: messageSticker,
                                                                  quotedMessage: quotedMessage,
                                                                  schemaVersion: schemaVersion,
                                                                  customMessage: customMessage,
@@ -795,6 +830,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -816,6 +853,7 @@ extension TSInteractionSerializer {
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
                                      linkPreview: linkPreview,
+                                     messageSticker: messageSticker,
                                      quotedMessage: quotedMessage,
                                      schemaVersion: schemaVersion,
                                      authorId: authorId,
@@ -841,6 +879,8 @@ extension TSInteractionSerializer {
             let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
             let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
             let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
             let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
@@ -876,6 +916,7 @@ extension TSInteractionSerializer {
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
                                      linkPreview: linkPreview,
+                                     messageSticker: messageSticker,
                                      quotedMessage: quotedMessage,
                                      schemaVersion: schemaVersion,
                                      attachmentFilenameMap: attachmentFilenameMap,

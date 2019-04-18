@@ -116,6 +116,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
@@ -142,6 +143,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
                        linkPreview:linkPreview
+                    messageSticker:messageSticker
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion];
 
@@ -308,7 +310,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                             attachmentId:attachmentId
                         expiresInSeconds:0
                            quotedMessage:nil
-                             linkPreview:nil];
+                             linkPreview:nil
+                          messageSticker:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -321,7 +324,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                             attachmentId:attachmentId
                         expiresInSeconds:expiresInSeconds
                            quotedMessage:nil
-                             linkPreview:nil];
+                             linkPreview:nil
+                          messageSticker:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -330,6 +334,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                        expiresInSeconds:(uint32_t)expiresInSeconds
                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             linkPreview:(nullable OWSLinkPreview *)linkPreview
+                         messageSticker:(nullable MessageSticker *)messageSticker
 {
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
     if (attachmentId) {
@@ -347,7 +352,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                       groupMetaMessage:TSGroupMetaMessageUnspecified
                                                          quotedMessage:quotedMessage
                                                           contactShare:nil
-                                                           linkPreview:linkPreview];
+                                                           linkPreview:linkPreview
+                                                        messageSticker:messageSticker];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -365,7 +371,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                       groupMetaMessage:groupMetaMessage
                                                          quotedMessage:nil
                                                           contactShare:nil
-                                                           linkPreview:nil];
+                                                           linkPreview:nil
+                                                        messageSticker:nil];
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -379,6 +386,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                                  messageSticker:(nullable MessageSticker *)messageSticker
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -388,7 +396,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                            expireStartedAt:expireStartedAt
                              quotedMessage:quotedMessage
                               contactShare:contactShare
-                               linkPreview:linkPreview];
+                               linkPreview:linkPreview
+                            messageSticker:messageSticker];
     if (!self) {
         return self;
     }
@@ -1085,6 +1094,29 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             OWSFailDebug(@"Could not build link preview protobuf: %@.", error);
         } else {
             [builder addPreview:previewProto];
+        }
+    }
+
+    // Sticker
+    if (self.messageSticker) {
+        SSKProtoAttachmentPointer *_Nullable attachmentProto =
+            [TSAttachmentStream buildProtoForAttachmentId:self.messageSticker.attachmentId];
+        if (!attachmentProto) {
+            OWSFailDebug(@"Could not build sticker attachment protobuf.");
+        } else {
+            SSKProtoDataMessageStickerBuilder *stickerBuilder =
+                [SSKProtoDataMessageSticker builderWithPackID:self.messageSticker.packId
+                                                      packKey:self.messageSticker.packKey
+                                                    stickerID:self.messageSticker.stickerId
+                                                         data:attachmentProto];
+
+            NSError *error;
+            SSKProtoDataMessageSticker *_Nullable stickerProto = [stickerBuilder buildAndReturnError:&error];
+            if (error || !stickerProto) {
+                OWSFailDebug(@"Could not build sticker protobuf: %@.", error);
+            } else {
+                [builder setSticker:stickerProto];
+            }
         }
     }
 

@@ -52,6 +52,7 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
@@ -73,6 +74,7 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
                        linkPreview:linkPreview
+                    messageSticker:messageSticker
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion
          errorMessageSchemaVersion:errorMessageSchemaVersion

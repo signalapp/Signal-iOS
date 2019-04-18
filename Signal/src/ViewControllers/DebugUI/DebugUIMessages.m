@@ -895,6 +895,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    quotedMessage:nil
                                                     contactShare:nil
                                                      linkPreview:nil
+                                                  messageSticker:nil
                                                      transaction:transaction];
 
     // This is a hack to "back-date" the message.
@@ -1798,6 +1799,7 @@ NS_ASSUME_NONNULL_BEGIN
                               quotedMessage:nil
                                contactShare:nil
                                 linkPreview:nil
+                             messageSticker:nil
                                 transaction:transaction];
         }];
 }
@@ -1847,6 +1849,7 @@ NS_ASSUME_NONNULL_BEGIN
                               quotedMessage:nil
                                contactShare:nil
                                 linkPreview:nil
+                             messageSticker:nil
                                 transaction:transaction];
         }];
 }
@@ -2032,6 +2035,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                 quotedMessage:nil
                                                                                  contactShare:nil
                                                                                   linkPreview:nil
+                                                                               messageSticker:nil
                                                                                   transaction:transaction];
                 OWSAssertDebug(messageToQuote);
 
@@ -2066,6 +2070,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   quotedMessage:quotedMessage
                                    contactShare:nil
                                     linkPreview:nil
+                                 messageSticker:nil
                                     transaction:transaction];
             }
         }
@@ -2916,6 +2921,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                            quotedMessage:nil
                                                             contactShare:nil
                                                              linkPreview:nil
+                                                          messageSticker:nil
                                                              transaction:transaction];
             [message setReceivedAtTimestamp:(uint64_t)((int64_t)[NSDate ows_millisecondTimeStamp] + dateOffset)];
             [message saveWithTransaction:transaction];
@@ -2987,6 +2993,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                            quotedMessage:nil
                                                             contactShare:contact
                                                              linkPreview:nil
+                                                          messageSticker:nil
                                                              transaction:transaction];
             [message saveWithTransaction:transaction];
         }];
@@ -3784,6 +3791,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                   quotedMessage:nil
                                                                    contactShare:nil
                                                                     linkPreview:nil
+                                                                 messageSticker:nil
                                                                 serverTimestamp:nil
                                                                 wasReceivedByUD:NO];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
@@ -3799,6 +3807,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                   quotedMessage:nil
                                    contactShare:nil
                                     linkPreview:nil
+                                 messageSticker:nil
                                     transaction:transaction];
                 break;
             }
@@ -3832,6 +3841,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                   quotedMessage:nil
                                                                    contactShare:nil
                                                                     linkPreview:nil
+                                                                 messageSticker:nil
                                                                 serverTimestamp:nil
                                                                 wasReceivedByUD:NO];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
@@ -3863,6 +3873,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                   quotedMessage:nil
                                    contactShare:nil
                                     linkPreview:nil
+                                 messageSticker:nil
                                     transaction:transaction];
                 break;
             }
@@ -4231,7 +4242,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                             groupMetaMessage:TSGroupMetaMessageUnspecified
                                quotedMessage:nil
                                 contactShare:nil
-                                 linkPreview:nil];
+                                 linkPreview:nil
+                              messageSticker:nil];
         OWSLogError(@"resurrectNewOutgoingMessages2 timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
@@ -4300,6 +4312,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                   quotedMessage:nil
                                                                    contactShare:nil
                                                                     linkPreview:nil
+                                                                 messageSticker:nil
                                                                 serverTimestamp:nil
                                                                 wasReceivedByUD:NO];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
@@ -4317,7 +4330,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                groupMetaMessage:TSGroupMetaMessageUnspecified
                                                                   quotedMessage:nil
                                                                    contactShare:nil
-                                                                    linkPreview:nil];
+                                                                    linkPreview:nil
+                                                                 messageSticker:nil];
                 [message saveWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
                 [message updateWithSentRecipient:recipientId wasSentByUD:NO transaction:transaction];
@@ -4347,6 +4361,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                            quotedMessage:nil
                             contactShare:nil
                              linkPreview:nil
+                          messageSticker:nil
                          serverTimestamp:nil
                          wasReceivedByUD:NO];
     // private setter to avoid starting expire machinery.
@@ -4564,6 +4579,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                                  messageSticker:(nullable MessageSticker *)messageSticker
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(thread);
@@ -4591,6 +4607,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                              quotedMessage:quotedMessage
                               contactShare:contactShare
                                linkPreview:linkPreview
+                            messageSticker:messageSticker
                                transaction:transaction];
 }
 
@@ -4605,6 +4622,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                                  messageSticker:(nullable MessageSticker *)messageSticker
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(thread);
@@ -4628,7 +4646,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:quotedMessage
                                                        contactShare:contactShare
-                                                        linkPreview:linkPreview];
+                                                        linkPreview:linkPreview
+                                                     messageSticker:messageSticker];
 
     if (attachmentId.length > 0 && filename.length > 0) {
         message.attachmentFilenameMap[attachmentId] = filename;
@@ -4719,6 +4738,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                       quotedMessage:quotedMessage
                                                        contactShare:nil
                                                         linkPreview:nil
+                                                     messageSticker:nil
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO];
     [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];

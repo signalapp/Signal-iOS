@@ -53,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                                  messageSticker:(nullable MessageSticker *)messageSticker
                                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                                  wasReceivedByUD:(BOOL)wasReceivedByUD
 {
@@ -64,7 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
                            expireStartedAt:0
                              quotedMessage:quotedMessage
                               contactShare:contactShare
-                               linkPreview:linkPreview];
+                               linkPreview:linkPreview
+                            messageSticker:messageSticker];
 
     if (!self) {
         return self;
@@ -98,6 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
                         authorId:(NSString *)authorId
@@ -118,6 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
                        linkPreview:linkPreview
+                    messageSticker:messageSticker
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion];
 

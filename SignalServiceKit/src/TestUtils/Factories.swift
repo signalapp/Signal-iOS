@@ -138,7 +138,8 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                      groupMetaMessage: groupMetaMessageBuilder(),
                                      quotedMessage: quotedMessageBuilder(),
                                      contactShare: contactShareBuilder(),
-                                     linkPreview: linkPreviewBuilder())
+                                     linkPreview: linkPreviewBuilder(),
+                                     messageSticker: messageStickerBuilder())
 
         return item
     }
@@ -210,6 +211,11 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return nil
     }
 
+    @objc
+    public var messageStickerBuilder: () -> MessageSticker? = {
+        return nil
+    }
+
     // MARK: Delivery Receipts
 
     @objc
@@ -254,6 +260,7 @@ public class IncomingMessageFactory: NSObject, Factory {
                                      quotedMessage: quotedMessageBuilder(),
                                      contactShare: contactShareBuilder(),
                                      linkPreview: linkPreviewBuilder(),
+                                     messageSticker: messageStickerBuilder(),
                                      serverTimestamp: serverTimestampBuilder(),
                                      wasReceivedByUD: wasReceivedByUDBuilder())
 
@@ -321,6 +328,11 @@ public class IncomingMessageFactory: NSObject, Factory {
 
     @objc
     public var linkPreviewBuilder: () -> OWSLinkPreview? = {
+        return nil
+    }
+
+    @objc
+    public var messageStickerBuilder: () -> MessageSticker? = {
         return nil
     }
 

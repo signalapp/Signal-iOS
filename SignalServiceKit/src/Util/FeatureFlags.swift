@@ -43,4 +43,10 @@ public class FeatureFlags: NSObject {
     // the migration every launch is helpful.
     public
     static let grdbMigratesFreshDBEveryLaunch = true
+
+    @objc
+    public static let stickerReceive = true
+    
+    @objc
+    public static let stickerSend = true
 }

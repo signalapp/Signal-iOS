@@ -1295,7 +1295,16 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  transaction:transaction
                                                                        error:&linkPreviewError];
                 if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
-                    OWSLogError(@"linkPreviewError: %@", linkPreviewError);
+                    OWSFailDebug(@"linkPreviewError: %@", linkPreviewError);
+                }
+
+                NSError *messageStickerError;
+                MessageSticker *_Nullable messageSticker =
+                    [MessageSticker buildValidatedMessageStickerWithDataMessage:dataMessage
+                                                                    transaction:transaction
+                                                                          error:&messageStickerError];
+                if (messageStickerError && ![MessageSticker isNoStickerError:messageStickerError]) {
+                    OWSFailDebug(@"messageStickerError: %@", messageStickerError);
                 }
 
                 OWSLogDebug(@"incoming message from: %@ for group: %@ with timestamp: %lu",
@@ -1315,6 +1324,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   quotedMessage:quotedMessage
                                                                    contactShare:contact
                                                                     linkPreview:linkPreview
+                                                                 messageSticker:messageSticker
                                                                 serverTimestamp:serverTimestamp
                                                                 wasReceivedByUD:wasReceivedByUD];
 
@@ -1371,6 +1381,15 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogError(@"linkPreviewError: %@", linkPreviewError);
         }
 
+        NSError *messageStickerError;
+        MessageSticker *_Nullable messageSticker =
+            [MessageSticker buildValidatedMessageStickerWithDataMessage:dataMessage
+                                                            transaction:transaction
+                                                                  error:&messageStickerError];
+        if (messageStickerError && ![MessageSticker isNoStickerError:messageStickerError]) {
+            OWSFailDebug(@"messageStickerError: %@", messageStickerError);
+        }
+
         // Legit usage of senderTimestamp when creating incoming message from received envelope
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
@@ -1383,6 +1402,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           quotedMessage:quotedMessage
                                                            contactShare:contact
                                                             linkPreview:linkPreview
+                                                         messageSticker:messageSticker
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 

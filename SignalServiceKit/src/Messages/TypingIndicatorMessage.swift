@@ -31,7 +31,8 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
                    groupMetaMessage: .unspecified,
                    quotedMessage: nil,
                    contactShare: nil,
-                   linkPreview: nil)
+                   linkPreview: nil,
+                   messageSticker: nil)
     }
 
     @objc

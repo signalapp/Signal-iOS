@@ -62,6 +62,7 @@ class TSMessageSerializer: SDSSerializer {
             TSInteractionSerializer.expiresAtColumn,
             TSInteractionSerializer.expiresInSecondsColumn,
             TSInteractionSerializer.linkPreviewColumn,
+            TSInteractionSerializer.messageStickerColumn,
             TSInteractionSerializer.quotedMessageColumn,
             TSInteractionSerializer.schemaVersionColumn
             ].map { $0.columnName }
@@ -80,6 +81,7 @@ class TSMessageSerializer: SDSSerializer {
             self.model.expiresAt,
             self.model.expiresInSeconds,
             SDSDeserializer.archive(self.model.linkPreview) ?? DatabaseValue.null,
+            SDSDeserializer.archive(self.model.messageSticker) ?? DatabaseValue.null,
             SDSDeserializer.archive(self.model.quotedMessage) ?? DatabaseValue.null,
             self.model.schemaVersion
 

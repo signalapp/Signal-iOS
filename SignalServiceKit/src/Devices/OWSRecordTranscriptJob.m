@@ -101,7 +101,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:transcript.quotedMessage
                                                        contactShare:transcript.contact
-                                                        linkPreview:transcript.linkPreview];
+                                                        linkPreview:transcript.linkPreview
+                                                     messageSticker:transcript.messageSticker];
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos

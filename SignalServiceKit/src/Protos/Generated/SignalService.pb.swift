@@ -639,6 +639,15 @@ struct SignalServiceProtos_DataMessage {
     set {_uniqueStorage()._preview = newValue}
   }
 
+  var sticker: SignalServiceProtos_DataMessage.Sticker {
+    get {return _storage._sticker ?? SignalServiceProtos_DataMessage.Sticker()}
+    set {_uniqueStorage()._sticker = newValue}
+  }
+  /// Returns true if `sticker` has been explicitly set.
+  var hasSticker: Bool {return _storage._sticker != nil}
+  /// Clears the value of `sticker`. Subsequent reads from it will return its default value.
+  mutating func clearSticker() {_uniqueStorage()._sticker = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Flags: SwiftProtobuf.Enum {
@@ -1249,6 +1258,58 @@ struct SignalServiceProtos_DataMessage {
     var hasImage: Bool {return _storage._image != nil}
     /// Clears the value of `image`. Subsequent reads from it will return its default value.
     mutating func clearImage() {_uniqueStorage()._image = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _storage = _StorageClass.defaultInstance
+  }
+
+  struct Sticker {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var packID: Data {
+      get {return _storage._packID ?? SwiftProtobuf.Internal.emptyData}
+      set {_uniqueStorage()._packID = newValue}
+    }
+    /// Returns true if `packID` has been explicitly set.
+    var hasPackID: Bool {return _storage._packID != nil}
+    /// Clears the value of `packID`. Subsequent reads from it will return its default value.
+    mutating func clearPackID() {_uniqueStorage()._packID = nil}
+
+    /// @required
+    var packKey: Data {
+      get {return _storage._packKey ?? SwiftProtobuf.Internal.emptyData}
+      set {_uniqueStorage()._packKey = newValue}
+    }
+    /// Returns true if `packKey` has been explicitly set.
+    var hasPackKey: Bool {return _storage._packKey != nil}
+    /// Clears the value of `packKey`. Subsequent reads from it will return its default value.
+    mutating func clearPackKey() {_uniqueStorage()._packKey = nil}
+
+    /// @required
+    var stickerID: UInt32 {
+      get {return _storage._stickerID ?? 0}
+      set {_uniqueStorage()._stickerID = newValue}
+    }
+    /// Returns true if `stickerID` has been explicitly set.
+    var hasStickerID: Bool {return _storage._stickerID != nil}
+    /// Clears the value of `stickerID`. Subsequent reads from it will return its default value.
+    mutating func clearStickerID() {_uniqueStorage()._stickerID = nil}
+
+    /// @required
+    var data: SignalServiceProtos_AttachmentPointer {
+      get {return _storage._data ?? SignalServiceProtos_AttachmentPointer()}
+      set {_uniqueStorage()._data = newValue}
+    }
+    /// Returns true if `data` has been explicitly set.
+    var hasData: Bool {return _storage._data != nil}
+    /// Clears the value of `data`. Subsequent reads from it will return its default value.
+    mutating func clearData() {_uniqueStorage()._data = nil}
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2837,6 +2898,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     8: .same(proto: "quote"),
     9: .same(proto: "contact"),
     10: .same(proto: "preview"),
+    11: .same(proto: "sticker"),
   ]
 
   fileprivate class _StorageClass {
@@ -2850,6 +2912,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _quote: SignalServiceProtos_DataMessage.Quote? = nil
     var _contact: [SignalServiceProtos_DataMessage.Contact] = []
     var _preview: [SignalServiceProtos_DataMessage.Preview] = []
+    var _sticker: SignalServiceProtos_DataMessage.Sticker? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -2866,6 +2929,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _quote = source._quote
       _contact = source._contact
       _preview = source._preview
+      _sticker = source._sticker
     }
   }
 
@@ -2891,6 +2955,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 8: try decoder.decodeSingularMessageField(value: &_storage._quote)
         case 9: try decoder.decodeRepeatedMessageField(value: &_storage._contact)
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._preview)
+        case 11: try decoder.decodeSingularMessageField(value: &_storage._sticker)
         default: break
         }
       }
@@ -2929,6 +2994,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if !_storage._preview.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._preview, fieldNumber: 10)
       }
+      if let v = _storage._sticker {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2948,6 +3016,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._quote != rhs_storage._quote {return false}
         if _storage._contact != rhs_storage._contact {return false}
         if _storage._preview != rhs_storage._preview {return false}
+        if _storage._sticker != rhs_storage._sticker {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -3585,6 +3654,91 @@ extension SignalServiceProtos_DataMessage.Preview: SwiftProtobuf.Message, SwiftP
         if _storage._url != rhs_storage._url {return false}
         if _storage._title != rhs_storage._title {return false}
         if _storage._image != rhs_storage._image {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Sticker"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "packId"),
+    2: .same(proto: "packKey"),
+    3: .same(proto: "stickerId"),
+    4: .same(proto: "data"),
+  ]
+
+  fileprivate class _StorageClass {
+    var _packID: Data? = nil
+    var _packKey: Data? = nil
+    var _stickerID: UInt32? = nil
+    var _data: SignalServiceProtos_AttachmentPointer? = nil
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _packID = source._packID
+      _packKey = source._packKey
+      _stickerID = source._stickerID
+      _data = source._data
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        switch fieldNumber {
+        case 1: try decoder.decodeSingularBytesField(value: &_storage._packID)
+        case 2: try decoder.decodeSingularBytesField(value: &_storage._packKey)
+        case 3: try decoder.decodeSingularUInt32Field(value: &_storage._stickerID)
+        case 4: try decoder.decodeSingularMessageField(value: &_storage._data)
+        default: break
+        }
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if let v = _storage._packID {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+      }
+      if let v = _storage._packKey {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+      }
+      if let v = _storage._stickerID {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+      }
+      if let v = _storage._data {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      }
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DataMessage.Sticker, rhs: SignalServiceProtos_DataMessage.Sticker) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._packID != rhs_storage._packID {return false}
+        if _storage._packKey != rhs_storage._packKey {return false}
+        if _storage._stickerID != rhs_storage._stickerID {return false}
+        if _storage._data != rhs_storage._data {return false}
         return true
       }
       if !storagesAreEqual {return false}
