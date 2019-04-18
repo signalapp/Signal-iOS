@@ -172,6 +172,13 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     }
 }
 
+- (NSURL *)domainFrontBaseURL
+{
+    OWSAssertDebug(self.isCensorshipCircumventionActive);
+    OWSCensorshipConfiguration *censorshipConfiguration = [self buildCensorshipConfiguration];
+    return censorshipConfiguration.domainFrontBaseURL;
+}
+
 - (AFHTTPSessionManager *)buildSignalServiceSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
@@ -204,9 +211,11 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     (OWSCensorshipConfiguration *)censorshipConfiguration
 {
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+
+    NSURL *frontingURL = censorshipConfiguration.domainFrontBaseURL;
+    NSURL *baseURL = [frontingURL URLByAppendingPathComponent:serviceCensorshipPrefix];
     AFHTTPSessionManager *sessionManager =
-        [[AFHTTPSessionManager alloc] initWithBaseURL:censorshipConfiguration.domainFrontBaseURL
-                                 sessionConfiguration:sessionConf];
+        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
 
     sessionManager.securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy;
 
@@ -255,9 +264,10 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 {
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
 
+    NSURL *frontingURL = censorshipConfiguration.domainFrontBaseURL;
+    NSURL *baseURL = [frontingURL URLByAppendingPathComponent:cdnCensorshipPrefix];
     AFHTTPSessionManager *sessionManager =
-        [[AFHTTPSessionManager alloc] initWithBaseURL:censorshipConfiguration.domainFrontBaseURL
-                                 sessionConfiguration:sessionConf];
+        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
 
     sessionManager.securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy;
 

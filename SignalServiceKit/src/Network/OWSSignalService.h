@@ -12,7 +12,7 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 
 @interface OWSSignalService : NSObject
 
-/// For uploading avatar assets.
+/// For uploading and downloading avatar assets and attachments
 @property (nonatomic, readonly) AFHTTPSessionManager *CDNSessionManager;
 
 + (instancetype)sharedInstance;
@@ -26,6 +26,9 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 @property (atomic) BOOL isCensorshipCircumventionManuallyActivated;
 @property (atomic) BOOL isCensorshipCircumventionManuallyDisabled;
 @property (atomic, nullable) NSString *manualCensorshipCircumventionCountryCode;
+
+/// should only be accessed if censorship circumvention is active.
+@property (nonatomic, readonly) NSURL *domainFrontBaseURL;
 
 /// For interacting with the Signal Service
 - (AFHTTPSessionManager *)buildSignalServiceSessionManager;

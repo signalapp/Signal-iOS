@@ -494,11 +494,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     TSAttachmentPointer *attachmentPointer = job.attachmentPointer;
 
     AFHTTPSessionManager *manager = self.cdnSessionManager;
-    manager.requestSerializer = [AFHTTPRequestSerializer serializer];
-    [manager.requestSerializer setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-
     NSString *urlPath = [NSString stringWithFormat:@"attachments/%llu", attachmentPointer.serverId];
     NSURL *url = [[NSURL alloc] initWithString:urlPath relativeToURL:manager.baseURL];
 
@@ -527,6 +523,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                                                       URLString:url.absoluteString
                                                                      parameters:nil
                                                                           error:&serializationError];
+    [request setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
     if (serializationError) {
         return failureHandler(serializationError);
     }
