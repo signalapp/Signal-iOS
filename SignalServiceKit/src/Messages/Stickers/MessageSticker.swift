@@ -5,13 +5,6 @@
 import Foundation
 import PromiseKit
 
-@objc
-public enum MessageStickerError: Int, Error {
-    case invalidInput
-    case noSticker
-    case assertionFailure
-}
-
 // MARK: - MessageStickerDraft
 
 @objc
@@ -81,7 +74,7 @@ public class MessageSticker: MTLModel {
 
     @objc
     public class func isNoStickerError(_ error: Error) -> Bool {
-        guard let error = error as? MessageStickerError else {
+        guard let error = error as? StickerError else {
             return false
         }
         return error == .noSticker
@@ -91,10 +84,10 @@ public class MessageSticker: MTLModel {
     public class func buildValidatedMessageSticker(dataMessage: SSKProtoDataMessage,
                                                    transaction: SDSAnyWriteTransaction) throws -> MessageSticker {
         guard FeatureFlags.stickerReceive else {
-            throw MessageStickerError.noSticker
+            throw StickerError.noSticker
         }
         guard let stickerProto: SSKProtoDataMessageSticker = dataMessage.sticker else {
-            throw MessageStickerError.noSticker
+            throw StickerError.noSticker
         }
 
         let packID: Data = stickerProto.packID
@@ -103,11 +96,11 @@ public class MessageSticker: MTLModel {
         let dataProto: SSKProtoAttachmentPointer = stickerProto.data
 
         guard let attachmentPointer = TSAttachmentPointer(fromProto: dataProto, albumMessage: nil) else {
-            throw MessageStickerError.invalidInput
+            throw StickerError.invalidInput
         }
         attachmentPointer.anySave(transaction: transaction)
         guard let attachmentId = attachmentPointer.uniqueId else {
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
 
         let stickerMetadata = StickerMetadata(packId: packID, packKey: packKey, stickerId: stickerID)
@@ -119,7 +112,7 @@ public class MessageSticker: MTLModel {
     public class func buildValidatedMessageSticker(fromDraft draft: MessageStickerDraft,
                                                    transaction: SDSAnyWriteTransaction) throws -> MessageSticker {
         guard FeatureFlags.stickerSend else {
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
         let attachmentId = try MessageSticker.saveAttachment(stickerData: draft.stickerData,
                                                              transaction: transaction)
@@ -134,7 +127,7 @@ public class MessageSticker: MTLModel {
         let fileSize = stickerData.count
         guard fileSize > 0 else {
             owsFailDebug("Invalid file size for data.")
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
         let fileExtension = "webp"
         let contentType = OWSMimeTypeImageWebp
@@ -144,22 +137,22 @@ public class MessageSticker: MTLModel {
             try stickerData.write(to: NSURL.fileURL(withPath: filePath))
         } catch let error as NSError {
             owsFailDebug("file write failed: \(filePath), \(error)")
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
 
         guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true) else {
             owsFailDebug("Could not create data source for path: \(filePath)")
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
         let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil)
         guard attachment.write(dataSource) else {
             owsFailDebug("Could not write data source for path: \(filePath)")
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
         attachment.anySave(transaction: transaction)
 
         guard let attachmentId = attachment.uniqueId else {
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
         return attachmentId
     }

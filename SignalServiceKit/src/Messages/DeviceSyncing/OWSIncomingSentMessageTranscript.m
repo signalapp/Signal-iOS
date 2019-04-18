@@ -66,12 +66,12 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogError(@"linkPreviewError: %@", linkPreviewError);
         }
 
-        NSError *messageStickerError;
+        NSError *stickerError;
         _messageSticker = [MessageSticker buildValidatedMessageStickerWithDataMessage:_dataMessage
                                                                           transaction:transaction
-                                                                                error:&messageStickerError];
-        if (messageStickerError && ![MessageSticker isNoStickerError:messageStickerError]) {
-            OWSFailDebug(@"messageStickerError: %@", messageStickerError);
+                                                                                error:&stickerError];
+        if (stickerError && ![MessageSticker isNoStickerError:stickerError]) {
+            OWSFailDebug(@"stickerError: %@", stickerError);
         }
     }
 

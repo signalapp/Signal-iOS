@@ -4,17 +4,15 @@
 
 import Foundation
 
-class DownloadStickerOperation: OWSOperation {
+class DownloadStickerPackOperation: OWSOperation {
 
     private let success: (Data) -> Void
     private let failure: (Error) -> Void
     private let packId: Data
     private let packKey: Data
-    private let stickerId: UInt32
 
     @objc public required init(packId: Data,
                                packKey: Data,
-                               stickerId: UInt32,
                                success : @escaping (Data) -> Void,
                                failure : @escaping (Error) -> Void) {
         assert(packId.count > 0)
@@ -24,7 +22,6 @@ class DownloadStickerOperation: OWSOperation {
         self.failure = failure
         self.packId = packId
         self.packKey = packKey
-        self.stickerId = stickerId
 
         super.init()
 
@@ -41,8 +38,8 @@ class DownloadStickerOperation: OWSOperation {
 
     override public func run() {
 
-        // https://cdn.signal.org/stickers/<pack_id>/full/<sticker_id>
-        let urlPath = "stickers/\(packId.hexadecimalString)/full/\(stickerId)"
+        // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
+        let urlPath = "stickers/\(packId.hexadecimalString)/manifest.proto"
         cdnSessionManager.get(urlPath,
                               parameters: nil,
                               progress: { (_) in

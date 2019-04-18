@@ -12,15 +12,6 @@ public class InstalledStickers: NSObject {
         return SDSDatabaseStorage.shared
     }
 
-//    private static var cdnSessionManager: AFHTTPSessionManager {
-//        return OWSSignalService.sharedInstance().cdnSessionManager
-//    }
-
-//    public static let collection = "InstalledStickers"
-//
-//    private let store = SDSKeyValueStore(collection: InstalledStickers.collection)
-
-//    private static let serialQueue = DispatchQueue(label: "org.signal.installedStickers")
     private static let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "org.signal.installedStickers"
@@ -135,8 +126,45 @@ public class InstalledStickers: NSObject {
                                                     self.installSticker(packId: packId, packKey: packKey, stickerId: stickerId, stickerData: stickerData)
         },
                                                  failure: { (_) in
-            // Do nothing.
+                                                    // Do nothing.
         })
         operationQueue.addOperation(operation)
+    }
+
+    @objc
+    public class func tryToDownloadAndInstallStickerPack(packId: Data,
+                                                         packKey: Data) {
+        assert(packId.count > 0)
+        assert(packKey.count > 0)
+
+        let operation = DownloadStickerPackOperation(packId: packId,
+                                                     packKey: packKey,
+                                                     success: { (_) in
+                                                        // TODO:
+//                                                        self.installSticker(packId: packId, packKey: packKey, stickerId: stickerId, stickerData: stickerData)
+        },
+                                                     failure: { (_) in
+                                                        // Do nothing.
+        })
+        operationQueue.addOperation(operation)
+    }
+
+    // Data might be a sticker or a sticker pack manifest.
+    public class func decrypt(ciphertext: Data,
+                              packKey: Data) throws -> Data {
+
+        guard let key = OWSAES256Key(data: packKey) else {
+            owsFailDebug("Invalid pack key.")
+            throw StickerError.invalidInput
+        }
+
+        // TODO: We might want to rename this method if we end up using it for more than
+        //       profile data.
+        guard let plaintext = Cryptography.decryptAESGCMProfileData(encryptedData: ciphertext, key: key) else {
+            owsFailDebug("Decryption failed.")
+            throw StickerError.invalidInput
+        }
+
+        return plaintext
     }
 }
