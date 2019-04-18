@@ -12,52 +12,6 @@ public enum MessageStickerError: Int, Error {
     case assertionFailure
 }
 
-// MARK: - StickerPackMetadata
-
-@objc
-public class StickerPackMetadata: NSObject {
-    @objc
-    public let packId: Data
-
-    @objc
-    public let packKey: Data
-
-    @objc
-    public init(packId: Data, packKey: Data) {
-        self.packId = packId
-        self.packKey = packKey
-    }
-
-    // Returns a String that can be used as a key in caches, etc.
-    @objc
-    public func cacheKey() -> String {
-        return packId.hexadecimalString
-    }
-}
-
-// MARK: - StickerMetadata
-
-@objc
-public class StickerMetadata: NSObject {
-    @objc
-    public let stickerPack: StickerPackMetadata
-
-    @objc
-    public var stickerId: UInt32
-
-    @objc
-    public init(stickerPack: StickerPackMetadata, stickerId: UInt32) {
-        self.stickerPack = stickerPack
-        self.stickerId = stickerId
-    }
-
-    // Returns a String that can be used as a key in caches, etc.
-    @objc
-    public func cacheKey() -> String {
-        return "\(stickerPack.packId.hexadecimalString).\(stickerId)"
-    }
-}
-
 // MARK: - MessageStickerDraft
 
 @objc
@@ -79,38 +33,27 @@ public class MessageStickerDraft: NSObject {
 
 @objc
 public class MessageSticker: MTLModel {
-
+    // MTLModel requires default values.
     @objc
-    public var stickerMetadata: StickerMetadata?
+    public var stickerMetadata = StickerMetadata.defaultValue
 
+    // MTLModel requires default values.
     @objc
-    public var attachmentId: String?
+    public var attachmentId: String = ""
 
     @objc
     public var stickerId: UInt32 {
-        guard let stickerMetadata = stickerMetadata else {
-            owsFailDebug("Missing stickerMetadata.")
-            return 0
-        }
         return stickerMetadata.stickerId
     }
 
     @objc
     public var packId: Data {
-        guard let stickerMetadata = stickerMetadata else {
-            owsFailDebug("Missing stickerMetadata.")
-            return Data()
-        }
-        return stickerMetadata.stickerPack.packId
+        return stickerMetadata.packId
     }
 
     @objc
     public var packKey: Data {
-        guard let stickerMetadata = stickerMetadata else {
-            owsFailDebug("Missing stickerMetadata.")
-            return Data()
-        }
-        return stickerMetadata.stickerPack.packKey
+        return stickerMetadata.packKey
     }
 
     @objc
@@ -167,8 +110,7 @@ public class MessageSticker: MTLModel {
             throw MessageStickerError.assertionFailure
         }
 
-        let stickerPackMetadata = StickerPackMetadata(packId: packID, packKey: packKey)
-        let stickerMetadata = StickerMetadata(stickerPack: stickerPackMetadata, stickerId: stickerID)
+        let stickerMetadata = StickerMetadata(packId: packID, packKey: packKey, stickerId: stickerID)
         let messageSticker = MessageSticker(stickerMetadata: stickerMetadata, attachmentId: attachmentId)
         return messageSticker
     }
@@ -224,10 +166,6 @@ public class MessageSticker: MTLModel {
 
     @objc
     public func removeAttachment(transaction: YapDatabaseReadWriteTransaction) {
-        guard let attachmentId = attachmentId else {
-            owsFailDebug("No attachment id.")
-            return
-        }
         guard let attachment = TSAttachment.fetch(uniqueId: attachmentId, transaction: transaction) else {
             owsFailDebug("Could not load attachment.")
             return
