@@ -437,7 +437,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             return [@"👤 " stringByAppendingString:self.contactShare.name.displayName];
         }
     } else {
-        OWSFailDebug(@"message has neither body nor attachment.");
+        if (transaction.transitional_yapReadTransaction) {
+            // some cases aren't yet handled by GRDB
+            OWSFailDebug(@"message has neither body nor attachment.");
+        }
         // TODO: We should do better here.
         return @"";
     }

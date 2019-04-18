@@ -381,11 +381,6 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     return [messages copy];
 }
 
-- (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    return [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.uniqueId];
-}
-
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {

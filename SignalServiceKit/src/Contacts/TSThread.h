@@ -111,9 +111,6 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 - (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key;
 #pragma clang diagnostic pop
 
-- (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
-    NS_SWIFT_NAME(unreadMessageCount(transaction:));
-
 - (BOOL)hasSafetyNumbers;
 
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;

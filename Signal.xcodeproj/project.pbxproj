@@ -465,6 +465,7 @@
 		4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */; };
 		4C04F58421C860C50090D0BB /* MantlePerfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C04F58321C860C50090D0BB /* MantlePerfTest.swift */; };
 		4C090A1B210FD9C7001FD7F9 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
+		4C0C36F8226647FE0083F19A /* ThreadMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0C36F7226647FE0083F19A /* ThreadMapping.swift */; };
 		4C11AA5020FD59C700351FBD /* MessageStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C11AA4F20FD59C700351FBD /* MessageStatusView.swift */; };
 		4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */; };
 		4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */; };
@@ -1208,6 +1209,7 @@
 		4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceNoteLock.swift; sourceTree = "<group>"; };
 		4C04F58321C860C50090D0BB /* MantlePerfTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MantlePerfTest.swift; path = Models/MantlePerfTest.swift; sourceTree = "<group>"; };
 		4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HapticFeedback.swift; path = UserInterface/HapticFeedback.swift; sourceTree = "<group>"; };
+		4C0C36F7226647FE0083F19A /* ThreadMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMapping.swift; sourceTree = "<group>"; };
 		4C11AA4F20FD59C700351FBD /* MessageStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageStatusView.swift; sourceTree = "<group>"; };
 		4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerViewController.swift; sourceTree = "<group>"; };
 		4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGridViewCell.swift; sourceTree = "<group>"; };
@@ -2269,6 +2271,7 @@
 				458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */,
 				4CB5F26820F7D060004D1B42 /* MessageActions.swift */,
 				4C5250D121E7BD7D00CE3D95 /* PhoneNumberValidator.swift */,
+				4C0C36F7226647FE0083F19A /* ThreadMapping.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -3563,6 +3566,7 @@
 				4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */,
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
+				4C0C36F8226647FE0083F19A /* ThreadMapping.swift in Sources */,
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
 				4CEB78C92178EBAB00F315D2 /* OWSSessionResetJobRecord.m in Sources */,
 				45794E861E00620000066731 /* CallUIAdapter.swift in Sources */,

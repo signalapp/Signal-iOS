@@ -23,14 +23,14 @@ public class ThreadViewModel: NSObject {
     @objc public let lastMessageForInbox: TSInteraction?
 
     @objc
-    public init(thread: TSThread, transaction: YapDatabaseReadTransaction) {
+    public init(thread: TSThread, transaction: SDSAnyReadTransaction) {
         self.threadRecord = thread
 
         self.isGroupThread = thread.isGroupThread()
         self.name = thread.name()
         self.isMuted = thread.isMuted
-        self.lastMessageText = thread.lastMessageText(transaction: SDSAnyReadTransaction(transitional_yapReadTransaction: transaction))
-        let lastInteraction = thread.lastInteractionForInbox(transaction: SDSAnyReadTransaction(transitional_yapReadTransaction: transaction))
+        self.lastMessageText = thread.lastMessageText(transaction: transaction)
+        let lastInteraction = thread.lastInteractionForInbox(transaction: transaction)
         self.lastMessageForInbox = lastInteraction
         self.lastMessageDate = lastInteraction?.receivedAtDate() ?? thread.creationDate
 
@@ -40,7 +40,13 @@ public class ThreadViewModel: NSObject {
             self.contactIdentifier = nil
         }
 
-        self.unreadCount = thread.unreadMessageCount(transaction: transaction)
+        if let threadUniqueId = thread.uniqueId,
+            let unreadCount = try? InteractionFinder(threadUniqueId: threadUniqueId).unreadCount(transaction: transaction) {
+            self.unreadCount = unreadCount
+        } else {
+            owsFailDebug("unreadCount was unexpectedly nil")
+            self.unreadCount = 0
+        }
         self.hasUnreadMessages = unreadCount > 0
     }
 
