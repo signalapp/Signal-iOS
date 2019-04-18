@@ -154,7 +154,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 #pragma mark - Manual Message Fetch
 
 - (BOOL)isManualMessageFetchEnabled;
-- (AnyPromise *)setIsManualMessageFetchEnabled:(BOOL)value __attribute__((warn_unused_result));
+- (void)setIsManualMessageFetchEnabled:(BOOL)value __attribute__((warn_unused_result));
 
 #ifdef DEBUG
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber;
