@@ -65,6 +65,9 @@ class DownloadStickerOperation: OWSOperation {
             }
             Logger.error("Download failed: \(error)")
             self.failureCount += 1
+            
+            // TODO: We need to discriminate retry-able errors from
+            //       404s, etc.  We might want to abort on all 4xx and 5xx.
             self.reportError(error)
         }
     }
