@@ -288,7 +288,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                            sql: """
             SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
-            WHERE \(interactionColumn: .threadUniqueId)) = ?
+            WHERE \(interactionColumn: .threadUniqueId) = ?
             ORDER BY \(interactionColumn: .id) DESC
 """,
             arguments: [threadUniqueId]).forEach { (uniqueId: String) -> Void in
