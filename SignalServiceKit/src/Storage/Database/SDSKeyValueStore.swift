@@ -69,80 +69,95 @@ public class SDSKeyValueStore: NSObject {
         write(NSNumber(booleanLiteral: value), forKey: key)
     }
 
+    public func getData(_ key: String) -> Data? {
+        return readData(key)
+    }
+
+    @objc
+    public func setData(_ value: Data, key: String) {
+        writeData(value, forKey: key)
+    }
+
     // MARK: -
 
     private func read<T>(_ key: String) -> T? {
+        guard let encoded = readData(key) else {
+            return nil
+        }
+
+        do {
+            guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
+                owsFailDebug("Could not decode value.")
+                return nil
+            }
+            return decoded
+        } catch {
+            owsFailDebug("Decode failed.")
+            return nil
+        }
+    }
+
+    private func readData(_ key: String) -> Data? {
 
         let collection = self.collection
 
-        var result: T?
+        var result: Data?
         databaseStorage.readSwallowingErrors { (transaction) in
             switch transaction.readTransaction {
             case .yapRead(let ydbTransaction):
-                if let rawObject = ydbTransaction.object(forKey: key, inCollection: collection) {
-                    guard let object = rawObject as? T else {
-                        owsFailDebug("Value has unexpected type.")
-                        result = nil
-                        return
-                    }
-                    result = object
-                } else {
-                    result = nil
+                guard let rawObject = ydbTransaction.object(forKey: key, inCollection: collection) else {
+                    return nil
                 }
+                guard let object = rawObject as? Data else {
+                    owsFailDebug("Value has unexpected type.")
+                    result = nil
+                    return
+                }
+                return object
             case .grdbRead(let grdbTransaction):
-                result = SDSKeyValueStore.read(transaction: grdbTransaction, key: key, collection: collection)
+                result = SDSKeyValueStore.readData(transaction: grdbTransaction, key: key, collection: collection)
             }
         }
         return result
     }
 
-    private class func read<T>(transaction: GRDBReadTransaction, key: String, collection: String) -> T? {
-        var encoded: Data?
+    private class func readData(transaction: GRDBReadTransaction, key: String, collection: String) -> Data? {
         do {
-            encoded = try Data.fetchOne(transaction.database,
-                                        sql: "SELECT \(self.valueColumn.columnName) FROM \(self.table.tableName) WHERE \(self.keyColumn.columnName) = ? AND \(collectionColumn.columnName) == ?",
+            return try Data.fetchOne(transaction.database,
+                                     sql: "SELECT \(self.valueColumn.columnName) FROM \(self.table.tableName) WHERE \(self.keyColumn.columnName) = ? AND \(collectionColumn.columnName) == ?",
                 arguments: [key, collection])
         } catch {
             owsFailDebug("Read failed.")
             return nil
         }
-
-        do {
-            if let encoded = encoded {
-                guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
-                    owsFailDebug("Could not decode value.")
-                    return nil
-                }
-                return decoded
-            }
-        } catch {
-            owsFailDebug("Decode failed.")
-        }
-
-        return nil
     }
 
     // TODO: Codable? NSCoding? Other serialization?
     private func write(_ value: NSCoding?, forKey key: String) {
 
-        let collection = self.collection
-
-        var encoded: Data?
         if let value = value {
-            encoded = NSKeyedArchiver.archivedData(withRootObject: value)
+            let encoded = NSKeyedArchiver.archivedData(withRootObject: value)
+            writeData(encoded, forKey: key)
+        } else {
+            writeData(nil, forKey: key)
         }
+    }
+
+    private func writeData(_ data: Data?, forKey key: String) {
+
+        let collection = self.collection
 
         databaseStorage.writeSwallowingErrors { (transaction) in
             switch transaction.writeTransaction {
             case .yapWrite(let ydbTransaction):
-                if let value = value {
-                    ydbTransaction.setObject(value, forKey: key, inCollection: collection)
+                if let data = data {
+                    ydbTransaction.setObject(data, forKey: key, inCollection: collection)
                 } else {
                     ydbTransaction.removeObject(forKey: key, inCollection: collection)
                 }
             case .grdbWrite(let grdbTransaction):
                 do {
-                    try SDSKeyValueStore.write(transaction: grdbTransaction, key: key, collection: collection, encoded: encoded)
+                    try SDSKeyValueStore.write(transaction: grdbTransaction, key: key, collection: collection, encoded: data)
                 } catch {
                     owsFailDebug("error: \(error)")
                 }

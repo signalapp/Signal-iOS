@@ -32,14 +32,16 @@ extension InstalledStickerPackSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 1)
     // Base class properties
-    static let packIdColumn = SDSColumnMetadata(columnName: "packId", columnType: .blob, columnIndex: 2)
-    static let packKeyColumn = SDSColumnMetadata(columnName: "packKey", columnType: .blob, columnIndex: 3)
+    static let manifestDataColumn = SDSColumnMetadata(columnName: "manifestData", columnType: .blob, columnIndex: 2)
+    static let packIdColumn = SDSColumnMetadata(columnName: "packId", columnType: .blob, columnIndex: 3)
+    static let packKeyColumn = SDSColumnMetadata(columnName: "packKey", columnType: .blob, columnIndex: 4)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
     public static let table = SDSTableMetadata(tableName: "model_InstalledStickerPack", columns: [
         recordTypeColumn,
         uniqueIdColumn,
+        manifestDataColumn,
         packIdColumn,
         packKeyColumn
         ])
@@ -72,10 +74,12 @@ extension InstalledStickerPackSerializer {
         case .installedStickerPack:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
+            let manifestData = try deserializer.blob(at: manifestDataColumn.columnIndex)
             let packId = try deserializer.blob(at: packIdColumn.columnIndex)
             let packKey = try deserializer.blob(at: packKeyColumn.columnIndex)
 
             return InstalledStickerPack(uniqueId: uniqueId,
+                                        manifestData: manifestData,
                                         packId: packId,
                                         packKey: packKey)
 
@@ -147,6 +151,35 @@ extension InstalledStickerPack {
                                                                    transaction: transaction,
                                                                    deserialize: InstalledStickerPackSerializer.sdsDeserialize))
     }
+
+    // Fetches a single model by "unique id".
+    @objc
+    public class func anyFetch(withUniqueId uniqueId: String,
+                               transaction: SDSAnyReadTransaction) -> InstalledStickerPack? {
+        assert(uniqueId.count > 0)
+
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return InstalledStickerPack.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+        case .grdbRead(let grdbTransaction):
+            let tableMetadata = InstalledStickerPackSerializer.table
+            let columnNames: [String] = tableMetadata.selectColumnNames
+            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
+            let tableName: String = tableMetadata.tableName
+            let uniqueIdColumnName: String = InstalledStickerPackSerializer.uniqueIdColumn.columnName
+            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
+
+            let cursor = InstalledStickerPack.grdbFetchCursor(sql: sql,
+                                                  arguments: [uniqueId],
+                                                  transaction: grdbTransaction)
+            do {
+                return try cursor.next()
+            } catch {
+                owsFailDebug("error: \(error)")
+                return nil
+            }
+        }
+    }
 }
 
 // MARK: - Swift Fetch
@@ -211,6 +244,7 @@ class InstalledStickerPackSerializer: SDSSerializer {
 
     public func updateColumnNames() -> [String] {
         return [
+            InstalledStickerPackSerializer.manifestDataColumn,
             InstalledStickerPackSerializer.packIdColumn,
             InstalledStickerPackSerializer.packKeyColumn
             ].map { $0.columnName }
@@ -218,6 +252,7 @@ class InstalledStickerPackSerializer: SDSSerializer {
 
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
+            self.model.manifestData,
             self.model.packId,
             self.model.packKey
 

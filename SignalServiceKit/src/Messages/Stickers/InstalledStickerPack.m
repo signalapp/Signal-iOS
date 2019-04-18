@@ -9,10 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation InstalledStickerPack
 
-- (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey
+- (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey manifestData:(NSData *)manifestData
 {
     OWSAssertDebug(packId.length > 0);
     OWSAssertDebug(packKey.length > 0);
+    OWSAssertDebug(manifestData.length > 0);
 
     self = [super initWithUniqueId:[InstalledStickerPack uniqueIdForPackId:packId]];
 
@@ -22,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _packId = packId;
     _packKey = packKey;
+    _manifestData = manifestData;
 
     return self;
 }
@@ -34,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+                    manifestData:(NSData *)manifestData
                           packId:(NSData *)packId
                          packKey:(NSData *)packKey
 {
@@ -43,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    _manifestData = manifestData;
     _packId = packId;
     _packKey = packKey;
 

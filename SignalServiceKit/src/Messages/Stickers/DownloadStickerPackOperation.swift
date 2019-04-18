@@ -38,6 +38,8 @@ class DownloadStickerPackOperation: OWSOperation {
 
     override public func run() {
 
+        // TODO: Skip redundant operation.
+
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
         let urlPath = "stickers/\(packId.hexadecimalString)/manifest.proto"
         cdnSessionManager.get(urlPath,

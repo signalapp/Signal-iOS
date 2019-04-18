@@ -147,6 +147,35 @@ extension OWSMessageDecryptJob {
                                                                    transaction: transaction,
                                                                    deserialize: OWSMessageDecryptJobSerializer.sdsDeserialize))
     }
+
+    // Fetches a single model by "unique id".
+    @objc
+    public class func anyFetch(withUniqueId uniqueId: String,
+                               transaction: SDSAnyReadTransaction) -> OWSMessageDecryptJob? {
+        assert(uniqueId.count > 0)
+
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return OWSMessageDecryptJob.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+        case .grdbRead(let grdbTransaction):
+            let tableMetadata = OWSMessageDecryptJobSerializer.table
+            let columnNames: [String] = tableMetadata.selectColumnNames
+            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
+            let tableName: String = tableMetadata.tableName
+            let uniqueIdColumnName: String = OWSMessageDecryptJobSerializer.uniqueIdColumn.columnName
+            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
+
+            let cursor = OWSMessageDecryptJob.grdbFetchCursor(sql: sql,
+                                                  arguments: [uniqueId],
+                                                  transaction: grdbTransaction)
+            do {
+                return try cursor.next()
+            } catch {
+                owsFailDebug("error: \(error)")
+                return nil
+            }
+        }
+    }
 }
 
 // MARK: - Swift Fetch

@@ -5,12 +5,17 @@
 import Foundation
 import PromiseKit
 
+// TODO: Determine how views can be notified of sticker downloads.
 @objc
 public class InstalledStickers: NSObject {
 
     private static var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
+
+//    public static let stickerPackCollection = "InstalledStickers"
+//
+//    private let stickerPackStore = SDSKeyValueStore(collection: InstalledStickers.stickerPackCollection)
 
     private static let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
@@ -47,7 +52,46 @@ public class InstalledStickers: NSObject {
         return url
     }
 
+    // MARK: - Sticker Packs
+
+    @objc
+    public class func fetchInstalledStickerPack(packId: Data,
+                                                transaction: SDSAnyReadTransaction) -> InstalledStickerPack? {
+        assert(packId.count > 0)
+
+        let uniqueId = InstalledStickerPack.uniqueId(forPackId: packId)
+
+        return InstalledStickerPack.anyFetch(withUniqueId: uniqueId, transaction: transaction)
+    }
+
     // MARK: -
+
+    @objc
+    public class func filepathForInstalledSticker(packId: Data,
+                                                  packKey: Data,
+                                                  stickerId: UInt32) -> String? {
+        assert(packId.count > 0)
+        assert(packKey.count > 0)
+
+        if isStickerInstalled(packId: packId,
+                              stickerId: stickerId) {
+            return stickerUrl(packId: packId, stickerId: stickerId).path
+        } else {
+            return nil
+        }
+    }
+
+    @objc
+    public class func isStickerInstalled(packId: Data,
+                                         stickerId: UInt32) -> Bool {
+        assert(packId.count > 0)
+
+        var result = false
+        databaseStorage.readSwallowingErrors { (transaction) in
+            result = nil != fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: transaction)
+        }
+        return result
+    }
 
     @objc
     public class func fetchInstalledSticker(packId: Data,
@@ -57,27 +101,7 @@ public class InstalledStickers: NSObject {
 
         let uniqueId = InstalledSticker.uniqueId(forPackId: packId, stickerId: stickerId)
 
-        switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return InstalledSticker.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
-        case .grdbRead(let grdbTransaction):
-            let tableMetadata = InstalledStickerSerializer.table
-            let columnNames: [String] = tableMetadata.selectColumnNames
-            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
-            let tableName: String = tableMetadata.tableName
-            let uniqueIdColumnName: String = InstalledStickerSerializer.uniqueIdColumn.columnName
-            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
-
-            let cursor = InstalledSticker.grdbFetchCursor(sql: sql,
-                                                          arguments: [uniqueId],
-                                                          transaction: grdbTransaction)
-            do {
-                return try cursor.next()
-            } catch {
-                owsFailDebug("error: \(error)")
-                return nil
-            }
-        }
+        return InstalledSticker.anyFetch(withUniqueId: uniqueId, transaction: transaction)
     }
 
     @objc

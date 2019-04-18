@@ -41,6 +41,12 @@ class DownloadStickerOperation: OWSOperation {
 
     override public func run() {
 
+        if InstalledStickers.isStickerInstalled(packId: packId,
+                                                stickerId: stickerId) {
+            Logger.verbose("Skipping redundant operation.")
+            return didFail(error: StickerError.redundantOperation)
+        }
+
         // https://cdn.signal.org/stickers/<pack_id>/full/<sticker_id>
         let urlPath = "stickers/\(packId.hexadecimalString)/full/\(stickerId)"
         cdnSessionManager.get(urlPath,

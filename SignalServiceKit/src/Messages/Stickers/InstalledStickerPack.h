@@ -10,8 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSData *packId;
 @property (nonatomic, readonly) NSData *packKey;
+@property (nonatomic, readonly) NSData *manifestData;
 
-- (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey;
+- (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey manifestData:(NSData *)manifestData;
 
 // --- CODE GENERATION MARKER
 
@@ -21,9 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+                    manifestData:(NSData *)manifestData
                           packId:(NSData *)packId
                          packKey:(NSData *)packKey
-NS_SWIFT_NAME(init(uniqueId:packId:packKey:));
+NS_SWIFT_NAME(init(uniqueId:manifestData:packId:packKey:));
 
 // clang-format on
 
