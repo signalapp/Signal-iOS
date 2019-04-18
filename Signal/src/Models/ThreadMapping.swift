@@ -181,10 +181,10 @@ class ThreadMapping: NSObject {
         //       each deletion affecting the indices of subsequent deletions.
         let deletedThreadIds = oldThreadIds.filter { !newThreadIds.contains($0) }
         for deletedThreadId in deletedThreadIds.reversed() {
-            guard let oldIndex = oldThreadIds.firstIndexDistance(of: deletedThreadId) else {
+            guard let oldIndex = oldThreadIds.firstIndexAsInt(of: deletedThreadId) else {
                 throw assertionError("oldIndex was unexpectedly nil")
             }
-            assert(newThreadIds.firstIndexDistance(of: deletedThreadId) == nil)
+            assert(newThreadIds.firstIndexAsInt(of: deletedThreadId) == nil)
             rowChanges.append(ThreadMappingRowChange(type: .delete,
                                                      uniqueRowId: deletedThreadId,
                                                      oldIndexPath: IndexPath(row: oldIndex, section: kSection),
@@ -196,8 +196,8 @@ class ThreadMapping: NSObject {
         // NOTE: We DO NOT use `reversed`
         let insertedThreadIds = newThreadIds.filter { !oldThreadIds.contains($0) }
         for insertedThreadId in insertedThreadIds {
-            assert(oldThreadIds.firstIndexDistance(of: insertedThreadId) == nil)
-            guard let newIndex = newThreadIds.firstIndexDistance(of: insertedThreadId) else {
+            assert(oldThreadIds.firstIndexAsInt(of: insertedThreadId) == nil)
+            guard let newIndex = newThreadIds.firstIndexAsInt(of: insertedThreadId) else {
                 throw assertionError("newIndex was unexpectedly nil")
             }
             rowChanges.append(ThreadMappingRowChange(type: .insert,
@@ -208,10 +208,10 @@ class ThreadMapping: NSObject {
 
         let exlusivelyUpdatedThreadIds = updatedItemIds.subtracting(insertedThreadIds).subtracting(deletedThreadIds)
         for updatedThreadId in exlusivelyUpdatedThreadIds {
-            guard let oldIndex = oldThreadIds.firstIndexDistance(of: updatedThreadId) else {
+            guard let oldIndex = oldThreadIds.firstIndexAsInt(of: updatedThreadId) else {
                 throw assertionError("oldIndex was unexpectedly nil")
             }
-            guard let newIndex = newThreadIds.firstIndexDistance(of: updatedThreadId) else {
+            guard let newIndex = newThreadIds.firstIndexAsInt(of: updatedThreadId) else {
                 throw assertionError("oldIndex was unexpectedly nil")
             }
             if oldIndex != newIndex {
@@ -280,7 +280,7 @@ class ThreadMapping: NSObject {
 }
 
 extension Collection where Element: Equatable {
-    func firstIndexDistance(of element: Element) -> Int? {
+    func firstIndexAsInt(of element: Element) -> Int? {
         guard let index = firstIndex(of: element) else { return nil }
         return distance(from: startIndex, to: index)
     }
