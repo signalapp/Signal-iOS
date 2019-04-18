@@ -5,6 +5,7 @@
 import Foundation
 import PromiseKit
 
+// TODO: Hang this singleton on SSKEnvironment.
 // TODO: Maybe this could be better described as "sticker manager".
 // TODO: Determine how views can be notified of sticker downloads.
 @objc
@@ -14,10 +15,6 @@ public class InstalledStickers: NSObject {
         return SDSDatabaseStorage.shared
     }
 
-//    public static let stickerPackCollection = "InstalledStickers"
-//
-//    private let stickerPackStore = SDSKeyValueStore(collection: InstalledStickers.stickerPackCollection)
-
     private static let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "org.signal.installedStickers"
@@ -26,11 +23,10 @@ public class InstalledStickers: NSObject {
     }()
 
     private override init() {
-//        appre
-//        // TODO: Resume sticker and sticker pack downloads when app is ready.
-//        AppReadiness.runNowOrWhenAppDidBecomeReady {
-//            (self.messageFetcherJob.run() as Promise<Void>).retainUntilComplete()
-//        }
+        // Resume sticker and sticker pack downloads when app is ready.
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            InstalledStickers.enqueueAllStickerDownloads()
+        }
     }
 
     // MARK: - Paths
@@ -85,8 +81,6 @@ public class InstalledStickers: NSObject {
                                                          packKey: Data) {
         assert(packId.count > 0)
         assert(packKey.count > 0)
-
-        // TODO: Mark sticker pack as downloading in kv store.
 
         let operation = DownloadStickerPackOperation(packId: packId,
                                                      packKey: packKey,
@@ -298,5 +292,35 @@ public class InstalledStickers: NSObject {
         }
 
         return plaintext
+    }
+
+    private class func enqueueAllStickerDownloads() {
+        DispatchQueue.global().async {
+            var installedStickerPacks = [InstalledStickerPack]()
+            self.databaseStorage.readSwallowingErrors { (transaction) in
+                switch transaction.readTransaction {
+                case .yapRead(let ydbTransaction):
+                    InstalledStickerPack.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
+                        guard let pack = object as? InstalledStickerPack else {
+                            owsFailDebug("Unexpected object: \(type(of: object))")
+                            return
+                        }
+                        installedStickerPacks.append(pack)
+                    }
+                case .grdbRead(let grdbTransaction):
+                    let cursor = InstalledStickerPack.grdbFetchCursor(transaction: grdbTransaction)
+                    do {
+                        installedStickerPacks += try cursor.all()
+                    } catch let error as NSError {
+                        owsFailDebug("Couldn't load models: \(error)")
+                        return
+                    }
+                }
+            }
+
+            for installedStickerPack in installedStickerPacks {
+                installStickerPackContents(installedStickerPack: installedStickerPack)
+            }
+        }
     }
 }
