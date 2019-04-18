@@ -5917,3 +5917,262 @@ extension SSKProtoGroupDetails.SSKProtoGroupDetailsBuilder {
 }
 
 #endif
+
+// MARK: - SSKProtoPackSticker
+
+@objc public class SSKProtoPackSticker: NSObject {
+
+    // MARK: - SSKProtoPackStickerBuilder
+
+    @objc public class func builder(id: UInt32, emoji: String) -> SSKProtoPackStickerBuilder {
+        return SSKProtoPackStickerBuilder(id: id, emoji: emoji)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoPackStickerBuilder {
+        let builder = SSKProtoPackStickerBuilder(id: id, emoji: emoji)
+        return builder
+    }
+
+    @objc public class SSKProtoPackStickerBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_Pack.Sticker()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(id: UInt32, emoji: String) {
+            super.init()
+
+            setId(id)
+            setEmoji(emoji)
+        }
+
+        @objc public func setId(_ valueParam: UInt32) {
+            proto.id = valueParam
+        }
+
+        @objc public func setEmoji(_ valueParam: String) {
+            proto.emoji = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoPackSticker {
+            return try SSKProtoPackSticker.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoPackSticker.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_Pack.Sticker
+
+    @objc public let id: UInt32
+
+    @objc public let emoji: String
+
+    private init(proto: SignalServiceProtos_Pack.Sticker,
+                 id: UInt32,
+                 emoji: String) {
+        self.proto = proto
+        self.id = id
+        self.emoji = emoji
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoPackSticker {
+        let proto = try SignalServiceProtos_Pack.Sticker(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_Pack.Sticker) throws -> SSKProtoPackSticker {
+        guard proto.hasID else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+        }
+        let id = proto.id
+
+        guard proto.hasEmoji else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: emoji")
+        }
+        let emoji = proto.emoji
+
+        // MARK: - Begin Validation Logic for SSKProtoPackSticker -
+
+        // MARK: - End Validation Logic for SSKProtoPackSticker -
+
+        let result = SSKProtoPackSticker(proto: proto,
+                                         id: id,
+                                         emoji: emoji)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoPackSticker {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoPackSticker.SSKProtoPackStickerBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoPackSticker? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoPack
+
+@objc public class SSKProtoPack: NSObject {
+
+    // MARK: - SSKProtoPackBuilder
+
+    @objc public class func builder() -> SSKProtoPackBuilder {
+        return SSKProtoPackBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoPackBuilder {
+        let builder = SSKProtoPackBuilder()
+        if let _value = title {
+            builder.setTitle(_value)
+        }
+        if let _value = author {
+            builder.setAuthor(_value)
+        }
+        if let _value = cover {
+            builder.setCover(_value)
+        }
+        builder.setStickers(stickers)
+        return builder
+    }
+
+    @objc public class SSKProtoPackBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_Pack()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setTitle(_ valueParam: String) {
+            proto.title = valueParam
+        }
+
+        @objc public func setAuthor(_ valueParam: String) {
+            proto.author = valueParam
+        }
+
+        @objc public func setCover(_ valueParam: SSKProtoPackSticker) {
+            proto.cover = valueParam.proto
+        }
+
+        @objc public func addStickers(_ valueParam: SSKProtoPackSticker) {
+            var items = proto.stickers
+            items.append(valueParam.proto)
+            proto.stickers = items
+        }
+
+        @objc public func setStickers(_ wrappedItems: [SSKProtoPackSticker]) {
+            proto.stickers = wrappedItems.map { $0.proto }
+        }
+
+        @objc public func build() throws -> SSKProtoPack {
+            return try SSKProtoPack.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoPack.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_Pack
+
+    @objc public let cover: SSKProtoPackSticker?
+
+    @objc public let stickers: [SSKProtoPackSticker]
+
+    @objc public var title: String? {
+        guard proto.hasTitle else {
+            return nil
+        }
+        return proto.title
+    }
+    @objc public var hasTitle: Bool {
+        return proto.hasTitle
+    }
+
+    @objc public var author: String? {
+        guard proto.hasAuthor else {
+            return nil
+        }
+        return proto.author
+    }
+    @objc public var hasAuthor: Bool {
+        return proto.hasAuthor
+    }
+
+    private init(proto: SignalServiceProtos_Pack,
+                 cover: SSKProtoPackSticker?,
+                 stickers: [SSKProtoPackSticker]) {
+        self.proto = proto
+        self.cover = cover
+        self.stickers = stickers
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoPack {
+        let proto = try SignalServiceProtos_Pack(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_Pack) throws -> SSKProtoPack {
+        var cover: SSKProtoPackSticker? = nil
+        if proto.hasCover {
+            cover = try SSKProtoPackSticker.parseProto(proto.cover)
+        }
+
+        var stickers: [SSKProtoPackSticker] = []
+        stickers = try proto.stickers.map { try SSKProtoPackSticker.parseProto($0) }
+
+        // MARK: - Begin Validation Logic for SSKProtoPack -
+
+        // MARK: - End Validation Logic for SSKProtoPack -
+
+        let result = SSKProtoPack(proto: proto,
+                                  cover: cover,
+                                  stickers: stickers)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoPack {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoPack.SSKProtoPackBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoPack? {
+        return try! self.build()
+    }
+}
+
+#endif
