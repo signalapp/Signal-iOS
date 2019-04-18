@@ -83,12 +83,16 @@ public class SDSKeyValueStore: NSObject {
         databaseStorage.readSwallowingErrors { (transaction) in
             switch transaction.readTransaction {
             case .yapRead(let ydbTransaction):
-                let rawObject = ydbTransaction.object(forKey: key, inCollection: collection)
-                guard let object = rawObject as? T else {
-                    owsFailDebug("Value has unexpected type.")
-                    return
+                if let rawObject = ydbTransaction.object(forKey: key, inCollection: collection) {
+                    guard let object = rawObject as? T else {
+                        owsFailDebug("Value has unexpected type.")
+                        result = nil
+                        return
+                    }
+                    result = object
+                } else {
+                    result = nil
                 }
-                result = object
             case .grdbRead(let grdbTransaction):
                 result = SDSKeyValueStore.read(transaction: grdbTransaction, key: key, collection: collection)
             }
