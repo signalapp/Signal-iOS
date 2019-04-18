@@ -32,18 +32,24 @@ extension InstalledStickerPackSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 1)
     // Base class properties
-    static let manifestDataColumn = SDSColumnMetadata(columnName: "manifestData", columnType: .blob, columnIndex: 2)
-    static let packIdColumn = SDSColumnMetadata(columnName: "packId", columnType: .blob, columnIndex: 3)
-    static let packKeyColumn = SDSColumnMetadata(columnName: "packKey", columnType: .blob, columnIndex: 4)
+    static let authorColumn = SDSColumnMetadata(columnName: "author", columnType: .unicodeString, isOptional: true, columnIndex: 2)
+    static let coverColumn = SDSColumnMetadata(columnName: "cover", columnType: .blob, columnIndex: 3)
+    static let packIdColumn = SDSColumnMetadata(columnName: "packId", columnType: .blob, columnIndex: 4)
+    static let packKeyColumn = SDSColumnMetadata(columnName: "packKey", columnType: .blob, columnIndex: 5)
+    static let stickersColumn = SDSColumnMetadata(columnName: "stickers", columnType: .blob, columnIndex: 6)
+    static let titleColumn = SDSColumnMetadata(columnName: "title", columnType: .unicodeString, isOptional: true, columnIndex: 7)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
     public static let table = SDSTableMetadata(tableName: "model_InstalledStickerPack", columns: [
         recordTypeColumn,
         uniqueIdColumn,
-        manifestDataColumn,
+        authorColumn,
+        coverColumn,
         packIdColumn,
-        packKeyColumn
+        packKeyColumn,
+        stickersColumn,
+        titleColumn
         ])
 
 }
@@ -74,14 +80,22 @@ extension InstalledStickerPackSerializer {
         case .installedStickerPack:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let manifestData = try deserializer.blob(at: manifestDataColumn.columnIndex)
+            let author = try deserializer.optionalString(at: authorColumn.columnIndex)
+            let coverSerialized: Data = try deserializer.blob(at: coverColumn.columnIndex)
+            let cover: InstalledStickerPackItem = try SDSDeserializer.unarchive(coverSerialized)
             let packId = try deserializer.blob(at: packIdColumn.columnIndex)
             let packKey = try deserializer.blob(at: packKeyColumn.columnIndex)
+            let stickersSerialized: Data = try deserializer.blob(at: stickersColumn.columnIndex)
+            let stickers: [InstalledStickerPackItem] = try SDSDeserializer.unarchive(stickersSerialized)
+            let title = try deserializer.optionalString(at: titleColumn.columnIndex)
 
             return InstalledStickerPack(uniqueId: uniqueId,
-                                        manifestData: manifestData,
+                                        author: author,
+                                        cover: cover,
                                         packId: packId,
-                                        packKey: packKey)
+                                        packKey: packKey,
+                                        stickers: stickers,
+                                        title: title)
 
         default:
             owsFail("Invalid record type \(recordType)")
@@ -244,17 +258,23 @@ class InstalledStickerPackSerializer: SDSSerializer {
 
     public func updateColumnNames() -> [String] {
         return [
-            InstalledStickerPackSerializer.manifestDataColumn,
+            InstalledStickerPackSerializer.authorColumn,
+            InstalledStickerPackSerializer.coverColumn,
             InstalledStickerPackSerializer.packIdColumn,
-            InstalledStickerPackSerializer.packKeyColumn
+            InstalledStickerPackSerializer.packKeyColumn,
+            InstalledStickerPackSerializer.stickersColumn,
+            InstalledStickerPackSerializer.titleColumn
             ].map { $0.columnName }
     }
 
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            self.model.manifestData,
+            self.model.author ?? DatabaseValue.null,
+            SDSDeserializer.archive(self.model.cover) ?? DatabaseValue.null,
             self.model.packId,
-            self.model.packKey
+            self.model.packKey,
+            SDSDeserializer.archive(self.model.stickers) ?? DatabaseValue.null,
+            self.model.title ?? DatabaseValue.null
 
         ]
         if OWSIsDebugBuild() {

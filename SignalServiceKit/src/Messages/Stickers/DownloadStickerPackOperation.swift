@@ -38,7 +38,10 @@ class DownloadStickerPackOperation: OWSOperation {
 
     override public func run() {
 
-        // TODO: Skip redundant operation.
+        if InstalledStickers.isStickerPackInstalled(packId: packId) {
+            Logger.verbose("Skipping redundant operation.")
+            return didFail(error: StickerError.redundantOperation)
+        }
 
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
         let urlPath = "stickers/\(packId.hexadecimalString)/manifest.proto"

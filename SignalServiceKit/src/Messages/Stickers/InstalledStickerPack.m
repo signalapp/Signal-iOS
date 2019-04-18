@@ -7,13 +7,40 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@implementation InstalledStickerPackItem
+
+- (instancetype)initWithStickerId:(UInt32)stickerId emojiString:(NSString *)emojiString
+{
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    _stickerId = stickerId;
+    _emojiString = emojiString;
+
+    return self;
+}
+
+@end
+
+#pragma mark -
+
 @implementation InstalledStickerPack
 
-- (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey manifestData:(NSData *)manifestData
+- (instancetype)initWithPackId:(NSData *)packId
+                       packKey:(NSData *)packKey
+                         title:(nullable NSString *)title
+                        author:(nullable NSString *)author
+                         cover:(InstalledStickerPackItem *)cover
+                      stickers:(NSArray<InstalledStickerPackItem *> *)stickers
 {
     OWSAssertDebug(packId.length > 0);
     OWSAssertDebug(packKey.length > 0);
-    OWSAssertDebug(manifestData.length > 0);
+    // Title and empty might be nil or empty.
+    OWSAssertDebug(cover);
+    OWSAssertDebug(stickers.count > 0);
 
     self = [super initWithUniqueId:[InstalledStickerPack uniqueIdForPackId:packId]];
 
@@ -23,7 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     _packId = packId;
     _packKey = packKey;
-    _manifestData = manifestData;
+    _author = author;
+    _cover = cover;
+    _stickers = stickers;
 
     return self;
 }
@@ -36,9 +65,12 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                    manifestData:(NSData *)manifestData
+                          author:(nullable NSString *)author
+                           cover:(InstalledStickerPackItem *)cover
                           packId:(NSData *)packId
                          packKey:(NSData *)packKey
+                        stickers:(NSArray<InstalledStickerPackItem *> *)stickers
+                           title:(nullable NSString *)title
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -46,9 +78,12 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _manifestData = manifestData;
+    _author = author;
+    _cover = cover;
     _packId = packId;
     _packKey = packKey;
+    _stickers = stickers;
+    _title = title;
 
     return self;
 }

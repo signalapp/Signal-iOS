@@ -5,6 +5,7 @@
 import Foundation
 import PromiseKit
 
+// TODO: Maybe this could be better described as "sticker manager".
 // TODO: Determine how views can be notified of sticker downloads.
 @objc
 public class InstalledStickers: NSObject {
@@ -25,7 +26,11 @@ public class InstalledStickers: NSObject {
     }()
 
     private override init() {
-        // TODO: Resume sticker and sticker pack downloads when app is ready.
+//        appre
+//        // TODO: Resume sticker and sticker pack downloads when app is ready.
+//        AppReadiness.runNowOrWhenAppDidBecomeReady {
+//            (self.messageFetcherJob.run() as Promise<Void>).retainUntilComplete()
+//        }
     }
 
     // MARK: - Paths
@@ -55,6 +60,17 @@ public class InstalledStickers: NSObject {
     // MARK: - Sticker Packs
 
     @objc
+    public class func isStickerPackInstalled(packId: Data) -> Bool {
+        assert(packId.count > 0)
+
+        var result = false
+        databaseStorage.readSwallowingErrors { (transaction) in
+            result = nil != fetchInstalledStickerPack(packId: packId, transaction: transaction)
+        }
+        return result
+    }
+
+    @objc
     public class func fetchInstalledStickerPack(packId: Data,
                                                 transaction: SDSAnyReadTransaction) -> InstalledStickerPack? {
         assert(packId.count > 0)
@@ -64,7 +80,111 @@ public class InstalledStickers: NSObject {
         return InstalledStickerPack.anyFetch(withUniqueId: uniqueId, transaction: transaction)
     }
 
-    // MARK: -
+    @objc
+    public class func tryToDownloadAndInstallStickerPack(packId: Data,
+                                                         packKey: Data) {
+        assert(packId.count > 0)
+        assert(packKey.count > 0)
+
+        // TODO: Mark sticker pack as downloading in kv store.
+
+        let operation = DownloadStickerPackOperation(packId: packId,
+                                                     packKey: packKey,
+                                                     success: { (manifestData) in
+                                                        DispatchQueue.global().async {
+                                                            // installStickerPack is expensive.
+                                                            self.installStickerPack(packId: packId,
+                                                                                    packKey: packKey,
+                                                                                    manifestData: manifestData)
+                                                        }
+        },
+                                                     failure: { (_) in
+                                                        // Do nothing.
+        })
+        operationQueue.addOperation(operation)
+    }
+
+    private class func parseOptionalString(_ value: String?) -> String? {
+        guard let value = value?.ows_stripped(), value.count > 0 else {
+            return nil
+        }
+        return value
+    }
+
+    private class func parsePackItem(_ proto: SSKProtoPackSticker?) -> InstalledStickerPackItem? {
+        guard let proto = proto else {
+            return nil
+        }
+        let stickerId = proto.id
+        let emojiString = parseOptionalString(proto.emoji) ?? ""
+        return InstalledStickerPackItem(stickerId: stickerId, emojiString: emojiString)
+    }
+
+    // This method tries to parse a downloaded manifest.
+    // If valid, we install the pack and then kick off
+    // download of its contents.
+    private class func installStickerPack(packId: Data,
+                                          packKey: Data,
+                                          manifestData: Data) {
+        assert(packId.count > 0)
+        assert(packKey.count > 0)
+        assert(manifestData.count > 0)
+
+        var hasInstalledStickerPack = false
+        databaseStorage.readSwallowingErrors { (transaction) in
+            hasInstalledStickerPack = nil != fetchInstalledStickerPack(packId: packId, transaction: transaction)
+        }
+        if hasInstalledStickerPack {
+            // Sticker pack already installed, skip.
+            return
+        }
+
+        let manifestProto: SSKProtoPack
+        do {
+            manifestProto = try SSKProtoPack.parseData(manifestData)
+        } catch let error as NSError {
+            owsFailDebug("Couldn't parse protos: \(error)")
+            return
+        }
+        let title = parseOptionalString(manifestProto.title)
+        let author = parseOptionalString(manifestProto.author)
+        let manifestCover = parsePackItem(manifestProto.cover)
+        var items = [InstalledStickerPackItem]()
+        for stickerProto in manifestProto.stickers {
+            if let item = parsePackItem(stickerProto) {
+                items.append(item)
+            }
+        }
+        guard let firstItem = items.first else {
+            owsFailDebug("Invalid manifest, no stickers")
+            return
+        }
+        let cover = manifestCover ?? firstItem
+
+        let installedStickerPack = InstalledStickerPack(packId: packId, packKey: packKey, title: title, author: author, cover: cover, stickers: items)
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            installedStickerPack.anySave(transaction: transaction)
+        }
+
+        installStickerPackContents(installedStickerPack: installedStickerPack)
+    }
+
+    private class func installStickerPackContents(installedStickerPack: InstalledStickerPack) {
+        // Note: It's safe to kick off downloads of stickers that are already installed.
+
+        // The cover.
+        tryToDownloadAndInstallSticker(packId: installedStickerPack.packId,
+                                       packKey: installedStickerPack.packKey,
+                                       stickerId: installedStickerPack.cover.stickerId)
+        // The stickers.
+        for item in installedStickerPack.stickers {
+            tryToDownloadAndInstallSticker(packId: installedStickerPack.packId,
+                                           packKey: installedStickerPack.packKey,
+                                           stickerId: item.stickerId)
+        }
+    }
+
+    // MARK: - Stickers
 
     @objc
     public class func filepathForInstalledSticker(packId: Data,
@@ -77,6 +197,8 @@ public class InstalledStickers: NSObject {
                               stickerId: stickerId) {
             return stickerUrl(packId: packId, stickerId: stickerId).path
         } else {
+            // TODO: We may want to kick off download here on cache miss.
+
             return nil
         }
     }
@@ -113,13 +235,11 @@ public class InstalledStickers: NSObject {
         assert(packKey.count > 0)
         assert(stickerData.count > 0)
 
-        var result: InstalledSticker?
+        var hasInstalledSticker = false
         databaseStorage.readSwallowingErrors { (transaction) in
-            if let installedSticker = fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: transaction) {
-                result = installedSticker
-            }
+            hasInstalledSticker = nil != fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: transaction)
         }
-        if result != nil {
+        if hasInstalledSticker {
             // Sticker already installed, skip.
             return
         }
@@ -159,25 +279,7 @@ public class InstalledStickers: NSObject {
         operationQueue.addOperation(operation)
     }
 
-    @objc
-    public class func tryToDownloadAndInstallStickerPack(packId: Data,
-                                                         packKey: Data) {
-        assert(packId.count > 0)
-        assert(packKey.count > 0)
-
-        // TODO: Mark sticker pack as downloading in kv store.
-
-        let operation = DownloadStickerPackOperation(packId: packId,
-                                                     packKey: packKey,
-                                                     success: { (_) in
-                                                        // TODO: Mark sticker pack as downloaded in kv store.
-                                                        // TODO: Enqueue all stickers in pack for download.
-        },
-                                                     failure: { (_) in
-                                                        // Do nothing.
-        })
-        operationQueue.addOperation(operation)
-    }
+    // MARK: - Misc.
 
     // Data might be a sticker or a sticker pack manifest.
     public class func decrypt(ciphertext: Data,

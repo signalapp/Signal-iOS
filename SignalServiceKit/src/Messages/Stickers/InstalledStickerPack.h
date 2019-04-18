@@ -6,13 +6,33 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface InstalledStickerPackItem : MTLModel
+
+@property (nonatomic, readonly) UInt32 stickerId;
+@property (nonatomic, readonly) NSString *emojiString;
+
+- (instancetype)initWithStickerId:(UInt32)stickerId emojiString:(NSString *)emojiString;
+
+@end
+
+#pragma mark -
+
 @interface InstalledStickerPack : TSYapDatabaseObject
 
 @property (nonatomic, readonly) NSData *packId;
 @property (nonatomic, readonly) NSData *packKey;
-@property (nonatomic, readonly) NSData *manifestData;
 
-- (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey manifestData:(NSData *)manifestData;
+@property (nonatomic, readonly, nullable) NSString *title;
+@property (nonatomic, readonly, nullable) NSString *author;
+@property (nonatomic, readonly) InstalledStickerPackItem *cover;
+@property (nonatomic, readonly) NSArray<InstalledStickerPackItem *> *stickers;
+
+- (instancetype)initWithPackId:(NSData *)packId
+                       packKey:(NSData *)packKey
+                         title:(nullable NSString *)title
+                        author:(nullable NSString *)author
+                         cover:(InstalledStickerPackItem *)cover
+                      stickers:(NSArray<InstalledStickerPackItem *> *)stickers;
 
 // --- CODE GENERATION MARKER
 
@@ -22,10 +42,13 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                    manifestData:(NSData *)manifestData
+                          author:(nullable NSString *)author
+                           cover:(InstalledStickerPackItem *)cover
                           packId:(NSData *)packId
                          packKey:(NSData *)packKey
-NS_SWIFT_NAME(init(uniqueId:manifestData:packId:packKey:));
+                        stickers:(NSArray<InstalledStickerPackItem *> *)stickers
+                           title:(nullable NSString *)title
+NS_SWIFT_NAME(init(uniqueId:author:cover:packId:packKey:stickers:title:));
 
 // clang-format on
 
