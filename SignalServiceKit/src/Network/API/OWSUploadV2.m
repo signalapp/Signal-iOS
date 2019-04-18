@@ -14,6 +14,7 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <SignalServiceKit/TSSocketManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,7 +49,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
 @implementation OWSUploadForm
 
-+ (nullable OWSUploadForm *)parse:(NSDictionary *)formResponseObject
++ (nullable OWSUploadForm *)parse:(nullable NSDictionary *)formResponseObject
 {
     if (![formResponseObject isKindOfClass:[NSDictionary class]]) {
         OWSFailDebug(@"Invalid upload form.");
@@ -170,7 +171,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 #pragma mark - Avatars
 
 // If avatarData is nil, we are clearing the avatar.
-- (AnyPromise *)uploadAvatarToService:(NSData *_Nullable)avatarData
+- (AnyPromise *)uploadAvatarToService:(nullable NSData *)avatarData
                      clearLocalAvatar:(dispatch_block_t)clearLocalAvatar
                         progressBlock:(UploadProgressBlock)progressBlock
 {
@@ -182,7 +183,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             TSRequest *formRequest = [OWSRequestFactory profileAvatarUploadFormRequest];
             [self.networkManager makeRequest:formRequest
-                success:^(NSURLSessionDataTask *task, id formResponseObject) {
+                success:^(NSURLSessionDataTask *task, id _Nullable formResponseObject) {
                     OWSAvatarUploadV2 *_Nullable strongSelf = weakSelf;
                     if (!strongSelf) {
                         return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
@@ -220,7 +221,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
     return promise;
 }
 
-- (AnyPromise *)parseFormAndUpload:(id)formResponseObject
+- (AnyPromise *)parseFormAndUpload:(nullable id)formResponseObject
                            urlPath:(NSString *)urlPath
                      progressBlock:(UploadProgressBlock)progressBlock
 {
@@ -304,6 +305,11 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
     return SSKEnvironment.shared.networkManager;
 }
 
+- (TSSocketManager *)socketManager
+{
+    return SSKEnvironment.shared.socketManager;
+}
+
 #pragma mark -
 
 - (nullable NSData *)attachmentData
@@ -340,39 +346,67 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
     self.attachmentStream = attachmentStream;
 
-    __weak OWSAttachmentUploadV2 *weakSelf = self;
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            TSRequest *formRequest = [OWSRequestFactory allocAttachmentRequest];
-            [self.networkManager makeRequest:formRequest
-                success:^(NSURLSessionDataTask *task, id formResponseObject) {
-                    OWSAttachmentUploadV2 *_Nullable strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
-                    }
-
-                    [[strongSelf parseFormAndUpload:formResponseObject
-                                            urlPath:@"attachments/"
-                                      progressBlock:progressBlock]
-                            .thenInBackground(^{
-                                resolve(@(1));
-                            })
-                            .catchInBackground(^(NSError *error) {
-                                resolve(error);
-                            }) retainUntilComplete];
-                }
-                failure:^(NSURLSessionDataTask *task, NSError *error) {
-                    OWSLogError(@"Failed to get profile avatar upload form: %@", error);
-                    resolve(error);
-                }];
+            [self tryToAllocateUpload:resolve progressBlock:progressBlock skipWebsocket:NO];
         });
     }];
     return promise;
 }
 
+- (void)tryToAllocateUpload:(PMKResolver)resolve
+              progressBlock:(UploadProgressBlock)progressBlock
+              skipWebsocket:(BOOL)skipWebsocket
+{
+    TSRequest *formRequest = [OWSRequestFactory allocAttachmentRequest];
+
+    BOOL shouldUseWebsocket = (self.socketManager.canMakeRequests && !skipWebsocket);
+
+    __weak OWSAttachmentUploadV2 *weakSelf = self;
+    void (^formSuccess)(id _Nullable) = ^(id _Nullable formResponseObject) {
+        OWSAttachmentUploadV2 *_Nullable strongSelf = weakSelf;
+        if (!strongSelf) {
+            return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
+        }
+
+        [[strongSelf parseFormAndUpload:formResponseObject urlPath:@"attachments/" progressBlock:progressBlock]
+                .thenInBackground(^{
+                    resolve(@(1));
+                })
+                .catchInBackground(^(NSError *error) {
+                    resolve(error);
+                }) retainUntilComplete];
+    };
+    void (^formFailure)(NSError *) = ^(NSError *error) {
+        OWSLogError(@"Failed to get profile avatar upload form: %@", error);
+        resolve(error);
+    };
+
+    if (shouldUseWebsocket) {
+        [self.socketManager makeRequest:formRequest
+            success:^(id _Nullable responseObject) {
+                formSuccess(responseObject);
+            }
+            failure:^(NSInteger statusCode, NSData *_Nullable responseData, NSError *_Nullable error) {
+                OWSLogError(@"Websocket request failed: %d, %@", (int)statusCode, error);
+
+                // Try again without websocket.
+                [weakSelf tryToAllocateUpload:resolve progressBlock:progressBlock skipWebsocket:YES];
+            }];
+    } else {
+        [self.networkManager makeRequest:formRequest
+            success:^(NSURLSessionDataTask *task, id _Nullable formResponseObject) {
+                formSuccess(formResponseObject);
+            }
+            failure:^(NSURLSessionDataTask *task, NSError *error) {
+                formFailure(error);
+            }];
+    }
+}
+
 #pragma mark -
 
-- (AnyPromise *)parseFormAndUpload:(id)formResponseObject
+- (AnyPromise *)parseFormAndUpload:(nullable id)formResponseObject
                            urlPath:(NSString *)urlPath
                      progressBlock:(UploadProgressBlock)progressBlock
 {
