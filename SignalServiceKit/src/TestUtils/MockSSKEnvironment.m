@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
     TSNetworkManager *networkManager = [OWSFakeNetworkManager new];
     OWSMessageSender *messageSender = [OWSFakeMessageSender new];
-    SSKMessageSenderJobQueue *messageSenderJobQueue = [SSKMessageSenderJobQueue new];
+    MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
 
     OWSMessageManager *messageManager = [[OWSMessageManager alloc] initWithPrimaryStorage:primaryStorage];
     OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];

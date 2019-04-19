@@ -21,8 +21,6 @@ import Foundation
 ///
 /// Both respect the `error.isRetryable` convention to be sure we don't keep retrying in some situations
 /// (e.g. rate limiting)
-
-@objc(SSKMessageSenderJobQueue)
 public class MessageSenderJobQueue: NSObject, JobQueue {
 
     @objc

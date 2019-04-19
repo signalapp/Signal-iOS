@@ -15,6 +15,14 @@ public class InstalledStickers: NSObject {
         return SDSDatabaseStorage.shared
     }
 
+    private static var primaryStorage: OWSPrimaryStorage {
+        return OWSPrimaryStorage.shared()
+    }
+
+    private static var messageSenderJobQueue: MessageSenderJobQueue {
+        return SSKEnvironment.shared.messageSenderJobQueue
+    }
+
     private static let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "org.signal.installedStickers"
@@ -85,6 +93,11 @@ public class InstalledStickers: NSObject {
                     completions.append(completion)
                 }
             }
+
+            let packKey = installedStickerPack.packKey
+            sendStickerSyncMessage(operationType: .remove,
+                                   packs: [StickerPackInfo(packId: packId, packKey: packKey)],
+                                   transaction: transaction)
         }
 
         for completion in completions {
@@ -184,6 +197,10 @@ public class InstalledStickers: NSObject {
         let installedStickerPack = InstalledStickerPack(packId: packId, packKey: packKey, title: title, author: author, cover: cover, stickers: items)
         databaseStorage.writeSwallowingErrors { (transaction) in
             installedStickerPack.anySave(transaction: transaction)
+
+            sendStickerSyncMessage(operationType: .install,
+                                   packs: [StickerPackInfo(packId: packId, packKey: packKey)],
+                                   transaction: transaction)
         }
 
         installStickerPackContents(installedStickerPack: installedStickerPack)
@@ -390,6 +407,21 @@ public class InstalledStickers: NSObject {
             for installedStickerPack in installedStickerPacks {
                 installStickerPackContents(installedStickerPack: installedStickerPack)
             }
+        }
+    }
+
+    // TODO: We could also send a sticker sync message after we link a new device.
+    private class func sendStickerSyncMessage(operationType: StickerPackOperationType,
+                                              packs: [StickerPackInfo],
+                                              transaction: SDSAnyWriteTransaction) {
+        let message = OWSStickerPackSyncMessage(packs: packs, operationType: operationType)
+
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            self.messageSenderJobQueue.add(message: message, transaction: ydbTransaction)
+        case .grdbWrite:
+            // TODO: Support any transactions.
+            owsFailDebug("GRDB not yet supported.")
         }
     }
 }

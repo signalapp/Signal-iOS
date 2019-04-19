@@ -13,6 +13,7 @@
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/OWSContactOffersInteraction.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
@@ -21,11 +22,10 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
-#import <SignalServiceKit/OWSContactOffersInteraction.h>
-#import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyErrorMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
+#import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -73,7 +73,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
 #pragma mark - Dependencies
 
-+ (SSKMessageSenderJobQueue *)messageSenderJobQueue
++ (MessageSenderJobQueue *)messageSenderJobQueue
 {
     return SSKEnvironment.shared.messageSenderJobQueue;
 }

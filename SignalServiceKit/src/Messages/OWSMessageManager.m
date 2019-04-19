@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.contactsManager;
 }
 
-- (SSKMessageSenderJobQueue *)messageSenderJobQueue
+- (MessageSenderJobQueue *)messageSenderJobQueue
 {
     return SSKEnvironment.shared.messageSenderJobQueue;
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncManagerProtocol.h"
@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ContactDiscoveryService;
 @class ContactsUpdater;
+@class MessageSenderJobQueue;
 @class OWS2FAManager;
 @class OWSAttachmentDownloads;
 @class OWSBatchMessageProcessor;
@@ -21,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSOutgoingReceiptManager;
 @class OWSPrimaryStorage;
 @class OWSReadReceiptManager;
-@class SSKMessageSenderJobQueue;
 @class TSAccountManager;
 @class TSNetworkManager;
 @class TSSocketManager;
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                           messageSender:(OWSMessageSender *)messageSender
-                  messageSenderJobQueue:(SSKMessageSenderJobQueue *)messageSenderJobQueue
+                  messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          primaryStorage:(OWSPrimaryStorage *)primaryStorage
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) SSKMessageSenderJobQueue *messageSenderJobQueue;
+@property (nonatomic, readonly) MessageSenderJobQueue *messageSenderJobQueue;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManager;
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
