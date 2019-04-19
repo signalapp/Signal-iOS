@@ -67,6 +67,32 @@ public class InstalledStickers: NSObject {
     }
 
     @objc
+    public class func uninstallStickerPack(packId: Data) {
+        assert(packId.count > 0)
+
+        var completions = [CleanupCompletion]()
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            guard let installedStickerPack = fetchInstalledStickerPack(packId: packId, transaction: transaction) else {
+                Logger.info("Skipping uninstall; not installed.")
+                return
+            }
+            installedStickerPack.anyRemove(transaction: transaction)
+
+            for item in installedStickerPack.stickers {
+                if let completion = uninstallSticker(packId: packId,
+                                                     stickerId: item.stickerId,
+                                                     transaction: transaction) {
+                    completions.append(completion)
+                }
+            }
+        }
+
+        for completion in completions {
+            completion()
+        }
+    }
+
+    @objc
     public class func fetchInstalledStickerPack(packId: Data,
                                                 transaction: SDSAnyReadTransaction) -> InstalledStickerPack? {
         assert(packId.count > 0)
@@ -207,6 +233,49 @@ public class InstalledStickers: NSObject {
             result = nil != fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: transaction)
         }
         return result
+    }
+
+    @objc
+    public class func uninstallSticker(packId: Data,
+                                       stickerId: UInt32) {
+        assert(packId.count > 0)
+
+        var completions = [CleanupCompletion]()
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            if let completion = uninstallSticker(packId: packId,
+                                                 stickerId: stickerId,
+                                                 transaction: transaction) {
+                completions.append(completion)
+            }
+        }
+
+        for completion in completions {
+            completion()
+        }
+    }
+
+    private typealias CleanupCompletion = () -> Void
+
+    // Returns a completion handler that cleans up the sticker data on disk.
+    // We want to do these deletions after the transaction is complete
+    // so that: a) other transactions aren't blocked. b) we only delete these
+    // files if the transaction is committed, ensuring the invariant that
+    // all installed stickers have a corresponding sticker data file.
+    private class func uninstallSticker(packId: Data,
+                                        stickerId: UInt32,
+                                        transaction: SDSAnyWriteTransaction) -> CleanupCompletion? {
+        assert(packId.count > 0)
+
+        guard let installedSticker = fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: transaction) else {
+            Logger.info("Skipping uninstall; not installed.")
+            return nil
+        }
+        installedSticker.anyRemove(transaction: transaction)
+
+        return {
+            let url = stickerUrl(packId: packId, stickerId: stickerId)
+            OWSFileSystem.deleteFileIfExists(url.path)
+        }
     }
 
     @objc
