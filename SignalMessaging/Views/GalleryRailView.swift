@@ -27,6 +27,7 @@ public class GalleryRailCellView: UIView {
         clipsToBounds = false
         addSubview(contentContainer)
         contentContainer.autoPinEdgesToSuperviewMargins()
+        contentContainer.layer.cornerRadius = 4.8
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(sender:)))
         addGestureRecognizer(tapGesture)
@@ -64,7 +65,7 @@ public class GalleryRailCellView: UIView {
 
     private(set) var isSelected: Bool = false
 
-    public let cellBorderWidth: CGFloat = 2
+    public let cellBorderWidth: CGFloat = 3
 
     func setIsSelected(_ isSelected: Bool) {
         self.isSelected = isSelected
@@ -75,10 +76,8 @@ public class GalleryRailCellView: UIView {
         if isSelected {
             contentContainer.layer.borderColor = Theme.galleryHighlightColor.cgColor
             contentContainer.layer.borderWidth = cellBorderWidth
-            contentContainer.layer.cornerRadius = cellBorderWidth
         } else {
             contentContainer.layer.borderWidth = 0
-            contentContainer.layer.cornerRadius = 0
         }
     }
 
@@ -179,7 +178,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         self.cellViews = cellViews
         let stackView = UIStackView(arrangedSubviews: cellViews)
         stackView.axis = .horizontal
-        stackView.spacing = 2
+        stackView.spacing = 0
         stackView.clipsToBounds = false
 
         scrollView.addSubview(stackView)
