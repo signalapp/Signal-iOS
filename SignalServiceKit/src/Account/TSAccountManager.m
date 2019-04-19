@@ -679,13 +679,11 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                             defaultValue:NO];
 }
 
-- (AnyPromise *)setIsManualMessageFetchEnabled:(BOOL)value {
+- (void)setIsManualMessageFetchEnabled:(BOOL)value
+{
     [self.dbConnection setBool:value
                         forKey:TSAccountManager_ManualMessageFetchKey
                   inCollection:TSAccountManager_UserAccountCollection];
-
-    // Try to update the account attributes to reflect this change.
-    return [self updateAccountAttributes];
 }
 
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber
