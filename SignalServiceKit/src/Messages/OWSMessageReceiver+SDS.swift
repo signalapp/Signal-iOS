@@ -150,7 +150,7 @@ extension OWSMessageDecryptJob {
 
     // Fetches a single model by "unique id".
     @objc
-    public class func anyFetch(withUniqueId uniqueId: String,
+    public class func anyFetch(uniqueId: String,
                                transaction: SDSAnyReadTransaction) -> OWSMessageDecryptJob? {
         assert(uniqueId.count > 0)
 

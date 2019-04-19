@@ -34,13 +34,13 @@ class DownloadStickerPackOperation: OWSOperation {
         return OWSSignalService.sharedInstance().cdnSessionManager
     }
 
-    var firstAttempt = true
-
     override public func run() {
 
         if InstalledStickers.isStickerPackInstalled(packId: packId) {
             Logger.verbose("Skipping redundant operation.")
-            return didFail(error: StickerError.redundantOperation)
+            var error = StickerError.redundantOperation
+            error.isRetryable = false
+            return reportError(error)
         }
 
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
@@ -65,24 +65,25 @@ class DownloadStickerPackOperation: OWSOperation {
                                     Logger.verbose("Decryption succeeded.")
 
                                     self.success(plaintext)
-                                    self.didSucceed()
+                                    self.reportSuccess()
                                 } catch let error as NSError {
                                     owsFailDebug("Decryption failed: \(error)")
 
                                     // Fail immediately; do not retry.
-                                    self.didFail(error: error)
+                                    error.isRetryable = false
+                                    return self.reportError(error)
                                 }
-        }) { [weak self] (_, error) in
+            },
+                                failure: { [weak self] (_, error) in
             guard let self = self else {
                 return
             }
             Logger.error("Download failed: \(error)")
-            self.failureCount += 1
 
             // TODO: We need to discriminate retry-able errors from
             //       404s, etc.  We might want to abort on all 4xx and 5xx.
             self.reportError(error)
-        }
+        })
     }
 
     override public func didFail(error: Error) {
@@ -90,8 +91,6 @@ class DownloadStickerPackOperation: OWSOperation {
 
         failure(error)
     }
-
-    private var failureCount: UInt = 0
 
     override public func retryInterval() -> TimeInterval {
         // Arbitrary backoff factor...
@@ -105,7 +104,7 @@ class DownloadStickerPackOperation: OWSOperation {
         let backoffFactor = 1.9
         let maxBackoff = kHourInterval
 
-        let seconds = 0.1 * min(maxBackoff, pow(backoffFactor, Double(self.failureCount)))
+        let seconds = 0.1 * min(maxBackoff, pow(backoffFactor, Double(self.errorCount)))
         return seconds
     }
 }

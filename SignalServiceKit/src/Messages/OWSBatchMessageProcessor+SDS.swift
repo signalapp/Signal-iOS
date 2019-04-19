@@ -158,7 +158,7 @@ extension OWSMessageContentJob {
 
     // Fetches a single model by "unique id".
     @objc
-    public class func anyFetch(withUniqueId uniqueId: String,
+    public class func anyFetch(uniqueId: String,
                                transaction: SDSAnyReadTransaction) -> OWSMessageContentJob? {
         assert(uniqueId.count > 0)
 

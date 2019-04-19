@@ -81,4 +81,34 @@ class SDSKeyValueStoreTest: SSKBaseTestSwift {
         XCTAssertNil(store.getString("stringA"))
         XCTAssertEqual("valueC", store.getString("stringB"))
     }
+
+    func test_data() {
+        let store = SDSKeyValueStore(collection: "test")
+
+        let bytesA = Randomness.generateRandomBytes(32)
+        let bytesB = Randomness.generateRandomBytes(32)
+
+        XCTAssertNil(store.getData("dataA"))
+        XCTAssertNil(store.getData("dataB"))
+
+        store.setData(bytesA, key: "dataA")
+
+        XCTAssertEqual(bytesA, store.getData("dataA"))
+        XCTAssertNil(store.getData("dataB"))
+
+        store.setData(bytesB, key: "dataA")
+
+        XCTAssertEqual(bytesB, store.getData("dataA"))
+        XCTAssertNil(store.getData("dataB"))
+
+        store.setData("valueC", key: "dataB")
+
+        XCTAssertEqual(bytesB, store.getData("dataA"))
+        XCTAssertEqual("valueC", store.getData("dataB"))
+
+        store.setData(nil, key: "dataA")
+
+        XCTAssertNil(store.getData("dataA"))
+        XCTAssertEqual("valueC", store.getData("dataB"))
+    }
 }

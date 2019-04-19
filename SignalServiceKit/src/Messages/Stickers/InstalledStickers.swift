@@ -73,7 +73,7 @@ public class InstalledStickers: NSObject {
 
         let uniqueId = InstalledStickerPack.uniqueId(forPackId: packId)
 
-        return InstalledStickerPack.anyFetch(withUniqueId: uniqueId, transaction: transaction)
+        return InstalledStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction)
     }
 
     @objc
@@ -217,7 +217,7 @@ public class InstalledStickers: NSObject {
 
         let uniqueId = InstalledSticker.uniqueId(forPackId: packId, stickerId: stickerId)
 
-        return InstalledSticker.anyFetch(withUniqueId: uniqueId, transaction: transaction)
+        return InstalledSticker.anyFetch(uniqueId: uniqueId, transaction: transaction)
     }
 
     @objc
