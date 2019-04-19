@@ -12,7 +12,6 @@ protocol AttachmentTextToolbarDelegate: class {
     func attachmentTextToolbarDidTapSend(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
-    func attachmentTextToolbarDidAddMore(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar)
 }
 
@@ -44,8 +43,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     // MARK: - Initializers
 
-    init(isAddMoreVisible: Bool) {
-        self.addMoreButton = UIButton(type: .custom)
+    init() {
         self.sendButton = UIButton(type: .system)
         self.textViewHeight = kMinTextViewHeight
 
@@ -58,11 +56,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         self.backgroundColor = UIColor.clear
 
         textView.delegate = self
-
-        let addMoreIcon = #imageLiteral(resourceName: "album_add_more").withRenderingMode(.alwaysTemplate)
-        addMoreButton.setImage(addMoreIcon, for: .normal)
-        addMoreButton.tintColor = Theme.darkThemePrimaryColor
-        addMoreButton.addTarget(self, action: #selector(didTapAddMore), for: .touchUpInside)
 
         let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
         sendButton.setTitle(sendTitle, for: .normal)
@@ -79,10 +72,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         contentView.addSubview(sendButton)
         contentView.addSubview(textContainer)
         contentView.addSubview(lengthLimitLabel)
-        if isAddMoreVisible {
-            contentView.addSubview(addMoreButton)
-        }
-
         addSubview(contentView)
         contentView.autoPinEdgesToSuperviewEdges()
 
@@ -105,15 +94,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         // I believe this is a bug in PureLayout. Filed here: https://github.com/PureLayout/PureLayout/issues/209
         textContainer.autoPinEdge(toSuperviewMargin: .top)
         textContainer.autoPinEdge(toSuperviewMargin: .bottom)
-        if isAddMoreVisible {
-            addMoreButton.autoPinEdge(toSuperviewMargin: .left)
-            textContainer.autoPinEdge(.left, to: .right, of: addMoreButton, withOffset: kToolbarMargin)
-            addMoreButton.autoAlignAxis(.horizontal, toSameAxisOf: sendButton)
-            addMoreButton.setContentHuggingHigh()
-            addMoreButton.setCompressionResistanceHigh()
-        } else {
-            textContainer.autoPinEdge(toSuperviewMargin: .left)
-        }
+        textContainer.autoPinEdge(toSuperviewMargin: .left)
 
         sendButton.autoPinEdge(.left, to: .right, of: textContainer, withOffset: kToolbarMargin)
         sendButton.autoPinEdge(.bottom, to: .bottom, of: textContainer, withOffset: -3)
@@ -145,7 +126,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     // MARK: - Subviews
 
-    private let addMoreButton: UIButton
     private let sendButton: UIButton
 
     private lazy var lengthLimitLabel: UILabel = {
@@ -219,10 +199,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     @objc func didTapSend() {
         attachmentTextToolbarDelegate?.attachmentTextToolbarDidTapSend(self)
-    }
-
-    @objc func didTapAddMore() {
-        attachmentTextToolbarDelegate?.attachmentTextToolbarDidAddMore(self)
     }
 
     // MARK: - UITextViewDelegate

@@ -40,6 +40,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - Properties
 
     private let mode: AttachmentApprovalViewControllerMode
+    private let isAddMoreVisible: Bool
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
 
@@ -64,7 +65,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         assert(attachments.count > 0)
         self.mode = mode
         let attachmentItems = attachments.map { SignalAttachmentItem(attachment: $0 )}
-        self.attachmentItemCollection = AttachmentItemCollection(attachmentItems: attachmentItems)
+        self.isAddMoreVisible = mode == .sharedNavigation
+
+        self.attachmentItemCollection = AttachmentItemCollection(attachmentItems: attachmentItems, isAddMoreVisible: isAddMoreVisible)
 
         let options: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
@@ -118,8 +121,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     lazy var bottomToolView: AttachmentApprovalInputAccessoryView = {
-        let isAddMoreVisible = mode == .sharedNavigation
-        let bottomToolView = AttachmentApprovalInputAccessoryView(isAddMoreVisible: isAddMoreVisible)
+        let bottomToolView = AttachmentApprovalInputAccessoryView()
         bottomToolView.delegate = self
 
         return bottomToolView
@@ -536,17 +538,31 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
 
-        let cellViewBuilder: () -> ApprovalRailCellView = { [weak self] in
-            let cell = ApprovalRailCellView()
-            cell.approvalRailCellDelegate = self
-            return cell
+        let cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView = { [weak self] railItem in
+            switch railItem {
+            case is AddMoreRailItem:
+                return GalleryRailCellView()
+            case is SignalAttachmentItem:
+                let cell = ApprovalRailCellView()
+                cell.approvalRailCellDelegate = self
+                return cell
+            default:
+                owsFailDebug("unexpted rail item type: \(railItem)")
+                return GalleryRailCellView()
+            }
         }
 
         galleryRailView.configureCellViews(itemProvider: attachmentItemCollection,
                                            focusedItem: currentItem,
                                            cellViewBuilder: cellViewBuilder)
 
-        galleryRailView.isHidden = attachmentItemCollection.attachmentItems.count < 2
+        if isAddMoreVisible {
+            galleryRailView.isHidden = false
+        } else if attachmentItemCollection.attachmentItems.count > 1 {
+            galleryRailView.isHidden = false
+        } else {
+            galleryRailView.isHidden = true
+        }
     }
 
     let attachmentItemCollection: AttachmentItemCollection
@@ -699,10 +715,6 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: attachmentTextToolbar.messageText)
     }
 
-    func attachmentTextToolbarDidAddMore(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        self.approvalDelegate?.attachmentApprovalDidTapAddMore?(self)
-    }
-
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar) {
         approvalDelegate?.attachmentApproval(self, didChangeMessageText: attachmentTextToolbar.messageText)
     }
@@ -723,12 +735,15 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
 // MARK: GalleryRail
 
 extension SignalAttachmentItem: GalleryRailItem {
-    var aspectRatio: CGFloat {
-        return self.imageSize.aspectRatio
-    }
+    func buildRailItemView() -> UIView {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
 
-    func getRailImage() -> Promise<UIImage> {
-        return self.getThumbnailImage()
+        getThumbnailImage().map { image in
+            imageView.image = image
+        }.retainUntilComplete()
+
+        return imageView
     }
 }
 
@@ -736,7 +751,11 @@ extension SignalAttachmentItem: GalleryRailItem {
 
 extension AttachmentItemCollection: GalleryRailItemProvider {
     var railItems: [GalleryRailItem] {
-        return self.attachmentItems
+        if isAddMoreVisible {
+            return self.attachmentItems + [AddMoreRailItem()]
+        } else {
+            return self.attachmentItems
+        }
     }
 }
 
@@ -744,6 +763,11 @@ extension AttachmentItemCollection: GalleryRailItemProvider {
 
 extension AttachmentApprovalViewController: GalleryRailViewDelegate {
     public func galleryRailView(_ galleryRailView: GalleryRailView, didTapItem imageRailItem: GalleryRailItem) {
+        if imageRailItem is AddMoreRailItem {
+            self.approvalDelegate?.attachmentApprovalDidTapAddMore?(self)
+            return
+        }
+
         guard let targetItem = imageRailItem as? SignalAttachmentItem else {
             owsFailDebug("unexpected imageRailItem: \(imageRailItem)")
             return
