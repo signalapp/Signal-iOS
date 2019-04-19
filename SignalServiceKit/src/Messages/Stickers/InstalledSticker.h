@@ -2,6 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import "StickerInfo.h"
 #import "TSYapDatabaseObject.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -10,11 +11,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface InstalledSticker : TSYapDatabaseObject
 
+@property (nonatomic, readonly) StickerInfo *info;
+
+// Convenience accessors.
 @property (nonatomic, readonly) NSData *packId;
 @property (nonatomic, readonly) NSData *packKey;
 @property (nonatomic, readonly) UInt32 stickerId;
 
-- (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey stickerId:(UInt32)stickerId;
+- (instancetype)initWithInfo:(StickerInfo *)info;
 
 // --- CODE GENERATION MARKER
 
@@ -24,16 +28,14 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                          packId:(NSData *)packId
-                         packKey:(NSData *)packKey
-                       stickerId:(unsigned int)stickerId
-NS_SWIFT_NAME(init(uniqueId:packId:packKey:stickerId:));
+                            info:(StickerInfo *)info
+NS_SWIFT_NAME(init(uniqueId:info:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
-+ (NSString *)uniqueIdForPackId:(NSData *)packId stickerId:(UInt32)stickerId;
++ (NSString *)uniqueIdForStickerInfo:(StickerInfo *)info;
 
 @end
 

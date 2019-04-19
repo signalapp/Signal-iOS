@@ -3,7 +3,6 @@
 //
 
 #import "InstalledStickerPack.h"
-#import <SignalCoreKit/NSData+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,32 +28,55 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation InstalledStickerPack
 
-- (instancetype)initWithPackId:(NSData *)packId
-                       packKey:(NSData *)packKey
-                         title:(nullable NSString *)title
-                        author:(nullable NSString *)author
-                         cover:(InstalledStickerPackItem *)cover
-                      stickers:(NSArray<InstalledStickerPackItem *> *)stickers
+- (instancetype)initWithInfo:(StickerPackInfo *)info
+                       title:(nullable NSString *)title
+                      author:(nullable NSString *)author
+                       cover:(InstalledStickerPackItem *)cover
+                    stickers:(NSArray<InstalledStickerPackItem *> *)items
 {
-    OWSAssertDebug(packId.length > 0);
-    OWSAssertDebug(packKey.length > 0);
+    OWSAssertDebug(info.packId.length > 0);
+    OWSAssertDebug(info.packKey.length > 0);
     // Title and empty might be nil or empty.
     OWSAssertDebug(cover);
-    OWSAssertDebug(stickers.count > 0);
+    OWSAssertDebug(items.count > 0);
 
-    self = [super initWithUniqueId:[InstalledStickerPack uniqueIdForPackId:packId]];
+    self = [super initWithUniqueId:[InstalledStickerPack uniqueIdForStickerPackInfo:info]];
 
     if (!self) {
         return self;
     }
 
-    _packId = packId;
-    _packKey = packKey;
+    _info = info;
     _author = author;
     _cover = cover;
-    _stickers = stickers;
+    _items = items;
 
     return self;
+}
+
+- (NSData *)packId
+{
+    return self.info.packId;
+}
+
+- (NSData *)packKey
+{
+    return self.info.packKey;
+}
+
+- (StickerInfo *)coverInfo
+{
+    return [[StickerInfo alloc] initWithPackId:self.packId packKey:self.packKey stickerId:self.cover.stickerId];
+}
+
+- (NSArray<StickerInfo *> *)stickerInfos
+{
+    NSMutableArray<StickerInfo *> *stickerInfos = [NSMutableArray new];
+    for (InstalledStickerPackItem *item in self.items) {
+        [stickerInfos
+            addObject:[[StickerInfo alloc] initWithPackId:self.packId packKey:self.packKey stickerId:item.stickerId]];
+    }
+    return stickerInfos;
 }
 
 // --- CODE GENERATION MARKER
@@ -67,9 +89,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                           author:(nullable NSString *)author
                            cover:(InstalledStickerPackItem *)cover
-                          packId:(NSData *)packId
-                         packKey:(NSData *)packKey
-                        stickers:(NSArray<InstalledStickerPackItem *> *)stickers
+                            info:(StickerPackInfo *)info
+                           items:(NSArray<InstalledStickerPackItem *> *)items
                            title:(nullable NSString *)title
 {
     self = [super initWithUniqueId:uniqueId];
@@ -80,9 +101,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     _author = author;
     _cover = cover;
-    _packId = packId;
-    _packKey = packKey;
-    _stickers = stickers;
+    _info = info;
+    _items = items;
     _title = title;
 
     return self;
@@ -92,9 +112,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
-+ (NSString *)uniqueIdForPackId:(NSData *)packId
++ (NSString *)uniqueIdForStickerPackInfo:(StickerPackInfo *)info
 {
-    return packId.hexadecimalString;
+    return info.asKey;
 }
 
 @end

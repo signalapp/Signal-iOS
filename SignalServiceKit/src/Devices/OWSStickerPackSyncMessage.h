@@ -3,6 +3,7 @@
 //
 
 #import "OWSOutgoingSyncMessage.h"
+#import "StickerInfo.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -10,19 +11,6 @@ typedef NS_ENUM(NSUInteger, StickerPackOperationType) {
     StickerPackOperationType_Install,
     StickerPackOperationType_Remove,
 };
-
-#pragma mark -
-
-@interface StickerPackInfo : NSObject
-
-@property (nonatomic, readonly) NSData *packId;
-@property (nonatomic, readonly) NSData *packKey;
-
-- (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey;
-
-@end
-
-#pragma mark -
 
 @interface OWSStickerPackSyncMessage : OWSOutgoingSyncMessage
 

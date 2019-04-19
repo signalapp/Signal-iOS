@@ -7,29 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation StickerPackInfo
-
-- (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey
-{
-    OWSAssertDebug(packId.length > 0);
-    OWSAssertDebug(packKey.length > 0);
-
-    self = [super init];
-
-    if (!self) {
-        return self;
-    }
-
-    _packId = packId;
-    _packKey = packKey;
-
-    return self;
-}
-
-@end
-
-#pragma mark -
-
 @interface OWSStickerPackSyncMessage ()
 
 @property (nonatomic, readonly) NSArray<StickerPackInfo *> *packs;

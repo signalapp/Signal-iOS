@@ -10,22 +10,29 @@ import PromiseKit
 @objc
 public class MessageStickerDraft: NSObject {
     @objc
-    public let packId: Data
+    public let info: StickerInfo
 
     @objc
-    public let packKey: Data
+    public var packId: Data {
+        return info.packId
+    }
 
     @objc
-    public let stickerId: UInt32
+    public var packKey: Data {
+        return info.packKey
+    }
+
+    @objc
+    public var stickerId: UInt32 {
+        return info.stickerId
+    }
 
     @objc
     public let stickerData: Data
 
     @objc
-    public init(packId: Data, packKey: Data, stickerId: UInt32, stickerData: Data) {
-        self.packId = packId
-        self.packKey = packKey
-        self.stickerId = stickerId
+    public init(info: StickerInfo, stickerData: Data) {
+        self.info = info
         self.stickerData = stickerData
     }
 }
@@ -36,25 +43,30 @@ public class MessageStickerDraft: NSObject {
 public class MessageSticker: MTLModel {
     // MTLModel requires default values.
     @objc
-    public var packId = Data()
+    public var info = StickerInfo.defaultValue
 
-    // MTLModel requires default values.
     @objc
-    public var packKey = Data()
+    public var packId: Data {
+        return info.packId
+    }
 
-    // MTLModel requires default values.
     @objc
-    public var stickerId: UInt32 = 0
+    public var packKey: Data {
+        return info.packKey
+    }
+
+    @objc
+    public var stickerId: UInt32 {
+        return info.stickerId
+    }
 
     // MTLModel requires default values.
     @objc
     public var attachmentId: String = ""
 
     @objc
-    public init(packId: Data, packKey: Data, stickerId: UInt32, attachmentId: String) {
-        self.packId = packId
-        self.packKey = packKey
-        self.stickerId = stickerId
+    public init(info: StickerInfo, attachmentId: String) {
+        self.info = info
         self.attachmentId = attachmentId
 
         super.init()
@@ -106,7 +118,8 @@ public class MessageSticker: MTLModel {
             throw StickerError.assertionFailure
         }
 
-        let messageSticker = MessageSticker(packId: packID, packKey: packKey, stickerId: stickerID, attachmentId: attachmentId)
+        let info = StickerInfo(packId: packID, packKey: packKey, stickerId: stickerID)
+        let messageSticker = MessageSticker(info: info, attachmentId: attachmentId)
         return messageSticker
     }
 
@@ -119,7 +132,7 @@ public class MessageSticker: MTLModel {
         let attachmentId = try MessageSticker.saveAttachment(stickerData: draft.stickerData,
                                                              transaction: transaction)
 
-        let messageSticker = MessageSticker(packId: draft.packId, packKey: draft.packKey, stickerId: draft.stickerId, attachmentId: attachmentId)
+        let messageSticker = MessageSticker(info: draft.info, attachmentId: attachmentId)
 
         return messageSticker
     }

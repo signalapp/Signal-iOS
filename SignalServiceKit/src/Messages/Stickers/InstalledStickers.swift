@@ -49,11 +49,9 @@ public class InstalledStickers: NSObject {
         return url
     }
 
-    private class func stickerUrl(packId: Data,
-                                  stickerId: UInt32) -> URL {
-        assert(packId.count > 0)
+    private class func stickerUrl(stickerInfo: StickerInfo) -> URL {
 
-        let uniqueId = InstalledSticker.uniqueId(forPackId: packId, stickerId: stickerId)
+        let uniqueId = InstalledSticker.uniqueId(for: stickerInfo)
 
         var url = cacheDirUrl()
         // All stickers are .webp.
@@ -64,39 +62,35 @@ public class InstalledStickers: NSObject {
     // MARK: - Sticker Packs
 
     @objc
-    public class func isStickerPackInstalled(packId: Data) -> Bool {
-        assert(packId.count > 0)
+    public class func isStickerPackInstalled(stickerPackInfo: StickerPackInfo) -> Bool {
 
         var result = false
         databaseStorage.readSwallowingErrors { (transaction) in
-            result = nil != fetchInstalledStickerPack(packId: packId, transaction: transaction)
+            result = nil != fetchInstalledStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
         }
         return result
     }
 
     @objc
-    public class func uninstallStickerPack(packId: Data) {
-        assert(packId.count > 0)
+    public class func uninstallStickerPack(stickerPackInfo: StickerPackInfo) {
 
         var completions = [CleanupCompletion]()
         databaseStorage.writeSwallowingErrors { (transaction) in
-            guard let installedStickerPack = fetchInstalledStickerPack(packId: packId, transaction: transaction) else {
+            guard let installedStickerPack = fetchInstalledStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction) else {
                 Logger.info("Skipping uninstall; not installed.")
                 return
             }
             installedStickerPack.anyRemove(transaction: transaction)
 
-            for item in installedStickerPack.stickers {
-                if let completion = uninstallSticker(packId: packId,
-                                                     stickerId: item.stickerId,
+            for stickerInfo in installedStickerPack.stickerInfos {
+                if let completion = uninstallSticker(stickerInfo: stickerInfo,
                                                      transaction: transaction) {
                     completions.append(completion)
                 }
             }
 
-            let packKey = installedStickerPack.packKey
             sendStickerSyncMessage(operationType: .remove,
-                                   packs: [StickerPackInfo(packId: packId, packKey: packKey)],
+                                   packs: [stickerPackInfo],
                                    transaction: transaction)
         }
 
@@ -106,28 +100,22 @@ public class InstalledStickers: NSObject {
     }
 
     @objc
-    public class func fetchInstalledStickerPack(packId: Data,
+    public class func fetchInstalledStickerPack(stickerPackInfo: StickerPackInfo,
                                                 transaction: SDSAnyReadTransaction) -> InstalledStickerPack? {
-        assert(packId.count > 0)
 
-        let uniqueId = InstalledStickerPack.uniqueId(forPackId: packId)
+        let uniqueId = InstalledStickerPack.uniqueId(for: stickerPackInfo)
 
         return InstalledStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction)
     }
 
     @objc
-    public class func tryToDownloadAndInstallStickerPack(packId: Data,
-                                                         packKey: Data) {
-        assert(packId.count > 0)
-        assert(packKey.count > 0)
+    public class func tryToDownloadAndInstallStickerPack(stickerPackInfo: StickerPackInfo) {
 
-        let operation = DownloadStickerPackOperation(packId: packId,
-                                                     packKey: packKey,
+        let operation = DownloadStickerPackOperation(stickerPackInfo: stickerPackInfo,
                                                      success: { (manifestData) in
                                                         DispatchQueue.global().async {
                                                             // installStickerPack is expensive.
-                                                            self.installStickerPack(packId: packId,
-                                                                                    packKey: packKey,
+                                                            self.installStickerPack(stickerPackInfo: stickerPackInfo,
                                                                                     manifestData: manifestData)
                                                         }
         },
@@ -156,16 +144,13 @@ public class InstalledStickers: NSObject {
     // This method tries to parse a downloaded manifest.
     // If valid, we install the pack and then kick off
     // download of its contents.
-    private class func installStickerPack(packId: Data,
-                                          packKey: Data,
+    private class func installStickerPack(stickerPackInfo: StickerPackInfo,
                                           manifestData: Data) {
-        assert(packId.count > 0)
-        assert(packKey.count > 0)
         assert(manifestData.count > 0)
 
         var hasInstalledStickerPack = false
         databaseStorage.readSwallowingErrors { (transaction) in
-            hasInstalledStickerPack = nil != fetchInstalledStickerPack(packId: packId, transaction: transaction)
+            hasInstalledStickerPack = nil != fetchInstalledStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
         }
         if hasInstalledStickerPack {
             // Sticker pack already installed, skip.
@@ -194,12 +179,12 @@ public class InstalledStickers: NSObject {
         }
         let cover = manifestCover ?? firstItem
 
-        let installedStickerPack = InstalledStickerPack(packId: packId, packKey: packKey, title: title, author: author, cover: cover, stickers: items)
+        let installedStickerPack = InstalledStickerPack(info: stickerPackInfo, title: title, author: author, cover: cover, stickers: items)
         databaseStorage.writeSwallowingErrors { (transaction) in
             installedStickerPack.anySave(transaction: transaction)
 
             sendStickerSyncMessage(operationType: .install,
-                                   packs: [StickerPackInfo(packId: packId, packKey: packKey)],
+                                   packs: [installedStickerPack.info],
                                    transaction: transaction)
         }
 
@@ -210,29 +195,20 @@ public class InstalledStickers: NSObject {
         // Note: It's safe to kick off downloads of stickers that are already installed.
 
         // The cover.
-        tryToDownloadAndInstallSticker(packId: installedStickerPack.packId,
-                                       packKey: installedStickerPack.packKey,
-                                       stickerId: installedStickerPack.cover.stickerId)
+        tryToDownloadAndInstallSticker(stickerInfo: installedStickerPack.coverInfo)
         // The stickers.
-        for item in installedStickerPack.stickers {
-            tryToDownloadAndInstallSticker(packId: installedStickerPack.packId,
-                                           packKey: installedStickerPack.packKey,
-                                           stickerId: item.stickerId)
+        for stickerInfo in installedStickerPack.stickerInfos {
+            tryToDownloadAndInstallSticker(stickerInfo: stickerInfo)
         }
     }
 
     // MARK: - Stickers
 
     @objc
-    public class func filepathForInstalledSticker(packId: Data,
-                                                  packKey: Data,
-                                                  stickerId: UInt32) -> String? {
-        assert(packId.count > 0)
-        assert(packKey.count > 0)
+    public class func filepathForInstalledSticker(stickerInfo: StickerInfo) -> String? {
 
-        if isStickerInstalled(packId: packId,
-                              stickerId: stickerId) {
-            return stickerUrl(packId: packId, stickerId: stickerId).path
+        if isStickerInstalled(stickerInfo: stickerInfo) {
+            return stickerUrl(stickerInfo: stickerInfo).path
         } else {
             // TODO: We may want to kick off download here on cache miss.
 
@@ -241,13 +217,11 @@ public class InstalledStickers: NSObject {
     }
 
     @objc
-    public class func isStickerInstalled(packId: Data,
-                                         stickerId: UInt32) -> Bool {
-        assert(packId.count > 0)
+    public class func isStickerInstalled(stickerInfo: StickerInfo) -> Bool {
 
         var result = false
         databaseStorage.readSwallowingErrors { (transaction) in
-            result = nil != fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: transaction)
+            result = nil != fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction)
         }
         return result
     }
@@ -259,46 +233,38 @@ public class InstalledStickers: NSObject {
     // so that: a) other transactions aren't blocked. b) we only delete these
     // files if the transaction is committed, ensuring the invariant that
     // all installed stickers have a corresponding sticker data file.
-    private class func uninstallSticker(packId: Data,
-                                        stickerId: UInt32,
+    private class func uninstallSticker(stickerInfo: StickerInfo,
                                         transaction: SDSAnyWriteTransaction) -> CleanupCompletion? {
-        assert(packId.count > 0)
 
-        guard let installedSticker = fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: transaction) else {
+        guard let installedSticker = fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction) else {
             Logger.info("Skipping uninstall; not installed.")
             return nil
         }
         installedSticker.anyRemove(transaction: transaction)
 
         return {
-            let url = stickerUrl(packId: packId, stickerId: stickerId)
+            let url = stickerUrl(stickerInfo: stickerInfo)
             OWSFileSystem.deleteFileIfExists(url.path)
         }
     }
 
     @objc
-    public class func fetchInstalledSticker(packId: Data,
-                                            stickerId: UInt32,
+    public class func fetchInstalledSticker(stickerInfo: StickerInfo,
                                             transaction: SDSAnyReadTransaction) -> InstalledSticker? {
-        assert(packId.count > 0)
 
-        let uniqueId = InstalledSticker.uniqueId(forPackId: packId, stickerId: stickerId)
+        let uniqueId = InstalledSticker.uniqueId(for: stickerInfo)
 
         return InstalledSticker.anyFetch(uniqueId: uniqueId, transaction: transaction)
     }
 
     @objc
-    public class func installSticker(packId: Data,
-                                     packKey: Data,
-                                     stickerId: UInt32,
+    public class func installSticker(stickerInfo: StickerInfo,
                                      stickerData: Data) {
-        assert(packId.count > 0)
-        assert(packKey.count > 0)
         assert(stickerData.count > 0)
 
         var hasInstalledSticker = false
         databaseStorage.readSwallowingErrors { (transaction) in
-            hasInstalledSticker = nil != fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: transaction)
+            hasInstalledSticker = nil != fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction)
         }
         if hasInstalledSticker {
             // Sticker already installed, skip.
@@ -306,7 +272,7 @@ public class InstalledStickers: NSObject {
         }
 
         DispatchQueue.global().async {
-            let url = stickerUrl(packId: packId, stickerId: stickerId)
+            let url = stickerUrl(stickerInfo: stickerInfo)
             do {
                 try stickerData.write(to: url, options: .atomic)
             } catch let error as NSError {
@@ -315,24 +281,18 @@ public class InstalledStickers: NSObject {
             }
 
             databaseStorage.writeSwallowingErrors { (transaction) in
-                let installedSticker = InstalledSticker(packId: packId, packKey: packKey, stickerId: stickerId)
+                let installedSticker = InstalledSticker(info: stickerInfo)
                 installedSticker.anySave(transaction: transaction)
             }
         }
     }
 
     @objc
-    public class func tryToDownloadAndInstallSticker(packId: Data,
-                                                     packKey: Data,
-                                                     stickerId: UInt32) {
-        assert(packId.count > 0)
-        assert(packKey.count > 0)
+    public class func tryToDownloadAndInstallSticker(stickerInfo: StickerInfo) {
 
-        let operation = DownloadStickerOperation(packId: packId,
-                                                 packKey: packKey,
-                                                 stickerId: stickerId,
+        let operation = DownloadStickerOperation(stickerInfo: stickerInfo,
                                                  success: { (stickerData) in
-                                                    self.installSticker(packId: packId, packKey: packKey, stickerId: stickerId, stickerData: stickerData)
+                                                    self.installSticker(stickerInfo: stickerInfo, stickerData: stickerData)
         },
                                                  failure: { (_) in
                                                     // Do nothing.

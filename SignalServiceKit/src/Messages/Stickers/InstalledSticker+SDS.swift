@@ -32,18 +32,14 @@ extension InstalledStickerSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 1)
     // Base class properties
-    static let packIdColumn = SDSColumnMetadata(columnName: "packId", columnType: .blob, columnIndex: 2)
-    static let packKeyColumn = SDSColumnMetadata(columnName: "packKey", columnType: .blob, columnIndex: 3)
-    static let stickerIdColumn = SDSColumnMetadata(columnName: "stickerId", columnType: .int, columnIndex: 4)
+    static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 2)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
     public static let table = SDSTableMetadata(tableName: "model_InstalledSticker", columns: [
         recordTypeColumn,
         uniqueIdColumn,
-        packIdColumn,
-        packKeyColumn,
-        stickerIdColumn
+        infoColumn
         ])
 
 }
@@ -74,14 +70,11 @@ extension InstalledStickerSerializer {
         case .installedSticker:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let packId = try deserializer.blob(at: packIdColumn.columnIndex)
-            let packKey = try deserializer.blob(at: packKeyColumn.columnIndex)
-            let stickerId = UInt32(try deserializer.int64(at: stickerIdColumn.columnIndex))
+            let infoSerialized: Data = try deserializer.blob(at: infoColumn.columnIndex)
+            let info: StickerInfo = try SDSDeserializer.unarchive(infoSerialized)
 
             return InstalledSticker(uniqueId: uniqueId,
-                                    packId: packId,
-                                    packKey: packKey,
-                                    stickerId: stickerId)
+                                    info: info)
 
         default:
             owsFail("Invalid record type \(recordType)")
@@ -244,17 +237,13 @@ class InstalledStickerSerializer: SDSSerializer {
 
     public func updateColumnNames() -> [String] {
         return [
-            InstalledStickerSerializer.packIdColumn,
-            InstalledStickerSerializer.packKeyColumn,
-            InstalledStickerSerializer.stickerIdColumn
+            InstalledStickerSerializer.infoColumn
             ].map { $0.columnName }
     }
 
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            self.model.packId,
-            self.model.packKey,
-            self.model.stickerId
+            SDSDeserializer.archive(self.model.info) ?? DatabaseValue.null
 
         ]
         if OWSIsDebugBuild() {
