@@ -324,15 +324,29 @@ message SyncMessage {
       optional bool linkPreviews                   = 4;
   }
 
-  optional Sent          sent          = 1;
-  optional Contacts      contacts      = 2;
-  optional Groups        groups        = 3;
-  optional Request       request       = 4;
-  repeated Read          read          = 5;
-  optional Blocked       blocked       = 6;
-  optional Verified      verified      = 7;
-  optional Configuration configuration = 9;
-  optional bytes         padding       = 8;
+  message StickerPackOperation {
+    enum Type {
+      INSTALL = 0;
+	  REMOVE  = 1;
+    }
+    // @required
+    optional bytes packId = 1;
+    // @required
+    optional bytes packKey = 2;
+    // @required
+    optional Type  type    = 3;
+  }
+
+  optional Sent                 sent                  = 1;
+  optional Contacts             contacts              = 2;
+  optional Groups               groups                = 3;
+  optional Request              request               = 4;
+  repeated Read                 read                  = 5;
+  optional Blocked              blocked               = 6;
+  optional Verified             verified              = 7;
+  optional Configuration        configuration         = 9;
+  optional bytes                padding               = 8;
+  repeated StickerPackOperation stickerPackOperation = 10;
 }
 
 message AttachmentPointer {
