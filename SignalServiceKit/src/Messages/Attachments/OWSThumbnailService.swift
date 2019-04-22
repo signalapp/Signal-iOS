@@ -168,7 +168,7 @@ private struct OWSThumbnailRequest {
             throw OWSThumbnailError.failure(description: "Could not convert thumbnail to JPEG.")
         }
         do {
-            try thumbnailData.write(to: URL(fileURLWithPath: thumbnailPath), options: .atomicWrite)
+            try thumbnailData.write(to: URL(fileURLWithPath: thumbnailPath), options: .atomic)
         } catch let error as NSError {
             throw OWSThumbnailError.externalError(description: "File write failed: \(thumbnailPath), \(error)", underlyingError: error)
         }

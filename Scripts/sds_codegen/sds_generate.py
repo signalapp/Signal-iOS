@@ -876,8 +876,37 @@ extension %s {
                                                                    transaction: transaction,
                                                                    deserialize: %sSerializer.sdsDeserialize))
     }
+
+    // Fetches a single model by "unique id".
+    @objc
+    public class func anyFetch(uniqueId: String,
+                               transaction: SDSAnyReadTransaction) -> %s? {
+        assert(uniqueId.count > 0)
+        
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return %s.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+        case .grdbRead(let grdbTransaction):
+            let tableMetadata = %sSerializer.table
+            let columnNames: [String] = tableMetadata.selectColumnNames
+            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
+            let tableName: String = tableMetadata.tableName
+            let uniqueIdColumnName: String = %sSerializer.uniqueIdColumn.columnName
+            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
+            
+            let cursor = %s.grdbFetchCursor(sql: sql,
+                                                  arguments: [uniqueId],
+                                                  transaction: grdbTransaction)
+            do {
+                return try cursor.next()
+            } catch {
+                owsFailDebug("error: \(error)")
+                return nil
+            }
+        }
+    }
 }
-''' % ( ( str(clazz.name), ) * 5 )
+''' % ( ( str(clazz.name), ) * 10 )
 
         # ---- Fetch ----
 

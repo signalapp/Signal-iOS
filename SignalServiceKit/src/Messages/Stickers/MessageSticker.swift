@@ -5,17 +5,10 @@
 import Foundation
 import PromiseKit
 
-@objc
-public enum MessageStickerError: Int, Error {
-    case invalidInput
-    case noSticker
-    case assertionFailure
-}
-
-// MARK: - StickerPackMetadata
+// MARK: - MessageStickerDraft
 
 @objc
-public class StickerPackMetadata: NSObject {
+public class MessageStickerDraft: NSObject {
     @objc
     public let packId: Data
 
@@ -23,54 +16,16 @@ public class StickerPackMetadata: NSObject {
     public let packKey: Data
 
     @objc
-    public init(packId: Data, packKey: Data) {
+    public let stickerId: UInt32
+
+    @objc
+    public let stickerData: Data
+
+    @objc
+    public init(packId: Data, packKey: Data, stickerId: UInt32, stickerData: Data) {
         self.packId = packId
         self.packKey = packKey
-    }
-
-    // Returns a String that can be used as a key in caches, etc.
-    @objc
-    public func cacheKey() -> String {
-        return packId.hexadecimalString
-    }
-}
-
-// MARK: - StickerMetadata
-
-@objc
-public class StickerMetadata: NSObject {
-    @objc
-    public let stickerPack: StickerPackMetadata
-
-    @objc
-    public var stickerId: UInt32
-
-    @objc
-    public init(stickerPack: StickerPackMetadata, stickerId: UInt32) {
-        self.stickerPack = stickerPack
         self.stickerId = stickerId
-    }
-
-    // Returns a String that can be used as a key in caches, etc.
-    @objc
-    public func cacheKey() -> String {
-        return "\(stickerPack.packId.hexadecimalString).\(stickerId)"
-    }
-}
-
-// MARK: - MessageStickerDraft
-
-@objc
-public class MessageStickerDraft: NSObject {
-    @objc
-    public let stickerMetadata: StickerMetadata
-
-    @objc
-    public var stickerData: Data
-
-    @objc
-    public init(stickerMetadata: StickerMetadata, stickerData: Data) {
-        self.stickerMetadata = stickerMetadata
         self.stickerData = stickerData
     }
 }
@@ -79,43 +34,27 @@ public class MessageStickerDraft: NSObject {
 
 @objc
 public class MessageSticker: MTLModel {
+    // MTLModel requires default values.
+    @objc
+    public var packId = Data()
+
+    // MTLModel requires default values.
+    @objc
+    public var packKey = Data()
+
+    // MTLModel requires default values.
+    @objc
+    public var stickerId: UInt32 = 0
+
+    // MTLModel requires default values.
+    @objc
+    public var attachmentId: String = ""
 
     @objc
-    public var stickerMetadata: StickerMetadata?
-
-    @objc
-    public var attachmentId: String?
-
-    @objc
-    public var stickerId: UInt32 {
-        guard let stickerMetadata = stickerMetadata else {
-            owsFailDebug("Missing stickerMetadata.")
-            return 0
-        }
-        return stickerMetadata.stickerId
-    }
-
-    @objc
-    public var packId: Data {
-        guard let stickerMetadata = stickerMetadata else {
-            owsFailDebug("Missing stickerMetadata.")
-            return Data()
-        }
-        return stickerMetadata.stickerPack.packId
-    }
-
-    @objc
-    public var packKey: Data {
-        guard let stickerMetadata = stickerMetadata else {
-            owsFailDebug("Missing stickerMetadata.")
-            return Data()
-        }
-        return stickerMetadata.stickerPack.packKey
-    }
-
-    @objc
-    public init(stickerMetadata: StickerMetadata, attachmentId: String) {
-        self.stickerMetadata = stickerMetadata
+    public init(packId: Data, packKey: Data, stickerId: UInt32, attachmentId: String) {
+        self.packId = packId
+        self.packKey = packKey
+        self.stickerId = stickerId
         self.attachmentId = attachmentId
 
         super.init()
@@ -138,7 +77,7 @@ public class MessageSticker: MTLModel {
 
     @objc
     public class func isNoStickerError(_ error: Error) -> Bool {
-        guard let error = error as? MessageStickerError else {
+        guard let error = error as? StickerError else {
             return false
         }
         return error == .noSticker
@@ -148,10 +87,10 @@ public class MessageSticker: MTLModel {
     public class func buildValidatedMessageSticker(dataMessage: SSKProtoDataMessage,
                                                    transaction: SDSAnyWriteTransaction) throws -> MessageSticker {
         guard FeatureFlags.stickerReceive else {
-            throw MessageStickerError.noSticker
+            throw StickerError.noSticker
         }
         guard let stickerProto: SSKProtoDataMessageSticker = dataMessage.sticker else {
-            throw MessageStickerError.noSticker
+            throw StickerError.noSticker
         }
 
         let packID: Data = stickerProto.packID
@@ -160,16 +99,14 @@ public class MessageSticker: MTLModel {
         let dataProto: SSKProtoAttachmentPointer = stickerProto.data
 
         guard let attachmentPointer = TSAttachmentPointer(fromProto: dataProto, albumMessage: nil) else {
-            throw MessageStickerError.invalidInput
+            throw StickerError.invalidInput
         }
         attachmentPointer.anySave(transaction: transaction)
         guard let attachmentId = attachmentPointer.uniqueId else {
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
 
-        let stickerPackMetadata = StickerPackMetadata(packId: packID, packKey: packKey)
-        let stickerMetadata = StickerMetadata(stickerPack: stickerPackMetadata, stickerId: stickerID)
-        let messageSticker = MessageSticker(stickerMetadata: stickerMetadata, attachmentId: attachmentId)
+        let messageSticker = MessageSticker(packId: packID, packKey: packKey, stickerId: stickerID, attachmentId: attachmentId)
         return messageSticker
     }
 
@@ -177,12 +114,12 @@ public class MessageSticker: MTLModel {
     public class func buildValidatedMessageSticker(fromDraft draft: MessageStickerDraft,
                                                    transaction: SDSAnyWriteTransaction) throws -> MessageSticker {
         guard FeatureFlags.stickerSend else {
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
         let attachmentId = try MessageSticker.saveAttachment(stickerData: draft.stickerData,
                                                              transaction: transaction)
 
-        let messageSticker = MessageSticker(stickerMetadata: draft.stickerMetadata, attachmentId: attachmentId)
+        let messageSticker = MessageSticker(packId: draft.packId, packKey: draft.packKey, stickerId: draft.stickerId, attachmentId: attachmentId)
 
         return messageSticker
     }
@@ -192,7 +129,7 @@ public class MessageSticker: MTLModel {
         let fileSize = stickerData.count
         guard fileSize > 0 else {
             owsFailDebug("Invalid file size for data.")
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
         let fileExtension = "webp"
         let contentType = OWSMimeTypeImageWebp
@@ -202,32 +139,28 @@ public class MessageSticker: MTLModel {
             try stickerData.write(to: NSURL.fileURL(withPath: filePath))
         } catch let error as NSError {
             owsFailDebug("file write failed: \(filePath), \(error)")
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
 
         guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true) else {
             owsFailDebug("Could not create data source for path: \(filePath)")
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
         let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil)
         guard attachment.write(dataSource) else {
             owsFailDebug("Could not write data source for path: \(filePath)")
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
         attachment.anySave(transaction: transaction)
 
         guard let attachmentId = attachment.uniqueId else {
-            throw MessageStickerError.assertionFailure
+            throw StickerError.assertionFailure
         }
         return attachmentId
     }
 
     @objc
     public func removeAttachment(transaction: YapDatabaseReadWriteTransaction) {
-        guard let attachmentId = attachmentId else {
-            owsFailDebug("No attachment id.")
-            return
-        }
         guard let attachment = TSAttachment.fetch(uniqueId: attachmentId, transaction: transaction) else {
             owsFailDebug("Could not load attachment.")
             return

@@ -11,48 +11,50 @@ import SignalCoreKit
 
 // MARK: - SDSSerializable
 
-extension OWSMessageDecryptJob: SDSSerializable {
+extension InstalledSticker: SDSSerializable {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
         default:
-            return OWSMessageDecryptJobSerializer(model: self)
+            return InstalledStickerSerializer(model: self)
         }
     }
 }
 
 // MARK: - Table Metadata
 
-extension OWSMessageDecryptJobSerializer {
+extension InstalledStickerSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 1)
     // Base class properties
-    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .int64, columnIndex: 2)
-    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, columnIndex: 3)
+    static let packIdColumn = SDSColumnMetadata(columnName: "packId", columnType: .blob, columnIndex: 2)
+    static let packKeyColumn = SDSColumnMetadata(columnName: "packKey", columnType: .blob, columnIndex: 3)
+    static let stickerIdColumn = SDSColumnMetadata(columnName: "stickerId", columnType: .int, columnIndex: 4)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_OWSMessageDecryptJob", columns: [
+    public static let table = SDSTableMetadata(tableName: "model_InstalledSticker", columns: [
         recordTypeColumn,
         uniqueIdColumn,
-        createdAtColumn,
-        envelopeDataColumn
+        packIdColumn,
+        packKeyColumn,
+        stickerIdColumn
         ])
 
 }
 
 // MARK: - Deserialization
 
-extension OWSMessageDecryptJobSerializer {
+extension InstalledStickerSerializer {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> OWSMessageDecryptJob {
+    class func sdsDeserialize(statement: SelectStatement) throws -> InstalledSticker {
 
         if OWSIsDebugBuild() {
             guard statement.columnNames == table.selectColumnNames else {
@@ -69,15 +71,17 @@ extension OWSMessageDecryptJobSerializer {
             throw SDSError.invalidResult
         }
         switch recordType {
-        case .messageDecryptJob:
+        case .installedSticker:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let createdAt = try deserializer.date(at: createdAtColumn.columnIndex)
-            let envelopeData = try deserializer.blob(at: envelopeDataColumn.columnIndex)
+            let packId = try deserializer.blob(at: packIdColumn.columnIndex)
+            let packKey = try deserializer.blob(at: packKeyColumn.columnIndex)
+            let stickerId = UInt32(try deserializer.int64(at: stickerIdColumn.columnIndex))
 
-            return OWSMessageDecryptJob(uniqueId: uniqueId,
-                                        createdAt: createdAt,
-                                        envelopeData: envelopeData)
+            return InstalledSticker(uniqueId: uniqueId,
+                                    packId: packId,
+                                    packKey: packKey,
+                                    stickerId: stickerId)
 
         default:
             owsFail("Invalid record type \(recordType)")
@@ -88,7 +92,7 @@ extension OWSMessageDecryptJobSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension OWSMessageDecryptJob {
+extension InstalledSticker {
     @objc
     public func anySave(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
@@ -110,22 +114,22 @@ extension OWSMessageDecryptJob {
     }
 }
 
-// MARK: - OWSMessageDecryptJobCursor
+// MARK: - InstalledStickerCursor
 
 @objc
-public class OWSMessageDecryptJobCursor: NSObject {
-    private let cursor: SDSCursor<OWSMessageDecryptJob>
+public class InstalledStickerCursor: NSObject {
+    private let cursor: SDSCursor<InstalledSticker>
 
-    init(cursor: SDSCursor<OWSMessageDecryptJob>) {
+    init(cursor: SDSCursor<InstalledSticker>) {
         self.cursor = cursor
     }
 
     // TODO: Revisit error handling in this class.
-    public func next() throws -> OWSMessageDecryptJob? {
+    public func next() throws -> InstalledSticker? {
         return try cursor.next()
     }
 
-    public func all() throws -> [OWSMessageDecryptJob] {
+    public func all() throws -> [InstalledSticker] {
         return try cursor.all()
     }
 }
@@ -141,31 +145,31 @@ public class OWSMessageDecryptJobCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension OWSMessageDecryptJob {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSMessageDecryptJobCursor {
-        return OWSMessageDecryptJobCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSMessageDecryptJobSerializer.table,
+extension InstalledSticker {
+    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> InstalledStickerCursor {
+        return InstalledStickerCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: InstalledStickerSerializer.table,
                                                                    transaction: transaction,
-                                                                   deserialize: OWSMessageDecryptJobSerializer.sdsDeserialize))
+                                                                   deserialize: InstalledStickerSerializer.sdsDeserialize))
     }
 
     // Fetches a single model by "unique id".
     @objc
     public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> OWSMessageDecryptJob? {
+                               transaction: SDSAnyReadTransaction) -> InstalledSticker? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return OWSMessageDecryptJob.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return InstalledSticker.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let tableMetadata = OWSMessageDecryptJobSerializer.table
+            let tableMetadata = InstalledStickerSerializer.table
             let columnNames: [String] = tableMetadata.selectColumnNames
             let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
             let tableName: String = tableMetadata.tableName
-            let uniqueIdColumnName: String = OWSMessageDecryptJobSerializer.uniqueIdColumn.columnName
+            let uniqueIdColumnName: String = InstalledStickerSerializer.uniqueIdColumn.columnName
             let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
 
-            let cursor = OWSMessageDecryptJob.grdbFetchCursor(sql: sql,
+            let cursor = InstalledSticker.grdbFetchCursor(sql: sql,
                                                   arguments: [uniqueId],
                                                   transaction: grdbTransaction)
             do {
@@ -180,10 +184,10 @@ extension OWSMessageDecryptJob {
 
 // MARK: - Swift Fetch
 
-extension OWSMessageDecryptJob {
+extension InstalledSticker {
     public class func grdbFetchCursor(sql: String,
                                       arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> OWSMessageDecryptJobCursor {
+                                      transaction: GRDBReadTransaction) -> InstalledStickerCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -191,10 +195,10 @@ extension OWSMessageDecryptJob {
             }
             statementArguments = statementArgs
         }
-        return OWSMessageDecryptJobCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
+        return InstalledStickerCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
                                                              arguments: statementArguments,
                                                              transaction: transaction,
-                                                                   deserialize: OWSMessageDecryptJobSerializer.sdsDeserialize))
+                                                                   deserialize: InstalledStickerSerializer.sdsDeserialize))
     }
 }
 
@@ -202,15 +206,15 @@ extension OWSMessageDecryptJob {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSMessageDecryptJobSerializer: SDSSerializer {
+class InstalledStickerSerializer: SDSSerializer {
 
-    private let model: OWSMessageDecryptJob
-    public required init(model: OWSMessageDecryptJob) {
+    private let model: InstalledSticker
+    public required init(model: InstalledSticker) {
         self.model = model
     }
 
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return OWSMessageDecryptJobSerializer.table
+        return InstalledStickerSerializer.table
     }
 
     public func insertColumnNames() -> [String] {
@@ -220,7 +224,7 @@ class OWSMessageDecryptJobSerializer: SDSSerializer {
         // * "unique id"
         // * ...all columns that we set when updating.
         return [
-            OWSMessageDecryptJobSerializer.recordTypeColumn.columnName,
+            InstalledStickerSerializer.recordTypeColumn.columnName,
             uniqueIdColumnName()
             ] + updateColumnNames()
 
@@ -228,7 +232,7 @@ class OWSMessageDecryptJobSerializer: SDSSerializer {
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.messageDecryptJob.rawValue
+            SDSRecordType.installedSticker.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -240,15 +244,17 @@ class OWSMessageDecryptJobSerializer: SDSSerializer {
 
     public func updateColumnNames() -> [String] {
         return [
-            OWSMessageDecryptJobSerializer.createdAtColumn,
-            OWSMessageDecryptJobSerializer.envelopeDataColumn
+            InstalledStickerSerializer.packIdColumn,
+            InstalledStickerSerializer.packKeyColumn,
+            InstalledStickerSerializer.stickerIdColumn
             ].map { $0.columnName }
     }
 
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            self.model.createdAt,
-            self.model.envelopeData
+            self.model.packId,
+            self.model.packKey,
+            self.model.stickerId
 
         ]
         if OWSIsDebugBuild() {
@@ -260,7 +266,7 @@ class OWSMessageDecryptJobSerializer: SDSSerializer {
     }
 
     public func uniqueIdColumnName() -> String {
-        return OWSMessageDecryptJobSerializer.uniqueIdColumn.columnName
+        return InstalledStickerSerializer.uniqueIdColumn.columnName
     }
 
     // TODO: uniqueId is currently an optional on our models.

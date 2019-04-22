@@ -239,6 +239,35 @@ extension TSThread {
                                                                    transaction: transaction,
                                                                    deserialize: TSThreadSerializer.sdsDeserialize))
     }
+
+    // Fetches a single model by "unique id".
+    @objc
+    public class func anyFetch(uniqueId: String,
+                               transaction: SDSAnyReadTransaction) -> TSThread? {
+        assert(uniqueId.count > 0)
+
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return TSThread.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+        case .grdbRead(let grdbTransaction):
+            let tableMetadata = TSThreadSerializer.table
+            let columnNames: [String] = tableMetadata.selectColumnNames
+            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
+            let tableName: String = tableMetadata.tableName
+            let uniqueIdColumnName: String = TSThreadSerializer.uniqueIdColumn.columnName
+            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
+
+            let cursor = TSThread.grdbFetchCursor(sql: sql,
+                                                  arguments: [uniqueId],
+                                                  transaction: grdbTransaction)
+            do {
+                return try cursor.next()
+            } catch {
+                owsFailDebug("error: \(error)")
+                return nil
+            }
+        }
+    }
 }
 
 // MARK: - Swift Fetch

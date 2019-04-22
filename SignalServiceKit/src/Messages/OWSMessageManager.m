@@ -1298,13 +1298,13 @@ NS_ASSUME_NONNULL_BEGIN
                     OWSFailDebug(@"linkPreviewError: %@", linkPreviewError);
                 }
 
-                NSError *messageStickerError;
+                NSError *stickerError;
                 MessageSticker *_Nullable messageSticker =
                     [MessageSticker buildValidatedMessageStickerWithDataMessage:dataMessage
                                                                     transaction:transaction
-                                                                          error:&messageStickerError];
-                if (messageStickerError && ![MessageSticker isNoStickerError:messageStickerError]) {
-                    OWSFailDebug(@"messageStickerError: %@", messageStickerError);
+                                                                          error:&stickerError];
+                if (stickerError && ![MessageSticker isNoStickerError:stickerError]) {
+                    OWSFailDebug(@"stickerError: %@", stickerError);
                 }
 
                 OWSLogDebug(@"incoming message from: %@ for group: %@ with timestamp: %lu",
@@ -1381,13 +1381,13 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogError(@"linkPreviewError: %@", linkPreviewError);
         }
 
-        NSError *messageStickerError;
+        NSError *stickerError;
         MessageSticker *_Nullable messageSticker =
             [MessageSticker buildValidatedMessageStickerWithDataMessage:dataMessage
                                                             transaction:transaction
-                                                                  error:&messageStickerError];
-        if (messageStickerError && ![MessageSticker isNoStickerError:messageStickerError]) {
-            OWSFailDebug(@"messageStickerError: %@", messageStickerError);
+                                                                  error:&stickerError];
+        if (stickerError && ![MessageSticker isNoStickerError:stickerError]) {
+            OWSFailDebug(@"stickerError: %@", stickerError);
         }
 
         // Legit usage of senderTimestamp when creating incoming message from received envelope
