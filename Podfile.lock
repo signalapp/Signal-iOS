@@ -205,8 +205,8 @@ DEPENDENCIES:
   - PromiseKit (= 6.5.3)
   - PureLayout
   - Reachability
-  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`, branch `charlesmchen/removeModuleImports`)
-  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit.git`, branch `charlesmchen/removeModuleImports`)
+  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
+  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit.git`)
   - SignalMetadataKit (from `https://github.com/signalapp/SignalMetadataKit`)
   - SignalMetadataKit/Tests (from `https://github.com/signalapp/SignalMetadataKit`)
   - SignalServiceKit (from `.`)
@@ -248,7 +248,6 @@ EXTERNAL SOURCES:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :branch: charlesmchen/removeModuleImports
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :git: https://github.com/signalapp/SignalMetadataKit
@@ -281,7 +280,7 @@ CHECKOUT OPTIONS:
     :commit: 9599b1d9796280c97cb2f786f34984fc98a3b6ef
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :commit: 303a98bb2ff514cfb88d0039d47999677f465517
+    :commit: 819be7842d6c020be28ff520e30723df92620740
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: 56f28fc3a6e35d548d034ef7d0009f233ca0aa62
@@ -317,6 +316,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: b2cfdb88804917d29410ea969c3166f2162fc798
+PODFILE CHECKSUM: 2eecf4da59c10ec1cdbb3a14517d03442eff2213
 
 COCOAPODS: 1.5.3
