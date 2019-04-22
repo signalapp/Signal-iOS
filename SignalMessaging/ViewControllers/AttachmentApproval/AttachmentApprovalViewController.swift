@@ -801,6 +801,10 @@ extension AttachmentApprovalViewController: ApprovalRailCellViewDelegate {
     func approvalRailCellView(_ approvalRailCellView: ApprovalRailCellView, didRemoveItem attachmentItem: SignalAttachmentItem) {
         remove(attachmentItem: attachmentItem)
     }
+
+    func canRemoveApprovalRailCellView(_ approvalRailCellView: ApprovalRailCellView) -> Bool {
+        return self.attachmentItems.count > 1
+    }
 }
 
 // MARK: -
