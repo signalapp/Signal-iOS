@@ -2166,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Envia previsualitzacions d'enllaços";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Les previsualitzacions estan disponibles per a enllaços d'Imgur, Reddit i Youtube.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Previsualitzacions d'enllaços";

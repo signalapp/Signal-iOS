@@ -2166,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Pošiljaj povezave s predogledi";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Predogledi so na voljo za povezave na Imgur, Instagram, Reddit in YouTube";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";

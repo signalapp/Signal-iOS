@@ -2166,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Saada linkide eelvaateid";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Eelvaated on toetatud Imgur, Instagram, Reddit ja YouTube linkide puhul";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Linkide eelvaated";
