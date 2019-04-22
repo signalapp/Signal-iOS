@@ -265,10 +265,20 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
             }
         }
 
-        if viewController is PhotoCaptureViewController && !isInBatchSelectMode {
-            // We're either showing the captureView for the first time or the user is navigating "back"
-            // indicating they want to "retake". We should discard any current image.
-            discardCameraDraft()
+        switch viewController {
+        case is PhotoCaptureViewController:
+            if attachmentDraftCollection.count == 1 && !isInBatchSelectMode {
+                // User is navigating "back" to the previous view, indicating
+                // they want to discard the previously captured item
+                discardDraft()
+            }
+        case is ImagePickerGridController:
+            if attachmentDraftCollection.count == 1 && !isInBatchSelectMode {
+                isInBatchSelectMode = true
+                self.mediaLibraryViewController.batchSelectModeDidChange()
+            }
+        default:
+            break
         }
 
         self.updateButtons(topViewController: viewController)
@@ -318,12 +328,12 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         didRequestExit(dontAbandonText: dontAbandonText)
     }
 
-    func discardCameraDraft() {
-        assert(attachmentDraftCollection.cameraAttachments.count <= 1)
-        if let lastCameraAttachment = attachmentDraftCollection.cameraAttachments.last {
-            attachmentDraftCollection.remove(attachment: lastCameraAttachment)
+    func discardDraft() {
+        assert(attachmentDraftCollection.attachmentDrafts.count <= 1)
+        if let lastAttachmentDraft = attachmentDraftCollection.attachmentDrafts.last {
+            attachmentDraftCollection.remove(attachment: lastAttachmentDraft.attachment)
         }
-        assert(attachmentDraftCollection.cameraAttachments.count == 0)
+        assert(attachmentDraftCollection.attachmentDrafts.count == 0)
     }
 }
 
