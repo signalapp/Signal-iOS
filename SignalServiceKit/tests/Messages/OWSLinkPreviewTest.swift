@@ -133,6 +133,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://pinterest.com/something"))
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.pinterest.com/something"))
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://pin.it/something"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.pinterest.com/ohjoy/recipes/"))
 
         // Strip trailing commas.
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://imgur.com/gallery/igHOwDM,"))
@@ -445,6 +446,27 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
 
                 XCTAssertEqual(content.title, "Sheet dance")
                 XCTAssertEqual(content.imageUrl, "https://i.imgur.com/PYiyLv1.jpg?fbplay")
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testLinkParsingWithRealData10() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.downloadLink(url: "https://www.pinterest.com/ohjoy/recipes/")
+            .done { (linkData) in
+                let content = try! OWSLinkPreview.parse(linkData: linkData)
+                XCTAssertNotNil(content)
+
+                XCTAssertEqual(content.title, "Recipes")
+                XCTAssertEqual(content.imageUrl, "https://i.pinimg.com/200x150/76/ae/9d/76ae9d3056dbcb295924fdd5db6951c6.jpg")
 
                 expectation.fulfill()
             }.catch { (error) in
