@@ -252,25 +252,6 @@ public class InstalledStickers: NSObject {
         return result
     }
 
-    @objc
-    public class func uninstallSticker(packId: Data,
-                                       stickerId: UInt32) {
-        assert(packId.count > 0)
-
-        var completions = [CleanupCompletion]()
-        databaseStorage.writeSwallowingErrors { (transaction) in
-            if let completion = uninstallSticker(packId: packId,
-                                                 stickerId: stickerId,
-                                                 transaction: transaction) {
-                completions.append(completion)
-            }
-        }
-
-        for completion in completions {
-            completion()
-        }
-    }
-
     private typealias CleanupCompletion = () -> Void
 
     // Returns a completion handler that cleans up the sticker data on disk.
@@ -420,7 +401,7 @@ public class InstalledStickers: NSObject {
         case .yapWrite(let ydbTransaction):
             self.messageSenderJobQueue.add(message: message, transaction: ydbTransaction)
         case .grdbWrite:
-            // TODO: Support any transactions.
+            // GRDB TODO: Support any transactions.
             owsFailDebug("GRDB not yet supported.")
         }
     }
