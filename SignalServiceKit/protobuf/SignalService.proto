@@ -40,16 +40,16 @@ message Envelope {
 }
 
 message TypingMessage {
-    enum Action {
-        STARTED = 0;
-        STOPPED = 1;
-    }
+  enum Action {
+    STARTED = 0;
+    STOPPED = 1;
+  }
 
-    // @required
-    optional uint64 timestamp = 1;
-    // @required
-    optional Action action = 2;
-    optional bytes groupId = 3;
+  // @required
+  optional uint64 timestamp = 1;
+  // @required
+  optional Action action = 2;
+  optional bytes groupId = 3;
 }
 
 message Content {
@@ -100,7 +100,6 @@ message CallMessage {
     // @required
     optional uint64 id = 1;
   }
-
 
   optional Offer     offer     = 1;
   optional Answer    answer    = 2;
@@ -213,7 +212,6 @@ message DataMessage {
     optional AttachmentPointer image = 3;
   }
 
-
   message Sticker {
     // @required
     optional bytes packId = 1;
@@ -318,21 +316,35 @@ message SyncMessage {
   }
 
   message Configuration {
-      optional bool readReceipts                   = 1;
-      optional bool unidentifiedDeliveryIndicators = 2;
-      optional bool typingIndicators               = 3;
-      optional bool linkPreviews                   = 4;
+    optional bool readReceipts                   = 1;
+    optional bool unidentifiedDeliveryIndicators = 2;
+    optional bool typingIndicators               = 3;
+    optional bool linkPreviews                   = 4;
   }
 
-  optional Sent          sent          = 1;
-  optional Contacts      contacts      = 2;
-  optional Groups        groups        = 3;
-  optional Request       request       = 4;
-  repeated Read          read          = 5;
-  optional Blocked       blocked       = 6;
-  optional Verified      verified      = 7;
-  optional Configuration configuration = 9;
-  optional bytes         padding       = 8;
+  message StickerPackOperation {
+    enum Type {
+      INSTALL = 0;
+	  REMOVE  = 1;
+    }
+    // @required
+    optional bytes packId = 1;
+    // @required
+    optional bytes packKey = 2;
+    // @required
+    optional Type  type    = 3;
+  }
+
+  optional Sent                 sent                  = 1;
+  optional Contacts             contacts              = 2;
+  optional Groups               groups                = 3;
+  optional Request              request               = 4;
+  repeated Read                 read                  = 5;
+  optional Blocked              blocked               = 6;
+  optional Verified             verified              = 7;
+  optional Configuration        configuration         = 9;
+  optional bytes                padding               = 8;
+  repeated StickerPackOperation stickerPackOperation = 10;
 }
 
 message AttachmentPointer {

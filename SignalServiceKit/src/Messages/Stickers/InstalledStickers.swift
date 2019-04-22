@@ -15,6 +15,14 @@ public class InstalledStickers: NSObject {
         return SDSDatabaseStorage.shared
     }
 
+    private static var primaryStorage: OWSPrimaryStorage {
+        return OWSPrimaryStorage.shared()
+    }
+
+    private static var messageSenderJobQueue: MessageSenderJobQueue {
+        return SSKEnvironment.shared.messageSenderJobQueue
+    }
+
     private static let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "org.signal.installedStickers"
@@ -64,6 +72,37 @@ public class InstalledStickers: NSObject {
             result = nil != fetchInstalledStickerPack(packId: packId, transaction: transaction)
         }
         return result
+    }
+
+    @objc
+    public class func uninstallStickerPack(packId: Data) {
+        assert(packId.count > 0)
+
+        var completions = [CleanupCompletion]()
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            guard let installedStickerPack = fetchInstalledStickerPack(packId: packId, transaction: transaction) else {
+                Logger.info("Skipping uninstall; not installed.")
+                return
+            }
+            installedStickerPack.anyRemove(transaction: transaction)
+
+            for item in installedStickerPack.stickers {
+                if let completion = uninstallSticker(packId: packId,
+                                                     stickerId: item.stickerId,
+                                                     transaction: transaction) {
+                    completions.append(completion)
+                }
+            }
+
+            let packKey = installedStickerPack.packKey
+            sendStickerSyncMessage(operationType: .remove,
+                                   packs: [StickerPackInfo(packId: packId, packKey: packKey)],
+                                   transaction: transaction)
+        }
+
+        for completion in completions {
+            completion()
+        }
     }
 
     @objc
@@ -158,6 +197,10 @@ public class InstalledStickers: NSObject {
         let installedStickerPack = InstalledStickerPack(packId: packId, packKey: packKey, title: title, author: author, cover: cover, stickers: items)
         databaseStorage.writeSwallowingErrors { (transaction) in
             installedStickerPack.anySave(transaction: transaction)
+
+            sendStickerSyncMessage(operationType: .install,
+                                   packs: [StickerPackInfo(packId: packId, packKey: packKey)],
+                                   transaction: transaction)
         }
 
         installStickerPackContents(installedStickerPack: installedStickerPack)
@@ -207,6 +250,30 @@ public class InstalledStickers: NSObject {
             result = nil != fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: transaction)
         }
         return result
+    }
+
+    private typealias CleanupCompletion = () -> Void
+
+    // Returns a completion handler that cleans up the sticker data on disk.
+    // We want to do these deletions after the transaction is complete
+    // so that: a) other transactions aren't blocked. b) we only delete these
+    // files if the transaction is committed, ensuring the invariant that
+    // all installed stickers have a corresponding sticker data file.
+    private class func uninstallSticker(packId: Data,
+                                        stickerId: UInt32,
+                                        transaction: SDSAnyWriteTransaction) -> CleanupCompletion? {
+        assert(packId.count > 0)
+
+        guard let installedSticker = fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: transaction) else {
+            Logger.info("Skipping uninstall; not installed.")
+            return nil
+        }
+        installedSticker.anyRemove(transaction: transaction)
+
+        return {
+            let url = stickerUrl(packId: packId, stickerId: stickerId)
+            OWSFileSystem.deleteFileIfExists(url.path)
+        }
     }
 
     @objc
@@ -321,6 +388,21 @@ public class InstalledStickers: NSObject {
             for installedStickerPack in installedStickerPacks {
                 installStickerPackContents(installedStickerPack: installedStickerPack)
             }
+        }
+    }
+
+    // TODO: We could also send a sticker sync message after we link a new device.
+    private class func sendStickerSyncMessage(operationType: StickerPackOperationType,
+                                              packs: [StickerPackInfo],
+                                              transaction: SDSAnyWriteTransaction) {
+        let message = OWSStickerPackSyncMessage(packs: packs, operationType: operationType)
+
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            self.messageSenderJobQueue.add(message: message, transaction: ydbTransaction)
+        case .grdbWrite:
+            // GRDB TODO: Support any transactions.
+            owsFailDebug("GRDB not yet supported.")
         }
     }
 }

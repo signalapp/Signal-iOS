@@ -4591,6 +4591,154 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
 
 #endif
 
+// MARK: - SSKProtoSyncMessageStickerPackOperation
+
+@objc public class SSKProtoSyncMessageStickerPackOperation: NSObject {
+
+    // MARK: - SSKProtoSyncMessageStickerPackOperationType
+
+    @objc public enum SSKProtoSyncMessageStickerPackOperationType: Int32 {
+        case install = 0
+        case remove = 1
+    }
+
+    private class func SSKProtoSyncMessageStickerPackOperationTypeWrap(_ value: SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum) -> SSKProtoSyncMessageStickerPackOperationType {
+        switch value {
+        case .install: return .install
+        case .remove: return .remove
+        }
+    }
+
+    private class func SSKProtoSyncMessageStickerPackOperationTypeUnwrap(_ value: SSKProtoSyncMessageStickerPackOperationType) -> SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum {
+        switch value {
+        case .install: return .install
+        case .remove: return .remove
+        }
+    }
+
+    // MARK: - SSKProtoSyncMessageStickerPackOperationBuilder
+
+    @objc public class func builder(packID: Data, packKey: Data, type: SSKProtoSyncMessageStickerPackOperationType) -> SSKProtoSyncMessageStickerPackOperationBuilder {
+        return SSKProtoSyncMessageStickerPackOperationBuilder(packID: packID, packKey: packKey, type: type)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoSyncMessageStickerPackOperationBuilder {
+        let builder = SSKProtoSyncMessageStickerPackOperationBuilder(packID: packID, packKey: packKey, type: type)
+        return builder
+    }
+
+    @objc public class SSKProtoSyncMessageStickerPackOperationBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.StickerPackOperation()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(packID: Data, packKey: Data, type: SSKProtoSyncMessageStickerPackOperationType) {
+            super.init()
+
+            setPackID(packID)
+            setPackKey(packKey)
+            setType(type)
+        }
+
+        @objc public func setPackID(_ valueParam: Data) {
+            proto.packID = valueParam
+        }
+
+        @objc public func setPackKey(_ valueParam: Data) {
+            proto.packKey = valueParam
+        }
+
+        @objc public func setType(_ valueParam: SSKProtoSyncMessageStickerPackOperationType) {
+            proto.type = SSKProtoSyncMessageStickerPackOperationTypeUnwrap(valueParam)
+        }
+
+        @objc public func build() throws -> SSKProtoSyncMessageStickerPackOperation {
+            return try SSKProtoSyncMessageStickerPackOperation.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageStickerPackOperation.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.StickerPackOperation
+
+    @objc public let packID: Data
+
+    @objc public let packKey: Data
+
+    @objc public let type: SSKProtoSyncMessageStickerPackOperationType
+
+    private init(proto: SignalServiceProtos_SyncMessage.StickerPackOperation,
+                 packID: Data,
+                 packKey: Data,
+                 type: SSKProtoSyncMessageStickerPackOperationType) {
+        self.proto = proto
+        self.packID = packID
+        self.packKey = packKey
+        self.type = type
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageStickerPackOperation {
+        let proto = try SignalServiceProtos_SyncMessage.StickerPackOperation(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.StickerPackOperation) throws -> SSKProtoSyncMessageStickerPackOperation {
+        guard proto.hasPackID else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: packID")
+        }
+        let packID = proto.packID
+
+        guard proto.hasPackKey else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: packKey")
+        }
+        let packKey = proto.packKey
+
+        guard proto.hasType else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
+        }
+        let type = SSKProtoSyncMessageStickerPackOperationTypeWrap(proto.type)
+
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageStickerPackOperation -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessageStickerPackOperation -
+
+        let result = SSKProtoSyncMessageStickerPackOperation(proto: proto,
+                                                             packID: packID,
+                                                             packKey: packKey,
+                                                             type: type)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessageStickerPackOperation {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPackOperationBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageStickerPackOperation? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessage
 
 @objc public class SSKProtoSyncMessage: NSObject {
@@ -4629,6 +4777,7 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
         if let _value = padding {
             builder.setPadding(_value)
         }
+        builder.setStickerPackOperation(stickerPackOperation)
         return builder
     }
 
@@ -4680,6 +4829,16 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
             proto.padding = valueParam
         }
 
+        @objc public func addStickerPackOperation(_ valueParam: SSKProtoSyncMessageStickerPackOperation) {
+            var items = proto.stickerPackOperation
+            items.append(valueParam.proto)
+            proto.stickerPackOperation = items
+        }
+
+        @objc public func setStickerPackOperation(_ wrappedItems: [SSKProtoSyncMessageStickerPackOperation]) {
+            proto.stickerPackOperation = wrappedItems.map { $0.proto }
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessage {
             return try SSKProtoSyncMessage.parseProto(proto)
         }
@@ -4707,6 +4866,8 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
 
     @objc public let configuration: SSKProtoSyncMessageConfiguration?
 
+    @objc public let stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation]
+
     @objc public var padding: Data? {
         guard proto.hasPadding else {
             return nil
@@ -4725,7 +4886,8 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
                  read: [SSKProtoSyncMessageRead],
                  blocked: SSKProtoSyncMessageBlocked?,
                  verified: SSKProtoVerified?,
-                 configuration: SSKProtoSyncMessageConfiguration?) {
+                 configuration: SSKProtoSyncMessageConfiguration?,
+                 stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation]) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -4735,6 +4897,7 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
         self.blocked = blocked
         self.verified = verified
         self.configuration = configuration
+        self.stickerPackOperation = stickerPackOperation
     }
 
     @objc
@@ -4786,6 +4949,9 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
             configuration = try SSKProtoSyncMessageConfiguration.parseProto(proto.configuration)
         }
 
+        var stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation] = []
+        stickerPackOperation = try proto.stickerPackOperation.map { try SSKProtoSyncMessageStickerPackOperation.parseProto($0) }
+
         // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
 
         // MARK: - End Validation Logic for SSKProtoSyncMessage -
@@ -4798,7 +4964,8 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
                                          read: read,
                                          blocked: blocked,
                                          verified: verified,
-                                         configuration: configuration)
+                                         configuration: configuration,
+                                         stickerPackOperation: stickerPackOperation)
         return result
     }
 
