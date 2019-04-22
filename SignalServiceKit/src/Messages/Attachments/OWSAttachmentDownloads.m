@@ -101,6 +101,11 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     return SSKEnvironment.shared.networkManager;
 }
 
+- (AFHTTPSessionManager *)cdnSessionManager
+{
+    return OWSSignalService.sharedInstance.CDNSessionManager;
+}
+
 #pragma mark -
 
 - (instancetype)init
@@ -488,16 +493,14 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
     TSAttachmentPointer *attachmentPointer = job.attachmentPointer;
 
-    AFHTTPSessionManager *manager = [OWSSignalService sharedInstance].CDNSessionManager;
+    AFHTTPSessionManager *manager = self.cdnSessionManager;
     manager.requestSerializer = [AFHTTPRequestSerializer serializer];
     [manager.requestSerializer setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 
     NSString *urlPath = [NSString stringWithFormat:@"attachments/%llu", attachmentPointer.serverId];
-    OWSLogVerbose(@"urlPath: %@", urlPath);
     NSURL *url = [[NSURL alloc] initWithString:urlPath relativeToURL:manager.baseURL];
-    OWSLogVerbose(@"url.absoluteString: %@", url.absoluteString);
 
     // We want to avoid large downloads from a compromised or buggy service.
     const long kMaxDownloadSize = 150 * 1024 * 1024;

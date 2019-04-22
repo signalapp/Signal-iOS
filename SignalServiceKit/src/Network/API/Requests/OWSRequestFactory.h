@@ -43,8 +43,6 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)allocAttachmentRequest;
 
-+ (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId;
-
 + (TSRequest *)contactsIntersectionRequestWithHashesArray:(NSArray<NSString *> *)hashes;
 
 + (TSRequest *)profileAvatarUploadFormRequest;
