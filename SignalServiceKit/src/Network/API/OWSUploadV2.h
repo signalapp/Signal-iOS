@@ -11,10 +11,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^UploadProgressBlock)(NSProgress *progress);
 
+// A strong reference should be maintained to this object
+// until it completes.  If it is deallocated, the upload
+// may be cancelled.
+//
 // This class can be safely accessed and used from any thread.
 @interface OWSAvatarUploadV2 : NSObject
 
-// This is set on success for non-nil uploads.
+// This property is set on success for non-nil uploads.
 @property (nonatomic, nullable) NSString *urlPath;
 
 - (AnyPromise *)uploadAvatarToService:(NSData *_Nullable)avatarData
@@ -25,9 +29,12 @@ typedef void (^UploadProgressBlock)(NSProgress *progress);
 
 #pragma mark -
 
+// A strong reference should be maintained to this object
+// until it completes.  If it is deallocated, the upload
+// may be cancelled.
+//
 // This class can be safely accessed and used from any thread.
 @interface OWSAttachmentUploadV2 : NSObject
-
 
 // These properties are set on success.
 @property (nonatomic, nullable) NSData *encryptionKey;
