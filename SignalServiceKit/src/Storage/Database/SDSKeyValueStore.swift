@@ -106,14 +106,13 @@ public class SDSKeyValueStore: NSObject {
             switch transaction.readTransaction {
             case .yapRead(let ydbTransaction):
                 guard let rawObject = ydbTransaction.object(forKey: key, inCollection: collection) else {
-                    return nil
+                    return
                 }
                 guard let object = rawObject as? Data else {
                     owsFailDebug("Value has unexpected type.")
-                    result = nil
                     return
                 }
-                return object
+                result = object
             case .grdbRead(let grdbTransaction):
                 result = SDSKeyValueStore.readData(transaction: grdbTransaction, key: key, collection: collection)
             }
