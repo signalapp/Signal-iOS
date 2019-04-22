@@ -196,8 +196,10 @@ typedef void (^SystemMessageActionBlock)(void);
         UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
         self.button.titleLabel.font = buttonFont;
         self.button.hidden = NO;
+        self.button.accessibilityIdentifier = self.action.accessibilityIdentifier;
     } else {
         self.button.hidden = YES;
+        self.button.accessibilityIdentifier = nil;
     }
     CGSize buttonSize = [self.button sizeThatFits:CGSizeZero];
 

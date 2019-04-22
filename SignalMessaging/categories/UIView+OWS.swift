@@ -126,6 +126,14 @@ public extension UIView {
         layer.shadowOffset = offset
         layer.shadowColor = color
     }
+
+    class func accessibilityIdentifier(in container: NSObject, name: String) -> String {
+        return "\(type(of: container)).\(name)"
+    }
+
+    func setAccessibilityIdentifier(in container: NSObject, name: String) {
+        self.accessibilityIdentifier = UIView.accessibilityIdentifier(in: container, name: name)
+    }
 }
 
 // MARK: -
