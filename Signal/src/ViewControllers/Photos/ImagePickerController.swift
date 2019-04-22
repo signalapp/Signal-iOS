@@ -259,6 +259,21 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         collectionView.setContentOffset(CGPoint(x: 0, y: yOffset), animated: animated)
     }
 
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if !hasEverAppeared, collectionView.contentOffset.y != lastPageYOffset {
+            // We initially want the user to be scrolled to the bottom of the media library content.
+            // However, at least on iOS12, we were finding that when the view finally presented,
+            // the content was not *quite* to the bottom (~20px above it).
+            //
+            // Debugging shows that initially we have the correct offset, but that *something* is
+            // causing the content to adjust *after* viewWillAppear and viewSafeAreaInsetsDidChange.
+            // Because that something results in `scrollViewDidScroll` we re-adjust the content
+            // insets to the bottom.
+            Logger.debug("adjusting scroll offset back to bottom")
+            scrollToBottom(animated: false)
+        }
+    }
+
     private func reloadDataAndRestoreSelection() {
         guard let collectionView = collectionView else {
             owsFailDebug("Missing collectionView.")
