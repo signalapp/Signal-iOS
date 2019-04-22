@@ -325,7 +325,7 @@ message SyncMessage {
   message StickerPackOperation {
     enum Type {
       INSTALL = 0;
-	  REMOVE  = 1;
+      REMOVE  = 1;
     }
     // @required
     optional bytes packId = 1;
