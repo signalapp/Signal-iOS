@@ -28,6 +28,7 @@
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <StoreKit/StoreKit.h>
@@ -633,6 +634,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
         @"Placeholder text for search bar which filters conversations.");
     searchBar.delegate = self;
+    searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"settings");
     [searchBar sizeToFit];
 
     // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
@@ -673,7 +675,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     NSString *paddingString = [@"" stringByPaddingToLength:paddingLength withString:@" " startingAtIndex:0];
 
     self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:paddingString style:UIBarButtonItemStylePlain target:nil action:nil];
+        [[UIBarButtonItem alloc] initWithTitle:paddingString
+                                         style:UIBarButtonItemStylePlain
+                                        target:nil
+                                        action:nil
+                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
 }
 
 - (void)applyArchiveBackButton
@@ -682,7 +688,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
                                          style:UIBarButtonItemStylePlain
                                         target:nil
-                                        action:nil];
+                                        action:nil
+                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
 }
 
 - (void)viewDidAppear:(BOOL)animated
