@@ -18,14 +18,14 @@ extension InstalledSticker: SDSSerializable {
         // We need to do a "depth first" search by type.
         switch self {
         default:
-            return InstalledStickerSerializer(model: self)
+            return StickerManagererializer(model: self)
         }
     }
 }
 
 // MARK: - Table Metadata
 
-extension InstalledStickerSerializer {
+extension StickerManagererializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -46,7 +46,7 @@ extension InstalledStickerSerializer {
 
 // MARK: - Deserialization
 
-extension InstalledStickerSerializer {
+extension StickerManagererializer {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
@@ -140,9 +140,9 @@ public class InstalledStickerCursor: NSObject {
 @objc
 extension InstalledSticker {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> InstalledStickerCursor {
-        return InstalledStickerCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: InstalledStickerSerializer.table,
+        return InstalledStickerCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: StickerManagererializer.table,
                                                                    transaction: transaction,
-                                                                   deserialize: InstalledStickerSerializer.sdsDeserialize))
+                                                                   deserialize: StickerManagererializer.sdsDeserialize))
     }
 
     // Fetches a single model by "unique id".
@@ -155,11 +155,11 @@ extension InstalledSticker {
         case .yapRead(let ydbTransaction):
             return InstalledSticker.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let tableMetadata = InstalledStickerSerializer.table
+            let tableMetadata = StickerManagererializer.table
             let columnNames: [String] = tableMetadata.selectColumnNames
             let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
             let tableName: String = tableMetadata.tableName
-            let uniqueIdColumnName: String = InstalledStickerSerializer.uniqueIdColumn.columnName
+            let uniqueIdColumnName: String = StickerManagererializer.uniqueIdColumn.columnName
             let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
 
             let cursor = InstalledSticker.grdbFetchCursor(sql: sql,
@@ -191,7 +191,7 @@ extension InstalledSticker {
         return InstalledStickerCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
                                                              arguments: statementArguments,
                                                              transaction: transaction,
-                                                                   deserialize: InstalledStickerSerializer.sdsDeserialize))
+                                                                   deserialize: StickerManagererializer.sdsDeserialize))
     }
 }
 
@@ -199,7 +199,7 @@ extension InstalledSticker {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class InstalledStickerSerializer: SDSSerializer {
+class StickerManagererializer: SDSSerializer {
 
     private let model: InstalledSticker
     public required init(model: InstalledSticker) {
@@ -207,7 +207,7 @@ class InstalledStickerSerializer: SDSSerializer {
     }
 
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return InstalledStickerSerializer.table
+        return StickerManagererializer.table
     }
 
     public func insertColumnNames() -> [String] {
@@ -217,7 +217,7 @@ class InstalledStickerSerializer: SDSSerializer {
         // * "unique id"
         // * ...all columns that we set when updating.
         return [
-            InstalledStickerSerializer.recordTypeColumn.columnName,
+            StickerManagererializer.recordTypeColumn.columnName,
             uniqueIdColumnName()
             ] + updateColumnNames()
 
@@ -237,7 +237,7 @@ class InstalledStickerSerializer: SDSSerializer {
 
     public func updateColumnNames() -> [String] {
         return [
-            InstalledStickerSerializer.infoColumn
+            StickerManagererializer.infoColumn
             ].map { $0.columnName }
     }
 
@@ -255,7 +255,7 @@ class InstalledStickerSerializer: SDSSerializer {
     }
 
     public func uniqueIdColumnName() -> String {
-        return InstalledStickerSerializer.uniqueIdColumn.columnName
+        return StickerManagererializer.uniqueIdColumn.columnName
     }
 
     // TODO: uniqueId is currently an optional on our models.

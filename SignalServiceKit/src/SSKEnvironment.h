@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSOutgoingReceiptManager;
 @class OWSPrimaryStorage;
 @class OWSReadReceiptManager;
+@class StickerManager;
 @class TSAccountManager;
 @class TSNetworkManager;
 @class TSSocketManager;
@@ -62,7 +63,8 @@ NS_ASSUME_NONNULL_BEGIN
                     reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
                             syncManager:(id<OWSSyncManagerProtocol>)syncManager
                        typingIndicators:(id<OWSTypingIndicators>)typingIndicators
-                    attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads NS_DESIGNATED_INITIALIZER;
+                    attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads
+                         stickerManager:(StickerManager *)stickerManager NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -100,6 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) id<SSKReachabilityManager> reachabilityManager;
 @property (nonatomic, readonly) id<OWSTypingIndicators> typingIndicators;
 @property (nonatomic, readonly) OWSAttachmentDownloads *attachmentDownloads;
+@property (nonatomic, readonly) StickerManager *stickerManager;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;

@@ -76,6 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<OWSSyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
     id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
     OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
+    StickerManager *stickerManager = [[StickerManager alloc] init];
 
     self = [super initWithContactsManager:contactsManager
                             messageSender:messageSender
@@ -101,7 +102,8 @@ NS_ASSUME_NONNULL_BEGIN
                       reachabilityManager:reachabilityManager
                               syncManager:syncManager
                          typingIndicators:typingIndicators
-                      attachmentDownloads:attachmentDownloads];
+                      attachmentDownloads:attachmentDownloads
+                           stickerManager:stickerManager];
 
     if (!self) {
         return nil;

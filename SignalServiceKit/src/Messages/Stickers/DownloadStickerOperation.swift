@@ -33,7 +33,7 @@ class DownloadStickerOperation: OWSOperation {
 
     override public func run() {
 
-        if InstalledStickers.isStickerInstalled(stickerInfo: stickerInfo) {
+        if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
             Logger.verbose("Skipping redundant operation.")
             var error = StickerError.redundantOperation
             error.isRetryable = false
@@ -58,7 +58,7 @@ class DownloadStickerOperation: OWSOperation {
                                 Logger.verbose("Download succeeded.")
 
                                 do {
-                                    let plaintext = try InstalledStickers.decrypt(ciphertext: data, packKey: self.stickerInfo.packKey)
+                                    let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerInfo.packKey)
                                     Logger.verbose("Decryption succeeded.")
 
                                     self.success(plaintext)
