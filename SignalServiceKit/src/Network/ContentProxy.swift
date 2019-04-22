@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 public class ContentProxy: NSObject {
@@ -102,56 +103,25 @@ public class ContentProxy: NSObject {
     }
 
     public class func padRequestSize(request: inout URLRequest) {
-        guard let sizeEstimate: UInt = estimateRequestSize(request: request) else {
-            owsFailDebug("Could not estimate request size.")
-            return
-        }
-        // We pad the estimated size to an even multiple of paddingQuantum (plus the
-        // extra ": " and "\r\n").  The exact size doesn't matter so long as the
-        // padding is consistent.
-        let paddingQuantum: UInt = 1024
-        let paddingSize = paddingQuantum - (sizeEstimate % paddingQuantum)
-        let padding = String(repeating: ".", count: Int(paddingSize))
+        // Generate 1-64 chars of padding.
+        let paddingLength: Int = 1 + Int(arc4random_uniform(64))
+        let padding = self.padding(withLength: paddingLength)
+        assert(padding.count == paddingLength)
         request.addValue(padding, forHTTPHeaderField: "X-SignalPadding")
     }
 
-    private class func estimateRequestSize(request: URLRequest) -> UInt? {
-        // iOS doesn't offer an exact way to measure request sizes on the wire,
-        // but we can reliably estimate request sizes using the "knowns", e.g.
-        // HTTP method, path, querystring, headers.  The "unknowns" should be
-        // consistent between requests.
-
-        guard let url = request.url?.absoluteString else {
-            owsFailDebug("Request missing URL.")
-            return nil
+    private class func padding(withLength length: Int) -> String {
+        // Pick a random ASCII char in the range 48-122
+        var result = ""
+        // Min and max values, inclusive.
+        let minValue: UInt32 = 48
+        let maxValue: UInt32 = 122
+        for _ in 1...length {
+            let value = minValue + arc4random_uniform(maxValue - minValue + 1)
+            assert(value >= minValue)
+            assert(value <= maxValue)
+            result += String(UnicodeScalar(UInt8(value)))
         }
-        guard let components = URLComponents(string: url) else {
-            owsFailDebug("Request has invalid URL.")
-            return nil
-        }
-
-        var result: Int = 0
-
-        if let httpMethod = request.httpMethod {
-            result += httpMethod.count
-        }
-        result += components.percentEncodedPath.count
-        if let percentEncodedQuery = components.percentEncodedQuery {
-            result += percentEncodedQuery.count
-        }
-        if let allHTTPHeaderFields = request.allHTTPHeaderFields {
-            for (key, value) in allHTTPHeaderFields {
-                // Each header has 4 extra bytes:
-                //
-                // * Two for the key/value separator ": "
-                // * Two for "\r\n", the line break in the HTTP protocol spec.
-                result += key.count + value.count + 4
-            }
-        } else {
-            owsFailDebug("Request has no headers.")
-        }
-        if let httpBody = request.httpBody {
-            result += httpBody.count
-        }
-        return UInt(result)
-    }}
+        return result
+    }
+}
