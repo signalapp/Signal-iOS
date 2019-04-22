@@ -1060,8 +1060,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     BOOL isBlocked = [self.blocklistCache isThreadBlocked:thread.threadRecord];
     [cell configureWithThread:thread isBlocked:isBlocked];
 
-    // TODO: Work with Nancy to confirm that this is accessible via Appium.
-    NSString *cellName = [NSString stringWithFormat:@"conversation-%@", NSUUID.UUID.UUIDString];
+    NSString *cellName;
+    if (thread.threadRecord.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread.threadRecord;
+        cellName = [NSString stringWithFormat:@"cell-group-%@", groupThread.groupModel.groupName];
+    } else {
+        TSContactThread *contactThread = (TSContactThread *)thread.threadRecord;
+        cellName = [NSString stringWithFormat:@"cell-contact-%@", contactThread.contactIdentifier];
+    }
     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
 
     return cell;
