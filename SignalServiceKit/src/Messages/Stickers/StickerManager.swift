@@ -5,11 +5,9 @@
 import Foundation
 import PromiseKit
 
-// TODO: Hang this singleton on SSKEnvironment.
-// TODO: Maybe this could be better described as "sticker manager".
 // TODO: Determine how views can be notified of sticker downloads.
 @objc
-public class InstalledStickers: NSObject {
+public class StickerManager: NSObject {
 
     private static var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
@@ -25,15 +23,16 @@ public class InstalledStickers: NSObject {
 
     private static let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "org.signal.installedStickers"
+        operationQueue.name = "org.signal.StickerManager"
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
     }()
 
-    private override init() {
+    @objc
+    public override init() {
         // Resume sticker and sticker pack downloads when app is ready.
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            InstalledStickers.enqueueAllStickerDownloads()
+            StickerManager.enqueueAllStickerDownloads()
         }
     }
 
@@ -44,7 +43,7 @@ public class InstalledStickers: NSObject {
     @objc
     public class func cacheDirUrl() -> URL {
         var url = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
-        url.appendPathComponent("InstalledStickers")
+        url.appendPathComponent("StickerManager")
         OWSFileSystem.ensureDirectoryExists(url.path)
         return url
     }
@@ -322,6 +321,9 @@ public class InstalledStickers: NSObject {
     }
 
     private class func enqueueAllStickerDownloads() {
+        // TODO: As an optimization, we could flag packs as "complete" if we know all
+        // of their stickers are installed.
+
         DispatchQueue.global().async {
             var installedStickerPacks = [InstalledStickerPack]()
             self.databaseStorage.readSwallowingErrors { (transaction) in

@@ -88,6 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
         OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
+        StickerManager *stickerManager = [[StickerManager alloc] init];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
@@ -124,7 +125,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                               reachabilityManager:reachabilityManager
                                                                       syncManager:syncManager
                                                                  typingIndicators:typingIndicators
-                                                              attachmentDownloads:attachmentDownloads]];
+                                                              attachmentDownloads:attachmentDownloads
+                                                                   stickerManager:stickerManager]];
 
         appSpecificSingletonBlock();
 
