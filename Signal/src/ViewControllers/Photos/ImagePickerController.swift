@@ -56,6 +56,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
 
+        // ensure images at the end of the list can be scrolled above the bottom buttons
+        let bottomButtonInset = -1 * SendMediaNavigationController.bottomButtonsCenterOffset + SendMediaNavigationController.bottomButtonWidth / 2
+        collectionView.contentInset.bottom = bottomButtonInset + 8
         view.backgroundColor = .ows_gray95
 
         // The PhotoCaptureVC needs a shadow behind it's cancel button, so we use a custom icon.
@@ -223,6 +226,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         // We don't need to do this when pushing VCs onto the SignalsNavigationController - only when
         // presenting directly from ConversationVC.
         _ = self.becomeFirstResponder()
+
+        DispatchQueue.main.async {
+            // pre-layout collectionPicker for snappier response
+            self.collectionPickerController.view.layoutIfNeeded()
+        }
     }
 
     // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
@@ -235,6 +243,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     // MARK: 
 
+    var lastPageYOffset: CGFloat {
+        return collectionView.contentSize.height - collectionView.frame.height
+    }
+
     func scrollToBottom(animated: Bool) {
         self.view.layoutIfNeeded()
 
@@ -243,11 +255,27 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        let lastSection = collectionView.numberOfSections - 1
-        let lastItem = collectionView.numberOfItems(inSection: lastSection) - 1
-        if lastSection >= 0 && lastItem >= 0 {
-            let lastIndex = IndexPath(item: lastItem, section: lastSection)
-            collectionView.scrollToItem(at: lastIndex, at: .bottom, animated: animated)
+        let yOffset = lastPageYOffset
+        guard yOffset > 0 else {
+            // less than 1 page of content. Do not offset.
+            return
+        }
+
+        collectionView.setContentOffset(CGPoint(x: 0, y: yOffset), animated: animated)
+    }
+
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if !hasEverAppeared, collectionView.contentOffset.y != lastPageYOffset {
+            // We initially want the user to be scrolled to the bottom of the media library content.
+            // However, at least on iOS12, we were finding that when the view finally presented,
+            // the content was not *quite* to the bottom (~20px above it).
+            //
+            // Debugging shows that initially we have the correct offset, but that *something* is
+            // causing the content to adjust *after* viewWillAppear and viewSafeAreaInsetsDidChange.
+            // Because that something results in `scrollViewDidScroll` we re-adjust the content
+            // insets to the bottom.
+            Logger.debug("adjusting scroll offset back to bottom")
+            scrollToBottom(animated: false)
         }
     }
 
@@ -378,26 +406,23 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     // MARK: - PhotoCollectionPicker Presentation
 
-    var isShowingCollectionPickerController: Bool {
-        return collectionPickerController != nil
-    }
+    var isShowingCollectionPickerController: Bool = false
 
-    var collectionPickerController: PhotoCollectionPickerController?
+    lazy var collectionPickerController: PhotoCollectionPickerController = {
+        return PhotoCollectionPickerController(library: library,
+                                               collectionDelegate: self)
+    }()
+
     func showCollectionPicker() {
         Logger.debug("")
-
-        let collectionPickerController = PhotoCollectionPickerController(library: library,
-                                                                         previousPhotoCollection: photoCollection,
-                                                                         collectionDelegate: self)
 
         guard let collectionPickerView = collectionPickerController.view else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
         }
 
-        assert(self.collectionPickerController == nil)
-        self.collectionPickerController = collectionPickerController
-
+        assert(!isShowingCollectionPickerController)
+        isShowingCollectionPickerController = true
         addChild(collectionPickerController)
 
         view.addSubview(collectionPickerView)
@@ -416,18 +441,16 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     func hideCollectionPicker() {
         Logger.debug("")
-        guard let collectionPickerController = collectionPickerController else {
-            owsFailDebug("collectionPickerController was unexpectedly nil")
-            return
-        }
-        self.collectionPickerController = nil
+
+        assert(isShowingCollectionPickerController)
+        isShowingCollectionPickerController = false
 
         UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
-            collectionPickerController.view.frame = self.view.frame.offsetBy(dx: 0, dy: self.view.frame.height)
+            self.collectionPickerController.view.frame = self.view.frame.offsetBy(dx: 0, dy: self.view.frame.height)
             self.titleView.rotateIcon(.down)
         }.done { _ in
-            collectionPickerController.view.removeFromSuperview()
-            collectionPickerController.removeFromParent()
+            self.collectionPickerController.view.removeFromSuperview()
+            self.collectionPickerController.removeFromParent()
         }.retainUntilComplete()
     }
 

@@ -334,7 +334,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         galleryRailView.configureCellViews(itemProvider: currentItem.album,
                                            focusedItem: currentItem,
-                                           cellViewBuilder: { return GalleryRailCellView() })
+                                           cellViewBuilder: { _ in return GalleryRailCellView() })
     }
 
     // MARK: Actions
@@ -774,17 +774,23 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 }
 
 extension MediaGalleryItem: GalleryRailItem {
-    public var aspectRatio: CGFloat {
-        return self.imageSize.aspectRatio
+    public func buildRailItemView() -> UIView {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        getRailImage().map { [weak imageView] image in
+            guard let imageView = imageView else { return }
+            imageView.image = image
+        }.retainUntilComplete()
+
+        return imageView
     }
 
-    public func getRailImage() -> Promise<UIImage> {
-        let (guarantee, fulfill) = Guarantee<UIImage>.pending()
-        if let image = self.thumbnailImage(async: { fulfill($0) }) {
-            fulfill(image)
+    public func getRailImage() -> Guarantee<UIImage> {
+        return Guarantee<UIImage> { fulfill in
+            if let image = self.thumbnailImage(async: { fulfill($0) }) {
+                fulfill(image)
+            }
         }
-
-        return Promise(guarantee)
     }
 }
 

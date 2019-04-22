@@ -32,9 +32,8 @@ class AttachmentApprovalInputAccessoryView: UIView {
 
     let kGalleryRailViewHeight: CGFloat = 72
 
-    required init(isAddMoreVisible: Bool) {
-        attachmentTextToolbar = AttachmentTextToolbar(isAddMoreVisible: isAddMoreVisible)
-
+    required init() {
+        attachmentTextToolbar = AttachmentTextToolbar()
         attachmentCaptionToolbar = AttachmentCaptionToolbar()
 
         galleryRailView = GalleryRailView()
