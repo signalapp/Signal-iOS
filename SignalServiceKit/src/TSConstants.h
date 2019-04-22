@@ -33,6 +33,11 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureCDNReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net"
 #define contactDiscoveryURL @"https://api.directory.signal.org"
 #define kUDTrustRoot @"BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF"
+
+#define serviceCensorshipPrefix @"service"
+#define cdnCensorshipPrefix @"cdn"
+#define contactDiscoveryCensorshipPrefix @"directory"
+
 #define USING_PRODUCTION_SERVICE
 
 //#else
@@ -41,17 +46,21 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define textSecureWebSocketAPI @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
 //#define textSecureServerURL @"https://textsecure-service-staging.whispersystems.org/"
 //#define textSecureCDNServerURL @"https://cdn-staging.signal.org"
-//#define textSecureServiceReflectorHost @"meek-signal-service-staging.appspot.com";
-//#define textSecureCDNReflectorHost @"meek-signal-cdn-staging.appspot.com";
+//#define textSecureServiceReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net";
+//#define textSecureCDNReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net";
 //#define contactDiscoveryURL @"https://api-staging.directory.signal.org"
 //#define kUDTrustRoot @"BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"
+//
+//#define serviceCensorshipPrefix @"service-staging"
+//#define cdnCensorshipPrefix @"cdn-staging"
+//#define contactDiscoveryCensorshipPrefix @"directory-staging"
 
 //#endif
 
 BOOL IsUsingProductionService(void);
 
 #define textSecureAccountsAPI @"v1/accounts"
-#define textSecureAttributesAPI @"/attributes/"
+#define textSecureAttributesAPI @"v1/accounts/attributes/"
 
 #define textSecureMessagesAPI @"v1/messages/"
 #define textSecureKeysAPI @"v2/keys"
@@ -64,7 +73,7 @@ BOOL IsUsingProductionService(void);
 #define textSecureProfileAPIFormat @"v1/profile/%@"
 #define textSecureSetProfileNameAPIFormat @"v1/profile/name/%@"
 #define textSecureProfileAvatarFormAPI @"v1/profile/form/avatar"
-#define textSecure2FAAPI @"/v1/accounts/pin"
+#define textSecure2FAAPI @"v1/accounts/pin"
 
 #define SignalApplicationGroup @"group.org.whispersystems.signal.group"
 

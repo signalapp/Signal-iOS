@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL shouldHaveAuthorizationHeaders;
 @property (atomic, nullable) NSString *authUsername;
 @property (atomic, nullable) NSString *authPassword;
+@property (atomic, nullable) NSString *customHost;
+@property (atomic, nullable) NSString *customCensorshipCircumventionPrefix;
 
 @property (nonatomic, readonly) NSDictionary<NSString *, id> *parameters;
 

@@ -103,6 +103,35 @@ dispatch_queue_t NetworkManagerQueue()
                                                                               password:request.authPassword];
     }
 
+    // Most of TSNetwork requests are destined for the Signal Service.
+    // When we are domain fronting, we have to target a different host and add a path prefix.
+    // For common Signal-Service requests the host/path-prefix logic is handled by the
+    // sessionManager.
+    //
+    // However, for CDS requests, we need to:
+    //  With CC enabled, use the service fronting Hostname but a custom path-prefix
+    //  With CC disabled, use the custom directory host, and no path-prefix
+    NSString *requestURLString;
+    if (self.signalService.isCensorshipCircumventionActive && request.customCensorshipCircumventionPrefix.length > 0) {
+        // All fronted requests go through the same host
+        NSURL *customBaseURL = [self.signalService.domainFrontBaseURL
+            URLByAppendingPathComponent:request.customCensorshipCircumventionPrefix];
+        // Ensure terminal slash for baseURL path, so that NSURL +URLWithString:relativeToURL: works as expected
+        if (![customBaseURL.absoluteString hasSuffix:@"/"]) {
+            customBaseURL = [customBaseURL URLByAppendingPathComponent:@""];
+        }
+        OWSAssertDebug(customBaseURL);
+        requestURLString = [NSURL URLWithString:request.URL.absoluteString relativeToURL:customBaseURL].absoluteString;
+    } else if (request.customHost) {
+        NSURL *customBaseURL = [NSURL URLWithString:request.customHost];
+        OWSAssertDebug(customBaseURL);
+        requestURLString = [NSURL URLWithString:request.URL.absoluteString relativeToURL:customBaseURL].absoluteString;
+    } else {
+        // requests for the signal-service (with or without censorship circumvention)
+        requestURLString = request.URL.absoluteString;
+    }
+    OWSAssertDebug(requestURLString.length > 0);
+
     // Honor the request's headers.
     for (NSString *headerField in request.allHTTPHeaderFields) {
         NSString *headerValue = request.allHTTPHeaderFields[headerField];
@@ -110,27 +139,21 @@ dispatch_queue_t NetworkManagerQueue()
     }
 
     if ([request.HTTPMethod isEqualToString:@"GET"]) {
-        [self.sessionManager GET:request.URL.absoluteString
+        [self.sessionManager GET:requestURLString
                       parameters:request.parameters
                         progress:nil
                          success:success
                          failure:failure];
     } else if ([request.HTTPMethod isEqualToString:@"POST"]) {
-        [self.sessionManager POST:request.URL.absoluteString
+        [self.sessionManager POST:requestURLString
                        parameters:request.parameters
                          progress:nil
                           success:success
                           failure:failure];
     } else if ([request.HTTPMethod isEqualToString:@"PUT"]) {
-        [self.sessionManager PUT:request.URL.absoluteString
-                      parameters:request.parameters
-                         success:success
-                         failure:failure];
+        [self.sessionManager PUT:requestURLString parameters:request.parameters success:success failure:failure];
     } else if ([request.HTTPMethod isEqualToString:@"DELETE"]) {
-        [self.sessionManager DELETE:request.URL.absoluteString
-                         parameters:request.parameters
-                            success:success
-                            failure:failure];
+        [self.sessionManager DELETE:requestURLString parameters:request.parameters success:success failure:failure];
     } else {
         OWSLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
     }

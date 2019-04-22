@@ -144,6 +144,15 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v2/attachments/form/upload"] method:@"GET" parameters:@{}];
 }
 
++ (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId
+{
+    OWSAssertDebug(attachmentId > 0);
+
+    NSString *path = [NSString stringWithFormat:@"%@/%llu", textSecureAttachmentsAPI, attachmentId];
+
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
 + (TSRequest *)availablePreKeysCountRequest
 {
     NSString *path = [NSString stringWithFormat:@"%@", textSecureKeysAPI];
@@ -207,15 +216,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)updateAttributesRequest
 {
-    NSString *path = [textSecureAccountsAPI stringByAppendingString:textSecureAttributesAPI];
-
     NSString *authKey = self.tsAccountManager.serverAuthToken;
     OWSAssertDebug(authKey.length > 0);
     NSString *_Nullable pin = [self.ows2FAManager pinCode];
 
     NSDictionary<NSString *, id> *accountAttributes = [self accountAttributesWithPin:pin authKey:authKey];
 
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:accountAttributes];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureAttributesAPI]
+                              method:@"PUT"
+                          parameters:accountAttributes];
 }
 
 + (TSRequest *)unregisterAccountRequest
@@ -426,7 +435,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(authUsername.length > 0);
     OWSAssertDebug(authPassword.length > 0);
 
-    NSString *path = [NSString stringWithFormat:@"%@/v1/attestation/%@", contactDiscoveryURL, enclaveId];
+    NSString *path = [NSString stringWithFormat:@"v1/attestation/%@", enclaveId];
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
                                             method:@"PUT"
                                         parameters:@{
@@ -435,6 +444,8 @@ NS_ASSUME_NONNULL_BEGIN
                                         }];
     request.authUsername = authUsername;
     request.authPassword = authPassword;
+    request.customHost = contactDiscoveryURL;
+    request.customCensorshipCircumventionPrefix = contactDiscoveryCensorshipPrefix;
 
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.
@@ -455,7 +466,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        authPassword:(NSString *)authPassword
                                             cookies:(NSArray<NSHTTPCookie *> *)cookies
 {
-    NSString *path = [NSString stringWithFormat:@"%@/v1/discovery/%@", contactDiscoveryURL, enclaveId];
+    NSString *path = [NSString stringWithFormat:@"v1/discovery/%@", enclaveId];
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
                                             method:@"PUT"
@@ -469,6 +480,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     request.authUsername = authUsername;
     request.authPassword = authPassword;
+    request.customHost = contactDiscoveryURL;
+    request.customCensorshipCircumventionPrefix = contactDiscoveryCensorshipPrefix;
 
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.
@@ -484,7 +497,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)remoteAttestationAuthRequest
 {
-    NSString *path = @"/v1/directory/auth";
+    NSString *path = @"v1/directory/auth";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
@@ -506,7 +519,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         parameters = @{ @"reason": limitedReason };
     }
-    NSString *path = [NSString stringWithFormat:@"/v1/directory/feedback-v3/%@", status];
+    NSString *path = [NSString stringWithFormat:@"v1/directory/feedback-v3/%@", status];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
 }
 
@@ -514,7 +527,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)udSenderCertificateRequest
 {
-    NSString *path = @"/v1/certificate/delivery";
+    NSString *path = @"v1/certificate/delivery";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
