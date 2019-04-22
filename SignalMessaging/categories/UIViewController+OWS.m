@@ -119,7 +119,8 @@ NS_ASSUME_NONNULL_BEGIN
         return [[UIBarButtonItem alloc] initWithImage:backImage
                                                 style:UIBarButtonItemStylePlain
                                                target:target
-                                               action:selector];
+                                               action:selector
+                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
     }
 
     UIBarButtonItem *backItem =
