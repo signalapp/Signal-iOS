@@ -56,6 +56,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
 
+        // ensure images at the end of the list can be scrolled above the bottom buttons
+        let bottomButtonInset = -1 * SendMediaNavigationController.bottomButtonsCenterOffset + SendMediaNavigationController.bottomButtonWidth / 2
+        collectionView.contentInset.bottom = bottomButtonInset + 8
         view.backgroundColor = .ows_gray95
 
         // The PhotoCaptureVC needs a shadow behind it's cancel button, so we use a custom icon.
@@ -235,6 +238,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     // MARK: 
 
+    var lastPageYOffset: CGFloat {
+        return collectionView.contentSize.height - collectionView.frame.height
+    }
+
     func scrollToBottom(animated: Bool) {
         self.view.layoutIfNeeded()
 
@@ -243,12 +250,13 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        let lastSection = collectionView.numberOfSections - 1
-        let lastItem = collectionView.numberOfItems(inSection: lastSection) - 1
-        if lastSection >= 0 && lastItem >= 0 {
-            let lastIndex = IndexPath(item: lastItem, section: lastSection)
-            collectionView.scrollToItem(at: lastIndex, at: .bottom, animated: animated)
+        let yOffset = lastPageYOffset
+        guard yOffset > 0 else {
+            // less than 1 page of content. Do not offset.
+            return
         }
+
+        collectionView.setContentOffset(CGPoint(x: 0, y: yOffset), animated: animated)
     }
 
     private func reloadDataAndRestoreSelection() {

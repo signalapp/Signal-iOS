@@ -135,6 +135,7 @@ class SendMediaNavigationController: OWSNavigationController {
     }
 
     // MARK: Views
+    public static let bottomButtonWidth: CGFloat = 44
 
     private lazy var doneButton: DoneButton = {
         let button = DoneButton()
@@ -149,7 +150,7 @@ class SendMediaNavigationController: OWSNavigationController {
                                tintColor: .ows_gray60,
                                block: { [weak self] in self?.didTapBatchModeButton() })
 
-        let width: CGFloat = 44
+        let width: CGFloat = type(of: self).bottomButtonWidth
         button.autoSetDimensions(to: CGSize(width: width, height: width))
         button.layer.cornerRadius = width / 2
         button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
@@ -164,7 +165,7 @@ class SendMediaNavigationController: OWSNavigationController {
                                tintColor: .ows_gray60,
                                block: { [weak self] in self?.didTapCameraModeButton() })
 
-        let width: CGFloat = 44
+        let width: CGFloat = type(of: self).bottomButtonWidth
         button.autoSetDimensions(to: CGSize(width: width, height: width))
         button.layer.cornerRadius = width / 2
         button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
@@ -179,7 +180,7 @@ class SendMediaNavigationController: OWSNavigationController {
                                tintColor: .ows_gray60,
                                block: { [weak self] in self?.didTapMediaLibraryModeButton() })
 
-        let width: CGFloat = 44
+        let width: CGFloat = type(of: self).bottomButtonWidth
         button.autoSetDimensions(to: CGSize(width: width, height: width))
         button.layer.cornerRadius = width / 2
         button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
