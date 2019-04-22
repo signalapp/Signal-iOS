@@ -226,6 +226,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         // We don't need to do this when pushing VCs onto the SignalsNavigationController - only when
         // presenting directly from ConversationVC.
         _ = self.becomeFirstResponder()
+
+        DispatchQueue.main.async {
+            // pre-layout collectionPicker for snappier response
+            self.collectionPickerController.view.layoutIfNeeded()
+        }
     }
 
     // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
@@ -401,26 +406,23 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     // MARK: - PhotoCollectionPicker Presentation
 
-    var isShowingCollectionPickerController: Bool {
-        return collectionPickerController != nil
-    }
+    var isShowingCollectionPickerController: Bool = false
 
-    var collectionPickerController: PhotoCollectionPickerController?
+    lazy var collectionPickerController: PhotoCollectionPickerController = {
+        return PhotoCollectionPickerController(library: library,
+                                               collectionDelegate: self)
+    }()
+
     func showCollectionPicker() {
         Logger.debug("")
-
-        let collectionPickerController = PhotoCollectionPickerController(library: library,
-                                                                         previousPhotoCollection: photoCollection,
-                                                                         collectionDelegate: self)
 
         guard let collectionPickerView = collectionPickerController.view else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
         }
 
-        assert(self.collectionPickerController == nil)
-        self.collectionPickerController = collectionPickerController
-
+        assert(!isShowingCollectionPickerController)
+        isShowingCollectionPickerController = true
         addChild(collectionPickerController)
 
         view.addSubview(collectionPickerView)
@@ -439,18 +441,16 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     func hideCollectionPicker() {
         Logger.debug("")
-        guard let collectionPickerController = collectionPickerController else {
-            owsFailDebug("collectionPickerController was unexpectedly nil")
-            return
-        }
-        self.collectionPickerController = nil
+
+        assert(isShowingCollectionPickerController)
+        isShowingCollectionPickerController = false
 
         UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
-            collectionPickerController.view.frame = self.view.frame.offsetBy(dx: 0, dy: self.view.frame.height)
+            self.collectionPickerController.view.frame = self.view.frame.offsetBy(dx: 0, dy: self.view.frame.height)
             self.titleView.rotateIcon(.down)
         }.done { _ in
-            collectionPickerController.view.removeFromSuperview()
-            collectionPickerController.removeFromParent()
+            self.collectionPickerController.view.removeFromSuperview()
+            self.collectionPickerController.removeFromParent()
         }.retainUntilComplete()
     }
 
