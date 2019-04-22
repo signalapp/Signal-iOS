@@ -5,6 +5,22 @@
 import Foundation
 import PromiseKit
 
+class AddMoreRailItem: GalleryRailItem {
+    func buildRailItemView() -> UIView {
+        let view = UIView()
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.33)
+
+        let iconView = UIImageView(image: #imageLiteral(resourceName: "ic_plus_24").withRenderingMode(.alwaysTemplate))
+        iconView.tintColor = .ows_white
+        view.addSubview(iconView)
+        iconView.setCompressionResistanceHigh()
+        iconView.setContentHuggingHigh()
+        iconView.autoCenterInSuperview()
+
+        return view
+    }
+}
+
 class SignalAttachmentItem: Hashable {
 
     enum SignalAttachmentItemError: Error {
@@ -75,8 +91,10 @@ class SignalAttachmentItem: Hashable {
 
 class AttachmentItemCollection {
     private (set) var attachmentItems: [SignalAttachmentItem]
-    init(attachmentItems: [SignalAttachmentItem]) {
+    let isAddMoreVisible: Bool
+    init(attachmentItems: [SignalAttachmentItem], isAddMoreVisible: Bool) {
         self.attachmentItems = attachmentItems
+        self.isAddMoreVisible = isAddMoreVisible
     }
 
     func itemAfter(item: SignalAttachmentItem) -> SignalAttachmentItem? {

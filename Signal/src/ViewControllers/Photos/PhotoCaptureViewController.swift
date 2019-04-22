@@ -101,7 +101,7 @@ class PhotoCaptureViewController: OWSViewController {
             let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
             fixedSpace.width = 16
 
-            navigationItem.rightBarButtonItems = [flashModeControl.barButtonItem, fixedSpace, switchCameraControl.barButtonItem]
+            navigationItem.rightBarButtonItems = [switchCameraControl.barButtonItem, fixedSpace, flashModeControl.barButtonItem]
         }
     }
 

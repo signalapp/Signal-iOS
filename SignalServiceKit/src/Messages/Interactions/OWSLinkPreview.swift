@@ -311,7 +311,12 @@ public class OWSLinkPreview: MTLModel {
         // Instagram
         "instagram.com",
         "www.instagram.com",
-        "m.instagram.com"
+        "m.instagram.com",
+
+        // Pinterest
+        "pinterest.com",
+        "www.pinterest.com",
+        "pin.it"
     ]
 
     // For media domains, we DO NOT require an exact match - subdomains are allowed.
@@ -327,7 +332,10 @@ public class OWSLinkPreview: MTLModel {
 
         // Instagram
         "cdninstagram.com",
-        "fbcdn.net"
+        "fbcdn.net",
+
+        // Pinterest
+        "pinimg.com"
     ]
 
     private static let protocolWhitelist = [
@@ -780,7 +788,7 @@ public class OWSLinkPreview: MTLModel {
         }
 
         var title: String?
-        if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:title\"\\s+content\\s*=\\s*\"(.*?)\"\\s*/?>",
+        if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:title\"\\s+[^>]*content\\s*=\\s*\"(.*?)\"\\s*[^>]*/?>",
                                                               text: linkText,
                                                               options: .dotMatchesLineSeparators) {
             if let decodedTitle = decodeHTMLEntities(inString: rawTitle) {
@@ -793,7 +801,7 @@ public class OWSLinkPreview: MTLModel {
 
         Logger.verbose("title: \(String(describing: title))")
 
-        guard let rawImageUrlString = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:image\"\\s+content\\s*=\\s*\"(.*?)\"\\s*/?>", text: linkText) else {
+        guard let rawImageUrlString = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:image\"\\s+[^>]*content\\s*=\\s*\"(.*?)\"[^>]*/?>", text: linkText) else {
             return OWSLinkPreviewContents(title: title)
         }
         guard let imageUrlString = decodeHTMLEntities(inString: rawImageUrlString)?.ows_stripped() else {

@@ -9,8 +9,7 @@ public protocol GalleryRailItemProvider: class {
 }
 
 public protocol GalleryRailItem: class {
-    func getRailImage() -> Promise<UIImage>
-    var aspectRatio: CGFloat { get }
+    func buildRailItemView() -> UIView
 }
 
 protocol GalleryRailCellViewDelegate: class {
@@ -26,8 +25,9 @@ public class GalleryRailCellView: UIView {
 
         layoutMargins = .zero
         clipsToBounds = false
-        addSubview(imageView)
-        imageView.autoPinEdgesToSuperviewMargins()
+        addSubview(contentContainer)
+        contentContainer.autoPinEdgesToSuperviewMargins()
+        contentContainer.layer.cornerRadius = 4.8
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(sender:)))
         addGestureRecognizer(tapGesture)
@@ -52,18 +52,20 @@ public class GalleryRailCellView: UIView {
         self.item = item
         self.delegate = delegate
 
-        item.getRailImage().done { image in
-            guard self.item === item else { return }
+        for view in contentContainer.subviews {
+            view.removeFromSuperview()
+        }
 
-            self.imageView.image = image
-        }.retainUntilComplete()
+        let itemView = item.buildRailItemView()
+        contentContainer.addSubview(itemView)
+        itemView.autoPinEdgesToSuperviewEdges()
     }
 
     // MARK: Selected
 
     private(set) var isSelected: Bool = false
 
-    public let cellBorderWidth: CGFloat = 2
+    public let cellBorderWidth: CGFloat = 3
 
     func setIsSelected(_ isSelected: Bool) {
         self.isSelected = isSelected
@@ -72,24 +74,21 @@ public class GalleryRailCellView: UIView {
         layoutMargins = UIEdgeInsets(top: 0, left: cellBorderWidth, bottom: 0, right: cellBorderWidth)
 
         if isSelected {
-            imageView.layer.borderColor = Theme.galleryHighlightColor.cgColor
-            imageView.layer.borderWidth = cellBorderWidth
-            imageView.layer.cornerRadius = cellBorderWidth
+            contentContainer.layer.borderColor = Theme.galleryHighlightColor.cgColor
+            contentContainer.layer.borderWidth = cellBorderWidth
         } else {
-            imageView.layer.borderWidth = 0
-            imageView.layer.cornerRadius = 0
+            contentContainer.layer.borderWidth = 0
         }
     }
 
     // MARK: Subview Helpers
 
-    let imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.autoPinToSquareAspectRatio()
-        imageView.clipsToBounds = true
+    let contentContainer: UIView = {
+        let view = UIView()
+        view.autoPinToSquareAspectRatio()
+        view.clipsToBounds = true
 
-        return imageView
+        return view
     }()
 }
 
@@ -124,7 +123,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
     // MARK: Public
 
-    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?, cellViewBuilder: () -> GalleryRailCellView) {
+    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?, cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView) {
         let animationDuration: TimeInterval = 0.2
 
         guard let itemProvider = itemProvider else {
@@ -179,7 +178,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         self.cellViews = cellViews
         let stackView = UIStackView(arrangedSubviews: cellViews)
         stackView.axis = .horizontal
-        stackView.spacing = 2
+        stackView.spacing = 0
         stackView.clipsToBounds = false
 
         scrollView.addSubview(stackView)
@@ -210,9 +209,9 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         return scrollView
     }()
 
-    private func buildCellViews(items: [GalleryRailItem], cellViewBuilder: () -> GalleryRailCellView) -> [GalleryRailCellView] {
+    private func buildCellViews(items: [GalleryRailItem], cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView) -> [GalleryRailCellView] {
         return items.map { item in
-            let cellView = cellViewBuilder()
+            let cellView = cellViewBuilder(item)
             cellView.configure(item: item, delegate: self)
             return cellView
         }

@@ -15,14 +15,11 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     private weak var collectionDelegate: PhotoCollectionPickerDelegate?
 
     private let library: PhotoLibrary
-    private let previousPhotoCollection: PhotoCollection
     private var photoCollections: [PhotoCollection]
 
     required init(library: PhotoLibrary,
-                  previousPhotoCollection: PhotoCollection,
                   collectionDelegate: PhotoCollectionPickerDelegate) {
         self.library = library
-        self.previousPhotoCollection = previousPhotoCollection
         self.photoCollections = library.allPhotoCollections()
         self.collectionDelegate = collectionDelegate
         super.init()

@@ -7,6 +7,7 @@ import UIKit
 
 protocol ApprovalRailCellViewDelegate: class {
     func approvalRailCellView(_ approvalRailCellView: ApprovalRailCellView, didRemoveItem attachmentItem: SignalAttachmentItem)
+    func canRemoveApprovalRailCellView(_ approvalRailCellView: ApprovalRailCellView) -> Bool
 }
 
 // MARK: -
@@ -55,10 +56,13 @@ public class ApprovalRailCellView: GalleryRailCellView {
         super.setIsSelected(isSelected)
 
         if isSelected {
-            addSubview(deleteButton)
+            if let approvalRailCellDelegate = self.approvalRailCellDelegate,
+                approvalRailCellDelegate.canRemoveApprovalRailCellView(self) {
 
-            deleteButton.autoPinEdge(toSuperviewEdge: .top, withInset: cellBorderWidth)
-            deleteButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: cellBorderWidth + 4)
+                addSubview(deleteButton)
+                deleteButton.autoPinEdge(toSuperviewEdge: .top, withInset: cellBorderWidth)
+                deleteButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: cellBorderWidth + 4)
+            }
         } else {
             deleteButton.removeFromSuperview()
         }

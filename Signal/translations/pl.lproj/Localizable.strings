@@ -2166,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Podgląd linków";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Podglądy linków są obsługiwane dla Imgur, Instagram, Reddit i YouTube.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Podgląd linków";
