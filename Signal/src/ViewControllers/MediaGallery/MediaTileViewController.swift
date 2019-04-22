@@ -137,15 +137,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         self.autoLoadMoreIfNecessary()
     }
 
-    override public func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        Logger.verbose("backItem: \(self.navigationController?.navigationBar.backItem) \(self.navigationController?.navigationBar.backItem)")
-        Logger.verbose("items: \(self.navigationController?.navigationBar.items)")
-        Logger.flush()
-        Logger.flush()
-    }
-
     override public func viewWillTransition(to size: CGSize,
                                             with coordinator: UIViewControllerTransitionCoordinator) {
         self.mediaTileViewLayout.invalidateLayout()
