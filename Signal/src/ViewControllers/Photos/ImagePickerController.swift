@@ -135,6 +135,20 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                 selectionPanGestureMode = .select
             }
         case .changed:
+            let velocity = selectionPanGesture.velocity(in: view)
+
+            // Bulk selection is a horizontal pan, while scrolling content is a vertical pan.
+            // There will be some ambiguity since users gestures are not perfectly cardinal.
+            //
+            // We try to account for that here.
+            //
+            // If the `alpha` is too low, the user will inadvertently select items while trying to scroll.
+            // If the `alpha` is too high, the user will not be able to easily horizontally select items.
+            let alpha: CGFloat = 8.0
+            let isDecidedlyHorizontal = abs(velocity.x) > abs(velocity.y) * alpha
+            guard isDecidedlyHorizontal else {
+                return
+            }
             let location = selectionPanGesture.location(in: collectionView)
             guard let indexPath = collectionView.indexPathForItem(at: location) else {
                 return
