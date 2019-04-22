@@ -3,28 +3,40 @@
 //
 
 #import "InstalledSticker.h"
-#import <SignalCoreKit/NSData+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation InstalledSticker
 
-- (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey stickerId:(UInt32)stickerId
+- (instancetype)initWithInfo:(StickerInfo *)info
 {
-    OWSAssertDebug(packId.length > 0);
-    OWSAssertDebug(packKey.length > 0);
+    OWSAssertDebug(info.packId.length > 0);
+    OWSAssertDebug(info.packKey.length > 0);
 
-    self = [super initWithUniqueId:[InstalledSticker uniqueIdForPackId:packId stickerId:stickerId]];
+    self = [super initWithUniqueId:[InstalledSticker uniqueIdForStickerInfo:info]];
 
     if (!self) {
         return self;
     }
 
-    _packId = packId;
-    _packKey = packKey;
-    _stickerId = stickerId;
+    _info = info;
 
     return self;
+}
+
+- (NSData *)packId
+{
+    return self.info.packId;
+}
+
+- (NSData *)packKey
+{
+    return self.info.packKey;
+}
+
+- (UInt32)stickerId
+{
+    return self.info.stickerId;
 }
 
 // --- CODE GENERATION MARKER
@@ -35,9 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                          packId:(NSData *)packId
-                         packKey:(NSData *)packKey
-                       stickerId:(unsigned int)stickerId
+                            info:(StickerInfo *)info
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -45,9 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _packId = packId;
-    _packKey = packKey;
-    _stickerId = stickerId;
+    _info = info;
 
     return self;
 }
@@ -56,9 +64,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
-+ (NSString *)uniqueIdForPackId:(NSData *)packId stickerId:(UInt32)stickerId
++ (NSString *)uniqueIdForStickerInfo:(StickerInfo *)info
 {
-    return [NSString stringWithFormat:@"%@.%lu", packId.hexadecimalString, (unsigned long)stickerId];
+    return info.asKey;
 }
 
 @end

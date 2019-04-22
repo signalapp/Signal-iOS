@@ -8,20 +8,17 @@ class DownloadStickerPackOperation: OWSOperation {
 
     private let success: (Data) -> Void
     private let failure: (Error) -> Void
-    private let packId: Data
-    private let packKey: Data
+    private let stickerPackInfo: StickerPackInfo
 
-    @objc public required init(packId: Data,
-                               packKey: Data,
+    @objc public required init(stickerPackInfo: StickerPackInfo,
                                success : @escaping (Data) -> Void,
                                failure : @escaping (Error) -> Void) {
-        assert(packId.count > 0)
-        assert(packKey.count > 0)
+        assert(stickerPackInfo.packId.count > 0)
+        assert(stickerPackInfo.packKey.count > 0)
 
         self.success = success
         self.failure = failure
-        self.packId = packId
-        self.packKey = packKey
+        self.stickerPackInfo = stickerPackInfo
 
         super.init()
 
@@ -36,7 +33,7 @@ class DownloadStickerPackOperation: OWSOperation {
 
     override public func run() {
 
-        if InstalledStickers.isStickerPackInstalled(packId: packId) {
+        if InstalledStickers.isStickerPackInstalled(stickerPackInfo: stickerPackInfo) {
             Logger.verbose("Skipping redundant operation.")
             var error = StickerError.redundantOperation
             error.isRetryable = false
@@ -44,7 +41,7 @@ class DownloadStickerPackOperation: OWSOperation {
         }
 
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
-        let urlPath = "stickers/\(packId.hexadecimalString)/manifest.proto"
+        let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)/manifest.proto"
         cdnSessionManager.get(urlPath,
                               parameters: nil,
                               progress: { (_) in
@@ -61,7 +58,7 @@ class DownloadStickerPackOperation: OWSOperation {
                                 Logger.verbose("Download succeeded.")
 
                                 do {
-                                    let plaintext = try InstalledStickers.decrypt(ciphertext: data, packKey: self.packKey)
+                                    let plaintext = try InstalledStickers.decrypt(ciphertext: data, packKey: self.stickerPackInfo.packKey)
                                     Logger.verbose("Decryption succeeded.")
 
                                     self.success(plaintext)

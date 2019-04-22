@@ -2,6 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import "StickerInfo.h"
 #import "TSYapDatabaseObject.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,20 +20,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface InstalledStickerPack : TSYapDatabaseObject
 
-@property (nonatomic, readonly) NSData *packId;
-@property (nonatomic, readonly) NSData *packKey;
+@property (nonatomic, readonly) StickerPackInfo *info;
 
 @property (nonatomic, readonly, nullable) NSString *title;
 @property (nonatomic, readonly, nullable) NSString *author;
 @property (nonatomic, readonly) InstalledStickerPackItem *cover;
-@property (nonatomic, readonly) NSArray<InstalledStickerPackItem *> *stickers;
+@property (nonatomic, readonly) NSArray<InstalledStickerPackItem *> *items;
 
-- (instancetype)initWithPackId:(NSData *)packId
-                       packKey:(NSData *)packKey
-                         title:(nullable NSString *)title
-                        author:(nullable NSString *)author
-                         cover:(InstalledStickerPackItem *)cover
-                      stickers:(NSArray<InstalledStickerPackItem *> *)stickers;
+// Convenience accessors.
+@property (nonatomic, readonly) NSData *packId;
+@property (nonatomic, readonly) NSData *packKey;
+@property (nonatomic, readonly) StickerInfo *coverInfo;
+@property (nonatomic, readonly) NSArray<StickerInfo *> *stickerInfos;
+
+- (instancetype)initWithInfo:(StickerPackInfo *)info
+                       title:(nullable NSString *)title
+                      author:(nullable NSString *)author
+                       cover:(InstalledStickerPackItem *)cover
+                    stickers:(NSArray<InstalledStickerPackItem *> *)items;
 
 // --- CODE GENERATION MARKER
 
@@ -44,17 +49,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                           author:(nullable NSString *)author
                            cover:(InstalledStickerPackItem *)cover
-                          packId:(NSData *)packId
-                         packKey:(NSData *)packKey
-                        stickers:(NSArray<InstalledStickerPackItem *> *)stickers
+                            info:(StickerPackInfo *)info
+                           items:(NSArray<InstalledStickerPackItem *> *)items
                            title:(nullable NSString *)title
-NS_SWIFT_NAME(init(uniqueId:author:cover:packId:packKey:stickers:title:));
+NS_SWIFT_NAME(init(uniqueId:author:cover:info:items:title:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
-+ (NSString *)uniqueIdForPackId:(NSData *)packId;
++ (NSString *)uniqueIdForStickerPackInfo:(StickerPackInfo *)info;
 
 @end
 

@@ -34,10 +34,9 @@ extension InstalledStickerPackSerializer {
     // Base class properties
     static let authorColumn = SDSColumnMetadata(columnName: "author", columnType: .unicodeString, isOptional: true, columnIndex: 2)
     static let coverColumn = SDSColumnMetadata(columnName: "cover", columnType: .blob, columnIndex: 3)
-    static let packIdColumn = SDSColumnMetadata(columnName: "packId", columnType: .blob, columnIndex: 4)
-    static let packKeyColumn = SDSColumnMetadata(columnName: "packKey", columnType: .blob, columnIndex: 5)
-    static let stickersColumn = SDSColumnMetadata(columnName: "stickers", columnType: .blob, columnIndex: 6)
-    static let titleColumn = SDSColumnMetadata(columnName: "title", columnType: .unicodeString, isOptional: true, columnIndex: 7)
+    static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 4)
+    static let itemsColumn = SDSColumnMetadata(columnName: "items", columnType: .blob, columnIndex: 5)
+    static let titleColumn = SDSColumnMetadata(columnName: "title", columnType: .unicodeString, isOptional: true, columnIndex: 6)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -46,9 +45,8 @@ extension InstalledStickerPackSerializer {
         uniqueIdColumn,
         authorColumn,
         coverColumn,
-        packIdColumn,
-        packKeyColumn,
-        stickersColumn,
+        infoColumn,
+        itemsColumn,
         titleColumn
         ])
 
@@ -83,18 +81,17 @@ extension InstalledStickerPackSerializer {
             let author = try deserializer.optionalString(at: authorColumn.columnIndex)
             let coverSerialized: Data = try deserializer.blob(at: coverColumn.columnIndex)
             let cover: InstalledStickerPackItem = try SDSDeserializer.unarchive(coverSerialized)
-            let packId = try deserializer.blob(at: packIdColumn.columnIndex)
-            let packKey = try deserializer.blob(at: packKeyColumn.columnIndex)
-            let stickersSerialized: Data = try deserializer.blob(at: stickersColumn.columnIndex)
-            let stickers: [InstalledStickerPackItem] = try SDSDeserializer.unarchive(stickersSerialized)
+            let infoSerialized: Data = try deserializer.blob(at: infoColumn.columnIndex)
+            let info: StickerPackInfo = try SDSDeserializer.unarchive(infoSerialized)
+            let itemsSerialized: Data = try deserializer.blob(at: itemsColumn.columnIndex)
+            let items: [InstalledStickerPackItem] = try SDSDeserializer.unarchive(itemsSerialized)
             let title = try deserializer.optionalString(at: titleColumn.columnIndex)
 
             return InstalledStickerPack(uniqueId: uniqueId,
                                         author: author,
                                         cover: cover,
-                                        packId: packId,
-                                        packKey: packKey,
-                                        stickers: stickers,
+                                        info: info,
+                                        items: items,
                                         title: title)
 
         default:
@@ -260,9 +257,8 @@ class InstalledStickerPackSerializer: SDSSerializer {
         return [
             InstalledStickerPackSerializer.authorColumn,
             InstalledStickerPackSerializer.coverColumn,
-            InstalledStickerPackSerializer.packIdColumn,
-            InstalledStickerPackSerializer.packKeyColumn,
-            InstalledStickerPackSerializer.stickersColumn,
+            InstalledStickerPackSerializer.infoColumn,
+            InstalledStickerPackSerializer.itemsColumn,
             InstalledStickerPackSerializer.titleColumn
             ].map { $0.columnName }
     }
@@ -271,9 +267,8 @@ class InstalledStickerPackSerializer: SDSSerializer {
         let result: [DatabaseValueConvertible] = [
             self.model.author ?? DatabaseValue.null,
             SDSDeserializer.archive(self.model.cover) ?? DatabaseValue.null,
-            self.model.packId,
-            self.model.packKey,
-            SDSDeserializer.archive(self.model.stickers) ?? DatabaseValue.null,
+            SDSDeserializer.archive(self.model.info) ?? DatabaseValue.null,
+            SDSDeserializer.archive(self.model.items) ?? DatabaseValue.null,
             self.model.title ?? DatabaseValue.null
 
         ]
