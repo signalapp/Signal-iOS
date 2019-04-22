@@ -11,6 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey stickerId:(UInt32)stickerId
 {
+    OWSAssertDebug(packId.length > 0);
+    OWSAssertDebug(packKey.length > 0);
+
     self = [super init];
 
     if (!self) {
@@ -42,6 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey
 {
+    OWSAssertDebug(packId.length > 0);
+    OWSAssertDebug(packKey.length > 0);
+
     self = [super init];
 
     if (!self) {
