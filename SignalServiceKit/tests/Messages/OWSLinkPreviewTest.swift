@@ -130,6 +130,10 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_web_button_share_sheet"))
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_share_sheet&igshid=94c7ihqjfmbm"))
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://imgur.com/gallery/igHOwDM"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://pinterest.com/something"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.pinterest.com/something"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://pin.it/something"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.pinterest.com/ohjoy/recipes/"))
 
         // Strip trailing commas.
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://imgur.com/gallery/igHOwDM,"))
@@ -171,6 +175,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com"))
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com"))
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://i.imgur.com/PYiyLv1.jpg?fbplay"))
+        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://pinimg.com/something"))
     }
 
     func testPreviewUrlForMessageBodyText() {
@@ -441,6 +446,27 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
 
                 XCTAssertEqual(content.title, "Sheet dance")
                 XCTAssertEqual(content.imageUrl, "https://i.imgur.com/PYiyLv1.jpg?fbplay")
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testLinkParsingWithRealData10() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.downloadLink(url: "https://www.pinterest.com/ohjoy/recipes/")
+            .done { (linkData) in
+                let content = try! OWSLinkPreview.parse(linkData: linkData)
+                XCTAssertNotNil(content)
+
+                XCTAssertEqual(content.title, "Recipes")
+                XCTAssertEqual(content.imageUrl, "https://i.pinimg.com/200x150/76/ae/9d/76ae9d3056dbcb295924fdd5db6951c6.jpg")
 
                 expectation.fulfill()
             }.catch { (error) in
