@@ -22,7 +22,7 @@ public class FeatureFlags: NSObject {
     /// see the media attached to a long text message until they update their client.
     @objc
     public static var sendingMediaWithOversizeText: Bool {
-        return false
+        return true
     }
 
     @objc
