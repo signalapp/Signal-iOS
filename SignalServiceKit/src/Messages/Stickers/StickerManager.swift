@@ -451,6 +451,7 @@ public class StickerManager: NSObject {
             for stickerPack in self.installedStickerPacks() {
                 installStickerPackContents(stickerPack: stickerPack)
             }
+            // Install the covers for available sticker packs.
             for stickerPack in self.availableStickerPacks() {
                 installStickerPackContents(stickerPack: stickerPack, justCover: true)
             }
