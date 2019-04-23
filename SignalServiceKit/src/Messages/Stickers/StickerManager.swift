@@ -442,28 +442,7 @@ public class StickerManager: NSObject {
         // of their stickers are installed.
 
         DispatchQueue.global().async {
-            var stickerPacks = [StickerPack]()
-            self.databaseStorage.readSwallowingErrors { (transaction) in
-                switch transaction.readTransaction {
-                case .yapRead(let ydbTransaction):
-                    StickerPack.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
-                        guard let pack = object as? StickerPack else {
-                            owsFailDebug("Unexpected object: \(type(of: object))")
-                            return
-                        }
-                        stickerPacks.append(pack)
-                    }
-                case .grdbRead(let grdbTransaction):
-                    let cursor = StickerPack.grdbFetchCursor(transaction: grdbTransaction)
-                    do {
-                        stickerPacks += try cursor.all()
-                    } catch let error as NSError {
-                        owsFailDebug("Couldn't load models: \(error)")
-                        return
-                    }
-                }
-            }
-
+            let stickerPacks = self.installedStickerPacks()
             for stickerPack in stickerPacks {
                 installStickerPackContents(stickerPack: stickerPack)
             }
