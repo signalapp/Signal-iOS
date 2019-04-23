@@ -285,11 +285,16 @@ public class StickerManager: NSObject {
         return stickerPack
     }
 
-    private class func installStickerPackContents(stickerPack: StickerPack) {
+    private class func installStickerPackContents(stickerPack: StickerPack, justCover: Bool = false) {
         // Note: It's safe to kick off downloads of stickers that are already installed.
 
         // The cover.
         tryToDownloadAndInstallSticker(stickerInfo: stickerPack.coverInfo)
+
+        guard !justCover else {
+            return
+        }
+
         // The stickers.
         for stickerInfo in stickerPack.stickerInfos {
             tryToDownloadAndInstallSticker(stickerInfo: stickerInfo)
@@ -399,8 +404,8 @@ public class StickerManager: NSObject {
                 return
             }
 
+            let installedSticker = InstalledSticker(info: stickerInfo)
             databaseStorage.writeSwallowingErrors { (transaction) in
-                let installedSticker = InstalledSticker(info: stickerInfo)
                 installedSticker.anySave(transaction: transaction)
             }
         }
@@ -434,7 +439,8 @@ public class StickerManager: NSObject {
             owsFailDebug("Could not derive sticker key.")
             throw StickerError.invalidInput
         }
-        return try StickerUtils.decryptStickerData(ciphertext, withKey: stickerKey)
+        let plaintext = try Cryptography.decryptAttachment(ciphertext, withKey: stickerKey, digest: nil, unpaddedSize: 0)
+        return plaintext
     }
 
     private class func enqueueAllStickerDownloads() {
@@ -442,9 +448,11 @@ public class StickerManager: NSObject {
         // of their stickers are installed.
 
         DispatchQueue.global().async {
-            let stickerPacks = self.installedStickerPacks()
-            for stickerPack in stickerPacks {
+            for stickerPack in self.installedStickerPacks() {
                 installStickerPackContents(stickerPack: stickerPack)
+            }
+            for stickerPack in self.availableStickerPacks() {
+                installStickerPackContents(stickerPack: stickerPack, justCover: true)
             }
         }
     }
@@ -460,7 +468,8 @@ public class StickerManager: NSObject {
             self.messageSenderJobQueue.add(message: message, transaction: ydbTransaction)
         case .grdbWrite:
             // GRDB TODO: Support any transactions.
-            owsFailDebug("GRDB not yet supported.")
+//            owsFailDebug("GRDB not yet supported.")
+            break
         }
     }
 }

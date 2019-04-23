@@ -5,7 +5,6 @@
 #import "StickerUtils.h"
 #import "OWSError.h"
 #import <HKDFKit/HKDFKit.h>
-#import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -37,16 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *nullSalt = [[NSMutableData dataWithLength:32] copy];
     NSData *stickerKey = [HKDFKit throws_deriveKey:packKey info:infoData salt:nullSalt outputSize:64];
     return stickerKey;
-}
-
-+ (nullable NSData *)decryptStickerData:(NSData *)dataToDecrypt
-                                withKey:(NSData *)key
-                                  error:(NSError **)error
-{
-    // TODO:
-    *error = OWSErrorWithCodeDescription(OWSErrorCodeInvalidStickerData,
-                                         NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
-    return nil;
 }
 
 @end

@@ -108,21 +108,13 @@ public class ManageStickersViewController: OWSTableViewController {
         self.contents = contents
     }
 
-    private let iconSize = 64
-
     private func buildTableCell(installedStickerPack stickerPack: StickerPack) -> UITableViewCell {
         let iconFilePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerPack.coverInfo)
         let actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
         return buildTableCell(iconFilePath: iconFilePath,
                               title: stickerPack.title,
                               authorName: stickerPack.author,
-                              actionIconName: actionIconName) { [weak self] in
-                                guard let self = self else {
-                                    return
-                                }
-                                self.show(stickerPack: stickerPack)
-
-        }
+                              actionIconName: actionIconName)
     }
 
     private func buildTableCell(availableStickerPack stickerPack: StickerPack) -> UITableViewCell {
@@ -131,30 +123,24 @@ public class ManageStickersViewController: OWSTableViewController {
         return buildTableCell(iconFilePath: iconFilePath,
                               title: stickerPack.title,
                               authorName: stickerPack.author,
-                              actionIconName: actionIconName) { [weak self] in
-                                guard let self = self else {
-                                    return
-                                }
-                                self.install(stickerPack: stickerPack)
-
-        }
+                              actionIconName: actionIconName)
     }
 
     private func buildTableCell(iconFilePath: String?,
                                 title titleValue: String?,
                                 authorName authorNameValue: String?,
-                                actionIconName: String,
-                                actionBlock: @escaping () -> Void) -> UITableViewCell {
+                                actionIconName: String) -> UITableViewCell {
         let cell = OWSTableItem.newCell()
 
         // TODO: Asset to show while loading a sticker - if any.
-        let iconView = UIImageView()
+        let iconView = YYAnimatedImageView()
         if let iconFilePath = iconFilePath,
-            let coverIcon = UIImage(contentsOfFile: iconFilePath) {
+            let coverIcon = YYImage(contentsOfFile: iconFilePath) {
             // TODO: This will be webp.
             iconView.image = coverIcon
         }
 
+        let iconSize: CGFloat = 64
         iconView.autoSetDimensions(to: CGSize(width: iconSize, height: iconSize))
 
         let title: String
@@ -189,23 +175,28 @@ public class ManageStickersViewController: OWSTableViewController {
             textStack.addArrangedSubview(authorLabel)
         }
 
+        let actionIconSize: CGFloat = 20
+        let actionCircleSize: CGFloat = 32
         let actionCircleView = OWSLayerView(frame: .zero) { (circleView) in
             circleView.backgroundColor = Theme.offBackgroundColor
-            circleView.layer.cornerRadius = min(circleView.width(), circleView.height()) * 0.5
+            circleView.layer.cornerRadius = actionCircleSize * 0.5
         }
-        // TODO: Should this even be a button?  Maybe we should just have the whole row be hot?
-        let actionButton = OWSButton(imageName: actionIconName, tintColor: Theme.secondaryColor, block: actionBlock)
-        actionCircleView.addSubview(actionButton)
-        actionButton.autoPinEdgesToSuperviewEdges()
+        actionCircleView.autoSetDimensions(to: CGSize(width: actionCircleSize, height: actionCircleSize))
+        let actionIcon = UIImage(named: actionIconName)?.withRenderingMode(.alwaysTemplate)
+        let actionIconView = UIImageView(image: actionIcon)
+        actionIconView.tintColor = Theme.secondaryColor
+        actionCircleView.addSubview(actionIconView)
+        actionIconView.autoCenterInSuperview()
+        actionIconView.autoSetDimensions(to: CGSize(width: actionIconSize, height: actionIconSize))
 
         let stack = UIStackView(arrangedSubviews: [
             iconView,
             textStack,
             actionCircleView
             ])
-        textStack.axis = .horizontal
-        textStack.alignment = .center
-        textStack.spacing = 12
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.spacing = 12
 
         cell.contentView.addSubview(stack)
         stack.ows_autoPinToSuperviewMargins()

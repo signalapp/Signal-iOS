@@ -10,10 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSData *)stickerKeyForPackKey:(NSData *)packKey;
 
-+ (nullable NSData *)decryptStickerData:(NSData *)dataToDecrypt
-                                withKey:(NSData *)key
-                                  error:(NSError **)error;
-
 @end
 
 NS_ASSUME_NONNULL_END
