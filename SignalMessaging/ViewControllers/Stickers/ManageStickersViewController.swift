@@ -218,8 +218,8 @@ public class ManageStickersViewController: OWSTableViewController {
         AssertIsOnMainThread()
 
         Logger.verbose("")
-
-        // TODO:
+        
+        StickerManager.installStickerPack(stickerPack: stickerPack)
     }
 
     @objc func stickersOrPacksDidChange() {
