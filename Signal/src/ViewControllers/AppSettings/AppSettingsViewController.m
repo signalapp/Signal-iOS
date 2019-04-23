@@ -242,16 +242,6 @@
                                                    color:[UIColor ows_destructiveRedColor]]];
     }
 
-    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_VIEW_TITLE",
-                                                              @"Title for the 'manage stickers' view.")
-                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"stickers")
-                                              actionBlock:^{
-                                                  ManageStickersViewController *manageStickersView =
-                                                      [ManageStickersViewController new];
-                                                  [weakSelf.navigationController pushViewController:manageStickersView
-                                                                                           animated:YES];
-                                              }]];
-
     [contents addSection:section];
 
     self.contents = contents;

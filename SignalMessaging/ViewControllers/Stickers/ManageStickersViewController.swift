@@ -9,12 +9,6 @@ import SignalServiceKit
 @objc
 public class ManageStickersViewController: OWSTableViewController {
 
-//        // MARK: - Dependencies
-//
-//        private var stickerManager: StickerManager {
-//            return AppEnvironment.shared.stickerManager
-//        }
-
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -22,46 +16,14 @@ public class ManageStickersViewController: OWSTableViewController {
         notImplemented()
     }
 
-    // Currently we only use one mode (AttachmentApproval), so we could simplify this class, but it's kind
-    // of nice that it's written in a flexible way in case we'd want to use it elsewhere again in the future.
     @objc
     public required override init() {
-//        assert(!attachment.hasError)
-//        self.attachment = attachment
-//        self.mode = mode
         super.init()
-
-        createViews()
     }
 
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-
-    // MARK: - Create Views
-
-    private func createViews() {
-//        if attachment.isAnimatedImage {
-//            createAnimatedPreview()
-//        } else if attachment.isImage {
-//            createImagePreview()
-//        } else if attachment.isVideo {
-//            createVideoPreview()
-//        } else if attachment.isAudio {
-//            createAudioPreview()
-//        } else {
-//            createGenericPreview()
-//        }
-    }
-
-//
-//    private var hasBegunImport = false
-//
-//    // MARK: - Dependencies
-//
-//    private var backup: OWSBackup {
-//        return AppEnvironment.shared.backup
-//    }
 
     // MARK: - View Lifecycle
 
@@ -69,8 +31,8 @@ public class ManageStickersViewController: OWSTableViewController {
         super.loadView()
 
         navigationItem.title = NSLocalizedString("STICKERS_MANAGE_VIEW_TITLE", comment: "Title for the 'manage stickers' view.")
-//
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancelButton))
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(didPressEditButton))
     }
 
     override public func viewDidLoad() {
@@ -251,101 +213,21 @@ public class ManageStickersViewController: OWSTableViewController {
         return cell
     }
 
-//    private var progressFormatter: NumberFormatter = {
-//        let numberFormatter = NumberFormatter()
-//        numberFormatter.numberStyle = .percent
-//        numberFormatter.maximumFractionDigits = 0
-//        numberFormatter.multiplier = 1
-//        return numberFormatter
-//    }()
-//
-//    private func updateProgressContents() {
-//        let contents = OWSTableContents()
-//
-//        let section = OWSTableSection()
-//
-//        section.add(OWSTableItem.label(withText: NSLocalizedString("BACKUP_RESTORE_STATUS", comment: "Label for the backup restore status."), accessoryText: NSStringForBackupImportState(backup.backupImportState)))
-//
-//        if backup.backupImportState == .inProgress {
-//            if let backupImportDescription = backup.backupImportDescription {
-//                section.add(OWSTableItem.label(withText: NSLocalizedString("BACKUP_RESTORE_DESCRIPTION", comment: "Label for the backup restore description."), accessoryText: backupImportDescription))
-//            }
-//
-//            if let backupImportProgress = backup.backupImportProgress {
-//                let progressInt = backupImportProgress.floatValue * 100
-//                if let progressString = progressFormatter.string(from: NSNumber(value: progressInt)) {
-//                    section.add(OWSTableItem.label(withText: NSLocalizedString("BACKUP_RESTORE_PROGRESS", comment: "Label for the backup restore progress."), accessoryText: progressString))
-//                } else {
-//                    owsFailDebug("Could not format progress: \(progressInt)")
-//                }
-//            }
-//        }
-//
-//        contents.addSection(section)
-//        self.contents = contents
-//
-//        // TODO: Add cancel button.
-//    }
-//
-//    // MARK: Helpers
-//
-//    @objc
-//    private func didPressCancelButton(sender: UIButton) {
-//        Logger.info("")
-//
-//        // TODO: Cancel import.
-//
-//        cancelAndDismiss()
-//    }
-//
-//    @objc
-//    private func cancelAndDismiss() {
-//        Logger.info("")
-//
-//        backup.setHasPendingRestoreDecision(false)
-//
-//        showHomeView()
-//    }
-//
-//    @objc
-//    private func startImport() {
-//        Logger.info("")
-//
-//        hasBegunImport = true
-//
-//        backup.tryToImport()
-//    }
-//
-//    private func showHomeView() {
-//        // In production, this view will never be presented in a modal.
-//        // During testing (debug UI, etc.), it may be a modal.
-//        let isModal = navigationController?.presentingViewController != nil
-//        if isModal {
-//            dismiss(animated: true, completion: {
-//                SignalApp.shared().showHomeView()
-//            })
-//        } else {
-//            SignalApp.shared().showHomeView()
-//        }
-//
-//        NotificationCenter.default.removeObserver(self)
-//    }
-//
-//    // MARK: - Notifications
-//    // MARK: Orientation
-//
-//    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-//        return .portrait
-//    }
-
-  // MARK: Events
+    // MARK: Events
 
     private func show(stickerPack: StickerPack) {
+        AssertIsOnMainThread()
+
+        Logger.verbose("")
+
         // TODO:
     }
 
     private func install(stickerPack: StickerPack) {
+        AssertIsOnMainThread()
+
         Logger.verbose("")
+
         // TODO:
     }
 
@@ -355,5 +237,14 @@ public class ManageStickersViewController: OWSTableViewController {
         Logger.verbose("")
 
         updateState()
+    }
+
+    @objc
+    private func didPressEditButton(sender: UIButton) {
+        AssertIsOnMainThread()
+
+        Logger.verbose("")
+
+        // TODO:
     }
 }

@@ -699,11 +699,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.searchResultsController viewDidAppear:animated];
 
     self.hasEverAppeared = YES;
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        ManageStickersViewController *manageStickersView = [ManageStickersViewController new];
-        [self.navigationController pushViewController:manageStickersView animated:YES];
-    });
 }
 
 - (void)viewDidDisappear:(BOOL)animated

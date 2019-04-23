@@ -296,11 +296,6 @@ public class StickerManager: NSObject {
         }
     }
 
-    //    https://cdn-staging.signal.org/stickers/0123456789abcdef0123456789abcdef/manifest.proto
-    //
-    //    Using key:
-    //    abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
-
     @objc
     public class func refreshAvailableStickerPacks() {
         // TODO: Fetch actual list from service.
