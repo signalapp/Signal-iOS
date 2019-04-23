@@ -20,7 +20,7 @@ public class StickerManager: NSObject {
     // MARK: - Notifications
 
     @objc
-    public static let InstalledStickersOrPacksDidChange = Notification.Name("InstalledStickersOrPacksDidChange")
+    public static let StickersOrPacksDidChange = Notification.Name("StickersOrPacksDidChange")
 
     // MARK: - Dependencies
 
@@ -106,8 +106,24 @@ public class StickerManager: NSObject {
         return result
     }
 
+    // TODO: Handle sorting.
     @objc
-    public class func isStickerPackInstalled(stickerPackInfo: StickerPackInfo) -> Bool {
+    public class func installedStickerPacks() -> [StickerPack] {
+        return allStickerPacks().filter {
+            $0.isInstalled
+        }
+    }
+
+    // TODO: Handle sorting.
+    @objc
+    public class func availableStickerPacks() -> [StickerPack] {
+        return allStickerPacks().filter {
+            !$0.isInstalled
+        }
+    }
+
+    @objc
+    public class func isStickerPackSaved(stickerPackInfo: StickerPackInfo) -> Bool {
 
         var result = false
         databaseStorage.readSwallowingErrors { (transaction) in
@@ -125,8 +141,9 @@ public class StickerManager: NSObject {
                 Logger.info("Skipping uninstall; not installed.")
                 return
             }
-            stickerPack.anyRemove(transaction: transaction)
+            stickerPack.update(withIsInstalled: false, transaction: transaction)
 
+            // TODO: I'm not sure we want to uninstall the stickers.
             for stickerInfo in stickerPack.stickerInfos {
                 if let completion = uninstallSticker(stickerInfo: stickerInfo,
                                                      transaction: transaction) {
@@ -143,12 +160,32 @@ public class StickerManager: NSObject {
             completion()
         }
 
-        NotificationCenter.default.postNotificationNameAsync(InstalledStickersOrPacksDidChange, object: nil)
+        NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
+    }
+
+    @objc
+    public class func installStickerPack(stickerPack: StickerPack) {
+
+        if stickerPack.isInstalled {
+            return
+        }
+
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            stickerPack.update(withIsInstalled: true, transaction: transaction)
+
+            sendStickerSyncMessage(operationType: .remove,
+                                   packs: [stickerPack.info],
+                                   transaction: transaction)
+        }
+
+        installStickerPackContents(stickerPack: stickerPack)
+
+        NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
     }
 
     @objc
     public class func fetchStickerPack(stickerPackInfo: StickerPackInfo,
-                                                transaction: SDSAnyReadTransaction) -> StickerPack? {
+                                       transaction: SDSAnyReadTransaction) -> StickerPack? {
 
         let uniqueId = StickerPack.uniqueId(for: stickerPackInfo)
 
@@ -156,14 +193,20 @@ public class StickerManager: NSObject {
     }
 
     @objc
-    public class func tryToDownloadAndInstallStickerPack(stickerPackInfo: StickerPackInfo) {
+    public class func tryToDownloadAndSaveStickerPack(stickerPackInfo: StickerPackInfo,
+                                                      shouldInstall: Bool = false) {
 
         let operation = DownloadStickerPackOperation(stickerPackInfo: stickerPackInfo,
                                                      success: { (manifestData) in
                                                         DispatchQueue.global().async {
-                                                            // installStickerPack is expensive.
-                                                            self.installStickerPack(stickerPackInfo: stickerPackInfo,
-                                                                                    manifestData: manifestData)
+                                                            // saveStickerPack is expensive.
+                                                            guard let stickerPack = self.saveStickerPack(stickerPackInfo: stickerPackInfo,
+                                                                                                         manifestData: manifestData) else {
+                                                                                                            return
+                                                            }
+                                                            if shouldInstall {
+                                                                self.installStickerPack(stickerPack: stickerPack)
+                                                            }
                                                         }
         },
                                                      failure: { (_) in
@@ -189,27 +232,17 @@ public class StickerManager: NSObject {
     }
 
     // This method tries to parse a downloaded manifest.
-    // If valid, we install the pack and then kick off
-    // download of its contents.
-    private class func installStickerPack(stickerPackInfo: StickerPackInfo,
-                                          manifestData: Data) {
+    // If valid, we save the pack.
+    private class func saveStickerPack(stickerPackInfo: StickerPackInfo,
+                                       manifestData: Data) -> StickerPack? {
         assert(manifestData.count > 0)
-
-        var hasStickerPack = false
-        databaseStorage.readSwallowingErrors { (transaction) in
-            hasStickerPack = nil != fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
-        }
-        if hasStickerPack {
-            // Sticker pack already installed, skip.
-            return
-        }
 
         let manifestProto: SSKProtoPack
         do {
             manifestProto = try SSKProtoPack.parseData(manifestData)
         } catch let error as NSError {
             owsFailDebug("Couldn't parse protos: \(error)")
-            return
+            return nil
         }
         let title = parseOptionalString(manifestProto.title)
         let author = parseOptionalString(manifestProto.author)
@@ -222,22 +255,34 @@ public class StickerManager: NSObject {
         }
         guard let firstItem = items.first else {
             owsFailDebug("Invalid manifest, no stickers")
-            return
+            return nil
         }
         let cover = manifestCover ?? firstItem
 
         let stickerPack = StickerPack(info: stickerPackInfo, title: title, author: author, cover: cover, stickers: items)
         databaseStorage.writeSwallowingErrors { (transaction) in
+            let oldCopy = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
+
             stickerPack.anySave(transaction: transaction)
+
+            // Preserve old mutable state.
+            if let oldCopy = oldCopy {
+                stickerPack.update(withIsInstalled: oldCopy.isInstalled, transaction: transaction)
+            }
 
             sendStickerSyncMessage(operationType: .install,
                                    packs: [stickerPack.info],
                                    transaction: transaction)
         }
 
-        installStickerPackContents(stickerPack: stickerPack)
+        // If the pack is already installed, make sure all stickers are installed.
+        if stickerPack.isInstalled {
+            installStickerPackContents(stickerPack: stickerPack)
+        }
 
-        NotificationCenter.default.postNotificationNameAsync(InstalledStickersOrPacksDidChange, object: nil)
+        NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
+
+        return stickerPack
     }
 
     private class func installStickerPackContents(stickerPack: StickerPack) {
@@ -251,28 +296,31 @@ public class StickerManager: NSObject {
         }
     }
 
-//    https://cdn-staging.signal.org/stickers/0123456789abcdef0123456789abcdef/manifest.proto
-//    
-//    Using key:
-//    abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
+    //    https://cdn-staging.signal.org/stickers/0123456789abcdef0123456789abcdef/manifest.proto
+    //
+    //    Using key:
+    //    abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
 
     @objc
-    public class func availableStickerPacks() -> [StickerPackInfo] {
+    public class func refreshAvailableStickerPacks() {
         // TODO: Fetch actual list from service.
         // TODO: Should this include other "encountered" packs?
         guard let packId = Data.data(fromHex: "0123456789abcdef0123456789abcdef") else {
             owsFailDebug("Invalid packId")
-            return []
+            return
         }
         assert(packId.count == StickerManager.packIdLength)
         guard let packKey = Data.data(fromHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789") else {
             owsFailDebug("Invalid packKey")
-            return []
+            return
         }
         assert(packKey.count == StickerManager.packKeyLength)
 
-        let stickerPackInfo = StickerPackInfo(packId: packId, packKey: packKey)
-        return [stickerPackInfo]
+        let stickerPackInfos = [StickerPackInfo(packId: packId, packKey: packKey)]
+        for stickerPackInfo in stickerPackInfos {
+            tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
+                                            shouldInstall: false)
+        }
     }
 
     // MARK: - Stickers
@@ -321,7 +369,7 @@ public class StickerManager: NSObject {
             OWSFileSystem.deleteFileIfExists(url.path)
         }
 
-        // No need to post InstalledStickersOrPacksDidChange; caller will do that.
+        // No need to post StickersOrPacksDidChange; caller will do that.
     }
 
     @objc
@@ -362,7 +410,7 @@ public class StickerManager: NSObject {
             }
         }
 
-        NotificationCenter.default.postNotificationNameAsync(InstalledStickersOrPacksDidChange, object: nil)
+        NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
     }
 
     @objc

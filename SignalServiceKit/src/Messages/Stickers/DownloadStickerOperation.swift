@@ -39,6 +39,10 @@ class DownloadStickerOperation: OWSOperation {
             error.isRetryable = false
             return reportError(error)
         }
+        
+        // The response is a .webp, so use the default response serializer.
+        let cdnSessionManager = self.cdnSessionManager
+        cdnSessionManager.responseSerializer = AFHTTPResponseSerializer()
 
         // https://cdn.signal.org/stickers/<pack_id>/full/<sticker_id>
         let urlPath = "stickers/\(stickerInfo.packId.hexadecimalString)/full/\(stickerInfo.stickerId)"
@@ -72,14 +76,16 @@ class DownloadStickerOperation: OWSOperation {
                                 }
             },
                               failure: { [weak self] (_, error) in
-            guard let self = self else {
-                return
-            }
-            Logger.error("Download failed: \(error)")
+                                guard let self = self else {
+                                    return
+                                }
+                                Logger.error("Download failed: \(error)")
 
-            // TODO: We need to discriminate retry-able errors from
-            //       404s, etc.  We might want to abort on all 4xx and 5xx.
-            self.reportError(error)
+                                // TODO: We need to discriminate retry-able errors from
+                                //       404s, etc.  We might want to abort on all 4xx and 5xx.
+                                var errorCopy = error
+                                errorCopy.isRetryable = true
+                                self.reportError(errorCopy)
         })
     }
 

@@ -68,7 +68,7 @@ public class ManageStickersViewController: OWSTableViewController {
     override public func loadView() {
         super.loadView()
 
-    navigationItem.title = NSLocalizedString("SETTINGS_VIEW_TITLE", comment: "Title for the 'manage stickers' view.")
+        navigationItem.title = NSLocalizedString("STICKERS_MANAGE_VIEW_TITLE", comment: "Title for the 'manage stickers' view.")
 //
 //        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancelButton))
     }
@@ -77,9 +77,21 @@ public class ManageStickersViewController: OWSTableViewController {
         super.viewDidLoad()
 
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(installedStickersOrPacksDidChange),
-                                               name: StickerManager.InstalledStickersOrPacksDidChange,
+                                               selector: #selector(stickersOrPacksDidChange),
+                                               name: StickerManager.StickersOrPacksDidChange,
                                                object: nil)
+
+        updateState()
+
+        StickerManager.refreshAvailableStickerPacks()
+    }
+
+    private var installedStickerPacks = [StickerPack]()
+    private var availableStickerPacks = [StickerPack]()
+
+    private func updateState() {
+        installedStickerPacks = StickerManager.installedStickerPacks()
+        availableStickerPacks = StickerManager.availableStickerPacks()
 
         updateTableContents()
     }
@@ -88,14 +100,10 @@ public class ManageStickersViewController: OWSTableViewController {
         let contents = OWSTableContents()
 
         // TODO: Sort sticker packs.
-        var installedPackIds = Set<String>()
-        let installedStickerPacks = StickerManager.allStickerPacks()
         if installedStickerPacks.count > 0 {
             let section = OWSTableSection()
             section.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE", comment: "Title for the 'installed stickers' section of the 'manage stickers' view.")
             for stickerPack in installedStickerPacks {
-                installedPackIds.insert(stickerPack.info.asKey())
-
                 section.add(OWSTableItem(customCellBlock: { [weak self] in
                     guard let self = self else {
                         return UITableViewCell()
@@ -114,27 +122,23 @@ public class ManageStickersViewController: OWSTableViewController {
         }
 
         // TODO: Sort sticker packs.
-        let availableStickerPacks = StickerManager.availableStickerPacks()
         if availableStickerPacks.count > 0 {
             let section = OWSTableSection()
             section.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_PACKS_SECTION_TITLE", comment: "Title for the 'available stickers' section of the 'manage stickers' view.")
             for stickerPack in availableStickerPacks {
-//                guard !installedPackIds.contains(stickerPack.info.asKey()) else {
-//                    continue
-//                }
-//                section.add(OWSTableItem(customCellBlock: { [weak self] in
-//                    guard let self = self else {
-//                        return UITableViewCell()
-//                    }
-//                    return self.buildTableCell(availableStickerPack: stickerPack)
-//                    },
-//                                         customRowHeight: UITableView.automaticDimension,
-//                                         actionBlock: { [weak self] in
-//                                            guard let self = self else {
-//                                                return
-//                                            }
-//                                            self.install(stickerPack: stickerPack)
-//                }))
+                section.add(OWSTableItem(customCellBlock: { [weak self] in
+                    guard let self = self else {
+                        return UITableViewCell()
+                    }
+                    return self.buildTableCell(availableStickerPack: stickerPack)
+                    },
+                                         customRowHeight: UITableView.automaticDimension,
+                                         actionBlock: { [weak self] in
+                                            guard let self = self else {
+                                                return
+                                            }
+                                            self.install(stickerPack: stickerPack)
+                }))
             }
             contents.addSection(section)
         }
@@ -359,11 +363,11 @@ public class ManageStickersViewController: OWSTableViewController {
         // TODO:
     }
 
-    @objc func installedStickersOrPacksDidChange() {
+    @objc func stickersOrPacksDidChange() {
         AssertIsOnMainThread()
 
         Logger.verbose("")
 
-        updateTableContents()
+        updateState()
     }
 }

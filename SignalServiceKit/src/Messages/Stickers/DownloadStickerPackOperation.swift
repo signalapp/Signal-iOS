@@ -33,12 +33,17 @@ class DownloadStickerPackOperation: OWSOperation {
 
     override public func run() {
 
-        if StickerManager.isStickerPackInstalled(stickerPackInfo: stickerPackInfo) {
+        // TODO: We might want to download anyway - the sticker pack may have changed.
+        if StickerManager.isStickerPackSaved(stickerPackInfo: stickerPackInfo) {
             Logger.verbose("Skipping redundant operation.")
             var error = StickerError.redundantOperation
             error.isRetryable = false
             return reportError(error)
         }
+
+        // The response is a binary protobuf, so use the default response serializer.
+        let cdnSessionManager = self.cdnSessionManager
+        cdnSessionManager.responseSerializer = AFHTTPResponseSerializer()
 
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
         let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)/manifest.proto"
@@ -71,15 +76,17 @@ class DownloadStickerPackOperation: OWSOperation {
                                     return self.reportError(error)
                                 }
             },
-                                failure: { [weak self] (_, error) in
-            guard let self = self else {
-                return
-            }
-            Logger.error("Download failed: \(error)")
+                              failure: { [weak self] (_, error) in
+                                guard let self = self else {
+                                    return
+                                }
+                                Logger.error("Download failed: \(error)")
 
-            // TODO: We need to discriminate retry-able errors from
-            //       404s, etc.  We might want to abort on all 4xx and 5xx.
-            self.reportError(error)
+                                // TODO: We need to discriminate retry-able errors from
+                                //       404s, etc.  We might want to abort on all 4xx and 5xx.
+                                var errorCopy = error
+                                errorCopy.isRetryable = true
+                                self.reportError(errorCopy)
         })
     }
 
