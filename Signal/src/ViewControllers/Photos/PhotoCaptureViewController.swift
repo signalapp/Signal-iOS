@@ -9,6 +9,8 @@ import PromiseKit
 protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didFinishProcessingAttachment attachment: SignalAttachment)
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController)
+    func photoCaptureViewControllerDidTryToCaptureTooMany(_ photoCaptureViewController: PhotoCaptureViewController)
+    func photoCaptureViewControllerCanCaptureMoreItems(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool
 }
 
 enum PhotoCaptureError: Error {
@@ -359,6 +361,15 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
     func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error) {
         showFailureUI(error: error)
+    }
+
+    func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool {
+        guard let delegate = delegate else { return false }
+        return delegate.photoCaptureViewControllerCanCaptureMoreItems(self)
+    }
+
+    func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture) {
+        delegate?.photoCaptureViewControllerDidTryToCaptureTooMany(self)
     }
 
     // MARK: - Video

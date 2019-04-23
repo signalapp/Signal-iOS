@@ -15,7 +15,8 @@ protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset)
 
     var isInBatchSelectMode: Bool { get }
-    func imagePickerCanSelectAdditionalItems(_ imagePicker: ImagePickerGridController) -> Bool
+    func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool
+    func imagePickerDidTryToSelectTooMany(_ imagePicker: ImagePickerGridController)
 }
 
 class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate, PhotoCollectionPickerDelegate {
@@ -164,8 +165,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let asset = photoCollectionContents.asset(at: indexPath.item)
         switch selectionPanGestureMode {
         case .select:
-            guard delegate.imagePickerCanSelectAdditionalItems(self) else {
-                showTooManySelectedToast()
+            guard delegate.imagePickerCanSelectMoreItems(self) else {
+                delegate.imagePickerDidTryToSelectTooMany(self)
                 return
             }
 
@@ -376,27 +377,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
     }
 
-    func showTooManySelectedToast() {
-        Logger.info("")
-
-        guard let  collectionView  = collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        let toastFormat = NSLocalizedString("IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT",
-                                            comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.")
-
-        let toastText = String(format: toastFormat, NSNumber(value: SignalAttachment.maxAttachmentsAllowed))
-
-        let toastController = ToastController(text: toastText)
-
-        let kToastInset: CGFloat = 10
-        let bottomInset = kToastInset + collectionView.contentInset.bottom + view.layoutMargins.bottom
-
-        toastController.presentToastView(fromBottomOfView: view, inset: bottomInset)
-    }
-
     // MARK: - PhotoLibraryDelegate
 
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
@@ -485,7 +465,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         if (indexPathsForSelectedItems.count < SignalAttachment.maxAttachmentsAllowed) {
             return true
         } else {
-            showTooManySelectedToast()
+            delegate?.imagePickerDidTryToSelectTooMany(self)
             return false
         }
     }

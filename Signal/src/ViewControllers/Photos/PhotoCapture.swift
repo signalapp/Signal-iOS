@@ -9,6 +9,9 @@ protocol PhotoCaptureDelegate: AnyObject {
     func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment)
     func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error)
 
+    func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool
+    func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture)
+
     func photoCaptureDidBeginVideo(_ photoCapture: PhotoCapture)
     func photoCaptureDidCompleteVideo(_ photoCapture: PhotoCapture)
     func photoCaptureDidCancelVideo(_ photoCapture: PhotoCapture)
@@ -279,6 +282,13 @@ extension PhotoCapture: CaptureButtonDelegate {
 
     func didTapCaptureButton(_ captureButton: CaptureButton) {
         Logger.verbose("")
+
+        guard let delegate = delegate else { return }
+        guard delegate.photoCaptureCanCaptureMoreItems(self) else {
+            delegate.photoCaptureDidTryToCaptureTooMany(self)
+            return
+        }
+
         sessionQueue.async {
             self.captureOutput.takePhoto(delegate: self)
         }
@@ -288,8 +298,14 @@ extension PhotoCapture: CaptureButtonDelegate {
 
     func didBeginLongPressCaptureButton(_ captureButton: CaptureButton) {
         AssertIsOnMainThread()
-
         Logger.verbose("")
+
+        guard let delegate = delegate else { return }
+        guard delegate.photoCaptureCanCaptureMoreItems(self) else {
+            delegate.photoCaptureDidTryToCaptureTooMany(self)
+            return
+        }
+
         sessionQueue.async {
             self.captureOutput.beginVideo(delegate: self)
 
