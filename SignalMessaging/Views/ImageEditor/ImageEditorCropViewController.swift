@@ -239,6 +239,10 @@ class ImageEditorCropViewController: OWSViewController {
 
     @objc
     public override var prefersStatusBarHidden: Bool {
+        guard !OWSWindowManager.shared().hasCall() else {
+            return false
+        }
+
         return true
     }
 

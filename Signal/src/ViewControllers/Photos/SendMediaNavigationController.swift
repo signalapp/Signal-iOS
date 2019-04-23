@@ -28,7 +28,13 @@ class SendMediaNavigationController: OWSNavigationController {
 
     // MARK: - Overrides
 
-    override var prefersStatusBarHidden: Bool { return true }
+    override var prefersStatusBarHidden: Bool {
+        guard !OWSWindowManager.shared().hasCall() else {
+            return false
+        }
+
+        return true
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
