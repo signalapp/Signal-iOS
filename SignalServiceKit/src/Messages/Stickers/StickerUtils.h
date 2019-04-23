@@ -10,9 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSData *)stickerKeyForPackKey:(NSData *)packKey;
 
-+ (nullable NSData *)decryptAttachment:(NSData *)dataToDecrypt
-                               withKey:(NSData *)key
-                                 error:(NSError **)error;
++ (nullable NSData *)decryptStickerData:(NSData *)dataToDecrypt
+                                withKey:(NSData *)key
+                                  error:(NSError **)error;
 
 @end
 

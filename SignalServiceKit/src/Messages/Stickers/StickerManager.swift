@@ -439,29 +439,7 @@ public class StickerManager: NSObject {
             owsFailDebug("Could not derive sticker key.")
             throw StickerError.invalidInput
         }
-        guard let key = OWSAES256Key(data: packKey) else {
-            owsFailDebug("Invalid pack key.")
-            throw StickerError.invalidInput
-        }
-
-        // TODO: We might want to rename this method if we end up using it for more than
-        //       profile data.
-        Logger.verbose("key: \(packKey.count), \(packKey.hexadecimalString)")
-        Logger.verbose("key: \(stickerKey.count), \(stickerKey.hexadecimalString)")
-//            + (nullable NSData *)decryptAttachment:(NSData *)dataToDecrypt
-//        withKey:(NSData *)key
-//        digest:(nullable NSData *)digest
-//        unpaddedSize:(UInt32)unpaddedSize
-//        error:(NSError **)error
-
-        let plaintext = try StickerUtils.decryptAttachment(ciphertext, withKey: stickerKey)
-//        let plaintext = try Cryptography.decryptAttachment(ciphertext, withKey: stickerKey, digest: nil, unpaddedSize: 0)
-//        guard let plaintext = Cryptography.decryptAESGCMProfileData(encryptedData: ciphertext, key: key) else {
-//            owsFailDebug("Decryption failed.")
-//            throw StickerError.invalidInput
-//        }
-
-        return plaintext
+        return try StickerUtils.decryptStickerData(ciphertext, withKey: stickerKey)
     }
 
     private class func enqueueAllStickerDownloads() {
