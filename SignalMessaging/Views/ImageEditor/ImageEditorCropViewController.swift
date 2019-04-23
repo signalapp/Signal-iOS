@@ -773,7 +773,7 @@ class ImageEditorCropViewController: OWSViewController {
     }
 
     @objc public func rotate90ButtonPressed() {
-        rotateButtonPressed(angleRadians: CGFloat.pi * 0.5, rotateCanvas: true)
+        rotateButtonPressed(angleRadians: -CGFloat.pi * 0.5, rotateCanvas: true)
     }
 
     private func rotateButtonPressed(angleRadians: CGFloat, rotateCanvas: Bool) {
