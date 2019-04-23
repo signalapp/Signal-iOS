@@ -168,6 +168,7 @@ class PhotoCapture: NSObject {
                at devicePoint: CGPoint,
                monitorSubjectAreaChange: Bool) {
         sessionQueue.async {
+            Logger.debug("focusMode: \(focusMode), exposureMode: \(exposureMode), devicePoint: \(devicePoint), monitorSubjectAreaChange:\(monitorSubjectAreaChange)")
             guard let device = self.captureDevice else {
                 owsFailDebug("device was unexpectedly nil")
                 return
@@ -629,6 +630,38 @@ extension AVCaptureVideoOrientation {
     }
 }
 
+extension AVCaptureDevice.FocusMode: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .locked:
+            return "FocusMode.locked"
+        case .autoFocus:
+            return "FocusMode.autoFocus"
+        case .continuousAutoFocus:
+            return "FocusMode.continuousAutoFocus"
+        @unknown default:
+            return "FocusMode.unknown"
+        }
+    }
+}
+
+extension AVCaptureDevice.ExposureMode: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .locked:
+            return "ExposureMode.locked"
+        case .autoExpose:
+            return "ExposureMode.autoExpose"
+        case .continuousAutoExposure:
+            return "ExposureMode.continuousAutoExposure"
+        case .custom:
+            return "ExposureMode.custom"
+        @unknown default:
+            return "ExposureMode.unknown"
+        }
+    }
+}
+
 extension AVCaptureVideoOrientation: CustomStringConvertible {
     public var description: String {
         switch self {
@@ -640,6 +673,8 @@ extension AVCaptureVideoOrientation: CustomStringConvertible {
             return "AVCaptureVideoOrientation.landscapeRight"
         case .landscapeLeft:
             return "AVCaptureVideoOrientation.landscapeLeft"
+        @unknown default:
+            return "AVCaptureVideoOrientation.unknown"
         }
     }
 }
@@ -661,6 +696,8 @@ extension UIDeviceOrientation: CustomStringConvertible {
             return "UIDeviceOrientation.faceUp"
         case .faceDown:
             return "UIDeviceOrientation.faceDown"
+        @unknown default:
+            return "UIDeviceOrientation.unknown"
         }
     }
 }
@@ -684,6 +721,8 @@ extension UIImage.Orientation: CustomStringConvertible {
             return "UIImageOrientation.leftMirrored"
         case .rightMirrored:
             return "UIImageOrientation.rightMirrored"
+        @unknown default:
+            return "UIImageOrientation.unknown"
         }
     }
 }
