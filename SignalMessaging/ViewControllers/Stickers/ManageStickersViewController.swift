@@ -119,7 +119,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
     private func buildTableCell(availableStickerPack stickerPack: StickerPack) -> UITableViewCell {
         let iconFilePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerPack.coverInfo)
-        let actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
+        let actionIconName = "download-filled-24"
         return buildTableCell(iconFilePath: iconFilePath,
                               title: stickerPack.title,
                               authorName: stickerPack.author,
@@ -218,7 +218,7 @@ public class ManageStickersViewController: OWSTableViewController {
         AssertIsOnMainThread()
 
         Logger.verbose("")
-        
+
         StickerManager.installStickerPack(stickerPack: stickerPack)
     }
 

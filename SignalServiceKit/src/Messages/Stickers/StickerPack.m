@@ -98,6 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
                           author:(nullable NSString *)author
                            cover:(StickerPackItem *)cover
                             info:(StickerPackInfo *)info
+                     isInstalled:(BOOL)isInstalled
                            items:(NSArray<StickerPackItem *> *)items
                            title:(nullable NSString *)title
 {
@@ -110,6 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
     _author = author;
     _cover = cover;
     _info = info;
+    _isInstalled = isInstalled;
     _items = items;
     _title = title;
 
@@ -127,7 +129,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateWithIsInstalled:(BOOL)isInstalled transaction:(SDSAnyWriteTransaction *)transaction
 {
-
     [self anyUpdateWithTransaction:transaction
                              block:^(StickerPack *instance) {
                                  instance.isInstalled = isInstalled;

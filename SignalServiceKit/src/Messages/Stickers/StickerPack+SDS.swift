@@ -35,8 +35,9 @@ extension StickerPackSerializer {
     static let authorColumn = SDSColumnMetadata(columnName: "author", columnType: .unicodeString, isOptional: true, columnIndex: 2)
     static let coverColumn = SDSColumnMetadata(columnName: "cover", columnType: .blob, columnIndex: 3)
     static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 4)
-    static let itemsColumn = SDSColumnMetadata(columnName: "items", columnType: .blob, columnIndex: 5)
-    static let titleColumn = SDSColumnMetadata(columnName: "title", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let isInstalledColumn = SDSColumnMetadata(columnName: "isInstalled", columnType: .int, columnIndex: 5)
+    static let itemsColumn = SDSColumnMetadata(columnName: "items", columnType: .blob, columnIndex: 6)
+    static let titleColumn = SDSColumnMetadata(columnName: "title", columnType: .unicodeString, isOptional: true, columnIndex: 7)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -46,6 +47,7 @@ extension StickerPackSerializer {
         authorColumn,
         coverColumn,
         infoColumn,
+        isInstalledColumn,
         itemsColumn,
         titleColumn
         ])
@@ -83,6 +85,7 @@ extension StickerPackSerializer {
             let cover: StickerPackItem = try SDSDeserializer.unarchive(coverSerialized)
             let infoSerialized: Data = try deserializer.blob(at: infoColumn.columnIndex)
             let info: StickerPackInfo = try SDSDeserializer.unarchive(infoSerialized)
+            let isInstalled = try deserializer.bool(at: isInstalledColumn.columnIndex)
             let itemsSerialized: Data = try deserializer.blob(at: itemsColumn.columnIndex)
             let items: [StickerPackItem] = try SDSDeserializer.unarchive(itemsSerialized)
             let title = try deserializer.optionalString(at: titleColumn.columnIndex)
@@ -91,6 +94,7 @@ extension StickerPackSerializer {
                                author: author,
                                cover: cover,
                                info: info,
+                               isInstalled: isInstalled,
                                items: items,
                                title: title)
 
@@ -300,6 +304,7 @@ class StickerPackSerializer: SDSSerializer {
             StickerPackSerializer.authorColumn,
             StickerPackSerializer.coverColumn,
             StickerPackSerializer.infoColumn,
+            StickerPackSerializer.isInstalledColumn,
             StickerPackSerializer.itemsColumn,
             StickerPackSerializer.titleColumn
             ].map { $0.columnName }
@@ -310,6 +315,7 @@ class StickerPackSerializer: SDSSerializer {
             self.model.author ?? DatabaseValue.null,
             SDSDeserializer.archive(self.model.cover) ?? DatabaseValue.null,
             SDSDeserializer.archive(self.model.info) ?? DatabaseValue.null,
+            self.model.isInstalled,
             SDSDeserializer.archive(self.model.items) ?? DatabaseValue.null,
             self.model.title ?? DatabaseValue.null
 

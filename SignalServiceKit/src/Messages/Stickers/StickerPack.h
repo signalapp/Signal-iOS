@@ -53,9 +53,10 @@ NS_ASSUME_NONNULL_BEGIN
                           author:(nullable NSString *)author
                            cover:(StickerPackItem *)cover
                             info:(StickerPackInfo *)info
+                     isInstalled:(BOOL)isInstalled
                            items:(NSArray<StickerPackItem *> *)items
                            title:(nullable NSString *)title
-NS_SWIFT_NAME(init(uniqueId:author:cover:info:items:title:));
+NS_SWIFT_NAME(init(uniqueId:author:cover:info:isInstalled:items:title:));
 
 // clang-format on
 

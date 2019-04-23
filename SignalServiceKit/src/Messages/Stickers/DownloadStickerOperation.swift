@@ -35,11 +35,11 @@ class DownloadStickerOperation: OWSOperation {
 
         if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
             Logger.verbose("Skipping redundant operation.")
-            var error = StickerError.redundantOperation
+            let error = StickerError.redundantOperation as NSError
             error.isRetryable = false
             return reportError(error)
         }
-        
+
         // The response is a .webp, so use the default response serializer.
         let cdnSessionManager = self.cdnSessionManager
         cdnSessionManager.responseSerializer = AFHTTPResponseSerializer()
@@ -83,7 +83,7 @@ class DownloadStickerOperation: OWSOperation {
 
                                 // TODO: We need to discriminate retry-able errors from
                                 //       404s, etc.  We might want to abort on all 4xx and 5xx.
-                                var errorCopy = error
+                                let errorCopy = error as NSError
                                 errorCopy.isRetryable = true
                                 self.reportError(errorCopy)
         })

@@ -36,7 +36,7 @@ class DownloadStickerPackOperation: OWSOperation {
         // TODO: We might want to download anyway - the sticker pack may have changed.
         if StickerManager.isStickerPackSaved(stickerPackInfo: stickerPackInfo) {
             Logger.verbose("Skipping redundant operation.")
-            var error = StickerError.redundantOperation
+            let error = StickerError.redundantOperation as NSError
             error.isRetryable = false
             return reportError(error)
         }
@@ -84,7 +84,7 @@ class DownloadStickerPackOperation: OWSOperation {
 
                                 // TODO: We need to discriminate retry-able errors from
                                 //       404s, etc.  We might want to abort on all 4xx and 5xx.
-                                var errorCopy = error
+                                let errorCopy = error as NSError
                                 errorCopy.isRetryable = true
                                 self.reportError(errorCopy)
         })
