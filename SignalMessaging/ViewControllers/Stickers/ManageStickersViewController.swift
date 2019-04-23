@@ -143,20 +143,6 @@ public class ManageStickersViewController: OWSTableViewController {
             contents.addSection(section)
         }
 
-//        let section = OWSTableSection()
-//
-//        section.headerTitle = NSLocalizedString("BACKUP_RESTORE_DECISION_TITLE", comment: "Label for the backup restore decision section.")
-////
-////        section.add(OWSTableItem.actionItem(withText: NSLocalizedString("CHECK_FOR_BACKUP_RESTORE",
-////                                                                        comment: "The label for the 'restore backup' button."), actionBlock: { [weak self] in
-////                                                                            guard let strongSelf = self else {
-////                                                                                return
-////                                                                            }
-////                                                                            strongSelf.startImport()
-////        }))
-//
-//        contents.addSection(section)
-
         self.contents = contents
     }
 
