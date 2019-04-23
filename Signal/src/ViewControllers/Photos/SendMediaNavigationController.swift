@@ -22,6 +22,10 @@ class SendMediaNavigationController: OWSNavigationController {
     // on iPhone5, 6, 6+, X, layouts.
     static let bottomButtonsCenterOffset: CGFloat = -50
 
+    var attachmentCount: Int {
+        return attachmentDraftCollection.count - attachmentDraftCollection.pickerAttachments.count + mediaLibrarySelections.count
+    }
+
     // MARK: - Overrides
 
     override var prefersStatusBarHidden: Bool { return true }
@@ -311,9 +315,28 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
             return nil
         }
     }
+
+    // MARK: - Too Many
+
+    func showTooManySelectedToast() {
+        Logger.info("")
+
+        let toastFormat = NSLocalizedString("IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT",
+                                            comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.")
+
+        let toastText = String(format: toastFormat, NSNumber(value: SignalAttachment.maxAttachmentsAllowed))
+
+        let toastController = ToastController(text: toastText)
+
+        let kToastInset: CGFloat = 10
+        let bottomInset = kToastInset + view.layoutMargins.bottom
+
+        toastController.presentToastView(fromBottomOfView: view, inset: bottomInset)
+    }
 }
 
 extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
+
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didFinishProcessingAttachment attachment: SignalAttachment) {
         attachmentDraftCollection.append(.camera(attachment: attachment))
         if isInBatchSelectMode {
@@ -326,6 +349,14 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController) {
         let dontAbandonText = NSLocalizedString("SEND_MEDIA_RETURN_TO_CAMERA", comment: "alert action when the user decides not to cancel the media flow after all.")
         didRequestExit(dontAbandonText: dontAbandonText)
+    }
+
+    func photoCaptureViewControllerDidTryToCaptureTooMany(_ photoCaptureViewController: PhotoCaptureViewController) {
+        showTooManySelectedToast()
+    }
+
+    func photoCaptureViewControllerCanCaptureMoreItems(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool {
+        return attachmentCount < SignalAttachment.maxAttachmentsAllowed
     }
 
     func discardDraft() {
@@ -397,8 +428,12 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         updateButtons(topViewController: imagePicker)
     }
 
-    func imagePickerCanSelectAdditionalItems(_ imagePicker: ImagePickerGridController) -> Bool {
-        return attachmentDraftCollection.count <= SignalAttachment.maxAttachmentsAllowed
+    func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool {
+        return attachmentCount < SignalAttachment.maxAttachmentsAllowed
+    }
+
+    func imagePickerDidTryToSelectTooMany(_ imagePicker: ImagePickerGridController) {
+        showTooManySelectedToast()
     }
 }
 
@@ -559,7 +594,7 @@ private struct MediaLibraryAttachment: Hashable, Equatable {
 
 extension SendMediaNavigationController: DoneButtonDelegate {
     var doneButtonCount: Int {
-        return attachmentDraftCollection.count - attachmentDraftCollection.pickerAttachments.count + mediaLibrarySelections.count
+        return attachmentCount
     }
 
     fileprivate func doneButtonWasTapped(_ doneButton: DoneButton) {
