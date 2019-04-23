@@ -42,7 +42,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     var contentView: UIView?
 
     var attachment: TSAttachment?
-    var dataSource: DataSource?
     var attachmentStream: TSAttachmentStream?
     var messageBody: String?
 
@@ -439,6 +438,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         return true
     }
 
+    private let byteCountFormatter: ByteCountFormatter = ByteCountFormatter()
+
     private func addAttachmentMetadataRows() -> [UIView] {
         guard hasMediaAttachment else {
             return []
@@ -447,26 +448,26 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         var rows = [UIView]()
 
         if let attachment = self.attachment {
-            // Only show MIME types in DEBUG builds.
-            if _isDebugAssertConfiguration() {
-                let contentType = attachment.contentType
-                rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
-                                                             comment: "Label for the MIME type of attachments in the 'message metadata' view."),
-                                     value: contentType))
-            }
-
             if let sourceFilename = attachment.sourceFilename {
                 rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
                                                              comment: "Label for the original filename of any attachment in the 'message metadata' view."),
                                      value: sourceFilename))
             }
-        }
 
-        if let dataSource = self.dataSource {
-            let fileSize = dataSource.dataLength()
-            rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
-                                                         comment: "Label for file size of attachments in the 'message metadata' view."),
-                                 value: OWSFormat.formatFileSize(UInt(fileSize))))
+            if _isDebugAssertConfiguration() {
+                let contentType = attachment.contentType
+                rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
+                                                             comment: "Label for the MIME type of attachments in the 'message metadata' view."),
+                                     value: contentType))
+
+                if let formattedByteCount = byteCountFormatter.string(for: attachment.byteCount) {
+                    rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
+                                                                 comment: "Label for file size of attachments in the 'message metadata' view."),
+                                         value: formattedByteCount))
+                } else {
+                    owsFailDebug("formattedByteCount was unexpectedly nil")
+                }
+            }
         }
 
         return rows
