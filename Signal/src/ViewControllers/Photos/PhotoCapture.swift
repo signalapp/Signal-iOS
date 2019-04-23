@@ -49,6 +49,8 @@ class PhotoCapture: NSObject {
             self.session.beginConfiguration()
             defer { self.session.commitConfiguration() }
 
+            self.session.sessionPreset = .medium
+
             try self.updateCurrentInput(position: .back)
 
             let audioDevice = AVCaptureDevice.default(for: .audio)
@@ -80,7 +82,6 @@ class PhotoCapture: NSObject {
 
             if self.session.canAddOutput(movieOutput) {
                 self.session.addOutput(movieOutput)
-                self.session.sessionPreset = .medium
                 if let connection = movieOutput.connection(with: .video) {
                     if connection.isVideoStabilizationSupported {
                         connection.preferredVideoStabilizationMode = .auto
@@ -529,6 +530,7 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
     private func buildCaptureSettings() -> AVCapturePhotoSettings {
         let photoSettings = AVCapturePhotoSettings()
         photoSettings.flashMode = flashMode
+        photoSettings.isHighResolutionPhotoEnabled = true
 
         photoSettings.isAutoStillImageStabilizationEnabled =
             photoOutput.isStillImageStabilizationSupported
