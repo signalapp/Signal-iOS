@@ -31,8 +31,6 @@ public class StickerPackCollectionView: UICollectionView {
     @objc
     override public var frame: CGRect {
         didSet {
-            Logger.verbose("----- frame: \(frame), bounds: \(bounds)")
-            Logger.flush()
             updateLayout()
         }
     }
@@ -40,8 +38,6 @@ public class StickerPackCollectionView: UICollectionView {
     @objc
     override public var bounds: CGRect {
         didSet {
-            Logger.verbose("----- frame: \(frame), bounds: \(bounds)")
-            Logger.flush()
             updateLayout()
         }
     }
@@ -86,8 +82,6 @@ public class StickerPackCollectionView: UICollectionView {
         } else {
             stickerInfos = []
         }
-
-        Logger.verbose("---- stickerInfos: \(stickerInfos.count)")
 
         reloadData()
     }
@@ -147,10 +141,6 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
         cell.contentView.addSubview(iconView)
         iconView.autoPinEdgesToSuperviewEdges()
 
-        cell.backgroundColor = .blue
-        cell.contentView.backgroundColor = .blue
-        iconView.backgroundColor = .green
-
         return cell
     }
 }
@@ -192,8 +182,6 @@ extension StickerPackCollectionView {
         let columnCount = UInt(containerWidth / CGFloat(preferredCellSize))
         let cellWidth = containerWidth / CGFloat(columnCount)
         let itemSize = CGSize(width: cellWidth, height: cellWidth)
-
-        Logger.verbose("itemSize: \(itemSize)")
 
         if (itemSize != flowLayout.itemSize) {
             flowLayout.itemSize = itemSize

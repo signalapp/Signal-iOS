@@ -17,37 +17,8 @@ public class StickerKeyboard: UIStackView {
     @objc
     public weak var delegate: StickerKeyboardDelegate?
 
-    @objc
-    override public var frame: CGRect {
-        didSet {
-            logLayout()
-        }
-    }
-
-    @objc
-    override public var bounds: CGRect {
-        didSet {
-            logLayout()
-        }
-    }
-
-    private func logLayout() {
-        Logger.verbose("----- frame: \(frame), bounds: \(bounds)")
-        Logger.verbose("----- \t: \(headerView.frame)")
-        Logger.verbose("----- \t: \(stickerCollectionView.frame)")
-        Logger.verbose("----- \t: \(footerView.frame)")
-
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.0) {
-            Logger.verbose("----- frame: \(self.frame), bounds: \(self.bounds)")
-            Logger.verbose("----- \t: \(self.headerView.frame)")
-            Logger.verbose("----- \t: \(self.stickerCollectionView.frame)")
-            Logger.verbose("----- \t: \(self.footerView.frame)")
-        }
-    }
-
     private let headerView = UIStackView()
     private let stickerCollectionView = StickerPackCollectionView()
-    private let footerView = UIStackView()
 
     private var stickerPacks = [StickerPack]()
     private var stickerPack: StickerPack? {
@@ -72,21 +43,21 @@ public class StickerKeyboard: UIStackView {
                                                object: nil)
     }
 
+    // TODO: Tune this value.
+    private let keyboardHeight: CGFloat = 200
+
     @objc
     public override var intrinsicContentSize: CGSize {
-        // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
-        // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
-        return CGSize(width: 0, height: 200)
-//        return .zero
+        return CGSize(width: 0, height: keyboardHeight)
     }
 
     private func createSubviews() {
-        self.axis = .vertical
-        self.layoutMargins = .zero
-        self.autoresizingMask = .flexibleHeight
-        self.alignment = .fill
+        axis = .vertical
+        layoutMargins = .zero
+        autoresizingMask = .flexibleHeight
+        alignment = .fill
 
-        self.addBackgroundView(withBackgroundColor: .red)
+        addBackgroundView(withBackgroundColor: Theme.offBackgroundColor)
 
         headerView.axis = .horizontal
         addArrangedSubview(headerView)
@@ -94,20 +65,10 @@ public class StickerKeyboard: UIStackView {
         headerView.setCompressionResistanceVerticalHigh()
         headerView.autoSetDimension(.height, toSize: 44)
 
-        headerView.backgroundColor = .green
-        stickerCollectionView.backgroundColor = .orange
-
         stickerCollectionView.stickerDelegate = self
         addArrangedSubview(stickerCollectionView)
         stickerCollectionView.setContentHuggingVerticalLow()
         stickerCollectionView.setCompressionResistanceVerticalLow()
-//        stickerCollectionView.autoSetDimension(.height, toSize: 100)
-
-//        footerView.axis = .horizontal
-//        footerView.alignment = .center
-//        addArrangedSubview(footerView)
-//        footerView.setContentHuggingVerticalHigh()
-//        footerView.setCompressionResistanceVerticalHigh()
     }
 
     private func reloadStickers() {
@@ -135,80 +96,9 @@ public class StickerKeyboard: UIStackView {
         reloadStickers()
     }
 
-    //    @objc
-//    public required init(thread: TSThread, contactsManager: OWSContactsManager) {
-//
-//        let avatarView = ConversationAvatarImageView(thread: thread, diameter: 36, contactsManager: contactsManager)
-//        self.avatarView = avatarView
-//        // remove default border on avatarView
-//        avatarView.layer.borderWidth = 0
-//
-//        titleLabel = UILabel()
-//        titleLabel.textColor = Theme.navbarTitleColor
-//        titleLabel.lineBreakMode = .byTruncatingTail
-//        titleLabel.font = titlePrimaryFont
-//        titleLabel.setContentHuggingHigh()
-//
-//        subtitleLabel = UILabel()
-//        subtitleLabel.textColor = Theme.navbarTitleColor
-//        subtitleLabel.lineBreakMode = .byTruncatingTail
-//        subtitleLabel.font = subtitleFont
-//        subtitleLabel.setContentHuggingHigh()
-//
-//        let textRows = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
-//        textRows.axis = .vertical
-//        textRows.alignment = .leading
-//        textRows.distribution = .fillProportionally
-//        textRows.spacing = 0
-//
-//        textRows.layoutMargins = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
-//        textRows.isLayoutMarginsRelativeArrangement = true
-//
-//        // low content hugging so that the text rows push container to the right bar button item(s)
-//        textRows.setContentHuggingLow()
-//
-//        super.init(frame: .zero)
-//
-//        self.layoutMargins = UIEdgeInsets(top: 4, left: 2, bottom: 4, right: 2)
-//        self.isLayoutMarginsRelativeArrangement = true
-//
-//        self.axis = .horizontal
-//        self.alignment = .center
-//        self.spacing = 0
-//        self.addArrangedSubview(avatarView)
-//        self.addArrangedSubview(textRows)
-//
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView))
-//        self.addGestureRecognizer(tapGesture)
-//    }
-
     required public init(coder: NSCoder) {
         notImplemented()
     }
-
-//    required public override init(frame: CGRect) {
-//        notImplemented()
-//    }
-//
-//    public override var intrinsicContentSize: CGSize {
-//        // Grow to fill as much of the navbar as possible.
-//        return UIView.layoutFittingExpandedSize
-//    }
-//
-//    @objc
-//    public func updateAvatar() {
-//        self.avatarView.updateImage()
-//    }
-//
-//    // MARK: Delegate Methods
-//
-//    @objc func didTapView(tapGesture: UITapGestureRecognizer) {
-//        guard tapGesture.state == .recognized else {
-//            return
-//        }
-//
-//        self.delegate?.didTapConversationHeaderView(self)
-//    }
 }
 
 // MARK: -
