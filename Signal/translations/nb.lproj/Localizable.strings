@@ -2166,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Send linkforhåndsvisninger";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Forhåndsvisninger støttes for Imgur, Instagram, Pinterest, Reddit og YouTube-koblinger.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Linkforhåndsvisninger";

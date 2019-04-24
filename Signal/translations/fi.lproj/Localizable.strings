@@ -2166,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Lähetä esikatselukuva linkeistä";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Esikatselu tukee sivustoja Imgur, Instagram, Pinterest, Reddit ja YouTube.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Linkkien esikatselukuvat";

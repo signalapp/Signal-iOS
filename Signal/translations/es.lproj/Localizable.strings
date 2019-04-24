@@ -1992,7 +1992,7 @@
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invitar por SMS: %@";
 
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "¿Descartar cambios?";
+"SEND_MEDIA_ABANDON_TITLE" = "¿Descartar fotos?";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Descartar";
@@ -2001,7 +2001,7 @@
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Regresar a la cámara";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Regresar a la biblioteca de medios";
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Regresar a la fototeca";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "¿Invitar a un contacto vía SMS no cifrado? ";
@@ -2166,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Enviar previsualizaciones";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Las previsualización está disponible para enlaces hacia Imgur, Instagram, Pinterest, Reddit y YouTube.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Previsualizar enlaces";
