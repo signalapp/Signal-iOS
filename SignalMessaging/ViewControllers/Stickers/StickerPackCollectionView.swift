@@ -48,9 +48,10 @@ public class StickerPackCollectionView: UICollectionView {
     public required init() {
         super.init(frame: .zero, collectionViewLayout: StickerPackCollectionView.buildLayout())
 
-        self.delegate = self
-        self.dataSource = self
+        delegate = self
+        dataSource = self
         register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
+        backgroundColor = Theme.offBackgroundColor
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
@@ -114,17 +115,7 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
         return stickerInfos.count
     }
 
-    // TODO: Show the share button using this?
-//    override public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-//
-//        let defaultView = UICollectionReusableView()
-//
-//        return defaultView
-//    }
-
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        Logger.debug("indexPath: \(indexPath)")
-
         // We could eventually use cells that lazy-load the sticker views
         // when the cells becomes visible and eagerly unload them.
         // But we probably won't need to do that.
@@ -150,7 +141,7 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
 extension StickerPackCollectionView {
 
     // TODO:
-    static let kInterItemSpacing: CGFloat = 0
+    static let kSpacing: CGFloat = 8
 
     private class func buildLayout() -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
@@ -158,8 +149,8 @@ extension StickerPackCollectionView {
         if #available(iOS 11, *) {
             layout.sectionInsetReference = .fromSafeArea
         }
-        layout.minimumInteritemSpacing = kInterItemSpacing
-        layout.minimumLineSpacing = kInterItemSpacing
+        layout.minimumInteritemSpacing = kSpacing
+        layout.minimumLineSpacing = kSpacing
 
         return layout
     }
@@ -178,9 +169,10 @@ extension StickerPackCollectionView {
             containerWidth = self.frame.size.width
         }
 
-        let preferredCellSize = 100
-        let columnCount = UInt(containerWidth / CGFloat(preferredCellSize))
-        let cellWidth = containerWidth / CGFloat(columnCount)
+        let spacing = StickerPackCollectionView.kSpacing
+        let preferredCellSize: CGFloat = 84
+        let columnCount = UInt((containerWidth + spacing) / (preferredCellSize + spacing))
+        let cellWidth = (containerWidth - spacing * (CGFloat(columnCount) - 1)) / CGFloat(columnCount)
         let itemSize = CGSize(width: cellWidth, height: cellWidth)
 
         if (itemSize != flowLayout.itemSize) {

@@ -10,20 +10,6 @@ public class StickerView: YYAnimatedImageView {
 
     private let stickerInfo: StickerInfo
 
-    @objc
-    override public var frame: CGRect {
-        didSet {
-            Logger.verbose("---- frame: \(frame)")
-        }
-    }
-
-    @objc
-    override public var bounds: CGRect {
-        didSet {
-            Logger.verbose("---- bounds: \(bounds)")
-        }
-    }
-
     // MARK: - Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
