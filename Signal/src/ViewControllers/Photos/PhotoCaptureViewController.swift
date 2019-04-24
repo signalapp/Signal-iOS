@@ -79,8 +79,11 @@ class PhotoCaptureViewController: OWSViewController {
         updateIconOrientations(isAnimated: false, captureOrientation: initialCaptureOrientation)
 
         view.addGestureRecognizer(pinchZoomGesture)
-        view.addGestureRecognizer(focusGesture)
+        view.addGestureRecognizer(tapToFocusGesture)
         view.addGestureRecognizer(doubleTapToSwitchCameraGesture)
+
+        tapToFocusGesture.require(toFail: doubleTapToSwitchCameraGesture)
+        doubleTapToSwitchCameraGesture.require(toFail: captureButton.tapGesture)
     }
 
     override var prefersStatusBarHidden: Bool {
@@ -174,7 +177,7 @@ class PhotoCaptureViewController: OWSViewController {
         return UIPinchGestureRecognizer(target: self, action: #selector(didPinchZoom(pinchGesture:)))
     }()
 
-    lazy var focusGesture: UITapGestureRecognizer = {
+    lazy var tapToFocusGesture: UITapGestureRecognizer = {
         return UITapGestureRecognizer(target: self, action: #selector(didTapFocusExpose(tapGesture:)))
     }()
 
