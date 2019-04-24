@@ -1128,6 +1128,15 @@ const CGFloat kMaxTextViewHeight = 98;
 
 #pragma mark - StickerKeyboardDelegate
 
+- (void)didSelectStickerWithStickerInfo:(StickerInfo *)stickerInfo
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogVerbose(@"");
+
+    // TODO:
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

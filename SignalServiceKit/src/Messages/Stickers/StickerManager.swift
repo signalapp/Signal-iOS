@@ -54,8 +54,12 @@ public class StickerManager: NSObject {
 
     @objc
     public override init() {
+        super.init()
+
         // Resume sticker and sticker pack downloads when app is ready.
         AppReadiness.runNowOrWhenAppDidBecomeReady {
+            self.refreshAvailableStickerPacks()
+
             StickerManager.ensureAllStickerDownloadsAsync()
         }
     }
@@ -134,12 +138,18 @@ public class StickerManager: NSObject {
 
     @objc
     public class func isStickerPackSaved(stickerPackInfo: StickerPackInfo) -> Bool {
-
         var result = false
         databaseStorage.readSwallowingErrors { (transaction) in
-            result = nil != fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
+            result = isStickerPackSaved(stickerPackInfo: stickerPackInfo,
+                                        transaction: transaction)
         }
         return result
+    }
+
+    @objc
+    public class func isStickerPackSaved(stickerPackInfo: StickerPackInfo,
+                                         transaction: SDSAnyReadTransaction) -> Bool {
+        return nil != fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
     }
 
     @objc
@@ -348,12 +358,52 @@ public class StickerManager: NSObject {
         return nil != defaultStickerPackMap[stickerPackInfo.asKey()]
     }
 
+    // This is only intended for use while debugging.
+    #if DEBUG
+    @objc
+    public class func tryToInstallAllAvailableStickerPacks() {
+        for stickerPack in availableStickerPacks() {
+            installStickerPack(stickerPack: stickerPack)
+        }
+
+        shared.refreshAvailableStickerPacks(shouldInstall: true)
+    }
+    #endif
+
     @objc
     public func refreshAvailableStickerPacks() {
-        for stickerPackInfo in defaultStickerPackMap.values {
-            StickerManager.tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
-                                                           shouldInstall: false)
+        refreshAvailableStickerPacks(shouldInstall: false)
+    }
+
+    private func refreshAvailableStickerPacks(shouldInstall: Bool) {
+        let defaultStickerPackMap = self.defaultStickerPackMap.values
+
+        var stickerPacksToDownload = [StickerPackInfo]()
+        StickerManager.databaseStorage.readSwallowingErrors { (transaction) in
+            for stickerPackInfo in defaultStickerPackMap {
+                if !StickerManager.isStickerPackSaved(stickerPackInfo: stickerPackInfo, transaction: transaction) {
+                    stickerPacksToDownload.append(stickerPackInfo)
+                }
+            }
         }
+
+        for stickerPackInfo in stickerPacksToDownload {
+            StickerManager.tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
+                                                           shouldInstall: shouldInstall)
+        }
+    }
+
+    @objc
+    public class func installedStickers(forStickerPack stickerPack: StickerPack) -> [StickerInfo] {
+        var result = [StickerInfo]()
+        databaseStorage.readSwallowingErrors { (transaction) in
+            for stickerInfo in stickerPack.stickerInfos {
+                if isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction) {
+                    result.append(stickerInfo)
+                }
+            }
+        }
+        return result
     }
 
     // MARK: - Stickers

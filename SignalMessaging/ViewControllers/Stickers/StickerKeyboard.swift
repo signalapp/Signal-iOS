@@ -6,8 +6,10 @@ import Foundation
 
 @objc
 public protocol StickerKeyboardDelegate {
-//    func didTapConversationHeaderView(_ conversationHeaderView: ConversationHeaderView)
+    func didSelectSticker(stickerInfo: StickerInfo)
 }
+
+// MARK: -
 
 @objc
 public class StickerKeyboard: UIStackView {
@@ -18,69 +20,37 @@ public class StickerKeyboard: UIStackView {
     @objc
     override public var frame: CGRect {
         didSet {
-            Logger.verbose("----- frame: \(frame)")
+            Logger.verbose("----- frame: \(frame), bounds: \(bounds)")
         }
     }
 
     @objc
     override public var bounds: CGRect {
         didSet {
-            Logger.verbose("----- bounds: \(bounds)")
+            Logger.verbose("----- frame: \(frame), bounds: \(bounds)")
         }
     }
 
-//    @objc
-//    public var attributedTitle: NSAttributedString? {
-//        get {
-//            return self.titleLabel.attributedText
-//        }
-//        set {
-//            self.titleLabel.attributedText = newValue
-//        }
-//    }
-//
-//    @objc
-//    public var attributedSubtitle: NSAttributedString? {
-//        get {
-//            return self.subtitleLabel.attributedText
-//        }
-//        set {
-//            self.subtitleLabel.attributedText = newValue
-//            self.subtitleLabel.isHidden = newValue == nil
-//        }
-//    }
-//
-//    public var avatarImage: UIImage? {
-//        get {
-//            return self.avatarView.image
-//        }
-//        set {
-//            self.avatarView.image = newValue
-//        }
-//    }
-//
-//    @objc
-//    public let titlePrimaryFont: UIFont =  UIFont.ows_boldFont(withSize: 17)
-//    @objc
-//    public let titleSecondaryFont: UIFont =  UIFont.ows_regularFont(withSize: 9)
-//    @objc
-//    public let subtitleFont: UIFont = UIFont.ows_regularFont(withSize: 12)
-//
-//    private let titleLabel: UILabel
-//    private let subtitleLabel: UILabel
-//    private let avatarView: ConversationAvatarImageView
-//
-
     private let headerView = UIStackView()
-    // TODO: Custom layout.  We might want to instantiate stickerCollectionView later.
-    private let stickerCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    private let stickerCollectionView = StickerPackCollectionView()
     private let footerView = UIStackView()
+
+    private var stickerPacks = [StickerPack]()
+    private var stickerPack: StickerPack? {
+        didSet {
+            AssertIsOnMainThread()
+
+            stickerCollectionView.stickerPack = stickerPack
+        }
+    }
 
     @objc
     public required init() {
         super.init(frame: .zero)
 
         createSubviews()
+
+        reloadStickers()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
@@ -92,13 +62,15 @@ public class StickerKeyboard: UIStackView {
     public override var intrinsicContentSize: CGSize {
         // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
         // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
-        return .zero
+        return CGSize(width: 0, height: 200)
+//        return .zero
     }
 
     private func createSubviews() {
         self.axis = .vertical
         self.layoutMargins = .zero
         self.autoresizingMask = .flexibleHeight
+        self.alignment = .fill
 
         self.addBackgroundView(withBackgroundColor: .red)
 
@@ -109,17 +81,34 @@ public class StickerKeyboard: UIStackView {
         headerView.autoSetDimension(.height, toSize: 44)
 
         headerView.backgroundColor = .green
-        stickerCollectionView.backgroundColor = .red
+        stickerCollectionView.backgroundColor = .orange
 
+        stickerCollectionView.stickerDelegate = self
         addArrangedSubview(stickerCollectionView)
         stickerCollectionView.setContentHuggingVerticalLow()
         stickerCollectionView.setCompressionResistanceVerticalLow()
+//        stickerCollectionView.autoSetDimension(.height, toSize: 100)
 
         footerView.axis = .horizontal
         footerView.alignment = .center
         addArrangedSubview(footerView)
         footerView.setContentHuggingVerticalHigh()
         footerView.setCompressionResistanceVerticalHigh()
+    }
+
+    private func reloadStickers() {
+        stickerPacks = StickerManager.installedStickerPacks()
+
+        guard stickerPacks.count > 0 else {
+           stickerPack = nil
+            return
+        }
+
+        if stickerPack == nil {
+            stickerPack = stickerPacks.first
+        }
+
+        // TODO: Reload header?
     }
 
     // MARK: Events
@@ -129,8 +118,7 @@ public class StickerKeyboard: UIStackView {
 
         Logger.verbose("")
 
-        // TODO: Reload header too.
-        stickerCollectionView.reloadData()
+        reloadStickers()
     }
 
     //    @objc
@@ -207,4 +195,16 @@ public class StickerKeyboard: UIStackView {
 //
 //        self.delegate?.didTapConversationHeaderView(self)
 //    }
+}
+
+// MARK: -
+
+extension StickerKeyboard: StickerPackCollectionViewDelegate {
+    public func didTapSticker(stickerInfo: StickerInfo) {
+        AssertIsOnMainThread()
+
+        Logger.verbose("")
+
+        delegate?.didSelectSticker(stickerInfo: stickerInfo)
+    }
 }
