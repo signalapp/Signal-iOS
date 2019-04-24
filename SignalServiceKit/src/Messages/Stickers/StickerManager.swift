@@ -10,6 +10,10 @@ import HKDFKit
 @objc
 public class StickerManager: NSObject {
 
+    private class var shared: StickerManager {
+        return SSKEnvironment.shared.stickerManager
+    }
+
     // MARK: - Constants
 
     @objc
@@ -149,11 +153,15 @@ public class StickerManager: NSObject {
             }
             stickerPack.update(withIsInstalled: false, transaction: transaction)
 
-            // Uninstall the cover and stickers.
-            if let completion = uninstallSticker(stickerInfo: stickerPack.coverInfo,
-                                                 transaction: transaction) {
-                completions.append(completion)
+            // Uninstall the cover and stickers - but retain the cover
+            // if this is a default sticker pack.
+            if !shared.isDefaultStickerPack(stickerPackInfo: stickerPack.info) {
+                if let completion = uninstallSticker(stickerInfo: stickerPack.coverInfo,
+                                                     transaction: transaction) {
+                    completions.append(completion)
+                }
             }
+
             for stickerInfo in stickerPack.stickerInfos {
                 if let completion = uninstallSticker(stickerInfo: stickerInfo,
                                                      transaction: transaction) {
@@ -317,25 +325,34 @@ public class StickerManager: NSObject {
         }
     }
 
-    @objc
-    public class func refreshAvailableStickerPacks() {
-        // TODO: Fetch actual list from service.
-        // TODO: Should this include other "encountered" packs?
+    // A mapping of sticker pack keys to sticker pack info.
+    private var defaultStickerPackMap: [String: StickerPackInfo] = StickerManager.parseDefaultStickerPacks()
+
+    private class func parseDefaultStickerPacks() -> [String: StickerPackInfo] {
         guard let packId = Data.data(fromHex: "0123456789abcdef0123456789abcdef") else {
             owsFailDebug("Invalid packId")
-            return
+            return [:]
         }
         assert(packId.count == StickerManager.packIdLength)
         guard let packKey = Data.data(fromHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789") else {
             owsFailDebug("Invalid packKey")
-            return
+            return [:]
         }
         assert(packKey.count == StickerManager.packKeyLength)
 
-        let stickerPackInfos = [StickerPackInfo(packId: packId, packKey: packKey)]
-        for stickerPackInfo in stickerPackInfos {
-            tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
-                                            shouldInstall: false)
+        let samplePack = StickerPackInfo(packId: packId, packKey: packKey)
+        return [samplePack.asKey(): samplePack]
+    }
+
+    private func isDefaultStickerPack(stickerPackInfo: StickerPackInfo) -> Bool {
+        return nil != defaultStickerPackMap[stickerPackInfo.asKey()]
+    }
+
+    @objc
+    public func refreshAvailableStickerPacks() {
+        for stickerPackInfo in defaultStickerPackMap.values {
+            StickerManager.tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
+                                                           shouldInstall: false)
         }
     }
 
