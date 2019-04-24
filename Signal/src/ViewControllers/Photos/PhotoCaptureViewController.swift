@@ -86,6 +86,11 @@ class PhotoCaptureViewController: OWSViewController {
         doubleTapToSwitchCameraGesture.require(toFail: captureButton.tapGesture)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        UIDevice.current.ows_setOrientation(.portrait)
+    }
+
     override var prefersStatusBarHidden: Bool {
         guard !OWSWindowManager.shared().hasCall() else {
             return false
