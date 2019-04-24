@@ -22,6 +22,8 @@ public class StickerPackCollectionView: UICollectionView {
             AssertIsOnMainThread()
 
             reloadStickers()
+            // Scroll to the top.
+            contentOffset = .zero
         }
     }
 
@@ -151,6 +153,8 @@ extension StickerPackCollectionView {
         }
         layout.minimumInteritemSpacing = kSpacing
         layout.minimumLineSpacing = kSpacing
+        let inset = kSpacing
+        layout.sectionInset = UIEdgeInsets(top: inset, leading: inset, bottom: inset, trailing: inset)
 
         return layout
     }
@@ -170,9 +174,11 @@ extension StickerPackCollectionView {
         }
 
         let spacing = StickerPackCollectionView.kSpacing
-        let preferredCellSize: CGFloat = 84
-        let columnCount = UInt((containerWidth + spacing) / (preferredCellSize + spacing))
-        let cellWidth = (containerWidth - spacing * (CGFloat(columnCount) - 1)) / CGFloat(columnCount)
+        let inset = spacing
+        let preferredCellSize: CGFloat = 80
+        let contentWidth = containerWidth - 2 * inset
+        let columnCount = UInt((contentWidth + spacing) / (preferredCellSize + spacing))
+        let cellWidth = (contentWidth - spacing * (CGFloat(columnCount) - 1)) / CGFloat(columnCount)
         let itemSize = CGSize(width: cellWidth, height: cellWidth)
 
         if (itemSize != flowLayout.itemSize) {
