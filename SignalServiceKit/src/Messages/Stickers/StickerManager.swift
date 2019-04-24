@@ -270,11 +270,11 @@ public class StickerManager: NSObject {
         databaseStorage.writeSwallowingErrors { (transaction) in
             let oldCopy = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
 
-            stickerPack.anySave(transaction: transaction)
-
             // Preserve old mutable state.
             if let oldCopy = oldCopy {
                 stickerPack.update(withIsInstalled: oldCopy.isInstalled, transaction: transaction)
+            } else {
+                stickerPack.anySave(transaction: transaction)
             }
 
             sendStickerSyncMessage(operationType: .install,

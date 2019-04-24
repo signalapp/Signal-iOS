@@ -41,10 +41,6 @@ class DownloadStickerPackOperation: OWSOperation {
             return reportError(error)
         }
 
-        // The response is a binary protobuf, so use the default response serializer.
-        let cdnSessionManager = self.cdnSessionManager
-        cdnSessionManager.responseSerializer = AFHTTPResponseSerializer()
-
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
         let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)/manifest.proto"
         cdnSessionManager.get(urlPath,
