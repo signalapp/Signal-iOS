@@ -259,7 +259,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: 
 
     var lastPageYOffset: CGFloat {
-        return collectionView.contentSize.height - collectionView.frame.height
+        var yOffset = collectionView.contentSize.height - collectionView.frame.height + collectionView.contentInset.bottom
+        if #available(iOS 11.0, *) {
+            yOffset += view.safeAreaInsets.bottom
+        }
+        return yOffset
     }
 
     func scrollToBottom(animated: Bool) {
@@ -548,7 +552,7 @@ extension ImagePickerGridController: UIGestureRecognizerDelegate {
             return true
         }
 
-        // Once we've startd the selectionPanGesture, don't allow scrolling
+        // Once we've started the selectionPanGesture, don't allow scrolling
         if otherGestureRecognizer.state == .began || otherGestureRecognizer.state == .changed {
             return false
         }
