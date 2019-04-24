@@ -21,19 +21,7 @@ public class StickerPackCollectionView: UICollectionView {
         didSet {
             AssertIsOnMainThread()
 
-            if let stickerPack = stickerPack {
-                // Only show installed stickers.
-                stickerInfos = StickerManager.installedStickers(forStickerPack: stickerPack)
-
-                // Download any missing stickers.
-                StickerManager.ensureDownloadsAsync(forStickerPack: stickerPack)
-            } else {
-                stickerInfos = []
-            }
-
-            Logger.verbose("---- stickerInfos: \(stickerInfos.count)")
-
-            self.reloadData()
+            reloadStickers()
         }
     }
 
@@ -79,11 +67,29 @@ public class StickerPackCollectionView: UICollectionView {
     @objc func stickersOrPacksDidChange() {
         AssertIsOnMainThread()
 
-        self.reloadData()
+        reloadStickers()
     }
 
     required public init(coder: NSCoder) {
         notImplemented()
+    }
+
+    private func reloadStickers() {
+        AssertIsOnMainThread()
+
+        if let stickerPack = stickerPack {
+            // Only show installed stickers.
+            stickerInfos = StickerManager.installedStickers(forStickerPack: stickerPack)
+
+            // Download any missing stickers.
+            StickerManager.ensureDownloadsAsync(forStickerPack: stickerPack)
+        } else {
+            stickerInfos = []
+        }
+
+        Logger.verbose("---- stickerInfos: \(stickerInfos.count)")
+
+        reloadData()
     }
 }
 
@@ -192,7 +198,6 @@ extension StickerPackCollectionView {
         if (itemSize != flowLayout.itemSize) {
             flowLayout.itemSize = itemSize
             flowLayout.invalidateLayout()
-            reloadData()
         }
     }
 }

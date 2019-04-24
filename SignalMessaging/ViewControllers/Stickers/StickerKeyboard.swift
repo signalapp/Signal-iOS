@@ -20,14 +20,28 @@ public class StickerKeyboard: UIStackView {
     @objc
     override public var frame: CGRect {
         didSet {
-            Logger.verbose("----- frame: \(frame), bounds: \(bounds)")
+            logLayout()
         }
     }
 
     @objc
     override public var bounds: CGRect {
         didSet {
-            Logger.verbose("----- frame: \(frame), bounds: \(bounds)")
+            logLayout()
+        }
+    }
+
+    private func logLayout() {
+        Logger.verbose("----- frame: \(frame), bounds: \(bounds)")
+        Logger.verbose("----- \t: \(headerView.frame)")
+        Logger.verbose("----- \t: \(stickerCollectionView.frame)")
+        Logger.verbose("----- \t: \(footerView.frame)")
+
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.0) {
+            Logger.verbose("----- frame: \(self.frame), bounds: \(self.bounds)")
+            Logger.verbose("----- \t: \(self.headerView.frame)")
+            Logger.verbose("----- \t: \(self.stickerCollectionView.frame)")
+            Logger.verbose("----- \t: \(self.footerView.frame)")
         }
     }
 
@@ -89,11 +103,11 @@ public class StickerKeyboard: UIStackView {
         stickerCollectionView.setCompressionResistanceVerticalLow()
 //        stickerCollectionView.autoSetDimension(.height, toSize: 100)
 
-        footerView.axis = .horizontal
-        footerView.alignment = .center
-        addArrangedSubview(footerView)
-        footerView.setContentHuggingVerticalHigh()
-        footerView.setCompressionResistanceVerticalHigh()
+//        footerView.axis = .horizontal
+//        footerView.alignment = .center
+//        addArrangedSubview(footerView)
+//        footerView.setContentHuggingVerticalHigh()
+//        footerView.setCompressionResistanceVerticalHigh()
     }
 
     private func reloadStickers() {
