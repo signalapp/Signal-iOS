@@ -144,7 +144,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             //
             // If the `alpha` is too low, the user will inadvertently select items while trying to scroll.
             // If the `alpha` is too high, the user will not be able to easily horizontally select items.
-            let alpha: CGFloat = 8.0
+            let alpha: CGFloat = 4.0
             let isDecidedlyHorizontal = abs(velocity.x) > abs(velocity.y) * alpha
             guard isDecidedlyHorizontal else {
                 return
