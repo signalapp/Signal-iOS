@@ -52,7 +52,7 @@ public class StickerManager: NSObject {
     public override init() {
         // Resume sticker and sticker pack downloads when app is ready.
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            StickerManager.enqueueAllStickerDownloads()
+            StickerManager.ensureAllStickerDownloadsAsync()
         }
     }
 
@@ -80,28 +80,33 @@ public class StickerManager: NSObject {
 
     // MARK: - Sticker Packs
 
-    // TODO: Handle sorting.
     @objc
     public class func allStickerPacks() -> [StickerPack] {
-
         var result = [StickerPack]()
         databaseStorage.readSwallowingErrors { (transaction) in
-            switch transaction.readTransaction {
-            case .yapRead(let ydbTransaction):
-                StickerPack.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
-                    guard let model = object as? StickerPack else {
-                        owsFailDebug("unexpected object: \(type(of: object))")
-                        return
-                    }
-                    result.append(model)
-                }
-            case .grdbRead(let grdbTransaction):
-                do {
-                    result += try StickerPack.grdbFetchCursor(transaction: grdbTransaction).all()
-                } catch let error as NSError {
-                    owsFailDebug("Couldn't fetch models: \(error)")
+            result += allStickerPacks(transaction: transaction)
+        }
+        return result
+    }
+
+    // TODO: Handle sorting.
+    @objc
+    public class func allStickerPacks(transaction: SDSAnyReadTransaction) -> [StickerPack] {
+        var result = [StickerPack]()
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            StickerPack.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
+                guard let model = object as? StickerPack else {
+                    owsFailDebug("unexpected object: \(type(of: object))")
                     return
                 }
+                result.append(model)
+            }
+        case .grdbRead(let grdbTransaction):
+            do {
+                result += try StickerPack.grdbFetchCursor(transaction: grdbTransaction).all()
+            } catch let error as NSError {
+                owsFailDebug("Couldn't fetch models: \(error)")
             }
         }
         return result
@@ -178,12 +183,12 @@ public class StickerManager: NSObject {
         databaseStorage.writeSwallowingErrors { (transaction) in
             stickerPack.update(withIsInstalled: true, transaction: transaction)
 
+            installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
+
             sendStickerSyncMessage(operationType: .remove,
                                    packs: [stickerPack.info],
                                    transaction: transaction)
         }
-
-        installStickerPackContents(stickerPack: stickerPack)
 
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
     }
@@ -280,11 +285,11 @@ public class StickerManager: NSObject {
             sendStickerSyncMessage(operationType: .install,
                                    packs: [stickerPack.info],
                                    transaction: transaction)
-        }
 
-        // If the pack is already installed, make sure all stickers are installed.
-        if stickerPack.isInstalled {
-            installStickerPackContents(stickerPack: stickerPack)
+            // If the pack is already installed, make sure all stickers are installed.
+            if stickerPack.isInstalled {
+                installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
+            }
         }
 
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
@@ -294,11 +299,14 @@ public class StickerManager: NSObject {
         }
     }
 
-    private class func installStickerPackContents(stickerPack: StickerPack, onlyInstallCover: Bool = false) {
+    private class func installStickerPackContents(stickerPack: StickerPack,
+                                                  transaction: SDSAnyReadTransaction,
+                                                  onlyInstallCover: Bool = false) {
         // Note: It's safe to kick off downloads of stickers that are already installed.
 
         // The cover.
         tryToDownloadAndInstallSticker(stickerInfo: stickerPack.coverInfo)
+//        private class func ensureStickerInstalled(stickerInfo: StickerInfo, transaction: SDSAnyReadTransaction) {
 
         guard !onlyInstallCover else {
             return
@@ -352,9 +360,16 @@ public class StickerManager: NSObject {
 
         var result = false
         databaseStorage.readSwallowingErrors { (transaction) in
-            result = nil != fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction)
+            result = isStickerInstalled(stickerInfo: stickerInfo,
+                                        transaction: transaction)
         }
         return result
+    }
+
+    @objc
+    public class func isStickerInstalled(stickerInfo: StickerInfo,
+                                         transaction: SDSAnyReadTransaction) -> Bool {
+        return nil != fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction)
     }
 
     private typealias CleanupCompletion = () -> Void
@@ -422,8 +437,17 @@ public class StickerManager: NSObject {
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
     }
 
-    @objc
-    public class func tryToDownloadAndInstallSticker(stickerInfo: StickerInfo) {
+    private class func ensureStickerInstalled(stickerInfo: StickerInfo, transaction: SDSAnyReadTransaction) {
+        guard !isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction) else {
+            return
+        }
+
+        DispatchQueue.global().async {
+            tryToDownloadAndInstallSticker(stickerInfo: stickerInfo)
+        }
+    }
+
+    private class func tryToDownloadAndInstallSticker(stickerInfo: StickerInfo) {
 
         let operation = DownloadStickerOperation(stickerInfo: stickerInfo,
                                                  success: { (stickerData) in
@@ -455,19 +479,32 @@ public class StickerManager: NSObject {
         return try Cryptography.decryptStickerData(ciphertext, withKey: stickerKey)
     }
 
-    private class func enqueueAllStickerDownloads() {
+    private class func ensureAllStickerDownloadsAsync() {
+        DispatchQueue.global().async {
+            databaseStorage.readSwallowingErrors { (transaction) in
+                for stickerPack in self.allStickerPacks(transaction: transaction) {
+                    ensureDownloadsSync(forStickerPack: stickerPack, transaction: transaction)
+                }
+            }
+        }
+    }
+
+    @objc
+    public class func ensureDownloadsAsync(forStickerPack stickerPack: StickerPack) {
+        DispatchQueue.global().async {
+            databaseStorage.readSwallowingErrors { (transaction) in
+                ensureDownloadsSync(forStickerPack: stickerPack, transaction: transaction)
+            }
+        }
+    }
+
+    private class func ensureDownloadsSync(forStickerPack stickerPack: StickerPack, transaction: SDSAnyReadTransaction) {
         // TODO: As an optimization, we could flag packs as "complete" if we know all
         // of their stickers are installed.
 
-        DispatchQueue.global().async {
-            for stickerPack in self.installedStickerPacks() {
-                installStickerPackContents(stickerPack: stickerPack)
-            }
-            // Install the covers for available sticker packs.
-            for stickerPack in self.availableStickerPacks() {
-                installStickerPackContents(stickerPack: stickerPack, onlyInstallCover: true)
-            }
-        }
+        // Install the covers for available sticker packs.
+        let onlyInstallCover = !stickerPack.isInstalled
+        installStickerPackContents(stickerPack: stickerPack, transaction: transaction, onlyInstallCover: onlyInstallCover)
     }
 
     // TODO: We could also send a sticker sync message after we link a new device.
