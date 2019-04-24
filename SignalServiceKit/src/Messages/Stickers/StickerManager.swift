@@ -306,7 +306,6 @@ public class StickerManager: NSObject {
 
         // The cover.
         tryToDownloadAndInstallSticker(stickerInfo: stickerPack.coverInfo)
-//        private class func ensureStickerInstalled(stickerInfo: StickerInfo, transaction: SDSAnyReadTransaction) {
 
         guard !onlyInstallCover else {
             return
