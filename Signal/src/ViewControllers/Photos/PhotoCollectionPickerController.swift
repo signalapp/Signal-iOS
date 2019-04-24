@@ -49,12 +49,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         photoCollections = library.allPhotoCollections()
 
         let sectionItems = photoCollections.map { collection in
-            return OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    return UITableViewCell()
-                }
-                return self.buildTableCell(collection: collection)
-            },
+            return OWSTableItem(customCellBlock: { self.buildTableCell(collection: collection) },
                                 customRowHeight: UITableView.automaticDimension,
                                 actionBlock: { [weak self] in
                                     guard let strongSelf = self else { return }

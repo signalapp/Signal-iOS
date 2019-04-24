@@ -481,7 +481,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 }
 
 - (nullable NSData *)groupIdForGroupKey:(NSString *)groupKey {
-    NSData *groupId = [NSData dataFromHexString:groupKey];
+    NSData *_Nullable groupId = [NSData dataFromHexString:groupKey];
     if (groupId.length != (NSUInteger)kGroupIdLength) {
         OWSFailDebug(@"Parsed group id has unexpected length: %@ (%lu)",
             groupId.hexadecimalString,

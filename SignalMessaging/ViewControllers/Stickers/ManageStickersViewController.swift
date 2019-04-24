@@ -77,7 +77,7 @@ public class ManageStickersViewController: OWSTableViewController {
                                             guard let self = self else {
                                                 return
                                             }
-                                            self.show(stickerPack: stickerPack)
+                                            self.share(stickerPack: stickerPack)
                 }))
             }
             contents.addSection(section)
@@ -177,11 +177,8 @@ public class ManageStickersViewController: OWSTableViewController {
 
         let actionIconSize: CGFloat = 20
         let actionCircleSize: CGFloat = 32
-        let actionCircleView = OWSLayerView(frame: .zero) { (circleView) in
-            circleView.backgroundColor = Theme.offBackgroundColor
-            circleView.layer.cornerRadius = actionCircleSize * 0.5
-        }
-        actionCircleView.autoSetDimensions(to: CGSize(width: actionCircleSize, height: actionCircleSize))
+        let actionCircleView = CircleView(diameter: actionCircleSize)
+        actionCircleView.backgroundColor = Theme.offBackgroundColor
         let actionIcon = UIImage(named: actionIconName)?.withRenderingMode(.alwaysTemplate)
         let actionIconView = UIImageView(image: actionIcon)
         actionIconView.tintColor = Theme.secondaryColor
@@ -206,7 +203,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
     // MARK: Events
 
-    private func show(stickerPack: StickerPack) {
+    private func share(stickerPack: StickerPack) {
         AssertIsOnMainThread()
 
         Logger.verbose("")

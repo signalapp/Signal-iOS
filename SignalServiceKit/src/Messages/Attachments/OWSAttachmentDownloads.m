@@ -441,15 +441,6 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 {
     OWSAssertDebug(attachmentPointer);
 
-    if (attachmentPointer.digest.length <= 0) {
-        // This *could* happen with sufficiently outdated clients.
-        OWSLogError(@"Refusing to decrypt attachment without a digest.");
-        NSError *error = OWSErrorWithCodeDescription(
-            OWSErrorCodeFailedToDecryptMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
-        failureHandler(error);
-        return;
-    }
-
     NSError *decryptError;
     NSData *_Nullable plaintext = [Cryptography decryptAttachment:cipherText
                                                           withKey:attachmentPointer.encryptionKey

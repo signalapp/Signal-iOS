@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import HKDFKit
 
 // TODO: Determine how views can be notified of sticker downloads.
 @objc
@@ -143,7 +144,11 @@ public class StickerManager: NSObject {
             }
             stickerPack.update(withIsInstalled: false, transaction: transaction)
 
-            // TODO: I'm not sure we want to uninstall the stickers.
+            // Uninstall the cover and stickers.
+            if let completion = uninstallSticker(stickerInfo: stickerPack.coverInfo,
+                                                 transaction: transaction) {
+                completions.append(completion)
+            }
             for stickerInfo in stickerPack.stickerInfos {
                 if let completion = uninstallSticker(stickerInfo: stickerInfo,
                                                      transaction: transaction) {
@@ -198,14 +203,15 @@ public class StickerManager: NSObject {
 
         let operation = DownloadStickerPackOperation(stickerPackInfo: stickerPackInfo,
                                                      success: { (manifestData) in
+                                                        // saveStickerPack is expensive, do async.
                                                         DispatchQueue.global().async {
-                                                            // saveStickerPack is expensive.
-                                                            guard let stickerPack = self.saveStickerPack(stickerPackInfo: stickerPackInfo,
-                                                                                                         manifestData: manifestData) else {
-                                                                                                            return
-                                                            }
-                                                            if shouldInstall {
-                                                                self.installStickerPack(stickerPack: stickerPack)
+                                                            do {
+                                                                try self.saveStickerPack(stickerPackInfo: stickerPackInfo,
+                                                                                         manifestData: manifestData,
+                                                                                         shouldInstall: shouldInstall)
+                                                            } catch let error as NSError {
+                                                                owsFailDebug("Couldn't save sticker pack: \(error)")
+                                                                return
                                                             }
                                                         }
         },
@@ -234,7 +240,8 @@ public class StickerManager: NSObject {
     // This method tries to parse a downloaded manifest.
     // If valid, we save the pack.
     private class func saveStickerPack(stickerPackInfo: StickerPackInfo,
-                                       manifestData: Data) -> StickerPack? {
+                                       manifestData: Data,
+                                       shouldInstall: Bool = false) throws {
         assert(manifestData.count > 0)
 
         let manifestProto: SSKProtoPack
@@ -242,7 +249,7 @@ public class StickerManager: NSObject {
             manifestProto = try SSKProtoPack.parseData(manifestData)
         } catch let error as NSError {
             owsFailDebug("Couldn't parse protos: \(error)")
-            return nil
+            throw StickerError.invalidInput
         }
         let title = parseOptionalString(manifestProto.title)
         let author = parseOptionalString(manifestProto.author)
@@ -255,7 +262,7 @@ public class StickerManager: NSObject {
         }
         guard let firstItem = items.first else {
             owsFailDebug("Invalid manifest, no stickers")
-            return nil
+            throw StickerError.invalidInput
         }
         let cover = manifestCover ?? firstItem
 
@@ -282,16 +289,18 @@ public class StickerManager: NSObject {
 
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
 
-        return stickerPack
+        if shouldInstall {
+            self.installStickerPack(stickerPack: stickerPack)
+        }
     }
 
-    private class func installStickerPackContents(stickerPack: StickerPack, justCover: Bool = false) {
+    private class func installStickerPackContents(stickerPack: StickerPack, onlyInstallCover: Bool = false) {
         // Note: It's safe to kick off downloads of stickers that are already installed.
 
         // The cover.
         tryToDownloadAndInstallSticker(stickerInfo: stickerPack.coverInfo)
 
-        guard !justCover else {
+        guard !onlyInstallCover else {
             return
         }
 
@@ -435,12 +444,15 @@ public class StickerManager: NSObject {
             owsFailDebug("Invalid pack key length: \(packKey.count).")
             throw StickerError.invalidInput
         }
-        guard let stickerKey = StickerUtils.stickerKey(forPackKey: packKey) else {
-            owsFailDebug("Could not derive sticker key.")
-            throw StickerError.invalidInput
+        guard let stickerKeyInfo: Data = "Sticker Pack".data(using: .utf8) else {
+            owsFailDebug("Couldn't convert info data.")
+            throw StickerError.assertionFailure
         }
-        let plaintext = try Cryptography.decryptAttachment(ciphertext, withKey: stickerKey, digest: nil, unpaddedSize: 0)
-        return plaintext
+        let stickerSalt = Data(repeating: 0, count: 32)
+        let stickerKeyLength: Int32 = 64
+        let stickerKey =
+            try HKDFKit.deriveKey(packKey, info: stickerKeyInfo, salt: stickerSalt, outputSize: stickerKeyLength)
+        return try Cryptography.decryptStickerData(ciphertext, withKey: stickerKey)
     }
 
     private class func enqueueAllStickerDownloads() {
@@ -453,7 +465,7 @@ public class StickerManager: NSObject {
             }
             // Install the covers for available sticker packs.
             for stickerPack in self.availableStickerPacks() {
-                installStickerPackContents(stickerPack: stickerPack, justCover: true)
+                installStickerPackContents(stickerPack: stickerPack, onlyInstallCover: true)
             }
         }
     }
