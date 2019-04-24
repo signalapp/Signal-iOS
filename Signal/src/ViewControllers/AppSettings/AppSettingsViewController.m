@@ -83,7 +83,8 @@
     self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                       target:self
-                                                      action:@selector(dismissWasPressed:)];
+                                                      action:@selector(dismissWasPressed:)
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")];
     [self updateRightBarButtonForTheme];
     [self observeNotifications];
 
