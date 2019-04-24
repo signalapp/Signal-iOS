@@ -271,6 +271,7 @@
 		34BEDB1621C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34BEDB1721C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */; };
 		34C2EEAC2270A69400BCA1D0 /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2EEAB2270A69400BCA1D0 /* CircleView.swift */; };
+		34C2EEB02270B8E200BCA1D0 /* StickerKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2EEAF2270B8E100BCA1D0 /* StickerKeyboard.swift */; };
 		34C3C78D20409F320000134C /* Opening.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78C20409F320000134C /* Opening.m4r */; };
 		34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78E2040A4F70000134C /* sonarping.mp3 */; };
 		34C3C7922040B0DD0000134C /* OWSAudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -979,6 +980,7 @@
 		34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
 		34C2EEAB2270A69400BCA1D0 /* CircleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleView.swift; sourceTree = "<group>"; };
+		34C2EEAF2270B8E100BCA1D0 /* StickerKeyboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerKeyboard.swift; sourceTree = "<group>"; };
 		34C3C78C20409F320000134C /* Opening.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Opening.m4r; sourceTree = "<group>"; };
 		34C3C78E2040A4F70000134C /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sonarping.mp3; path = Signal/AudioFiles/sonarping.mp3; sourceTree = SOURCE_ROOT; };
 		34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioPlayer.h; sourceTree = "<group>"; };
@@ -1721,6 +1723,7 @@
 			isa = PBXGroup;
 			children = (
 				344DC9AE226E483C004E7322 /* ManageStickersViewController.swift */,
+				34C2EEAF2270B8E100BCA1D0 /* StickerKeyboard.swift */,
 			);
 			path = Stickers;
 			sourceTree = "<group>";
@@ -3408,6 +3411,7 @@
 				346129F81FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.m in Sources */,
 				34AC09DF211B39B100997B47 /* OWSNavigationController.m in Sources */,
 				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
+				34C2EEB02270B8E200BCA1D0 /* StickerKeyboard.swift in Sources */,
 				34BEDB1721C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m in Sources */,
 				340872C92239563500CB25B0 /* AttachmentItemCollection.swift in Sources */,
 				34080EFE2225F96D0087E99F /* ImageEditorPaletteView.swift in Sources */,

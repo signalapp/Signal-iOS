@@ -9,6 +9,12 @@ import SignalServiceKit
 @objc
 public class ManageStickersViewController: OWSTableViewController {
 
+    // MARK: - Dependencies
+
+    private var stickerManager: StickerManager {
+        return SSKEnvironment.shared.stickerManager
+    }
+
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -45,7 +51,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
         updateState()
 
-        StickerManager.refreshAvailableStickerPacks()
+        stickerManager.refreshAvailableStickerPacks()
     }
 
     private var installedStickerPacks = [StickerPack]()
