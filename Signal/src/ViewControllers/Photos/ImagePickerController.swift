@@ -383,7 +383,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         collectionView.allowsMultipleSelection = delegate.isInBatchSelectMode
-        collectionView.reloadData()
     }
 
     func clearCollectionViewSelection() {

@@ -367,6 +367,16 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
     // MARK: - Photo
 
+    func photoCaptureDidStartPhotoCapture(_ photoCapture: PhotoCapture) {
+        let captureFeedbackView = UIView()
+        captureFeedbackView.backgroundColor = .black
+        previewView.addSubview(captureFeedbackView)
+        captureFeedbackView.autoPinEdgesToSuperviewEdges()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            captureFeedbackView.removeFromSuperview()
+        }
+    }
+
     func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment) {
         delegate?.photoCaptureViewController(self, didFinishProcessingAttachment: attachment)
     }
@@ -445,7 +455,7 @@ class CaptureButton: UIView {
     weak var delegate: CaptureButtonDelegate?
 
     let defaultDiameter: CGFloat = ScaleFromIPhone5To7Plus(60, 80)
-    let recordingDiameter: CGFloat = ScaleFromIPhone5To7Plus(68, 120)
+    static let recordingDiameter: CGFloat = ScaleFromIPhone5To7Plus(68, 120)
     var innerButtonSizeConstraints: [NSLayoutConstraint]!
     var zoomIndicatorSizeConstraints: [NSLayoutConstraint]!
 
@@ -504,8 +514,8 @@ class CaptureButton: UIView {
             initialTouchLocation = gesture.location(in: gesture.view)
             delegate?.didBeginLongPressCaptureButton(self)
             UIView.animate(withDuration: 0.2) {
-                self.innerButtonSizeConstraints.forEach { $0.constant = self.recordingDiameter }
-                self.zoomIndicatorSizeConstraints.forEach { $0.constant = self.recordingDiameter }
+                self.innerButtonSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
+                self.zoomIndicatorSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
                 self.superview?.layoutIfNeeded()
             }
         case .changed:
@@ -534,7 +544,7 @@ class CaptureButton: UIView {
 
             Logger.verbose("distance: \(distance), alpha: \(alpha)")
 
-            let zoomIndicatorDiameter = CGFloatLerp(recordingDiameter, 3, alpha)
+            let zoomIndicatorDiameter = CGFloatLerp(type(of: self).recordingDiameter, 3, alpha)
             self.zoomIndicatorSizeConstraints.forEach { $0.constant = zoomIndicatorDiameter }
             zoomIndicator.superview?.layoutIfNeeded()
 
