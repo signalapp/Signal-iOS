@@ -165,21 +165,21 @@ class SendMediaNavigationController: OWSNavigationController {
     }()
 
     private lazy var batchModeButton: SendMediaBottomButton = {
-        return SendMediaBottomButton(imageName: "media_send_batch_mode_disabled",
+        return SendMediaBottomButton(imageName: "create-album-filled-28",
                                      tintColor: .ows_white,
                                      diameter: type(of: self).bottomButtonWidth,
                                      block: { [weak self] in self?.didTapBatchModeButton() })
     }()
 
     private lazy var cameraModeButton: UIView = {
-        return SendMediaBottomButton(imageName: "settings-avatar-camera-2",
+        return SendMediaBottomButton(imageName: "camera-filled-28",
                                      tintColor: .ows_white,
                                      diameter: type(of: self).bottomButtonWidth,
                                      block: { [weak self] in self?.didTapCameraModeButton() })
     }()
 
     private lazy var mediaLibraryModeButton: UIView = {
-        return SendMediaBottomButton(imageName: "actionsheet_camera_roll_black",
+        return SendMediaBottomButton(imageName: "photo-filled-28",
                                      tintColor: .ows_white,
                                      diameter: type(of: self).bottomButtonWidth,
                                      block: { [weak self] in self?.didTapMediaLibraryModeButton() })
