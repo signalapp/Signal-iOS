@@ -278,8 +278,12 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_OversizeTextDownloading:
             bodyMediaView = [self loadViewForOversizeTextDownload];
             break;
+        case OWSMessageCellType_StickerMessage:
+            bodyMediaView = [self loadViewForSticker];
+            break;
     }
 
+    // TODO:
     if (bodyMediaView) {
         OWSAssertDebug(self.loadCellContentBlock);
         OWSAssertDebug(self.unloadCellContentBlock);

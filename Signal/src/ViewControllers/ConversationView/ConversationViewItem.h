@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_ContactShare,
     OWSMessageCellType_MediaMessage,
     OWSMessageCellType_OversizeTextDownloading,
+    OWSMessageCellType_StickerMessage,
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
@@ -29,6 +30,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
 @class SDSAnyReadTransaction;
+@class StickerInfo;
 @class TSAttachment;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
@@ -64,8 +66,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @protocol ConversationViewItem <NSObject, ConversationViewLayoutItem, OWSAudioPlayerDelegate>
 
 @property (nonatomic, readonly) TSInteraction *interaction;
-
-@property (nonatomic, readonly, nullable) OWSQuotedReplyModel *quotedReply;
 
 @property (nonatomic, readonly) BOOL isGroupThread;
 
@@ -120,10 +120,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 // if a load has previously failed.
 @property (nonatomic) BOOL didCellMediaFailToLoad;
 
+@property (nonatomic, readonly, nullable) OWSQuotedReplyModel *quotedReply;
+
 @property (nonatomic, readonly, nullable) ContactShareViewModel *contactShare;
 
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, readonly, nullable) TSAttachment *linkPreviewAttachment;
+
+@property (nonatomic, readonly, nullable) StickerInfo *stickerInfo;
+@property (nonatomic, readonly, nullable) TSAttachmentStream *stickerAttachment;
 
 @property (nonatomic, readonly, nullable) NSString *systemMessageText;
 
