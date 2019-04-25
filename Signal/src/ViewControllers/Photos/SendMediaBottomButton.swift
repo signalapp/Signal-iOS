@@ -45,17 +45,45 @@ class SendMediaBottomButton: UIView {
         }
     }
 
-    func updateViewState() {
+    var isBeingPresentedOverPhotoCapture: Bool = false {
+        didSet {
+            updateViewState()
+        }
+    }
+
+    private enum Mode {
+        case selected, unselectedOverMediaLibrary, unselectedOverPhotoCapture
+    }
+
+    private var mode: Mode {
         if isSelected {
+            return .selected
+        }
+
+        if isBeingPresentedOverPhotoCapture {
+            return .unselectedOverPhotoCapture
+        }
+
+        return .unselectedOverMediaLibrary
+    }
+
+    func updateViewState() {
+        switch mode {
+        case .selected:
             button.tintColor = .ows_black
             blurView.isHidden = true
             backgroundColor = .ows_white
             setShadow()
-        } else {
+        case .unselectedOverMediaLibrary:
             button.tintColor = .ows_white
             blurView.isHidden = false
             backgroundColor = .clear
             layer.shadowRadius = 0
+        case .unselectedOverPhotoCapture:
+            button.tintColor = .ows_white
+            blurView.isHidden = true
+            backgroundColor = .clear
+            setShadow()
         }
     }
 }

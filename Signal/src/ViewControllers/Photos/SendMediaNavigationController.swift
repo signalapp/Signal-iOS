@@ -113,16 +113,29 @@ class SendMediaNavigationController: OWSNavigationController {
             mediaLibraryModeButton.isHidden = true
         case is ImagePickerGridController:
             let showDoneButton = isInBatchSelectMode && attachmentCount > 0
-            batchModeButton.isHidden = showDoneButton
             doneButton.isHidden = !showDoneButton
+
+            batchModeButton.isHidden = showDoneButton
+            batchModeButton.isBeingPresentedOverPhotoCapture = false
+
             cameraModeButton.isHidden = false
+            cameraModeButton.isBeingPresentedOverPhotoCapture = false
+
             mediaLibraryModeButton.isHidden = true
+            mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
         case is PhotoCaptureViewController:
             let showDoneButton = isInBatchSelectMode && attachmentCount > 0
-            batchModeButton.isHidden = showDoneButton
             doneButton.isHidden = !showDoneButton
+
+            batchModeButton.isHidden = showDoneButton
+            batchModeButton.isBeingPresentedOverPhotoCapture = true
+
             cameraModeButton.isHidden = true
+            cameraModeButton.isBeingPresentedOverPhotoCapture = true
+
             mediaLibraryModeButton.isHidden = false
+            mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = true
+
         default:
             owsFailDebug("unexpected topViewController: \(topViewController)")
         }
@@ -171,14 +184,14 @@ class SendMediaNavigationController: OWSNavigationController {
                                      block: { [weak self] in self?.didTapBatchModeButton() })
     }()
 
-    private lazy var cameraModeButton: UIView = {
+    private lazy var cameraModeButton: SendMediaBottomButton = {
         return SendMediaBottomButton(imageName: "camera-filled-28",
                                      tintColor: .ows_white,
                                      diameter: type(of: self).bottomButtonWidth,
                                      block: { [weak self] in self?.didTapCameraModeButton() })
     }()
 
-    private lazy var mediaLibraryModeButton: UIView = {
+    private lazy var mediaLibraryModeButton: SendMediaBottomButton = {
         return SendMediaBottomButton(imageName: "photo-filled-28",
                                      tintColor: .ows_white,
                                      diameter: type(of: self).bottomButtonWidth,
