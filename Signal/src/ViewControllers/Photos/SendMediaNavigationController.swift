@@ -20,7 +20,7 @@ class SendMediaNavigationController: OWSNavigationController {
 
     // This is a sensitive constant, if you change it make sure to check
     // on iPhone5, 6, 6+, X, layouts.
-    static let bottomButtonsCenterOffset: CGFloat = -50
+    static let bottomButtonsCenterOffset: CGFloat = -34
 
     var attachmentCount: Int {
         return attachmentDraftCollection.count - attachmentDraftCollection.pickerAttachments.count + mediaLibrarySelections.count
@@ -85,9 +85,16 @@ class SendMediaNavigationController: OWSNavigationController {
         return navController
     }
 
-    var isInBatchSelectMode = false {
-        didSet {
-            if oldValue != isInBatchSelectMode {
+    var isInBatchSelectMode: Bool {
+        get {
+            return self.batchModeButton.isSelected
+        }
+
+        set {
+            let didChange = newValue != isInBatchSelectMode
+            self.batchModeButton.isSelected = newValue
+
+            if didChange {
                 mediaLibraryViewController.batchSelectModeDidChange()
                 guard let topViewController = viewControllers.last else {
                     return
@@ -105,13 +112,15 @@ class SendMediaNavigationController: OWSNavigationController {
             cameraModeButton.isHidden = true
             mediaLibraryModeButton.isHidden = true
         case is ImagePickerGridController:
-            batchModeButton.isHidden = isInBatchSelectMode
-            doneButton.isHidden = !isInBatchSelectMode || (attachmentDraftCollection.count == 0 && mediaLibrarySelections.count == 0)
+            let showDoneButton = isInBatchSelectMode && attachmentCount > 0
+            batchModeButton.isHidden = showDoneButton
+            doneButton.isHidden = !showDoneButton
             cameraModeButton.isHidden = false
             mediaLibraryModeButton.isHidden = true
         case is PhotoCaptureViewController:
-            batchModeButton.isHidden = isInBatchSelectMode
-            doneButton.isHidden = !isInBatchSelectMode || (attachmentDraftCollection.count == 0 && mediaLibrarySelections.count == 0)
+            let showDoneButton = isInBatchSelectMode && attachmentCount > 0
+            batchModeButton.isHidden = showDoneButton
+            doneButton.isHidden = !showDoneButton
             cameraModeButton.isHidden = true
             mediaLibraryModeButton.isHidden = false
         default:
@@ -132,8 +141,8 @@ class SendMediaNavigationController: OWSNavigationController {
     // MARK: - Events
 
     private func didTapBatchModeButton() {
-        // There's no way to _disable_ batch mode.
-        isInBatchSelectMode = true
+        isInBatchSelectMode = !isInBatchSelectMode
+        assert(isInBatchSelectMode || attachmentCount <= 1)
     }
 
     private func didTapCameraModeButton() {
@@ -155,49 +164,25 @@ class SendMediaNavigationController: OWSNavigationController {
         return button
     }()
 
-    private lazy var batchModeButton: UIButton = {
-        let button = OWSButton(imageName: "media_send_batch_mode_disabled",
-                               tintColor: .ows_gray60,
-                               block: { [weak self] in self?.didTapBatchModeButton() })
-
-        let width: CGFloat = type(of: self).bottomButtonWidth
-        button.autoSetDimensions(to: CGSize(width: width, height: width))
-        button.layer.cornerRadius = width / 2
-        button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.backgroundColor = .ows_white
-        button.setShadow()
-
-        return button
+    private lazy var batchModeButton: SendMediaBottomButton = {
+        return SendMediaBottomButton(imageName: "media_send_batch_mode_disabled",
+                                     tintColor: .ows_white,
+                                     diameter: type(of: self).bottomButtonWidth,
+                                     block: { [weak self] in self?.didTapBatchModeButton() })
     }()
 
-    private lazy var cameraModeButton: UIButton = {
-        let button = OWSButton(imageName: "settings-avatar-camera-2",
-                               tintColor: .ows_gray60,
-                               block: { [weak self] in self?.didTapCameraModeButton() })
-
-        let width: CGFloat = type(of: self).bottomButtonWidth
-        button.autoSetDimensions(to: CGSize(width: width, height: width))
-        button.layer.cornerRadius = width / 2
-        button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.backgroundColor = .ows_white
-        button.setShadow()
-
-        return button
+    private lazy var cameraModeButton: UIView = {
+        return SendMediaBottomButton(imageName: "settings-avatar-camera-2",
+                                     tintColor: .ows_white,
+                                     diameter: type(of: self).bottomButtonWidth,
+                                     block: { [weak self] in self?.didTapCameraModeButton() })
     }()
 
-    private lazy var mediaLibraryModeButton: UIButton = {
-        let button = OWSButton(imageName: "actionsheet_camera_roll_black",
-                               tintColor: .ows_gray60,
-                               block: { [weak self] in self?.didTapMediaLibraryModeButton() })
-
-        let width: CGFloat = type(of: self).bottomButtonWidth
-        button.autoSetDimensions(to: CGSize(width: width, height: width))
-        button.layer.cornerRadius = width / 2
-        button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.backgroundColor = .ows_white
-        button.setShadow()
-
-        return button
+    private lazy var mediaLibraryModeButton: UIView = {
+        return SendMediaBottomButton(imageName: "actionsheet_camera_roll_black",
+                                     tintColor: .ows_white,
+                                     diameter: type(of: self).bottomButtonWidth,
+                                     block: { [weak self] in self?.didTapMediaLibraryModeButton() })
     }()
 
     // MARK: State
