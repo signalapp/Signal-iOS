@@ -9,6 +9,6 @@ import Foundation
     // MARK: Orientation
 
     override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return DefaultUIInterfaceOrientationMask()
+        return .allButUpsideDown
     }
 }

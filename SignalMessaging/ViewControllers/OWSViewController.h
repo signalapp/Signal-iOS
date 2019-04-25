@@ -6,10 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-BOOL IsLandscapeOrientationEnabled(void);
-
-UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void);
-
 @interface OWSViewController : UIViewController
 
 @property (nonatomic) BOOL shouldIgnoreKeyboardChanges;

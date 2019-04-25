@@ -608,16 +608,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
 
-        if IsLandscapeOrientationEnabled() {
-            mediaGalleryDataSource.dismissMediaDetailViewController(self,
-                                                                    animated: isAnimated,
-                                                                    completion: completion)
-        } else {
-            mediaGalleryDataSource.dismissMediaDetailViewController(self, animated: isAnimated) {
-                UIDevice.current.ows_setOrientation(.portrait)
-                completion?()
-            }
-        }
+        mediaGalleryDataSource.dismissMediaDetailViewController(self,
+                                                                animated: isAnimated,
+                                                                completion: completion)
     }
 
     // MARK: MediaDetailViewControllerDelegate
