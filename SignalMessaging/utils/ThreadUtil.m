@@ -251,32 +251,11 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return message;
 }
 
-+ (nullable TSOutgoingMessage *)enqueueMessageWithSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread;
++ (TSOutgoingMessage *)enqueueMessageWithSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread;
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(stickerInfo);
     OWSAssertDebug(thread);
-
-    // We load the sticker data synchronously.
-    // If this fails, we don't send the message and won't want to optimistically insert
-    // the message into the view model (since the message will have not other content).
-    // Additionally, the views can't render the message without the sticker data anyhow.
-    // Sticker data should be much smaller than typical attachments.
-    NSString *_Nullable filePath = [StickerManager filepathForInstalledStickerWithStickerInfo:stickerInfo];
-    if (!filePath) {
-        OWSFailDebug(@"Could not find sticker file.");
-        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"STICKERS_SEND_FAILED_ALERT_TITLE",
-                                          @"Alert title when picking a document fails for an unknown reason")];
-        return nil;
-    }
-    NSData *_Nullable stickerData = [NSData dataWithContentsOfFile:filePath];
-    if (!stickerData) {
-        OWSFailDebug(@"Couldn't load sticker data.");
-        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"STICKERS_SEND_FAILED_ALERT_TITLE",
-                                          @"Alert title when picking a document fails for an unknown reason")];
-        return nil;
-    }
-    MessageStickerDraft *stickerDraft = [[MessageStickerDraft alloc] initWithInfo:stickerInfo stickerData:stickerData];
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
@@ -297,19 +276,43 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                         linkPreview:nil
                                                      messageSticker:nil];
 
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        MessageSticker *_Nullable messageSticker =
-            [self messageStickerForStickerDraft:stickerDraft transaction:transaction];
-        if (!messageSticker) {
-            OWSFailDebug(@"Couldn't send sticker.");
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        // Load the sticker data async.
+        NSString *_Nullable filePath = [StickerManager filepathForInstalledStickerWithStickerInfo:stickerInfo];
+        if (!filePath) {
+            OWSFailDebug(@"Could not find sticker file.");
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"STICKERS_SEND_FAILED_ALERT_TITLE",
+                                                  @"Alert title when picking a document fails for an unknown reason")];
+            });
             return;
         }
+        NSData *_Nullable stickerData = [NSData dataWithContentsOfFile:filePath];
+        if (!stickerData) {
+            OWSFailDebug(@"Couldn't load sticker data.");
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"STICKERS_SEND_FAILED_ALERT_TITLE",
+                                                  @"Alert title when picking a document fails for an unknown reason")];
+            });
+            return;
+        }
+        MessageStickerDraft *stickerDraft =
+            [[MessageStickerDraft alloc] initWithInfo:stickerInfo stickerData:stickerData];
 
-        [message saveWithTransaction:transaction];
-        [message updateWithMessageSticker:messageSticker transaction:transaction];
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            MessageSticker *_Nullable messageSticker =
+                [self messageStickerForStickerDraft:stickerDraft transaction:transaction];
+            if (!messageSticker) {
+                OWSFailDebug(@"Couldn't send sticker.");
+                return;
+            }
 
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
-    }];
+            [message saveWithTransaction:transaction];
+            [message updateWithMessageSticker:messageSticker transaction:transaction];
+
+            [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        }];
+    });
 
     return message;
 }

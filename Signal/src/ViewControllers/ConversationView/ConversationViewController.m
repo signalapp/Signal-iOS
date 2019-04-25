@@ -4447,11 +4447,7 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"Sending sticker.");
 
-    TSOutgoingMessage *_Nullable message = [ThreadUtil enqueueMessageWithSticker:stickerInfo inThread:self.thread];
-    if (!message) {
-        OWSFailDebug(@"Sticker could not be sent.");
-        return;
-    }
+    TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithSticker:stickerInfo inThread:self.thread];
     [self messageWasSent:message];
 }
 

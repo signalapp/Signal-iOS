@@ -2345,6 +2345,9 @@
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "Sticker Pack";
 
+/* Alert title when picking a document fails for an unknown reason */
+"STICKERS_SEND_FAILED_ALERT_TITLE" = "Could not send sticker";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
 
