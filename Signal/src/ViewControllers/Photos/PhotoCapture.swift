@@ -6,16 +6,23 @@ import Foundation
 import PromiseKit
 
 protocol PhotoCaptureDelegate: AnyObject {
+
+    // MARK: Still Photo
+
+    func photoCaptureDidStartPhotoCapture(_ photoCapture: PhotoCapture)
     func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment)
     func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error)
 
-    func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool
-    func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture)
+    // MARK: Video
 
     func photoCaptureDidBeginVideo(_ photoCapture: PhotoCapture)
     func photoCaptureDidCompleteVideo(_ photoCapture: PhotoCapture)
     func photoCaptureDidCancelVideo(_ photoCapture: PhotoCapture)
 
+    // MARK: Utility
+
+    func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool
+    func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture)
     var zoomScaleReferenceHeight: CGFloat? { get }
     var captureOrientation: AVCaptureVideoOrientation { get }
 }
@@ -291,6 +298,7 @@ extension PhotoCapture: CaptureButtonDelegate {
             return
         }
 
+        delegate.photoCaptureDidStartPhotoCapture(self)
         sessionQueue.async {
             self.captureOutput.takePhoto(delegate: self)
         }

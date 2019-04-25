@@ -367,6 +367,16 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
     // MARK: - Photo
 
+    func photoCaptureDidStartPhotoCapture(_ photoCapture: PhotoCapture) {
+        let captureFeedbackView = UIView()
+        captureFeedbackView.backgroundColor = .black
+        previewView.addSubview(captureFeedbackView)
+        captureFeedbackView.autoPinEdgesToSuperviewEdges()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            captureFeedbackView.removeFromSuperview()
+        }
+    }
+
     func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment) {
         delegate?.photoCaptureViewController(self, didFinishProcessingAttachment: attachment)
     }
