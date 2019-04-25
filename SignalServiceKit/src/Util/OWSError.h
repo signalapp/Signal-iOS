@@ -53,6 +53,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeAvatarUploadFailed = 777426,
     OWSErrorCodeNoSessionForTransientMessage,
     OWSErrorCodeUploadFailed,
+    OWSErrorCodeInvalidStickerData,
 };
 
 extern NSString *const OWSErrorRecipientIdentifierKey;

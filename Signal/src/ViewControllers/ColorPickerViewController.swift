@@ -20,10 +20,9 @@ class OWSColorPickerAccessoryView: NeverClearView {
     required init(color: UIColor) {
         super.init(frame: .zero)
 
-        let circleView = CircleView()
+        let circleView = CircleView(diameter: kSwatchSize)
         circleView.backgroundColor = color
         addSubview(circleView)
-        circleView.autoSetDimensions(to: CGSize(width: kSwatchSize, height: kSwatchSize))
         circleView.autoPinEdgesToSuperviewEdges()
     }
 
@@ -32,14 +31,7 @@ class OWSColorPickerAccessoryView: NeverClearView {
     }
 }
 
-@objc (OWSCircleView)
-class CircleView: UIView {
-    override var bounds: CGRect {
-        didSet {
-            self.layer.cornerRadius = self.bounds.size.height / 2
-        }
-    }
-}
+// MARK: -
 
 protocol ColorViewDelegate: class {
     func colorViewWasTapped(_ colorView: ColorView)

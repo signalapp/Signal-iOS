@@ -11,21 +11,21 @@ import SignalCoreKit
 
 // MARK: - SDSSerializable
 
-extension InstalledStickerPack: SDSSerializable {
+extension StickerPack: SDSSerializable {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
         default:
-            return InstalledStickerPackSerializer(model: self)
+            return StickerPackSerializer(model: self)
         }
     }
 }
 
 // MARK: - Table Metadata
 
-extension InstalledStickerPackSerializer {
+extension StickerPackSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -35,17 +35,19 @@ extension InstalledStickerPackSerializer {
     static let authorColumn = SDSColumnMetadata(columnName: "author", columnType: .unicodeString, isOptional: true, columnIndex: 2)
     static let coverColumn = SDSColumnMetadata(columnName: "cover", columnType: .blob, columnIndex: 3)
     static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 4)
-    static let itemsColumn = SDSColumnMetadata(columnName: "items", columnType: .blob, columnIndex: 5)
-    static let titleColumn = SDSColumnMetadata(columnName: "title", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let isInstalledColumn = SDSColumnMetadata(columnName: "isInstalled", columnType: .int, columnIndex: 5)
+    static let itemsColumn = SDSColumnMetadata(columnName: "items", columnType: .blob, columnIndex: 6)
+    static let titleColumn = SDSColumnMetadata(columnName: "title", columnType: .unicodeString, isOptional: true, columnIndex: 7)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_InstalledStickerPack", columns: [
+    public static let table = SDSTableMetadata(tableName: "model_StickerPack", columns: [
         recordTypeColumn,
         uniqueIdColumn,
         authorColumn,
         coverColumn,
         infoColumn,
+        isInstalledColumn,
         itemsColumn,
         titleColumn
         ])
@@ -54,11 +56,11 @@ extension InstalledStickerPackSerializer {
 
 // MARK: - Deserialization
 
-extension InstalledStickerPackSerializer {
+extension StickerPackSerializer {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> InstalledStickerPack {
+    class func sdsDeserialize(statement: SelectStatement) throws -> StickerPack {
 
         if OWSIsDebugBuild() {
             guard statement.columnNames == table.selectColumnNames else {
@@ -75,24 +77,26 @@ extension InstalledStickerPackSerializer {
             throw SDSError.invalidResult
         }
         switch recordType {
-        case .installedStickerPack:
+        case .stickerPack:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let author = try deserializer.optionalString(at: authorColumn.columnIndex)
             let coverSerialized: Data = try deserializer.blob(at: coverColumn.columnIndex)
-            let cover: InstalledStickerPackItem = try SDSDeserializer.unarchive(coverSerialized)
+            let cover: StickerPackItem = try SDSDeserializer.unarchive(coverSerialized)
             let infoSerialized: Data = try deserializer.blob(at: infoColumn.columnIndex)
             let info: StickerPackInfo = try SDSDeserializer.unarchive(infoSerialized)
+            let isInstalled = try deserializer.bool(at: isInstalledColumn.columnIndex)
             let itemsSerialized: Data = try deserializer.blob(at: itemsColumn.columnIndex)
-            let items: [InstalledStickerPackItem] = try SDSDeserializer.unarchive(itemsSerialized)
+            let items: [StickerPackItem] = try SDSDeserializer.unarchive(itemsSerialized)
             let title = try deserializer.optionalString(at: titleColumn.columnIndex)
 
-            return InstalledStickerPack(uniqueId: uniqueId,
-                                        author: author,
-                                        cover: cover,
-                                        info: info,
-                                        items: items,
-                                        title: title)
+            return StickerPack(uniqueId: uniqueId,
+                               author: author,
+                               cover: cover,
+                               info: info,
+                               isInstalled: isInstalled,
+                               items: items,
+                               title: title)
 
         default:
             owsFail("Invalid record type \(recordType)")
@@ -103,7 +107,7 @@ extension InstalledStickerPackSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension InstalledStickerPack {
+extension StickerPack {
     @objc
     public func anySave(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
@@ -112,6 +116,48 @@ extension InstalledStickerPack {
         case .grdbWrite(let grdbTransaction):
             SDSSerialization.save(entity: self, transaction: grdbTransaction)
         }
+    }
+
+    // This method is used by "updateWith..." methods.
+    //
+    // This model may be updated from many threads. We don't want to save
+    // our local copy (this instance) since it may be out of date.  We also
+    // want to avoid re-saving a model that has been deleted.  Therefore, we
+    // use "updateWith..." methods to:
+    //
+    // a) Update a property of this instance.
+    // b) If a copy of this model exists in the database, load an up-to-date copy,
+    //    and update and save that copy.
+    // b) If a copy of this model _DOES NOT_ exist in the database, do _NOT_ save
+    //    this local instance.
+    //
+    // After "updateWith...":
+    //
+    // a) Any copy of this model in the database will have been updated.
+    // b) The local property on this instance will always have been updated.
+    // c) Other properties on this instance may be out of date.
+    //
+    // All mutable properties of this class have been made read-only to
+    // prevent accidentally modifying them directly.
+    //
+    // This isn't a perfect arrangement, but in practice this will prevent
+    // data loss and will resolve all known issues.
+    @objc
+    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (StickerPack) -> Void) {
+        guard let uniqueId = uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            return
+        }
+
+        guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
+                                                   transaction: transaction) else {
+            return
+        }
+
+        block(self)
+        block(dbCopy)
+
+        dbCopy.anySave(transaction: transaction)
     }
 
     @objc
@@ -125,22 +171,22 @@ extension InstalledStickerPack {
     }
 }
 
-// MARK: - InstalledStickerPackCursor
+// MARK: - StickerPackCursor
 
 @objc
-public class InstalledStickerPackCursor: NSObject {
-    private let cursor: SDSCursor<InstalledStickerPack>
+public class StickerPackCursor: NSObject {
+    private let cursor: SDSCursor<StickerPack>
 
-    init(cursor: SDSCursor<InstalledStickerPack>) {
+    init(cursor: SDSCursor<StickerPack>) {
         self.cursor = cursor
     }
 
     // TODO: Revisit error handling in this class.
-    public func next() throws -> InstalledStickerPack? {
+    public func next() throws -> StickerPack? {
         return try cursor.next()
     }
 
-    public func all() throws -> [InstalledStickerPack] {
+    public func all() throws -> [StickerPack] {
         return try cursor.all()
     }
 }
@@ -156,31 +202,31 @@ public class InstalledStickerPackCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension InstalledStickerPack {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> InstalledStickerPackCursor {
-        return InstalledStickerPackCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: InstalledStickerPackSerializer.table,
+extension StickerPack {
+    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> StickerPackCursor {
+        return StickerPackCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: StickerPackSerializer.table,
                                                                    transaction: transaction,
-                                                                   deserialize: InstalledStickerPackSerializer.sdsDeserialize))
+                                                                   deserialize: StickerPackSerializer.sdsDeserialize))
     }
 
     // Fetches a single model by "unique id".
     @objc
     public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> InstalledStickerPack? {
+                               transaction: SDSAnyReadTransaction) -> StickerPack? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return InstalledStickerPack.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return StickerPack.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let tableMetadata = InstalledStickerPackSerializer.table
+            let tableMetadata = StickerPackSerializer.table
             let columnNames: [String] = tableMetadata.selectColumnNames
             let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
             let tableName: String = tableMetadata.tableName
-            let uniqueIdColumnName: String = InstalledStickerPackSerializer.uniqueIdColumn.columnName
+            let uniqueIdColumnName: String = StickerPackSerializer.uniqueIdColumn.columnName
             let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
 
-            let cursor = InstalledStickerPack.grdbFetchCursor(sql: sql,
+            let cursor = StickerPack.grdbFetchCursor(sql: sql,
                                                   arguments: [uniqueId],
                                                   transaction: grdbTransaction)
             do {
@@ -195,10 +241,10 @@ extension InstalledStickerPack {
 
 // MARK: - Swift Fetch
 
-extension InstalledStickerPack {
+extension StickerPack {
     public class func grdbFetchCursor(sql: String,
                                       arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> InstalledStickerPackCursor {
+                                      transaction: GRDBReadTransaction) -> StickerPackCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -206,10 +252,10 @@ extension InstalledStickerPack {
             }
             statementArguments = statementArgs
         }
-        return InstalledStickerPackCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
+        return StickerPackCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
                                                              arguments: statementArguments,
                                                              transaction: transaction,
-                                                                   deserialize: InstalledStickerPackSerializer.sdsDeserialize))
+                                                                   deserialize: StickerPackSerializer.sdsDeserialize))
     }
 }
 
@@ -217,15 +263,15 @@ extension InstalledStickerPack {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class InstalledStickerPackSerializer: SDSSerializer {
+class StickerPackSerializer: SDSSerializer {
 
-    private let model: InstalledStickerPack
-    public required init(model: InstalledStickerPack) {
+    private let model: StickerPack
+    public required init(model: StickerPack) {
         self.model = model
     }
 
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return InstalledStickerPackSerializer.table
+        return StickerPackSerializer.table
     }
 
     public func insertColumnNames() -> [String] {
@@ -235,7 +281,7 @@ class InstalledStickerPackSerializer: SDSSerializer {
         // * "unique id"
         // * ...all columns that we set when updating.
         return [
-            InstalledStickerPackSerializer.recordTypeColumn.columnName,
+            StickerPackSerializer.recordTypeColumn.columnName,
             uniqueIdColumnName()
             ] + updateColumnNames()
 
@@ -243,7 +289,7 @@ class InstalledStickerPackSerializer: SDSSerializer {
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.installedStickerPack.rawValue
+            SDSRecordType.stickerPack.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -255,11 +301,12 @@ class InstalledStickerPackSerializer: SDSSerializer {
 
     public func updateColumnNames() -> [String] {
         return [
-            InstalledStickerPackSerializer.authorColumn,
-            InstalledStickerPackSerializer.coverColumn,
-            InstalledStickerPackSerializer.infoColumn,
-            InstalledStickerPackSerializer.itemsColumn,
-            InstalledStickerPackSerializer.titleColumn
+            StickerPackSerializer.authorColumn,
+            StickerPackSerializer.coverColumn,
+            StickerPackSerializer.infoColumn,
+            StickerPackSerializer.isInstalledColumn,
+            StickerPackSerializer.itemsColumn,
+            StickerPackSerializer.titleColumn
             ].map { $0.columnName }
     }
 
@@ -268,6 +315,7 @@ class InstalledStickerPackSerializer: SDSSerializer {
             self.model.author ?? DatabaseValue.null,
             SDSDeserializer.archive(self.model.cover) ?? DatabaseValue.null,
             SDSDeserializer.archive(self.model.info) ?? DatabaseValue.null,
+            self.model.isInstalled,
             SDSDeserializer.archive(self.model.items) ?? DatabaseValue.null,
             self.model.title ?? DatabaseValue.null
 
@@ -281,7 +329,7 @@ class InstalledStickerPackSerializer: SDSSerializer {
     }
 
     public func uniqueIdColumnName() -> String {
-        return InstalledStickerPackSerializer.uniqueIdColumn.columnName
+        return StickerPackSerializer.uniqueIdColumn.columnName
     }
 
     // TODO: uniqueId is currently an optional on our models.

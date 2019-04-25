@@ -7,7 +7,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface InstalledStickerPackItem : MTLModel
+@class SDSAnyWriteTransaction;
+
+@interface StickerPackItem : MTLModel
 
 @property (nonatomic, readonly) UInt32 stickerId;
 @property (nonatomic, readonly) NSString *emojiString;
@@ -18,14 +20,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface InstalledStickerPack : TSYapDatabaseObject
+@interface StickerPack : TSYapDatabaseObject
 
 @property (nonatomic, readonly) StickerPackInfo *info;
 
 @property (nonatomic, readonly, nullable) NSString *title;
 @property (nonatomic, readonly, nullable) NSString *author;
-@property (nonatomic, readonly) InstalledStickerPackItem *cover;
-@property (nonatomic, readonly) NSArray<InstalledStickerPackItem *> *items;
+@property (nonatomic, readonly) StickerPackItem *cover;
+@property (nonatomic, readonly) NSArray<StickerPackItem *> *items;
 
 // Convenience accessors.
 @property (nonatomic, readonly) NSData *packId;
@@ -33,11 +35,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) StickerInfo *coverInfo;
 @property (nonatomic, readonly) NSArray<StickerInfo *> *stickerInfos;
 
+@property (nonatomic, readonly) BOOL isInstalled;
+
 - (instancetype)initWithInfo:(StickerPackInfo *)info
                        title:(nullable NSString *)title
                       author:(nullable NSString *)author
-                       cover:(InstalledStickerPackItem *)cover
-                    stickers:(NSArray<InstalledStickerPackItem *> *)items;
+                       cover:(StickerPackItem *)cover
+                    stickers:(NSArray<StickerPackItem *> *)items;
 
 // --- CODE GENERATION MARKER
 
@@ -47,17 +51,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                           author:(nullable NSString *)author
-                           cover:(InstalledStickerPackItem *)cover
+                           cover:(StickerPackItem *)cover
                             info:(StickerPackInfo *)info
-                           items:(NSArray<InstalledStickerPackItem *> *)items
+                     isInstalled:(BOOL)isInstalled
+                           items:(NSArray<StickerPackItem *> *)items
                            title:(nullable NSString *)title
-NS_SWIFT_NAME(init(uniqueId:author:cover:info:items:title:));
+NS_SWIFT_NAME(init(uniqueId:author:cover:info:isInstalled:items:title:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
 + (NSString *)uniqueIdForStickerPackInfo:(StickerPackInfo *)info;
+
+- (void)updateWithIsInstalled:(BOOL)isInstalled transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

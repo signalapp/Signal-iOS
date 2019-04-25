@@ -2,11 +2,12 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "InstalledStickerPack.h"
+#import "StickerPack.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation InstalledStickerPackItem
+@implementation StickerPackItem
 
 - (instancetype)initWithStickerId:(UInt32)stickerId emojiString:(NSString *)emojiString
 {
@@ -26,13 +27,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation InstalledStickerPack
+@interface StickerPack ()
+
+@property (nonatomic) BOOL isInstalled;
+
+@end
+
+#pragma mark -
+
+@implementation StickerPack
 
 - (instancetype)initWithInfo:(StickerPackInfo *)info
                        title:(nullable NSString *)title
                       author:(nullable NSString *)author
-                       cover:(InstalledStickerPackItem *)cover
-                    stickers:(NSArray<InstalledStickerPackItem *> *)items
+                       cover:(StickerPackItem *)cover
+                    stickers:(NSArray<StickerPackItem *> *)items
 {
     OWSAssertDebug(info.packId.length > 0);
     OWSAssertDebug(info.packKey.length > 0);
@@ -40,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(cover);
     OWSAssertDebug(items.count > 0);
 
-    self = [super initWithUniqueId:[InstalledStickerPack uniqueIdForStickerPackInfo:info]];
+    self = [super initWithUniqueId:[StickerPack uniqueIdForStickerPackInfo:info]];
 
     if (!self) {
         return self;
@@ -72,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<StickerInfo *> *)stickerInfos
 {
     NSMutableArray<StickerInfo *> *stickerInfos = [NSMutableArray new];
-    for (InstalledStickerPackItem *item in self.items) {
+    for (StickerPackItem *item in self.items) {
         [stickerInfos
             addObject:[[StickerInfo alloc] initWithPackId:self.packId packKey:self.packKey stickerId:item.stickerId]];
     }
@@ -87,9 +96,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                           author:(nullable NSString *)author
-                           cover:(InstalledStickerPackItem *)cover
+                           cover:(StickerPackItem *)cover
                             info:(StickerPackInfo *)info
-                           items:(NSArray<InstalledStickerPackItem *> *)items
+                     isInstalled:(BOOL)isInstalled
+                           items:(NSArray<StickerPackItem *> *)items
                            title:(nullable NSString *)title
 {
     self = [super initWithUniqueId:uniqueId];
@@ -101,6 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
     _author = author;
     _cover = cover;
     _info = info;
+    _isInstalled = isInstalled;
     _items = items;
     _title = title;
 
@@ -114,6 +125,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)uniqueIdForStickerPackInfo:(StickerPackInfo *)info
 {
     return info.asKey;
+}
+
+- (void)updateWithIsInstalled:(BOOL)isInstalled transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(StickerPack *instance) {
+                                 instance.isInstalled = isInstalled;
+                             }];
 }
 
 @end

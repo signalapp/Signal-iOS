@@ -666,12 +666,9 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.voiceMemoContentView addSubview:cancelLabel];
 
     const CGFloat kRedCircleSize = 100.f;
-    UIView *redCircleView = [UIView new];
+    UIView *redCircleView = [[OWSCircleView alloc] initWithDiameter:kRedCircleSize];
     self.voiceMemoRedRecordingCircle = redCircleView;
     redCircleView.backgroundColor = [UIColor ows_destructiveRedColor];
-    redCircleView.layer.cornerRadius = kRedCircleSize * 0.5f;
-    [redCircleView autoSetDimension:ALDimensionWidth toSize:kRedCircleSize];
-    [redCircleView autoSetDimension:ALDimensionHeight toSize:kRedCircleSize];
     [self.voiceMemoContentView addSubview:redCircleView];
     [redCircleView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.voiceMemoButton];
     [redCircleView autoAlignAxis:ALAxisVertical toSameAxisOfView:self.voiceMemoButton];

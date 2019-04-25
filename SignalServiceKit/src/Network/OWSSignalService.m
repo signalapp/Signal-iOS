@@ -233,13 +233,17 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (AFHTTPSessionManager *)CDNSessionManager
 {
+    AFHTTPSessionManager *result;
     if (self.isCensorshipCircumventionActive) {
         OWSCensorshipConfiguration *censorshipConfiguration = [self buildCensorshipConfiguration];
         OWSLogInfo(@"using reflector CDNSessionManager via: %@", censorshipConfiguration.domainFrontBaseURL);
-        return [self reflectorCDNSessionManagerWithCensorshipConfiguration:censorshipConfiguration];
+        result = [self reflectorCDNSessionManagerWithCensorshipConfiguration:censorshipConfiguration];
     } else {
-        return self.defaultCDNSessionManager;
+        result = self.defaultCDNSessionManager;
     }
+    // By default, CDN content should be binary.
+    result.responseSerializer = [AFHTTPResponseSerializer serializer];
+    return result;
 }
 
 - (AFHTTPSessionManager *)defaultCDNSessionManager

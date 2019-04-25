@@ -481,30 +481,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 }
 
 - (nullable NSData *)groupIdForGroupKey:(NSString *)groupKey {
-    NSMutableData *groupId = [NSMutableData new];
-
-    if (groupKey.length % 2 != 0) {
-        OWSFailDebug(@"Group key has unexpected length: %@ (%lu)", groupKey, (unsigned long)groupKey.length);
-        return nil;
-    }
-    for (NSUInteger i = 0; i + 2 <= groupKey.length; i += 2) {
-        NSString *_Nullable byteString = [groupKey substringWithRange:NSMakeRange(i, 2)];
-        if (!byteString) {
-            OWSFailDebug(@"Couldn't slice group key.");
-            return nil;
-        }
-        unsigned byteValue;
-        if (![[NSScanner scannerWithString:byteString] scanHexInt:&byteValue]) {
-            OWSFailDebug(@"Couldn't parse hex byte: %@.", byteString);
-            return nil;
-        }
-        if (byteValue > 0xff) {
-            OWSFailDebug(@"Invalid hex byte: %@ (%d).", byteString, byteValue);
-            return nil;
-        }
-        uint8_t byte = (uint8_t)(0xff & byteValue);
-        [groupId appendBytes:&byte length:1];
-    }
+    NSData *_Nullable groupId = [NSData dataFromHexString:groupKey];
     if (groupId.length != (NSUInteger)kGroupIdLength) {
         OWSFailDebug(@"Parsed group id has unexpected length: %@ (%lu)",
             groupId.hexadecimalString,

@@ -11,31 +11,31 @@ import SignalCoreKit
 
 @objc
 public enum SDSRecordType: UInt {
-    case installedSticker = 28
-    case installedStickerPack = 27
-    case addToContactsOfferMessage = 23
+    case installedSticker = 24
+    case addToContactsOfferMessage = 25
     case addToProfileWhitelistOfferMessage = 7
-    case contactOffersInteraction = 21
-    case disappearingConfigurationUpdateInfoMessage = 26
-    case messageContentJob = 14
+    case contactOffersInteraction = 22
+    case disappearingConfigurationUpdateInfoMessage = 28
+    case messageContentJob = 15
     case messageDecryptJob = 8
     case unknownContactBlockOfferMessage = 5
     case verificationStateChangeMessage = 13
+    case stickerPack = 14
     case attachment = 6
     case attachmentPointer = 3
-    case attachmentStream = 17
-    case call = 19
-    case contactThread = 25
+    case attachmentStream = 18
+    case call = 20
+    case contactThread = 27
     case errorMessage = 9
-    case groupThread = 24
-    case incomingMessage = 18
+    case groupThread = 26
+    case incomingMessage = 19
     case infoMessage = 10
-    case interaction = 15
-    case invalidIdentityKeyErrorMessage = 16
+    case interaction = 16
+    case invalidIdentityKeyErrorMessage = 17
     case invalidIdentityKeyReceivingErrorMessage = 1
-    case invalidIdentityKeySendingErrorMessage = 22
+    case invalidIdentityKeySendingErrorMessage = 23
     case message = 11
-    case outgoingMessage = 20
+    case outgoingMessage = 21
     case recipientReadReceipt = 12
     case thread = 2
     case unreadIndicatorInteraction = 4

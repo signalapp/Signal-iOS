@@ -187,9 +187,9 @@ PODS:
     - YapDatabase/SQLCipher/Core
   - YapDatabase/SQLCipher/Extensions/View (3.1.1):
     - YapDatabase/SQLCipher/Core
-  - YYImage (1.0.4):
-    - YYImage/Core (= 1.0.4)
   - YYImage/Core (1.0.4)
+  - YYImage/WebP (1.0.4):
+    - YYImage/Core
 
 DEPENDENCIES:
   - AFNetworking
@@ -215,7 +215,7 @@ DEPENDENCIES:
   - SSZipArchive
   - "Starscream (from `git@github.com:signalapp/Starscream.git`, branch `signal-release`)"
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
-  - YYImage
+  - YYImage/WebP
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -280,7 +280,7 @@ CHECKOUT OPTIONS:
     :commit: 9599b1d9796280c97cb2f786f34984fc98a3b6ef
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :commit: 819be7842d6c020be28ff520e30723df92620740
+    :commit: 521615304b0448b5edcab43d7fcef7724c7dd10c
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: 56f28fc3a6e35d548d034ef7d0009f233ca0aa62
@@ -316,6 +316,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 2eecf4da59c10ec1cdbb3a14517d03442eff2213
+PODFILE CHECKSUM: 75ed17cb31e1c52151d3fb2967e25027203907e1
 
 COCOAPODS: 1.5.3

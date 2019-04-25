@@ -264,6 +264,48 @@ extension TSAttachment {
         }
     }
 
+    // This method is used by "updateWith..." methods.
+    //
+    // This model may be updated from many threads. We don't want to save
+    // our local copy (this instance) since it may be out of date.  We also
+    // want to avoid re-saving a model that has been deleted.  Therefore, we
+    // use "updateWith..." methods to:
+    //
+    // a) Update a property of this instance.
+    // b) If a copy of this model exists in the database, load an up-to-date copy,
+    //    and update and save that copy.
+    // b) If a copy of this model _DOES NOT_ exist in the database, do _NOT_ save
+    //    this local instance.
+    //
+    // After "updateWith...":
+    //
+    // a) Any copy of this model in the database will have been updated.
+    // b) The local property on this instance will always have been updated.
+    // c) Other properties on this instance may be out of date.
+    //
+    // All mutable properties of this class have been made read-only to
+    // prevent accidentally modifying them directly.
+    //
+    // This isn't a perfect arrangement, but in practice this will prevent
+    // data loss and will resolve all known issues.
+    @objc
+    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (TSAttachment) -> Void) {
+        guard let uniqueId = uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            return
+        }
+
+        guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
+                                                   transaction: transaction) else {
+            return
+        }
+
+        block(self)
+        block(dbCopy)
+
+        dbCopy.anySave(transaction: transaction)
+    }
+
     @objc
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {

@@ -35,7 +35,7 @@ class DownloadStickerOperation: OWSOperation {
 
         if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
             Logger.verbose("Skipping redundant operation.")
-            var error = StickerError.redundantOperation
+            let error = StickerError.redundantOperation as NSError
             error.isRetryable = false
             return reportError(error)
         }
@@ -72,14 +72,16 @@ class DownloadStickerOperation: OWSOperation {
                                 }
             },
                               failure: { [weak self] (_, error) in
-            guard let self = self else {
-                return
-            }
-            Logger.error("Download failed: \(error)")
+                                guard let self = self else {
+                                    return
+                                }
+                                Logger.error("Download failed: \(error)")
 
-            // TODO: We need to discriminate retry-able errors from
-            //       404s, etc.  We might want to abort on all 4xx and 5xx.
-            self.reportError(error)
+                                // TODO: We need to discriminate retry-able errors from
+                                //       404s, etc.  We might want to abort on all 4xx and 5xx.
+                                let errorCopy = error as NSError
+                                errorCopy.isRetryable = true
+                                self.reportError(errorCopy)
         })
     }
 
