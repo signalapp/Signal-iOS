@@ -18,9 +18,9 @@ protocol SendMediaNavDelegate: AnyObject {
 @objc
 class SendMediaNavigationController: OWSNavigationController {
 
-    // This is a sensitive constant, if you change it make sure to check
-    // on iPhone5, 6, 6+, X, layouts.
-    static let bottomButtonsCenterOffset: CGFloat = -34
+    static var bottomButtonsCenterOffset: CGFloat {
+        return -1 * (CaptureButton.recordingDiameter / 2 + 4)
+    }
 
     var attachmentCount: Int {
         return attachmentDraftCollection.count - attachmentDraftCollection.pickerAttachments.count + mediaLibrarySelections.count
