@@ -180,8 +180,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"jpeg" : @"image/jpeg",
             @"jpg" : @"image/jpeg",
             @"tif" : @"image/tiff",
-            @"tiff" : @"image/tiff"
-                      @"webp" : OWSMimeTypeImageWebp,
+            @"tiff" : @"image/tiff",
+            @"webp" : OWSMimeTypeImageWebp,
         };
     });
     return result;

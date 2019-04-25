@@ -643,8 +643,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             [TSAttachment anyFetchWithUniqueId:message.messageSticker.attachmentId transaction:transaction];
         if ([stickerAttachment isKindOfClass:[TSAttachmentStream class]]) {
             TSAttachmentStream *stickerAttachmentStream = (TSAttachmentStream *)stickerAttachment;
-            if (stickerAttachmentStream.isValidImage) {
-                self.stickerAttachment = stickerAttachment;
+            CGSize mediaSize = [stickerAttachmentStream imageSize];
+            if (stickerAttachmentStream.isValidImage && mediaSize.width > 0 && mediaSize.height > 0) {
+                self.stickerAttachment = stickerAttachmentStream;
             }
         }
         // Exit early; stickers shouldn't have body text or other attachments.
@@ -1109,7 +1110,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_OversizeTextDownloading:
             return NO;
         case OWSMessageCellType_StickerMessage:
-            return self.stickerAttachment != nil
+            return self.stickerAttachment != nil;
     }
 }
 
@@ -1152,7 +1153,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_OversizeTextDownloading:
             return NO;
         case OWSMessageCellType_StickerMessage:
-            return self.stickerAttachment != nil
+            return self.stickerAttachment != nil;
     }
 }
 

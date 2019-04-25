@@ -2789,6 +2789,7 @@ typedef enum : NSUInteger {
     self.lastMessageSentDate = [NSDate new];
     [self.conversationViewModel clearUnreadMessagesIndicator];
     self.inputToolbar.quotedReply = nil;
+    [self.inputToolbar clearStickerKeyboard];
 
     if (!Environment.shared.preferences.hasSentAMessage) {
         [Environment.shared.preferences setHasSentAMessage:YES];

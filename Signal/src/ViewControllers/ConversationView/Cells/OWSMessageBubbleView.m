@@ -279,11 +279,10 @@ NS_ASSUME_NONNULL_BEGIN
             bodyMediaView = [self loadViewForOversizeTextDownload];
             break;
         case OWSMessageCellType_StickerMessage:
-            bodyMediaView = [self loadViewForSticker];
+            OWSFailDebug(@"Stickers should not be rendered with this view.");
             break;
     }
 
-    // TODO:
     if (bodyMediaView) {
         OWSAssertDebug(self.loadCellContentBlock);
         OWSAssertDebug(self.unloadCellContentBlock);
@@ -568,6 +567,9 @@ NS_ASSUME_NONNULL_BEGIN
             return NO;
         case OWSMessageCellType_MediaMessage:
             return YES;
+        case OWSMessageCellType_StickerMessage:
+            OWSFailDebug(@"Stickers should not be rendered with this view.");
+            return NO;
     }
 }
 
@@ -582,6 +584,9 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_MediaMessage:
         case OWSMessageCellType_OversizeTextDownloading:
             return YES;
+        case OWSMessageCellType_StickerMessage:
+            OWSFailDebug(@"Stickers should not be rendered with this view.");
+            return NO;
     }
 }
 
@@ -1128,6 +1133,10 @@ NS_ASSUME_NONNULL_BEGIN
             // so we just use a square bubble.
             result = CGSizeMake(maxMessageWidth, maxMessageWidth);
             break;
+        case OWSMessageCellType_StickerMessage:
+            OWSFailDebug(@"Stickers should not be rendered with this view.");
+            result = CGSizeZero;
+            break;
     }
 
     OWSAssertDebug(result.width <= maxMessageWidth);
@@ -1521,6 +1530,9 @@ NS_ASSUME_NONNULL_BEGIN
             [self.delegate didTapImageViewItem:self.viewItem attachmentStream:attachmentStream imageView:mediaView];
             break;
         }
+        case OWSMessageCellType_StickerMessage:
+            OWSFailDebug(@"Stickers should not be rendered with this view.");
+            break;
     }
 }
 

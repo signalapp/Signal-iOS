@@ -931,9 +931,6 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSLogVerbose(@"");
 
     self.isStickerKeyboardActive = !self.isStickerKeyboardActive;
-
-    // TODO: Should we move this inside setIsStickerKeyboardActive?
-    [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
 }
 
 #pragma mark - Sticker Keyboard
@@ -945,6 +942,8 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 
     _isStickerKeyboardActive = isStickerKeyboardActive;
+
+    [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
 
     if (isStickerKeyboardActive) {
         StickerKeyboard *stickerKeyboard = [StickerKeyboard new];
