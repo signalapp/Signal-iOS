@@ -278,9 +278,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                 shouldShowCaptionUI = true
             }
             if shouldShowCaptionUI {
-                let captionButton = navigationBarButton(imageName: "image_editor_caption",
-                                                        selector: #selector(didTapCaption(sender:)))
-                navigationBarItems.append(captionButton)
+                let addCaptionButton = navigationBarButton(imageName: "image_editor_add_caption",
+                                                           selector: #selector(didTapCaption(sender:)))
+                navigationBarItems.append(addCaptionButton)
             }
         }
 
