@@ -420,21 +420,16 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
         // Attachment with caption.
-        if ([CurrentAppContext() isRTL]) {
-            return [[bodyDescription stringByAppendingString:@": "] stringByAppendingString:attachmentDescription];
-        } else {
-            return [[attachmentDescription stringByAppendingString:@": "] stringByAppendingString:bodyDescription];
-        }
+        return [[bodyDescription rtlSafeAppend:@" "] rtlSafeAppend:attachmentDescription];
     } else if (bodyDescription.length > 0) {
         return bodyDescription;
     } else if (attachmentDescription.length > 0) {
         return attachmentDescription;
     } else if (self.contactShare) {
-        if (CurrentAppContext().isRTL) {
-            return [self.contactShare.name.displayName stringByAppendingString:@" 👤"];
-        } else {
-            return [@"👤 " stringByAppendingString:self.contactShare.name.displayName];
-        }
+        return [[self.contactShare.name.displayName rtlSafeAppend:@" "] rtlSafeAppend:@"👤"];
+    } else if (self.messageSticker) {
+        // TODO: Design not final.
+        return [[self.contactShare.name.displayName rtlSafeAppend:@" "] rtlSafeAppend:@"👤"];
     } else {
         if (transaction.transitional_yapReadTransaction) {
             // some cases aren't yet handled by GRDB

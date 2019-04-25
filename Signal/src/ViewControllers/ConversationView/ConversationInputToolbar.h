@@ -8,12 +8,15 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSLinkPreviewDraft;
 @class OWSQuotedReplyModel;
 @class SignalAttachment;
+@class StickerInfo;
 
 @protocol ConversationInputToolbarDelegate <NSObject>
 
 - (void)sendButtonPressed;
 
 - (void)attachmentButtonPressed;
+
+- (void)sendSticker:(StickerInfo *)stickerInfo;
 
 #pragma mark - Voice Memo
 
@@ -52,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)messageText;
 - (void)setMessageText:(NSString *_Nullable)value animated:(BOOL)isAnimated;
 - (void)clearTextMessageAnimated:(BOOL)isAnimated;
+- (void)clearStickerKeyboard;
 - (void)toggleDefaultKeyboard;
 
 - (void)updateFontSizes;

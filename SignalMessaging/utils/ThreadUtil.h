@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
 @class SignalAttachment;
+@class StickerInfo;
 @class TSContactThread;
 @class TSGroupThread;
 @class TSInteraction;
@@ -59,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
 + (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread;
++ (nullable TSOutgoingMessage *)enqueueMessageWithSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread;
 
 #pragma mark - Non-Durable Sending
 

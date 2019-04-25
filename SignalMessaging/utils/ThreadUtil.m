@@ -17,6 +17,7 @@
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>
@@ -250,6 +251,69 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return message;
 }
 
++ (nullable TSOutgoingMessage *)enqueueMessageWithSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread;
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(stickerInfo);
+    OWSAssertDebug(thread);
+
+    // We load the sticker data synchronously.
+    // If this fails, we don't send the message and won't want to optimistically insert
+    // the message into the view model (since the message will have not other content).
+    // Additionally, the views can't render the message without the sticker data anyhow.
+    // Sticker data should be much smaller than typical attachments.
+    NSString *_Nullable filePath = [StickerManager filepathForInstalledStickerWithStickerInfo:stickerInfo];
+    if (!filePath) {
+        OWSFailDebug(@"Could not find sticker file.");
+        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"STICKERS_SEND_FAILED_ALERT_TITLE",
+                                          @"Alert title when picking a document fails for an unknown reason")];
+        return nil;
+    }
+    NSData *_Nullable stickerData = [NSData dataWithContentsOfFile:filePath];
+    if (!stickerData) {
+        OWSFailDebug(@"Couldn't load sticker data.");
+        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"STICKERS_SEND_FAILED_ALERT_TITLE",
+                                          @"Alert title when picking a document fails for an unknown reason")];
+        return nil;
+    }
+    MessageStickerDraft *stickerDraft = [[MessageStickerDraft alloc] initWithInfo:stickerInfo stickerData:stickerData];
+
+    OWSDisappearingMessagesConfiguration *configuration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
+
+    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+
+    TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                           inThread:thread
+                                                        messageBody:nil
+                                                      attachmentIds:[NSMutableArray new]
+                                                   expiresInSeconds:expiresInSeconds
+                                                    expireStartedAt:0
+                                                     isVoiceMessage:NO
+                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                      quotedMessage:nil
+                                                       contactShare:nil
+                                                        linkPreview:nil
+                                                     messageSticker:nil];
+
+    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        MessageSticker *_Nullable messageSticker =
+            [self messageStickerForStickerDraft:stickerDraft transaction:transaction];
+        if (!messageSticker) {
+            OWSFailDebug(@"Couldn't send sticker.");
+            return;
+        }
+
+        [message saveWithTransaction:transaction];
+        [message updateWithMessageSticker:messageSticker transaction:transaction];
+
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+    }];
+
+    return message;
+}
+
 + (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread
 {
     OWSAssertDebug([thread isKindOfClass:[TSGroupThread class]]);
@@ -398,6 +462,23 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         OWSLogError(@"linkPreviewError: %@", linkPreviewError);
     }
     return linkPreview;
+}
+
++ (nullable MessageSticker *)messageStickerForStickerDraft:(MessageStickerDraft *)stickerDraft
+                                               transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    NSError *error;
+    MessageSticker *_Nullable messageSticker =
+        [MessageSticker buildValidatedMessageStickerFromDraft:stickerDraft
+                                                  transaction:[[SDSAnyWriteTransaction alloc]
+                                                                  initWithTransitional_yapWriteTransaction:transaction]
+                                                        error:&error];
+    if (error && ![MessageSticker isNoStickerError:error]) {
+        OWSFailDebug(@"error: %@", error);
+    }
+    return messageSticker;
 }
 
 #pragma mark - Dynamic Interactions
