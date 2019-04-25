@@ -273,7 +273,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // Show the caption UI if there's more than one attachment
             // OR if the attachment already has a caption.
             let attachmentCount = attachmentItemCollection.count
-            var shouldShowCaptionUI = attachmentCount > 0
+            var shouldShowCaptionUI = attachmentCount > 1
             if let captionText = firstViewController.attachmentItem.captionText, captionText.count > 0 {
                 shouldShowCaptionUI = true
             }
