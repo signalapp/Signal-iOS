@@ -1,12 +1,12 @@
 # Loki Messenger iOS
 
-Loki messenger is a fully end to end encrypted messenger that aims to remove any chance of metadata collection by routing all messages through an onion routing network. Storage of offline messages is handled by Service Nodes, which are a distributed set of nodes run by the community.
+Loki Messenger is a fully end-to-end encrypted messenger that aims to remove any chance of metadata collection by routing all messages through an onion routing network. Storage of offline messages is handled by Service Nodes, which are a distributed set of nodes run by the community.
 
 ## Contributing Code
-Code should be contributed via pull request to the dev branch, all submitted code will be reviewed.
+Code should be contributed via pull request to the master branch, all submitted code will be reviewed.
 
 ## Contributing Ideas
-Have something you want to say about Loki messenger, create an issue with the discussion tag and the community can weigh in
+Have something you want to say about Loki Messenger? Create an issue with the discussion tag and the community can weigh in.
 
 ## Cryptography Notice
 
