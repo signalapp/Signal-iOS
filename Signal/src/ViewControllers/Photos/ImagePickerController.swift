@@ -179,6 +179,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let asset = photoCollectionContents.asset(at: indexPath.item)
         switch selectionPanGestureMode {
         case .select:
+            guard !isSelected(indexPath: indexPath) else {
+                return
+            }
+
             guard delegate.imagePickerCanSelectMoreItems(self) else {
                 delegate.imagePickerDidTryToSelectTooMany(self)
                 return
@@ -188,6 +192,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             delegate.imagePicker(self, didSelectAsset: asset, attachmentPromise: attachmentPromise)
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
         case .deselect:
+            guard isSelected(indexPath: indexPath) else {
+                return
+            }
+
             delegate.imagePicker(self, didDeselectAsset: asset)
             collectionView.deselectItem(at: indexPath, animated: true)
         }
@@ -371,6 +379,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     // MARK: - Batch Selection
+
+    func isSelected(indexPath: IndexPath) -> Bool {
+        guard let selectedIndexPaths = collectionView.indexPathsForSelectedItems else {
+            return false
+        }
+
+        return selectedIndexPaths.contains(indexPath)
+    }
 
     func batchSelectModeDidChange() {
         guard let delegate = delegate else {
