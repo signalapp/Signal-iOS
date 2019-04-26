@@ -281,19 +281,11 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         NSString *_Nullable filePath = [StickerManager filepathForInstalledStickerWithStickerInfo:stickerInfo];
         if (!filePath) {
             OWSFailDebug(@"Could not find sticker file.");
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"STICKERS_SEND_FAILED_ALERT_TITLE",
-                                                  @"Alert title when picking a document fails for an unknown reason")];
-            });
             return;
         }
         NSData *_Nullable stickerData = [NSData dataWithContentsOfFile:filePath];
         if (!stickerData) {
             OWSFailDebug(@"Couldn't load sticker data.");
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"STICKERS_SEND_FAILED_ALERT_TITLE",
-                                                  @"Alert title when picking a document fails for an unknown reason")];
-            });
             return;
         }
         MessageStickerDraft *stickerDraft =

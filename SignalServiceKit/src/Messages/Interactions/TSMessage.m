@@ -428,8 +428,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else if (self.contactShare) {
         return [[self.contactShare.name.displayName rtlSafeAppend:@" "] rtlSafeAppend:@"👤"];
     } else if (self.messageSticker) {
-        // TODO: Design not final.
-        return [[self.contactShare.name.displayName rtlSafeAppend:@" "] rtlSafeAppend:@"👤"];
+        // TODO: Design isn't final here.
+        return [TSAttachment emojiForMimeType:OWSMimeTypeImageWebp];
     } else {
         if (transaction.transitional_yapReadTransaction) {
             // some cases aren't yet handled by GRDB
