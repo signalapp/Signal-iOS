@@ -272,6 +272,11 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 #pragma mark - AttachmentApprovalViewControllerDelegate
 
+- (void)attachmentApprovalDidAppear:(AttachmentApprovalViewController *_Nonnull)attachmentApproval
+{
+    // no-op
+}
+
 - (void)attachmentApproval:(AttachmentApprovalViewController *_Nonnull)attachmentApproval
      didApproveAttachments:(NSArray<SignalAttachment *> *_Nonnull)attachments
                messageText:(NSString *_Nullable)messageText

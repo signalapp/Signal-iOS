@@ -3950,6 +3950,11 @@ typedef enum : NSUInteger {
 
 #pragma mark - AttachmentApprovalViewControllerDelegate
 
+- (void)attachmentApprovalDidAppear:(AttachmentApprovalViewController *)attachmentApproval
+{
+    // no-op
+}
+
 - (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
      didApproveAttachments:(NSArray<SignalAttachment *> *)attachments
                messageText:(NSString *_Nullable)messageText
