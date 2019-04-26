@@ -40,6 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
                                      stickerId:0];
 }
 
+- (StickerPackInfo *)packInfo
+{
+    return [[StickerPackInfo alloc] initWithPackId:self.packId packKey:self.packKey];
+}
+
 - (BOOL)isValid
 {
     return (self.packId.length == StickerManager.packIdLength && self.packKey.length == StickerManager.packKeyLength);

@@ -127,3 +127,23 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction {
         }
     }
 }
+
+// MARK: -
+
+@objc
+public extension YapDatabaseReadTransaction {
+    @objc
+    func asAnyRead() -> SDSAnyReadTransaction {
+        return SDSAnyReadTransaction(transitional_yapReadTransaction: self)
+    }
+}
+
+// MARK: -
+
+@objc
+public extension YapDatabaseReadWriteTransaction {
+    @objc
+    func asAnyWrite() -> SDSAnyWriteTransaction {
+        return SDSAnyWriteTransaction(transitional_yapWriteTransaction: self)
+    }
+}

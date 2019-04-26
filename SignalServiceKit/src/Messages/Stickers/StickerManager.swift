@@ -554,6 +554,44 @@ public class StickerManager: NSObject {
         return emojiString.substring(to: 1)
     }
 
+    // MARK: - Known Sticker Packs
+
+    @objc
+    public class func addKnownStickerInfo(_ stickerInfo: StickerInfo) {
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            let packInfo = stickerInfo.packInfo
+            let pack: KnownStickerPack
+            let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
+            if let existing = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) {
+                pack = existing
+            } else {
+                pack = KnownStickerPack(info: packInfo)
+            }
+            pack.referenceCount += 1
+            pack.anySave(transaction: transaction)
+        }
+    }
+
+    @objc
+    public class func removeKnownStickerInfo(_ stickerInfo: StickerInfo) {
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            let packInfo = stickerInfo.packInfo
+            let pack: KnownStickerPack
+            let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
+            if let existing = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) {
+                pack = existing
+            } else {
+                pack = KnownStickerPack(info: packInfo)
+            }
+            pack.referenceCount -= 1
+            if pack.referenceCount < 1 {
+                pack.anyRemove(transaction: transaction)
+            } else {
+                pack.anySave(transaction: transaction)
+            }
+        }
+    }
+
     // MARK: - Misc.
 
     // Data might be a sticker or a sticker pack manifest.

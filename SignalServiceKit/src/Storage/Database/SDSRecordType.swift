@@ -12,6 +12,7 @@ import SignalCoreKit
 @objc
 public enum SDSRecordType: UInt {
     case installedSticker = 24
+    case knownStickerPack = 29
     case addToContactsOfferMessage = 25
     case addToProfileWhitelistOfferMessage = 7
     case contactOffersInteraction = 22
