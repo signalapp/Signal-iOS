@@ -384,6 +384,15 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         }
     }
 
+    override public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let photoGridViewCell = cell as? PhotoGridViewCell else {
+            owsFailDebug("unexpected cell: \(cell)")
+            return
+        }
+
+        photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
+    }
+
     func galleryItem(at indexPath: IndexPath) -> MediaGalleryItem? {
         guard let sectionDate = self.galleryDates[safe: indexPath.section - 1] else {
             owsFailDebug("unknown section: \(indexPath.section)")
@@ -401,6 +410,17 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         }
 
         return galleryItem
+    }
+
+    func updateVisibleCells() {
+        for cell in collectionView.visibleCells {
+            guard let photoGridViewCell = cell as? PhotoGridViewCell else {
+                owsFailDebug("unexpected cell: \(cell)")
+                continue
+            }
+
+            photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
+        }
     }
 
     // MARK: UICollectionViewDelegateFlowLayout
@@ -476,9 +496,13 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
     var isInBatchSelectMode = false {
         didSet {
-            collectionView!.allowsMultipleSelection = isInBatchSelectMode
-            updateSelectButton()
-            updateDeleteButton()
+            let didChange = isInBatchSelectMode != oldValue
+            if didChange {
+                collectionView!.allowsMultipleSelection = isInBatchSelectMode
+                updateVisibleCells()
+                updateSelectButton()
+                updateDeleteButton()
+            }
         }
     }
 
