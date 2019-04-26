@@ -9,6 +9,15 @@ import PromiseKit
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: class {
+    // In the media send flow, partially swiping to go back from AttachmentApproval,
+    // then cancelling would render the mediaSend bottom buttons behind the attachment approval
+    // input toolbar.
+    //
+    // I erroneously thought that this would have been prevented the UINavigationControllerDelegate
+    // `didShowViewController` method but `didShowViewController" is not called upon canceling
+    // navigation, while that view controllers `didAppear` method is.
+    func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController)
+
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
                             didApproveAttachments attachments: [SignalAttachment], messageText: String?)
 
@@ -189,8 +198,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("")
 
         super.viewDidAppear(animated)
-
         updateContents()
+        approvalDelegate?.attachmentApprovalDidAppear(self)
     }
 
     override public func viewWillDisappear(_ animated: Bool) {

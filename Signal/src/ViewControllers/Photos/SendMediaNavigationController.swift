@@ -435,6 +435,11 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 }
 
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {
+
+    func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
+        updateButtons(topViewController: attachmentApproval)
+    }
+
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
         sendMediaNavDelegate?.sendMediaNav(self, didChangeMessageText: newMessageText)
     }
