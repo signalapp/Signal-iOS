@@ -12,7 +12,7 @@ class LinearHorizontalLayout: UICollectionViewLayout {
     private let inset: CGFloat
     private let spacing: CGFloat
 
-    private var itemAttributesMap = [UInt: UICollectionViewLayoutAttributes]()
+    private var itemAttributesMap = [UICollectionViewLayoutAttributes]()
 
     private var contentSize = CGSize.zero
 
@@ -73,7 +73,7 @@ class LinearHorizontalLayout: UICollectionViewLayout {
             let indexPath = NSIndexPath(row: row, section: 0)
             let itemAttributes = UICollectionViewLayoutAttributes(forCellWith: indexPath as IndexPath)
             itemAttributes.frame = itemFrame
-            itemAttributesMap[UInt(row)] = itemAttributes
+            itemAttributesMap.append(itemAttributes)
         }
 
         contentSize = CGSize(width: hInset * 2 + CGFloat(itemCount) * itemSize.width + CGFloat(itemCount - 1) * spacing,
@@ -81,14 +81,13 @@ class LinearHorizontalLayout: UICollectionViewLayout {
     }
 
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        return itemAttributesMap.values.filter { itemAttributes in
+        return itemAttributesMap.filter { itemAttributes in
             return itemAttributes.frame.intersects(rect)
         }
     }
 
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        let result = itemAttributesMap[UInt(indexPath.row)]
-        return result
+        return itemAttributesMap[safe: indexPath.row]
     }
 
     override var collectionViewContentSize: CGSize {
