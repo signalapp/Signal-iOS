@@ -742,11 +742,7 @@ extension SignalAttachmentItem: GalleryRailItem {
     func buildRailItemView() -> UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-
-        getThumbnailImage().map { image in
-            imageView.image = image
-        }.retainUntilComplete()
-
+        imageView.image = getThumbnailImage()
         return imageView
     }
 }
