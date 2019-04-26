@@ -73,6 +73,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.stackView = [UIStackView new];
     self.stackView.axis = UILayoutConstraintAxisVertical;
+    self.stackView.alignment = UIStackViewAlignmentFill;
+    // NOTE: we don't use bottom margin or spacing.
+    CGFloat margin = OWSMessageStickerView.marginAndSpacing;
+    self.stackView.layoutMargins = UIEdgeInsetsMake(margin, margin, 0, margin);
+    self.stackView.layoutMarginsRelativeArrangement = YES;
 
     self.senderNameLabel = [OWSLabel new];
     self.senderNameContainer = [UIView new];
@@ -81,6 +86,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.senderNameLabel ows_autoPinToSuperviewMargins];
 
     self.footerView = [OWSMessageFooterView new];
+}
+
++ (CGFloat)marginAndSpacing
+{
+    return 8;
 }
 
 #pragma mark - Convenience Accessors
@@ -161,11 +171,16 @@ NS_ASSUME_NONNULL_BEGIN
     textStackView.spacing = self.textViewVSpacing;
     textStackView.layoutMarginsRelativeArrangement = YES;
     textStackView.layoutMargins = UIEdgeInsetsMake(self.conversationStyle.textInsetTop,
-        self.conversationStyle.textInsetHorizontal,
+        OWSMessageStickerView.textInsetHorizontal,
         self.conversationStyle.textInsetBottom,
-        self.conversationStyle.textInsetHorizontal);
+        OWSMessageStickerView.textInsetHorizontal);
     [self.stackView addArrangedSubview:textStackView];
     return YES;
+}
+
++ (CGFloat)textInsetHorizontal
+{
+    return 0.f;
 }
 
 - (CGFloat)textViewVSpacing
@@ -262,7 +277,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    CGFloat hMargins = self.conversationStyle.textInsetHorizontal * 2;
+    CGFloat hMargins = OWSMessageStickerView.textInsetHorizontal * 2;
     const int maxTextWidth = (int)floor(self.conversationStyle.maxMessageWidth - hMargins);
     [self configureSenderNameLabel];
     CGSize result = CGSizeCeil([self.senderNameLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
@@ -311,6 +326,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertDebug(cellSize.width > 0 && cellSize.height > 0);
 
+    CGFloat margin = OWSMessageStickerView.marginAndSpacing;
+    cellSize.width += margin * 2;
+    cellSize.height += margin;
+
     cellSize = CGSizeCeil(cellSize);
 
     OWSAssertDebug(cellSize.width <= self.conversationStyle.maxMessageWidth);
@@ -333,7 +352,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     result.height += self.textViewVSpacing * (textViewSizes.count - 1);
     result.height += (self.conversationStyle.textInsetTop + self.conversationStyle.textInsetBottom);
-    result.width += self.conversationStyle.textInsetHorizontal * 2;
+    result.width += OWSMessageStickerView.textInsetHorizontal * 2;
 
     return result;
 }
