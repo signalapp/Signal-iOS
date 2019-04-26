@@ -275,7 +275,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         view.backgroundColor = Theme.backgroundColor
         view.layoutMargins = .zero
 
-        let titleLabel = self.titleLabel(text: "")
+        let titleLabel = self.createTitleLabel(text: "")
         self.titleLabel = titleLabel
         titleLabel.accessibilityIdentifier = "onboarding.verification." + "titleLabel"
 

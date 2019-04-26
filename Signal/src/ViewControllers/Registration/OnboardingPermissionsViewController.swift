@@ -19,10 +19,10 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
                                                             target: self,
                                                             action: #selector(skipWasPressed))
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_PERMISSIONS_TITLE", comment: "Title of the 'onboarding permissions' view."))
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString("ONBOARDING_PERMISSIONS_TITLE", comment: "Title of the 'onboarding permissions' view."))
         titleLabel.accessibilityIdentifier = "onboarding.permissions." + "titleLabel"
 
-        let explanationLabel = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_PERMISSIONS_EXPLANATION",
+        let explanationLabel = self.createExplanationLabel(text: NSLocalizedString("ONBOARDING_PERMISSIONS_EXPLANATION",
                                                                                   comment: "Explanation in the 'onboarding permissions' view."))
         explanationLabel.accessibilityIdentifier = "onboarding.permissions." + "explanationLabel"
 

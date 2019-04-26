@@ -1,1 +1,2 @@
-github "TheLevelUp/ZXingObjC" "3.2.2"
+github "TheLevelUp/ZXingObjC" "3.6.4"
+github "krzyzanowskim/CryptoSwift" "1.0.0"

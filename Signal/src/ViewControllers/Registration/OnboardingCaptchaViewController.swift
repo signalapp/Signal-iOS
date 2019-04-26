@@ -16,7 +16,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         view.backgroundColor = Theme.backgroundColor
         view.layoutMargins = .zero
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_CAPTCHA_TITLE", comment: "Title of the 'onboarding Captcha' view."))
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString("ONBOARDING_CAPTCHA_TITLE", comment: "Title of the 'onboarding Captcha' view."))
         titleLabel.accessibilityIdentifier = "onboarding.captcha." + "titleLabel"
 
         let titleRow = UIStackView(arrangedSubviews: [

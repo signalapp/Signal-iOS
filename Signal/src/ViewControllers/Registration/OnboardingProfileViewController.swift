@@ -30,10 +30,10 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
         view.backgroundColor = Theme.backgroundColor
         view.layoutMargins = .zero
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_PROFILE_TITLE", comment: "Title of the 'onboarding profile' view."))
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString("ONBOARDING_PROFILE_TITLE", comment: "Title of the 'onboarding profile' view."))
         titleLabel.accessibilityIdentifier = "onboarding.profile." + "titleLabel"
 
-        let explanationLabel = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_PROFILE_EXPLANATION",
+        let explanationLabel = self.createExplanationLabel(text: NSLocalizedString("ONBOARDING_PROFILE_EXPLANATION",
                                                                                         comment: "Explanation in the 'onboarding profile' view."))
         explanationLabel.accessibilityIdentifier = "onboarding.profile." + "explanationLabel"
 

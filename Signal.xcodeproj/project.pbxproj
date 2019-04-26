@@ -88,7 +88,6 @@
 		3448E15E221333F5004B052E /* OnboardingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E15D221333F5004B052E /* OnboardingController.swift */; };
 		3448E16022134C89004B052E /* OnboardingSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E15F22134C88004B052E /* OnboardingSplashViewController.swift */; };
 		3448E1622213585C004B052E /* OnboardingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E1612213585C004B052E /* OnboardingBaseViewController.swift */; };
-		3448E16422135FFA004B052E /* OnboardingPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */; };
 		3448E1662215B313004B052E /* OnboardingCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */; };
 		344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F248C2007CCD600CFB4F4 /* DisplayableText.swift */; };
 		345BC30C2047030700257B7C /* OWS2FASettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 345BC30B2047030600257B7C /* OWS2FASettingsViewController.m */; };
@@ -556,6 +555,13 @@
 		B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6B226961BE4B7D200860F4D /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		B6F509971AA53F760068F56A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */; };
+		B821F2ED2272CBC0002C88C0 /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2EC2272CBC0002C88C0 /* Mnemonic.swift */; };
+		B821F2F32272CCD9002C88C0 /* portuguese.txt in Resources */ = {isa = PBXBuildFile; fileRef = B821F2EF2272CCD9002C88C0 /* portuguese.txt */; };
+		B821F2F42272CCD9002C88C0 /* japanese.txt in Resources */ = {isa = PBXBuildFile; fileRef = B821F2F02272CCD9002C88C0 /* japanese.txt */; };
+		B821F2F52272CCD9002C88C0 /* spanish.txt in Resources */ = {isa = PBXBuildFile; fileRef = B821F2F12272CCD9002C88C0 /* spanish.txt */; };
+		B821F2F62272CCD9002C88C0 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = B821F2F22272CCD9002C88C0 /* english.txt */; };
+		B821F2F82272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */; };
+		B821F2FA2272CEEE002C88C0 /* OnboardingPublicKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* OnboardingPublicKeyViewController.swift */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
@@ -772,7 +778,6 @@
 		3448E15D221333F5004B052E /* OnboardingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingController.swift; sourceTree = "<group>"; };
 		3448E15F22134C88004B052E /* OnboardingSplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingSplashViewController.swift; sourceTree = "<group>"; };
 		3448E1612213585C004B052E /* OnboardingBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingBaseViewController.swift; sourceTree = "<group>"; };
-		3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingCaptchaViewController.swift; sourceTree = "<group>"; };
 		34491FC11FB0F78500B3E5A3 /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = translations/my.lproj/Localizable.strings; sourceTree = "<group>"; };
 		344F248C2007CCD600CFB4F4 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
@@ -1339,6 +1344,13 @@
 		B6BC3D0C1AA544B100C2907F /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = translations/da.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6F509961AA53F760068F56A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = translations/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
+		B821F2EC2272CBC0002C88C0 /* Mnemonic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
+		B821F2EF2272CCD9002C88C0 /* portuguese.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = portuguese.txt; path = mnemonic/portuguese.txt; sourceTree = "<group>"; };
+		B821F2F02272CCD9002C88C0 /* japanese.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = japanese.txt; path = mnemonic/japanese.txt; sourceTree = "<group>"; };
+		B821F2F12272CCD9002C88C0 /* spanish.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = spanish.txt; path = mnemonic/spanish.txt; sourceTree = "<group>"; };
+		B821F2F22272CCD9002C88C0 /* english.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = english.txt; path = mnemonic/english.txt; sourceTree = "<group>"; };
+		B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingAccountDetailsViewController.swift; sourceTree = "<group>"; };
+		B821F2F92272CEEE002C88C0 /* OnboardingPublicKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPublicKeyViewController.swift; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B97940251832BD2400BD66CB /* UIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIUtil.h; sourceTree = "<group>"; };
@@ -1522,12 +1534,13 @@
 			children = (
 				3441FD9E21A3604F00BB9542 /* BackupRestoreViewController.swift */,
 				349ED98F221B0194008045B0 /* Onboarding2FAViewController.swift */,
+				B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */,
 				3448E1612213585C004B052E /* OnboardingBaseViewController.swift */,
 				3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */,
 				3448E15D221333F5004B052E /* OnboardingController.swift */,
 				3448E15B22133274004B052E /* OnboardingPermissionsViewController.swift */,
-				3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */,
 				34A4C61F22175C5C0042EF2E /* OnboardingProfileViewController.swift */,
+				B821F2F92272CEEE002C88C0 /* OnboardingPublicKeyViewController.swift */,
 				3448E15F22134C88004B052E /* OnboardingSplashViewController.swift */,
 				34A4C61D221613D00042EF2E /* OnboardingVerificationViewController.swift */,
 				346E9D5321B040B600562252 /* RegistrationController.swift */,
@@ -2418,6 +2431,7 @@
 				B90418E5183E9DD40038554A /* DateUtil.m */,
 				34B0796C1FCF46B000E248C2 /* MainAppContext.h */,
 				34B0796B1FCF46B000E248C2 /* MainAppContext.m */,
+				B821F2EC2272CBC0002C88C0 /* Mnemonic.swift */,
 				34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */,
 				344825C4211390C700DB4BD8 /* OWSOrphanDataCleaner.h */,
 				344825C5211390C800DB4BD8 /* OWSOrphanDataCleaner.m */,
@@ -2590,6 +2604,17 @@
 			name = Translations;
 			sourceTree = "<group>";
 		};
+		B821F2EE2272CC39002C88C0 /* mnemonic */ = {
+			isa = PBXGroup;
+			children = (
+				B821F2F22272CCD9002C88C0 /* english.txt */,
+				B821F2F02272CCD9002C88C0 /* japanese.txt */,
+				B821F2EF2272CCD9002C88C0 /* portuguese.txt */,
+				B821F2F12272CCD9002C88C0 /* spanish.txt */,
+			);
+			name = mnemonic;
+			sourceTree = "<group>";
+		};
 		D221A07E169C9E5E00537ABF = {
 			isa = PBXGroup;
 			children = (
@@ -2680,6 +2705,7 @@
 				4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */,
 				B6B6C3C419193F5B00C0B76B /* Translations */,
 				D221A099169C9E5E00537ABF /* main.m */,
+				B821F2EE2272CC39002C88C0 /* mnemonic */,
 				D221A095169C9E5E00537ABF /* Signal-Info.plist */,
 				D221A09B169C9E5E00537ABF /* Signal-Prefix.pch */,
 			);
@@ -3078,6 +3104,7 @@
 				B10C9B601A7049EC00ECA2BF /* pause_icon@2x.png in Resources */,
 				FC9120411A39EFB70074545C /* qr@2x.png in Resources */,
 				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
+				B821F2F42272CCD9002C88C0 /* japanese.txt in Resources */,
 				B10C9B5F1A7049EC00ECA2BF /* pause_icon.png in Resources */,
 				AD83FF471A73428300B5C81A /* audio_play_button_blue.png in Resources */,
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
@@ -3091,7 +3118,10 @@
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
 				45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */,
+				B821F2F32272CCD9002C88C0 /* portuguese.txt in Resources */,
+				B821F2F52272CCD9002C88C0 /* spanish.txt in Resources */,
 				4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */,
+				B821F2F62272CCD9002C88C0 /* english.txt in Resources */,
 				4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */,
 				45B74A7E2044AAB600CD42F8 /* complete.aifc in Resources */,
 				45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */,
@@ -3187,6 +3217,7 @@
 			inputPaths = (
 				"$(SRCROOT)/ThirdParty/WebRTC/Build/WebRTC.framework",
 				"$(SRCROOT)/ThirdParty/Carthage/Build/iOS/ZXingObjC.framework",
+				"$(SRCROOT)/ThirdParty/Carthage/Build/iOS/CryptoSwift.framework",
 			);
 			name = "[Carthage] Copy Frameworks";
 			outputPaths = (
@@ -3560,6 +3591,7 @@
 				4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */,
 				45C9DEB81DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
 				34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */,
+				B821F2ED2272CBC0002C88C0 /* Mnemonic.swift in Sources */,
 				3496957421A301A100DCFE74 /* OWSBackupAPI.swift in Sources */,
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
 				340FC8B8204DAC8D007AEB0F /* AddToGroupViewController.m in Sources */,
@@ -3642,7 +3674,6 @@
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
-				3448E16422135FFA004B052E /* OnboardingPhoneNumberViewController.swift in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				344825C6211390C800DB4BD8 /* OWSOrphanDataCleaner.m in Sources */,
 				45D2AC02204885170033C692 /* OWS2FAReminderViewController.swift in Sources */,
@@ -3657,6 +3688,7 @@
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
+				B821F2FA2272CEEE002C88C0 /* OnboardingPublicKeyViewController.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
 				3448E16022134C89004B052E /* OnboardingSplashViewController.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
@@ -3673,6 +3705,7 @@
 				45F32C222057297A00A300D5 /* MediaDetailViewController.m in Sources */,
 				34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */,
 				34ABC0E421DD20C500ED9469 /* ConversationMessageMapping.swift in Sources */,
+				B821F2F82272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift in Sources */,
 				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
 				34DBF003206BD5A500025978 /* OWSMessageTextView.m in Sources */,
 				34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */,

@@ -24,11 +24,11 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         view.backgroundColor = Theme.backgroundColor
         view.layoutMargins = .zero
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_2FA_TITLE", comment: "Title of the 'onboarding 2FA' view."))
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString("ONBOARDING_2FA_TITLE", comment: "Title of the 'onboarding 2FA' view."))
 
-        let explanationLabel1 = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_2FA_EXPLANATION_1",
+        let explanationLabel1 = self.createExplanationLabel(text: NSLocalizedString("ONBOARDING_2FA_EXPLANATION_1",
                                                                                          comment: "The first explanation in the 'onboarding 2FA' view."))
-        let explanationLabel2 = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_2FA_EXPLANATION_2",
+        let explanationLabel2 = self.createExplanationLabel(text: NSLocalizedString("ONBOARDING_2FA_EXPLANATION_2",
                                                                                          comment: "The first explanation in the 'onboarding 2FA' view."))
         explanationLabel1.font = UIFont.ows_dynamicTypeCaption1
         explanationLabel2.font = UIFont.ows_dynamicTypeCaption1

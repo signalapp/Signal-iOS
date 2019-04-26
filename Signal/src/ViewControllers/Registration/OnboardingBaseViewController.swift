@@ -27,7 +27,7 @@ public class OnboardingBaseViewController: OWSViewController {
 
     // MARK: - Factory Methods
 
-    func titleLabel(text: String) -> UILabel {
+    func createTitleLabel(text: String) -> UILabel {
         let titleLabel = UILabel()
         titleLabel.text = text
         titleLabel.textColor = Theme.primaryColor
@@ -38,11 +38,11 @@ public class OnboardingBaseViewController: OWSViewController {
         return titleLabel
     }
 
-    func explanationLabel(explanationText: String) -> UILabel {
+    func createExplanationLabel(text: String) -> UILabel {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Theme.secondaryColor
         explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
-        explanationLabel.text = explanationText
+        explanationLabel.text = text
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping

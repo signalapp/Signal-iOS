@@ -23,7 +23,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         heroImageView.setContentHuggingVerticalLow()
         heroImageView.accessibilityIdentifier = "onboarding.splash." + "heroImageView"
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_SPLASH_TITLE", comment: "Title of the 'onboarding splash' view."))
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString("ONBOARDING_SPLASH_TITLE", comment: "Title of the 'onboarding splash' view."))
         view.addSubview(titleLabel)
         titleLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"

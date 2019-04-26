@@ -111,7 +111,7 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        pushPhoneNumberView(viewController: viewController)
+        pushAccountDetailsViewController(from: viewController)
     }
 
     public func onboardingPermissionsDidComplete(viewController: UIViewController) {
@@ -119,14 +119,19 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        pushPhoneNumberView(viewController: viewController)
+        pushAccountDetailsViewController(from: viewController)
     }
 
-    private func pushPhoneNumberView(viewController: UIViewController) {
+    private func pushAccountDetailsViewController(from viewController: UIViewController) {
         AssertIsOnMainThread()
-
-        let view = OnboardingPhoneNumberViewController(onboardingController: self)
-        viewController.navigationController?.pushViewController(view, animated: true)
+        let accountDetailsVC = OnboardingAccountDetailsViewController(onboardingController: self)
+        viewController.navigationController?.pushViewController(accountDetailsVC, animated: true)
+    }
+    
+    func pushPublicKeyViewController(from viewController: UIViewController) {
+        AssertIsOnMainThread()
+        let publicKeyVC = OnboardingPublicKeyViewController(onboardingController: self)
+        viewController.navigationController?.pushViewController(publicKeyVC, animated: true)
     }
 
     public func onboardingRegistrationSucceeded(viewController: UIViewController) {
@@ -152,7 +157,7 @@ public class OnboardingController: NSObject {
         // from the "code verification" view.  The "Captcha" view should always appear
         // immediately after the "phone number" view.
         while navigationController.viewControllers.count > 1 &&
-            !(navigationController.topViewController is OnboardingPhoneNumberViewController) {
+            !(navigationController.topViewController is OnboardingAccountDetailsViewController) {
                 navigationController.popViewController(animated: false)
         }
 
