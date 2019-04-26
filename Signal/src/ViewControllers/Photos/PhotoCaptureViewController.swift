@@ -91,6 +91,13 @@ class PhotoCaptureViewController: OWSViewController {
         UIDevice.current.ows_setOrientation(.portrait)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if hasCaptureStarted {
+            BenchEventComplete(eventId: "Show-Camera")
+        }
+    }
+
     override var prefersStatusBarHidden: Bool {
         guard !OWSWindowManager.shared().hasCall() else {
             return false
@@ -308,6 +315,7 @@ class PhotoCaptureViewController: OWSViewController {
         }
     }
 
+    var hasCaptureStarted = false
     private func setupPhotoCapture() {
         photoCapture = PhotoCapture()
         photoCapture.delegate = self
@@ -316,8 +324,9 @@ class PhotoCaptureViewController: OWSViewController {
 
         photoCapture.startCapture().done { [weak self] in
             guard let self = self else { return }
-
+            self.hasCaptureStarted = true
             self.showCaptureUI()
+            BenchEventComplete(eventId: "Show-Camera")
         }.catch { [weak self] error in
             guard let self = self else { return }
 

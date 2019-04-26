@@ -2855,6 +2855,7 @@ typedef enum : NSUInteger {
  */
 - (void)takePictureOrVideo
 {
+    [BenchManager startEventWithTitle:@"Show-Camera" eventId:@"Show-Camera"];
     [self ows_askForCameraPermissions:^(BOOL cameraGranted) {
         if (!cameraGranted) {
             OWSLogWarn(@"camera permission denied.");
@@ -2907,6 +2908,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
+    [BenchManager startEventWithTitle:@"Show-Media-Library" eventId:@"Show-Media-Library"];
     self.isPickingMediaAsDocument = shouldTreatAsDocument;
 
     [self ows_askForMediaLibraryPermissions:^(BOOL granted) {

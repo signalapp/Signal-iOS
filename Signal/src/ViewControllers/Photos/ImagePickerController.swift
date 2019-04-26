@@ -241,6 +241,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         hasEverAppeared = true
 
+        BenchEventComplete(eventId: "Show-Media-Library")
+
         // Since we're presenting *over* the ConversationVC, we need to `becomeFirstResponder`.
         //
         // Otherwise, the `ConversationVC.inputAccessoryView` will appear over top of us whenever

@@ -64,6 +64,15 @@ class SendMediaNavigationController: OWSNavigationController {
         mediaLibraryModeButton.autoPinEdge(toSuperviewMargin: .leading)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        DispatchQueue.main.async {
+            // pre-layout collectionPicker for snappier response should we use it
+            self.mediaLibraryViewController.view.layoutIfNeeded()
+            self.captureViewController.view.layoutIfNeeded()
+        }
+    }
+
     // MARK: -
 
     @objc
@@ -145,7 +154,7 @@ class SendMediaNavigationController: OWSNavigationController {
 
     func fadeTo(viewControllers: [UIViewController]) {
         let transition: CATransition = CATransition()
-        transition.duration = 0.1
+        transition.duration = 0.08
         transition.type = CATransitionType.fade
         view.layer.add(transition, forKey: nil)
         setViewControllers(viewControllers, animated: false)
@@ -159,10 +168,12 @@ class SendMediaNavigationController: OWSNavigationController {
     }
 
     private func didTapCameraModeButton() {
+        BenchEventStart(title: "Show-Camera", eventId: "Show-Camera")
         fadeTo(viewControllers: [captureViewController])
     }
 
     private func didTapMediaLibraryModeButton() {
+        BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
         fadeTo(viewControllers: [mediaLibraryViewController])
     }
 
