@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (class, readonly, nonatomic) StickerInfo *defaultValue;
 
+- (BOOL)isValid;
+
 @end
 
 #pragma mark -
@@ -30,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey;
 
 - (NSString *)asKey;
+
+- (BOOL)isValid;
 
 @end
 

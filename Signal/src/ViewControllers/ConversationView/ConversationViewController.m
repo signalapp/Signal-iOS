@@ -1728,6 +1728,8 @@ typedef enum : NSUInteger {
 
 - (void)showConversationSettingsAndShowVerification:(BOOL)showVerification
 {
+    [self.inputToolbar clearStickerKeyboard];
+
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
     [settingsVC configureWithThread:self.thread uiDatabaseConnection:self.uiDatabaseConnection];
@@ -1988,6 +1990,7 @@ typedef enum : NSUInteger {
     [alert addAction:callAction];
     [alert addAction:[OWSAlerts cancelAction]];
 
+    [self.inputToolbar clearStickerKeyboard];
     [self dismissKeyBoard];
     [self presentAlert:alert];
 }
@@ -2409,6 +2412,8 @@ typedef enum : NSUInteger {
     OWSAssertDebug(conversationItem);
     OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
+    [self.inputToolbar clearStickerKeyboard];
+
     LongTextViewController *viewController = [[LongTextViewController alloc] initWithViewItem:conversationItem];
     viewController.delegate = self;
     [self.navigationController pushViewController:viewController animated:YES];
@@ -2420,6 +2425,8 @@ typedef enum : NSUInteger {
     OWSAssertDebug(conversationItem);
     OWSAssertDebug(conversationItem.contactShare);
     OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
+
+    [self.inputToolbar clearStickerKeyboard];
 
     ContactViewController *view = [[ContactViewController alloc] initWithContactShare:conversationItem.contactShare];
     [self.navigationController pushViewController:view animated:YES];
@@ -2546,6 +2553,8 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(conversationItem);
     OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
+
+    [self.inputToolbar clearStickerKeyboard];
 
     TSMessage *message = (TSMessage *)conversationItem.interaction;
     MessageDetailViewController *detailVC =
@@ -2862,7 +2871,7 @@ typedef enum : NSUInteger {
     [dataSource setSourceFilename:filename];
 
     // Although we want to be able to send higher quality attachments through the document picker
-    // it's more imporant that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
+    // it's more important that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
     if ([SignalAttachment isInvalidVideoWithDataSource:dataSource dataUTI:type]) {
         [self showApprovalDialogAfterProcessingVideoURL:url filename:filename];
         return;
@@ -4429,6 +4438,17 @@ typedef enum : NSUInteger {
     if (didAddToProfileWhitelist) {
         [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
     }
+}
+
+- (void)sendSticker:(StickerInfo *)stickerInfo
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(stickerInfo);
+
+    OWSLogVerbose(@"Sending sticker.");
+
+    TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithSticker:stickerInfo inThread:self.thread];
+    [self messageWasSent:message];
 }
 
 - (void)voiceMemoGestureDidStart

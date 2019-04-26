@@ -235,13 +235,18 @@ const CGFloat kMaxTextViewHeight = 98;
     [vStackWrapper setCompressionResistanceHorizontalLow];
 
     // H Stack
-    _hStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.attachmentButton,
-        vStackWrapper,
-        self.stickerButton,
-        self.voiceMemoButton,
-        self.sendButton
-    ]];
+    if (SSKFeatureFlags.stickerSend) {
+        _hStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+            self.attachmentButton,
+            vStackWrapper,
+            self.stickerButton,
+            self.voiceMemoButton,
+            self.sendButton
+        ]];
+    } else {
+        _hStack = [[UIStackView alloc]
+            initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, self.voiceMemoButton, self.sendButton ]];
+    }
     self.hStack.axis = UILayoutConstraintAxisHorizontal;
     self.hStack.layoutMarginsRelativeArrangement = YES;
     self.hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
@@ -331,6 +336,8 @@ const CGFloat kMaxTextViewHeight = 98;
     [self ensureTextViewHeight];
     [self updateInputLinkPreview];
 
+    [self clearStickerKeyboard];
+
     [self ensureButtonVisibilityWithIsAnimated:isAnimated doLayout:YES];
 }
 
@@ -341,6 +348,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)clearTextMessageAnimated:(BOOL)isAnimated
 {
+    [self clearStickerKeyboard];
     [self setMessageText:nil animated:isAnimated];
     [self.inputTextView.undoManager removeAllActions];
     self.wasLinkPreviewCancelled = NO;
@@ -606,6 +614,8 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)showVoiceMemoUI
 {
     OWSAssertIsOnMainThread();
+
+    [self clearStickerKeyboard];
 
     self.voiceMemoStartTime = [NSDate date];
 
@@ -909,6 +919,8 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     OWSAssertDebug(self.inputToolbarDelegate);
 
+    [self clearStickerKeyboard];
+
     [self.inputToolbarDelegate attachmentButtonPressed];
 }
 
@@ -946,6 +958,13 @@ const CGFloat kMaxTextViewHeight = 98;
         [self.inputTextView becomeFirstResponder];
     }
     [self.inputTextView reloadInputViews];
+}
+
+- (void)clearStickerKeyboard
+{
+    OWSAssertIsOnMainThread();
+
+    self.isStickerKeyboardActive = NO;
 }
 
 #pragma mark - ConversationTextViewToolbarDelegate
@@ -1134,7 +1153,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     OWSLogVerbose(@"");
 
-    // TODO:
+    [self.inputToolbarDelegate sendSticker:stickerInfo];
 }
 
 @end

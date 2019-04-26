@@ -88,6 +88,11 @@ public class MessageSticker: MTLModel {
     }
 
     @objc
+    public var isValid: Bool {
+        return info.isValid()
+    }
+
+    @objc
     public class func isNoStickerError(_ error: Error) -> Bool {
         guard let error = error as? StickerError else {
             return false
@@ -120,6 +125,9 @@ public class MessageSticker: MTLModel {
 
         let info = StickerInfo(packId: packID, packKey: packKey, stickerId: stickerID)
         let messageSticker = MessageSticker(info: info, attachmentId: attachmentId)
+        guard messageSticker.isValid else {
+            throw StickerError.invalidInput
+        }
         return messageSticker
     }
 
@@ -133,7 +141,9 @@ public class MessageSticker: MTLModel {
                                                              transaction: transaction)
 
         let messageSticker = MessageSticker(info: draft.info, attachmentId: attachmentId)
-
+        guard messageSticker.isValid else {
+            throw StickerError.assertionFailure
+        }
         return messageSticker
     }
 

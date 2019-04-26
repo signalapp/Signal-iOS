@@ -4,6 +4,8 @@
 
 #import "StickerInfo.h"
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,9 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey stickerId:(UInt32)stickerId
 {
-    OWSAssertDebug(packId.length > 0);
-    OWSAssertDebug(packKey.length > 0);
-
     self = [super init];
 
     if (!self) {
@@ -23,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
     _packId = packId;
     _packKey = packKey;
     _stickerId = stickerId;
+
+    OWSAssertDebug(self.isValid);
 
     return self;
 }
@@ -34,7 +35,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (StickerInfo *)defaultValue
 {
-    return [[StickerInfo alloc] initWithPackId:[NSData new] packKey:[NSData new] stickerId:0];
+    return [[StickerInfo alloc] initWithPackId:[Randomness generateRandomBytes:(int)StickerManager.packIdLength]
+                                       packKey:[Randomness generateRandomBytes:(int)StickerManager.packKeyLength]
+                                     stickerId:0];
+}
+
+- (BOOL)isValid
+{
+    return (self.packId.length == StickerManager.packIdLength && self.packKey.length == StickerManager.packKeyLength);
 }
 
 @end
@@ -45,9 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey
 {
-    OWSAssertDebug(packId.length > 0);
-    OWSAssertDebug(packKey.length > 0);
-
     self = [super init];
 
     if (!self) {
@@ -57,12 +62,19 @@ NS_ASSUME_NONNULL_BEGIN
     _packId = packId;
     _packKey = packKey;
 
+    OWSAssertDebug(self.isValid);
+
     return self;
 }
 
 - (NSString *)asKey
 {
     return self.packId.hexadecimalString;
+}
+
+- (BOOL)isValid
+{
+    return (self.packId.length == StickerManager.packIdLength && self.packKey.length == StickerManager.packKeyLength);
 }
 
 @end
