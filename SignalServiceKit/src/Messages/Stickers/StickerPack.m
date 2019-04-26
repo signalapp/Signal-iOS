@@ -23,6 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (StickerInfo *)stickerInfoWithStickerPack:(StickerPack *)stickerPack
+{
+    return [[StickerInfo alloc] initWithPackId:stickerPack.packId packKey:stickerPack.packKey stickerId:self.stickerId];
+}
+
 @end
 
 #pragma mark -
@@ -82,8 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<StickerInfo *> *stickerInfos = [NSMutableArray new];
     for (StickerPackItem *item in self.items) {
-        [stickerInfos
-            addObject:[[StickerInfo alloc] initWithPackId:self.packId packKey:self.packKey stickerId:item.stickerId]];
+        [stickerInfos addObject:[item stickerInfoWithStickerPack:self]];
     }
     return stickerInfos;
 }

@@ -56,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                        quotedMessage:nil
                                                                                         contactShare:nil
                                                                                          linkPreview:nil
+                                                                                      messageSticker:nil
                                                                                      serverTimestamp:nil
                                                                                      wasReceivedByUD:NO];
     [incomingMessage save];

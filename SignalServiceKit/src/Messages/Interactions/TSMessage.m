@@ -428,7 +428,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else if (self.contactShare) {
         return [[self.contactShare.name.displayName rtlSafeAppend:@" "] rtlSafeAppend:@"👤"];
     } else if (self.messageSticker) {
-        // TODO: Design isn't final here.
+        NSString *_Nullable emoji =
+            [StickerManager emojiForStickerWithStickerInfo:self.messageSticker.info transaction:transaction];
+        if (emoji.length > 0) {
+            return emoji;
+        }
         return [TSAttachment emojiForMimeType:OWSMimeTypeImageWebp];
     } else {
         if (transaction.transitional_yapReadTransaction) {

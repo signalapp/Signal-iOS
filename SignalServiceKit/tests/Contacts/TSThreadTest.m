@@ -50,6 +50,7 @@
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil
+                                                     messageSticker:nil
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO];
     [incomingMessage save];
@@ -65,7 +66,8 @@
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
                                                        contactShare:nil
-                                                        linkPreview:nil];
+                                                        linkPreview:nil
+                                                     messageSticker:nil];
     [outgoingMessage save];
 
     XCTAssertEqual(2, [thread numberOfInteractions]);
@@ -103,6 +105,7 @@
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil
+                                                     messageSticker:nil
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO];
     [incomingMessage save];
@@ -126,7 +129,8 @@
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
                                                        contactShare:nil
-                                                        linkPreview:nil];
+                                                        linkPreview:nil
+                                                     messageSticker:nil];
     [outgoingMessage save];
 
     // Sanity check
