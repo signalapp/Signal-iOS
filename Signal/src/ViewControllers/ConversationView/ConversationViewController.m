@@ -5055,9 +5055,6 @@ typedef enum : NSUInteger {
                 animateWithDuration:0.0
                          animations:^{
                              [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
-                             if (scrollToBottom) {
-                                 [self scrollToBottomAnimated:NO];
-                             }
                              [BenchManager completeEventWithEventId:@"message-send"];
                          }];
         }

@@ -922,6 +922,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (nullable SSKProtoAttachmentPointer *)buildProto
 {
+    OWSAssertDebug(self.serverId > 0);
+
     SSKProtoAttachmentPointerBuilder *builder = [SSKProtoAttachmentPointer builderWithId:self.serverId];
 
     OWSAssertDebug(self.contentType.length > 0);

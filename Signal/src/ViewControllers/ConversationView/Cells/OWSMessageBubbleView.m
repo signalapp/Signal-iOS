@@ -387,9 +387,10 @@ NS_ASSUME_NONNULL_BEGIN
         [self.viewConstraints addObjectsFromArray:[gradientView ows_autoPinToSuperviewEdges]];
 
         [self.footerView configureWithConversationViewItem:self.viewItem
-                                         isOverlayingMedia:YES
                                          conversationStyle:self.conversationStyle
-                                                isIncoming:self.isIncoming];
+                                                isIncoming:self.isIncoming
+                                         isOverlayingMedia:YES
+                                           isOutsideBubble:NO];
         [bodyMediaView addSubview:self.footerView];
 
         bodyMediaView.layoutMargins = UIEdgeInsetsZero;
@@ -401,9 +402,10 @@ NS_ASSUME_NONNULL_BEGIN
         ]];
     } else {
         [self.footerView configureWithConversationViewItem:self.viewItem
-                                         isOverlayingMedia:NO
                                          conversationStyle:self.conversationStyle
-                                                isIncoming:self.isIncoming];
+                                                isIncoming:self.isIncoming
+                                         isOverlayingMedia:NO
+                                           isOutsideBubble:NO];
         [textViews addObject:self.footerView];
     }
 

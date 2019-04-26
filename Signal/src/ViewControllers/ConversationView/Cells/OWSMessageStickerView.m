@@ -129,9 +129,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self.stackView addArrangedSubview:bodyMediaView];
 
     [self.footerView configureWithConversationViewItem:self.viewItem
-                                     isOverlayingMedia:NO
                                      conversationStyle:self.conversationStyle
-                                            isIncoming:self.isIncoming];
+                                            isIncoming:self.isIncoming
+                                     isOverlayingMedia:NO
+                                       isOutsideBubble:YES];
     [self insertAnyTextViewsIntoStackView:@[
         self.footerView,
     ]];

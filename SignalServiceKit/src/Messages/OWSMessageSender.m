@@ -1853,6 +1853,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
+    if (message.messageSticker.attachmentId != nil) {
+        TSAttachment *attachment =
+            [TSAttachment fetchObjectWithUniqueID:message.messageSticker.attachmentId transaction:transaction];
+        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+            [attachmentIds addObject:attachment.uniqueId];
+        } else {
+            OWSFailDebug(@"unexpected attachment: %@", attachment);
+        }
+    }
+
     // All outgoing messages should be saved at the time they are enqueued.
     [message saveWithTransaction:transaction];
     // When we start a message send, all "failed" recipients should be marked as "sending".

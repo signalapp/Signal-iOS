@@ -641,6 +641,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         self.stickerInfo = message.messageSticker.info;
         TSAttachment *_Nullable stickerAttachment =
             [TSAttachment anyFetchWithUniqueId:message.messageSticker.attachmentId transaction:transaction];
+        OWSAssertDebug(stickerAttachment);
         if ([stickerAttachment isKindOfClass:[TSAttachmentStream class]]) {
             TSAttachmentStream *stickerAttachmentStream = (TSAttachmentStream *)stickerAttachment;
             CGSize mediaSize = [stickerAttachmentStream imageSize];

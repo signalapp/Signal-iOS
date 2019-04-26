@@ -48,6 +48,30 @@ PODS:
     - CocoaLumberjack
     - SignalCoreKit
   - libPhoneNumber-iOS (0.9.13)
+  - libwebp (1.0.2):
+    - libwebp/core (= 1.0.2)
+    - libwebp/dec (= 1.0.2)
+    - libwebp/demux (= 1.0.2)
+    - libwebp/dsp (= 1.0.2)
+    - libwebp/enc (= 1.0.2)
+    - libwebp/mux (= 1.0.2)
+    - libwebp/utils (= 1.0.2)
+    - libwebp/webp (= 1.0.2)
+  - libwebp/core (1.0.2):
+    - libwebp/webp
+  - libwebp/dec (1.0.2):
+    - libwebp/core
+  - libwebp/demux (1.0.2):
+    - libwebp/core
+  - libwebp/dsp (1.0.2):
+    - libwebp/core
+  - libwebp/enc (1.0.2):
+    - libwebp/core
+  - libwebp/mux (1.0.2):
+    - libwebp/core
+  - libwebp/utils (1.0.2):
+    - libwebp/core
+  - libwebp/webp (1.0.2)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
@@ -91,6 +115,7 @@ PODS:
     - GRDBCipher
     - GRKOpenSSLFramework
     - libPhoneNumber-iOS
+    - libwebp
     - Mantle
     - PromiseKit (~> 6.0)
     - Reachability
@@ -108,6 +133,7 @@ PODS:
     - GRDBCipher
     - GRKOpenSSLFramework
     - libPhoneNumber-iOS
+    - libwebp
     - Mantle
     - PromiseKit (~> 6.0)
     - Reachability
@@ -222,6 +248,7 @@ SPEC REPOS:
     - AFNetworking
     - CocoaLumberjack
     - libPhoneNumber-iOS
+    - libwebp
     - PromiseKit
     - PureLayout
     - Reachability
@@ -301,6 +328,7 @@ SPEC CHECKSUMS:
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   HKDFKit: 3b6dbbb9d59c221cc6c52c3aa915700cbf24e376
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
+  libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   PromiseKit: c609029bdd801f792551a504c695c7d3098b42cd
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
@@ -308,7 +336,7 @@ SPEC CHECKSUMS:
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: c2d8132cdedb95d35eb2f8ae7eac0957695d0a8b
   SignalMetadataKit: 6fa5e9a53c7f104568662521a2f3874672ff7a02
-  SignalServiceKit: a256942e116591ac248040d5c8114c096ac7cb90
+  SignalServiceKit: b072da216bb14fb0b010d7bd3c1e99866ee756de
   SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
