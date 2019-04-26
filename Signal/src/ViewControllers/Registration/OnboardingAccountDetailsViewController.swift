@@ -50,7 +50,7 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
             passwordTextField,
             bottomSpacer,
             nextButton
-            ])
+        ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)

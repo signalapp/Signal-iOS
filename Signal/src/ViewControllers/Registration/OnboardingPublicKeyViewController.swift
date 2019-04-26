@@ -41,7 +41,7 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
             mnemonicLabel,
             bottomSpacer,
             registerButton
-            ])
+        ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)
