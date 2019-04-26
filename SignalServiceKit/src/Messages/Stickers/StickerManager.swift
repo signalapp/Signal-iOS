@@ -100,24 +100,7 @@ public class StickerManager: NSObject {
     // TODO: Handle sorting.
     @objc
     public class func allStickerPacks(transaction: SDSAnyReadTransaction) -> [StickerPack] {
-        var result = [StickerPack]()
-        switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            StickerPack.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
-                guard let model = object as? StickerPack else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                result.append(model)
-            }
-        case .grdbRead(let grdbTransaction):
-            do {
-                result += try StickerPack.grdbFetchCursor(transaction: grdbTransaction).all()
-            } catch let error as NSError {
-                owsFailDebug("Couldn't fetch models: \(error)")
-            }
-        }
-        return result
+        return StickerPack.anyFetchAll(transaction: transaction)
     }
 
     // TODO: Handle sorting.
@@ -556,6 +539,7 @@ public class StickerManager: NSObject {
 
     // MARK: - Known Sticker Packs
 
+    // TODO: We may want to cull these in the orphan data cleaner.
     @objc
     public class func addKnownStickerInfo(_ stickerInfo: StickerInfo) {
         databaseStorage.writeSwallowingErrors { (transaction) in
@@ -576,12 +560,10 @@ public class StickerManager: NSObject {
     public class func removeKnownStickerInfo(_ stickerInfo: StickerInfo) {
         databaseStorage.writeSwallowingErrors { (transaction) in
             let packInfo = stickerInfo.packInfo
-            let pack: KnownStickerPack
             let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
-            if let existing = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) {
-                pack = existing
-            } else {
-                pack = KnownStickerPack(info: packInfo)
+            guard let pack = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing known sticker pack.")
+                return
             }
             pack.referenceCount -= 1
             if pack.referenceCount < 1 {
@@ -590,6 +572,29 @@ public class StickerManager: NSObject {
                 pack.anySave(transaction: transaction)
             }
         }
+    }
+
+    @objc
+    public class func allKnownStickerPacks() -> [StickerPackInfo] {
+        var result = [StickerPackInfo]()
+        databaseStorage.readSwallowingErrors { (_) in
+//            KnownStickerPack.any
+//            let packInfo = stickerInfo.packInfo
+//            let pack: KnownStickerPack
+//            let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
+//            if let existing = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) {
+//                pack = existing
+//            } else {
+//                pack = KnownStickerPack(info: packInfo)
+//            }
+//            pack.referenceCount -= 1
+//            if pack.referenceCount < 1 {
+//                pack.anyRemove(transaction: transaction)
+//            } else {
+//                pack.anySave(transaction: transaction)
+//            }
+        }
+        return result
     }
 
     // MARK: - Misc.

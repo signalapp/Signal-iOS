@@ -219,6 +219,48 @@ extension InstalledSticker {
             }
         }
     }
+
+    // Traverses all records.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    @objc
+    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (InstalledSticker) -> Bool) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            InstalledSticker.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+                guard let value = object as? InstalledSticker else {
+                    owsFailDebug("unexpected object: \(type(of: object))")
+                    return
+                }
+                guard visitor(value) else {
+                    stop.pointee = true
+                    return
+                }
+            }
+        case .grdbRead(let grdbTransaction):
+            do {
+                let cursor = InstalledSticker.grdbFetchCursor(transaction: grdbTransaction)
+                while let value = try cursor.next() {
+                    guard visitor(value) else {
+                        return
+                    }
+                }
+            } catch let error as NSError {
+                owsFailDebug("Couldn't fetch models: \(error)")
+            }
+        }
+    }
+
+    // Does not order the results.
+    @objc
+    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [InstalledSticker] {
+        var result = [InstalledSticker]()
+        anyVisitAll(transaction: transaction) { (model) in
+            result.append(model)
+            return true
+        }
+        return result
+    }
 }
 
 // MARK: - Swift Fetch

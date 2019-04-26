@@ -15,34 +15,6 @@ extension TSThread {
         }
         return result
     }
-
-    @objc
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSThread] {
-        var result = [TSThread]()
-        switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            TSThread.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
-                guard let model = object as? TSThread else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                result.append(model)
-            }
-        case .grdbRead(let grdbTransaction):
-            let columnNames: [String] = TSThreadSerializer.table.selectColumnNames
-            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
-            let tableName: String = TSThreadSerializer.table.tableName
-            // TODO: Add ORDER by clause.
-            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier)"
-            do {
-                result += try grdbFetchCursor(sql: sql, arguments: nil, transaction: grdbTransaction).all()
-            } catch let error {
-                // TODO:
-                owsFail("Read failed: \(error)")
-            }
-        }
-        return result
-    }
 }
 
 // MARK: -
@@ -53,34 +25,6 @@ extension TSInteraction {
         var result = [TSInteraction]()
         databaseStorage.readSwallowingErrors { (transaction) in
             result += anyFetchAll(transaction: transaction)
-        }
-        return result
-    }
-
-    @objc
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSInteraction] {
-        var result = [TSInteraction]()
-        switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            TSInteraction.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
-                guard let model = object as? TSInteraction else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                result.append(model)
-            }
-        case .grdbRead(let grdbTransaction):
-            let columnNames: [String] = TSInteractionSerializer.table.selectColumnNames
-            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
-            let tableName: String = TSInteractionSerializer.table.tableName
-            // TODO: Add ORDER by clause.
-            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier)"
-            do {
-                result += try grdbFetchCursor(sql: sql, arguments: nil, transaction: grdbTransaction).all()
-            } catch let error {
-                // TODO:
-                owsFail("Read failed: \(error)")
-            }
         }
         return result
     }
