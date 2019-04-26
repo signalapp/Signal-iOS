@@ -3,11 +3,16 @@
 //
 
 import Foundation
-import YYImage
 import SignalServiceKit
 
 @objc
 public class ManageStickersViewController: OWSTableViewController {
+
+    // MARK: - Dependencies
+
+    private var stickerManager: StickerManager {
+        return SSKEnvironment.shared.stickerManager
+    }
 
     // MARK: Initializers
 
@@ -45,7 +50,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
         updateState()
 
-        StickerManager.refreshAvailableStickerPacks()
+        stickerManager.refreshAvailableStickerPacks()
     }
 
     private var installedStickerPacks = [StickerPack]()
@@ -109,39 +114,28 @@ public class ManageStickersViewController: OWSTableViewController {
     }
 
     private func buildTableCell(installedStickerPack stickerPack: StickerPack) -> UITableViewCell {
-        let iconFilePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerPack.coverInfo)
         let actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
-        return buildTableCell(iconFilePath: iconFilePath,
+        return buildTableCell(stickerInfo: stickerPack.coverInfo,
                               title: stickerPack.title,
                               authorName: stickerPack.author,
                               actionIconName: actionIconName)
     }
 
     private func buildTableCell(availableStickerPack stickerPack: StickerPack) -> UITableViewCell {
-        let iconFilePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerPack.coverInfo)
         let actionIconName = "download-filled-24"
-        return buildTableCell(iconFilePath: iconFilePath,
+        return buildTableCell(stickerInfo: stickerPack.coverInfo,
                               title: stickerPack.title,
                               authorName: stickerPack.author,
                               actionIconName: actionIconName)
     }
 
-    private func buildTableCell(iconFilePath: String?,
+    private func buildTableCell(stickerInfo: StickerInfo,
                                 title titleValue: String?,
                                 authorName authorNameValue: String?,
                                 actionIconName: String) -> UITableViewCell {
         let cell = OWSTableItem.newCell()
 
-        // TODO: Asset to show while loading a sticker - if any.
-        let iconView = YYAnimatedImageView()
-        if let iconFilePath = iconFilePath,
-            let coverIcon = YYImage(contentsOfFile: iconFilePath) {
-            // TODO: This will be webp.
-            iconView.image = coverIcon
-        }
-
-        let iconSize: CGFloat = 64
-        iconView.autoSetDimensions(to: CGSize(width: iconSize, height: iconSize))
+        let iconView = StickerView(stickerInfo: stickerInfo, size: 64)
 
         let title: String
         if let titleValue = titleValue?.ows_stripped(),

@@ -10,6 +10,10 @@ import HKDFKit
 @objc
 public class StickerManager: NSObject {
 
+    private class var shared: StickerManager {
+        return SSKEnvironment.shared.stickerManager
+    }
+
     // MARK: - Constants
 
     @objc
@@ -50,8 +54,12 @@ public class StickerManager: NSObject {
 
     @objc
     public override init() {
+        super.init()
+
         // Resume sticker and sticker pack downloads when app is ready.
         AppReadiness.runNowOrWhenAppDidBecomeReady {
+            self.refreshAvailableStickerPacks()
+
             StickerManager.ensureAllStickerDownloadsAsync()
         }
     }
@@ -130,12 +138,18 @@ public class StickerManager: NSObject {
 
     @objc
     public class func isStickerPackSaved(stickerPackInfo: StickerPackInfo) -> Bool {
-
         var result = false
         databaseStorage.readSwallowingErrors { (transaction) in
-            result = nil != fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
+            result = isStickerPackSaved(stickerPackInfo: stickerPackInfo,
+                                        transaction: transaction)
         }
         return result
+    }
+
+    @objc
+    public class func isStickerPackSaved(stickerPackInfo: StickerPackInfo,
+                                         transaction: SDSAnyReadTransaction) -> Bool {
+        return nil != fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
     }
 
     @objc
@@ -149,11 +163,15 @@ public class StickerManager: NSObject {
             }
             stickerPack.update(withIsInstalled: false, transaction: transaction)
 
-            // Uninstall the cover and stickers.
-            if let completion = uninstallSticker(stickerInfo: stickerPack.coverInfo,
-                                                 transaction: transaction) {
-                completions.append(completion)
+            // Uninstall the cover and stickers - but retain the cover
+            // if this is a default sticker pack.
+            if !shared.isDefaultStickerPack(stickerPackInfo: stickerPack.info) {
+                if let completion = uninstallSticker(stickerInfo: stickerPack.coverInfo,
+                                                     transaction: transaction) {
+                    completions.append(completion)
+                }
             }
+
             for stickerInfo in stickerPack.stickerInfos {
                 if let completion = uninstallSticker(stickerInfo: stickerInfo,
                                                      transaction: transaction) {
@@ -317,26 +335,75 @@ public class StickerManager: NSObject {
         }
     }
 
-    @objc
-    public class func refreshAvailableStickerPacks() {
-        // TODO: Fetch actual list from service.
-        // TODO: Should this include other "encountered" packs?
+    // A mapping of sticker pack keys to sticker pack info.
+    private var defaultStickerPackMap: [String: StickerPackInfo] = StickerManager.parseDefaultStickerPacks()
+
+    private class func parseDefaultStickerPacks() -> [String: StickerPackInfo] {
         guard let packId = Data.data(fromHex: "0123456789abcdef0123456789abcdef") else {
             owsFailDebug("Invalid packId")
-            return
+            return [:]
         }
         assert(packId.count == StickerManager.packIdLength)
         guard let packKey = Data.data(fromHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789") else {
             owsFailDebug("Invalid packKey")
-            return
+            return [:]
         }
         assert(packKey.count == StickerManager.packKeyLength)
 
-        let stickerPackInfos = [StickerPackInfo(packId: packId, packKey: packKey)]
-        for stickerPackInfo in stickerPackInfos {
-            tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
-                                            shouldInstall: false)
+        let samplePack = StickerPackInfo(packId: packId, packKey: packKey)
+        return [samplePack.asKey(): samplePack]
+    }
+
+    private func isDefaultStickerPack(stickerPackInfo: StickerPackInfo) -> Bool {
+        return nil != defaultStickerPackMap[stickerPackInfo.asKey()]
+    }
+
+    // This is only intended for use while debugging.
+    #if DEBUG
+    @objc
+    public class func tryToInstallAllAvailableStickerPacks() {
+        for stickerPack in availableStickerPacks() {
+            installStickerPack(stickerPack: stickerPack)
         }
+
+        shared.refreshAvailableStickerPacks(shouldInstall: true)
+    }
+    #endif
+
+    @objc
+    public func refreshAvailableStickerPacks() {
+        refreshAvailableStickerPacks(shouldInstall: false)
+    }
+
+    private func refreshAvailableStickerPacks(shouldInstall: Bool) {
+        let defaultStickerPackMap = self.defaultStickerPackMap.values
+
+        var stickerPacksToDownload = [StickerPackInfo]()
+        StickerManager.databaseStorage.readSwallowingErrors { (transaction) in
+            for stickerPackInfo in defaultStickerPackMap {
+                if !StickerManager.isStickerPackSaved(stickerPackInfo: stickerPackInfo, transaction: transaction) {
+                    stickerPacksToDownload.append(stickerPackInfo)
+                }
+            }
+        }
+
+        for stickerPackInfo in stickerPacksToDownload {
+            StickerManager.tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
+                                                           shouldInstall: shouldInstall)
+        }
+    }
+
+    @objc
+    public class func installedStickers(forStickerPack stickerPack: StickerPack) -> [StickerInfo] {
+        var result = [StickerInfo]()
+        databaseStorage.readSwallowingErrors { (transaction) in
+            for stickerInfo in stickerPack.stickerInfos {
+                if isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction) {
+                    result.append(stickerInfo)
+                }
+            }
+        }
+        return result
     }
 
     // MARK: - Stickers
