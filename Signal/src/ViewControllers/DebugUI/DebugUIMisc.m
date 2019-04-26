@@ -7,7 +7,6 @@
 #import "OWSBackup.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
-#import "RegistrationViewController.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AxolotlKit/PreKeyBundle.h>
@@ -33,6 +32,13 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation DebugUIMisc
+
+#pragma mark - Dependencies
+
++ (YapDatabaseConnection *)dbConnection
+{
+    return [OWSPrimaryStorage.sharedManager dbReadWriteConnection];
+}
 
 #pragma mark - Factory Methods
 
@@ -168,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [Environment.shared.preferences unsetRecordedAPNSTokens];
 
-    RegistrationViewController *viewController = [RegistrationViewController new];
+    UIViewController *viewController = [[OnboardingController new] initialViewController];
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:viewController];
     navigationController.navigationBarHidden = YES;
@@ -253,11 +259,23 @@ NS_ASSUME_NONNULL_BEGIN
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     NSData *databasePassword = [OWSPrimaryStorage.sharedManager databasePassword];
     attachment.captionText = [databasePassword hexadecimalString];
+    [self sendAttachment:attachment thread:thread];
+}
+
++ (void)sendAttachment:(SignalAttachment *)attachment thread:(TSThread *)thread
+{
     if (!attachment || [attachment hasError]) {
         OWSFailDebug(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
         return;
     }
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [ThreadUtil enqueueMessageWithText:nil
+                          mediaAttachments:@[ attachment ]
+                                  inThread:thread
+                          quotedReplyModel:nil
+                          linkPreviewDraft:nil
+                               transaction:transaction];
+    }];
 }
 
 + (void)sendUnencryptedDatabase:(TSThread *)thread
@@ -275,11 +293,7 @@ NS_ASSUME_NONNULL_BEGIN
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
-    if (!attachment || [attachment hasError]) {
-        OWSFailDebug(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
-        return;
-    }
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
+    [self sendAttachment:attachment thread:thread];
 }
 
 #ifdef DEBUG

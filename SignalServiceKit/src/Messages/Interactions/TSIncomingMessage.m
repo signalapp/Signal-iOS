@@ -158,7 +158,6 @@ NS_ASSUME_NONNULL_BEGIN
         secondsAgoRead);
     _read = YES;
     [self saveWithTransaction:transaction];
-    [self touchThreadWithTransaction:transaction];
     
     [transaction addCompletionQueue:nil
                     completionBlock:^{

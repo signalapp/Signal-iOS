@@ -496,10 +496,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
+    @objc
     public func cancelNotifications(threadId: String) {
         self.adaptee.cancelNotifications(threadId: threadId)
     }
 
+    @objc
     public func clearAllNotifications() {
         adaptee.clearAllNotifications()
     }
@@ -613,15 +615,7 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
 
-        return Promise { resolver in
-            self.dbConnection.asyncReadWrite({ transaction in
-                thread.markAllAsRead(with: transaction)
-            },
-                                        completionBlock: {
-                                            self.notificationPresenter.cancelNotifications(threadId: threadId)
-                                            resolver.fulfill(())
-            })
-        }
+        return markAsRead(thread: thread)
     }
 
     func reply(userInfo: [AnyHashable: Any], replyText: String) throws -> Promise<Void> {
@@ -633,12 +627,16 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
 
-        return ThreadUtil.sendMessageNonDurably(text: replyText,
-                                                thread: thread,
-                                                quotedReplyModel: nil,
-                                                messageSender: messageSender).recover { error in
-                                                    Logger.warn("Failed to send reply message from notification with error: \(error)")
-                                                    self.notificationPresenter.notifyForFailedSend(inThread: thread)
+        return markAsRead(thread: thread).then { () -> Promise<Void> in
+            let sendPromise = ThreadUtil.sendMessageNonDurably(text: replyText,
+                                                               thread: thread,
+                                                               quotedReplyModel: nil,
+                                                               messageSender: self.messageSender)
+
+            return sendPromise.recover { error in
+                Logger.warn("Failed to send reply message from notification with error: \(error)")
+                self.notificationPresenter.notifyForFailedSend(inThread: thread)
+            }
         }
     }
 
@@ -651,20 +649,32 @@ class NotificationActionHandler {
         // can be visible to the user immediately upon opening the app, rather than having to watch
         // it animate in from the homescreen.
         let shouldAnimate = UIApplication.shared.applicationState == .active
-        signalApp.presentConversation(forThreadId: threadId, animated: shouldAnimate)
+        signalApp.presentConversationAndScrollToFirstUnreadMessage(forThreadId: threadId, animated: shouldAnimate)
         return Promise.value(())
+    }
+
+    private func markAsRead(thread: TSThread) -> Promise<Void> {
+        return dbConnection.readWritePromise { transaction in
+            thread.markAllAsRead(with: transaction)
+        }
     }
 }
 
 extension ThreadUtil {
+    static var dbReadConnection: YapDatabaseConnection {
+        return OWSPrimaryStorage.shared().dbReadConnection
+    }
+
     class func sendMessageNonDurably(text: String, thread: TSThread, quotedReplyModel: OWSQuotedReplyModel?, messageSender: MessageSender) -> Promise<Void> {
         return Promise { resolver in
-            self.sendMessageNonDurably(withText: text,
-                                       in: thread,
-                                       quotedReplyModel: quotedReplyModel,
-                                       messageSender: messageSender,
-                                       success: resolver.fulfill,
-                                       failure: resolver.reject)
+            self.dbReadConnection.read { transaction in
+                _ = self.sendMessageNonDurably(withText: text,
+                                               in: thread,
+                                               quotedReplyModel: quotedReplyModel,
+                                               transaction: transaction,
+                                               messageSender: messageSender,
+                                               completion: resolver.resolve)
+            }
         }
     }
 }

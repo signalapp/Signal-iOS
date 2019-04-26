@@ -287,6 +287,11 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages testDirectionalFilenamesInThread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Test Linkification"
+                        actionBlock:^{
+                            [DebugUIMessages testLinkificationInThread:thread];
+                        }],
+
     ]];
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -390,12 +395,12 @@ NS_ASSUME_NONNULL_BEGIN
                                    }];
 }
 
-+ (void)sendAttachment:(NSString *)filePath
-                thread:(TSThread *)thread
-                 label:(NSString *)label
-            hasCaption:(BOOL)hasCaption
-               success:(nullable void (^)(void))success
-               failure:(nullable void (^)(void))failure
++ (void)sendAttachmentWithFilePath:(NSString *)filePath
+                            thread:(TSThread *)thread
+                             label:(NSString *)label
+                        hasCaption:(BOOL)hasCaption
+                           success:(nullable void (^)(void))success
+                           failure:(nullable void (^)(void))failure
 {
     OWSAssertDebug(filePath);
     OWSAssertDebug(thread);
@@ -425,7 +430,9 @@ NS_ASSUME_NONNULL_BEGIN
         [DDLog flushLog];
     }
     OWSAssertDebug(![attachment hasError]);
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
+
+    [self sendAttachment:attachment thread:thread messageBody:messageBody];
+
     success();
 }
 
@@ -455,7 +462,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [alert addAction:[OWSAlerts cancelAction]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:alert animated:YES completion:nil];
+    [fromViewController presentAlert:alert];
 }
 
 #pragma mark - Send Media
@@ -551,12 +558,12 @@ NS_ASSUME_NONNULL_BEGIN
             ActionFailureBlock failure) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 OWSAssertDebug(fakeAssetLoader.filePath.length > 0);
-                [self sendAttachment:fakeAssetLoader.filePath
-                              thread:thread
-                               label:label
-                          hasCaption:hasCaption
-                             success:success
-                             failure:failure];
+                [self sendAttachmentWithFilePath:fakeAssetLoader.filePath
+                                          thread:thread
+                                           label:label
+                                      hasCaption:hasCaption
+                                         success:success
+                                         failure:failure];
             });
         }
                 prepareBlock:fakeAssetLoader.prepareBlock];
@@ -1732,18 +1739,24 @@ NS_ASSUME_NONNULL_BEGIN
     return attachment;
 }
 
-+ (void)sendAttachment:(NSString *)filePath
++ (void)sendAttachment:(nullable SignalAttachment *)attachment
                 thread:(TSThread *)thread
-               success:(nullable void (^)(void))success
-               failure:(nullable void (^)(void))failure
+           messageBody:(nullable NSString *)messageBody
 {
-    OWSAssertDebug(filePath);
-    OWSAssertDebug(thread);
-
-    SignalAttachment *attachment = [self signalAttachmentForFilePath:filePath];
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
-    success();
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        NSArray<SignalAttachment *> *attachments = @[];
+        if (attachment != nil) {
+            attachments = @[ attachment ];
+        }
+        [ThreadUtil enqueueMessageWithText:messageBody
+                          mediaAttachments:attachments
+                                  inThread:thread
+                          quotedReplyModel:nil
+                          linkPreviewDraft:nil
+                               transaction:transaction];
+    }];
 }
+
 
 + (DebugUIMessagesAction *)fakeIncomingTextMessageAction:(TSThread *)thread text:(NSString *)text
 {
@@ -2740,7 +2753,7 @@ NS_ASSUME_NONNULL_BEGIN
     [alert addAction:[OWSAlerts cancelAction]];
 
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:alert animated:YES completion:nil];
+    [fromViewController presentAlert:alert];
 }
 
 #pragma mark - Sequences
@@ -3342,11 +3355,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
 + (void)sendOversizeTextMessage:(TSThread *)thread
 {
-    NSString *message = [self randomOversizeText];
-    DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
+    [self sendAttachment:nil thread:thread messageBody:[self randomOversizeText]];
 }
 
 + (NSData *)createRandomNSDataOfSize:(size_t)size
@@ -3379,7 +3388,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         // style them indistinguishably from a separate text message.
         attachment.captionText = [self randomCaptionText];
     }
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
+    [self sendAttachment:attachment thread:thread messageBody:nil];
 }
 
 + (SSKProtoEnvelope *)createEnvelopeForThread:(TSThread *)thread
@@ -3798,7 +3807,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                    sourceFilename:@"test.mp3"
                                                           caption:nil
                                                    albumMessageId:nil
-                                                   attachmentType:TSAttachmentTypeDefault];
+                                                   attachmentType:TSAttachmentTypeDefault
+                                                        mediaSize:CGSizeZero];
                 pointer.state = TSAttachmentPointerStateFailed;
                 [pointer saveWithTransaction:transaction];
                 // MJK - should be safe to remove this senderTimestamp
@@ -4337,6 +4347,53 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     [message save];
 }
 
++ (void)testLinkificationInThread:(TSThread *)thread
+{
+    NSArray<NSString *> *strings = @[@"google.com",
+                                     @"foo.google.com",
+                                     @"https://foo.google.com",
+                                     @"https://foo.google.com/some/path.html",
+                                     @"http://кц.com",
+                                     @"кц.com",
+                                     @"http://asĸ.com",
+                                     @"кц.рф",
+                                     @"кц.рф/some/path",
+                                     @"https://кц.рф/some/path",
+                                     @"http://foo.кц.рф"];
+
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection
+     readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+         for (NSString *string in strings) {
+             // DO NOT log these strings with the debugger attached.
+             //        OWSLogInfo(@"%@", string);
+
+             {
+                 [self createFakeIncomingMessage:thread
+                                     messageBody:string
+                                 fakeAssetLoader:nil
+                          isAttachmentDownloaded:NO
+                                   quotedMessage:nil
+                                     transaction:transaction];
+             }
+             {
+                 NSString *recipientId = @"+1323555555";
+                 NSString *groupName = string;
+                 NSMutableArray<NSString *> *recipientIds = [@[
+                                                               recipientId,
+                                                               [TSAccountManager localNumber],
+                                                               ] mutableCopy];
+                 NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
+                 TSGroupModel *groupModel =
+                 [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+
+                 TSGroupThread *groupThread =
+                 [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                 OWSAssertDebug(groupThread);
+             }
+         }
+     }];
+}
+
 + (void)testIndicScriptsInThread:(TSThread *)thread
 {
     NSArray<NSString *> *strings = @[
@@ -4445,7 +4502,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             [DDLog flushLog];
         }
         OWSAssertDebug(![attachment hasError]);
-        [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
+        [self sendAttachment:attachment thread:thread messageBody:nil];
 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             sendUnsafeFile();
@@ -4697,7 +4754,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                            sourceFilename:fakeAssetLoader.filename
                                                   caption:nil
                                            albumMessageId:nil
-                                           attachmentType:TSAttachmentTypeDefault];
+                                           attachmentType:TSAttachmentTypeDefault
+                                                mediaSize:CGSizeZero];
         attachmentPointer.state = TSAttachmentPointerStateFailed;
         [attachmentPointer saveWithTransaction:transaction];
         return attachmentPointer;
@@ -4759,12 +4817,14 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         [attachments addObject:attachment];
     }
 
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithAttachments:attachments
-                                                                   messageBody:messageBody
-                                                                      inThread:thread
-                                                              quotedReplyModel:nil];
-        OWSLogError(@"timestamp: %llu.", message.timestamp);
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithText:messageBody
+                                                       mediaAttachments:attachments
+                                                               inThread:thread
+                                                       quotedReplyModel:nil
+                                                       linkPreviewDraft:nil
+                                                            transaction:transaction];
+        OWSLogDebug(@"timestamp: %llu.", message.timestamp);
     }];
 }
 

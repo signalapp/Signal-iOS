@@ -12,7 +12,7 @@
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "Dërgo Mesazhin";
+"ACTION_SEND_MESSAGE" = "Dërgoje Mesazhin";
 
 /* Label for 'share contact' button. */
 "ACTION_SHARE_CONTACT" = "Ndaje Kontaktin";
@@ -90,10 +90,13 @@
 "ATTACHMENT" = "Bashkëngjitje";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "U mbërrrit në kufi përshkrimes.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "U mbërrrit në kufi përshkrimesh.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Shtoni një përshkrim…";
+
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Transkriptim";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Lloj kartele: %@";
@@ -112,12 +115,6 @@
 
 /* Status label when an attachment download has failed. */
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Shkarkimi dështoi. Prekeni që të riprovohet.";
-
-/* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Po shkarkohet…";
-
-/* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Në radhë";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Gabim Dërgimi Bashkëngjitjeje";
@@ -302,14 +299,11 @@
 /* Label for generic done button. */
 "BUTTON_DONE" = "U bë";
 
-/* Label for redo button. */
-"BUTTON_REDO" = "Ribëje";
+/* Label for the 'next' button. */
+"BUTTON_NEXT" = "Pasuesi";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Përzgjidhni";
-
-/* Label for undo button. */
-"BUTTON_UNDO" = "Zhbëje";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Rithirre";
@@ -355,6 +349,9 @@
 
 /* Accessibility label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Hidhe tej thirrjen ardhëse";
+
+/* tooltip label when remote party has enabled their video */
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Prekeni këtu që të ktheni te videoja juaj";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Përfundoje thirrjen";
@@ -566,6 +563,15 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Të fshihet Biseda?";
 
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "S’ka përputhje";
+
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 përputhje";
+
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d nga %d përputhje";
+
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Rregullime Për Biseda";
 
@@ -616,6 +622,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Krijoni Kontakt të Ri";
+
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "Kërkoni Në Bisedë";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Prekeni që t’i Ndryshoni";
@@ -816,29 +825,11 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Le të kalojmë në Signal";
 
-/* Body text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TEXT" = "Bisedat joaktive nga Të marrët tuaj mund t’i arkivoni.";
-
-/* Header text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TITLE" = "Pastroni Listën e Bisedave Tuaja ";
-
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Asnjë prej kontakteve tuaj s’ka Signal.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Pse s’ftoni ndonjë?";
-
-/* Body text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TEXT" = "Prekni butonin e hartimeve";
-
-/* Header text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TITLE" = "Filloni bisedën tuaj të parë në Signal!";
-
-/* Body text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TEXT" = "Asnjë. Hiç. Asgjë Fare.";
-
-/* Header text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TITLE" = "Zero Te të Marrë";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Ripohoni PIN-in tuaj.";
@@ -889,7 +880,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "S’arrihet të dërgohet, për shkak të dhënash prekey të vjetruara";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Dështoi dërgimi i mesazhit për përdorues, sepse i keni bllokuar.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "S’u arrit t’i dërgohej mesazh përdoruesit, ngaqë e keni bllokuar.";
 
 /* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "S’u arrit të shkruhej dhe dërgohej bashkëngjitje.";
@@ -964,7 +955,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Numri juaj i sigurisë me %@ ka ndryshuar tani afër. Mund të doni ta verifikoni, përpara se ky mesazh të ridërgohet .";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Dështoi Verifikimi i Numrit të Sigurisë!";
+"FAILED_VERIFICATION_TITLE" = "S’u arrit të Verifikohej Numri i Sigurisë!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Vëri Shenjë Si i Verifikuar";
@@ -1071,6 +1062,18 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Kërko";
 
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Disa nga kontaktet tuaja kanë tashmë Signal, përfshi %@.";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Disa nga kontaktet tuaj kanë tashmë Signal, përfshi %@ dhe %@";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Disa nga kontaktet tuaja kanë tashmë Signal, përfshi %@, %@ dhe %@";
+
+/* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Filloni këtu bisedën tuaj të parë.";
+
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "S’u gjetën përfundime kërkimi për '%@'";
 
@@ -1079,12 +1082,6 @@
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
-
-/* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Lyeje";
-
-/* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Qethe";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "S’mund të ndani me të tjerët më tepër se %@ objekte.";
@@ -1109,6 +1106,9 @@
 
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Këto biseda janë të arkivuara dhe do të shfaqen te Të marrë vetëm nëse merren mesazhe të rinj.";
+
+/* Message shown in the home view when the inbox is empty. */
+"INBOX_VIEW_EMPTY_INBOX" = "Sajoni diçka për shkrim në shtëpi. Fillojani duke shkruar një mesazh për një shok.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Për të parë te lista e bisedave Signal emra kontaktesh, mund të aktivizoni që nga aplikacioni Rregullime iOS-i hyrjen te kontaktet.";
@@ -1496,6 +1496,87 @@
 /* No comment provided by engineer. */
 "OK" = "OK";
 
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_1" = "Ky numër telefoni ka të aktivizuar Kyçje Regjistrimi. Ju lutemi, jepni PIN Kyçjeje Regjistrimi.";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_2" = "PIN-i juaj për Kyçje Regjistrimesh është tjetër gjë nga kodi i verifikimit të automatizuar që u dërgua për telefonin tuaj gjatë hapit të fundit.";
+
+/* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Harrova PIN-in tim";
+
+/* Title of the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_TITLE" = "Kyçje Regjistrimi";
+
+/* Title of the 'onboarding Captcha' view. */
+"ONBOARDING_CAPTCHA_TITLE" = "Shtojini një grimë dore njerëzore mesazheve tuaj";
+
+/* Label for the 'give access' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Aktivizoni Leje";
+
+/* Explanation in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Të dhënat tuaja të kontaktit transmetohen përherë në mënyrë të sigurt.";
+
+/* Label for the 'not now' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Jo Tani";
+
+/* Title of the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_TITLE" = "Signal-i mund t’ju lejojë të mësoni se kur merrni një mesazh (dhe se prej kujt është)";
+
+/* Title of the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Që t’ia filloni, jepni numrin tuaj të telefonit";
+
+/* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Numër i pavlefshëm";
+
+/* Explanation in the 'onboarding profile' view. */
+"ONBOARDING_PROFILE_EXPLANATION" = "Profilet Signal janë të fshehtëzuara skaj-më-skaj dhe shërbimi Signal nuk ka hyn dot kurrë në këto të dhëna.";
+
+/* Placeholder text for the profile name in the 'onboarding profile' view. */
+"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Emri Juaj";
+
+/* Title of the 'onboarding profile' view. */
+"ONBOARDING_PROFILE_TITLE" = "Ujdisni profilin tuaj";
+
+/* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Kushte & Rregulla Privatësie";
+
+/* Title of the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TITLE" = "Merreni privatësinë me vete.\nJini ju vetë, në çdo mesazh.";
+
+/* Label for the link that lets users change their phone number in the onboarding views. */
+"ONBOARDING_VERIFICATION_BACK_LINK" = "Numër i gabuar?";
+
+/* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "S’mora kod (i passhëm te %@)";
+
+/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "Ky kod është i pasaktë";
+
+/* Label for link that can be used when the original code did not arrive. */
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "S’mora kod";
+
+/* Message for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Ju lutemi, sigurohuni se keni shërbim celular dhe mund të merrni mesazhe SMS.";
+
+/* Title for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Pa kod?";
+
+/* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Ridërgomëni kod";
+
+/* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Më mirë më thirr";
+
+/* Label for link that can be used when the resent code did not arrive. */
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Prapë s’ka kod?";
+
+/* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Jepni kodin që dërguam te %@";
+
+/* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "Sapo ridërguam një kod te %@";
+
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Rregullime";
 
@@ -1558,6 +1639,15 @@
 
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Faks Pune";
+
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "S’arrihet të fotografohet figura";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "S’arrihet të fotografohet figura";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "S’u arrit të formësohej kamera.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Album Pa Emër";
@@ -1709,12 +1799,6 @@
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Regjistrimi i këtij numri telefoni do të jetë i mundur pa PIN-in tuaj të Kyçjes së Regjistrime pasi të kenë kaluar 7 ditë që kur numri i telefonit qe aktiv në Signal.";
 
-/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "Ky numër telefoni ka të aktivizuar Kyçjen e Regjistrimeve. Ju lutemi, jepni PIN-in për Kyçje Regjistrimesh.\n\nPIN-i juaj për Kyçje Regjistrimesh është tjetër gjë nga kodi i verifikimit të automatizuar që u dërgua për telefonin tuaj gjatë hapit të fundit.";
-
-/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Regjistrimi Dështoi";
-
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Parashtroje";
 
@@ -1731,13 +1815,10 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Keni provuar shumë herë. Ju lutemi, pritni një minutë, përpara se të riprovoni.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Dështoi ribërja e regjistrimit për njoftime push.";
+"REGISTRATION_BODY" = "S’u arrit të bëhej riregjistrim për njoftime push.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Kod Vendi";
-
-/* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Kyçje Regjistrimesh";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Jepni Numër";
@@ -1757,15 +1838,6 @@
 /* alert title when registering an iPad */
 "REGISTRATION_IPAD_CONFIRM_TITLE" = "Keni tashmë një llogari Signal?";
 
-/* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Kushte & Rregulla Privatësie";
-
-/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Duke regjistruar këtë pajisje, pajtoheni me %@Signal-it";
-
-/* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "kushte";
-
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Ky format numrash telefoni nuk mbulohet, ju lutemi, lidhuni me asistencën.";
 
@@ -1775,9 +1847,6 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Përpara se të mund të dërgoni një mesazh, lypset të regjistroheni.";
 
-/* No comment provided by engineer. */
-"REGISTRATION_TITLE_LABEL" = "Numri Juaj i Telefonit";
-
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikimi Dështoi";
 
@@ -1786,9 +1855,6 @@
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "PIN Kyçjeje Regjistrimesh i Pasaktë.";
-
-/* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Regjistroje";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Ju lutemi, jepni për regjistrim një numër telefoni të vlefshëm.";
@@ -1925,6 +1991,18 @@
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Ftojeni me SMS: %@";
 
+/* alert title when user attempts to leave the send media flow when they have an in-progress album */
+"SEND_MEDIA_ABANDON_TITLE" = "Të hidhet tej Media?";
+
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Hidhe tej Median";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Kthehuni te Kamera";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Kthehuni te Mediateka";
+
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Të ftohet një shok përmes SMS-s të pasigurt?";
 
@@ -1954,6 +2032,9 @@
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Anashkalimi i censurimit është aktivizuar për numrin e telefonit të llogarisë tuaj.";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Anashkalimin e censurës e keni çaktivizuar dorazi.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Anashkalimi i censurimit mund të aktivizohet vetëm kur jeni i lidhur në internet.";
@@ -2085,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Dërgo Paraparje Lidhjesh";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Paraparjet mbulohen për lidhje Imgur, Instagram, Reddit, dhe YouTube.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Paraparje Lidhjesh";
@@ -2312,14 +2393,14 @@
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Çarkivoje ";
 
-/* In Inbox view, last message label for thread with corrupted attachment. */
-"UNKNOWN_ATTACHMENT_LABEL" = "Bashkëngjitje e panjohur";
-
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Përdoruesi s’gjendet në kontaktet tuaja. Doni të bllokohet ky përdorues?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Kontakt i Panjohur";
+
+/* Label for unknown countries. */
+"UNKNOWN_COUNTRY_NAME" = "Vend i Panjohur";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "E panjohur";
@@ -2415,28 +2496,10 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Tungjatjeta Thirrjeve Video të Sigurta!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal-i lyp iOS 9 ose më të ri. Ju lutemi, përdorni veçorinë Përditësim Software-i që nga aplikacioni Rregullime iOS.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal-i së shpejti do të dojë iOS 10 ose të mëvonshëm. Ju lutemi, përmirësojeni që nga aplikacioni Rregullime >> Të përgjithshme >> Përditësim Software-i.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Përmirësoni iOS-in";
-
-/* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Mbrapsht";
-
-/* Text field placeholder for SMS verification code during registration */
-"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Kod Verifikimi";
-
-/* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Më Mirë Me Thirrje";
-
-/* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Ridërgo Kod me SMS";
-
-/* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Parashtroje";
-
-/* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Jepni kodin e verifikimit që dërguam te %@.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "I keni vënë shenjë %@ si jo të verifikuar.";

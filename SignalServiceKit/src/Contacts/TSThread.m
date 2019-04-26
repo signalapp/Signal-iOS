@@ -151,6 +151,13 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     return self;
 }
 
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [super saveWithTransaction:transaction];
+
+    [SSKPreferences setHasSavedThreadWithValue:YES transaction:transaction];
+}
+
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [self removeAllThreadInteractionsWithTransaction:transaction];
@@ -429,6 +436,8 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     if (!self.shouldThreadBeVisible) {
         self.shouldThreadBeVisible = YES;
         [self saveWithTransaction:transaction];
+    } else {
+        [self touchWithTransaction:transaction];
     }
 }
 

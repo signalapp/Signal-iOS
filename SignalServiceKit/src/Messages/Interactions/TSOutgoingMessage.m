@@ -23,6 +23,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+BOOL AreRecipientUpdatesEnabled(void)
+{
+    return NO;
+}
+
 NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRecipientAll";
 
 NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value)
@@ -753,7 +758,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)updateWithWasSentFromLinkedDeviceWithUDRecipientIds:(nullable NSArray<NSString *> *)udRecipientIds
                                           nonUdRecipientIds:(nullable NSArray<NSString *> *)nonUdRecipientIds
-                                                transaction:(YapDatabaseReadWriteTransaction *)transaction {
+                                               isSentUpdate:(BOOL)isSentUpdate
+                                                transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
     OWSAssertDebug(transaction);
 
     [self
@@ -788,6 +795,20 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                        recipientState.wasSentByUD = NO;
                                        recipientStateMap[recipientId] = recipientState;
                                    }
+
+                                   if (isSentUpdate) {
+                                       // If this is a "sent update", make sure that:
+                                       //
+                                       // a) "Sent updates" should never remove any recipients.  We end up with the
+                                       //    union of the existing and new recipients.
+                                       // b) "Sent updates" should never downgrade the "recipient state" for any
+                                       //    recipients.  Prefer existing "recipient state"; "sent updates" only
+                                       //    add new recipients at the "sent" state.
+                                       //
+                                       // Therefore we retain all existing entries in the recipient state map.
+                                       [recipientStateMap addEntriesFromDictionary:self.recipientStateMap];
+                                   }
+
                                    [message setRecipientStateMap:recipientStateMap];
                                } else {
                                    // Otherwise assume this is a legacy message before UD was introduced, and mark
@@ -800,7 +821,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                        }
                                    }
                                }
-                               [message setIsFromLinkedDevice:YES];
+
+                               if (!isSentUpdate) {
+                                   [message setIsFromLinkedDevice:YES];
+                               }
                            }];
 }
 
@@ -1089,7 +1113,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (BOOL)shouldSyncTranscript
 {
-    return !self.hasSyncedTranscript;
+    return YES;
 }
 
 - (NSString *)statusDescription

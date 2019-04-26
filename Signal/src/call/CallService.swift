@@ -106,6 +106,7 @@ protocol SignalCallDataDelegate: class {
 
 // Gather all per-call state in one place.
 private class SignalCallData: NSObject {
+
     fileprivate weak var delegate: SignalCallDataDelegate?
 
     public let call: SignalCall
@@ -438,6 +439,9 @@ private class SignalCallData: NSObject {
     func handleOutgoingCall(_ call: SignalCall) -> Promise<Void> {
         AssertIsOnMainThread()
 
+        let callId = call.signalingId
+        BenchEventStart(title: "Outgoing Call Connection", eventId: "call-\(callId)")
+
         guard self.call == nil else {
             let errorDescription = "call was unexpectedly already set."
             Logger.error(errorDescription)
@@ -605,12 +609,7 @@ private class SignalCallData: NSObject {
     public func handleMissedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        // Insert missed call record
-        if let callRecord = call.callRecord {
-            if callRecord.callType == RPRecentCallTypeIncoming {
-                callRecord.updateCallType(RPRecentCallTypeIncomingMissed)
-            }
-        } else {
+        if call.callRecord == nil {
             // MJK TODO remove this timestamp param
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                      withCallNumber: call.thread.contactIdentifier(),
@@ -618,10 +617,27 @@ private class SignalCallData: NSObject {
                                      in: call.thread)
         }
 
-        assert(call.callRecord != nil)
-        call.callRecord?.save()
+        guard let callRecord = call.callRecord else {
+            handleFailedCall(failedCall: call, error: .assertionError(description: "callRecord was unexpectedly nil"))
+            return
+        }
 
-        self.callUIAdapter.reportMissedCall(call)
+        switch callRecord.callType {
+        case RPRecentCallTypeIncomingMissed:
+            callRecord.save()
+            callUIAdapter.reportMissedCall(call)
+        case RPRecentCallTypeIncomingIncomplete, RPRecentCallTypeIncoming:
+            callRecord.updateCallType(RPRecentCallTypeIncomingMissed)
+            callUIAdapter.reportMissedCall(call)
+        case RPRecentCallTypeOutgoingIncomplete:
+            callRecord.updateCallType(RPRecentCallTypeOutgoingMissed)
+        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity, RPRecentCallTypeIncomingDeclined, RPRecentCallTypeOutgoingMissed, RPRecentCallTypeOutgoing:
+            owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
+            callRecord.save()
+        default:
+            callRecord.save()
+            owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
+        }
     }
 
     /**
@@ -666,6 +682,9 @@ private class SignalCallData: NSObject {
         }
 
         call.state = .remoteBusy
+        assert(call.callRecord != nil)
+        call.callRecord?.updateCallType(RPRecentCallTypeOutgoingMissed)
+
         callUIAdapter.remoteBusy(call)
         terminateCall()
     }
@@ -676,6 +695,8 @@ private class SignalCallData: NSObject {
      */
     public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sessionDescription callerSessionDescription: String) {
         AssertIsOnMainThread()
+
+        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(callId)")
 
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
@@ -972,20 +993,28 @@ private class SignalCallData: NSObject {
     private func handleIceConnected() {
         AssertIsOnMainThread()
 
-        guard let call = self.call else {
+        guard let callData = self.callData else {
             // This will only be called for the current peerConnectionClient, so
             // fail the current call.
             OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
             handleFailedCurrentCall(error: CallError.assertionError(description: "ignoring \(#function) since there is no current call."))
             return
         }
+        let call = callData.call
+        let callId = call.signalingId
 
-        Logger.info("\(call.identifiersForLogs).")
+        Logger.info("\(call.identifiersForLogs)")
 
         switch call.state {
         case .dialing:
+            if call.state != .remoteRinging {
+                BenchEventComplete(eventId: "call-\(callId)")
+            }
             call.state = .remoteRinging
         case .answering:
+            if call.state != .localRinging {
+                BenchEventComplete(eventId: "call-\(callId)")
+            }
             call.state = .localRinging
             self.callUIAdapter.reportIncomingCall(call, thread: call.thread)
         case .remoteRinging:
@@ -1802,7 +1831,7 @@ private class SignalCallData: NSObject {
     func removeObserver(_ observer: CallServiceObserver) {
         AssertIsOnMainThread()
 
-        while let index = observers.index(where: { $0.value === observer }) {
+        while let index = observers.firstIndex(where: { $0.value === observer }) {
             observers.remove(at: index)
         }
     }
@@ -1905,5 +1934,31 @@ private class SignalCallData: NSObject {
         }
 
         handleFailedCall(failedCall: call, error: CallError.messageSendFailure(underlyingError: error))
+    }
+}
+
+extension RPRecentCallType: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case RPRecentCallTypeIncoming:
+            return "RPRecentCallTypeIncoming"
+        case RPRecentCallTypeOutgoing:
+            return "RPRecentCallTypeOutgoing"
+        case RPRecentCallTypeIncomingMissed:
+            return "RPRecentCallTypeIncomingMissed"
+        case RPRecentCallTypeOutgoingIncomplete:
+            return "RPRecentCallTypeOutgoingIncomplete"
+        case RPRecentCallTypeIncomingIncomplete:
+            return "RPRecentCallTypeIncomingIncomplete"
+        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
+            return "RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity"
+        case RPRecentCallTypeIncomingDeclined:
+            return "RPRecentCallTypeIncomingDeclined"
+        case RPRecentCallTypeOutgoingMissed:
+            return "RPRecentCallTypeOutgoingMissed"
+        default:
+            owsFailDebug("unexpected RPRecentCallType: \(self)")
+            return "RPRecentCallTypeUnknown"
+        }
     }
 }

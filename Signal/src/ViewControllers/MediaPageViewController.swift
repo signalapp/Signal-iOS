@@ -48,7 +48,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return currentViewController.galleryItemBox.value
     }
 
-    public func setCurrentItem(_ item: MediaGalleryItem, direction: UIPageViewControllerNavigationDirection, animated isAnimated: Bool) {
+    public func setCurrentItem(_ item: MediaGalleryItem, direction: UIPageViewController.NavigationDirection, animated isAnimated: Bool) {
         guard let galleryPage = self.buildGalleryPage(galleryItem: item) else {
             owsFailDebug("unexpectedly unable to build new gallery page")
             return
@@ -75,9 +75,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         let kSpacingBetweenItems: CGFloat = 20
 
+        let options: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
-                   options: [UIPageViewControllerOptionInterPageSpacingKey: kSpacingBetweenItems])
+                   options: options)
 
         self.dataSource = self
         self.delegate = self
@@ -333,7 +334,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         galleryRailView.configureCellViews(itemProvider: currentItem.album,
                                            focusedItem: currentItem,
-                                           cellViewBuilder: { return GalleryRailCellView() })
+                                           cellViewBuilder: { _ in return GalleryRailCellView() })
     }
 
     // MARK: Actions
@@ -396,16 +397,16 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         actionSheet.addAction(OWSAlerts.cancelAction)
         actionSheet.addAction(deleteAction)
 
-        self.present(actionSheet, animated: true)
+        self.presentAlert(actionSheet)
     }
 
     // MARK: MediaGalleryDataSourceDelegate
 
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
         Logger.debug("")
 
         guard let currentItem = self.currentItem else {
-              owsFailDebug("currentItem was unexpectedly nil")
+            owsFailDebug("currentItem was unexpectedly nil")
             return
         }
 
@@ -773,17 +774,23 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 }
 
 extension MediaGalleryItem: GalleryRailItem {
-    public var aspectRatio: CGFloat {
-        return self.imageSize.aspectRatio
+    public func buildRailItemView() -> UIView {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        getRailImage().map { [weak imageView] image in
+            guard let imageView = imageView else { return }
+            imageView.image = image
+        }.retainUntilComplete()
+
+        return imageView
     }
 
-    public func getRailImage() -> Promise<UIImage> {
-        let (guarantee, fulfill) = Guarantee<UIImage>.pending()
-        if let image = self.thumbnailImage(async: { fulfill($0) }) {
-            fulfill(image)
+    public func getRailImage() -> Guarantee<UIImage> {
+        return Guarantee<UIImage> { fulfill in
+            if let image = self.thumbnailImage(async: { fulfill($0) }) {
+                fulfill(image)
+            }
         }
-
-        return Promise(guarantee)
     }
 }
 
@@ -800,7 +807,7 @@ extension MediaPageViewController: GalleryRailViewDelegate {
             return
         }
 
-        let direction: UIPageViewControllerNavigationDirection
+        let direction: UIPageViewController.NavigationDirection
         direction = currentItem.albumIndex < targetItem.albumIndex ? .forward : .reverse
 
         self.setCurrentItem(targetItem, direction: direction, animated: true)

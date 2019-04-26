@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSCall.h"
@@ -144,7 +144,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
     _read = YES;
     [self saveWithTransaction:transaction];
-    [self touchThreadWithTransaction:transaction];
 
     // Ignore sendReadReceipt - it doesn't apply to calls.
 }
@@ -171,9 +170,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     _callType = callType;
 
     [self saveWithTransaction:transaction];
-
-    // redraw any thread-related unread count UI.
-    [self touchThreadWithTransaction:transaction];
 }
 
 @end

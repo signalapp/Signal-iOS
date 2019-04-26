@@ -46,11 +46,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 @property (atomic, readonly) BOOL isRegistered;
 
-// This property is exposed publicly for testing purposes only.
-#ifndef DEBUG
-@property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
-#endif
-
 @property (nonatomic, nullable) NSString *cachedLocalNumber;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
@@ -264,21 +259,23 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction
 {
-    @synchronized(self)
-    {
-        uint32_t registrationID = [[transaction objectForKey:TSAccountManager_LocalRegistrationIdKey
-                                                inCollection:TSAccountManager_UserAccountCollection] unsignedIntValue];
+    // Unlike other methods in this class, there's no need for a `@synchronized` block
+    // here, since we're already in a write transaction, and all writes occur on a serial queue.
+    //
+    // Since other code in this class which uses @synchronized(self) also needs to open write
+    // transaction, using @synchronized(self) here, inside of a WriteTransaction risks deadlock.
+    uint32_t registrationID = [[transaction objectForKey:TSAccountManager_LocalRegistrationIdKey
+                                            inCollection:TSAccountManager_UserAccountCollection] unsignedIntValue];
 
-        if (registrationID == 0) {
-            registrationID = (uint32_t)arc4random_uniform(16380) + 1;
-            OWSLogWarn(@"Generated a new registrationID: %u", registrationID);
+    if (registrationID == 0) {
+        registrationID = (uint32_t)arc4random_uniform(16380) + 1;
+        OWSLogWarn(@"Generated a new registrationID: %u", registrationID);
 
-            [transaction setObject:[NSNumber numberWithUnsignedInteger:registrationID]
-                            forKey:TSAccountManager_LocalRegistrationIdKey
-                      inCollection:TSAccountManager_UserAccountCollection];
-        }
-        return registrationID;
+        [transaction setObject:[NSNumber numberWithUnsignedInteger:registrationID]
+                        forKey:TSAccountManager_LocalRegistrationIdKey
+                  inCollection:TSAccountManager_UserAccountCollection];
     }
+    return registrationID;
 }
 
 - (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
@@ -322,6 +319,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 }
 
 - (void)registerWithPhoneNumber:(NSString *)phoneNumber
+                   captchaToken:(nullable NSString *)captchaToken
                         success:(void (^)(void))successBlock
                         failure:(void (^)(NSError *error))failureBlock
                 smsVerification:(BOOL)isSMS
@@ -339,6 +337,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
     TSRequest *request =
         [OWSRequestFactory requestVerificationCodeRequestWithPhoneNumber:phoneNumber
+                                                            captchaToken:captchaToken
                                                                transport:(isSMS ? TSVerificationTransportSMS
                                                                                 : TSVerificationTransportVoice)];
     [[TSNetworkManager sharedManager] makeRequest:request
@@ -357,20 +356,33 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }];
 }
 
-- (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
+- (void)rerequestSMSWithCaptchaToken:(nullable NSString *)captchaToken
+                             success:(void (^)(void))successBlock
+                             failure:(void (^)(NSError *error))failureBlock
 {
+    // TODO: Can we remove phoneNumberAwaitingVerification?
     NSString *number          = self.phoneNumberAwaitingVerification;
     OWSAssertDebug(number);
 
-    [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:YES];
+    [self registerWithPhoneNumber:number
+                     captchaToken:captchaToken
+                          success:successBlock
+                          failure:failureBlock
+                  smsVerification:YES];
 }
 
-- (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
+- (void)rerequestVoiceWithCaptchaToken:(nullable NSString *)captchaToken
+                               success:(void (^)(void))successBlock
+                               failure:(void (^)(NSError *error))failureBlock
 {
     NSString *number          = self.phoneNumberAwaitingVerification;
     OWSAssertDebug(number);
 
-    [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:NO];
+    [self registerWithPhoneNumber:number
+                     captchaToken:captchaToken
+                          success:successBlock
+                          failure:failureBlock
+                  smsVerification:NO];
 }
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
@@ -625,7 +637,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
 }
 
-- (NSString *)reregisterationPhoneNumber
+- (nullable NSString *)reregisterationPhoneNumber
 {
     OWSAssertDebug([self isReregistering]);
 

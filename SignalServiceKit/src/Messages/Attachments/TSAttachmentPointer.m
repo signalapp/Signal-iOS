@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachmentPointer.h"
@@ -11,6 +11,15 @@
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface TSAttachmentStream (TSAttachmentPointer)
+
+- (CGSize)cachedMediaSize;
+
+@end
+
+#pragma mark -
+
 
 @interface TSAttachmentPointer ()
 
@@ -53,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
                   attachmentType:(TSAttachmentType)attachmentType
+                       mediaSize:(CGSize)mediaSize
 {
     self = [super initWithServerId:serverId
                      encryptionKey:key
@@ -69,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     _state = TSAttachmentPointerStateEnqueued;
     self.attachmentType = attachmentType;
     _pointerType = TSAttachmentPointerTypeIncoming;
+    _mediaSize = mediaSize;
 
     return self;
 }
@@ -89,6 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     _state = TSAttachmentPointerStateEnqueued;
     self.attachmentType = attachmentStream.attachmentType;
     _pointerType = TSAttachmentPointerTypeRestoring;
+    _mediaSize = (attachmentStream.shouldHaveImageSize ? attachmentStream.cachedMediaSize : CGSizeZero);
 
     return self;
 }
@@ -104,9 +116,19 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Invalid attachment key.");
         return nil;
     }
-    if (attachmentProto.contentType.length < 1) {
-        OWSFailDebug(@"Invalid attachment content type.");
-        return nil;
+    NSString *_Nullable fileName = attachmentProto.fileName;
+    NSString *_Nullable contentType = attachmentProto.contentType;
+    if (contentType.length < 1) {
+        // Content type might not set if the sending client can't
+        // infer a MIME type from the file extension.
+        OWSLogWarn(@"Invalid attachment content type.");
+        NSString *_Nullable fileExtension = [fileName pathExtension].lowercaseString;
+        if (fileExtension.length > 0) {
+            contentType = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
+        }
+        if (contentType.length < 1) {
+            contentType = OWSMimeTypeApplicationOctetStream;
+        }
     }
 
     // digest will be empty for old clients.
@@ -129,15 +151,22 @@ NS_ASSUME_NONNULL_BEGIN
         albumMessageId = albumMessage.uniqueId;
     }
 
+    CGSize mediaSize = CGSizeZero;
+    if (attachmentProto.hasWidth && attachmentProto.hasHeight && attachmentProto.width > 0
+        && attachmentProto.height > 0) {
+        mediaSize = CGSizeMake(attachmentProto.width, attachmentProto.height);
+    }
+
     TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
                                                                              key:attachmentProto.key
                                                                           digest:digest
                                                                        byteCount:attachmentProto.size
-                                                                     contentType:attachmentProto.contentType
-                                                                  sourceFilename:attachmentProto.fileName
+                                                                     contentType:contentType
+                                                                  sourceFilename:fileName
                                                                          caption:caption
                                                                   albumMessageId:albumMessageId
-                                                                  attachmentType:attachmentType];
+                                                                  attachmentType:attachmentType
+                                                                       mediaSize:mediaSize];
     return pointer;
 }
 

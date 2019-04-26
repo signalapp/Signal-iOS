@@ -27,12 +27,12 @@ class CompareSafetyNumbersActivity: UIActivity {
 
     // MARK: UIActivity
 
-    override class var activityCategory: UIActivityCategory {
+    override class var activityCategory: UIActivity.Category {
         get { return .action }
     }
 
-    override var activityType: UIActivityType? {
-        get { return UIActivityType(rawValue: CompareSafetyNumbersActivityType) }
+    override var activityType: UIActivity.ActivityType? {
+        get { return UIActivity.ActivityType(rawValue: CompareSafetyNumbersActivityType) }
     }
 
     override var activityTitle: String? {

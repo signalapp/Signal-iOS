@@ -3602,6 +3602,9 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.SSKProtoSyncMessageS
             builder.setExpirationStartTimestamp(expirationStartTimestamp)
         }
         builder.setUnidentifiedStatus(unidentifiedStatus)
+        if hasIsRecipientUpdate {
+            builder.setIsRecipientUpdate(isRecipientUpdate)
+        }
         return builder
     }
 
@@ -3635,6 +3638,10 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.SSKProtoSyncMessageS
 
         @objc public func setUnidentifiedStatus(_ wrappedItems: [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus]) {
             proto.unidentifiedStatus = wrappedItems.map { $0.proto }
+        }
+
+        @objc public func setIsRecipientUpdate(_ valueParam: Bool) {
+            proto.isRecipientUpdate = valueParam
         }
 
         @objc public func build() throws -> SSKProtoSyncMessageSent {
@@ -3674,6 +3681,13 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.SSKProtoSyncMessageS
     }
     @objc public var hasExpirationStartTimestamp: Bool {
         return proto.hasExpirationStartTimestamp
+    }
+
+    @objc public var isRecipientUpdate: Bool {
+        return proto.isRecipientUpdate
+    }
+    @objc public var hasIsRecipientUpdate: Bool {
+        return proto.hasIsRecipientUpdate
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Sent,

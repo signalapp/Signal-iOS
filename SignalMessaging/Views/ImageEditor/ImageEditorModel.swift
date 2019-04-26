@@ -4,323 +4,6 @@
 
 import UIKit
 
-@objc public enum ImageEditorError: Int, Error {
-    case assertionError
-    case invalidInput
-}
-
-@objc
-public enum ImageEditorItemType: Int {
-    case test
-    case stroke
-}
-
-// MARK: -
-
-// Instances of ImageEditorItem should be treated
-// as immutable, once configured.
-@objc
-public class ImageEditorItem: NSObject {
-    @objc
-    public let itemId: String
-
-    @objc
-    public let itemType: ImageEditorItemType
-
-    @objc
-    public init(itemType: ImageEditorItemType) {
-        self.itemId = UUID().uuidString
-        self.itemType = itemType
-
-        super.init()
-    }
-
-    @objc
-    public init(itemId: String,
-                itemType: ImageEditorItemType) {
-        self.itemId = itemId
-        self.itemType = itemType
-
-        super.init()
-    }
-
-    public typealias PointConversionFunction = (CGPoint) -> CGPoint
-
-    public func clone(withPointConversionFunction conversion: PointConversionFunction) -> ImageEditorItem {
-        return ImageEditorItem(itemId: itemId, itemType: itemType)
-    }
-}
-
-// MARK: -
-
-@objc
-public class ImageEditorStrokeItem: ImageEditorItem {
-    // Until we need to serialize these items,
-    // just use UIColor.
-    @objc
-    public let color: UIColor
-
-    // Represented in a "ULO unit" coordinate system
-    // for source image.
-    //
-    // "ULO" coordinate system is "upper-left-origin".
-    //
-    // "Unit" coordinate system means values are expressed
-    // in terms of some other values, in this case the
-    // width and height of the source image.
-    //
-    // * 0.0 = left edge
-    // * 1.0 = right edge
-    // * 0.0 = top edge
-    // * 1.0 = bottom edge
-    public typealias StrokeSample = CGPoint
-
-    @objc
-    public let unitSamples: [StrokeSample]
-
-    // Expressed as a "Unit" value as a fraction of
-    // min(width, height) of the destination viewport.
-    @objc
-    public let unitStrokeWidth: CGFloat
-
-    @objc
-    public init(color: UIColor,
-                unitSamples: [StrokeSample],
-                unitStrokeWidth: CGFloat) {
-        self.color = color
-        self.unitSamples = unitSamples
-        self.unitStrokeWidth = unitStrokeWidth
-
-        super.init(itemType: .stroke)
-    }
-
-    @objc
-    public init(itemId: String,
-                color: UIColor,
-                unitSamples: [StrokeSample],
-                unitStrokeWidth: CGFloat) {
-        self.color = color
-        self.unitSamples = unitSamples
-        self.unitStrokeWidth = unitStrokeWidth
-
-        super.init(itemId: itemId, itemType: .stroke)
-    }
-
-    @objc
-    public class func defaultUnitStrokeWidth() -> CGFloat {
-        return 0.02
-    }
-
-    @objc
-    public class func strokeWidth(forUnitStrokeWidth unitStrokeWidth: CGFloat,
-                                  dstSize: CGSize) -> CGFloat {
-        return CGFloatClamp01(unitStrokeWidth) * min(dstSize.width, dstSize.height)
-    }
-
-    public override func clone(withPointConversionFunction conversion: PointConversionFunction) -> ImageEditorItem {
-        // TODO: We might want to convert the unitStrokeWidth too.
-        let convertedUnitSamples = unitSamples.map { (sample) in
-            conversion(sample)
-        }
-        return ImageEditorStrokeItem(itemId: itemId,
-                                     color: color,
-                                     unitSamples: convertedUnitSamples,
-                                     unitStrokeWidth: unitStrokeWidth)
-    }
-}
-
-// MARK: -
-
-public class OrderedDictionary<ValueType>: NSObject {
-
-    public typealias KeyType = String
-
-    var keyValueMap = [KeyType: ValueType]()
-
-    var orderedKeys = [KeyType]()
-
-    public override init() {
-    }
-
-    // Used to clone copies of instances of this class.
-    public init(keyValueMap: [KeyType: ValueType],
-                orderedKeys: [KeyType]) {
-
-        self.keyValueMap = keyValueMap
-        self.orderedKeys = orderedKeys
-    }
-
-    // Since the contents are immutable, we only modify copies
-    // made with this method.
-    public func clone() -> OrderedDictionary<ValueType> {
-        return OrderedDictionary(keyValueMap: keyValueMap, orderedKeys: orderedKeys)
-    }
-
-    public func value(forKey key: KeyType) -> ValueType? {
-        return keyValueMap[key]
-    }
-
-    public func append(key: KeyType, value: ValueType) {
-        if keyValueMap[key] != nil {
-            owsFailDebug("Unexpected duplicate key in key map: \(key)")
-        }
-        keyValueMap[key] = value
-
-        if orderedKeys.contains(key) {
-            owsFailDebug("Unexpected duplicate key in key list: \(key)")
-        } else {
-            orderedKeys.append(key)
-        }
-
-        if orderedKeys.count != keyValueMap.count {
-            owsFailDebug("Invalid contents.")
-        }
-    }
-
-    public func replace(key: KeyType, value: ValueType) {
-        if keyValueMap[key] == nil {
-            owsFailDebug("Missing key in key map: \(key)")
-        }
-        keyValueMap[key] = value
-
-        if !orderedKeys.contains(key) {
-            owsFailDebug("Missing key in key list: \(key)")
-        }
-
-        if orderedKeys.count != keyValueMap.count {
-            owsFailDebug("Invalid contents.")
-        }
-    }
-
-    public func remove(key: KeyType) {
-        if keyValueMap[key] == nil {
-            owsFailDebug("Missing key in key map: \(key)")
-        } else {
-            keyValueMap.removeValue(forKey: key)
-        }
-
-        if !orderedKeys.contains(key) {
-            owsFailDebug("Missing key in key list: \(key)")
-        } else {
-            orderedKeys = orderedKeys.filter { $0 != key }
-        }
-
-        if orderedKeys.count != keyValueMap.count {
-            owsFailDebug("Invalid contents.")
-        }
-    }
-
-    public var count: Int {
-        if orderedKeys.count != keyValueMap.count {
-            owsFailDebug("Invalid contents.")
-        }
-        return orderedKeys.count
-    }
-
-    public func orderedValues() -> [ValueType] {
-        var values = [ValueType]()
-        for key in orderedKeys {
-            guard let value = self.keyValueMap[key] else {
-                owsFailDebug("Missing value")
-                continue
-            }
-            values.append(value)
-        }
-        return values
-    }
-}
-
-// MARK: -
-
-// ImageEditorContents represents a snapshot of canvas
-// state.
-//
-// Instances of ImageEditorContents should be treated
-// as immutable, once configured.
-public class ImageEditorContents: NSObject {
-
-    @objc
-    public let imagePath: String
-
-    @objc
-    public let imageSizePixels: CGSize
-
-    public typealias ItemMapType = OrderedDictionary<ImageEditorItem>
-
-    // This represents the current state of each item,
-    // a mapping of [itemId : item].
-    var itemMap = ItemMapType()
-
-    // Used to create an initial, empty instances of this class.
-    public init(imagePath: String,
-                imageSizePixels: CGSize) {
-        self.imagePath = imagePath
-        self.imageSizePixels = imageSizePixels
-    }
-
-    // Used to clone copies of instances of this class.
-    public init(imagePath: String,
-                imageSizePixels: CGSize,
-                itemMap: ItemMapType) {
-        self.imagePath = imagePath
-        self.imageSizePixels = imageSizePixels
-        self.itemMap = itemMap
-    }
-
-    // Since the contents are immutable, we only modify copies
-    // made with this method.
-    public func clone() -> ImageEditorContents {
-        return ImageEditorContents(imagePath: imagePath,
-                                   imageSizePixels: imageSizePixels,
-                                   itemMap: itemMap.clone())
-    }
-
-    @objc
-    public func item(forId itemId: String) -> ImageEditorItem? {
-        return itemMap.value(forKey: itemId)
-    }
-
-    @objc
-    public func append(item: ImageEditorItem) {
-        Logger.verbose("\(item.itemId)")
-
-        itemMap.append(key: item.itemId, value: item)
-    }
-
-    @objc
-    public func replace(item: ImageEditorItem) {
-        Logger.verbose("\(item.itemId)")
-
-        itemMap.replace(key: item.itemId, value: item)
-    }
-
-    @objc
-    public func remove(item: ImageEditorItem) {
-        Logger.verbose("\(item.itemId)")
-
-        itemMap.remove(key: item.itemId)
-    }
-
-    @objc
-    public func remove(itemId: String) {
-        Logger.verbose("\(itemId)")
-
-        itemMap.remove(key: itemId)
-    }
-
-    @objc
-    public func itemCount() -> Int {
-        return itemMap.count
-    }
-
-    @objc
-    public func items() -> [ImageEditorItem] {
-        return itemMap.orderedValues()
-    }
-}
-
-// MARK: -
-
 // Used to represent undo/redo operations.
 //
 // Because the image editor's "contents" and "items"
@@ -329,9 +12,12 @@ public class ImageEditorContents: NSObject {
 // (multiple times) to preserve/restore editor state.
 private class ImageEditorOperation: NSObject {
 
+    let operationId: String
+
     let contents: ImageEditorContents
 
     required init(contents: ImageEditorContents) {
+        self.operationId = UUID().uuidString
         self.contents = contents
     }
 }
@@ -339,7 +25,7 @@ private class ImageEditorOperation: NSObject {
 // MARK: -
 
 @objc
-public protocol ImageEditorModelDelegate: class {
+public protocol ImageEditorModelObserver: class {
     // Used for large changes to the model, when the entire
     // model should be reloaded.
     func imageEditorModelDidChange(before: ImageEditorContents,
@@ -357,11 +43,8 @@ public class ImageEditorModel: NSObject {
 
     @objc
     public static var isFeatureEnabled: Bool {
-        return _isDebugAssertConfiguration()
+        return true
     }
-
-    @objc
-    public weak var delegate: ImageEditorModelDelegate?
 
     @objc
     public let srcImagePath: String
@@ -370,6 +53,8 @@ public class ImageEditorModel: NSObject {
     public let srcImageSizePixels: CGSize
 
     private var contents: ImageEditorContents
+
+    private var transform: ImageEditorTransform
 
     private var undoStack = [ImageEditorOperation]()
     private var redoStack = [ImageEditorOperation]()
@@ -390,8 +75,8 @@ public class ImageEditorModel: NSObject {
         }
         guard MIMETypeUtil.isImage(mimeType),
             !MIMETypeUtil.isAnimated(mimeType) else {
-            Logger.error("Invalid MIME type: \(mimeType).")
-            throw ImageEditorError.invalidInput
+                Logger.error("Invalid MIME type: \(mimeType).")
+                throw ImageEditorError.invalidInput
         }
 
         let srcImageSizePixels = NSData.imageSize(forFilePath: srcImagePath, mimeType: mimeType)
@@ -401,15 +86,22 @@ public class ImageEditorModel: NSObject {
         }
         self.srcImageSizePixels = srcImageSizePixels
 
-        self.contents = ImageEditorContents(imagePath: srcImagePath,
-                                            imageSizePixels: srcImageSizePixels)
+        self.contents = ImageEditorContents()
+        self.transform = ImageEditorTransform.defaultTransform(srcImageSizePixels: srcImageSizePixels)
 
         super.init()
     }
 
+    public func currentTransform() -> ImageEditorTransform {
+        return transform
+    }
+
     @objc
-    public var currentImagePath: String {
-        return contents.imagePath
+    public func isDirty() -> Bool {
+        if itemCount() > 0 {
+            return true
+        }
+        return transform != ImageEditorTransform.defaultTransform(srcImageSizePixels: srcImageSizePixels)
     }
 
     @objc
@@ -420,6 +112,16 @@ public class ImageEditorModel: NSObject {
     @objc
     public func items() -> [ImageEditorItem] {
         return contents.items()
+    }
+
+    @objc
+    public func itemIds() -> [String] {
+        return contents.itemIds()
+    }
+
+    @objc
+    public func has(itemForId itemId: String) -> Bool {
+        return item(forId: itemId) != nil
     }
 
     @objc
@@ -438,6 +140,47 @@ public class ImageEditorModel: NSObject {
     }
 
     @objc
+    public func currentUndoOperationId() -> String? {
+        guard let operation = undoStack.last else {
+            return nil
+        }
+        return operation.operationId
+    }
+
+    // MARK: - Observers
+
+    private var observers = [Weak<ImageEditorModelObserver>]()
+
+    @objc
+    public func add(observer: ImageEditorModelObserver) {
+        observers.append(Weak(value: observer))
+    }
+
+    private func fireModelDidChange(before: ImageEditorContents,
+                                    after: ImageEditorContents) {
+        // We could diff here and yield a more narrow change event.
+        for weakObserver in observers {
+            guard let observer = weakObserver.value else {
+                continue
+            }
+            observer.imageEditorModelDidChange(before: before,
+                                               after: after)
+        }
+    }
+
+    private func fireModelDidChange(changedItemIds: [String]) {
+        // We could diff here and yield a more narrow change event.
+        for weakObserver in observers {
+            guard let observer = weakObserver.value else {
+                continue
+            }
+            observer.imageEditorModelDidChange(changedItemIds: changedItemIds)
+        }
+    }
+
+    // MARK: -
+
+    @objc
     public func undo() {
         guard let undoOperation = undoStack.popLast() else {
             owsFailDebug("Cannot undo.")
@@ -451,8 +194,7 @@ public class ImageEditorModel: NSObject {
         self.contents = undoOperation.contents
 
         // We could diff here and yield a more narrow change event.
-        delegate?.imageEditorModelDidChange(before: oldContents,
-                                            after: self.contents)
+        fireModelDidChange(before: oldContents, after: self.contents)
     }
 
     @objc
@@ -469,8 +211,7 @@ public class ImageEditorModel: NSObject {
         self.contents = redoOperation.contents
 
         // We could diff here and yield a more narrow change event.
-        delegate?.imageEditorModelDidChange(before: oldContents,
-                                            after: self.contents)
+        fireModelDidChange(before: oldContents, after: self.contents)
     }
 
     @objc
@@ -502,6 +243,16 @@ public class ImageEditorModel: NSObject {
         }, changedItemIds: [item.itemId])
     }
 
+    @objc
+    public func replace(transform: ImageEditorTransform) {
+        self.transform = transform
+
+        // The contents haven't changed, but this event prods the
+        // observers to reload everything, which is necessary if
+        // the transform changes.
+        fireModelDidChange(before: self.contents, after: self.contents)
+    }
+
     // MARK: - Temp Files
 
     private var temporaryFilePaths = [String]()
@@ -530,63 +281,6 @@ public class ImageEditorModel: NSObject {
         }
     }
 
-    // MARK: - Crop
-
-    @objc
-    public func crop(unitCropRect: CGRect) {
-        guard let croppedImage = ImageEditorModel.crop(imagePath: contents.imagePath,
-                                                 unitCropRect: unitCropRect) else {
-                                                    // Not an error; user might have tapped or
-                                                    // otherwise drawn an invalid crop region.
-            Logger.warn("Could not crop image.")
-            return
-        }
-        // Use PNG for temp files; PNG is lossless.
-        guard let croppedImageData = UIImagePNGRepresentation(croppedImage) else {
-            owsFailDebug("Could not convert cropped image to PNG.")
-            return
-        }
-        let croppedImagePath = temporaryFilePath(withFileExtension: "png")
-        do {
-            try croppedImageData.write(to: NSURL.fileURL(withPath: croppedImagePath), options: .atomicWrite)
-        } catch let error as NSError {
-            owsFailDebug("File write failed: \(error)")
-            return
-        }
-        let croppedImageSizePixels = CGSizeScale(croppedImage.size, croppedImage.scale)
-
-        let left = unitCropRect.origin.x
-        let right = unitCropRect.origin.x + unitCropRect.size.width
-        let top = unitCropRect.origin.y
-        let bottom = unitCropRect.origin.y + unitCropRect.size.height
-        let conversion: ImageEditorItem.PointConversionFunction = { (point) in
-            // Convert from the pre-crop unit coordinate system
-            // to post-crop unit coordinate system using inverse
-            // lerp.
-            //
-            // NOTE: Some post-conversion unit values will _NOT_
-            //       be clamped. e.g. strokes outside the crop
-            //       are that < 0 or > 1.  This is fine.
-            //       We could hypothethically discard any items
-            //       whose bounding box is entirely outside the
-            //       new unit rectangle (e.g. have been completely
-            //       cropped) but it doesn't seem worthwhile.
-            let converted = CGPoint(x: CGFloatInverseLerp(point.x, left, right),
-                                    y: CGFloatInverseLerp(point.y, top, bottom))
-            return converted
-        }
-
-        performAction({ (oldContents) in
-            let newContents = ImageEditorContents(imagePath: croppedImagePath,
-                                                  imageSizePixels: croppedImageSizePixels)
-            for oldItem in oldContents.items() {
-                let newItem = oldItem.clone(withPointConversionFunction: conversion)
-                newContents.append(item: newItem)
-            }
-            return newContents
-        }, changedItemIds: nil)
-    }
-
     private func performAction(_ action: (ImageEditorContents) -> ImageEditorContents,
                                changedItemIds: [String]?,
                                suppressUndo: Bool = false) {
@@ -601,10 +295,10 @@ public class ImageEditorModel: NSObject {
         contents = newContents
 
         if let changedItemIds = changedItemIds {
-            delegate?.imageEditorModelDidChange(changedItemIds: changedItemIds)
+            fireModelDidChange(changedItemIds: changedItemIds)
         } else {
-            delegate?.imageEditorModelDidChange(before: oldContents,
-                                                after: self.contents)
+            fireModelDidChange(before: oldContents,
+                               after: self.contents)
         }
     }
 

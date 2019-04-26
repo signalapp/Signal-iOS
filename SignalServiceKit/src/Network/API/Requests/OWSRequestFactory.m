@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRequestFactory.h"
@@ -235,13 +235,21 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
+                                                captchaToken:(nullable NSString *)captchaToken
                                                    transport:(TSVerificationTransport)transport
 {
     OWSAssertDebug(phoneNumber.length > 0);
-    NSString *path = [NSString stringWithFormat:@"%@/%@/code/%@?client=ios",
+
+    NSString *querystring = @"client=ios";
+    if (captchaToken.length > 0) {
+        querystring = [NSString stringWithFormat:@"%@&captcha=%@", querystring, captchaToken];
+    }
+
+    NSString *path = [NSString stringWithFormat:@"%@/%@/code/%@?%@",
                                textSecureAccountsAPI,
                                [self stringForTransport:transport],
-                               phoneNumber];
+                               phoneNumber,
+                               querystring];
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     request.shouldHaveAuthorizationHeaders = NO;
 
@@ -490,10 +498,26 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)cdsFeedbackRequestWithResult:(NSString *)result
++ (TSRequest *)cdsFeedbackRequestWithStatus:(NSString *)status
+                                     reason:(nullable NSString *)reason
 {
-    NSString *path = [NSString stringWithFormat:@"/v1/directory/feedback/%@", result];
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:@{}];
+
+    NSDictionary<NSString *, NSString *> *parameters;
+    if (reason == nil) {
+        parameters = @{};
+    } else {
+        const NSUInteger kServerReasonLimit = 1000;
+        NSString *limitedReason;
+        if (reason.length < kServerReasonLimit) {
+            limitedReason = reason;
+        } else {
+            OWSFailDebug(@"failure: reason should be under 1000");
+            limitedReason = [reason substringToIndex:kServerReasonLimit - 1];
+        }
+        parameters = @{ @"reason": limitedReason };
+    }
+    NSString *path = [NSString stringWithFormat:@"/v1/directory/feedback-v3/%@", status];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
 }
 
 #pragma mark - UD

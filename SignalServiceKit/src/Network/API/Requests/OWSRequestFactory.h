@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -56,6 +56,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 + (TSRequest *)unregisterAccountRequest;
 
 + (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
+                                                captchaToken:(nullable NSString *)captchaToken
                                                    transport:(TSVerificationTransport)transport;
 
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
@@ -102,7 +103,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                             cookies:(NSArray<NSHTTPCookie *> *)cookies;
 
 + (TSRequest *)remoteAttestationAuthRequest;
-+ (TSRequest *)cdsFeedbackRequestWithResult:(NSString *)result NS_SWIFT_NAME(cdsFeedbackRequest(result:));
++ (TSRequest *)cdsFeedbackRequestWithStatus:(NSString *)status
+                                     reason:(nullable NSString *)reason NS_SWIFT_NAME(cdsFeedbackRequest(status:reason:));
 
 #pragma mark - UD
 

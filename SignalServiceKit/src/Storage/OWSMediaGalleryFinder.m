@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMediaGalleryFinder.h"
@@ -43,7 +43,8 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
     return [[self galleryExtensionWithTransaction:transaction] numberOfItemsInGroup:self.mediaGroup];
 }
 
-- (NSUInteger)mediaIndexForAttachment:(TSAttachment *)attachment transaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSNumber *)mediaIndexForAttachment:(TSAttachment *)attachment
+                                   transaction:(YapDatabaseReadTransaction *)transaction
 {
     NSString *groupId;
     NSUInteger index;
@@ -53,10 +54,13 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
                                                                           forKey:attachment.uniqueId
                                                                     inCollection:[TSAttachment collection]];
 
-    OWSAssertDebug(wasFound);
+    if (!wasFound) {
+        return nil;
+    }
+
     OWSAssertDebug([self.mediaGroup isEqual:groupId]);
 
-    return index;
+    return @(index);
 }
 
 - (nullable TSAttachment *)oldestMediaAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -86,6 +90,15 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
                                 OWSAssertDebug([object isKindOfClass:[TSAttachment class]]);
                                 attachmentBlock((TSAttachment *)object);
                             }];
+}
+
+- (BOOL)hasMediaChangesInNotifications:(NSArray<NSNotification *> *)notifications
+                          dbConnection:(YapDatabaseConnection *)dbConnection
+{
+    YapDatabaseAutoViewConnection *extConnection = [dbConnection ext:OWSMediaGalleryFinderExtensionName];
+    OWSAssert(extConnection);
+
+    return [extConnection hasChangesForGroup:self.mediaGroup inNotifications:notifications];
 }
 
 #pragma mark - Util

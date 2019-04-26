@@ -115,7 +115,8 @@ public class ProfileFetcherJob: NSObject {
         }.catch(on: DispatchQueue.global()) { error in
             switch error {
             case ProfileFetcherJobError.throttled(let lastTimeInterval):
-                Logger.info("skipping updateProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
+                // skipping
+                break
             case let error as SignalServiceProfile.ValidationError:
                 Logger.warn("skipping updateProfile retry. Invalid profile for: \(recipientId) error: \(error)")
             default:

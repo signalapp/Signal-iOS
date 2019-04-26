@@ -6,6 +6,11 @@ import Foundation
 @testable import SignalServiceKit
 import XCTest
 
+func XCTAssertMatch(expectedPattern: String, actualText: String, file: StaticString = #file, line: UInt = #line) {
+    let regex = try! NSRegularExpression(pattern: expectedPattern, options: [])
+    XCTAssert(regex.hasMatch(input: actualText), "\(actualText) did not match pattern \(expectedPattern)", file: file, line: line)
+}
+
 class OWSLinkPreviewTest: SSKBaseTestSwift {
 
     override func setUp() {
@@ -125,6 +130,10 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_web_button_share_sheet"))
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_share_sheet&igshid=94c7ihqjfmbm"))
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://imgur.com/gallery/igHOwDM"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://pinterest.com/something"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.pinterest.com/something"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://pin.it/something"))
+        XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://www.pinterest.com/ohjoy/recipes/"))
 
         // Strip trailing commas.
         XCTAssertTrue(OWSLinkPreview.isValidLinkUrl("https://imgur.com/gallery/igHOwDM,"))
@@ -166,22 +175,24 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com"))
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com"))
         XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://i.imgur.com/PYiyLv1.jpg?fbplay"))
+        XCTAssertTrue(OWSLinkPreview.isValidMediaUrl("https://pinimg.com/something"))
     }
 
     func testPreviewUrlForMessageBodyText() {
-        XCTAssertNil(OWSLinkPreview.previewUrl(forMessageBodyText: ""))
-        XCTAssertNil(OWSLinkPreview.previewUrl(forMessageBodyText: "alice bob jim"))
-        XCTAssertNil(OWSLinkPreview.previewUrl(forMessageBodyText: "alice bob jim http://"))
-        XCTAssertNil(OWSLinkPreview.previewUrl(forMessageBodyText: "alice bob jim http://a.com"))
+        Assert(bodyText: "", extractsLink: nil)
+        Assert(bodyText: "alice bob jim", extractsLink: nil)
+        Assert(bodyText: "alice bob jim http://", extractsLink: nil)
+        Assert(bodyText: "alice bob jim http://a.com", extractsLink: nil)
 
-        XCTAssertEqual(OWSLinkPreview.previewUrl(forMessageBodyText: "https://www.youtube.com/watch?v=tP-Ipsat90c"),
-                       "https://www.youtube.com/watch?v=tP-Ipsat90c")
-        XCTAssertEqual(OWSLinkPreview.previewUrl(forMessageBodyText: "alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim"),
-                       "https://www.youtube.com/watch?v=tP-Ipsat90c")
+        Assert(bodyText: "https://www.youtube.com/watch?v=tP-Ipsat90c",
+               extractsLink: "https://www.youtube.com/watch?v=tP-Ipsat90c")
+
+        Assert(bodyText: "alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim",
+               extractsLink: "https://www.youtube.com/watch?v=tP-Ipsat90c")
 
         // If there are more than one, take the first.
-        XCTAssertEqual(OWSLinkPreview.previewUrl(forMessageBodyText: "alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim https://www.youtube.com/watch?v=other-url carol"),
-                       "https://www.youtube.com/watch?v=tP-Ipsat90c")
+        Assert(bodyText: "alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim https://www.youtube.com/watch?v=other-url carol",
+               extractsLink: "https://www.youtube.com/watch?v=tP-Ipsat90c")
     }
 
     func testUtils() {
@@ -207,11 +218,11 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let expectation = self.expectation(description: "link download and parsing")
 
         OWSLinkPreview.tryToBuildPreviewInfo(previewUrl: "https://www.youtube.com/watch?v=tP-Ipsat90c")
-            .done { (draft) in
+            .done { (draft: OWSLinkPreviewDraft) in
                 XCTAssertNotNil(draft)
 
                 XCTAssertEqual(draft.title, "Randomness is Random - Numberphile")
-                XCTAssertNotNil(draft.imageFilePath)
+                XCTAssertNotNil(draft.jpegImageData)
 
                 expectation.fulfill()
             }.catch { (error) in
@@ -381,7 +392,13 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 XCTAssertNotNil(content)
 
                 XCTAssertEqual(content.title, "Walter \"MFPallytime\" on Instagram: “Lol gg”")
-                XCTAssertEqual(content.imageUrl, "https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com")
+                // Actual URL can change based on network response
+                //     https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com
+                // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
+                // to remove it or stub the network response
+                XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/47690175_2275988962411653_1145978227188801192_n.jpg\\?.*$",
+                               actualText: content.imageUrl!)
+//                XCTAssertEqual(content.imageUrl, "https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com")
 
                 expectation.fulfill()
             }.catch { (error) in
@@ -402,7 +419,12 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 XCTAssertNotNil(content)
 
                 XCTAssertEqual(content.title, "Walter \"MFPallytime\" on Instagram: “Lol gg”")
-                XCTAssertEqual(content.imageUrl, "https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com")
+                // Actual URL can change based on network response
+                //     https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com
+                // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
+                // to remove it or stub the network response
+                XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/47690175_2275988962411653_1145978227188801192_n.jpg\\?.*$",
+                               actualText: content.imageUrl!)
 
                 expectation.fulfill()
             }.catch { (error) in
@@ -435,6 +457,27 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         self.waitForExpectations(timeout: 5.0, handler: nil)
     }
 
+    func testLinkParsingWithRealData10() {
+        let expectation = self.expectation(description: "link download and parsing")
+
+        OWSLinkPreview.downloadLink(url: "https://www.pinterest.com/ohjoy/recipes/")
+            .done { (linkData) in
+                let content = try! OWSLinkPreview.parse(linkData: linkData)
+                XCTAssertNotNil(content)
+
+                XCTAssertEqual(content.title, "Recipes")
+                XCTAssertEqual(content.imageUrl, "https://i.pinimg.com/200x150/76/ae/9d/76ae9d3056dbcb295924fdd5db6951c6.jpg")
+
+                expectation.fulfill()
+            }.catch { (error) in
+                Logger.error("error: \(error)")
+                XCTFail("Unexpected error: \(error)")
+                expectation.fulfill()
+            }.retainUntilComplete()
+
+        self.waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
     // When using regular expressions to parse link titles, we need to use
     // String.utf16.count, not String.count in the range.
     func testRegexRanges() {
@@ -453,5 +496,88 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         XCTAssertNotNil(regex.firstMatch(in: text,
                                          options: [],
                                          range: NSRange(location: 0, length: text.utf16.count)))
+    }
+
+    func testCursorPositions() {
+        // sanity check
+        Assert(bodyText: "https://www.youtube.com/watch?v=testCursorPositionsa",
+               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsa",
+               selectedRange: nil)
+
+        // Don't extract link if cursor is touching text
+        let text2 = "https://www.youtube.com/watch?v=testCursorPositionsb"
+        XCTAssertEqual(text2.count, 52)
+        Assert(bodyText: text2,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 51, length: 0))
+
+        Assert(bodyText: text2,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 51, length: 10))
+
+        Assert(bodyText: text2,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 0, length: 0))
+
+        // Unless the cursor is at the end of the text
+        Assert(bodyText: text2,
+               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsb",
+               selectedRange: NSRange(location: 52, length: 0))
+
+        // Once extracted, keep the existing link preview, even if the cursor moves back.
+        Assert(bodyText: text2,
+               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsb",
+               selectedRange: NSRange(location: 51, length: 0))
+
+        let text3 = "foo https://www.youtube.com/watch?v=testCursorPositionsc bar"
+        XCTAssertEqual(text3.count, 60)
+
+        // front edge
+        Assert(bodyText: text3,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 4, length: 0))
+
+        // middle
+        Assert(bodyText: text3,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 4, length: 0))
+
+        // rear edge
+        Assert(bodyText: text3,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 56, length: 0))
+
+        // extract link if selecting after link
+        Assert(bodyText: text3,
+               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsc",
+               selectedRange: NSRange(location: 57, length: 0))
+
+        let text4 = "bar https://www.youtube.com/watch?v=testCursorPositionsd foo"
+        XCTAssertEqual(text4.count, 60)
+
+        // front edge
+        Assert(bodyText: text4,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 4, length: 0))
+
+        // middle
+        Assert(bodyText: text4,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 20, length: 0))
+
+        // rear edge
+        Assert(bodyText: text4,
+               extractsLink: nil,
+               selectedRange: NSRange(location: 56, length: 0))
+
+        // extract link if selecting before link
+        Assert(bodyText: text4,
+               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsd",
+               selectedRange: NSRange(location: 3, length: 0))
+    }
+
+    private func Assert(bodyText: String, extractsLink link: String?, selectedRange: NSRange? = nil, file: StaticString = #file, line: UInt = #line) {
+        let actual = OWSLinkPreview.previewUrl(forMessageBodyText: bodyText, selectedRange: selectedRange)
+        XCTAssertEqual(actual, link, file: file, line: line)
     }
 }

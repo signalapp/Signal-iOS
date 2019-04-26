@@ -18,12 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
 
 + (NSString *)callingCodeFromCountryCode:(NSString *)countryCode;
-+ (NSString *)countryNameFromCountryCode:(NSString *)countryCode;
++ (nullable NSString *)countryNameFromCountryCode:(NSString *)countryCode;
 + (NSArray *)countryCodesForSearchTerm:(nullable NSString *)searchTerm;
 
 // Returns a list of country codes for a calling code in descending
 // order of population.
-- (NSArray *)countryCodesFromCallingCode:(NSString *)callingCode;
+- (NSArray<NSString *> *)countryCodesFromCallingCode:(NSString *)callingCode;
 // Returns the most likely country code for a calling code based on population.
 - (NSString *)probableCountryCodeForCallingCode:(NSString *)callingCode;
 

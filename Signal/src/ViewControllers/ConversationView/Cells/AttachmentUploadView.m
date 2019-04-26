@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AttachmentUploadView.h"
@@ -21,8 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UILabel *progressLabel;
 
-@property (nonatomic) AttachmentStateBlock _Nullable attachmentStateCallback;
-
 @property (nonatomic) BOOL isAttachmentReady;
 
 @property (nonatomic) CGFloat lastProgress;
@@ -34,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation AttachmentUploadView
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment
-           attachmentStateCallback:(AttachmentStateBlock _Nullable)attachmentStateCallback
 {
     self = [super init];
 
@@ -42,7 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssertDebug(attachment);
 
         self.attachment = attachment;
-        self.attachmentStateCallback = attachmentStateCallback;
 
         [self createContents];
 
@@ -54,10 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
         _isAttachmentReady = self.attachment.isUploaded;
 
         [self ensureViewState];
-
-        if (attachmentStateCallback) {
-            self.attachmentStateCallback(_isAttachmentReady);
-        }
     }
     return self;
 }
@@ -110,10 +102,6 @@ NS_ASSUME_NONNULL_BEGIN
     _isAttachmentReady = isAttachmentReady;
 
     [self ensureViewState];
-
-    if (self.attachmentStateCallback) {
-        self.attachmentStateCallback(isAttachmentReady);
-    }
 }
 
 - (void)setLastProgress:(CGFloat)lastProgress

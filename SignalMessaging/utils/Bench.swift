@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,15 +9,18 @@ import Foundation
 ///
 ///     BenchAsync(title: "my benchmark") { completeBenchmark in
 ///         foo {
+///             // consider benchmarking of "foo" complete
 ///             completeBenchmark()
+///
+///             // call any completion handler foo might have
 ///             fooCompletion()
 ///         }
 ///     }
 public func BenchAsync(title: String, block: (@escaping () -> Void) -> Void) {
-    let startTime = CFAbsoluteTimeGetCurrent()
+    let startTime = CACurrentMediaTime()
 
     block {
-        let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
+        let timeElapsed = CACurrentMediaTime() - startTime
         let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
         Logger.debug("[Bench] title: \(title), duration: \(formattedTime)")
     }
@@ -30,23 +33,39 @@ public func Bench(title: String, block: () -> Void) {
     }
 }
 
+public func Bench(title: String, block: () throws -> Void) throws {
+    var thrownError: Error?
+    BenchAsync(title: title) { finish in
+        do {
+            try block()
+        } catch {
+            thrownError = error
+        }
+        finish()
+    }
+    if let errorToRethrow = thrownError {
+        throw errorToRethrow
+    }
+}
+
 /// When it's not convenient to retain the event completion handler, e.g. when the measured event
 /// crosses multiple classes, you can use the BenchEvent tools
 ///
 ///     // in one class
-///     let message = getMessage()
 ///     BenchEventStart(title: "message sending", eventId: message.id)
+///     beginTheWork()
 ///
-/// ...
+///     ...
 ///
 ///    // in another class
-///    BenchEventComplete(title: "message sending", eventId: message.id)
+///    doTheLastThing()
+///    BenchEventComplete(eventId: message.id)
 ///
 /// Or in objc
 ///
 ///    [BenchManager startEventWithTitle:"message sending" eventId:message.id]
 ///    ...
-///    [BenchManager startEventWithTitle:"message sending" eventId:message.id]
+///    [BenchManager completeEventWithEventId:eventId:message.id]
 public func BenchEventStart(title: String, eventId: BenchmarkEventId) {
     BenchAsync(title: title) { finish in
         runningEvents[eventId] = Event(title: title, eventId: eventId, completion: finish)

@@ -6,8 +6,10 @@
 #import <UIKit/UIKit.h>
 
 // Separate iOS Frameworks from other imports.
+#import "AVAudioSession+OWS.h"
 #import "AppSettingsViewController.h"
 #import "AttachmentUploadView.h"
+#import "AvatarViewHelper.h"
 #import "ContactCellView.h"
 #import "ContactTableViewCell.h"
 #import "ConversationViewCell.h"
@@ -40,7 +42,6 @@
 #import "PinEntryView.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
-#import "RegistrationViewController.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"
 #import "UIViewController+Permissions.h"

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "FingerprintViewController.h"
@@ -169,10 +169,13 @@ typedef void (^CustomLayoutBlock)(void);
     self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                       target:self
-                                                      action:@selector(closeButton)];
-    self.shareButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                                                                     target:self
-                                                                     action:@selector(didTapShareButton)];
+                                                      action:@selector(closeButton)
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"stop")];
+    self.shareButton =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                      target:self
+                                                      action:@selector(didTapShareButton)
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share")];
     self.navigationItem.rightBarButtonItem = self.shareButton;
 
     [self createViews];
@@ -190,6 +193,7 @@ typedef void (^CustomLayoutBlock)(void);
     [self.view addSubview:verifyUnverifyButton];
     [verifyUnverifyButton autoPinWidthToSuperview];
     [verifyUnverifyButton autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, verifyUnverifyButton);
 
     UIView *verifyUnverifyPillbox = [UIView new];
     verifyUnverifyPillbox.backgroundColor = [UIColor ows_materialBlueColor];
@@ -217,6 +221,7 @@ typedef void (^CustomLayoutBlock)(void);
     [self.view addSubview:learnMoreButton];
     [learnMoreButton autoPinWidthToSuperview];
     [learnMoreButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:verifyUnverifyButton withOffset:0];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, learnMoreButton);
 
     UILabel *learnMoreLabel = [UILabel new];
     learnMoreLabel.attributedText = [[NSAttributedString alloc]
@@ -265,6 +270,7 @@ typedef void (^CustomLayoutBlock)(void);
                            toEdge:ALEdgeTop
                            ofView:instructionsLabel
                        withOffset:-ScaleFromIPhone5To7Plus(8.f, 15.f)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, fingerprintLabel);
 
     // Fingerprint Image
     CustomLayoutView *fingerprintView = [CustomLayoutView new];
@@ -278,6 +284,7 @@ typedef void (^CustomLayoutBlock)(void);
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(fingerprintViewTapped:)]];
     fingerprintView.userInteractionEnabled = YES;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, fingerprintView);
 
     OWSBezierPathView *fingerprintCircle = [OWSBezierPathView new];
     [fingerprintCircle setConfigureShapeLayerBlock:^(CAShapeLayer *layer, CGRect bounds) {

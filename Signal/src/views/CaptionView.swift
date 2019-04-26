@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 public protocol CaptionContainerViewDelegate: class {
@@ -165,7 +165,7 @@ private class CaptionView: UIView {
         override var intrinsicContentSize: CGSize {
             var size = super.intrinsicContentSize
 
-            if size.height == UIViewNoIntrinsicMetric {
+            if size.height == UIView.noIntrinsicMetric {
                 size.height = layoutManager.usedRect(for: textContainer).height + textContainerInset.top + textContainerInset.bottom
             }
             size.height = min(kMaxHeight, size.height)

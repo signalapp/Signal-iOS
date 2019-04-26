@@ -15,6 +15,8 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
@@ -110,6 +112,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     nameRow.userInteractionEnabled = YES;
     [nameRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(nameRowTapped:)]];
+    nameRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"nameRow");
     [rows addObject:nameRow];
 
     UILabel *nameLabel = [UILabel new];
@@ -136,6 +139,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     nameTextField.text = [OWSProfileManager.sharedManager localProfileName];
     nameTextField.textAlignment = NSTextAlignmentRight;
     nameTextField.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, nameTextField);
     [nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     [nameRow addSubview:nameTextField];
     [nameTextField autoPinLeadingToTrailingEdgeOfView:nameLabel offset:10.f];
@@ -148,6 +152,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     avatarRow.userInteractionEnabled = YES;
     [avatarRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarRowTapped:)]];
+    avatarRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"avatarRow");
     [rows addObject:avatarRow];
 
     UILabel *avatarLabel = [UILabel new];
@@ -160,10 +165,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [avatarLabel autoVCenterInSuperview];
 
     self.avatarView = [AvatarImageView new];
+    self.avatarView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"avatarView");
 
     UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
     self.cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
-
+    
     [avatarRow addSubview:self.avatarView];
     [avatarRow addSubview:self.cameraImageView];
     [self updateAvatarView];
@@ -183,6 +189,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     infoRow.userInteractionEnabled = YES;
     [infoRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(infoRowTapped:)]];
+    infoRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"infoRow");
     [rows addObject:infoRow];
 
     UILabel *infoLabel = [UILabel new];
@@ -229,6 +236,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                            backgroundColor:[UIColor ows_signalBrandBlueColor]
                                     target:self
                                   selector:@selector(saveButtonPressed)];
+        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, saveButton);
         self.saveButton = saveButton;
         [buttonRow addSubview:saveButton];
         [saveButton autoPinLeadingAndTrailingToSuperviewMargin];
@@ -289,7 +297,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     }
  
     __weak ProfileViewController *weakSelf = self;
-    UIAlertController *controller = [UIAlertController
+    UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:
             NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
                 @"The alert title if user tries to exit the new group view without saving changes.")
@@ -297,15 +305,18 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                              NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
                                  @"The alert message if user tries to exit the new group view without saving changes.")
                   preferredStyle:UIAlertControllerStyleAlert];
-    [controller
-        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DISCARD_BUTTON",
-                                                     @"The label for the 'discard' button in alerts and action sheets.")
-                                           style:UIAlertActionStyleDestructive
-                                         handler:^(UIAlertAction *action) {
-                                             [weakSelf profileCompletedOrSkipped];
-                                         }]];
-    [controller addAction:[OWSAlerts cancelAction]];
-    [self presentViewController:controller animated:YES completion:nil];
+    UIAlertAction *discardAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DISCARD_BUTTON",
+                                           @"The label for the 'discard' button in alerts and action sheets.")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"discard")
+                                 style:UIAlertActionStyleDestructive
+                               handler:^(UIAlertAction *action) {
+                                   [weakSelf profileCompletedOrSkipped];
+                               }];
+    [alert addAction:discardAction];
+
+    [alert addAction:[OWSAlerts cancelAction]];
+    [self presentAlert:alert];
 }
 
 - (void)avatarTapped
@@ -334,10 +345,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         case ProfileViewMode_AppSettings:
             if (self.hasUnsavedChanges) {
                 // If we have a unsaved changes, right item should be a "save" button.
-                self.navigationItem.rightBarButtonItem =
+                UIBarButtonItem *saveButton =
                     [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
                                                                   target:self
                                                                   action:@selector(updatePressed)];
+                SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, saveButton);
+                self.navigationItem.rightBarButtonItem = saveButton;
             } else {
                 self.navigationItem.rightBarButtonItem = nil;
             }
@@ -573,7 +586,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 #pragma mark - AvatarViewHelperDelegate
 
-- (NSString *)avatarActionSheetTitle
+- (nullable NSString *)avatarActionSheetTitle
 {
     return NSLocalizedString(
         @"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE", @"Action Sheet title prompting the user for a profile avatar");

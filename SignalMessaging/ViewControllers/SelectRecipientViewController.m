@@ -123,6 +123,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         [_countryCodeButton addTarget:self
                                action:@selector(showCountryCodeView:)
                      forControlEvents:UIControlEventTouchUpInside];
+        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _countryCodeButton);
     }
 
     return _countryCodeButton;
@@ -149,6 +150,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         _examplePhoneNumberLabel = [UILabel new];
         _examplePhoneNumberLabel.font = [self examplePhoneNumberFont];
         _examplePhoneNumberLabel.textColor = [Theme secondaryColor];
+        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _examplePhoneNumberLabel);
     }
 
     return _examplePhoneNumberLabel;
@@ -168,6 +170,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         [_phoneNumberTextField addTarget:self
                                   action:@selector(textFieldDidChange:)
                         forControlEvents:UIControlEventEditingChanged];
+        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _phoneNumberTextField);
     }
 
     return _phoneNumberTextField;
@@ -186,6 +189,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         _phoneNumberButton = button;
         [button autoSetDimension:ALDimensionWidth toSize:140];
         [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
+        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _phoneNumberButton);
     }
     return _phoneNumberButton;
 }
@@ -414,8 +418,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 #pragma mark - UITextFieldDelegate
 
-// TODO: This logic resides in both RegistrationViewController and here.
-//       We should refactor it out into a utility function.
 - (BOOL)textField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText
@@ -423,7 +425,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     [ViewControllerUtils phoneNumberTextField:textField
                 shouldChangeCharactersInRange:range
                             replacementString:insertionText
-                                  countryCode:_callingCode];
+                                  callingCode:_callingCode];
 
     [self updatePhoneNumberButtonEnabling];
 

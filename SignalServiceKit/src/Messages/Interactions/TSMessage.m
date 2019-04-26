@@ -219,6 +219,26 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return [attachments copy];
 }
 
+- (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+                                            contentType:(NSString *)contentType
+{
+    NSArray<TSAttachment *> *attachments = [self attachmentsWithTransaction:transaction];
+    return [attachments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(TSAttachment *evaluatedObject,
+                                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+        return [evaluatedObject.contentType isEqualToString:contentType];
+    }]];
+}
+
+- (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+                                      exceptContentType:(NSString *)contentType
+{
+    NSArray<TSAttachment *> *attachments = [self attachmentsWithTransaction:transaction];
+    return [attachments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(TSAttachment *evaluatedObject,
+                                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+        return ![evaluatedObject.contentType isEqualToString:contentType];
+    }]];
+}
+
 - (void)removeAttachment:(TSAttachment *)attachment transaction:(YapDatabaseReadWriteTransaction *)transaction;
 {
     OWSAssertDebug([self.attachmentIds containsObject:attachment.uniqueId]);
@@ -227,20 +247,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self.attachmentIds removeObject:attachment.uniqueId];
 
     [self saveWithTransaction:transaction];
-}
-
-- (BOOL)isMediaAlbumWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    NSArray<TSAttachment *> *attachments = [self attachmentsWithTransaction:transaction];
-    if (attachments.count < 1) {
-        return NO;
-    }
-    for (TSAttachment *attachment in attachments) {
-        if (!attachment.isVisualMedia) {
-            return NO;
-        }
-    }
-    return YES;
 }
 
 - (NSString *)debugDescription
@@ -257,15 +263,24 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
+- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [self attachmentsWithTransaction:transaction contentType:OWSMimeTypeOversizeTextMessage].firstObject;
+}
+
+- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [self attachmentsWithTransaction:transaction exceptContentType:OWSMimeTypeOversizeTextMessage];
+}
+
 - (nullable NSString *)oversizeTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    if (self.attachmentIds.count != 1) {
+    TSAttachment *_Nullable attachment = [self oversizeTextAttachmentWithTransaction:transaction];
+    if (!attachment) {
         return nil;
     }
 
-    TSAttachment *_Nullable attachment = [self attachmentsWithTransaction:transaction].firstObject;
-    if (![OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType]
-        || ![attachment isKindOfClass:TSAttachmentStream.class]) {
+    if (![attachment isKindOfClass:TSAttachmentStream.class]) {
         return nil;
     }
 
@@ -300,36 +315,30 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 // TODO: This method contains view-specific logic and probably belongs in NotificationsManager, not in SSK.
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
-{    
-    NSString *_Nullable attachmentDescription = nil;
-    if ([self hasAttachments]) {
-        NSString *attachmentId = self.attachmentIds[0];
-        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
-        if ([OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType]) {
-            // Handle oversize text attachments.
-            if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-                NSData *_Nullable data = [NSData dataWithContentsOfFile:attachmentStream.originalFilePath];
-                if (data) {
-                    NSString *_Nullable text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                    if (text) {
-                        return text.filterStringForDisplay;
-                    }
-                }
-            }
-            
-            return @"";
-        } else if (attachment) {
-            attachmentDescription = attachment.description;
-        } else {
-            attachmentDescription = NSLocalizedString(@"UNKNOWN_ATTACHMENT_LABEL",
-                @"In Inbox view, last message label for thread with corrupted attachment.");
-        }
-    }
-
+{
     NSString *_Nullable bodyDescription = nil;
     if (self.body.length > 0) {
         bodyDescription = self.body;
+    }
+
+    if (bodyDescription == nil) {
+        TSAttachment *_Nullable oversizeTextAttachment = [self oversizeTextAttachmentWithTransaction:transaction];
+        if ([oversizeTextAttachment isKindOfClass:[TSAttachmentStream class]]) {
+            TSAttachmentStream *oversizeTextAttachmentStream = (TSAttachmentStream *)oversizeTextAttachment;
+            NSData *_Nullable data = [NSData dataWithContentsOfFile:oversizeTextAttachmentStream.originalFilePath];
+            if (data) {
+                NSString *_Nullable text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                if (text) {
+                    bodyDescription = text.filterStringForDisplay;
+                }
+            }
+        }
+    }
+
+    NSString *_Nullable attachmentDescription = nil;
+    TSAttachment *_Nullable mediaAttachment = [self mediaAttachmentsWithTransaction:transaction].firstObject;
+    if (mediaAttachment != nil) {
+        attachmentDescription = mediaAttachment.description;
     }
 
     if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
@@ -370,14 +379,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
         [attachment removeWithTransaction:transaction];
     };
-
-    // Updates inbox thread preview
-    [self touchThreadWithTransaction:transaction];
-}
-
-- (void)touchThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [transaction touchObjectForKey:self.uniqueThreadId inCollection:[TSThread collection]];
 }
 
 - (BOOL)isExpiringMessage
@@ -415,15 +416,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 }
 
 #pragma mark - Update With... Methods
-
-- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                           changeBlock:(void (^)(id))changeBlock
-{
-    OWSAssertDebug(transaction);
-
-    [super applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
-    [self touchThreadWithTransaction:transaction];
-}
 
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction
 {

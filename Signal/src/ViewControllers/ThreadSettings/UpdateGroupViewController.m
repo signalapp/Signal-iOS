@@ -143,7 +143,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                          @"The title for the 'update group' button.")
                                                style:UIBarButtonItemStylePlain
                                               target:self
-                                              action:@selector(updateGroupPressed)]
+                                              action:@selector(updateGroupPressed)
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"update")]
             : nil);
 }
 
@@ -206,10 +207,12 @@ NS_ASSUME_NONNULL_BEGIN
     [groupNameTextField autoVCenterInSuperview];
     [groupNameTextField autoPinTrailingToSuperviewMargin];
     [groupNameTextField autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, groupNameTextField);
 
     [avatarView
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];
     avatarView.userInteractionEnabled = YES;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, avatarView);
 
     return firstSectionHeader;
 }
@@ -285,6 +288,12 @@ NS_ASSUME_NONNULL_BEGIN
                             }
 
                             [cell configureWithRecipientId:recipientId];
+
+                            // TODO: Confirm with nancy if this will work.
+                            NSString *cellName = [NSString stringWithFormat:@"member.%@", recipientId];
+                            cell.accessibilityIdentifier
+                                = ACCESSIBILITY_IDENTIFIER_WITH_NAME(UpdateGroupViewController, cellName);
+
                             return cell;
                         }
                         customRowHeight:UITableViewAutomaticDimension
@@ -415,31 +424,33 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    UIAlertController *controller = [UIAlertController
+    UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
                                      @"The alert title if user tries to exit update group view without saving changes.")
                          message:
                              NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
                                  @"The alert message if user tries to exit update group view without saving changes.")
                   preferredStyle:UIAlertControllerStyleAlert];
-    [controller
-        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_SAVE",
-                                                     @"The label for the 'save' button in action sheets.")
-                                           style:UIAlertActionStyleDefault
-                                         handler:^(UIAlertAction *action) {
-                                             OWSAssertDebug(self.conversationSettingsViewDelegate);
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_SAVE",
+                                                        @"The label for the 'save' button in action sheets.")
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"save")
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *action) {
+                                                OWSAssertDebug(self.conversationSettingsViewDelegate);
 
-                                             [self updateGroup];
+                                                [self updateGroup];
 
-                                             [self.conversationSettingsViewDelegate popAllConversationSettingsViews];
-                                         }]];
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
-                                                             @"The label for the 'don't save' button in action sheets.")
-                                                   style:UIAlertActionStyleDestructive
-                                                 handler:^(UIAlertAction *action) {
-                                                     [self.navigationController popViewControllerAnimated:YES];
-                                                 }]];
-    [self presentViewController:controller animated:YES completion:nil];
+                                                [self.conversationSettingsViewDelegate
+                                                    popAllConversationSettingsViewsWithCompletion:nil];
+                                            }]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
+                                                        @"The label for the 'don't save' button in action sheets.")
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dont_save")
+                                              style:UIAlertActionStyleDestructive
+                                            handler:^(UIAlertAction *action) {
+                                                [self.navigationController popViewControllerAnimated:YES];
+                                            }]];
+    [self presentAlert:alert];
 }
 
 - (void)updateGroupPressed
@@ -448,7 +459,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updateGroup];
 
-    [self.conversationSettingsViewDelegate popAllConversationSettingsViews];
+    [self.conversationSettingsViewDelegate popAllConversationSettingsViewsWithCompletion:nil];
 }
 
 - (void)groupNameDidChange:(id)sender
@@ -485,7 +496,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - AvatarViewHelperDelegate
 
-- (NSString *)avatarActionSheetTitle
+- (nullable NSString *)avatarActionSheetTitle
 {
     return NSLocalizedString(
         @"NEW_GROUP_ADD_PHOTO_ACTION", @"Action Sheet title prompting the user for a group avatar");

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -63,7 +63,7 @@ class SAELoadViewController: UIViewController {
 
         self.view.backgroundColor = UIColor.ows_signalBrandBlue
 
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
         self.activityIndicator = activityIndicator
         self.view.addSubview(activityIndicator)
         activityIndicator.autoCenterInSuperview()

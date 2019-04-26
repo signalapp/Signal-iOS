@@ -170,6 +170,6 @@ public class BackupRestoreViewController: OWSTableViewController {
     // MARK: Orientation
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return DefaultUIInterfaceOrientationMask()
+        return .portrait
     }
 }

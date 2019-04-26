@@ -27,10 +27,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 @interface TSAccountManager : NSObject
 
-// This property is exposed for testing purposes only.
-#ifdef DEBUG
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
-#endif
 
 #pragma mark - Initializers
 
@@ -90,13 +87,18 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 #pragma mark - Register with phone number
 
 - (void)registerWithPhoneNumber:(NSString *)phoneNumber
+                   captchaToken:(nullable NSString *)captchaToken
                         success:(void (^)(void))successBlock
                         failure:(void (^)(NSError *error))failureBlock
                 smsVerification:(BOOL)isSMS;
 
-- (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
+- (void)rerequestSMSWithCaptchaToken:(nullable NSString *)captchaToken
+                             success:(void (^)(void))successBlock
+                             failure:(void (^)(NSError *error))failureBlock;
 
-- (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
+- (void)rerequestVoiceWithCaptchaToken:(nullable NSString *)captchaToken
+                               success:(void (^)(void))successBlock
+                               failure:(void (^)(NSError *error))failureBlock;
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                           pin:(nullable NSString *)pin
@@ -146,7 +148,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 // Returns YES on success.
 - (BOOL)resetForReregistration;
-- (NSString *)reregisterationPhoneNumber;
+- (nullable NSString *)reregisterationPhoneNumber;
 - (BOOL)isReregistering;
 
 #pragma mark - Manual Message Fetch

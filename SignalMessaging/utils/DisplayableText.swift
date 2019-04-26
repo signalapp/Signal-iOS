@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -165,7 +165,8 @@ extension String {
 
     // MARK: Initializers
 
-    @objc public init(fullText: String, displayText: String, isTextTruncated: Bool) {
+    @objc
+    public init(fullText: String, displayText: String, isTextTruncated: Bool) {
         self.fullText = fullText
         self.displayText = displayText
         self.isTextTruncated = isTextTruncated
@@ -197,6 +198,67 @@ extension String {
         }
         return UInt(emojiCount)
     }
+
+    // For perf we use a static linkDetector. It doesn't change and building DataDetectors is
+    // surprisingly expensive. This should be fine, since NSDataDetector is an NSRegularExpression
+    // and NSRegularExpressions are thread safe.
+    private static let linkDetector: NSDataDetector? = {
+        return try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+    }()
+
+    private static let hostRegex: NSRegularExpression? = {
+        let pattern = "^(?:https?:\\/\\/)?([^:\\/\\s]+)(.*)?$"
+        return try? NSRegularExpression(pattern: pattern)
+    }()
+
+    @objc
+    public lazy var shouldAllowLinkification: Bool = {
+        guard let linkDetector: NSDataDetector = DisplayableText.linkDetector else {
+            owsFailDebug("linkDetector was unexpectedly nil")
+            return false
+        }
+
+        func isValidLink(linkText: String) -> Bool {
+            guard let hostRegex = DisplayableText.hostRegex else {
+                owsFailDebug("hostRegex was unexpectedly nil")
+                return false
+            }
+
+            guard let hostText = hostRegex.parseFirstMatch(inText: linkText) else {
+                owsFailDebug("hostText was unexpectedly nil")
+                return false
+            }
+
+            let strippedHost = hostText.replacingOccurrences(of: ".", with: "") as NSString
+
+            if strippedHost.isOnlyASCII {
+                return true
+            } else if strippedHost.hasAnyASCII {
+                // mix of ascii and non-ascii is invalid
+                return false
+            } else {
+                // IDN
+                return true
+            }
+        }
+
+        for match in linkDetector.matches(in: fullText, options: [], range: NSRange(location: 0, length: fullText.utf16.count)) {
+            guard let matchURL: URL = match.url else {
+                continue
+            }
+
+            // We extract the exact text from the `fullText` rather than use match.url.host
+            // because match.url.host actually escapes non-ascii domains into puny-code.
+            //
+            // But what we really want is to check the text which will ultimately be presented to
+            // the user.
+            let rawTextOfMatch = (fullText as NSString).substring(with: match.range)
+            guard isValidLink(linkText: rawTextOfMatch) else {
+                return false
+            }
+        }
+        return true
+    }()
 
     // MARK: Filter Methods
 

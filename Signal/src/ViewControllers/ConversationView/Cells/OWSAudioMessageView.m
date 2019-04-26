@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAudioMessageView.h"
@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSAudioMessageView ()
 
-@property (nonatomic) TSAttachmentStream *attachmentStream;
+@property (nonatomic) TSAttachment *attachment;
+@property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic) BOOL isIncoming;
 @property (nonatomic, weak) id<ConversationViewItem> viewItem;
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
@@ -30,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSAudioMessageView
 
-- (instancetype)initWithAttachment:(TSAttachmentStream *)attachmentStream
+- (instancetype)initWithAttachment:(TSAttachment *)attachment
                         isIncoming:(BOOL)isIncoming
                           viewItem:(id<ConversationViewItem>)viewItem
                  conversationStyle:(ConversationStyle *)conversationStyle
@@ -38,7 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
 
     if (self) {
-        _attachmentStream = attachmentStream;
+        _attachment = attachment;
+        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+            _attachmentStream = (TSAttachmentStream *)attachment;
+        }
         _isIncoming = isIncoming;
         _viewItem = viewItem;
         _conversationStyle = conversationStyle;
@@ -66,8 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)audioDurationSeconds
 {
-    OWSAssertDebug(self.viewItem.audioDurationSeconds > 0.f);
-
     return self.viewItem.audioDurationSeconds;
 }
 
@@ -126,6 +128,45 @@ NS_ASSUME_NONNULL_BEGIN
     self.audioProgressView.progressColor = progressColor;
 }
 
+- (void)replaceIconWithDownloadProgressIfNecessary:(UIView *)iconView
+{
+    if (!self.viewItem.attachmentPointer) {
+        return;
+    }
+
+    switch (self.viewItem.attachmentPointer.state) {
+        case TSAttachmentPointerStateFailed:
+            // We don't need to handle the "tap to retry" state here,
+            // only download progress.
+            return;
+        case TSAttachmentPointerStateEnqueued:
+        case TSAttachmentPointerStateDownloading:
+            break;
+    }
+    switch (self.viewItem.attachmentPointer.pointerType) {
+        case TSAttachmentPointerTypeRestoring:
+            // TODO: Show "restoring" indicator and possibly progress.
+            return;
+        case TSAttachmentPointerTypeUnknown:
+        case TSAttachmentPointerTypeIncoming:
+            break;
+    }
+    NSString *_Nullable uniqueId = self.viewItem.attachmentPointer.uniqueId;
+    if (uniqueId.length < 1) {
+        OWSFailDebug(@"Missing uniqueId.");
+        return;
+    }
+
+    CGFloat downloadViewSize = self.iconSize;
+    MediaDownloadView *downloadView =
+        [[MediaDownloadView alloc] initWithAttachmentId:uniqueId radius:downloadViewSize * 0.5f];
+    iconView.layer.opacity = 0.01f;
+    [self addSubview:downloadView];
+    [downloadView autoSetDimensionsToSize:CGSizeMake(downloadViewSize, downloadViewSize)];
+    [downloadView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:iconView];
+    [downloadView autoAlignAxis:ALAxisVertical toSameAxisOfView:iconView];
+}
+
 #pragma mark -
 
 - (CGFloat)hMargin
@@ -174,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isVoiceMessage
 {
-    return self.attachmentStream.isVoiceMessage;
+    return self.attachment.isVoiceMessage;
 }
 
 - (void)createContents
@@ -190,13 +231,15 @@ NS_ASSUME_NONNULL_BEGIN
     [self addArrangedSubview:self.audioPlayPauseButton];
     [self.audioPlayPauseButton setContentHuggingHigh];
 
-    NSString *filename = self.attachmentStream.sourceFilename;
-    if (!filename) {
+    [self replaceIconWithDownloadProgressIfNecessary:self.audioPlayPauseButton];
+
+    NSString *_Nullable filename = self.attachment.sourceFilename;
+    if (filename.length < 1) {
         filename = [self.attachmentStream.originalFilePath lastPathComponent];
     }
     NSString *topText = [[filename stringByDeletingPathExtension] ows_stripped];
     if (topText.length < 1) {
-        topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType].localizedUppercaseString;
+        topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachment.contentType].localizedUppercaseString;
     }
     if (topText.length < 1) {
         topText = NSLocalizedString(@"GENERIC_ATTACHMENT_LABEL", @"A label for generic attachments.");

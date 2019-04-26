@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat baseProgress = borderThickness * 2;
     CGFloat minProgress = baseProgress;
     CGFloat maxProgress = MAX(0, self.bounds.size.width - baseProgress);
-    progressRect.size.width = CGFloatLerp(minProgress, maxProgress, self.progress);
+    progressRect.size.width = CGFloatLerp(minProgress, maxProgress, CGFloatClamp01(self.progress));
     UIBezierPath *progressPath = [UIBezierPath bezierPathWithRoundedRect:progressRect cornerRadius:cornerRadius];
     self.progressLayer.path = progressPath.CGPath;
     self.progressLayer.fillColor = self.color.CGColor;

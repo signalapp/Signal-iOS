@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachment.h"
@@ -36,6 +36,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 // messages received from other clients
 @property (nullable, nonatomic, readonly) NSData *digest;
 
+@property (nonatomic, readonly) CGSize mediaSize;
+
 // Non-nil for attachments which need "lazy backup restore."
 - (nullable OWSBackupFragment *)lazyRestoreFragment;
 
@@ -49,7 +51,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
-                  attachmentType:(TSAttachmentType)attachmentType NS_DESIGNATED_INITIALIZER;
+                  attachmentType:(TSAttachmentType)attachmentType
+                       mediaSize:(CGSize)mediaSize NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initForRestoreWithAttachmentStream:(TSAttachmentStream *)attachmentStream NS_DESIGNATED_INITIALIZER;
 

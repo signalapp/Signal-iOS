@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
@@ -53,11 +53,11 @@ class SyncPushTokensJob: NSObject {
             }
 
             guard shouldUploadTokens else {
-                Logger.info("No reason to upload pushToken: \(pushToken), voipToken: \(voipToken)")
+                Logger.info("No reason to upload pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
                 return Promise.value(())
             }
 
-            Logger.warn("uploading tokens to account servers. pushToken: \(pushToken), voipToken: \(voipToken)")
+            Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
             return firstly {
                 self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken)
             }.done { _ in
@@ -89,7 +89,7 @@ class SyncPushTokensJob: NSObject {
     // MARK: 
 
     private func recordPushTokensLocally(pushToken: String, voipToken: String) {
-        Logger.warn("Recording push tokens locally. pushToken: \(pushToken), voipToken: \(voipToken)")
+        Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
 
         var didTokensChange = false
 
@@ -109,4 +109,8 @@ class SyncPushTokensJob: NSObject {
             NotificationCenter.default.postNotificationNameAsync(SyncPushTokensJob.PushTokensDidChange, object: nil)
         }
     }
+}
+
+private func redact(_ string: String) -> String {
+    return OWSIsDebugBuild() ? string : "[ READACTED \(string.prefix(2))...\(string.suffix(2)) ]"
 }

@@ -164,6 +164,8 @@
                                  }
                                  [accessoryLabel sizeToFit];
                                  cell.accessoryView = accessoryLabel;
+                                 cell.accessibilityIdentifier
+                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(AppSettingsViewController, @"network_status");
                                  return cell;
                              }
                                          actionBlock:nil]];
@@ -171,24 +173,29 @@
 
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
                                                               @"Settings table view cell label")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"invite")
                                               actionBlock:^{
                                                   [weakSelf showInviteFlow];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_TITLE",
                                                               @"Settings table view cell label")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"privacy")
                                               actionBlock:^{
                                                   [weakSelf showPrivacy];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil)
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"notifications")
                                               actionBlock:^{
                                                   [weakSelf showNotifications];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"LINKED_DEVICES_TITLE",
                                                               @"Menu item and navbar title for the device manager")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"linked_devices")
                                               actionBlock:^{
                                                   [weakSelf showLinkedDevices];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"advanced")
                                               actionBlock:^{
                                                   [weakSelf showAdvanced];
                                               }]];
@@ -197,17 +204,20 @@
     if (showBackup) {
         [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_BACKUP",
                                                                   @"Label for the backup view in app settings.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"backup")
                                                   actionBlock:^{
                                                       [weakSelf showBackup];
                                                   }]];
     }
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ABOUT", @"")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"about")
                                               actionBlock:^{
                                                   [weakSelf showAbout];
                                               }]];
 
 #ifdef USE_DEBUG_UI
     [section addItem:[OWSTableItem disclosureItemWithText:@"Debug UI"
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"debugui")
                                               actionBlock:^{
                                                   [weakSelf showDebugUI];
                                               }]];
@@ -216,16 +226,20 @@
     if (TSAccountManager.sharedInstance.isDeregistered) {
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON",
                                                                   @"Label for re-registration button.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reregister")
                                                      selector:@selector(reregisterUser)
                                                         color:[UIColor ows_materialBlueColor]]];
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
                                                                   @"Label for 'delete data' button.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")
                                                      selector:@selector(deleteUnregisterUserData)
                                                         color:[UIColor ows_destructiveRedColor]]];
     } else {
-        [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
-                                                     selector:@selector(unregisterUser)
-                                                        color:[UIColor ows_destructiveRedColor]]];
+        [section
+            addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_account")
+                                                selector:@selector(unregisterUser)
+                                                   color:[UIColor ows_destructiveRedColor]]];
     }
 
     [contents addSection:section];
@@ -233,7 +247,10 @@
     self.contents = contents;
 }
 
-- (OWSTableItem *)destructiveButtonItemWithTitle:(NSString *)title selector:(SEL)selector color:(UIColor *)color
+- (OWSTableItem *)destructiveButtonItemWithTitle:(NSString *)title
+                         accessibilityIdentifier:(NSString *)accessibilityIdentifier
+                                        selector:(SEL)selector
+                                           color:(UIColor *)color
 {
     __weak AppSettingsViewController *weakSelf = self;
    return [OWSTableItem
@@ -254,6 +271,7 @@
             [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
             [button autoVCenterInSuperview];
             [button autoPinLeadingAndTrailingToSuperviewMargin];
+            button.accessibilityIdentifier = accessibilityIdentifier;
 
             return cell;
         }
@@ -335,6 +353,8 @@
     [disclosureButton setContentCompressionResistancePriority:(UILayoutPriorityDefaultHigh + 1)
                                                       forAxis:UILayoutConstraintAxisHorizontal];
 
+    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"profile");
+
     return cell;
 }
 
@@ -410,19 +430,19 @@
 - (void)showDeleteAccountUI:(BOOL)isRegistered
 {
     __weak AppSettingsViewController *weakSelf = self;
-    
-    UIAlertController *alertController =
+
+    UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")
                                             message:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TEXT", @"")
                                      preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
-                                                        style:UIAlertActionStyleDestructive
-                                                      handler:^(UIAlertAction *action) {
-                                                          [weakSelf deleteAccount:isRegistered];
-                                                      }]];
-    [alertController addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
+                                              style:UIAlertActionStyleDestructive
+                                            handler:^(UIAlertAction *action) {
+                                                [weakSelf deleteAccount:isRegistered];
+                                            }]];
+    [alert addAction:[OWSAlerts cancelAction]];
 
-    [self presentViewController:alertController animated:YES completion:nil];
+    [self presentAlert:alert];
 }
 
 - (void)deleteAccount:(BOOL)isRegistered
@@ -471,6 +491,7 @@
                                                         target:self
                                                         action:@selector(didPressEnableDarkTheme:)];
     }
+    barButtonItem.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dark_theme");
     return barButtonItem;
 }
 

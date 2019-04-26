@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInteraction.h"
@@ -160,8 +160,16 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (void)touchThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    TSThread *thread = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
-    [thread touchWithTransaction:transaction];
+    [transaction touchObjectForKey:self.uniqueThreadId inCollection:[TSThread collection]];
+}
+
+- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
+                           changeBlock:(void (^)(id))changeBlock
+{
+    OWSAssertDebug(transaction);
+
+    [super applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
+    [self touchThreadWithTransaction:transaction];
 }
 
 #pragma mark Date operations

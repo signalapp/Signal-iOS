@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
 @property (nonatomic) BOOL hasUpdatedContactsAtLeastOnce;
 @property (nonatomic) OWSProfileManager *profileManager;
-@property (nonatomic, readonly) ConversationSearcher *conversationSearcher;
+@property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
 
 @end
 
@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     _blockListCache = [OWSBlockListCache new];
     [_blockListCache startObservingAndSyncStateWithDelegate:self];
 
-    _conversationSearcher = ConversationSearcher.shared;
+    _fullTextSearcher = FullTextSearcher.shared;
 
     _contactsManager = Environment.shared.contactsManager;
     _profileManager = [OWSProfileManager sharedManager];
@@ -210,8 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<SignalAccount *> *signalAccountsToSearch = [self.signalAccounts mutableCopy];
     SignalAccount *selfAccount = [[SignalAccount alloc] initWithRecipientId:self.localNumber];
     [signalAccountsToSearch addObject:selfAccount];
-    return [self.conversationSearcher filterSignalAccounts:signalAccountsToSearch
-                                            withSearchText:searchText];
+    return [self.fullTextSearcher filterSignalAccounts:signalAccountsToSearch withSearchText:searchText];
 }
 
 - (BOOL)doesContact:(Contact *)contact matchSearchTerm:(NSString *)searchTerm
@@ -322,7 +321,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController
 {
-    UIAlertController *alertController = [UIAlertController
+    UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
                                                    : @"Alert title for when the user has just tried to edit a "
                                                      @"contacts after declining to give Signal contacts "
@@ -333,18 +332,18 @@ NS_ASSUME_NONNULL_BEGIN
                                                      @"permissions")
                   preferredStyle:UIAlertControllerStyleAlert];
 
-    [alertController
-        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
-                                                     @"Button text to dismiss missing contacts permission alert")
-                                           style:UIAlertActionStyleCancel
-                                         handler:nil]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
+                                                        @"Button text to dismiss missing contacts permission alert")
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"not_now")
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
 
     UIAlertAction *_Nullable openSystemSettingsAction = CurrentAppContext().openSystemSettingsAction;
     if (openSystemSettingsAction) {
-        [alertController addAction:openSystemSettingsAction];
+        [alert addAction:openSystemSettingsAction];
     }
 
-    [viewController presentViewController:alertController animated:YES completion:nil];
+    [viewController presentAlert:alert];
 }
 
 - (void)presentContactViewControllerForRecipientId:(NSString *)recipientId

@@ -181,7 +181,6 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
     _read = YES;
     [self saveWithTransaction:transaction];
-    [self touchThreadWithTransaction:transaction];
 
     // Ignore sendReadReceipt, it doesn't apply to info messages.
 }

@@ -160,10 +160,6 @@ public class SignalAttachment: NSObject {
     @objc
     public let dataUTI: String
 
-    // Can be used by views to link this SignalAttachment with an Photos framework asset.
-    @objc
-    public var assetId: String?
-
     var error: SignalAttachmentError? {
         didSet {
             AssertIsOnMainThread()
@@ -193,12 +189,7 @@ public class SignalAttachment: NSObject {
     // MARK: 
 
     @objc
-    public static let isMultiSendEnabled = true
-
-    @objc
-    public static var maxAttachmentsAllowed: Int {
-        return isMultiSendEnabled ? 32 : 1
-    }
+    public static let maxAttachmentsAllowed: Int = 32
 
     // MARK: Constructor
 
@@ -310,7 +301,7 @@ public class SignalAttachment: NSObject {
             let asset = AVURLAsset(url: mediaUrl)
             let generator = AVAssetImageGenerator(asset: asset)
             generator.appliesPreferredTrackTransform = true
-            let cgImage = try generator.copyCGImage(at: CMTimeMake(0, 1), actualTime: nil)
+            let cgImage = try generator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
             let image = UIImage(cgImage: cgImage)
 
             cachedVideoPreview = image
@@ -756,8 +747,7 @@ public class SignalAttachment: NSObject {
                 }
                 dstImage = resizedImage
             }
-            guard let jpgImageData = UIImageJPEGRepresentation(dstImage,
-                                                               jpegCompressionQuality(imageUploadQuality: imageUploadQuality)) else {
+            guard let jpgImageData = dstImage.jpegData(compressionQuality: jpegCompressionQuality(imageUploadQuality: imageUploadQuality)) else {
                                                                 attachment.error = .couldNotConvertToJpeg
                                                                 return attachment
             }

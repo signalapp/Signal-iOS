@@ -72,7 +72,7 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Agora Não";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "A versão %@ está disponível na App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "A versão %@ está disponível agora na App Store.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Uma Nova Versão do Signal Está Disponível";
@@ -95,6 +95,9 @@
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Adicionar legenda...";
 
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Legenda";
+
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tipo de arquivo: %@";
 
@@ -112,12 +115,6 @@
 
 /* Status label when an attachment download has failed. */
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Falha ao baixar. Toque para tentar novamente.";
-
-/* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Baixando...";
-
-/* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Na fila";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Erro ao Enviar Anexo";
@@ -302,14 +299,11 @@
 /* Label for generic done button. */
 "BUTTON_DONE" = "Pronto";
 
-/* Label for redo button. */
-"BUTTON_REDO" = "Refazer";
+/* Label for the 'next' button. */
+"BUTTON_NEXT" = "Avançar";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Selecionar";
-
-/* Label for undo button. */
-"BUTTON_UNDO" = "Desfazer";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Ligar novamente";
@@ -321,16 +315,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Necessário acesso ao microfone";
 
 /* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Recebendo ligação";
 
 /* Accessibility label for placing call button */
-"CALL_LABEL" = "Chamar";
+"CALL_LABEL" = "Ligar";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Chamada perdida porque o número de segurança do chamador mudou.";
 
 /* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Ligação perdida";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Sem Resposta.";
@@ -339,13 +333,13 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "Chamar";
+"CALL_USER_ALERT_CALL_BUTTON" = "Ligar";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
 "CALL_USER_ALERT_MESSAGE_FORMAT" = "Gostaria de chamar %@?";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Chamar?";
+"CALL_USER_ALERT_TITLE" = "Ligar?";
 
 /* Accessibility label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Receber chamada";
@@ -355,6 +349,9 @@
 
 /* Accessibility label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Recusar chamada";
+
+/* tooltip label when remote party has enabled their video */
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Toque para ligar seu vídeo";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Terminar chamada";
@@ -513,7 +510,7 @@
 "CONTACT_FIELD_FAMILY_NAME" = "Sobrenome";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Nome";
+"CONTACT_FIELD_GIVEN_NAME" = "Primeiro nome";
 
 /* Label for the 'middle name' field of a contact. */
 "CONTACT_FIELD_MIDDLE_NAME" = "Segundo nome";
@@ -566,6 +563,15 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Excluir conversa?";
 
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "Sem resultados";
+
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 resultado";
+
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d de %d resultados";
+
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Configurações de Conversa";
 
@@ -576,7 +582,7 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Bloquear grupo";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquear pessoa";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquear usuário";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Informações do contato";
@@ -616,6 +622,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Criar Novo Contato";
+
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "Buscar na Conversa";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Toque para mudar";
@@ -736,7 +745,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redirecionando para o GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Recadastrar este telefone";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Recadastrar este número de telefone";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Dispositivo não cadastrado. Seu número de telefone pode estar cadastrado no Signal em outro aparelho. Clique para se recadastrar.";
@@ -816,29 +825,11 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Vamos trocar para o Signal!";
 
-/* Body text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TEXT" = "Você pode arquivar conversas inativas da sua Caixa de Entrada.";
-
-/* Header text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TITLE" = "Limpar Sua Lista de Conversas.";
-
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Nenhum dos seus contatos possui Signal.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Por que você não convida alguém?";
-
-/* Body text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TEXT" = "Clique no botão de escrever";
-
-/* Header text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TITLE" = "Comece a conversar no Signal!";
-
-/* Body text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TEXT" = "Nada por aqui. Aproveite para respirar.";
-
-/* Header text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TITLE" = "Caixa de entrada vazia";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirme seu PIN.";
@@ -856,7 +847,7 @@
 "ENABLE_2FA_VIEW_ENABLE_2FA" = "Ativar";
 
 /* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Próximo";
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Avançar";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN incorreto.";
@@ -1071,6 +1062,18 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Buscar";
 
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Alguns dos seus contatos já estão no Signal, inclusive %@.";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Alguns dos seus contatos já estão no Signal, inclusive %@ e %@";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Alguns dos seus contatos já estão no Signal, inclusive %@, %@ e %@";
+
+/* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Inicie sua primeira conversa aqui.";
+
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nenhum resultado encontrado para '%@'";
 
@@ -1079,12 +1082,6 @@
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
-
-/* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Brush";
-
-/* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Cortar";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Você não pode compartilhar mais de %@ itens.";
@@ -1109,6 +1106,9 @@
 
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Estas conversas estão arquivadas. Elas aparecerão na caixa de entrada somente se novas mensagens forem recebidas.";
+
+/* Message shown in the home view when the inbox is empty. */
+"INBOX_VIEW_EMPTY_INBOX" = "Que tal movimentar as coisas por aqui? Comece mandando uma mensagem para alguém.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Você pode permitir o acesso aos contatos nos Ajustes do iOS para vê-los na sua lista de conversas no Signal.";
@@ -1279,7 +1279,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Enviando";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Enviado";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Enviada";
 
 /* Status label for messages which were skipped. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Ignorada";
@@ -1419,7 +1419,7 @@
 "NETWORK_STATUS_HEADER" = "Status de rede";
 
 /* No comment provided by engineer. */
-"NETWORK_STATUS_OFFLINE" = "Offline";
+"NETWORK_STATUS_OFFLINE" = "Off-line";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Encontrar pelo número de telefone";
@@ -1440,7 +1440,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "Membro";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ para %@";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Nomear esse grupo de bate-papo";
@@ -1467,7 +1467,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Encontrar Contatos pelo Número do Telefone";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Recado para mim";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Pode ser que você tenha recebido mensagens enquanto seu %@ reiniciava.";
@@ -1495,6 +1495,87 @@
 
 /* No comment provided by engineer. */
 "OK" = "OK";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_1" = "Este número de telefone está com o Bloqueio de Cadastro ativo. Por favor, insira o PIN de Desbloqueio de Cadastro.";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_2" = "Seu PIN de Bloqueio de Cadastro é diferente do código de verificação automático que foi enviado para o seu celular na última etapa.";
+
+/* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Esqueci meu PIN";
+
+/* Title of the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_TITLE" = "Bloqueio de Cadastro";
+
+/* Title of the 'onboarding Captcha' view. */
+"ONBOARDING_CAPTCHA_TITLE" = "Adicione um toque de humanidade às suas mensagens";
+
+/* Label for the 'give access' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Habilitar permissões";
+
+/* Explanation in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "As suas informações de contato são sempre transmitidas com segurança.";
+
+/* Label for the 'not now' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Agora Não";
+
+/* Title of the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_TITLE" = "O Signal pode avisar quando você receber uma mensagem (e quem a mandou)";
+
+/* Title of the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Insira seu número de telefone para começar";
+
+/* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Número inválido";
+
+/* Explanation in the 'onboarding profile' view. */
+"ONBOARDING_PROFILE_EXPLANATION" = "Os perfis do Signal são criptografados de ponta a ponta, e o Signal jamais tem acesso a estas informações.";
+
+/* Placeholder text for the profile name in the 'onboarding profile' view. */
+"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Seu nome";
+
+/* Title of the 'onboarding profile' view. */
+"ONBOARDING_PROFILE_TITLE" = "Crie seu perfil";
+
+/* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Termos & Política de Privacidade";
+
+/* Title of the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TITLE" = "Leve a privacidade consigo.\nSeja você em cada mensagem.";
+
+/* Label for the link that lets users change their phone number in the onboarding views. */
+"ONBOARDING_VERIFICATION_BACK_LINK" = "Número errado?";
+
+/* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Não recebi um código (disponível em %@)";
+
+/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "O código está incorreto";
+
+/* Label for link that can be used when the original code did not arrive. */
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Não recebi um código";
+
+/* Message for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Por favor, verifique se o seu celular está com sinal e pode receber mensagens de SMS.";
+
+/* Title for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Nada de código?";
+
+/* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Reenviar código";
+
+/* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Ligue para mim";
+
+/* Label for link that can be used when the resent code did not arrive. */
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Ainda nada de código?";
+
+/* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Insira o código que enviamos para %@";
+
+/* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "Acabamos de reenviar um código para %@";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Configurações";
@@ -1558,6 +1639,15 @@
 
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Fax no Trabalho";
+
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Não foi possível capturar a imagem.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Não foi possível capturar a imagem.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Falha ao configurar câmera.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Álbum sem nome";
@@ -1709,12 +1799,6 @@
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Este número de telefone poderá ser cadastrado sem o PIN de Desbloqueio de Cadastro após 7 dias de inatividade no Signal.";
 
-/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "Este número de telefone está com o Bloqueio de Cadastro ativo. Por favor, insira o PIN de Desbloqueio de Cadastro.\n\nSeu PIN de Desbloqueio de Cadastro é um número à parte do código de verificação automático enviado para você na etapa anterior.";
-
-/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Falha no registro";
-
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Enviar";
 
@@ -1734,10 +1818,7 @@
 "REGISTRATION_BODY" = "Falha na reinscrição para notificações.";
 
 /* Label for the country code field */
-"REGISTRATION_DEFAULT_COUNTRY_NAME" = "Código Do País";
-
-/* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Bloqueio de Cadastro";
+"REGISTRATION_DEFAULT_COUNTRY_NAME" = "Código do país";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Inserir Número";
@@ -1752,31 +1833,19 @@
 "REGISTRATION_IPAD_CONFIRM_BODY" = "O Signal será agora desativado em outros dispositivos cadastrados atualmente com este número de telefone.";
 
 /* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Registre esse iPad";
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Cadastrar este iPad";
 
 /* alert title when registering an iPad */
 "REGISTRATION_IPAD_CONFIRM_TITLE" = "Já tem uma conta no Signal?";
-
-/* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Termos e Política de Privacidade";
-
-/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Ao cadastrar este dispositivo, você concorda com os %@ do Signal";
-
-/* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "termos";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Este formato de número de telefone não possui suporte. Por favor, contactar a assistência. ";
 
 /* Label for the phone number textfield */
-"REGISTRATION_PHONENUMBER_BUTTON" = "Número De Telefone";
+"REGISTRATION_PHONENUMBER_BUTTON" = "Número de telefone";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Você precisa se cadastrar antes de mandar uma mensagem.";
-
-/* No comment provided by engineer. */
-"REGISTRATION_TITLE_LABEL" = "Seu Número De Telefone";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "A Verificação Falhou";
@@ -1786,9 +1855,6 @@
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "PIN de Desbloqueio de Cadastro incorreto.";
-
-/* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Cadastro";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Por favor, forneça um número de telefone válido para registrar.";
@@ -1914,7 +1980,7 @@
 "SEND_BUTTON_TITLE" = "Enviar";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
+"SEND_FAILED_NOTIFICATION_BODY" = "Sua mensagem não pôde ser enviada.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Falha no envie de convite. Tente novamente mais tarde.";
@@ -1924,6 +1990,18 @@
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Convide via SMS: %@";
+
+/* alert title when user attempts to leave the send media flow when they have an in-progress album */
+"SEND_MEDIA_ABANDON_TITLE" = "Descartar mídia?";
+
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Descartar mídia";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Voltar para a Câmera";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Voltar para a Midiateca";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Convidar amigos usando SMS que não é seguro?";
@@ -1955,6 +2033,9 @@
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "A driblagem de censura foi ativada tendo como base o número de telefone da sua conta.";
 
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Você desativou manualmente a driblagem de censura.";
+
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "A driblagem de censura pode ser ativada somente durante uma conexão à Internet.";
 
@@ -1965,10 +2046,10 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Driblagem de Censura";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Habilitar log de depuração";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Habilitar registro de depuração";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Enviar log de depuração";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Enviar registro de depuração";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avançado";
@@ -2070,7 +2151,7 @@
 "SETTINGS_INFORMATION_HEADER" = "Informação";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Convide seus amigos";
+"SETTINGS_INVITE_TITLE" = "Convide sua turma";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "Você pode falar comigo pelo @signalapp. Baixe agora: https://signal.org/download/.";
@@ -2085,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Enviar pré-visualizações de links";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Pré-visualizações de links";
@@ -2312,14 +2393,14 @@
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Desarquivar";
 
-/* In Inbox view, last message label for thread with corrupted attachment. */
-"UNKNOWN_ATTACHMENT_LABEL" = "Anexo desconhecido";
-
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "O usuário não está em seus contatos. Gostaria de bloqueá-lo?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Contato Desconhecido";
+
+/* Label for unknown countries. */
+"UNKNOWN_COUNTRY_NAME" = "País desconhecido";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Desconhecida/o";
@@ -2367,10 +2448,10 @@
 "UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Ativar indicadores de digitação";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Optional link previews are now supported for some of the most popular sites on the Internet.";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Agora é possível mostrar pré-visualizações de links de alguns dos sites mais populares da internet.";
 
 /* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Você pode desativar ou habilitar essa característica a qualquer momento em suas configurações do Signal (Privacidade > Mandar link de visualizações).";
 
 /* Header for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Pré-visualizações de links";
@@ -2415,28 +2496,10 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Olá, chamadas seguras em vídeo!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "O Signal requer iOS 9 ou superior. Por favor, use o recurso de Atualização de Software disponível nos Ajustes do iOS.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal irá em breve exigir iOS 10 ou mais recente. Favor atualizar em Configurações app >> Geral >> Atualização de Software";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Atualize o iOS";
-
-/* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Voltar";
-
-/* Text field placeholder for SMS verification code during registration */
-"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Código de Verificação";
-
-/* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Ligar para mim.";
-
-/* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Reenviar código via SMS";
-
-/* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Enviar";
-
-/* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Entre com o código de verificação enviado para %@";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Você marcou %@ como não verificado.";
@@ -2472,7 +2535,7 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Mensagem de voz";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Termine a configuração no Signal Desktop";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Termine a configuração no Signal Desktop.";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Você desabilitou mensagens efêmeras.";

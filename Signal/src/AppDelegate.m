@@ -3,7 +3,6 @@
 //
 
 #import "AppDelegate.h"
-#import "CodeVerificationViewController.h"
 #import "DebugLogger.h"
 #import "HomeViewController.h"
 #import "MainAppContext.h"
@@ -12,7 +11,6 @@
 #import "OWSOrphanDataCleaner.h"
 #import "OWSScreenLockUI.h"
 #import "Pastelog.h"
-#import "RegistrationViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "SignalsNavigationController.h"
@@ -65,35 +63,6 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
-
-// Signal iOS uses multiple "key" windows, e.g. the screen lock window.
-// We usually switch "key" windows while becoming active.  At the same
-// time, we often change the state of our orientation mask.
-//
-// For reasons unknown, this confuses iOS and leads to very strange
-// behavior, e.g.:
-//
-// * Multiple activation of the app returning from the background, e.g.
-//   transitions from "background, inactive" -> "foreground, inactive"
-//   -> "foreground, active"  -> "foreground, inactive"  ->
-//   "foreground, active".
-// * Multiple (sometimes incomplete) orientation changes while becoming
-//   active.
-// * The side effects of orientation changes (e.g. safe area insets)
-//   being left in a bad state.
-//
-// The solution:
-//
-// * Lock app in portrait unless "foreground, active".
-// * Don't "unlock" until the app has been "foreground, active"
-//   for a short duration (to allow activation process to safely complete).
-// * After unlocking, try to rotate to the current device orientation.
-//
-// The user experience is reasonable: if the user activates the app
-// while in landscape, the user sees a rotation animation.
-@property (nonatomic) BOOL isLandscapeEnabled;
-@property (nonatomic) BOOL shouldEnableLandscape;
-@property (nonatomic, nullable) NSTimer *landscapeTimer;
 
 @end
 
@@ -191,28 +160,26 @@ static NSTimeInterval launchStartedAt;
 
 #pragma mark -
 
-- (void)applicationDidEnterBackground:(UIApplication *)application {
-    OWSLogWarn(@"applicationDidEnterBackground.");
-
-    [self updateShouldEnableLandscape];
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    OWSLogInfo(@"applicationDidEnterBackground.");
 
     [DDLog flushLog];
 }
 
-- (void)applicationWillEnterForeground:(UIApplication *)application {
-    OWSLogWarn(@"applicationWillEnterForeground.");
-
-    [self updateShouldEnableLandscape];
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    OWSLogInfo(@"applicationWillEnterForeground.");
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
 {
-    OWSLogWarn(@"applicationDidReceiveMemoryWarning.");
+    OWSLogInfo(@"applicationDidReceiveMemoryWarning.");
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    OWSLogWarn(@"applicationWillTerminate.");
+    OWSLogInfo(@"applicationWillTerminate.");
 
     [DDLog flushLog];
 }
@@ -330,14 +297,6 @@ static NSTimeInterval launchStartedAt;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationLockDidChange:)
                                                  name:NSNotificationName_2FAStateDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(isScreenBlockActiveDidChange:)
-                                                 name:IsScreenBlockActiveDidChangeNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(reportedApplicationStateDidChange:)
-                                                 name:ReportedApplicationStateDidChangeNotification
                                                object:nil];
 
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
@@ -461,22 +420,22 @@ static NSTimeInterval launchStartedAt;
 
     [self.window makeKeyAndVisible];
 
-    UIAlertController *controller =
+    UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_TITLE",
                                                         @"Title for the 'app launch failed' alert.")
                                             message:NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_MESSAGE",
                                                         @"Message for the 'app launch failed' alert.")
                                      preferredStyle:UIAlertControllerStyleAlert];
 
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [Pastelog submitLogsWithCompletion:^{
-                                                         OWSFail(@"exiting after sharing debug logs.");
-                                                     }];
-                                                 }]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *_Nonnull action) {
+                                                [Pastelog submitLogsWithCompletion:^{
+                                                    OWSFail(@"exiting after sharing debug logs.");
+                                                }];
+                                            }]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:controller animated:YES completion:nil];
+    [fromViewController presentAlert:alert];
 }
 
 - (nullable NSError *)convertDatabaseIfNecessary
@@ -569,7 +528,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    OWSLogInfo(@"registered vanilla push token: %@", deviceToken);
+    OWSLogInfo(@"registered vanilla push token");
     [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
 
@@ -632,10 +591,11 @@ static NSTimeInterval launchStartedAt;
             if ([signupController isKindOfClass:[OWSNavigationController class]]) {
                 OWSNavigationController *navController = (OWSNavigationController *)signupController;
                 UIViewController *controller = [navController.childViewControllers lastObject];
-                if ([controller isKindOfClass:[CodeVerificationViewController class]]) {
-                    CodeVerificationViewController *cvvc = (CodeVerificationViewController *)controller;
+                if ([controller isKindOfClass:[OnboardingVerificationViewController class]]) {
+                    OnboardingVerificationViewController *verificationView
+                        = (OnboardingVerificationViewController *)controller;
                     NSString *verificationCode           = [url.path substringFromIndex:1];
-                    [cvvc setVerificationCodeAndTryToVerify:verificationCode];
+                    [verificationView setVerificationCodeAndTryToVerify:verificationCode];
                     return YES;
                 } else {
                     OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead",
@@ -676,7 +636,8 @@ static NSTimeInterval launchStartedAt;
     // be called _before_ we become active.
     [self clearAllNotificationsAndRestoreBadgeCount];
 
-    [self updateShouldEnableLandscape];
+    // On every activation, clear old temp directories.
+    ClearOldTemporaryDirectories();
 
     OWSLogInfo(@"applicationDidBecomeActive completed.");
 }
@@ -732,7 +693,7 @@ static NSTimeInterval launchStartedAt;
             OWSLogInfo(@"running post launch block for unregistered user.");
 
             // Unregistered user should have no unread messages. e.g. if you delete your account.
-            [SignalApp clearAllNotifications];
+            [AppEnvironment.shared.notificationPresenter clearAllNotifications];
 
             [self.socketManager requestSocketOpen];
 
@@ -780,7 +741,8 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"handleActivation completed.");
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application {
+- (void)applicationWillResignActive:(UIApplication *)application
+{
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
@@ -790,7 +752,7 @@ static NSTimeInterval launchStartedAt;
 
     OWSLogWarn(@"applicationWillResignActive.");
 
-    [self updateShouldEnableLandscape];
+    [self clearAllNotificationsAndRestoreBadgeCount];
 
     [DDLog flushLog];
 }
@@ -799,8 +761,8 @@ static NSTimeInterval launchStartedAt;
 {
     OWSAssertIsOnMainThread();
 
-    [SignalApp clearAllNotifications];
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [AppEnvironment.shared.notificationPresenter clearAllNotifications];
         [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
     }];
 }
@@ -893,13 +855,10 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
-            NSString *_Nullable phoneNumber = handle;
-            if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-                phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
-                if (phoneNumber.length < 1) {
-                    OWSLogWarn(@"ignoring attempt to initiate video call to unknown anonymous signal user.");
-                    return;
-                }
+            NSString *_Nullable phoneNumber = [self phoneNumberForIntentHandle:handle];
+            if (phoneNumber.length < 1) {
+                OWSLogWarn(@"ignoring attempt to initiate video call to unknown user.");
+                return;
             }
 
             // This intent can be received from more than one user interaction.
@@ -955,13 +914,10 @@ static NSTimeInterval launchStartedAt;
                 return;
             }
 
-            NSString *_Nullable phoneNumber = handle;
-            if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-                phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
-                if (phoneNumber.length < 1) {
-                    OWSLogWarn(@"ignoring attempt to initiate audio call to unknown anonymous signal user.");
-                    return;
-                }
+            NSString *_Nullable phoneNumber = [self phoneNumberForIntentHandle:handle];
+            if (phoneNumber.length < 1) {
+                OWSLogWarn(@"ignoring attempt to initiate audio call to unknown user.");
+                return;
             }
 
             if (AppEnvironment.shared.callService.call != nil) {
@@ -1003,114 +959,48 @@ static NSTimeInterval launchStartedAt;
     return NO;
 }
 
+- (nullable NSString *)phoneNumberForIntentHandle:(NSString *)handle
+{
+    OWSAssertDebug(handle.length > 0);
+
+    if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
+        NSString *_Nullable phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
+        if (phoneNumber.length < 1) {
+            OWSLogWarn(@"ignoring attempt to initiate audio call to unknown anonymous signal user.");
+            return nil;
+        }
+        return phoneNumber;
+    }
+
+    for (PhoneNumber *phoneNumber in
+        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:handle
+                                              clientPhoneNumber:[TSAccountManager localNumber]]) {
+        return phoneNumber.toE164;
+    }
+    return nil;
+}
+
 #pragma mark - Orientation
 
 - (UIInterfaceOrientationMask)application:(UIApplication *)application
     supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
 {
-    // See comments on isLandscapeEnabled property.
-    if (!self.isLandscapeEnabled) {
-        return UIInterfaceOrientationMaskPortrait;
-    }
-    // We use isAppForegroundAndActive which depends on "reportedApplicationState"
-    // and therefore is more conservative about being active.
-    if (!CurrentAppContext().isAppForegroundAndActive) {
-        return UIInterfaceOrientationMaskPortrait;
-    }
-    // This clause shouldn't be necessary, but it's nice to
-    // be explicit about our invariants.
-    if (!self.hasInitialRootViewController) {
-        return UIInterfaceOrientationMaskPortrait;
-    }
-
-    if (self.windowManager.hasCall) {
+    if (self.hasCall) {
+        OWSLogInfo(@"has call");
         // The call-banner window is only suitable for portrait display
         return UIInterfaceOrientationMaskPortrait;
     }
-    
-    if (!window) {
-        // If `window` is nil, be permissive.  Otherwise orientation
-        // gets messed up during presentation of windows.
+
+    UIViewController *_Nullable rootViewController = self.window.rootViewController;
+    if (!rootViewController) {
         return UIInterfaceOrientationMaskAllButUpsideDown;
     }
-
-    if (![self.windowManager isAppWindow:window]) {
-        // iOS uses various windows for animations, transitions, etc.
-        // e.g. _UIInteractiveHighlightEffectWindow,
-        //      UITextEffectsWindow.
-        //
-        // We should be permissive with these windows.
-        return UIInterfaceOrientationMaskAllButUpsideDown;
-    }
-
-    if (window == self.windowManager.menuActionsWindow) {
-        return UIInterfaceOrientationMaskAllButUpsideDown;
-    }
-
-    if (self.windowManager.rootWindow != window) {
-        return UIInterfaceOrientationMaskPortrait;
-    }
-
-    return UIInterfaceOrientationMaskAllButUpsideDown;
+    return rootViewController.supportedInterfaceOrientations;
 }
 
-// See comments on isLandscapeEnabled property.
-- (void)updateShouldEnableLandscape
+- (BOOL)hasCall
 {
-    OWSAssertIsOnMainThread();
-
-    // We use isAppForegroundAndActive which depends on "reportedApplicationState"
-    // and therefore is more conservative about being active.
-    self.shouldEnableLandscape = (CurrentAppContext().isAppForegroundAndActive && [AppReadiness isAppReady]
-        && ![OWSWindowManager sharedManager].isScreenBlockActive);
-}
-
-// See comments on isLandscapeEnabled property.
-- (void)setShouldEnableLandscape:(BOOL)shouldEnableLandscape
-{
-    if (_shouldEnableLandscape == shouldEnableLandscape) {
-        return;
-    }
-
-    _shouldEnableLandscape = shouldEnableLandscape;
-
-    void (^disableLandscape)(void) = ^{
-        BOOL wasEnabled = self.isLandscapeEnabled;
-        self.isLandscapeEnabled = NO;
-        [self.landscapeTimer invalidate];
-        self.landscapeTimer = nil;
-
-        if (wasEnabled) {
-            [UIViewController attemptRotationToDeviceOrientation];
-        }
-    };
-
-    if (shouldEnableLandscape) {
-        disableLandscape();
-
-        // Enable Async
-        NSTimeInterval delay = 0.35f;
-        self.landscapeTimer = [NSTimer weakScheduledTimerWithTimeInterval:delay
-                                                                   target:self
-                                                                 selector:@selector(enableLandscape)
-                                                                 userInfo:nil
-                                                                  repeats:NO];
-    } else {
-        // Disable.
-        disableLandscape();
-    }
-}
-
-// See comments on isLandscapeEnabled property.
-- (void)enableLandscape
-{
-    OWSAssertIsOnMainThread();
-
-    self.isLandscapeEnabled = YES;
-    [self.landscapeTimer invalidate];
-    self.landscapeTimer = nil;
-
-    [UIViewController attemptRotationToDeviceOrientation];
+    return self.windowManager.hasCall;
 }
 
 #pragma mark Push Notifications Delegate Methods
@@ -1381,8 +1271,6 @@ static NSTimeInterval launchStartedAt;
 
     [self.primaryStorage touchDbAsync];
 
-    [self updateShouldEnableLandscape];
-
     // Every time the user upgrades to a new version:
     //
     // * Update account attributes.
@@ -1445,16 +1333,6 @@ static NSTimeInterval launchStartedAt;
     [self enableBackgroundRefreshIfNecessary];
 }
 
-- (void)isScreenBlockActiveDidChange:(NSNotification *)notification
-{
-    [self updateShouldEnableLandscape];
-}
-
-- (void)reportedApplicationStateDidChange:(NSNotification *)notification
-{
-    [self updateShouldEnableLandscape];
-}
-
 - (void)ensureRootViewController
 {
     OWSAssertIsOnMainThread();
@@ -1478,7 +1356,7 @@ static NSTimeInterval launchStartedAt;
             rootViewController = [HomeViewController new];
         }
     } else {
-        rootViewController = [RegistrationViewController new];
+        rootViewController = [[OnboardingController new] initialViewController];
         navigationBarHidden = YES;
     }
     OWSAssertDebug(rootViewController);

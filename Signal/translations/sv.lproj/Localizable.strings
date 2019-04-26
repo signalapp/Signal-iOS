@@ -90,10 +90,13 @@
 "ATTACHMENT" = "Bifogad fil";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Bildtext gräns uppnådd.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Gräns för bildtext nådd.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Lägg till en bildtext...";
+
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Rubrik";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Filtyp: %@";
@@ -112,12 +115,6 @@
 
 /* Status label when an attachment download has failed. */
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Nedladdning misslyckad. Tryck för att försöka igen.";
-
-/* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Hämtar hem...";
-
-/* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Köad";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Fel vid sändning av bifogad fil";
@@ -150,7 +147,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Den bifogade filen är tom.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Välj eller ta ny bild och för att skicka";
+"ATTACHMENT_HINT" = "Välj en bild eller ta en ny och skicka sedan den";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Bifogad fil";
@@ -240,7 +237,7 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Blockera";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blockera och lämna \"%@\" gruppen?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blockera och lämna gruppen \"%@\"?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blockera %@?";
@@ -282,7 +279,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Fel";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@har blivit avblockerad ";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@har blivit avblockerad.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Befintliga medlemmar kan nu lägga dig till gruppen igen.";
@@ -294,7 +291,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Blockera %@?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blockerade användare kommer inte kunna ringa eller skicka meddelanden till dig.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blockerade användare kommer inte att kunna ringa eller skicka meddelanden till dig.";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Fortsätt";
@@ -302,35 +299,32 @@
 /* Label for generic done button. */
 "BUTTON_DONE" = "Klar";
 
-/* Label for redo button. */
-"BUTTON_REDO" = "Gör om";
+/* Label for the 'next' button. */
+"BUTTON_NEXT" = "Nästa";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Välj";
-
-/* Label for undo button. */
-"BUTTON_UNDO" = "Ångra";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Ring igen";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Du kan aktivera mikrofonåtkomst i appen Inställningar för att ringa och spela in röstmeddelanden i Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Du kan aktivera mikrofonåtkomst i Inställningar för att ringa och spela in röstmeddelanden i Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Åtkomst till mikrofon krävs";
 
 /* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Inkommande samtal";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Ring";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missade samtalet för att den andra personens säkerhetsnummer har ändrats.";
 
 /* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missat samtal";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Inget svar";
@@ -356,6 +350,9 @@
 /* Accessibility label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Avvisa inkommande samtal";
 
+/* tooltip label when remote party has enabled their video */
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tryck här för att aktivera din video";
+
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Avsluta samtal";
 
@@ -363,10 +360,10 @@
 "CALL_VIEW_MUTE_LABEL" = "Mikrofon av";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Du kan aktivera iOS Call Integration i dina Signal integritetsskydd inställningar för att svara inkommande samtal från din låsskärm.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Du kan aktivera iOS Call Integration i avsnittet Integritetsskydd under Inställningar för att svara på inkommande samtal från din låsskärm.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Du kan aktivera iOS Call Integration i dina Signal integritetsskydd inställningar för att se namn och telefonnummer för inkommande samtal.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Du kan aktivera iOS Call Integration i avsnittet Integritetsskydd under Inställningar för att se namn och telefonnummer för inkommande samtal.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Inte nu";
@@ -414,19 +411,19 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Återställ";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal kunde inte bestämma statusen för ditt iCloud-konto. Logga in på ditt iCloud-konto i iOS-inställningsappen för att säkerhetskopiera din Signal-data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal kunde inte bestämma statusen för ditt iCloud-konto. Logga in på ditt iCloud-konto i appen Inställningar i iOS för att säkerhetskopiera dina Signal-data.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Inget iCloud-konto. Logga in på ditt iCloud-konto i iOS-inställningsappen för att säkerhetskopiera din Signal-data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Inget iCloud-konto. Logga in på ditt iCloud-konto i appen Inställningar i iOS för att säkerhetskopiera dina Signal-data.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal nekades åtkomst till ditt iCloud-konto för säkerhetskopiering. Bevilja åtkomst till ditt iCloud-konto i iOS-inställningsappen för att säkerhetskopiera din Signal-data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal nekades åtkomst till ditt iCloud-konto för säkerhetskopiering. Bevilja åtkomst till ditt iCloud-konto i appen Inställningar i iOS för att säkerhetskopiera dina Signal-data.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Välj färgen för utgående meddelanden för denna konversation.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Välj färg för utgående meddelanden för denna konversation.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Bara du kommer se färgen du väljer.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Bara du kommer att se färgen du väljer.";
 
 /* Modal Sheet title when picking a conversation color. */
 "COLOR_PICKER_SHEET_TITLE" = "Konversationsfärg";
@@ -447,13 +444,13 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kan aktivera kontaktåtkomst i appen Inställningar för att se vilka av dina kontakter som är Signalanvändare.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Det här kommer återställa appen, radera dina meddelanden och avregistrera dig från servern. Appen kommer stängas när allt är klart.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Det här kommer att återställa appen, radera dina meddelanden och avregistrera dig från servern. Appen kommer att stängas när allt är klart.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Är du säker på att du vill radera ditt konto?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Du kommer inte längre kunna skicka eller ta emot meddelanden i den här gruppen.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Du kommer inte längre att kunna skicka eller ta emot meddelanden i den här gruppen.";
 
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Vill du verkligen lämna?";
@@ -549,7 +546,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "Ogiltig kontakt.";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Inga kontaktfält valda";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Inga kontaktfält valda.";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Öppna i Kartor";
@@ -561,10 +558,19 @@
 "CONTACT_WITHOUT_NAME" = "Okänd kontakt";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Detta kan inte göras ogjort.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Denna åtgärd kan inte ångras.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Radera konversation?";
+
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "Inga resultat";
+
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 resultat";
+
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d av %d resultat";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Konversationsinställningar";
@@ -617,6 +623,9 @@
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Skapa ny kontakt";
 
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "Sök i konversationen";
+
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tryck för att ändra";
 
@@ -648,7 +657,7 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Användaren finns inte bland dina kontakter.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Hämtar fler meddelanden...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Hämtar fler meddelanden …";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tryck för mer";
@@ -675,10 +684,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimerar databas";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Timmar sen";
+"DATE_HOURS_AGO_FORMAT" = "%@ timmar sen";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Minuter sen";
+"DATE_MINUTES_AGO_FORMAT" = "%@ minuter sen";
 
 /* The present; the current time. */
 "DATE_NOW" = "Nu";
@@ -727,10 +736,10 @@
 "DEBUG_LOG_ALERT_TITLE" = "Ett steg till";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Kunde inte öppna Mail appen.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "Kunde inte öppna appen Mail.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist-länken kopierades till urklipp. Du kommer bli skickad vidare till listan över problem på GitHub.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist-länken kopierades till urklipp. Du kommer att bli skickad vidare till listan på problem på GitHub.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Går vidare till GitHub";
@@ -739,7 +748,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registrera det här telefonnumret igen";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Enheten inte registrerad längre. Ditt telefonnummer kan vara registrerat med Signal på en annan enhet. Tryck för att registrera igen.";
+"DEREGISTRATION_WARNING" = "Enheten är inte längre inte registrerad. Ditt telefonnummer kan vara registrerat med Signal på en annan enhet. Tryck för att registrera igen.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Senast aktiv: %@";
@@ -748,16 +757,16 @@
 "DEVICE_LINKED_AT_LABEL" = "Länkad: %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Misslyckades uppdatera enhetslistan.";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Misslyckades med uppdatera enhetslistan.";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Meddelanden som försvinner";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Meddelanden i denna konversation kommer försvinna efter %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Meddelanden i denna konversation kommer att försvinna efter %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Gör att meddelanden som skickats och tagits emot i denna konversation kommer försvinna efter att de setts.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Gör att meddelanden som skickats och tagits emot i denna konversation kommer att försvinna efter att de setts.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Just nu försvinner meddelanden efter %@";
@@ -772,7 +781,7 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Kringgå censur för platsen";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kan ge åtkomst i appen för iOS-inställningar.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kan ge åtkomst i appen Inställningar i iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal behöver åtkomst för att ändra kontaktinformation";
@@ -787,7 +796,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Ändra grupp";
 
 /* Label for the cell that lets you add a new member to a group. */
-"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Lägg till...";
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Lägg till …";
 
 /* a title for the members section of the 'new/update group' view. */
 "EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Medlemmar";
@@ -799,10 +808,10 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Uppdatera";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vill du spara ändringarna som du gjort för denna grupp?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vill du spara ändringarna som du har gjort för denna grupp?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Osparade förändringar";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Osparade ändringar";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Kopiera";
@@ -811,34 +820,16 @@
 "EDIT_TXT" = "Ändra";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hej,\n\nDen senaste tiden har jag använt Signal för att hålla mina konversationer på min iPhone privata. Jag vill att du installerar det också, så att vi kan vara säkra på att endast du och jag kan läsa våra meddelanden eller höra våra samtal.\n\nSignal finns tillgänglig för iPhone och för Android. Hämta den här: %@\n\nSignal fungerar som din redan befintliga meddelandeapp. Vi kan skicka bilder och video, ringa samtal, och starta gruppkonversationer. Den bästa delen med det är att ingen annan kan se något av det, inte ens de som gör Signal!\n\nDu kan läsa mer om Open Whisper Systems, och de som ligger bakom här: %@";
+"EMAIL_INVITE_BODY" = "Hej,\n\nDen senaste tiden har jag använt Signal för att hålla mina konversationer på min iPhone privata. Jag vill att du installerar det också, så att vi kan vara säkra på att endast du och jag kan läsa våra meddelanden eller höra våra samtal.\n\nSignal finns tillgänglig för iPhone och för Android. Hämta den här: %@\n\nSignal fungerar som din befintliga meddelandeapp. Vi kan skicka bilder och videor, ringa samtal och starta gruppkonversationer. Det bästa är att ingen annan kan se något av det, inte ens de som gör Signal!\n\nDu kan läsa mer om Open Whisper Systems, de som ligger bakom Signal, här: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Låt oss byta till Signal";
-
-/* Body text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TEXT" = "Du kan arkivera inaktiva konversationer från din inbox.";
-
-/* Header text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TITLE" = "Rensa bland konversationerna";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Inga av dina kontakter har Signal.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Varför inte bjuda in någon?";
-
-/* Body text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TEXT" = "Tryck på knappen för nytt meddelande.";
-
-/* Header text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TITLE" = "Starta din första konversation i Signal!";
-
-/* Body text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TEXT" = "Ingenting. Noll. Tomt. Nada.";
-
-/* Header text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TITLE" = "Inkorgen är tom";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Bekräfta din PIN-kod.";
@@ -859,13 +850,13 @@
 "ENABLE_2FA_VIEW_NEXT_BUTTON" = "Nästa";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN-koderna är inte samma.";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN-koderna matchar inte.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Ange en registreringslås-PIN. Du kommer att behöva ange denna PIN nästa gång du registrerar detta telefonnummer med Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "För ökad säkerhet kan du aktivera en registreringslås-PIN som kommer att krävas för att kunna registrera detta telefonnummer med Signal igen.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "För ökad säkerhet kan du aktivera en registreringslås-PIN som kommer att krävas för att registrera detta telefonnummer med Signal igen.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
 "ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registreringslås är aktiverat. Du kommer att behöva ange din PIN när du registrerar ditt telefonnummer med Signal igen.";
@@ -880,16 +871,16 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Samtalsfel.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Kom inte åt kontakter.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Kunde inte komma åt kontakter.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Kunde inte skicka meddelande.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Kunde inte skicka på grund av unken prekey-data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Kunde inte skicka på grund av gamla prekey-data.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kunde inte skicka meddelande eftersom du blockerat användaren";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kunde inte skicka meddelande eftersom du har blockerat användaren.";
 
 /* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Kunde inte skriva och skicka bifogad fil.";
@@ -898,7 +889,7 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal kunde inte ansluta till internet. Var god försök igen.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Kunde inte skicka meddelandet, det saknas giltig mottagare.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Kunde inte skicka meddelandet då det saknas giltiga mottagare.";
 
 /* Error indicating that a socket request failed. */
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Nätverksförfrågan misslyckades.";
@@ -922,16 +913,16 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakten är inte en Signal-användare.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Bilag misslyckades: Be den här kontakten om att skicka sitt meddelande igen efter uppdatering till den senaste versionen av Signal.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Misslyckades att ta emot bilaga: Be den här kontakten att skicka sitt meddelande igen efter att ha uppdaterat till den senaste versionen av Signal.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Fick ett duplicerat meddelande.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mottog ett duplicerat meddelande.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Mottagarens nyckel är ogiltig.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Mottaget meddelande var ur sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Mottaget meddelande var inte i synk.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Fick ett meddelande som inte är kompatibelt med den här versionen.";
@@ -949,7 +940,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ett okänt fel inträffade.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Säkerhetsnumret har ändrats";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Säkerhetsnumret har ändrats.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Oregistrerad kontakt: %@";
@@ -973,16 +964,16 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Återställ session";
 
 /* Accessibility label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Slutför skapa grupp";
+"FINISH_GROUP_CREATION_LABEL" = "Slutför skapandet av grupp";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Du har inga medier i denna konversation.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Hämtar nyare media...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Hämtar nyare medier …";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Hämtar äldre media...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Hämtar äldre medier …";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Bilaga";
@@ -1071,6 +1062,18 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Sök";
 
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Några av dina kontakter är redan på Signal, inklusive %@.";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Några av dina kontakter är redan på Signal, inklusive %@ och %@";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Några av dina kontakter är redan på Signal, inklusive %@, %@ och %@";
+
+/* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Starta ditt första samtal här.";
+
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Inga träffar för '%@'";
 
@@ -1079,12 +1082,6 @@
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
-
-/* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Pensel";
-
-/* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Beskära";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Du kan inte dela mer än %@ objekt.";
@@ -1109,6 +1106,9 @@
 
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Konversationerna här är arkiverade och kommer bara visas i inkorgen ifall nya meddelanden tas emot.";
+
+/* Message shown in the home view when the inbox is empty. */
+"INBOX_VIEW_EMPTY_INBOX" = "Ge din inkorg något att visa upp. Kom igång genom att skriva till en vän.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Du kan aktivera kontaktåtkomst i appen Inställningar för att se kontaktnamn i din Signal konversationslista.";
@@ -1440,10 +1440,10 @@
 "NEW_GROUP_MEMBER_LABEL" = "Medlem";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ till %@";
 
 /* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Namnge gruppchatten";
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Namnge gruppkonversationen";
 
 /* a title for the non-contacts section of the 'new group' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Andra användare";
@@ -1495,6 +1495,87 @@
 
 /* No comment provided by engineer. */
 "OK" = "OK";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_1" = "Detta mobilnummer har registreringslåset påslaget. Ange PIN-koden för registreringslåset.";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_2" = "Din registrerings lås-PIN-kod skiljer sig från den automatiserade verifieringskoden som skickades till telefonen under det sista steget.";
+
+/* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Jag glömde min PIN-kod";
+
+/* Title of the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_TITLE" = "Registreringslås";
+
+/* Title of the 'onboarding Captcha' view. */
+"ONBOARDING_CAPTCHA_TITLE" = "Lägg till en känsla av mänsklighet till dina meddelanden";
+
+/* Label for the 'give access' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Aktivera behörigheter";
+
+/* Explanation in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Dina kontaktuppgifter överförs alltid säkert.";
+
+/* Label for the 'not now' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Inte nu";
+
+/* Title of the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_TITLE" = "Signal kan låta dig veta när du får ett meddelande (och vem det är från)";
+
+/* Title of the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Ange ditt telefonnummer för att komma igång";
+
+/* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Felaktigt nummer";
+
+/* Explanation in the 'onboarding profile' view. */
+"ONBOARDING_PROFILE_EXPLANATION" = "Signal-profiler är end-to-end krypterade och Signal-tjänsten har aldrig tillgång till denna information.";
+
+/* Placeholder text for the profile name in the 'onboarding profile' view. */
+"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Ditt namn";
+
+/* Title of the 'onboarding profile' view. */
+"ONBOARDING_PROFILE_TITLE" = "Ställ in din profil";
+
+/* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Villkor & Dataskyddspolicy";
+
+/* Title of the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TITLE" = "Ta sekretess med dig.\nVar dig själv i varje meddelande.";
+
+/* Label for the link that lets users change their phone number in the onboarding views. */
+"ONBOARDING_VERIFICATION_BACK_LINK" = "Fel nummer?";
+
+/* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Jag fick inte en kod (tillgänglig om %@)";
+
+/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "Denna kod är felaktig";
+
+/* Label for link that can be used when the original code did not arrive. */
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Jag fick ingen kod.";
+
+/* Message for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Se till att du har mobiltjänst och kan ta emot SMS-meddelanden.";
+
+/* Title for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Ingen kod?";
+
+/* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = " Skicka koden pånytt";
+
+/* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Ring mig istället";
+
+/* Label for link that can be used when the resent code did not arrive. */
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Fortfarande ingen kod?";
+
+/* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Ange koden vi skickade till %@";
+
+/* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "Vi skickade just koden till %@ pånytt";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Inställningar";
@@ -1558,6 +1639,15 @@
 
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Arbetsfax";
+
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Kunde inte ta bilden.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Kunde inte ta bilden.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Kunde inte konfigurera kameran.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Namnlösa album";
@@ -1641,7 +1731,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Dina kontakter kommer kunna se din Signalprofil när du startar nya konversationer och när du delar den med andra användare eller grupper.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Dina kontakter kommer att kunna se din Signal-profil när du startar nya konversationer och när du delar den med andra användare eller grupper.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tryck här för att veta mer. ";
@@ -1709,12 +1799,6 @@
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Efter att 7 dagar har gått sen telefonnumret senast var aktivt i Signal så kan det här telefonnumret registreras igen utan din pinkod för registreringslås.";
 
-/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "Det här telefonnumret har registreringslås aktiverat. Ange pinkoden för registreringslås.\n\nDin pinkod för registreringslås är inte samma som den automatiska verifieringskoden som skickades till din telefon i förra steget.";
-
-/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Kunde inte registrera";
-
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Skicka";
 
@@ -1736,9 +1820,6 @@
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landskod";
 
-/* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Registreringslås";
-
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Ange nummer";
 
@@ -1757,15 +1838,6 @@
 /* alert title when registering an iPad */
 "REGISTRATION_IPAD_CONFIRM_TITLE" = "Har du redan ett Signal-konto?";
 
-/* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Villkor & Dataskyddspolicy";
-
-/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Genom att registrera denna enhet godkänner du Signals %@";
-
-/* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "villkor";
-
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Formatet på telefonnumret stöds inte, vänligen kontaktar supporten.";
 
@@ -1775,9 +1847,6 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Du behöver registrera dig innan du kan skicka ett meddelande.";
 
-/* No comment provided by engineer. */
-"REGISTRATION_TITLE_LABEL" = "Ditt telefonnummer";
-
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Kunde inte bekräfta";
 
@@ -1786,9 +1855,6 @@
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Fel PIN-kod för registreringslås";
-
-/* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Registrera";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Ange ett giltigt telefonnummer för att registrera.";
@@ -1866,13 +1932,13 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "För många felaktiga autentiseringsförsök. Försök igen senare.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att kunna använda skärmlås.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att använda Skärmlås.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att kunna använda skärmlås.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att använda Skärmlås.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att kunna använda skärmlås.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att använda Skärmlås.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autentisera för att öppna Signal";
@@ -1905,7 +1971,7 @@
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Andra kontakter";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Senaste chattar";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Senaste konversationer";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Skicka igen";
@@ -1914,7 +1980,7 @@
 "SEND_BUTTON_TITLE" = "Skicka";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
+"SEND_FAILED_NOTIFICATION_BODY" = "Ditt meddelande kunde inte skickas.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Kunde inte skicka inbjudan, vänligen försök senare.";
@@ -1924,6 +1990,18 @@
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Bjud in via SMS: %@";
+
+/* alert title when user attempts to leave the send media flow when they have an in-progress album */
+"SEND_MEDIA_ABANDON_TITLE" = "Släng media?";
+
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Släng media";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Återgå till kameran";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Återgå till mediebiblioteket";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Bjud in en vän via osäkert SMS?";
@@ -1954,6 +2032,9 @@
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Kringgå censur har aktiverats baserat på ditt kontos telefonnummer";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Du har manuellt inaktiverad censur kringgående.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Kringgå censur kan bara aktiveras när då internet är tillgängligt";
@@ -2085,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Skicka länkförhandsvisningar";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Förhandsvisningar stöds för Imgur-, Instagram-, Reddit- och YouTube-länkar.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Länkförhandsvisningar";
@@ -2312,14 +2393,14 @@
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Avarkivera";
 
-/* In Inbox view, last message label for thread with corrupted attachment. */
-"UNKNOWN_ATTACHMENT_LABEL" = "Okänd bifogad fil";
-
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Användaren finns inte i dina kontakter. Vill du blockera användaren?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Okänd kontakt";
+
+/* Label for unknown countries. */
+"UNKNOWN_COUNTRY_NAME" = "Okänt land";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Okänt";
@@ -2328,7 +2409,7 @@
 "UNLINK_ACTION" = "Avlänka";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Denna enhet kommer inte längre att kunna skicka eller ta emot meddelanden om den är frånkopplad.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Denna enhet kommer inte längre att skicka eller ta emot meddelanden om den är frånkopplad.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Avlänka \"%@\"?";
@@ -2415,28 +2496,10 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hallå säkra videosamtal!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal kräver iOS 9 eller senare. Använd funktionen Programuppdatering i appen för iOS-inställningar.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal kommer snart att kräva iOS 10 eller senare. Vänligen uppgradera i Inställningar-app >> Allmänt >> Programuppdatering.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Uppgradera iOS";
-
-/* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Tillbaka";
-
-/* Text field placeholder for SMS verification code during registration */
-"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Verifieringskod";
-
-/* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Ring mig istället";
-
-/* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Skicka koden igen via SMS";
-
-/* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Skicka";
-
-/* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Skriv verifieringskoden vi skickade till %@.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Du markerade %@ som ej verifierad.";

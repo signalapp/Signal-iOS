@@ -46,11 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
                       focusMessageId:(nullable NSString *)focusMessageId
                             animated:(BOOL)isAnimated;
 
+- (void)presentConversationAndScrollToFirstUnreadMessageForThreadId:(NSString *)threadId animated:(BOOL)isAnimated;
+
 #pragma mark - Methods
 
 + (void)resetAppData;
 
-+ (void)clearAllNotifications;
 
 - (void)showHomeView;
 

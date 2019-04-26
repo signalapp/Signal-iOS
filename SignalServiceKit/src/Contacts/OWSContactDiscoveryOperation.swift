@@ -1,14 +1,14 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc(OWSLegacyContactDiscoveryOperation)
-class LegacyContactDiscoveryBatchOperation: OWSOperation {
+public class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
     @objc
-    var registeredRecipientIds: Set<String>
+    public var registeredRecipientIds: Set<String>
 
     private let recipientIdsToLookup: [String]
     private var networkManager: TSNetworkManager {
@@ -18,7 +18,7 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
     // MARK: Initializers
 
     @objc
-    required init(recipientIdsToLookup: [String]) {
+    public required init(recipientIdsToLookup: [String]) {
         self.recipientIdsToLookup = recipientIdsToLookup
         self.registeredRecipientIds = Set()
 
@@ -30,7 +30,7 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
     // MARK: OWSOperation Overrides
 
     // Called every retry, this is where the bulk of the operation's work should go.
-    override func run() {
+    override public func run() {
         Logger.debug("")
 
         guard !isCancelled else {
@@ -82,7 +82,7 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
     }
 
     // Called at most one time.
-    override func didSucceed() {
+    override public func didSucceed() {
         // Compare against new CDS service
         let modernCDSOperation = CDSOperation(recipientIdsToLookup: self.recipientIdsToLookup)
         let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredRecipientIds: self.registeredRecipientIds)
@@ -400,11 +400,11 @@ class CDSBatchOperation: OWSOperation {
 
 class CDSFeedbackOperation: OWSOperation {
 
-    enum FeedbackResult: String {
+    enum FeedbackResult {
         case ok
         case mismatch
-        case attestationError = "attestation-error"
-        case unexpectedError = "unexpected-error"
+        case attestationError(reason: String)
+        case unexpectedError(reason: String)
     }
 
     private let legacyRegisteredRecipientIds: Set<String>
@@ -455,10 +455,22 @@ class CDSFeedbackOperation: OWSOperation {
             case ContactDiscoveryError.serverError, ContactDiscoveryError.clientError:
                 // Server already has this information, no need submit feedback
                 self.reportSuccess()
-            case ContactDiscoveryServiceError.attestationFailed:
-                self.makeRequest(result: .attestationError)
+            case let cdsError as ContactDiscoveryServiceError:
+                let reason = cdsError.reason
+                switch cdsError.code {
+                case .assertionError:
+                    self.makeRequest(result: .unexpectedError(reason: "CDS assertionError: \(reason ?? "unknown")"))
+                case .attestationFailed:
+                    self.makeRequest(result: .attestationError(reason: "CDS attestationFailed: \(reason ?? "unknown")"))
+                }
+            case ContactDiscoveryError.assertionError(let assertionDescription):
+                self.makeRequest(result: .unexpectedError(reason: "assertionError: \(assertionDescription)"))
+            case ContactDiscoveryError.parseError(description: let parseErrorDescription):
+                self.makeRequest(result: .unexpectedError(reason: "parseError: \(parseErrorDescription)"))
             default:
-                self.makeRequest(result: .unexpectedError)
+                let nsError = error as NSError
+                let reason = "unexpectedError code:\(nsError.code)"
+                self.makeRequest(result: .unexpectedError(reason: reason))
             }
 
             return
@@ -474,7 +486,18 @@ class CDSFeedbackOperation: OWSOperation {
     }
 
     func makeRequest(result: FeedbackResult) {
-        let request = OWSRequestFactory.cdsFeedbackRequest(result: result.rawValue)
+        let reason: String?
+        switch result {
+        case .ok:
+            reason = nil
+        case .mismatch:
+            reason = nil
+        case .attestationError(let attestationErrorReason):
+            reason = attestationErrorReason
+        case .unexpectedError(let unexpectedErrorReason):
+            reason = unexpectedErrorReason
+        }
+        let request = OWSRequestFactory.cdsFeedbackRequest(status: result.statusPath, reason: reason)
         self.networkManager.makeRequest(request,
                                         success: { _, _ in self.reportSuccess() },
                                         failure: { _, error in self.reportError(error) })
@@ -486,5 +509,26 @@ extension Array {
         return stride(from: 0, to: self.count, by: chunkSize).map {
             Array(self[$0..<Swift.min($0 + chunkSize, self.count)])
         }
+    }
+}
+
+extension CDSFeedbackOperation.FeedbackResult {
+    var statusPath: String {
+        switch self {
+        case .ok:
+            return "ok"
+        case .mismatch:
+            return "mismatch"
+        case .attestationError:
+            return "attestation-error"
+        case .unexpectedError:
+            return "unexpected-error"
+        }
+    }
+}
+
+extension ContactDiscoveryServiceError {
+    var reason: String? {
+        return userInfo[ContactDiscoveryServiceErrorKey_Reason] as? String
     }
 }

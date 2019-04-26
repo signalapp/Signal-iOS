@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -39,7 +39,7 @@ public class OWSAudioSession: NSObject {
 
     @objc
     public func setup() {
-        NotificationCenter.default.addObserver(self, selector: #selector(proximitySensorStateDidChange(notification:)), name: .UIDeviceProximityStateDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(proximitySensorStateDidChange(notification:)), name: UIDevice.proximityStateDidChangeNotification, object: nil)
     }
 
     // MARK: Dependencies
@@ -105,20 +105,20 @@ public class OWSAudioSession: NSObject {
             // Eventually it would be nice to consolidate more of the audio
             // session handling.
         } else if aggregateBehaviors.contains(.playAndRecord) {
-            assert(avAudioSession.recordPermission() == .granted)
-            try avAudioSession.setCategory(AVAudioSessionCategoryRecord)
+            assert(avAudioSession.recordPermission == .granted)
+            try avAudioSession.setCategory(.record)
         } else if aggregateBehaviors.contains(.audioMessagePlayback) {
             if self.device.proximityState {
                 Logger.debug("proximityState: true")
 
-                try avAudioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+                try avAudioSession.setCategory(.playAndRecord)
                 try avAudioSession.overrideOutputAudioPort(.none)
             } else {
                 Logger.debug("proximityState: false")
-                try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
+                try avAudioSession.setCategory(.playback)
             }
         } else if aggregateBehaviors.contains(.playback) {
-            try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
+            try avAudioSession.setCategory(.playback)
         } else {
             ensureAudioSessionActivationStateAfterDelay()
         }
@@ -168,7 +168,7 @@ public class OWSAudioSession: NSObject {
         do {
             // When playing audio in Signal, other apps audio (e.g. Music) is paused.
             // By notifying when we deactivate, the other app can resume playback.
-            try avAudioSession.setActive(false, with: [.notifyOthersOnDeactivation])
+            try avAudioSession.setActive(false, options: [.notifyOthersOnDeactivation])
         } catch {
             owsFailDebug("failed with error: \(error)")
         }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "FingerprintViewScanController.h"
@@ -177,10 +177,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *descriptionFormat = NSLocalizedString(
         @"SUCCESSFUL_VERIFICATION_DESCRIPTION", @"Alert body after verifying privacy with {{other user's name}}");
     NSString *successDescription = [NSString stringWithFormat:descriptionFormat, contactName];
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:successTitle
-                                                                             message:successDescription
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
-    [alertController
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:successTitle
+                                                                   message:successDescription
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert
         addAction:[UIAlertAction
                       actionWithTitle:NSLocalizedString(@"FINGERPRINT_SCAN_VERIFY_BUTTON",
                                           @"Button that marks user as verified after a successful fingerprint scan.")
@@ -198,9 +198,9 @@ NS_ASSUME_NONNULL_BEGIN
                                handler:^(UIAlertAction *action) {
                                    [viewController dismissViewControllerAnimated:true completion:nil];
                                }];
-    [alertController addAction:dismissAction];
+    [alert addAction:dismissAction];
 
-    [viewController presentViewController:alertController animated:YES completion:nil];
+    [viewController presentAlert:alert];
 }
 
 + (void)showVerificationFailedWithError:(NSError *)error
@@ -220,21 +220,21 @@ NS_ASSUME_NONNULL_BEGIN
         failureTitle = NSLocalizedString(@"FAILED_VERIFICATION_TITLE", @"alert title");
     } // else no title. We don't want to show a big scary "VERIFICATION FAILED" when it's just user error.
 
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:failureTitle
-                                                                             message:error.localizedDescription
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:failureTitle
+                                                                   message:error.localizedDescription
+                                                            preferredStyle:UIAlertControllerStyleAlert];
 
     if (retryBlock) {
-        [alertController addAction:[UIAlertAction actionWithTitle:[CommonStrings retryButton]
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction *action) {
-                                                              retryBlock();
-                                                          }]];
+        [alert addAction:[UIAlertAction actionWithTitle:[CommonStrings retryButton]
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *action) {
+                                                    retryBlock();
+                                                }]];
     }
 
-    [alertController addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSAlerts cancelAction]];
 
-    [viewController presentViewController:alertController animated:YES completion:nil];
+    [viewController presentAlert:alert];
 
     OWSLogWarn(@"%@ Identity verification failed with error: %@", tag, error);
 }

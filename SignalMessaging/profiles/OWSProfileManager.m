@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSProfileManager.h"
@@ -1233,10 +1233,19 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             });
         };
 
-        NSURL *avatarUrlPath =
-            [NSURL URLWithString:userProfile.avatarUrlPath relativeToURL:self.avatarHTTPManager.baseURL];
-        NSURLRequest *request = [NSURLRequest requestWithURL:avatarUrlPath];
-        NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
+        NSURL *avatarUrl = [NSURL URLWithString:userProfile.avatarUrlPath relativeToURL:self.avatarHTTPManager.baseURL];
+        NSError *serializationError;
+        NSMutableURLRequest *request =
+            [self.avatarHTTPManager.requestSerializer requestWithMethod:@"GET"
+                                                              URLString:avatarUrl.absoluteString
+                                                             parameters:nil
+                                                                  error:&serializationError];
+        if (serializationError) {
+            OWSFailDebug(@"serializationError: %@", serializationError);
+            return;
+        }
+
+        __block NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
             progress:^(NSProgress *_Nonnull downloadProgress) {
                 OWSLogVerbose(
                     @"Downloading avatar for %@ %f", userProfile.recipientId, downloadProgress.fractionCompleted);
@@ -1467,20 +1476,21 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     OWSAssertIsOnMainThread();
 
-    UIAlertController *alertController =
+    UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
     NSString *shareTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
         @"Button to confirm that user wants to share their profile with a user or group.");
-    [alertController addAction:[UIAlertAction actionWithTitle:shareTitle
-                                                        style:UIAlertActionStyleDefault
-                                                      handler:^(UIAlertAction *_Nonnull action) {
-                                                          [self userAddedThreadToProfileWhitelist:thread];
-                                                          successHandler();
-                                                      }]];
-    [alertController addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[UIAlertAction actionWithTitle:shareTitle
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share_profile")
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *_Nonnull action) {
+                                                [self userAddedThreadToProfileWhitelist:thread];
+                                                successHandler();
+                                            }]];
+    [alert addAction:[OWSAlerts cancelAction]];
 
-    [fromViewController presentViewController:alertController animated:YES completion:nil];
+    [fromViewController presentAlert:alert];
 }
 
 - (void)userAddedThreadToProfileWhitelist:(TSThread *)thread

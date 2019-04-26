@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -191,7 +191,7 @@ protocol CallObserver: class {
     func removeObserver(_ observer: CallObserver) {
         AssertIsOnMainThread()
 
-        while let index = observers.index(where: { $0.value === observer }) {
+        while let index = observers.firstIndex(where: { $0.value === observer }) {
             observers.remove(at: index)
         }
     }

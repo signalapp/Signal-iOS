@@ -26,6 +26,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 // Pins the width of this view to the width of its superview, with uniform margins.
 - (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperviewWithMargin:(CGFloat)margin;
 - (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperview;
+- (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperviewMargins;
 // Pins the height of this view to the height of its superview, with uniform margins.
 - (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperviewWithMargin:(CGFloat)margin;
 - (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperview;
@@ -40,7 +41,9 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (void)autoPinHeightToHeightOfView:(UIView *)view;
 
 - (NSLayoutConstraint *)autoPinToSquareAspectRatio;
+- (NSLayoutConstraint *)autoPinToAspectRatioWithSize:(CGSize)size;
 - (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio;
+- (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio relation:(NSLayoutRelation)relation;
 
 #pragma mark - Content Hugging and Compression Resistance
 
@@ -151,6 +154,17 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor;
 
 - (UIView *)addBorderViewWithColor:(UIColor *)color strokeWidth:(CGFloat)strokeWidth cornerRadius:(CGFloat)cornerRadius;
+
+@end
+
+#pragma mark -
+
+@interface UIAlertAction (OWS)
+
++ (instancetype)actionWithTitle:(nullable NSString *)title
+        accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                          style:(UIAlertActionStyle)style
+                        handler:(void (^__nullable)(UIAlertAction *action))handler;
 
 @end
 

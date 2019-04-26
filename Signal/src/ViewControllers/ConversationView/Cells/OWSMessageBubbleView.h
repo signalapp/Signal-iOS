@@ -25,8 +25,6 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
     OWSMessageGestureLocation_LinkPreview,
 };
 
-extern const UIDataDetectorTypes kOWSAllowedDataDetectorTypes;
-
 @protocol OWSMessageBubbleViewDelegate
 
 - (void)didTapImageViewItem:(id<ConversationViewItem>)viewItem
@@ -58,6 +56,8 @@ extern const UIDataDetectorTypes kOWSAllowedDataDetectorTypes;
     NS_SWIFT_NAME(didTapSendInvite(toContactShare:));
 - (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
     NS_SWIFT_NAME(didTapShowAddToContactUI(forContactShare:));
+
+@property (nonatomic, readonly, nullable) NSString *lastSearchedText;
 
 @end
 

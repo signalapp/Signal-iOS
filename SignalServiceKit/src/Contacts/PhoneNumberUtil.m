@@ -82,7 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // country code -> country name
-+ (NSString *)countryNameFromCountryCode:(NSString *)countryCode {
++ (nullable NSString *)countryNameFromCountryCode:(NSString *)countryCode
+{
     OWSAssertDebug(countryCode);
 
     NSDictionary *countryCodeComponent = @{NSLocaleCountryCode : countryCode};

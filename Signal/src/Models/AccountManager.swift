@@ -19,17 +19,6 @@ public class AccountManager: NSObject {
         return OWSProfileManager.shared()
     }
 
-    // MARK: -
-
-    @objc
-    public override init() {
-        super.init()
-
-        SwiftSingletons.register(self)
-    }
-
-    // MARK: - Dependencies
-
     private var networkManager: TSNetworkManager {
         return SSKEnvironment.shared.networkManager
     }
@@ -40,6 +29,15 @@ public class AccountManager: NSObject {
 
     private var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
+    }
+
+    // MARK: -
+
+    @objc
+    public override init() {
+        super.init()
+
+        SwiftSingletons.register(self)
     }
 
     // MARK: registration
@@ -88,7 +86,7 @@ public class AccountManager: NSObject {
         return Promise { resolver in
             tsAccountManager.verifyAccount(withCode: verificationCode,
                                            pin: pin,
-                                           success: resolver.fulfill,
+                                           success: { resolver.fulfill(()) },
                                            failure: resolver.reject)
         }
     }
@@ -111,7 +109,7 @@ public class AccountManager: NSObject {
         return Promise { resolver in
             tsAccountManager.registerForPushNotifications(pushToken: pushToken,
                                                           voipToken: voipToken,
-                                                          success: resolver.fulfill,
+                                                          success: { resolver.fulfill(()) },
                                                           failure: resolver.reject)
         }
     }
