@@ -482,7 +482,7 @@ public class StickerManager: NSObject {
         DispatchQueue.global().async {
             databaseStorage.readSwallowingErrors { (transaction) in
                 for stickerPack in self.allStickerPacks(transaction: transaction) {
-                    ensureDownloadsSync(forStickerPack: stickerPack, transaction: transaction)
+                    ensureDownloads(forStickerPack: stickerPack, transaction: transaction)
                 }
             }
         }
@@ -492,12 +492,12 @@ public class StickerManager: NSObject {
     public class func ensureDownloadsAsync(forStickerPack stickerPack: StickerPack) {
         DispatchQueue.global().async {
             databaseStorage.readSwallowingErrors { (transaction) in
-                ensureDownloadsSync(forStickerPack: stickerPack, transaction: transaction)
+                ensureDownloads(forStickerPack: stickerPack, transaction: transaction)
             }
         }
     }
 
-    private class func ensureDownloadsSync(forStickerPack stickerPack: StickerPack, transaction: SDSAnyReadTransaction) {
+    private class func ensureDownloads(forStickerPack stickerPack: StickerPack, transaction: SDSAnyReadTransaction) {
         // TODO: As an optimization, we could flag packs as "complete" if we know all
         // of their stickers are installed.
 
