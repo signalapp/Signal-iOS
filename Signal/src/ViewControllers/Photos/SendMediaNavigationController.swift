@@ -23,7 +23,7 @@ class SendMediaNavigationController: OWSNavigationController {
     }
 
     var attachmentCount: Int {
-        return attachmentDraftCollection.count - attachmentDraftCollection.pickerAttachments.count + mediaLibrarySelections.count
+        return attachmentDraftCollection.count
     }
 
     // MARK: - Overrides
@@ -202,11 +202,9 @@ class SendMediaNavigationController: OWSNavigationController {
 
     private var attachmentDraftCollection: AttachmentDraftCollection = .empty
 
-    private var attachments: [SignalAttachment] {
-        return attachmentDraftCollection.attachmentDrafts.map { $0.attachment }
+    private var attachmentPromises: [Promise<SignalAttachment>] {
+        return attachmentDraftCollection.attachmentDrafts.map { $0.attachmentPromise }
     }
-
-    private let mediaLibrarySelections: OrderedDictionary<PHAsset, MediaLibrarySelection> = OrderedDictionary()
 
     // MARK: Child VC's
 
@@ -224,13 +222,13 @@ class SendMediaNavigationController: OWSNavigationController {
         return vc
     }()
 
-    private func pushApprovalViewController() {
+    private func pushApprovalViewController(attachments: [SignalAttachment]) {
         guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
             owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
             return
         }
 
-        let approvalViewController = AttachmentApprovalViewController(mode: .sharedNavigation, attachments: self.attachments)
+        let approvalViewController = AttachmentApprovalViewController(mode: .sharedNavigation, attachments: attachments)
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
@@ -346,7 +344,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         if isInBatchSelectMode {
             updateButtons(topViewController: photoCaptureViewController)
         } else {
-            pushApprovalViewController()
+            pushApprovalViewController(attachments: [attachment])
         }
     }
 
@@ -366,7 +364,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     func discardDraft() {
         assert(attachmentDraftCollection.attachmentDrafts.count <= 1)
         if let lastAttachmentDraft = attachmentDraftCollection.attachmentDrafts.last {
-            attachmentDraftCollection.remove(attachment: lastAttachmentDraft.attachment)
+            attachmentDraftCollection.remove(lastAttachmentDraft)
         }
         assert(attachmentDraftCollection.attachmentDrafts.count == 0)
     }
@@ -384,16 +382,11 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
     }
 
     func showApprovalAfterProcessingAnyMediaLibrarySelections() {
-        let mediaLibrarySelections: [MediaLibrarySelection] = self.mediaLibrarySelections.orderedValues
-
         let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
-            let attachmentPromises: [Promise<MediaLibraryAttachment>] = mediaLibrarySelections.map { $0.promise }
-
-            when(fulfilled: attachmentPromises).map { attachments in
+            when(fulfilled: self.attachmentDraftCollection.attachmentPromises).map { attachments in
                 Logger.debug("built all attachments")
                 modal.dismiss {
-                    self.attachmentDraftCollection.selectedFromPicker(attachments: attachments)
-                    self.pushApprovalViewController()
+                    self.pushApprovalViewController(attachments: attachments)
                 }
             }.catch { error in
                 Logger.error("failed to prepare attachments. error: \(error)")
@@ -409,25 +402,25 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, isAssetSelected asset: PHAsset) -> Bool {
-        return mediaLibrarySelections.hasValue(forKey: asset)
+        return attachmentDraftCollection.hasPickerAttachment(forAsset: asset)
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>) {
-        guard !mediaLibrarySelections.hasValue(forKey: asset) else {
+        guard !attachmentDraftCollection.hasPickerAttachment(forAsset: asset) else {
             return
         }
 
-        let libraryMedia = MediaLibrarySelection(asset: asset, signalAttachmentPromise: attachmentPromise)
-        mediaLibrarySelections.append(key: asset, value: libraryMedia)
+        let libraryMedia = MediaLibraryAttachment(asset: asset, signalAttachmentPromise: attachmentPromise)
+        attachmentDraftCollection.append(.picker(attachment: libraryMedia))
 
         updateButtons(topViewController: imagePicker)
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset) {
-        guard mediaLibrarySelections.hasValue(forKey: asset) else {
+        guard let draft = attachmentDraftCollection.pickerAttachment(forAsset: asset) else {
             return
         }
-        mediaLibrarySelections.remove(key: asset)
+        attachmentDraftCollection.remove(.picker(attachment: draft))
 
         updateButtons(topViewController: imagePicker)
     }
@@ -447,19 +440,12 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
-        guard let removedDraft = attachmentDraftCollection.attachmentDrafts.first(where: { $0.attachment == attachment}) else {
+        guard let removedDraft = attachmentDraftCollection.attachmentDraft(forAttachment: attachment) else {
             owsFailDebug("removedDraft was unexpectedly nil")
             return
         }
 
-        switch removedDraft.source {
-        case .picker(attachment: let pickerAttachment):
-            mediaLibrarySelections.remove(key: pickerAttachment.asset)
-        case .camera(attachment: _):
-            break
-        }
-
-        attachmentDraftCollection.remove(attachment: attachment)
+        attachmentDraftCollection.remove(removedDraft)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
@@ -488,12 +474,12 @@ private enum AttachmentDraft {
 }
 
 private extension AttachmentDraft {
-    var attachment: SignalAttachment {
+    var attachmentPromise: Promise<SignalAttachment> {
         switch self {
         case .camera(let cameraAttachment):
-            return cameraAttachment
+            return Promise.value(cameraAttachment)
         case .picker(let pickerAttachment):
-            return pickerAttachment.signalAttachment
+            return pickerAttachment.signalAttachmentPromise
         }
     }
 
@@ -501,6 +487,8 @@ private extension AttachmentDraft {
         return self
     }
 }
+
+extension AttachmentDraft: Equatable { }
 
 private struct AttachmentDraftCollection {
     private(set) var attachmentDrafts: [AttachmentDraft]
@@ -513,6 +501,10 @@ private struct AttachmentDraftCollection {
 
     var count: Int {
         return attachmentDrafts.count
+    }
+
+    var attachmentPromises: [Promise<SignalAttachment>] {
+        return attachmentDrafts.map { $0.attachmentPromise }
     }
 
     var pickerAttachments: [MediaLibraryAttachment] {
@@ -541,57 +533,42 @@ private struct AttachmentDraftCollection {
         attachmentDrafts.append(element)
     }
 
-    mutating func remove(attachment: SignalAttachment) {
-        attachmentDrafts = attachmentDrafts.filter { $0.attachment != attachment }
+    mutating func remove(_ element: AttachmentDraft) {
+        attachmentDrafts.removeAll { $0 == element }
     }
 
-    mutating func selectedFromPicker(attachments: [MediaLibraryAttachment]) {
-        let pickedAttachments: Set<MediaLibraryAttachment> = Set(attachments)
-        let oldPickerAttachments: Set<MediaLibraryAttachment> = Set(self.pickerAttachments)
-
-        for removedAttachment in oldPickerAttachments.subtracting(pickedAttachments) {
-            remove(attachment: removedAttachment.signalAttachment)
-        }
-
-        // enumerate over new attachments to maintain order from picker
-        for attachment in attachments {
-            guard !oldPickerAttachments.contains(attachment) else {
+    func attachmentDraft(forAttachment: SignalAttachment) -> AttachmentDraft? {
+        for attachmentDraft in attachmentDrafts {
+            guard let attachment = attachmentDraft.attachmentPromise.value else {
+                // method should only be used after draft promises have been resolved.
+                owsFailDebug("attachment was unexpectedly nil")
                 continue
             }
-            append(.picker(attachment: attachment))
+            if attachment == forAttachment {
+                return attachmentDraft
+            }
         }
-    }
-}
-
-private struct MediaLibrarySelection: Hashable, Equatable {
-    let asset: PHAsset
-    let signalAttachmentPromise: Promise<SignalAttachment>
-
-    var hashValue: Int {
-        return asset.hashValue
+        return nil
     }
 
-    var promise: Promise<MediaLibraryAttachment> {
-        let asset = self.asset
-        return signalAttachmentPromise.map { signalAttachment in
-            return MediaLibraryAttachment(asset: asset, signalAttachment: signalAttachment)
-        }
+    func pickerAttachment(forAsset asset: PHAsset) -> MediaLibraryAttachment? {
+        return pickerAttachments.first { $0.asset == asset }
     }
 
-    static func ==(lhs: MediaLibrarySelection, rhs: MediaLibrarySelection) -> Bool {
-        return lhs.asset == rhs.asset
+    func hasPickerAttachment(forAsset asset: PHAsset) -> Bool {
+        return pickerAttachment(forAsset: asset) != nil
     }
 }
 
 private struct MediaLibraryAttachment: Hashable, Equatable {
     let asset: PHAsset
-    let signalAttachment: SignalAttachment
+    let signalAttachmentPromise: Promise<SignalAttachment>
 
-    public var hashValue: Int {
-        return asset.hashValue
+    func hash(into hasher: inout Hasher) {
+        asset.hash(into: &hasher)
     }
 
-    public static func == (lhs: MediaLibraryAttachment, rhs: MediaLibraryAttachment) -> Bool {
+    static func ==(lhs: MediaLibraryAttachment, rhs: MediaLibraryAttachment) -> Bool {
         return lhs.asset == rhs.asset
     }
 }
@@ -602,7 +579,7 @@ extension SendMediaNavigationController: DoneButtonDelegate {
     }
 
     fileprivate func doneButtonWasTapped(_ doneButton: DoneButton) {
-        assert(attachmentDraftCollection.count > 0 || mediaLibrarySelections.count > 0)
+        assert(attachmentDraftCollection.count > 0)
         showApprovalAfterProcessingAnyMediaLibrarySelections()
     }
 }
