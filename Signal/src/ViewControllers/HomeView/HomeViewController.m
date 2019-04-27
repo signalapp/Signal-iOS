@@ -1457,6 +1457,9 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
             [self.navigationController pushViewController:conversationVC animated:isAnimated];
         } else {
             [self.navigationController setViewControllers:@[ self, conversationVC ] animated:isAnimated];
+            if (self.navigationController.presentedViewController) {
+                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            }
         }
     });
 }
