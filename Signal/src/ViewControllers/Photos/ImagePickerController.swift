@@ -401,6 +401,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         collectionView.allowsMultipleSelection = delegate.isInBatchSelectMode
+        updateVisibleCells()
     }
 
     func clearCollectionViewSelection() {
@@ -538,10 +539,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let delegate = delegate else {
-            return UICollectionViewCell(forAutoLayout: ())
-        }
-
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoGridViewCell.reuseIdentifier, for: indexPath) as? PhotoGridViewCell else {
             owsFail("cell was unexpectedly nil")
         }
@@ -549,15 +546,36 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         cell.loadingColor = UIColor(white: 0.2, alpha: 1)
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
         cell.configure(item: assetItem)
-
-        let isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
-        if isSelected {
-            cell.isSelected = isSelected
-        } else {
-            cell.isSelected = isSelected
-        }
-
         return cell
+    }
+
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let delegate = delegate else { return }
+        guard let photoGridViewCell = cell as? PhotoGridViewCell else {
+            owsFailDebug("unexpected cell: \(cell)")
+            return
+        }
+        let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
+        photoGridViewCell.isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
+        photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
+    }
+
+    func updateVisibleCells() {
+        guard let delegate = delegate else { return }
+        for cell in collectionView.visibleCells {
+            guard let photoGridViewCell = cell as? PhotoGridViewCell else {
+                owsFailDebug("unexpected cell: \(cell)")
+                continue
+            }
+
+            guard let assetItem = photoGridViewCell.item as? PhotoPickerAssetItem else {
+                owsFailDebug("unexpected photoGridViewCell.item: \(String(describing: photoGridViewCell.item))")
+                continue
+            }
+
+            photoGridViewCell.isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
+            photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
+        }
     }
 }
 

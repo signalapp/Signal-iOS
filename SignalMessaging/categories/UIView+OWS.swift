@@ -120,11 +120,11 @@ public extension UIView {
         return constraints
     }
 
-    func setShadow(radius: CGFloat = 2.0, opacity: CGFloat = 0.66, offset: CGPoint = .zero, color: CGColor = UIColor.black.cgColor) {
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowRadius = 2.0
-        layer.shadowOpacity = 0.66
-        layer.shadowOffset = .zero
+    func setShadow(radius: CGFloat = 2.0, opacity: Float = 0.66, offset: CGSize = .zero, color: CGColor = UIColor.black.cgColor) {
+        layer.shadowRadius = radius
+        layer.shadowOpacity = opacity
+        layer.shadowOffset = offset
+        layer.shadowColor = color
     }
 }
 

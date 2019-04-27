@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 public enum PhotoGridItemType {
@@ -18,29 +18,50 @@ public class PhotoGridViewCell: UICollectionViewCell {
     public let imageView: UIImageView
 
     private let contentTypeBadgeView: UIImageView
+    private let unselectedBadgeView: UIView
     private let selectedBadgeView: UIImageView
 
-    private let highlightedView: UIView
-    private let selectedView: UIView
+    private let highlightedMaskView: UIView
+    private let selectedMaskView: UIView
 
     var item: PhotoGridItem?
 
     private static let videoBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_video")
     private static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
-    private static let selectedBadgeImage = #imageLiteral(resourceName: "selected_blue_circle")
-
+    private static let selectedBadgeImage = #imageLiteral(resourceName: "image_editor_checkmark_full").withRenderingMode(.alwaysTemplate)
     public var loadingColor = Theme.offBackgroundColor
 
     override public var isSelected: Bool {
         didSet {
-            self.selectedBadgeView.isHidden = !self.isSelected
-            self.selectedView.isHidden = !self.isSelected
+            updateSelectionState()
+        }
+    }
+
+    public var allowsMultipleSelection: Bool = false {
+        didSet {
+            updateSelectionState()
+        }
+    }
+
+    func updateSelectionState() {
+        if isSelected {
+            unselectedBadgeView.isHidden = true
+            selectedBadgeView.isHidden = false
+            selectedMaskView.isHidden = false
+        } else if allowsMultipleSelection {
+            unselectedBadgeView.isHidden = false
+            selectedBadgeView.isHidden = true
+            selectedMaskView.isHidden = true
+        } else {
+            unselectedBadgeView.isHidden = true
+            selectedBadgeView.isHidden = true
+            selectedMaskView.isHidden = true
         }
     }
 
     override public var isHighlighted: Bool {
         didSet {
-            self.highlightedView.isHidden = !self.isHighlighted
+            self.highlightedMaskView.isHidden = !self.isHighlighted
         }
     }
 
@@ -54,16 +75,23 @@ public class PhotoGridViewCell: UICollectionViewCell {
         self.selectedBadgeView = UIImageView()
         selectedBadgeView.image = PhotoGridViewCell.selectedBadgeImage
         selectedBadgeView.isHidden = true
+        selectedBadgeView.tintColor = .white
 
-        self.highlightedView = UIView()
-        highlightedView.alpha = 0.2
-        highlightedView.backgroundColor = Theme.darkThemePrimaryColor
-        highlightedView.isHidden = true
+        self.unselectedBadgeView = CircleView()
+        unselectedBadgeView.backgroundColor = .clear
+        unselectedBadgeView.layer.borderWidth = 0.5
+        unselectedBadgeView.layer.borderColor = UIColor.white.cgColor
+        selectedBadgeView.isHidden = true
 
-        self.selectedView = UIView()
-        selectedView.alpha = 0.3
-        selectedView.backgroundColor = Theme.darkThemeBackgroundColor
-        selectedView.isHidden = true
+        self.highlightedMaskView = UIView()
+        highlightedMaskView.alpha = 0.2
+        highlightedMaskView.backgroundColor = Theme.darkThemePrimaryColor
+        highlightedMaskView.isHidden = true
+
+        self.selectedMaskView = UIView()
+        selectedMaskView.alpha = 0.3
+        selectedMaskView.backgroundColor = Theme.darkThemeBackgroundColor
+        selectedMaskView.isHidden = true
 
         super.init(frame: frame)
 
@@ -71,13 +99,14 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
         self.contentView.addSubview(imageView)
         self.contentView.addSubview(contentTypeBadgeView)
-        self.contentView.addSubview(highlightedView)
-        self.contentView.addSubview(selectedView)
+        self.contentView.addSubview(highlightedMaskView)
+        self.contentView.addSubview(selectedMaskView)
+        self.contentView.addSubview(unselectedBadgeView)
         self.contentView.addSubview(selectedBadgeView)
 
         imageView.autoPinEdgesToSuperviewEdges()
-        highlightedView.autoPinEdgesToSuperviewEdges()
-        selectedView.autoPinEdgesToSuperviewEdges()
+        highlightedMaskView.autoPinEdgesToSuperviewEdges()
+        selectedMaskView.autoPinEdgesToSuperviewEdges()
 
         // Note assets were rendered to match exactly. We don't want to re-size with
         // content mode lest they become less legible.
@@ -86,10 +115,15 @@ public class PhotoGridViewCell: UICollectionViewCell {
         contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
         contentTypeBadgeView.autoSetDimensions(to: kContentTypeBadgeSize)
 
-        let kSelectedBadgeSize = CGSize(width: 31, height: 31)
-        selectedBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0)
-        selectedBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
+        let kUnselectedBadgeSize = CGSize(width: 22, height: 22)
+        unselectedBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 4)
+        unselectedBadgeView.autoPinEdge(toSuperviewEdge: .top, withInset: 4)
+        unselectedBadgeView.autoSetDimensions(to: kUnselectedBadgeSize)
+
+        let kSelectedBadgeSize = CGSize(width: 22, height: 22)
         selectedBadgeView.autoSetDimensions(to: kSelectedBadgeSize)
+        selectedBadgeView.autoAlignAxis(.vertical, toSameAxisOf: unselectedBadgeView)
+        selectedBadgeView.autoAlignAxis(.horizontal, toSameAxisOf: unselectedBadgeView)
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -116,7 +150,14 @@ public class PhotoGridViewCell: UICollectionViewCell {
     public func configure(item: PhotoGridItem) {
         self.item = item
 
-        self.image = item.asyncThumbnail { image in
+        // PHCachingImageManager returns multiple progressively better
+        // thumbnails in the async block. We want to avoid calling
+        // `configure(item:)` multiple times because the high-quality image eventually applied
+        // last time it was called will be momentarily replaced by a progression of lower
+        // quality images.
+        image = item.asyncThumbnail { [weak self] image in
+            guard let self = self else { return }
+
             guard let currentItem = self.item else {
                 return
             }
@@ -144,11 +185,12 @@ public class PhotoGridViewCell: UICollectionViewCell {
     override public func prepareForReuse() {
         super.prepareForReuse()
 
-        self.item = nil
-        self.imageView.image = nil
-        self.contentTypeBadgeView.isHidden = true
-        self.highlightedView.isHidden = true
-        self.selectedView.isHidden = true
-        self.selectedBadgeView.isHidden = true
+        item = nil
+        imageView.image = nil
+        contentTypeBadgeView.isHidden = true
+        highlightedMaskView.isHidden = true
+        selectedMaskView.isHidden = true
+        selectedBadgeView.isHidden = true
+        unselectedBadgeView.isHidden = true
     }
 }
