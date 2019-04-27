@@ -1467,7 +1467,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Pronađi kontakt po telefonskom broju";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Osobna bilješka";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
@@ -1536,7 +1536,7 @@
 "ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Your Name";
 
 /* Title of the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_TITLE" = "Set up your profile";
+"ONBOARDING_PROFILE_TITLE" = "Postavite vaš profil";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Uvjeti i pravila o privatnosti";
