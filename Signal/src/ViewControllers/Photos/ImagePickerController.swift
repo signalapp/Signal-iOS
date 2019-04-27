@@ -368,14 +368,19 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let approxItemWidth = screenWidth / CGFloat(kItemsPerPortraitRow)
 
         let itemCount = round(containerWidth / approxItemWidth)
-        let spaceWidth = (itemCount + 1) * type(of: self).kInterItemSpacing
-        let availableWidth = containerWidth - spaceWidth
+        let interSpaceWidth = (itemCount - 1) * type(of: self).kInterItemSpacing
+
+        let availableWidth = containerWidth - interSpaceWidth
 
         let itemWidth = floor(availableWidth / CGFloat(itemCount))
         let newItemSize = CGSize(width: itemWidth, height: itemWidth)
+        let remainingSpace = availableWidth - (itemCount * itemWidth)
 
         if (newItemSize != collectionViewFlowLayout.itemSize) {
             collectionViewFlowLayout.itemSize = newItemSize
+            // Inset any remaining space around the outside edges to ensure all inter-item spacing is exactly equal, otherwise
+            // we may get slightly different gaps between rows vs. columns
+            collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, leading: remainingSpace / 2, bottom: 0, trailing: remainingSpace / 2)
             collectionViewFlowLayout.invalidateLayout()
         }
     }
