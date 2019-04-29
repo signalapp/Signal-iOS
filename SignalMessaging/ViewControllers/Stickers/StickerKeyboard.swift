@@ -231,6 +231,9 @@ extension StickerKeyboard: UICollectionViewDataSource {
         // when the cells becomes visible and eagerly unload them.
         // But we probably won't need to do that.
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath)
+        for subview in cell.contentView.subviews {
+            subview.removeFromSuperview()
+        }
 
         guard let stickerPack = stickerPacks[safe: indexPath.row] else {
             owsFailDebug("Invalid index path: \(indexPath)")

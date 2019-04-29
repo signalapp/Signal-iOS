@@ -166,6 +166,9 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
         // when the cells becomes visible and eagerly unload them.
         // But we probably won't need to do that.
         let cell = dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath)
+        for subview in cell.contentView.subviews {
+            subview.removeFromSuperview()
+        }
 
         guard let stickerInfo = stickerInfos[safe: indexPath.row] else {
             owsFailDebug("Invalid index path: \(indexPath)")

@@ -97,6 +97,13 @@ public class SDSKeyValueStore: NSObject {
 
     @objc
     public func setObject(_ anyValue: Any?, key: String) {
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            self.setObject(anyValue, key: key, transaction: transaction)
+        }
+    }
+
+    @objc
+    public func setObject(_ anyValue: Any?, key: String, transaction: SDSAnyWriteTransaction) {
         guard let anyValue = anyValue else {
             write(nil, forKey: key)
             return
@@ -106,7 +113,7 @@ public class SDSKeyValueStore: NSObject {
             write(nil, forKey: key)
             return
         }
-        write(codingValue, forKey: key)
+        write(codingValue, forKey: key, transaction: transaction)
     }
 
     // MARK: - Internal Methods
@@ -174,35 +181,45 @@ public class SDSKeyValueStore: NSObject {
         }
     }
 
-    // TODO: Codable? NSCoding? Other serialization?
     private func write(_ value: NSCoding?, forKey key: String) {
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            self.write(value, forKey: key, transaction: transaction)
+        }
+    }
+
+    // TODO: Codable? NSCoding? Other serialization?
+    private func write(_ value: NSCoding?, forKey key: String, transaction: SDSAnyWriteTransaction) {
 
         if let value = value {
             let encoded = NSKeyedArchiver.archivedData(withRootObject: value)
-            writeData(encoded, forKey: key)
+            writeData(encoded, forKey: key, transaction: transaction)
         } else {
-            writeData(nil, forKey: key)
+            writeData(nil, forKey: key, transaction: transaction)
         }
     }
 
     private func writeData(_ data: Data?, forKey key: String) {
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            self.writeData(data, forKey: key, transaction: transaction)
+        }
+    }
+
+    private func writeData(_ data: Data?, forKey key: String, transaction: SDSAnyWriteTransaction) {
 
         let collection = self.collection
 
-        databaseStorage.writeSwallowingErrors { (transaction) in
-            switch transaction.writeTransaction {
-            case .yapWrite(let ydbTransaction):
-                if let data = data {
-                    ydbTransaction.setObject(data, forKey: key, inCollection: collection)
-                } else {
-                    ydbTransaction.removeObject(forKey: key, inCollection: collection)
-                }
-            case .grdbWrite(let grdbTransaction):
-                do {
-                    try SDSKeyValueStore.write(transaction: grdbTransaction, key: key, collection: collection, encoded: data)
-                } catch {
-                    owsFailDebug("error: \(error)")
-                }
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            if let data = data {
+                ydbTransaction.setObject(data, forKey: key, inCollection: collection)
+            } else {
+                ydbTransaction.removeObject(forKey: key, inCollection: collection)
+            }
+        case .grdbWrite(let grdbTransaction):
+            do {
+                try SDSKeyValueStore.write(transaction: grdbTransaction, key: key, collection: collection, encoded: data)
+            } catch {
+                owsFailDebug("error: \(error)")
             }
         }
     }
