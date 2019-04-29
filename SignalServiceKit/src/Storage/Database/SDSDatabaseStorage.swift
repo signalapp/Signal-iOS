@@ -296,6 +296,7 @@ public struct GRDBDatabaseStorageAdapter {
             try StickerPackSerializer.table.createTable(database: db)
             try InstalledStickerSerializer.table.createTable(database: db)
             try KnownStickerPackSerializer.table.createTable(database: db)
+            try TSAttachmentSerializer.table.createTable(database: db)
 
             try db.create(index: "index_interactions_on_id_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,

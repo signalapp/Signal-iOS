@@ -39,7 +39,7 @@ public class SDSKeyValueStore: NSObject {
         super.init()
     }
 
-    // MARK: -
+    // MARK: - String
 
     @objc
     public func getString(_ key: String) -> String? {
@@ -55,6 +55,8 @@ public class SDSKeyValueStore: NSObject {
         write(value as NSString, forKey: key)
     }
 
+    // MARK: - Bool
+
     @objc
     public func getBool(_ key: String, defaultValue: Bool = false) -> Bool {
         if let value: NSNumber = read(key) {
@@ -69,6 +71,8 @@ public class SDSKeyValueStore: NSObject {
         write(NSNumber(booleanLiteral: value), forKey: key)
     }
 
+    // MARK: - Data
+
     public func getData(_ key: String) -> Data? {
         return readData(key)
     }
@@ -78,9 +82,17 @@ public class SDSKeyValueStore: NSObject {
         writeData(value, forKey: key)
     }
 
+    // MARK: - Object
+
     @objc
     public func getObject(_ key: String) -> Any? {
         return read(key)
+    }
+
+    @objc
+    public func getObject(_ key: String,
+                          transaction: SDSAnyReadTransaction) -> Any? {
+        return read(key, transaction: transaction)
     }
 
     @objc
@@ -97,10 +109,18 @@ public class SDSKeyValueStore: NSObject {
         write(codingValue, forKey: key)
     }
 
-    // MARK: -
+    // MARK: - Internal Methods
 
     private func read<T>(_ key: String) -> T? {
-        guard let encoded = readData(key) else {
+        var result: T?
+        databaseStorage.readSwallowingErrors { (transaction) in
+            result = self.read(key, transaction: transaction)
+        }
+        return result
+    }
+
+    private func read<T>(_ key: String, transaction: SDSAnyReadTransaction) -> T? {
+        guard let encoded = readData(key, transaction: transaction) else {
             return nil
         }
 
@@ -117,26 +137,30 @@ public class SDSKeyValueStore: NSObject {
     }
 
     private func readData(_ key: String) -> Data? {
+        var result: Data?
+        databaseStorage.readSwallowingErrors { (transaction) in
+            result = self.readData(key, transaction: transaction)
+        }
+        return result
+    }
+
+    private func readData(_ key: String, transaction: SDSAnyReadTransaction) -> Data? {
 
         let collection = self.collection
 
-        var result: Data?
-        databaseStorage.readSwallowingErrors { (transaction) in
-            switch transaction.readTransaction {
-            case .yapRead(let ydbTransaction):
-                guard let rawObject = ydbTransaction.object(forKey: key, inCollection: collection) else {
-                    return
-                }
-                guard let object = rawObject as? Data else {
-                    owsFailDebug("Value has unexpected type.")
-                    return
-                }
-                result = object
-            case .grdbRead(let grdbTransaction):
-                result = SDSKeyValueStore.readData(transaction: grdbTransaction, key: key, collection: collection)
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            guard let rawObject = ydbTransaction.object(forKey: key, inCollection: collection) else {
+                return nil
             }
+            guard let object = rawObject as? Data else {
+                owsFailDebug("Value has unexpected type.")
+                return nil
+            }
+            return object
+        case .grdbRead(let grdbTransaction):
+            return SDSKeyValueStore.readData(transaction: grdbTransaction, key: key, collection: collection)
         }
-        return result
     }
 
     private class func readData(transaction: GRDBReadTransaction, key: String, collection: String) -> Data? {

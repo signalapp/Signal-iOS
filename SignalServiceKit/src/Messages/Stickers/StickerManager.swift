@@ -681,7 +681,7 @@ public class StickerManager: NSObject {
     // Only returns installed stickers.
     private class func recentStickers(transaction: SDSAnyReadTransaction) -> [StickerInfo] {
         var result = [StickerInfo]()
-        if let keys = store.getObject(kRecentStickersKey) as? [String] {
+        if let keys = store.getObject(kRecentStickersKey, transaction: transaction) as? [String] {
             for key in keys {
                 guard let sticker = InstalledSticker.anyFetch(uniqueId: key, transaction: transaction) else {
                     owsFailDebug("Couldn't fetch sticker")
