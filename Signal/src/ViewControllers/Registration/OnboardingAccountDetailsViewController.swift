@@ -24,6 +24,12 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         return result
     }()
     
+    private var normalizedName: String? {
+        get {
+            return displayNameTextField.text?.ows_stripped()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = Theme.backgroundColor
@@ -36,7 +42,7 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         let passwordLabel = createExplanationLabel(text: NSLocalizedString("Type an optional password for added security", comment: ""))
         passwordLabel.accessibilityIdentifier = "onboarding.accountDetailsStep.passwordLabel"
         let bottomSpacer = UIView.vStretchingSpacer()
-        let nextButton = button(title: NSLocalizedString("Next", comment: ""), selector: #selector(goToSeedStep))
+        let nextButton = button(title: NSLocalizedString("Next", comment: ""), selector: #selector(updateProfile))
         nextButton.accessibilityIdentifier = "onboarding.accountDetailsStep.nextButton"
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
@@ -67,7 +73,21 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         displayNameTextField.becomeFirstResponder()
     }
     
-    @objc private func goToSeedStep() {
-        onboardingController.pushPublicKeyViewController(from: self)
+    @objc private func goToSeedStep(profileName: String? = nil) {
+        onboardingController.pushPublicKeyViewController(from: self, profileName: profileName)
+    }
+    
+    @objc private func updateProfile() {
+        guard let normalizedName = self.normalizedName else {
+            self.goToSeedStep()
+            return
+        }
+        
+        if (OWSProfileManager.shared().isProfileNameTooLong(normalizedName)) {
+            OWSAlerts.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG", comment: "Error message shown when user tries to update profile with a profile name that is too long"))
+            return
+        }
+        
+        self.goToSeedStep(profileName: normalizedName)
     }
 }

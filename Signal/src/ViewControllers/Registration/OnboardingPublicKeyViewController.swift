@@ -5,6 +5,7 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
     private var keyPair: ECKeyPair! { didSet { updateMnemonic() } }
     private var hexEncodedPublicKey: String!
     private var mnemonic: String! { didSet { mnemonicLabel.text = mnemonic } }
+    private var profileName: String?
     
     private lazy var mnemonicLabel: UILabel = {
         let result = createExplanationLabel(text: "")
@@ -15,6 +16,12 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
         result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: result.font.pointSize)
         return result
     }()
+    
+    @objc
+    public init(onboardingController: OnboardingController, profileName: String?) {
+        super.init(onboardingController: onboardingController);
+        self.profileName = profileName
+    }
     
     override public func viewDidLoad() {
         super.loadView()
@@ -68,6 +75,21 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
         let accountManager = TSAccountManager.sharedInstance()
         accountManager.phoneNumberAwaitingVerification = hexEncodedPublicKey
         accountManager.didRegister()
-        onboardingController.verificationDidComplete(fromView: self)
+        
+        let verificationComplete: () -> Void = { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.onboardingController.verificationDidComplete(fromView: strongSelf)
+        }
+        
+        if let name = self.profileName {
+            // Try save the profile name
+            OWSProfileManager.shared().updateLocalProfileName(name, avatarImage: nil, success: verificationComplete, failure: {
+                Logger.warn("Failed to set profile name")
+                verificationComplete()
+            })
+        } else {
+            verificationComplete()
+        }
+
     }
 }

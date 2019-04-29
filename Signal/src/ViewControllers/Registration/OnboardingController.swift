@@ -128,9 +128,9 @@ public class OnboardingController: NSObject {
         viewController.navigationController?.pushViewController(accountDetailsVC, animated: true)
     }
     
-    func pushPublicKeyViewController(from viewController: UIViewController) {
+    func pushPublicKeyViewController(from viewController: UIViewController, profileName: String?) {
         AssertIsOnMainThread()
-        let publicKeyVC = OnboardingPublicKeyViewController(onboardingController: self)
+        let publicKeyVC = OnboardingPublicKeyViewController(onboardingController: self, profileName: profileName)
         viewController.navigationController?.pushViewController(publicKeyVC, animated: true)
     }
 
