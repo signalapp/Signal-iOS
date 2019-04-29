@@ -5,7 +5,7 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
     private var keyPair: ECKeyPair! { didSet { updateMnemonic() } }
     private var hexEncodedPublicKey: String!
     private var mnemonic: String! { didSet { mnemonicLabel.text = mnemonic } }
-    private var profileName: String?
+    private var userName: String?
     
     private lazy var mnemonicLabel: UILabel = {
         let result = createExplanationLabel(text: "")
@@ -17,10 +17,9 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
         return result
     }()
     
-    @objc
-    public init(onboardingController: OnboardingController, profileName: String?) {
-        super.init(onboardingController: onboardingController);
-        self.profileName = profileName
+    init(onboardingController: OnboardingController, userName: String?) {
+        super.init(onboardingController: onboardingController)
+        self.userName = userName
     }
     
     override public func viewDidLoad() {
@@ -81,10 +80,10 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
             strongSelf.onboardingController.verificationDidComplete(fromView: strongSelf)
         }
         
-        if let name = self.profileName {
+        if let userName = userName {
             // Try save the profile name
-            OWSProfileManager.shared().updateLocalProfileName(name, avatarImage: nil, success: verificationComplete, failure: {
-                Logger.warn("Failed to set profile name")
+            OWSProfileManager.shared().updateLocalProfileName(userName, avatarImage: nil, success: verificationComplete, failure: {
+                Logger.warn("Failed to set user name")
                 verificationComplete()
             })
         } else {

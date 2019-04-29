@@ -23,11 +23,10 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         result.isSecureTextEntry = true
         return result
     }()
-    
+
     private var normalizedName: String? {
-        get {
-            return displayNameTextField.text?.ows_stripped()
-        }
+        let result = displayNameTextField.text!.ows_stripped()
+        return !result.isEmpty ? result : nil
     }
     
     override func viewDidLoad() {
@@ -73,21 +72,16 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         displayNameTextField.becomeFirstResponder()
     }
     
-    @objc private func goToSeedStep(profileName: String? = nil) {
-        onboardingController.pushPublicKeyViewController(from: self, profileName: profileName)
-    }
-    
     @objc private func updateProfile() {
-        guard let normalizedName = self.normalizedName else {
-            self.goToSeedStep()
-            return
+        if let normalizedName = normalizedName {
+            guard !OWSProfileManager.shared().isProfileNameTooLong(normalizedName) else {
+                return OWSAlerts.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG", comment: "Error message shown when user tries to update profile with a profile name that is too long"))
+            }
         }
-        
-        if (OWSProfileManager.shared().isProfileNameTooLong(normalizedName)) {
-            OWSAlerts.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG", comment: "Error message shown when user tries to update profile with a profile name that is too long"))
-            return
-        }
-        
-        self.goToSeedStep(profileName: normalizedName)
+        goToSeedStep()
+    }
+
+    @objc private func goToSeedStep() {
+        onboardingController.pushPublicKeyViewController(from: self, userName: normalizedName)
     }
 }
