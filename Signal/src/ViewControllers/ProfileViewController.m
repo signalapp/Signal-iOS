@@ -153,7 +153,9 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [avatarRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarRowTapped:)]];
     avatarRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"avatarRow");
-    [rows addObject:avatarRow];
+
+//    Loki - Disable setting the avatar
+//    [rows addObject:avatarRow];
 
     UILabel *avatarLabel = [UILabel new];
     avatarLabel.text = NSLocalizedString(
