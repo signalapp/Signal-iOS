@@ -645,7 +645,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     for (TSOutgoingMessage *unsavedOutgoingMessage in self.unsavedOutgoingMessages) {
         // unsavedOutgoingMessages should only exist for a short period (usually 30-50ms) before
         // they are saved and moved into the `persistedViewItems`
-        OWSAssertDebug(unsavedOutgoingMessage.timestamp >= ([NSDate ows_millisecondTimeStamp] - 1 * kSecondInMs));
+        //        OWSAssertDebug(unsavedOutgoingMessage.timestamp >= ([NSDate ows_millisecondTimeStamp] - 1 *
+        //        kSecondInMs));
 
         BOOL isFound = ([diff.addedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
             [diff.removedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
