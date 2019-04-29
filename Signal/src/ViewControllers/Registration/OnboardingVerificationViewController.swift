@@ -279,7 +279,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         self.titleLabel = titleLabel
         titleLabel.accessibilityIdentifier = "onboarding.verification." + "titleLabel"
 
-        let backLink = self.linkButton(title: NSLocalizedString("ONBOARDING_VERIFICATION_BACK_LINK",
+        let backLink = self.createLinkButton(title: NSLocalizedString("ONBOARDING_VERIFICATION_BACK_LINK",
                                                                 comment: "Label for the link that lets users change their phone number in the onboarding views."),
                                        selector: #selector(backLinkTapped))
         self.backLink = backLink
@@ -300,7 +300,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         errorRow.addSubview(errorLabel)
         errorLabel.autoPinEdgesToSuperviewEdges()
 
-        let codeStateLink = self.linkButton(title: "",
+        let codeStateLink = self.createLinkButton(title: "",
                                              selector: #selector(resendCodeLinkTapped))
         codeStateLink.enableMultilineLabel()
         self.codeStateLink = codeStateLink

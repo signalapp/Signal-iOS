@@ -40,7 +40,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explanationLabelTapped)))
         explanationLabel.accessibilityIdentifier = "onboarding.splash." + "explanationLabel"
 
-        let continueButton = self.button(title: NSLocalizedString("BUTTON_CONTINUE",
+        let continueButton = self.createButton(title: NSLocalizedString("BUTTON_CONTINUE",
                                                                  comment: "Label for 'continue' button."),
                                                     selector: #selector(continuePressed))
         view.addSubview(continueButton)

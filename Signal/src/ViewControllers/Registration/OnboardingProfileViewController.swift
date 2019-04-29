@@ -37,7 +37,7 @@ public class OnboardingProfileViewController: OnboardingBaseViewController {
                                                                                         comment: "Explanation in the 'onboarding profile' view."))
         explanationLabel.accessibilityIdentifier = "onboarding.profile." + "explanationLabel"
 
-        let nextButton = self.button(title: NSLocalizedString("BUTTON_NEXT",
+        let nextButton = self.createButton(title: NSLocalizedString("BUTTON_NEXT",
                                                               comment: "Label for the 'next' button."),
                                      selector: #selector(nextPressed))
         nextButton.accessibilityIdentifier = "onboarding.profile." + "nextButton"

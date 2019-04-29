@@ -22,6 +22,7 @@ message Envelope {
     PREKEY_BUNDLE       = 3;
     RECEIPT             = 5;
     UNIDENTIFIED_SENDER = 6;
+    FRIEND_REQUEST      = 101; // Loki: Contains prekeys and a message; uses simple encryption
   }
 
   // @required
@@ -53,12 +54,29 @@ message TypingMessage {
 }
 
 message Content {
-  optional DataMessage    dataMessage    = 1;
-  optional SyncMessage    syncMessage    = 2;
-  optional CallMessage    callMessage    = 3;
-  optional NullMessage    nullMessage    = 4;
-  optional ReceiptMessage receiptMessage = 5;
-  optional TypingMessage  typingMessage  = 6;
+  optional DataMessage    dataMessage               = 1;
+  optional SyncMessage    syncMessage               = 2;
+  optional CallMessage    callMessage               = 3;
+  optional NullMessage    nullMessage               = 4;
+  optional ReceiptMessage receiptMessage            = 5;
+  optional TypingMessage  typingMessage             = 6;
+  optional PrekeyBundleMessage prekeyBundleMessage  = 101; // Loki
+  optional LokiAddressMessage LokiAddressMessage    = 102; // Loki
+}
+
+message PrekeyBundleMessage { // Loki
+  optional bytes identityKey  = 1;
+  optional uint32 deviceID    = 2;
+  optional uint32 prekeyID    = 3;
+  optional uint32 signedKeyID = 4;
+  optional bytes prekey       = 5;
+  optional bytes signedKey    = 6;
+  optional bytes signature    = 7;
+}
+
+message LokiAddressMessage { // Loki
+  optional string p2pAddress  = 1;
+  optional uint32 p2pPort     = 2;
 }
 
 message CallMessage {
@@ -222,7 +240,8 @@ message DataMessage {
   optional uint64             timestamp   = 7;
   optional Quote              quote       = 8;
   repeated Contact            contact     = 9;
-  repeated Preview preview = 10;
+  repeated Preview            preview     = 10;
+  optional Contact            profile     = 101; // Loki: The current user's profile
 }
 
 message NullMessage {
