@@ -26,12 +26,12 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
                                                                                   comment: "Explanation in the 'onboarding permissions' view."))
         explanationLabel.accessibilityIdentifier = "onboarding.permissions." + "explanationLabel"
 
-        let giveAccessButton = self.button(title: NSLocalizedString("ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
+        let giveAccessButton = self.createButton(title: NSLocalizedString("ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
                                                                     comment: "Label for the 'give access' button in the 'onboarding permissions' view."),
                                            selector: #selector(giveAccessPressed))
         giveAccessButton.accessibilityIdentifier = "onboarding.permissions." + "giveAccessButton"
 
-        let notNowButton = self.linkButton(title: NSLocalizedString("ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON",
+        let notNowButton = self.createLinkButton(title: NSLocalizedString("ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON",
                                                                     comment: "Label for the 'not now' button in the 'onboarding permissions' view."),
                                            selector: #selector(notNowPressed))
         notNowButton.accessibilityIdentifier = "onboarding.permissions." + "notNowButton"

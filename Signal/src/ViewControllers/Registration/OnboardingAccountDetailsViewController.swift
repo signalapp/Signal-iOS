@@ -36,7 +36,7 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         let passwordLabel = createExplanationLabel(text: NSLocalizedString("Type an optional password for added security", comment: ""))
         passwordLabel.accessibilityIdentifier = "onboarding.accountDetailsStep.passwordLabel"
         let bottomSpacer = UIView.vStretchingSpacer()
-        let nextButton = button(title: NSLocalizedString("Next", comment: ""), selector: #selector(goToSeedStep))
+        let nextButton = createButton(title: NSLocalizedString("Next", comment: ""), selector: #selector(goToSeedStep))
         nextButton.accessibilityIdentifier = "onboarding.accountDetailsStep.nextButton"
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,

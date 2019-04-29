@@ -49,11 +49,11 @@ public class OnboardingBaseViewController: OWSViewController {
         return explanationLabel
     }
 
-    func button(title: String, selector: Selector) -> OWSFlatButton {
+    func createButton(title: String, selector: Selector) -> OWSFlatButton {
         return button(title: title, selector: selector, titleColor: .white, backgroundColor: .ows_materialBlue)
     }
 
-    func linkButton(title: String, selector: Selector) -> OWSFlatButton {
+    func createLinkButton(title: String, selector: Selector) -> OWSFlatButton {
         return button(title: title, selector: selector, titleColor: .ows_materialBlue, backgroundColor: .white)
     }
 

@@ -2552,4 +2552,5 @@
 "Type an optional password for added security" = "Type an optional password for added security";
 "Password (Optional)" = "Password (Optional)";
 "Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device." = "Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device.";
+"Copy" = "Copy";
 "Register" = "Register";

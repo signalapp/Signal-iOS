@@ -30,8 +30,10 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
         let topSpacer = UIView.vStretchingSpacer()
         let explanationLabel = createExplanationLabel(text: NSLocalizedString("Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device.", comment: ""))
         explanationLabel.accessibilityIdentifier = "onboarding.publicKeyStep.explanationLabel"
+        let copyButton = createLinkButton(title: NSLocalizedString("Copy", comment: ""), selector: #selector(copyMnemonic))
+        copyButton.accessibilityIdentifier = "onboarding.publicKeyStep.copyButton"
         let bottomSpacer = UIView.vStretchingSpacer()
-        let registerButton = button(title: NSLocalizedString("Register", comment: ""), selector: #selector(register))
+        let registerButton = createButton(title: NSLocalizedString("Register", comment: ""), selector: #selector(register))
         registerButton.accessibilityIdentifier = "onboarding.publicKeyStep.registerButton"
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
@@ -39,6 +41,8 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
             explanationLabel,
             UIView.spacer(withHeight: 32),
             mnemonicLabel,
+            UIView.spacer(withHeight: 24),
+            copyButton,
             bottomSpacer,
             registerButton
         ])
@@ -63,7 +67,11 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
         hexEncodedPublicKey = keyPair.publicKey.map { String(format: "%02hhx", $0) }.joined()
         mnemonic = Mnemonic.encode(hexEncodedString: hexEncodedPublicKey)
     }
-    
+
+    @objc private func copyMnemonic() {
+        UIPasteboard.general.string = mnemonic
+    }
+
     @objc private func register() {
         let accountManager = TSAccountManager.sharedInstance()
         accountManager.phoneNumberAwaitingVerification = hexEncodedPublicKey
