@@ -81,7 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super setConversationStyle:conversationStyle];
 
-    self.messageView.conversationStyle = conversationStyle;
+    self.messageBubbleView.conversationStyle = conversationStyle;
+    self.messageStickerView.conversationStyle = conversationStyle;
 }
 
 + (NSString *)cellReuseIdentifier
@@ -143,7 +144,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.messageStickerView);
 
     OWSMessageView *messageView = self.messageView;
-    messageView = self.messageStickerView;
     messageView.viewItem = self.viewItem;
     messageView.cellMediaCache = self.delegate.cellMediaCache;
     [messageView configureViews];
@@ -424,11 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (self.cellType == OWSMessageCellType_StickerMessage) {
-        // TODO:
-    } else {
-        [self.messageBubbleView handleTapGesture:sender];
-    }
+    [self.messageView handleTapGesture:sender];
 }
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
@@ -479,7 +475,8 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         }
         case OWSMessageGestureLocation_Sticker:
-            // TODO:
+            OWSAssertDebug(self.viewItem.stickerInfo != nil);
+            [self.delegate conversationCell:self didLongpressSticker:self.viewItem];
             break;
     }
 }

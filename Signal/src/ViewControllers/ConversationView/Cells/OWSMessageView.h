@@ -18,6 +18,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
     OWSMessageGestureLocation_Sticker,
 };
 
+// A base class for views that can be used to render message cell contents.
 @interface OWSMessageView : UIView
 
 @property (nonatomic, nullable) id<ConversationViewItem> viewItem;
@@ -42,6 +43,10 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 #pragma mark - Gestures
 
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble;
+
+// This only needs to be called when we use the cell _outside_ the context
+// of a conversation view message cell.
+- (void)addTapGestureHandler;
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender;
 

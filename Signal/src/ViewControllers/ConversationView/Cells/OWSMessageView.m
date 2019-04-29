@@ -36,18 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
     return CGSizeZero;
 }
 
-- (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble
-{
-    OWSAbstractMethod();
-
-    return OWSMessageGestureLocation_Default;
-}
-
-- (void)handleTapGesture:(UITapGestureRecognizer *)sender
-{
-    OWSAbstractMethod();
-}
-
 + (UIFont *)senderNameFont
 {
     return UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
@@ -67,6 +55,27 @@ NS_ASSUME_NONNULL_BEGIN
         NSFontAttributeName : self.senderNameFont.ows_italic,
         NSForegroundColorAttributeName : ConversationStyle.bubbleTextColorIncoming,
     };
+}
+
+#pragma mark - Gestures
+
+- (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble
+{
+    OWSAbstractMethod();
+
+    return OWSMessageGestureLocation_Default;
+}
+
+- (void)addTapGestureHandler
+{
+    UITapGestureRecognizer *tap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
+    [self addGestureRecognizer:tap];
+}
+
+- (void)handleTapGesture:(UITapGestureRecognizer *)sender
+{
+    OWSAbstractMethod();
 }
 
 @end

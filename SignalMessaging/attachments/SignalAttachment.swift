@@ -492,7 +492,7 @@ public class SignalAttachment: NSObject {
         guard let pasteboardUTITypes = UIPasteboard.general.types(forItemSet: itemSet) else {
             return false
         }
-        let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
+        let pasteboardUTISet = Set<String>(filterDynamicUTITypes(pasteboardUTITypes[0]))
 
         // The pasteboard can be populated with multiple UTI types
         // with different payloads.  iMessage for example will copy
@@ -527,6 +527,15 @@ public class SignalAttachment: NSObject {
         return hasTextUTIType
     }
 
+    // Discard "dynamic" UTI types since our attachment pipeline
+    // requires "standard" UTI types to work properly, e.g. when
+    // mapping between UTI type, MIME type and file extension.
+    private class func filterDynamicUTITypes(_ types: [String]) -> [String] {
+        return types.filter {
+            !$0.hasPrefix("dyn")
+        }
+    }
+
     // Returns an attachment from the pasteboard, or nil if no attachment
     // can be found.
     //
@@ -542,7 +551,8 @@ public class SignalAttachment: NSObject {
         guard let pasteboardUTITypes = UIPasteboard.general.types(forItemSet: itemSet) else {
             return nil
         }
-        let pasteboardUTISet = Set<String>(pasteboardUTITypes[0])
+
+        let pasteboardUTISet = Set<String>(filterDynamicUTITypes(pasteboardUTITypes[0]))
         for dataUTI in inputImageUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {

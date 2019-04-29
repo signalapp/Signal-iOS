@@ -15,8 +15,32 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSThread.h>
+#import <YYImage/YYImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface NSData (QuotedReply)
+
+@end
+
+#pragma mark -
+
+@implementation NSData (QuotedReply)
+
+- (nullable UIImage *)jpegStillForWebpData
+{
+    CGImageRef _Nullable cgImage = YYCGImageCreateWithWebPData((__bridge CFDataRef)self, NO, NO, NO, NO);
+    if (!cgImage) {
+        return nil;
+    }
+
+    UIImage *uiImage = [UIImage imageWithCGImage:cgImage];
+    return uiImage;
+}
+
+@end
+
+#pragma mark -
 
 @interface OWSQuotedReplyModel ()
 
@@ -159,6 +183,36 @@ NS_ASSUME_NONNULL_BEGIN
                                    contentType:nil
                                 sourceFilename:nil
                               attachmentStream:nil
+                    thumbnailAttachmentPointer:nil
+                       thumbnailDownloadFailed:NO];
+    }
+
+    if (conversationItem.stickerInfo || conversationItem.stickerAttachment) {
+        if (!conversationItem.stickerInfo || !conversationItem.stickerAttachment) {
+            OWSFailDebug(@"Incomplete sticker message.");
+            return nil;
+        }
+
+        TSAttachmentStream *quotedAttachment = conversationItem.stickerAttachment;
+        NSData *_Nullable stickerData = [NSData dataWithContentsOfFile:quotedAttachment.originalFilePath];
+        if (!stickerData) {
+            OWSFailDebug(@"Couldn't load sticker data.");
+            return nil;
+        }
+        UIImage *_Nullable thumbnailImage = [stickerData jpegStillForWebpData];
+        if (!thumbnailImage) {
+            OWSFailDebug(@"Couldn't generate thumbnail for sticker.");
+            return nil;
+        }
+
+        return [[self alloc] initWithTimestamp:timestamp
+                                      authorId:authorId
+                                          body:nil
+                                    bodySource:TSQuotedMessageContentSourceLocal
+                                thumbnailImage:thumbnailImage
+                                   contentType:OWSMimeTypeImageJpeg
+                                sourceFilename:nil
+                              attachmentStream:quotedAttachment
                     thumbnailAttachmentPointer:nil
                        thumbnailDownloadFailed:NO];
     }

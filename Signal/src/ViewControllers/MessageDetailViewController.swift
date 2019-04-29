@@ -18,7 +18,7 @@ protocol MessageDetailViewDelegate: AnyObject {
 }
 
 @objc
-class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDelegate, OWSMessageBubbleViewDelegate, ContactShareViewHelperDelegate {
+class MessageDetailViewController: OWSViewController {
 
     @objc
     weak var delegate: MessageDetailViewDelegate?
@@ -34,9 +34,9 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     var message: TSMessage
     var wasDeleted: Bool = false
 
-    var messageBubbleView: OWSMessageBubbleView?
-    var messageBubbleViewWidthLayoutConstraint: NSLayoutConstraint?
-    var messageBubbleViewHeightLayoutConstraint: NSLayoutConstraint?
+    var messageView: OWSMessageView?
+    var messageViewWidthLayoutConstraint: NSLayoutConstraint?
+    var messageViewHeightLayoutConstraint: NSLayoutConstraint?
 
     var scrollView: UIScrollView!
     var contentView: UIView?
@@ -63,6 +63,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     var contactsManager: OWSContactsManager {
         return Environment.shared.contactsManager
     }
+
+    var audioAttachmentPlayer: OWSAudioPlayer?
 
     // MARK: Initializers
 
@@ -123,7 +125,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        updateMessageBubbleViewLayout()
+        updateMessageViewLayout()
 
         if mode == .focusOnMetadata {
             if let bubbleView = self.bubbleView {
@@ -351,7 +353,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         contentView.addSubview(rowStack)
         rowStack.autoPinEdgesToSuperviewMargins()
         contentView.layoutIfNeeded()
-        updateMessageBubbleViewLayout()
+        updateMessageViewLayout()
     }
 
     private func displayableTextIfText() -> String? {
@@ -373,27 +375,36 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     private func contentRows() -> [UIView] {
         var rows = [UIView]()
 
-        let messageBubbleView = OWSMessageBubbleView(frame: CGRect.zero)
-        messageBubbleView.delegate = self
-        messageBubbleView.addTapGestureHandler()
-        self.messageBubbleView = messageBubbleView
-        messageBubbleView.viewItem = viewItem
-        messageBubbleView.cellMediaCache = NSCache()
-        messageBubbleView.conversationStyle = conversationStyle
-        messageBubbleView.configureViews()
-        messageBubbleView.loadContent()
+        let messageView: OWSMessageView
+        if viewItem.messageCellType == .stickerMessage {
+            let messageStickerView = OWSMessageStickerView(frame: CGRect.zero)
+            messageStickerView.delegate = self
+            messageView = messageStickerView
+        } else {
+            let messageBubbleView = OWSMessageBubbleView(frame: CGRect.zero)
+            messageBubbleView.delegate = self
+            messageView = messageBubbleView
+        }
 
-        assert(messageBubbleView.isUserInteractionEnabled)
+        messageView.addTapGestureHandler()
+        self.messageView = messageView
+        messageView.viewItem = viewItem
+        messageView.cellMediaCache = NSCache()
+        messageView.conversationStyle = conversationStyle
+        messageView.configureViews()
+        messageView.loadContent()
+
+        assert(messageView.isUserInteractionEnabled)
 
         let row = UIView()
-        row.addSubview(messageBubbleView)
-        messageBubbleView.autoPinHeightToSuperview()
+        row.addSubview(messageView)
+        messageView.autoPinHeightToSuperview()
 
         let isIncoming = self.message as? TSIncomingMessage != nil
-        messageBubbleView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: bubbleViewHMargin)
+        messageView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: bubbleViewHMargin)
 
-        self.messageBubbleViewWidthLayoutConstraint = messageBubbleView.autoSetDimension(.width, toSize: 0)
-        self.messageBubbleViewHeightLayoutConstraint = messageBubbleView.autoSetDimension(.height, toSize: 0)
+        self.messageViewWidthLayoutConstraint = messageView.autoSetDimension(.width, toSize: 0)
+        self.messageViewHeightLayoutConstraint = messageView.autoSetDimension(.height, toSize: 0)
         rows.append(row)
 
         if rows.isEmpty {
@@ -629,23 +640,24 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     // MARK: - Message Bubble Layout
 
-    private func updateMessageBubbleViewLayout() {
-        guard let messageBubbleView = messageBubbleView else {
+    private func updateMessageViewLayout() {
+        guard let messageView = messageView else {
             return
         }
-        guard let messageBubbleViewWidthLayoutConstraint = messageBubbleViewWidthLayoutConstraint else {
+        guard let messageViewWidthLayoutConstraint = messageViewWidthLayoutConstraint else {
             return
         }
-        guard let messageBubbleViewHeightLayoutConstraint = messageBubbleViewHeightLayoutConstraint else {
+        guard let messageViewHeightLayoutConstraint = messageViewHeightLayoutConstraint else {
             return
         }
 
-        let messageBubbleSize = messageBubbleView.measureSize()
-        messageBubbleViewWidthLayoutConstraint.constant = messageBubbleSize.width
-        messageBubbleViewHeightLayoutConstraint.constant = messageBubbleSize.height
+        let messageBubbleSize = messageView.measureSize()
+        messageViewWidthLayoutConstraint.constant = messageBubbleSize.width
+        messageViewHeightLayoutConstraint.constant = messageBubbleSize.height
     }
+}
 
-    // MARK: OWSMessageBubbleViewDelegate
+extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
 
     func didTapImageViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
         let mediaGallery = MediaGallery(thread: self.thread)
@@ -681,8 +693,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     func didTapShowAddToContactUI(forContactShare contactShare: ContactShareViewModel) {
         contactShareViewHelper.showAddToContacts(contactShare: contactShare, fromViewController: self)
     }
-
-    var audioAttachmentPlayer: OWSAudioPlayer?
 
     func didTapAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
         AssertIsOnMainThread()
@@ -766,8 +776,9 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     var lastSearchedText: String? {
         return nil
     }
+}
 
-    // MediaGalleryDataSourceDelegate
+extension MessageDetailViewController: MediaGalleryDataSourceDelegate {
 
     func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
         Logger.info("")
@@ -786,8 +797,13 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             self.navigationController?.popViewController(animated: true)
         }
     }
+}
 
-    // MARK: - ContactShareViewHelperDelegate
+extension MessageDetailViewController: OWSMessageStickerViewDelegate {
+    // TODO:
+}
+
+extension MessageDetailViewController: ContactShareViewHelperDelegate {
 
     public func didCreateOrEditContact() {
         updateContent()

@@ -1386,13 +1386,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Gestures
 
-- (void)addTapGestureHandler
-{
-    UITapGestureRecognizer *tap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-    [self addGestureRecognizer:tap];
-}
-
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
     OWSAssertDebug(self.delegate);

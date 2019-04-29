@@ -394,8 +394,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
-    OWSAssertDebug(self.delegate);
-
     if (sender.state != UIGestureRecognizerStateRecognized) {
         OWSLogVerbose(@"Ignoring tap on message: %@", self.viewItem.interaction.debugDescription);
         return;

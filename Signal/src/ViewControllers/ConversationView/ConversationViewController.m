@@ -2215,6 +2215,15 @@ typedef enum : NSUInteger {
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressSticker:(id<ConversationViewItem>)viewItem
+{
+    OWSAssertDebug(viewItem);
+
+    NSArray<MenuAction *> *messageActions =
+        [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem shouldAllowReply:YES delegate:self];
+    [self presentMessageActions:messageActions withFocusedCell:cell];
+}
+
 - (void)presentMessageActions:(NSArray<MenuAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
 {
     MenuActionsViewController *menuActionsViewController =
