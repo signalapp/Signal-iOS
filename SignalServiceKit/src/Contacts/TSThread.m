@@ -472,7 +472,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 
 #pragma mark - Archival
 
-- (BOOL)isArchivedWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (BOOL)isArchivedWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     if (!self.archivedAsOfMessageSortId) {
         return NO;

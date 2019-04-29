@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(id<ConversationViewItem>)conversationItem
-                                                           transaction:(YapDatabaseReadTransaction *)transaction;
+                                                           transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(conversationItem);
     OWSAssertDebug(transaction);

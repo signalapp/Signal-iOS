@@ -96,7 +96,8 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return thread;
 }
 
-+ (nullable instancetype)getThreadWithContactId:(NSString *)contactId transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable instancetype)getThreadWithContactId:(NSString *)contactId
+                                    transaction:(YapDatabaseReadTransaction *)transaction
 {
     return [TSContactThread fetchObjectWithUniqueID:[self threadIdFromContactId:contactId] transaction:transaction];
 }

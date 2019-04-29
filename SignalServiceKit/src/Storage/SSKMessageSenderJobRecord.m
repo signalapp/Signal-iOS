@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithMessage:(TSOutgoingMessage *)message
                removeMessageAfterSending:(BOOL)removeMessageAfterSending
                                    label:(NSString *)label
-                                   error:(NSError **)outError;
+                                   error:(NSError **)outError
 {
     self = [super initWithLabel:label];
     if (!self) {

@@ -374,8 +374,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     return (sound == OWSSound_CallConnecting || sound == OWSSound_CallOutboundRinging);
 }
 
-+ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound
-                                 audioBehavior:(OWSAudioBehavior)audioBehavior;
++ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound audioBehavior:(OWSAudioBehavior)audioBehavior
 {
     NSURL *_Nullable soundURL = [OWSSounds soundURLForSound:sound quiet:NO];
     if (!soundURL) {
