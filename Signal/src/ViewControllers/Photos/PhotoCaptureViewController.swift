@@ -379,7 +379,7 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     func photoCaptureDidStartPhotoCapture(_ photoCapture: PhotoCapture) {
         let captureFeedbackView = UIView()
         captureFeedbackView.backgroundColor = .black
-        previewView.addSubview(captureFeedbackView)
+        view.insertSubview(captureFeedbackView, aboveSubview: previewView)
         captureFeedbackView.autoPinEdgesToSuperviewEdges()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             captureFeedbackView.removeFromSuperview()
