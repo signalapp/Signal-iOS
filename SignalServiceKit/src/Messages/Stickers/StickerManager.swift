@@ -58,12 +58,23 @@ public class StickerManager: NSObject {
 
         // Resume sticker and sticker pack downloads when app is ready.
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            self.refreshAvailableStickerPacks()
-
-            StickerManager.installKnownStickerPacks()
-
-            StickerManager.ensureAllStickerDownloadsAsync()
+            StickerManager.refreshContents()
         }
+    }
+
+    // The sticker manager is responsible for downloading more than one kind
+    // of content; those downloads can fail.  Therefore the sticker manager
+    // retries those downloads, sometimes in response to user activity.
+    @objc
+    public class func refreshContents() {
+        // Try to download the manifests for "default" sticker packs.
+        shared.tryToDownloadDefaultStickerPacks(shouldInstall: false)
+
+        // Try to download the manifests for "known" sticker packs.
+        tryToDownloadKnownStickerPacks()
+
+        // Try to download the stickers for "installed" sticker packs.
+        ensureAllStickerDownloadsAsync()
     }
 
     // MARK: - Paths
@@ -364,16 +375,11 @@ public class StickerManager: NSObject {
             }
         }
 
-        shared.refreshAvailableStickerPacks(shouldInstall: true)
+        shared.tryToDownloadDefaultStickerPacks(shouldInstall: true)
     }
     #endif
 
-    @objc
-    public func refreshAvailableStickerPacks() {
-        refreshAvailableStickerPacks(shouldInstall: false)
-    }
-
-    private func refreshAvailableStickerPacks(shouldInstall: Bool) {
+    private func tryToDownloadDefaultStickerPacks(shouldInstall: Bool) {
         let stickerPacks = Array(defaultStickerPackMap.values)
         StickerManager.tryToDownloadStickerPacks(stickerPacks: stickerPacks,
                                                  shouldInstall: shouldInstall)
@@ -590,7 +596,7 @@ public class StickerManager: NSObject {
         return result
     }
 
-    private class func installKnownStickerPacks() {
+    private class func tryToDownloadKnownStickerPacks() {
         let stickerPacks = allKnownStickerPacks()
         tryToDownloadStickerPacks(stickerPacks: stickerPacks,
                                   shouldInstall: false)
