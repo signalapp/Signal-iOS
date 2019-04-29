@@ -43,6 +43,10 @@ public class StickerKeyboard: UIStackView {
 
         reloadStickers()
 
+        // By default, show the "recent" stickers.
+        assert(nil == stickerPack)
+        stickerCollectionView.showRecents()
+
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
                                                name: StickerManager.StickersOrPacksDidChange,
