@@ -28,7 +28,7 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
         let titleLabel = createTitleLabel(text: NSLocalizedString("Create Your Loki Messenger Account", comment: ""))
         titleLabel.accessibilityIdentifier = "onboarding.publicKeyStep.titleLabel"
         let topSpacer = UIView.vStretchingSpacer()
-        let explanationLabel = createExplanationLabel(text: NSLocalizedString("Please save the seed below in a safe location. They can be used to restore your account if you lose access or migrate to a new device.", comment: ""))
+        let explanationLabel = createExplanationLabel(text: NSLocalizedString("Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device.", comment: ""))
         explanationLabel.accessibilityIdentifier = "onboarding.publicKeyStep.explanationLabel"
         let bottomSpacer = UIView.vStretchingSpacer()
         let registerButton = button(title: NSLocalizedString("Register", comment: ""), selector: #selector(register))

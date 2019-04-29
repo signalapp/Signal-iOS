@@ -19,7 +19,7 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
                                                             target: self,
                                                             action: #selector(skipWasPressed))
 
-        let titleLabel = self.createTitleLabel(text: NSLocalizedString("ONBOARDING_PERMISSIONS_TITLE", comment: "Title of the 'onboarding permissions' view."))
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString("Loki Messenger can let you know when you get a message (and who it is from)", comment: ""))
         titleLabel.accessibilityIdentifier = "onboarding.permissions." + "titleLabel"
 
         let explanationLabel = self.createExplanationLabel(text: NSLocalizedString("ONBOARDING_PERMISSIONS_EXPLANATION",

@@ -31,7 +31,7 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         let titleLabel = self.createTitleLabel(text: NSLocalizedString("Create Your Loki Messenger Account", comment: ""))
         titleLabel.accessibilityIdentifier = "onboarding.accountDetailsStep.titleLabel"
         let topSpacer = UIView.vStretchingSpacer()
-        let displayNameLabel = createExplanationLabel(text: NSLocalizedString("Enter a name that will be shown to all your contacts", comment: ""))
+        let displayNameLabel = createExplanationLabel(text: NSLocalizedString("Enter a name to be shown to your contacts", comment: ""))
         displayNameLabel.accessibilityIdentifier = "onboarding.accountDetailsStep.displayNameLabel"
         let passwordLabel = createExplanationLabel(text: NSLocalizedString("Type an optional password for added security", comment: ""))
         passwordLabel.accessibilityIdentifier = "onboarding.accountDetailsStep.passwordLabel"
