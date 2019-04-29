@@ -452,7 +452,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             || nil == [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction.asAnyWrite]);
 
         if (willInsert) {
-            [StickerManager addKnownStickerInfo:self.messageSticker.info];
+            [StickerManager addKnownStickerInfo:self.messageSticker.info transaction:transaction];
         }
     }
 
@@ -468,7 +468,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
         // StickerManager does reference counting of "known" sticker packs.
         if (willDelete) {
-            [StickerManager removeKnownStickerInfo:self.messageSticker.info];
+            [StickerManager removeKnownStickerInfo:self.messageSticker.info transaction:transaction];
         }
     }
 

@@ -493,6 +493,9 @@ public class SignalAttachment: NSObject {
             return false
         }
         let pasteboardUTISet = Set<String>(filterDynamicUTITypes(pasteboardUTITypes[0]))
+        guard pasteboardUTISet.count > 0 else {
+            return false
+        }
 
         // The pasteboard can be populated with multiple UTI types
         // with different payloads.  iMessage for example will copy
@@ -553,6 +556,9 @@ public class SignalAttachment: NSObject {
         }
 
         let pasteboardUTISet = Set<String>(filterDynamicUTITypes(pasteboardUTITypes[0]))
+        guard pasteboardUTISet.count > 0 else {
+            return nil
+        }
         for dataUTI in inputImageUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
