@@ -119,6 +119,11 @@ public class OWSFlatButton: UIView {
     // MARK: Methods
 
     @objc
+    public func setTitle(_ title: String) {
+        button.setTitle(title, for: .normal)
+    }
+    
+    @objc
     public func setTitle(title: String, font: UIFont,
                          titleColor: UIColor ) {
         button.setTitle(title, for: .normal)

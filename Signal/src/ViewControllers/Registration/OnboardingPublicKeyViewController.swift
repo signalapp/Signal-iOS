@@ -42,8 +42,6 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
         let topSpacer = UIView.vStretchingSpacer()
         let explanationLabel = createExplanationLabel(text: NSLocalizedString("Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device.", comment: ""))
         explanationLabel.accessibilityIdentifier = "onboarding.publicKeyStep.explanationLabel"
-        let copyButton = createLinkButton(title: NSLocalizedString("Copy", comment: ""), selector: #selector(copyMnemonic))
-        copyButton.accessibilityIdentifier = "onboarding.publicKeyStep.copyButton"
         let bottomSpacer = UIView.vStretchingSpacer()
         let registerButton = createButton(title: NSLocalizedString("Register", comment: ""), selector: #selector(register))
         registerButton.accessibilityIdentifier = "onboarding.publicKeyStep.registerButton"
@@ -83,34 +81,31 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
     @objc private func copyMnemonic() {
         UIPasteboard.general.string = mnemonic
         copyButton.isUserInteractionEnabled = false
-        copyButton.setTitle(title: NSLocalizedString("Copied ✓", comment: ""), font: .ows_dynamicTypeBodyClamped, titleColor: .ows_materialBlue)
+        copyButton.setTitle(NSLocalizedString("Copied ✓", comment: ""))
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
     }
 
     @objc private func enableCopyButton() {
         copyButton.isUserInteractionEnabled = true
-        copyButton.setTitle(title: NSLocalizedString("Copy", comment: ""), font: .ows_dynamicTypeBodyClamped, titleColor: .ows_materialBlue)
+        copyButton.setTitle(NSLocalizedString("Copy", comment: ""))
     }
 
     @objc private func register() {
         let accountManager = TSAccountManager.sharedInstance()
         accountManager.phoneNumberAwaitingVerification = hexEncodedPublicKey
         accountManager.didRegister()
-        
-        let verificationComplete: () -> Void = { [weak self] in
+        let onSuccess: () -> Void = { [weak self] in
             guard let strongSelf = self else { return }
             strongSelf.onboardingController.verificationDidComplete(fromView: strongSelf)
         }
-        
         if let userName = userName {
-            // Try save the profile name
-            OWSProfileManager.shared().updateLocalProfileName(userName, avatarImage: nil, success: verificationComplete, failure: {
+            // Try to save the user name
+            OWSProfileManager.shared().updateLocalProfileName(userName, avatarImage: nil, success: onSuccess, failure: {
                 Logger.warn("Failed to set user name")
-                verificationComplete()
+                onSuccess()
             })
         } else {
-            verificationComplete()
+            onSuccess()
         }
-
     }
 }

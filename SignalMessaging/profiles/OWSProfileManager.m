@@ -294,7 +294,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSUserProfile *userProfile = self.localUserProfile;
     OWSAssertDebug(userProfile);
     
-    /* LOKI - We don't support avatar uploads yet */
+    /* Loki: We don't support avatar uploads yet */
     OWSLogVerbose(@"Updating local profile on service with no avatar.");
     tryToUpdateService(nil, nil);
 
@@ -535,10 +535,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
     
-    // Since we don't need to call any servers, automatically succeed
+    // Loki: We don't need to make any server calls so succeed automatically
     successBlock();
     
-    /* ============ Original Code ==================
+    /* ============ Original Code ============
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSData *_Nullable encryptedPaddedName = [self encryptProfileNameWithUnpaddedName:localProfileName];
 
@@ -552,7 +552,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 failureBlock(error);
             }];
     });
-     */
+    */
 }
 
 - (void)fetchLocalUsersProfile

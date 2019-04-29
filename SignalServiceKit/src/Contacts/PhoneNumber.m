@@ -89,9 +89,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 + (nullable PhoneNumber *)phoneNumberFromE164:(NSString *)text {
-    NSString *e164 = text;
-    PhoneNumber *result = [[PhoneNumber alloc] initWithPhoneNumber:[NBPhoneNumber new] e164:e164];
-    return result;
+    return [[PhoneNumber alloc] initWithPhoneNumber:[NBPhoneNumber new] e164:text];
     // Original code:
     // ========
 //    OWSAssertDebug(text != nil);
