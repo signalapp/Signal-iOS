@@ -340,6 +340,7 @@
     [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
     [subtitleLabel autoPinLeadingToSuperviewMargin];
     [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [subtitleLabel autoPinWidthToSuperview];
 
     UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
     OWSAssertDebug(disclosureImage);
