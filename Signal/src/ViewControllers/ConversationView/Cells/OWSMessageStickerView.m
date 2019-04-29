@@ -217,24 +217,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.shouldShowSenderName);
 
     self.senderNameLabel.textColor = self.bodyTextColor;
-    self.senderNameLabel.font = OWSMessageStickerView.senderNameFont;
+    self.senderNameLabel.font = OWSMessageView.senderNameFont;
     self.senderNameLabel.attributedText = self.viewItem.senderName;
     self.senderNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-}
-
-+ (UIFont *)senderNameFont
-{
-    return OWSMessageBubbleView.senderNameFont;
-}
-
-+ (NSDictionary *)senderNamePrimaryAttributes
-{
-    return OWSMessageBubbleView.senderNamePrimaryAttributes;
-}
-
-+ (NSDictionary *)senderNameSecondaryAttributes
-{
-    return OWSMessageBubbleView.senderNameSecondaryAttributes;
 }
 
 - (UIView *)loadStickerView
@@ -438,7 +423,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble
 {
-    return OWSMessageGestureLocation_Media;
+    return OWSMessageGestureLocation_Sticker;
 }
 
 @end

@@ -2,28 +2,17 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSMessageView.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class ContactShareViewModel;
-@class ConversationStyle;
-
-@protocol ConversationViewItem;
-
 @class OWSContact;
 @class OWSLinkPreview;
 @class OWSQuotedReplyModel;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSOutgoingMessage;
-
-typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
-    // Message text, etc.
-    OWSMessageGestureLocation_Default,
-    OWSMessageGestureLocation_OversizeText,
-    OWSMessageGestureLocation_Media,
-    OWSMessageGestureLocation_QuotedReply,
-    OWSMessageGestureLocation_LinkPreview,
-};
 
 @protocol OWSMessageBubbleViewDelegate
 
@@ -63,13 +52,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 #pragma mark -
 
-@interface OWSMessageBubbleView : UIView
-
-@property (nonatomic, nullable) id<ConversationViewItem> viewItem;
-
-@property (nonatomic) ConversationStyle *conversationStyle;
-
-@property (nonatomic) NSCache *cellMediaCache;
+@interface OWSMessageBubbleView : OWSMessageView
 
 @property (nonatomic, nullable, readonly) UIView *bodyMediaView;
 
@@ -81,28 +64,11 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
-- (void)configureViews;
-
-- (void)loadContent;
-- (void)unloadContent;
-
-- (CGSize)measureSize;
-
-- (void)prepareForReuse;
-
-+ (UIFont *)senderNameFont;
-+ (NSDictionary *)senderNamePrimaryAttributes;
-+ (NSDictionary *)senderNameSecondaryAttributes;
-
 #pragma mark - Gestures
-
-- (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble;
 
 // This only needs to be called when we use the cell _outside_ the context
 // of a conversation view message cell.
 - (void)addTapGestureHandler;
-
-- (void)handleTapGesture:(UITapGestureRecognizer *)sender;
 
 @end
 
