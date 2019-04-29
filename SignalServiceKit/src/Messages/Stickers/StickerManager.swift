@@ -26,6 +26,7 @@ public class StickerManager: NSObject {
 
     @objc
     public static let StickersOrPacksDidChange = Notification.Name("StickersOrPacksDidChange")
+    public static let RecentStickersDidChange = Notification.Name("RecentStickersDidChange")
 
     // MARK: - Dependencies
 
@@ -49,6 +50,8 @@ public class StickerManager: NSObject {
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
     }()
+
+    private static let store = SDSKeyValueStore(collection: "StickerManager")
 
     // MARK: - Initializers
 
@@ -443,6 +446,9 @@ public class StickerManager: NSObject {
         }
         installedSticker.anyRemove(transaction: transaction)
 
+        removeFromRecentStickers(stickerInfo,
+                                 transaction: transaction)
+
         return {
             let url = stickerUrl(stickerInfo: stickerInfo)
             OWSFileSystem.deleteFileIfExists(url.path)
@@ -618,6 +624,73 @@ public class StickerManager: NSObject {
             StickerManager.tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
                                                            shouldInstall: shouldInstall)
         }
+    }
+
+    // MARK: - Recents
+
+    private static let kRecentStickersKey = "recentStickers"
+
+    @objc
+    public class func stickerWasSent(_ stickerInfo: StickerInfo,
+                                     transaction: SDSAnyWriteTransaction) {
+        let key = stickerInfo.asKey()
+        // Prepend key to ensure descending order of recency.
+        var recentStickerKeys = [key]
+        if let storedValue = store.getObject(kRecentStickersKey) as? [String] {
+            recentStickerKeys += storedValue.filter {
+                $0 != key
+            }
+        }
+        store.setObject(recentStickerKeys, key: kRecentStickersKey)
+
+        NotificationCenter.default.postNotificationNameAsync(RecentStickersDidChange, object: nil)
+    }
+
+    private class func removeFromRecentStickers(_ stickerInfo: StickerInfo,
+                                                transaction: SDSAnyWriteTransaction) {
+        let key = stickerInfo.asKey()
+        var recentStickerKeys = [String]()
+        if let storedValue = store.getObject(kRecentStickersKey) as? [String] {
+            guard storedValue.contains(key) else {
+                // No work to do.
+                return
+            }
+            recentStickerKeys += storedValue.filter {
+                $0 != key
+            }
+        }
+        store.setObject(recentStickerKeys, key: kRecentStickersKey)
+
+        NotificationCenter.default.postNotificationNameAsync(RecentStickersDidChange, object: nil)
+    }
+
+    // Returned in descending order of recency.
+    //
+    // Only returns installed stickers.
+    @objc
+    public class func recentStickers() -> [StickerInfo] {
+        var result = [StickerInfo]()
+        databaseStorage.readSwallowingErrors { (transaction) in
+            result = self.recentStickers(transaction: transaction)
+        }
+        return result
+    }
+
+    // Returned in descending order of recency.
+    //
+    // Only returns installed stickers.
+    private class func recentStickers(transaction: SDSAnyReadTransaction) -> [StickerInfo] {
+        var result = [StickerInfo]()
+        if let keys = store.getObject(kRecentStickersKey) as? [String] {
+            for key in keys {
+                guard let sticker = InstalledSticker.anyFetch(uniqueId: key, transaction: transaction) else {
+                    owsFailDebug("Couldn't fetch sticker")
+                    continue
+                }
+                result.append(sticker.info)
+            }
+        }
+        return result
     }
 
     // MARK: - Misc.

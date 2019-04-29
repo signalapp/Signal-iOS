@@ -78,6 +78,25 @@ public class SDSKeyValueStore: NSObject {
         writeData(value, forKey: key)
     }
 
+    @objc
+    public func getObject(_ key: String) -> Any? {
+        return read(key)
+    }
+
+    @objc
+    public func setObject(_ anyValue: Any?, key: String) {
+        guard let anyValue = anyValue else {
+            write(nil, forKey: key)
+            return
+        }
+        guard let codingValue = anyValue as? NSCoding else {
+            owsFailDebug("Invalid value.")
+            write(nil, forKey: key)
+            return
+        }
+        write(codingValue, forKey: key)
+    }
+
     // MARK: -
 
     private func read<T>(_ key: String) -> T? {
