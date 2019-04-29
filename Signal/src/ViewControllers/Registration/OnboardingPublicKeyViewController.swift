@@ -16,6 +16,12 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
         result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: result.font.pointSize)
         return result
     }()
+
+    private lazy var copyButton: OWSFlatButton = {
+        let result = createLinkButton(title: NSLocalizedString("Copy", comment: ""), selector: #selector(copyMnemonic))
+        result.accessibilityIdentifier = "onboarding.publicKeyStep.copyButton"
+        return result
+    }()
     
     init(onboardingController: OnboardingController, userName: String?) {
         super.init(onboardingController: onboardingController)
@@ -76,6 +82,14 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
 
     @objc private func copyMnemonic() {
         UIPasteboard.general.string = mnemonic
+        copyButton.isUserInteractionEnabled = false
+        copyButton.setTitle(title: NSLocalizedString("Copied ✓", comment: ""), font: .ows_dynamicTypeBodyClamped, titleColor: .ows_materialBlue)
+        Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
+    }
+
+    @objc private func enableCopyButton() {
+        copyButton.isUserInteractionEnabled = true
+        copyButton.setTitle(title: NSLocalizedString("Copy", comment: ""), font: .ows_dynamicTypeBodyClamped, titleColor: .ows_materialBlue)
     }
 
     @objc private func register() {
