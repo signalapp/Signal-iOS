@@ -179,7 +179,7 @@ public class OnboardingController: NSObject {
         contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
         if tsAccountManager.isReregistering() {
-            showProfileView(fromView: view)
+            showHomeView(view: view)
         } else {
             checkCanImportBackup(fromView: view)
         }
@@ -225,7 +225,7 @@ public class OnboardingController: NSObject {
 
                 self.showBackupRestoreView(fromView: view)
             } else {
-                self.showProfileView(fromView: view)
+                self.showHomeView(view: view)
             }
         }, failure: { (_) in
             self.showBackupCheckFailedAlert(fromView: view)
@@ -248,7 +248,7 @@ public class OnboardingController: NSObject {
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("CHECK_FOR_BACKUP_DO_NOT_RESTORE", comment: "The label for the 'do not restore backup' button."),
                                       style: .destructive) { (_) in
-                                        self.showProfileView(fromView: view)
+                                        self.showHomeView(view: view)
         })
         view.presentAlert(alert)
     }
