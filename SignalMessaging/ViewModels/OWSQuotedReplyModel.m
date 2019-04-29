@@ -15,32 +15,8 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSThread.h>
-#import <YYImage/YYImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-@interface NSData (QuotedReply)
-
-@end
-
-#pragma mark -
-
-@implementation NSData (QuotedReply)
-
-- (nullable UIImage *)jpegStillForWebpData
-{
-    CGImageRef _Nullable cgImage = YYCGImageCreateWithWebPData((__bridge CFDataRef)self, NO, NO, NO, NO);
-    if (!cgImage) {
-        return nil;
-    }
-
-    UIImage *uiImage = [UIImage imageWithCGImage:cgImage];
-    return uiImage;
-}
-
-@end
-
-#pragma mark -
 
 @interface OWSQuotedReplyModel ()
 
@@ -199,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Couldn't load sticker data.");
             return nil;
         }
-        UIImage *_Nullable thumbnailImage = [stickerData jpegStillForWebpData];
+        UIImage *_Nullable thumbnailImage = [stickerData stillForWebpData];
         if (!thumbnailImage) {
             OWSFailDebug(@"Couldn't generate thumbnail for sticker.");
             return nil;
@@ -210,8 +186,8 @@ NS_ASSUME_NONNULL_BEGIN
                                           body:nil
                                     bodySource:TSQuotedMessageContentSourceLocal
                                 thumbnailImage:thumbnailImage
-                                   contentType:OWSMimeTypeImageJpeg
-                                sourceFilename:nil
+                                   contentType:quotedAttachment.contentType
+                                sourceFilename:quotedAttachment.sourceFilename
                               attachmentStream:quotedAttachment
                     thumbnailAttachmentPointer:nil
                        thumbnailDownloadFailed:NO];

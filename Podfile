@@ -63,7 +63,6 @@ def shared_pods
   pod 'AFNetworking', inhibit_warnings: true
   pod 'PureLayout', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
-  pod 'YYImage/WebP', :inhibit_warnings => true  
 end
 
 target 'Signal' do

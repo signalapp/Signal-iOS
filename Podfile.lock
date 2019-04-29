@@ -125,6 +125,7 @@ PODS:
     - Starscream
     - SwiftProtobuf
     - YapDatabase/SQLCipher
+    - YYImage/WebP
   - SignalServiceKit/Tests (0.9.0):
     - AFNetworking
     - AxolotlKit
@@ -143,6 +144,7 @@ PODS:
     - Starscream
     - SwiftProtobuf
     - YapDatabase/SQLCipher
+    - YYImage/WebP
   - SQLCipher (4.0.1):
     - SQLCipher/standard (= 4.0.1)
   - SQLCipher/common (4.0.1)
@@ -241,7 +243,6 @@ DEPENDENCIES:
   - SSZipArchive
   - "Starscream (from `git@github.com:signalapp/Starscream.git`, branch `signal-release`)"
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
-  - YYImage/WebP
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -336,7 +337,7 @@ SPEC CHECKSUMS:
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: c2d8132cdedb95d35eb2f8ae7eac0957695d0a8b
   SignalMetadataKit: 6fa5e9a53c7f104568662521a2f3874672ff7a02
-  SignalServiceKit: 2a1804740e9c7fca396128a9750822053471e759
+  SignalServiceKit: c8786e183cb528fb85547196767f44055cb4fb27
   SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
@@ -344,6 +345,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 75ed17cb31e1c52151d3fb2967e25027203907e1
+PODFILE CHECKSUM: a330e853eae03fe06fde79490727aa1c2724d6cc
 
 COCOAPODS: 1.5.3

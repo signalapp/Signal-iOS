@@ -56,6 +56,7 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'GRDBCipher'
   s.dependency 'libwebp'
   s.dependency 'PromiseKit', "~> 6.0"
+  s.dependency 'YYImage/WebP'
 
   s.ios.vendored_frameworks = 'Vendor/WebP.framework'
 		
