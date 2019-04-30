@@ -58,10 +58,23 @@ public class StickerManager: NSObject {
 
         // Resume sticker and sticker pack downloads when app is ready.
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            self.refreshAvailableStickerPacks()
-
-            StickerManager.ensureAllStickerDownloadsAsync()
+            StickerManager.refreshContents()
         }
+    }
+
+    // The sticker manager is responsible for downloading more than one kind
+    // of content; those downloads can fail.  Therefore the sticker manager
+    // retries those downloads, sometimes in response to user activity.
+    @objc
+    public class func refreshContents() {
+        // Try to download the manifests for "default" sticker packs.
+        shared.tryToDownloadDefaultStickerPacks(shouldInstall: false)
+
+        // Try to download the manifests for "known" sticker packs.
+        tryToDownloadKnownStickerPacks()
+
+        // Try to download the stickers for "installed" sticker packs.
+        ensureAllStickerDownloadsAsync()
     }
 
     // MARK: - Paths
@@ -100,24 +113,7 @@ public class StickerManager: NSObject {
     // TODO: Handle sorting.
     @objc
     public class func allStickerPacks(transaction: SDSAnyReadTransaction) -> [StickerPack] {
-        var result = [StickerPack]()
-        switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            StickerPack.enumerateCollectionObjects(with: ydbTransaction) { (object, _) in
-                guard let model = object as? StickerPack else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                result.append(model)
-            }
-        case .grdbRead(let grdbTransaction):
-            do {
-                result += try StickerPack.grdbFetchCursor(transaction: grdbTransaction).all()
-            } catch let error as NSError {
-                owsFailDebug("Couldn't fetch models: \(error)")
-            }
-        }
-        return result
+        return StickerPack.anyFetchAll(transaction: transaction)
     }
 
     // TODO: Handle sorting.
@@ -379,31 +375,14 @@ public class StickerManager: NSObject {
             }
         }
 
-        shared.refreshAvailableStickerPacks(shouldInstall: true)
+        shared.tryToDownloadDefaultStickerPacks(shouldInstall: true)
     }
     #endif
 
-    @objc
-    public func refreshAvailableStickerPacks() {
-        refreshAvailableStickerPacks(shouldInstall: false)
-    }
-
-    private func refreshAvailableStickerPacks(shouldInstall: Bool) {
-        let defaultStickerPackMap = self.defaultStickerPackMap.values
-
-        var stickerPacksToDownload = [StickerPackInfo]()
-        StickerManager.databaseStorage.readSwallowingErrors { (transaction) in
-            for stickerPackInfo in defaultStickerPackMap {
-                if !StickerManager.isStickerPackSaved(stickerPackInfo: stickerPackInfo, transaction: transaction) {
-                    stickerPacksToDownload.append(stickerPackInfo)
-                }
-            }
-        }
-
-        for stickerPackInfo in stickerPacksToDownload {
-            StickerManager.tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
-                                                           shouldInstall: shouldInstall)
-        }
+    private func tryToDownloadDefaultStickerPacks(shouldInstall: Bool) {
+        let stickerPacks = Array(defaultStickerPackMap.values)
+        StickerManager.tryToDownloadStickerPacks(stickerPacks: stickerPacks,
+                                                 shouldInstall: shouldInstall)
     }
 
     @objc
@@ -552,6 +531,93 @@ public class StickerManager: NSObject {
         }
 
         return emojiString.substring(to: 1)
+    }
+
+    // MARK: - Known Sticker Packs
+
+    // TODO: We may want to cull these in the orphan data cleaner.
+    @objc
+    public class func addKnownStickerInfo(_ stickerInfo: StickerInfo) {
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            let packInfo = stickerInfo.packInfo
+            let pack: KnownStickerPack
+            let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
+            if let existing = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) {
+                pack = existing
+            } else {
+                pack = KnownStickerPack(info: packInfo)
+
+                DispatchQueue.global().async {
+                    self.tryToDownloadStickerPacks(stickerPacks: [packInfo], shouldInstall: false)
+                }
+            }
+            pack.referenceCount += 1
+            pack.anySave(transaction: transaction)
+        }
+    }
+
+    @objc
+    public class func removeKnownStickerInfo(_ stickerInfo: StickerInfo) {
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            let packInfo = stickerInfo.packInfo
+            let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
+            guard let pack = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing known sticker pack.")
+                return
+            }
+            pack.referenceCount -= 1
+            if pack.referenceCount < 1 {
+                pack.anyRemove(transaction: transaction)
+
+                // Clean up the pack metadata unless either:
+                //
+                // * It's a default sticker pack.
+                // * The pack has been installed.
+                if !self.shared.isDefaultStickerPack(stickerPackInfo: packInfo),
+                    let stickerPack = StickerPack.anyFetch(uniqueId: StickerPack.uniqueId(for: packInfo), transaction: transaction),
+                    !stickerPack.isInstalled {
+                    self.uninstallStickerPack(stickerPackInfo: packInfo)
+                }
+            } else {
+                pack.anySave(transaction: transaction)
+            }
+        }
+    }
+
+    @objc
+    public class func allKnownStickerPacks() -> [StickerPackInfo] {
+        var result = [StickerPackInfo]()
+        databaseStorage.readSwallowingErrors { (transaction) in
+            KnownStickerPack.anyVisitAll(transaction: transaction) { (knownStickerPack) in
+                result.append(knownStickerPack.info)
+                return true
+            }
+        }
+        return result
+    }
+
+    private class func tryToDownloadKnownStickerPacks() {
+        let stickerPacks = allKnownStickerPacks()
+        tryToDownloadStickerPacks(stickerPacks: stickerPacks,
+                                  shouldInstall: false)
+    }
+
+    private class func tryToDownloadStickerPacks(stickerPacks: [StickerPackInfo],
+                                                 shouldInstall: Bool) {
+
+        var stickerPacksToDownload = [StickerPackInfo]()
+        StickerManager.databaseStorage.readSwallowingErrors { (transaction) in
+            for stickerPackInfo in stickerPacks {
+                if !StickerManager.isStickerPackSaved(stickerPackInfo: stickerPackInfo, transaction: transaction) {
+                    stickerPacksToDownload.append(stickerPackInfo)
+                }
+            }
+        }
+
+        for stickerPackInfo in stickerPacksToDownload {
+            StickerManager.tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
+                                                           shouldInstall: shouldInstall)
+        }
     }
 
     // MARK: - Misc.

@@ -50,7 +50,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
         updateState()
 
-        stickerManager.refreshAvailableStickerPacks()
+        StickerManager.refreshContents()
     }
 
     private var installedStickerPacks = [StickerPack]()

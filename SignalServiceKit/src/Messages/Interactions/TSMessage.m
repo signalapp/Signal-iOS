@@ -444,8 +444,34 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    // StickerManager does reference counting of "known" sticker packs.
+    if (self.messageSticker != nil) {
+        BOOL willInsert = (self.uniqueId.length < 1
+            || nil == [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction.asAnyWrite]);
+
+        if (willInsert) {
+            [StickerManager addKnownStickerInfo:self.messageSticker.info];
+        }
+    }
+
+    [super saveWithTransaction:transaction];
+}
+
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    // StickerManager does reference counting of "known" sticker packs.
+    if (self.messageSticker != nil) {
+        BOOL willDelete = (self.uniqueId.length > 0
+            && nil != [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction.asAnyWrite]);
+
+        // StickerManager does reference counting of "known" sticker packs.
+        if (willDelete) {
+            [StickerManager removeKnownStickerInfo:self.messageSticker.info];
+        }
+    }
+
     [super removeWithTransaction:transaction];
 
     for (NSString *attachmentId in self.allAttachmentIds) {

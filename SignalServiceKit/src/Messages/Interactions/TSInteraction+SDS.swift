@@ -1131,6 +1131,48 @@ extension TSInteraction {
             }
         }
     }
+
+    // Traverses all records.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    @objc
+    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (TSInteraction) -> Bool) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            TSInteraction.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+                guard let value = object as? TSInteraction else {
+                    owsFailDebug("unexpected object: \(type(of: object))")
+                    return
+                }
+                guard visitor(value) else {
+                    stop.pointee = true
+                    return
+                }
+            }
+        case .grdbRead(let grdbTransaction):
+            do {
+                let cursor = TSInteraction.grdbFetchCursor(transaction: grdbTransaction)
+                while let value = try cursor.next() {
+                    guard visitor(value) else {
+                        return
+                    }
+                }
+            } catch let error as NSError {
+                owsFailDebug("Couldn't fetch models: \(error)")
+            }
+        }
+    }
+
+    // Does not order the results.
+    @objc
+    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSInteraction] {
+        var result = [TSInteraction]()
+        anyVisitAll(transaction: transaction) { (model) in
+            result.append(model)
+            return true
+        }
+        return result
+    }
 }
 
 // MARK: - Swift Fetch

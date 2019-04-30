@@ -6,6 +6,7 @@
 #import <Reachability/Reachability.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>
 #import <SignalServiceKit/InstalledSticker.h>
+#import <SignalServiceKit/KnownStickerPack.h>
 #import <SignalServiceKit/NotificationsProtocol.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSFileSystem.h>

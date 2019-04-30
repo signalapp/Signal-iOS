@@ -310,6 +310,48 @@ extension TSThread {
             }
         }
     }
+
+    // Traverses all records.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    @objc
+    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (TSThread) -> Bool) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            TSThread.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+                guard let value = object as? TSThread else {
+                    owsFailDebug("unexpected object: \(type(of: object))")
+                    return
+                }
+                guard visitor(value) else {
+                    stop.pointee = true
+                    return
+                }
+            }
+        case .grdbRead(let grdbTransaction):
+            do {
+                let cursor = TSThread.grdbFetchCursor(transaction: grdbTransaction)
+                while let value = try cursor.next() {
+                    guard visitor(value) else {
+                        return
+                    }
+                }
+            } catch let error as NSError {
+                owsFailDebug("Couldn't fetch models: \(error)")
+            }
+        }
+    }
+
+    // Does not order the results.
+    @objc
+    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSThread] {
+        var result = [TSThread]()
+        anyVisitAll(transaction: transaction) { (model) in
+            result.append(model)
+            return true
+        }
+        return result
+    }
 }
 
 // MARK: - Swift Fetch

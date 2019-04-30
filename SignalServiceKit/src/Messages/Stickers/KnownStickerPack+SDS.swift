@@ -11,48 +11,48 @@ import SignalCoreKit
 
 // MARK: - SDSSerializable
 
-extension InstalledSticker: SDSSerializable {
+extension KnownStickerPack: SDSSerializable {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
         default:
-            return InstalledStickerSerializer(model: self)
+            return KnownStickerPackSerializer(model: self)
         }
     }
 }
 
 // MARK: - Table Metadata
 
-extension InstalledStickerSerializer {
+extension KnownStickerPackSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 1)
     // Base class properties
-    static let emojiStringColumn = SDSColumnMetadata(columnName: "emojiString", columnType: .unicodeString, isOptional: true, columnIndex: 2)
-    static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 3)
+    static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 2)
+    static let referenceCountColumn = SDSColumnMetadata(columnName: "referenceCount", columnType: .int64, columnIndex: 3)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_InstalledSticker", columns: [
+    public static let table = SDSTableMetadata(tableName: "model_KnownStickerPack", columns: [
         recordTypeColumn,
         uniqueIdColumn,
-        emojiStringColumn,
-        infoColumn
+        infoColumn,
+        referenceCountColumn
         ])
 
 }
 
 // MARK: - Deserialization
 
-extension InstalledStickerSerializer {
+extension KnownStickerPackSerializer {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> InstalledSticker {
+    class func sdsDeserialize(statement: SelectStatement) throws -> KnownStickerPack {
 
         if OWSIsDebugBuild() {
             guard statement.columnNames == table.selectColumnNames else {
@@ -69,16 +69,16 @@ extension InstalledStickerSerializer {
             throw SDSError.invalidResult
         }
         switch recordType {
-        case .installedSticker:
+        case .knownStickerPack:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let emojiString = try deserializer.optionalString(at: emojiStringColumn.columnIndex)
             let infoSerialized: Data = try deserializer.blob(at: infoColumn.columnIndex)
-            let info: StickerInfo = try SDSDeserializer.unarchive(infoSerialized)
+            let info: StickerPackInfo = try SDSDeserializer.unarchive(infoSerialized)
+            let referenceCount = Int(try deserializer.int64(at: referenceCountColumn.columnIndex))
 
-            return InstalledSticker(uniqueId: uniqueId,
-                                    emojiString: emojiString,
-                                    info: info)
+            return KnownStickerPack(uniqueId: uniqueId,
+                                    info: info,
+                                    referenceCount: referenceCount)
 
         default:
             owsFail("Invalid record type \(recordType)")
@@ -89,7 +89,7 @@ extension InstalledStickerSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension InstalledSticker {
+extension KnownStickerPack {
     @objc
     public func anySave(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
@@ -125,7 +125,7 @@ extension InstalledSticker {
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
     @objc
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (InstalledSticker) -> Void) {
+    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (KnownStickerPack) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -153,22 +153,22 @@ extension InstalledSticker {
     }
 }
 
-// MARK: - InstalledStickerCursor
+// MARK: - KnownStickerPackCursor
 
 @objc
-public class InstalledStickerCursor: NSObject {
-    private let cursor: SDSCursor<InstalledSticker>
+public class KnownStickerPackCursor: NSObject {
+    private let cursor: SDSCursor<KnownStickerPack>
 
-    init(cursor: SDSCursor<InstalledSticker>) {
+    init(cursor: SDSCursor<KnownStickerPack>) {
         self.cursor = cursor
     }
 
     // TODO: Revisit error handling in this class.
-    public func next() throws -> InstalledSticker? {
+    public func next() throws -> KnownStickerPack? {
         return try cursor.next()
     }
 
-    public func all() throws -> [InstalledSticker] {
+    public func all() throws -> [KnownStickerPack] {
         return try cursor.all()
     }
 }
@@ -184,31 +184,31 @@ public class InstalledStickerCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension InstalledSticker {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> InstalledStickerCursor {
-        return InstalledStickerCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: InstalledStickerSerializer.table,
+extension KnownStickerPack {
+    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> KnownStickerPackCursor {
+        return KnownStickerPackCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: KnownStickerPackSerializer.table,
                                                                    transaction: transaction,
-                                                                   deserialize: InstalledStickerSerializer.sdsDeserialize))
+                                                                   deserialize: KnownStickerPackSerializer.sdsDeserialize))
     }
 
     // Fetches a single model by "unique id".
     @objc
     public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> InstalledSticker? {
+                               transaction: SDSAnyReadTransaction) -> KnownStickerPack? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return InstalledSticker.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return KnownStickerPack.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let tableMetadata = InstalledStickerSerializer.table
+            let tableMetadata = KnownStickerPackSerializer.table
             let columnNames: [String] = tableMetadata.selectColumnNames
             let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
             let tableName: String = tableMetadata.tableName
-            let uniqueIdColumnName: String = InstalledStickerSerializer.uniqueIdColumn.columnName
+            let uniqueIdColumnName: String = KnownStickerPackSerializer.uniqueIdColumn.columnName
             let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
 
-            let cursor = InstalledSticker.grdbFetchCursor(sql: sql,
+            let cursor = KnownStickerPack.grdbFetchCursor(sql: sql,
                                                   arguments: [uniqueId],
                                                   transaction: grdbTransaction)
             do {
@@ -224,11 +224,11 @@ extension InstalledSticker {
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
     @objc
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (InstalledSticker) -> Bool) {
+    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (KnownStickerPack) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            InstalledSticker.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
-                guard let value = object as? InstalledSticker else {
+            KnownStickerPack.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+                guard let value = object as? KnownStickerPack else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
                 }
@@ -239,7 +239,7 @@ extension InstalledSticker {
             }
         case .grdbRead(let grdbTransaction):
             do {
-                let cursor = InstalledSticker.grdbFetchCursor(transaction: grdbTransaction)
+                let cursor = KnownStickerPack.grdbFetchCursor(transaction: grdbTransaction)
                 while let value = try cursor.next() {
                     guard visitor(value) else {
                         return
@@ -253,8 +253,8 @@ extension InstalledSticker {
 
     // Does not order the results.
     @objc
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [InstalledSticker] {
-        var result = [InstalledSticker]()
+    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [KnownStickerPack] {
+        var result = [KnownStickerPack]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
             return true
@@ -265,10 +265,10 @@ extension InstalledSticker {
 
 // MARK: - Swift Fetch
 
-extension InstalledSticker {
+extension KnownStickerPack {
     public class func grdbFetchCursor(sql: String,
                                       arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> InstalledStickerCursor {
+                                      transaction: GRDBReadTransaction) -> KnownStickerPackCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -276,10 +276,10 @@ extension InstalledSticker {
             }
             statementArguments = statementArgs
         }
-        return InstalledStickerCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
+        return KnownStickerPackCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
                                                              arguments: statementArguments,
                                                              transaction: transaction,
-                                                                   deserialize: InstalledStickerSerializer.sdsDeserialize))
+                                                                   deserialize: KnownStickerPackSerializer.sdsDeserialize))
     }
 }
 
@@ -287,15 +287,15 @@ extension InstalledSticker {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class InstalledStickerSerializer: SDSSerializer {
+class KnownStickerPackSerializer: SDSSerializer {
 
-    private let model: InstalledSticker
-    public required init(model: InstalledSticker) {
+    private let model: KnownStickerPack
+    public required init(model: KnownStickerPack) {
         self.model = model
     }
 
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return InstalledStickerSerializer.table
+        return KnownStickerPackSerializer.table
     }
 
     public func insertColumnNames() -> [String] {
@@ -305,7 +305,7 @@ class InstalledStickerSerializer: SDSSerializer {
         // * "unique id"
         // * ...all columns that we set when updating.
         return [
-            InstalledStickerSerializer.recordTypeColumn.columnName,
+            KnownStickerPackSerializer.recordTypeColumn.columnName,
             uniqueIdColumnName()
             ] + updateColumnNames()
 
@@ -313,7 +313,7 @@ class InstalledStickerSerializer: SDSSerializer {
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.installedSticker.rawValue
+            SDSRecordType.knownStickerPack.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {
@@ -325,15 +325,15 @@ class InstalledStickerSerializer: SDSSerializer {
 
     public func updateColumnNames() -> [String] {
         return [
-            InstalledStickerSerializer.emojiStringColumn,
-            InstalledStickerSerializer.infoColumn
+            KnownStickerPackSerializer.infoColumn,
+            KnownStickerPackSerializer.referenceCountColumn
             ].map { $0.columnName }
     }
 
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            self.model.emojiString ?? DatabaseValue.null,
-            SDSDeserializer.archive(self.model.info) ?? DatabaseValue.null
+            SDSDeserializer.archive(self.model.info) ?? DatabaseValue.null,
+            self.model.referenceCount
 
         ]
         if OWSIsDebugBuild() {
@@ -345,7 +345,7 @@ class InstalledStickerSerializer: SDSSerializer {
     }
 
     public func uniqueIdColumnName() -> String {
-        return InstalledStickerSerializer.uniqueIdColumn.columnName
+        return KnownStickerPackSerializer.uniqueIdColumn.columnName
     }
 
     // TODO: uniqueId is currently an optional on our models.

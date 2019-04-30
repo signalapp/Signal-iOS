@@ -218,6 +218,48 @@ extension OWSMessageDecryptJob {
             }
         }
     }
+
+    // Traverses all records.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    @objc
+    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSMessageDecryptJob) -> Bool) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            OWSMessageDecryptJob.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+                guard let value = object as? OWSMessageDecryptJob else {
+                    owsFailDebug("unexpected object: \(type(of: object))")
+                    return
+                }
+                guard visitor(value) else {
+                    stop.pointee = true
+                    return
+                }
+            }
+        case .grdbRead(let grdbTransaction):
+            do {
+                let cursor = OWSMessageDecryptJob.grdbFetchCursor(transaction: grdbTransaction)
+                while let value = try cursor.next() {
+                    guard visitor(value) else {
+                        return
+                    }
+                }
+            } catch let error as NSError {
+                owsFailDebug("Couldn't fetch models: \(error)")
+            }
+        }
+    }
+
+    // Does not order the results.
+    @objc
+    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSMessageDecryptJob] {
+        var result = [OWSMessageDecryptJob]()
+        anyVisitAll(transaction: transaction) { (model) in
+            result.append(model)
+            return true
+        }
+        return result
+    }
 }
 
 // MARK: - Swift Fetch

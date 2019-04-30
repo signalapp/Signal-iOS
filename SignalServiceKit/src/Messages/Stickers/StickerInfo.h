@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class StickerPackInfo;
+
 @interface StickerInfo : MTLModel
 
 @property (nonatomic, readonly) NSData *packId;
@@ -15,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey stickerId:(UInt32)stickerId;
 
 - (NSString *)asKey;
+
+@property (nonatomic, readonly) StickerPackInfo *packInfo;
 
 @property (class, readonly, nonatomic) StickerInfo *defaultValue;
 
