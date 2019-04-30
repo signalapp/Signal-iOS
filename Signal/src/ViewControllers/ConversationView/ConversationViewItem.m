@@ -179,7 +179,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     [self clearCachedLayoutState];
 
-    [self ensureViewState:[[SDSAnyReadTransaction alloc] initWithTransitional_yapReadTransaction:transaction]];
+    [self ensureViewState:transaction.asAnyRead];
 }
 
 - (void)updateAuthorConversationColorNameWithTransaction:(YapDatabaseReadTransaction *)transaction

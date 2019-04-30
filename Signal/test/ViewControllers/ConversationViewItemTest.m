@@ -47,11 +47,10 @@
     [message save];
     __block ConversationInteractionViewItem *viewItem = nil;
     [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        viewItem = [[ConversationInteractionViewItem alloc]
-            initWithInteraction:message
-                  isGroupThread:NO
-                    transaction:[[SDSAnyReadTransaction alloc] initWithTransitional_yapReadTransaction:transaction]
-              conversationStyle:self.conversationStyle];
+        viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:message
+                                                                  isGroupThread:NO
+                                                                    transaction:transaction.asAnyRead
+                                                              conversationStyle:self.conversationStyle];
     }];
     return viewItem;
 }
@@ -75,11 +74,10 @@
 
     __block ConversationInteractionViewItem *viewItem = nil;
     [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        viewItem = [[ConversationInteractionViewItem alloc]
-            initWithInteraction:message
-                  isGroupThread:NO
-                    transaction:[[SDSAnyReadTransaction alloc] initWithTransitional_yapReadTransaction:transaction]
-              conversationStyle:self.conversationStyle];
+        viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:message
+                                                                  isGroupThread:NO
+                                                                    transaction:transaction.asAnyRead
+                                                              conversationStyle:self.conversationStyle];
     }];
 
     return viewItem;

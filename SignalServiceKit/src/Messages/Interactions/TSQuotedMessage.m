@@ -164,7 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (quotedMessage) {
         bodySource = TSQuotedMessageContentSourceLocal;
 
-        NSString *localText = [quotedMessage bodyTextWithTransaction:[[SDSAnyReadTransaction alloc] initWithTransitional_yapReadTransaction:transaction]];
+        NSString *localText = [quotedMessage bodyTextWithTransaction:transaction.asAnyRead];
         if (localText.length > 0) {
             body = localText;
         }

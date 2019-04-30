@@ -1468,8 +1468,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                                           inNotifications:notifications]) {
 
         [uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            SDSAnyReadTransaction *anyReadTransaction =
-                [[SDSAnyReadTransaction alloc] initWithTransitional_yapReadTransaction:transaction];
+            SDSAnyReadTransaction *anyReadTransaction = transaction.asAnyRead;
             [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
                                                                transaction:anyReadTransaction];
         }];
@@ -1482,8 +1481,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         NSSet<NSString *> *updatedItemIds = [self.threadMapping updatedYapItemIdsForNotifications:notifications];
 
-        SDSAnyReadTransaction *anyReadTransaction =
-            [[SDSAnyReadTransaction alloc] initWithTransitional_yapReadTransaction:transaction];
+        SDSAnyReadTransaction *anyReadTransaction = transaction.asAnyRead;
         mappingDiff =
             [self.threadMapping updateAndCalculateDiffSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
                                                                             updatedItemIds:updatedItemIds
