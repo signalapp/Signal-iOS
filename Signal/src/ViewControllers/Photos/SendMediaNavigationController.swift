@@ -292,7 +292,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
         case is ImagePickerGridController:
             if attachmentDraftCollection.count == 1 && !isInBatchSelectMode {
                 isInBatchSelectMode = true
-                self.mediaLibraryViewController.batchSelectModeDidChange()
+                mediaLibraryViewController.reloadDataAndRestoreSelection()
             }
         default:
             break
@@ -478,7 +478,6 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
 
         // regardless of which VC we're going "back" to, we're in "batch" mode at this point.
         isInBatchSelectMode = true
-        mediaLibraryViewController.batchSelectModeDidChange()
 
         popViewController(animated: true)
     }

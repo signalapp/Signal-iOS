@@ -308,7 +308,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
     }
 
-    private func reloadDataAndRestoreSelection() {
+    public func reloadDataAndRestoreSelection() {
         guard let collectionView = collectionView else {
             owsFailDebug("Missing collectionView.")
             return
@@ -499,14 +499,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - UICollectionView
 
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        guard let indexPathsForSelectedItems = collectionView.indexPathsForSelectedItems else {
-            return true
-        }
+        guard let delegate = delegate else { return false }
 
-        if (indexPathsForSelectedItems.count < SignalAttachment.maxAttachmentsAllowed) {
+        if delegate.imagePickerCanSelectMoreItems(self) {
             return true
         } else {
-            delegate?.imagePickerDidTryToSelectTooMany(self)
+            delegate.imagePickerDidTryToSelectTooMany(self)
             return false
         }
     }
