@@ -133,7 +133,7 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction {
 @objc
 public extension YapDatabaseReadTransaction {
     @objc
-    func asAnyRead() -> SDSAnyReadTransaction {
+    var asAnyRead: SDSAnyReadTransaction {
         return SDSAnyReadTransaction(transitional_yapReadTransaction: self)
     }
 }
@@ -143,7 +143,7 @@ public extension YapDatabaseReadTransaction {
 @objc
 public extension YapDatabaseReadWriteTransaction {
     @objc
-    func asAnyWrite() -> SDSAnyWriteTransaction {
+    var asAnyWrite: SDSAnyWriteTransaction {
         return SDSAnyWriteTransaction(transitional_yapWriteTransaction: self)
     }
 }

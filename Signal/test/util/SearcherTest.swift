@@ -85,17 +85,17 @@ class FullTextSearcherTest: SignalBaseTest {
         self.dbConnection.readWrite { transaction in
             let bookModel = TSGroupModel(title: "Book Club", memberIds: [aliceRecipientId, bobRecipientId], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
             let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction)
-            self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyWrite())
+            self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyWrite)
 
             let snackModel = TSGroupModel(title: "Snack Club", memberIds: [aliceRecipientId], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
             let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
-            self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyWrite())
+            self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyWrite)
 
             let aliceContactThread = TSContactThread.getOrCreateThread(withContactId: aliceRecipientId, transaction: transaction)
-            self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction.asAnyWrite())
+            self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction.asAnyWrite)
 
             let bobContactThread = TSContactThread.getOrCreateThread(withContactId: bobRecipientId, transaction: transaction)
-            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction.asAnyWrite())
+            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction.asAnyWrite)
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
             helloAlice.save(with: transaction)
