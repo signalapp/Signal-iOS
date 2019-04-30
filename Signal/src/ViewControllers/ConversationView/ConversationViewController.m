@@ -2602,7 +2602,8 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
+    StickerPackViewController *packView =
+        [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo hasDismissButton:YES];
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:packView];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -4473,6 +4474,18 @@ typedef enum : NSUInteger {
 
     TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithSticker:stickerInfo inThread:self.thread];
     [self messageWasSent:message];
+}
+
+- (void)presentManageStickersView
+{
+    OWSAssertIsOnMainThread();
+
+    ManageStickersViewController *manageStickersView = [ManageStickersViewController new];
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:manageStickersView];
+    [UIApplication.sharedApplication.frontmostViewController presentViewController:navigationController
+                                                                          animated:YES
+                                                                        completion:nil];
 }
 
 - (void)voiceMemoGestureDidStart

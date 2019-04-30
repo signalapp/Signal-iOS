@@ -1155,6 +1155,15 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.inputToolbarDelegate sendSticker:stickerInfo];
 }
 
+- (void)presentManageStickersView
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogVerbose(@"");
+
+    [self.inputToolbarDelegate presentManageStickersView];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

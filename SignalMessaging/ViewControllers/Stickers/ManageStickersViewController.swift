@@ -5,6 +5,51 @@
 import Foundation
 import SignalServiceKit
 
+private class StickerPackActionButton: UIView {
+
+    private let block: () -> Void
+
+    @available(*, unavailable, message:"use other constructor instead.")
+    required public init?(coder aDecoder: NSCoder) {
+        notImplemented()
+    }
+
+    init(actionIconName: String, block: @escaping () -> Void) {
+        self.block = block
+
+        super.init(frame: .zero)
+
+        configure(actionIconName: actionIconName)
+    }
+
+    private func configure(actionIconName: String) {
+        let actionIconSize: CGFloat = 20
+        let actionCircleSize: CGFloat = 32
+        let actionCircleView = CircleView(diameter: actionCircleSize)
+        actionCircleView.backgroundColor = Theme.offBackgroundColor
+        let actionIcon = UIImage(named: actionIconName)?.withRenderingMode(.alwaysTemplate)
+        let actionIconView = UIImageView(image: actionIcon)
+        actionIconView.tintColor = Theme.secondaryColor
+        actionCircleView.addSubview(actionIconView)
+        actionIconView.autoCenterInSuperview()
+        actionIconView.autoSetDimensions(to: CGSize(width: actionIconSize, height: actionIconSize))
+
+        self.addSubview(actionCircleView)
+        actionCircleView.autoPinEdgesToSuperviewEdges()
+
+        isUserInteractionEnabled = true
+        addGestureRecognizer(UITapGestureRecognizer(target: self,
+                                                    action: #selector(didTapButton)))
+    }
+
+    @objc
+    func didTapButton(sender: UIGestureRecognizer) {
+        block()
+    }
+}
+
+// MARK: -
+
 @objc
 public class ManageStickersViewController: OWSTableViewController {
 
@@ -36,6 +81,8 @@ public class ManageStickersViewController: OWSTableViewController {
         super.loadView()
 
         navigationItem.title = NSLocalizedString("STICKERS_MANAGE_VIEW_TITLE", comment: "Title for the 'manage stickers' view.")
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didPressDismiss))
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(didPressEditButton))
     }
@@ -79,10 +126,7 @@ public class ManageStickersViewController: OWSTableViewController {
                     },
                                          customRowHeight: UITableView.automaticDimension,
                                          actionBlock: { [weak self] in
-                                            guard let self = self else {
-                                                return
-                                            }
-                                            self.share(stickerPack: stickerPack)
+                                            self?.show(stickerPack: stickerPack)
                 }))
             }
             contents.addSection(section)
@@ -101,10 +145,7 @@ public class ManageStickersViewController: OWSTableViewController {
                     },
                                          customRowHeight: UITableView.automaticDimension,
                                          actionBlock: { [weak self] in
-                                            guard let self = self else {
-                                                return
-                                            }
-                                            self.install(stickerPack: stickerPack)
+                                            self?.show(stickerPack: stickerPack)
                 }))
             }
             contents.addSection(section)
@@ -118,7 +159,9 @@ public class ManageStickersViewController: OWSTableViewController {
         return buildTableCell(stickerInfo: stickerPack.coverInfo,
                               title: stickerPack.title,
                               authorName: stickerPack.author,
-                              actionIconName: actionIconName)
+                              actionIconName: actionIconName) { [weak self] in
+                                self?.share(stickerPack: stickerPack)
+        }
     }
 
     private func buildTableCell(availableStickerPack stickerPack: StickerPack) -> UITableViewCell {
@@ -126,13 +169,16 @@ public class ManageStickersViewController: OWSTableViewController {
         return buildTableCell(stickerInfo: stickerPack.coverInfo,
                               title: stickerPack.title,
                               authorName: stickerPack.author,
-                              actionIconName: actionIconName)
+                              actionIconName: actionIconName) { [weak self] in
+                                self?.install(stickerPack: stickerPack)
+        }
     }
 
     private func buildTableCell(stickerInfo: StickerInfo,
                                 title titleValue: String?,
                                 authorName authorNameValue: String?,
-                                actionIconName: String) -> UITableViewCell {
+                                actionIconName: String,
+                                block: @escaping () -> Void) -> UITableViewCell {
         let cell = OWSTableItem.newCell()
 
         let iconView = StickerView(stickerInfo: stickerInfo, size: 64)
@@ -169,21 +215,12 @@ public class ManageStickersViewController: OWSTableViewController {
             textStack.addArrangedSubview(authorLabel)
         }
 
-        let actionIconSize: CGFloat = 20
-        let actionCircleSize: CGFloat = 32
-        let actionCircleView = CircleView(diameter: actionCircleSize)
-        actionCircleView.backgroundColor = Theme.offBackgroundColor
-        let actionIcon = UIImage(named: actionIconName)?.withRenderingMode(.alwaysTemplate)
-        let actionIconView = UIImageView(image: actionIcon)
-        actionIconView.tintColor = Theme.secondaryColor
-        actionCircleView.addSubview(actionIconView)
-        actionIconView.autoCenterInSuperview()
-        actionIconView.autoSetDimensions(to: CGSize(width: actionIconSize, height: actionIconSize))
+        let actionButton = StickerPackActionButton(actionIconName: actionIconName, block: block)
 
         let stack = UIStackView(arrangedSubviews: [
             iconView,
             textStack,
-            actionCircleView
+            actionButton
             ])
         stack.axis = .horizontal
         stack.alignment = .center
@@ -196,6 +233,16 @@ public class ManageStickersViewController: OWSTableViewController {
     }
 
     // MARK: Events
+
+    private func show(stickerPack: StickerPack) {
+        AssertIsOnMainThread()
+
+        Logger.verbose("")
+
+        let packView = StickerPackViewController(stickerPackInfo: stickerPack.info,
+                                                 hasDismissButton: false)
+        navigationController?.pushViewController(packView, animated: true)
+    }
 
     private func share(stickerPack: StickerPack) {
         AssertIsOnMainThread()
@@ -228,5 +275,14 @@ public class ManageStickersViewController: OWSTableViewController {
         Logger.verbose("")
 
         // TODO:
+    }
+
+    @objc
+    private func didPressDismiss(sender: UIButton) {
+        AssertIsOnMainThread()
+
+        Logger.verbose("")
+
+        dismiss(animated: true)
     }
 }
