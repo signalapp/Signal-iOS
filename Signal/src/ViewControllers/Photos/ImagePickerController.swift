@@ -308,7 +308,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
     }
 
-    private func reloadDataAndRestoreSelection() {
+    public func reloadDataAndRestoreSelection() {
         guard let collectionView = collectionView else {
             owsFailDebug("Missing collectionView.")
             return
