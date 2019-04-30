@@ -10,6 +10,8 @@ protocol InteractionFinderAdapter {
 
     static func fetch(uniqueId: String, transaction: ReadTransaction) throws -> TSInteraction?
 
+    static func mostRecentSortId(transaction: ReadTransaction) -> UInt64
+
     func mostRecentInteraction(transaction: ReadTransaction) -> TSInteraction?
     func mostRecentInteractionForInbox(transaction: ReadTransaction) -> TSInteraction?
 
@@ -54,6 +56,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
+    @objc
+    public class func mostRecentSortId(transaction: SDSAnyReadTransaction) -> UInt64 {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return YAPDBInteractionFinderAdapter.mostRecentSortId(transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinderAdapter.mostRecentSortId(transaction: grdbRead)
+        }
+    }
+
     // MARK: - instance methods
 
     @objc
@@ -92,7 +104,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             return yapAdapter.count(transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try! grdbAdapter.count(transaction: grdbRead)
+            return try grdbAdapter.count(transaction: grdbRead)
         }
     }
 
@@ -125,6 +137,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 }
 
 struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
+
     private let threadUniqueId: String
 
     init(threadUniqueId: String) {
@@ -135,6 +148,10 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     static func fetch(uniqueId: String, transaction: YapDatabaseReadTransaction) -> TSInteraction? {
         return transaction.object(forKey: uniqueId, inCollection: TSInteraction.collection()) as? TSInteraction
+    }
+
+    static func mostRecentSortId(transaction: YapDatabaseReadTransaction) -> UInt64 {
+        return SSKIncrementingIdFinder.previousId(key: TSInteraction.collection(), transaction: transaction)
     }
 
     // MARK: - instance methods
@@ -254,6 +271,15 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
 
         return TSInteraction.fromRecord(interactionRecord)
+    }
+
+    static func mostRecentSortId(transaction: GRDBReadTransaction) -> UInt64 {
+        let sql = """
+            SELECT seq
+            FROM sqlite_sequence
+            WHERE name = ?
+        """
+        return try! UInt64.fetchOne(transaction.database, sql: sql, arguments: [InteractionRecord.databaseTableName])!
     }
 
     // MARK: - instance methods

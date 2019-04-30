@@ -60,6 +60,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
+    HomeViewDatabaseSnapshotDelegate,
     OWSBlockListCacheDelegate>
 
 @property (nonatomic) UITableView *tableView;
@@ -175,7 +176,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                              selector:@selector(applicationWillResignActive:)
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
-    if (!SSKFeatureFlags.useGRDB) {
+    if (SSKFeatureFlags.useGRDB) {
+        [self.dbStorage.grdbStorage.homeViewDatabaseObserver appendSnapshotDelegate:self];
+    } else {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseDidUpdateExternally:)
                                                      name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
@@ -1318,9 +1321,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             }
         }
 
-        if (transaction.transitional_yapWriteTransaction) {
-            [thread removeWithTransaction:transaction.transitional_yapWriteTransaction];
-        }
+        [thread anyRemoveWithTransaction:transaction];
     }];
 
     [self updateViewState];
@@ -1338,14 +1339,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.dbStorage writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
         switch (self.homeViewMode) {
             case HomeViewMode_Inbox:
-                if (transaction.transitional_yapWriteTransaction) {
-                    [thread archiveThreadWithTransaction:transaction.transitional_yapWriteTransaction];
-                }
+                [thread archiveThreadWithTransaction:transaction];
                 break;
             case HomeViewMode_Archive:
-                if (transaction.transitional_yapWriteTransaction) {
-                    [thread unarchiveThreadWithTransaction:transaction.transitional_yapWriteTransaction];
-                }
+                [thread unarchiveThreadWithTransaction:transaction];
                 break;
         }
     }];
@@ -1434,26 +1431,48 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - Database delegates
 
-- (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
+#pragma mark GRDB Update
+
+- (void)homeViewDatabaseSnapshotWillUpdate
 {
     OWSAssertIsOnMainThread();
+    [self anyUIDBWillUpdate];
+}
 
-    OWSLogVerbose(@"");
+- (void)homeViewDatabaseSnapshotDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedThreadIds
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(SSKFeatureFlags.useGRDB);
 
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+
+    [self anyUIDBDidUpdateWithUpdatedThreadIds:updatedThreadIds];
+}
+
+- (void)homeViewDatabaseSnapshotDidUpdateExternally
+{
+    OWSAssertIsOnMainThread();
+    [self anyUIDBDidUpdateExternally];
+}
+
+- (void)homeViewDatabaseSnapshotDidReset
+{
+    OWSAssertIsOnMainThread();
     if (self.shouldObserveDBModifications) {
-        // External database modifications can't be converted into incremental updates,
-        // so rebuild everything.  This is expensive and usually isn't necessary, but
-        // there's no alternative.
-        //
         // We don't need to do this if we're not observing db modifications since we'll
         // do it when we resume.
         [self resetMappings];
     }
 }
 
+#pragma mark YapDB Update
+
 - (void)uiDatabaseWillUpdate:(NSNotification *)notification
 {
-    [BenchManager startEventWithTitle:@"uiDatabaseUpdate" eventId:@"uiDatabaseUpdate"];
+    OWSAssertIsOnMainThread();
+    [self anyUIDBWillUpdate];
 }
 
 - (void)uiDatabaseDidUpdate:(NSNotification *)notification
@@ -1480,15 +1499,34 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return;
     }
 
-    __block ThreadMappingDiff *mappingDiff;
-    [uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        NSSet<NSString *> *updatedItemIds = [self.threadMapping updatedYapItemIdsForNotifications:notifications];
+    NSSet<NSString *> *updatedThreadIds = [self.threadMapping updatedYapItemIdsForNotifications:notifications];
+    [self anyUIDBDidUpdateWithUpdatedThreadIds:updatedThreadIds];
+}
 
-        SDSAnyReadTransaction *anyReadTransaction = transaction.asAnyRead;
+- (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    [self anyUIDBDidUpdateExternally];
+}
+
+#pragma mark AnyDB Update
+
+- (void)anyUIDBWillUpdate
+{
+    OWSAssertIsOnMainThread();
+    [BenchManager startEventWithTitle:@"uiDatabaseUpdate" eventId:@"uiDatabaseUpdate"];
+}
+
+- (void)anyUIDBDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedItemIds
+{
+    OWSAssertIsOnMainThread();
+
+    __block ThreadMappingDiff *mappingDiff;
+    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
         mappingDiff =
             [self.threadMapping updateAndCalculateDiffSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
                                                                             updatedItemIds:updatedItemIds
-                                                                               transaction:anyReadTransaction];
+                                                                               transaction:transaction];
     }];
 
     // We want this regardless of if we're currently viewing the archive.
@@ -1541,6 +1579,24 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.tableView endUpdates];
     [BenchManager completeEventWithEventId:@"uiDatabaseUpdate"];
 }
+
+- (void)anyUIDBDidUpdateExternally
+{
+    OWSLogVerbose(@"");
+    OWSAssertIsOnMainThread();
+
+    if (self.shouldObserveDBModifications) {
+        // External database modifications can't be converted into incremental updates,
+        // so rebuild everything.  This is expensive and usually isn't necessary, but
+        // there's no alternative.
+        //
+        // We don't need to do this if we're not observing db modifications since we'll
+        // do it when we resume.
+        [self resetMappings];
+    }
+}
+
+#pragma mark -
 
 - (NSUInteger)numberOfInboxThreads
 {

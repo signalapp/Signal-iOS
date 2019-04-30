@@ -499,22 +499,24 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     return [archivalDate compare:lastMessageDate] != NSOrderedAscending;
 }
 
-- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)archiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSThread *thread) {
-                                 uint64_t latestId = [SSKIncrementingIdFinder previousIdWithKey:TSInteraction.collection
-                                                                                    transaction:transaction];
+
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 uint64_t latestId = [InteractionFinder mostRecentSortIdWithTransaction:transaction];
                                  thread.archivedAsOfMessageSortId = @(latestId);
                              }];
 
-    [self markAllAsReadWithTransaction:transaction];
+    if (transaction.transitional_yapWriteTransaction) {
+        [self markAllAsReadWithTransaction:transaction.transitional_yapWriteTransaction];
+    }
 }
 
-- (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)unarchiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSThread *thread) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
                                  thread.archivedAsOfMessageSortId = nil;
                              }];
 }

@@ -14,12 +14,19 @@ public class GRDBReadTransaction: NSObject {
     init(database: Database) {
         self.database = database
     }
+
+    var asAnyRead: SDSAnyReadTransaction {
+        return SDSAnyReadTransaction(.grdbRead(self))
+    }
 }
 
 // MARK: -
 
 @objc
 public class GRDBWriteTransaction: GRDBReadTransaction {
+    var asAnyWrite: SDSAnyWriteTransaction {
+        return SDSAnyWriteTransaction(.grdbWrite(self))
+    }
 }
 
 // MARK: -
@@ -132,7 +139,6 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction {
 
 @objc
 public extension YapDatabaseReadTransaction {
-    @objc
     var asAnyRead: SDSAnyReadTransaction {
         return SDSAnyReadTransaction(transitional_yapReadTransaction: self)
     }
@@ -142,7 +148,6 @@ public extension YapDatabaseReadTransaction {
 
 @objc
 public extension YapDatabaseReadWriteTransaction {
-    @objc
     var asAnyWrite: SDSAnyWriteTransaction {
         return SDSAnyWriteTransaction(transitional_yapWriteTransaction: self)
     }

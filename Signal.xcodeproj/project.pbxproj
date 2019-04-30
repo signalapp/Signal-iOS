@@ -386,7 +386,6 @@
 		4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */; };
 		452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */; };
 		452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
-		452C7CA72037628B003D51A5 /* Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170D51E315310003FC1F2 /* Weak.swift */; };
 		452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */; };
 		452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */; };
 		452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
@@ -1246,7 +1245,6 @@
 		45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableTextFilterTest.swift; sourceTree = "<group>"; };
 		45F170AB1E2F0351003FC1F2 /* OWSAudioSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAudioSession.swift; sourceTree = "<group>"; };
 		45F170BA1E2FC5D3003FC1F2 /* CallAudioService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallAudioService.swift; sourceTree = "<group>"; };
-		45F170D51E315310003FC1F2 /* Weak.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Weak.swift; sourceTree = "<group>"; };
 		45F32C1D205718B000A300D5 /* MediaPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MediaPageViewController.swift; path = Signal/src/ViewControllers/MediaPageViewController.swift; sourceTree = SOURCE_ROOT; };
 		45F59A092029140500E8D2B0 /* OWSVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSVideoPlayer.swift; sourceTree = "<group>"; };
 		45F659721E1BD99C00444429 /* CallKitCallUIAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallKitCallUIAdaptee.swift; sourceTree = "<group>"; };
@@ -1708,7 +1706,6 @@
 				4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */,
 				B97940251832BD2400BD66CB /* UIUtil.h */,
 				B97940261832BD2400BD66CB /* UIUtil.m */,
-				45F170D51E315310003FC1F2 /* Weak.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -3533,7 +3530,6 @@
 				4C9B4F23225025F100DD5B9A /* OWS115GRDBMigration.swift in Sources */,
 				340872CA2239563500CB25B0 /* AttachmentApprovalViewController.swift in Sources */,
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
-				452C7CA72037628B003D51A5 /* Weak.swift in Sources */,
 				34D5872F208E2C4200D2255A /* OWS109OutgoingMessageState.m in Sources */,
 				340872D02239787F00CB25B0 /* AttachmentTextToolbar.swift in Sources */,
 				3416BCAE2277A24000E761B4 /* StickerPackDataSource.swift in Sources */,

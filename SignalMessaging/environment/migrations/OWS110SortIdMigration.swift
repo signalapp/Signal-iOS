@@ -106,7 +106,7 @@ public class OWS110SortIdMigration: OWSDatabaseMigration {
 
             Logger.info("re-archiving \(archivedThreads.count) threads which were previously archived")
             for archivedThread in archivedThreads {
-                archivedThread.archiveThread(with: transaction)
+                archivedThread.archiveThread(with: transaction.asAnyWrite)
             }
 
             self.save(with: transaction)
