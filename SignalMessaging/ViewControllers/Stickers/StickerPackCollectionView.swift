@@ -15,17 +15,16 @@ public protocol StickerPackCollectionViewDelegate {
 @objc
 public class StickerPackCollectionView: UICollectionView {
 
+    private enum Mode {
+        case pack
+        case recents
+    }
+
+    private var mode: Mode = .pack
+
     private var stickerInfos = [StickerInfo]()
 
-    public var stickerPack: StickerPack? {
-        didSet {
-            AssertIsOnMainThread()
-
-            reloadStickers()
-            // Scroll to the top.
-            contentOffset = .zero
-        }
-    }
+    private var stickerPack: StickerPack?
 
     @objc
     public weak var stickerDelegate: StickerPackCollectionViewDelegate?
@@ -59,12 +58,52 @@ public class StickerPackCollectionView: UICollectionView {
                                                selector: #selector(stickersOrPacksDidChange),
                                                name: StickerManager.StickersOrPacksDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(recentStickersDidChange),
+                                               name: StickerManager.RecentStickersDidChange,
+                                               object: nil)
+    }
+
+    // MARK: Modes
+
+    @objc
+    public func showPack(stickerPack: StickerPack) {
+        AssertIsOnMainThread()
+
+        self.stickerPack = stickerPack
+        self.mode = .pack
+
+        reloadStickers()
+        // Scroll to the top.
+        contentOffset = .zero
+    }
+
+    @objc
+    public func showRecents() {
+        AssertIsOnMainThread()
+
+        self.stickerPack = nil
+        self.mode = .recents
+
+        reloadStickers()
+        // Scroll to the top.
+        contentOffset = .zero
     }
 
     // MARK: Events
 
     @objc func stickersOrPacksDidChange() {
         AssertIsOnMainThread()
+
+        reloadStickers()
+    }
+
+    @objc func recentStickersDidChange() {
+        AssertIsOnMainThread()
+
+        guard mode == .recents else {
+            return
+        }
 
         reloadStickers()
     }
@@ -76,14 +115,19 @@ public class StickerPackCollectionView: UICollectionView {
     private func reloadStickers() {
         AssertIsOnMainThread()
 
-        if let stickerPack = stickerPack {
-            // Only show installed stickers.
-            stickerInfos = StickerManager.installedStickers(forStickerPack: stickerPack)
+        switch (mode) {
+        case .pack:
+            if let stickerPack = stickerPack {
+                // Only show installed stickers.
+                stickerInfos = StickerManager.installedStickers(forStickerPack: stickerPack)
 
-            // Download any missing stickers.
-            StickerManager.ensureDownloadsAsync(forStickerPack: stickerPack)
-        } else {
-            stickerInfos = []
+                // Download any missing stickers.
+                StickerManager.ensureDownloadsAsync(forStickerPack: stickerPack)
+            } else {
+                stickerInfos = []
+            }
+        case .recents:
+            stickerInfos = StickerManager.recentStickers()
         }
 
         reloadData()
@@ -122,6 +166,9 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
         // when the cells becomes visible and eagerly unload them.
         // But we probably won't need to do that.
         let cell = dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath)
+        for subview in cell.contentView.subviews {
+            subview.removeFromSuperview()
+        }
 
         guard let stickerInfo = stickerInfos[safe: indexPath.row] else {
             owsFailDebug("Invalid index path: \(indexPath)")

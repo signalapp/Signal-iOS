@@ -21,11 +21,17 @@ public class StickerKeyboard: UIStackView {
     private let stickerCollectionView = StickerPackCollectionView()
 
     private var stickerPacks = [StickerPack]()
+
     private var stickerPack: StickerPack? {
         didSet {
             AssertIsOnMainThread()
 
-            stickerCollectionView.stickerPack = stickerPack
+            // We use nil for the "recents" special-case.
+            if let stickerPack = stickerPack {
+                stickerCollectionView.showPack(stickerPack: stickerPack)
+            } else {
+                stickerCollectionView.showRecents()
+            }
         }
     }
 
@@ -85,10 +91,6 @@ public class StickerKeyboard: UIStackView {
             stickerPack = nil
             return
         }
-
-        if stickerPack == nil {
-            stickerPack = stickerPacks.first
-        }
     }
 
     private let packsCollectionView = UICollectionView(frame: .zero, collectionViewLayout: buildCoverLayout())
@@ -109,12 +111,15 @@ public class StickerKeyboard: UIStackView {
         headerView.layoutMargins = UIEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
         headerView.isLayoutMarginsRelativeArrangement = true
 
-        let searchButton = OWSButton(imageName: "search-24", tintColor: Theme.secondaryColor) { [weak self] in
+        let searchButton = buildHeaderButton("search-24") { [weak self] in
             self?.searchButtonWasTapped()
         }
-        searchButton.setContentHuggingHigh()
-        searchButton.setCompressionResistanceHigh()
         headerView.addArrangedSubview(searchButton)
+
+        let recentsButton = buildHeaderButton("recent-outline-24") { [weak self] in
+            self?.recentsButtonWasTapped()
+        }
+        headerView.addArrangedSubview(recentsButton)
 
         packsCollectionView.backgroundColor = Theme.offBackgroundColor
         packsCollectionView.delegate = self
@@ -127,14 +132,19 @@ public class StickerKeyboard: UIStackView {
         packsCollectionView.autoSetDimension(.height, toSize: StickerKeyboard.packCoverSize)
         headerView.addArrangedSubview(packsCollectionView)
 
-        let manageButton = OWSButton(imageName: "plus-24", tintColor: Theme.secondaryColor) { [weak self] in
+        let manageButton = buildHeaderButton("plus-24") { [weak self] in
             self?.manageButtonWasTapped()
         }
-        manageButton.setContentHuggingHigh()
-        manageButton.setCompressionResistanceHigh()
         headerView.addArrangedSubview(manageButton)
 
         updateHeaderView()
+    }
+
+    private func buildHeaderButton(_ imageName: String, block: @escaping () -> Void) -> UIView {
+        let button = OWSButton(imageName: imageName, tintColor: Theme.secondaryColor, block: block)
+        button.setContentHuggingHigh()
+        button.setCompressionResistanceHigh()
+        return button
     }
 
     private func updateHeaderView() {
@@ -157,6 +167,15 @@ public class StickerKeyboard: UIStackView {
         Logger.verbose("")
 
         // TODO:
+    }
+
+    private func recentsButtonWasTapped() {
+        AssertIsOnMainThread()
+
+        Logger.verbose("")
+
+        // nil is used for the recents special-case.
+        stickerPack = nil
     }
 
     private func manageButtonWasTapped() {
@@ -212,6 +231,9 @@ extension StickerKeyboard: UICollectionViewDataSource {
         // when the cells becomes visible and eagerly unload them.
         // But we probably won't need to do that.
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath)
+        for subview in cell.contentView.subviews {
+            subview.removeFromSuperview()
+        }
 
         guard let stickerPack = stickerPacks[safe: indexPath.row] else {
             owsFailDebug("Invalid index path: \(indexPath)")
