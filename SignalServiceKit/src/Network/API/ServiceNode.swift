@@ -20,8 +20,6 @@ public struct ServiceNode {
     // MARK: API
     private static func invoke(_ method: Method, parameters: [String:String] = [:]) -> Promise<Response> {
         let url = URL(string: "\(snodeURL):\(port)/\(apiVersion)/storage_rpc")!
-        var parameters = parameters
-        parameters["pubKey"] = "050371e72be8dd42ff77105e474a3ac26a503d017fb4562409c639eaf5965f5b31" // OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         return TSNetworkManager.shared().makePromise(request: request)
     }
@@ -29,6 +27,7 @@ public struct ServiceNode {
     public static func sendTestMessage() -> Promise<Response> {
         let ttl = String(4 * 24 * 60 * 60 * 1000)
         let parameters = [
+            "pubKey" : "0371e72be8dd42ff77105e474a3ac26a503d017fb4562409c639eaf5965f5b31", // TODO: Receiver's public key
             "ttl" : ttl,
             "nonce" : "AAAAAAAA5rs=", // TODO: Proof of work
             "timestamp" : "1556259498201", // TODO: Message send time
@@ -38,7 +37,10 @@ public struct ServiceNode {
     }
     
     public static func retrieveAllMessages() -> Promise<Response> {
-        let parameters = [ "lastHash" : "" ]
+        let parameters = [
+            "pubKey" : OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey,
+            "lastHash" : ""
+        ]
         return invoke(.retrieveAllMessages, parameters: parameters)
     }
 }

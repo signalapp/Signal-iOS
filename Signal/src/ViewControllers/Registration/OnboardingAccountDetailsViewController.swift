@@ -76,6 +76,6 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
                 return OWSAlerts.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG", comment: "Error message shown when user tries to update profile with a profile name that is too long"))
             }
         }
-        onboardingController.pushPublicKeyViewController(from: self, userName: normalizedName)
+        onboardingController.pushKeyPairViewController(from: self, userName: normalizedName)
     }
 }

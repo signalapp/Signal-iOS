@@ -1,13 +1,12 @@
 
-final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
+final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     private var keyPair: ECKeyPair! { didSet { updateMnemonic() } }
-    private var hexEncodedPublicKey: String!
     private var mnemonic: String! { didSet { mnemonicLabel.text = mnemonic } }
     private var userName: String?
     
     private lazy var mnemonicLabel: UILabel = {
         let result = createExplanationLabel(text: "")
-        result.accessibilityIdentifier = "onboarding.publicKeyStep.mnemonicLabel"
+        result.accessibilityIdentifier = "onboarding.keyPairStep.mnemonicLabel"
         result.alpha = 0.8
         var fontTraits = result.font.fontDescriptor.symbolicTraits
         fontTraits.insert(.traitItalic)
@@ -17,7 +16,7 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
 
     private lazy var copyButton: OWSFlatButton = {
         let result = createLinkButton(title: NSLocalizedString("Copy", comment: ""), selector: #selector(copyMnemonic))
-        result.accessibilityIdentifier = "onboarding.publicKeyStep.copyButton"
+        result.accessibilityIdentifier = "onboarding.keyPairStep.copyButton"
         return result
     }()
     
@@ -47,13 +46,13 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
         view.backgroundColor = Theme.backgroundColor
         view.layoutMargins = .zero
         let titleLabel = createTitleLabel(text: NSLocalizedString("Create Your Loki Messenger Account", comment: ""))
-        titleLabel.accessibilityIdentifier = "onboarding.publicKeyStep.titleLabel"
+        titleLabel.accessibilityIdentifier = "onboarding.keyPairStep.titleLabel"
         let topSpacer = UIView.vStretchingSpacer()
         let explanationLabel = createExplanationLabel(text: NSLocalizedString("Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device.", comment: ""))
-        explanationLabel.accessibilityIdentifier = "onboarding.publicKeyStep.explanationLabel"
+        explanationLabel.accessibilityIdentifier = "onboarding.keyPairStep.explanationLabel"
         let bottomSpacer = UIView.vStretchingSpacer()
         let registerButton = createButton(title: NSLocalizedString("Register", comment: ""), selector: #selector(register))
-        registerButton.accessibilityIdentifier = "onboarding.publicKeyStep.registerButton"
+        registerButton.accessibilityIdentifier = "onboarding.keyPairStep.registerButton"
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             topSpacer,
@@ -83,8 +82,7 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
     }
     
     private func updateMnemonic() {
-        hexEncodedPublicKey = keyPair.hexEncodedPublicKey
-        mnemonic = Mnemonic.encode(hexEncodedString: hexEncodedPublicKey)
+        mnemonic = Mnemonic.encode(hexEncodedString: keyPair.hexEncodedPrivateKey)
     }
 
     @objc private func copyMnemonic() {
@@ -101,7 +99,7 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
 
     @objc private func register() {
         let accountManager = TSAccountManager.sharedInstance()
-        accountManager.phoneNumberAwaitingVerification = hexEncodedPublicKey
+        accountManager.phoneNumberAwaitingVerification = keyPair.hexEncodedPublicKey
         accountManager.didRegister()
         let onSuccess: () -> Void = { [weak self] in
             guard let strongSelf = self else { return }
