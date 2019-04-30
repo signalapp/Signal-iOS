@@ -1497,7 +1497,7 @@
 "OK" = "OK";
 
 /* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_1" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.";
+"ONBOARDING_2FA_EXPLANATION_1" = "Ovaj telefonski broj ima omogućeno registracijsko zaključavanje. Molimo unesite PIN registracijskog zaključavanja.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_2" = "Your Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
@@ -1524,7 +1524,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "Signal can let you know when you get a message (and who it is from)";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Enter your phone number to get started";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Unesite telefonski broj da biste započeli";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Neispravni broj";
@@ -1956,7 +1956,7 @@
 "SEARCH_SECTION_CONTACTS" = "Ostali kontakti";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
-"SEARCH_SECTION_CONVERSATIONS" = "Conversations";
+"SEARCH_SECTION_CONVERSATIONS" = "Razgovori";
 
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "Poruke";

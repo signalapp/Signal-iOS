@@ -714,7 +714,7 @@
 "DEBUG_LOG_ALERT_NO_LOGS" = "Aucun journal n’a été trouvé.";
 
 /* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Ouvrir un rapport de bogue";
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Ouvrir un relevé de bogue";
 
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copier le lien";

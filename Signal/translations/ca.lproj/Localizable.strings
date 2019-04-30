@@ -1992,16 +1992,16 @@
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Convida via SMS: %@";
 
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "Discard Media?";
+"SEND_MEDIA_ABANDON_TITLE" = "Descarto el contingut multimèdia?";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Descarta el contingut";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Torna a la càmera";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Return to Media Library";
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Torna a la biblioteca multimèdia";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Convidar a un amic via SMS segur?";
@@ -2034,7 +2034,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "L'elusió de la censura s'ha activat basant-se en el número de telèfon del vostre compte.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "You have manually disabled censorship circumvention.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Heu inhabilitat manualment l’elusió de la censura.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "L'elusió de la censura només es pot activar si esteu connectat a internet.";
@@ -2166,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Envia previsualitzacions d'enllaços";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Les vistes prèvies són compatibles amb els enllaços d'Imgur, Instagram, Pinterest, Reddit i YouTube.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Previsualitzacions d'enllaços";

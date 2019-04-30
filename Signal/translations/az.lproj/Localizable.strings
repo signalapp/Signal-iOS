@@ -138,16 +138,16 @@
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Fayl çox böyükdür.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Əlavə edilmiş faylın tərkibində xətalı məlumat var.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Əlavə edilmiş faylın formatı səhvdir.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "Əlavə edilmiş fayl boşdur.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose or take a picture and then send it";
+"ATTACHMENT_HINT" = "Şəkil çək, yaxud da seç və göndər";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Əlavə";
@@ -156,79 +156,79 @@
 "ATTACHMENT_MENU_CONTACT_BUTTON" = "Əlaqə";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Failed to choose document.";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Faylın seçilməsi alınmadı.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Zəhmət olmasa bu fayl və ya kataloqun sıxılmış arxivini yarat və bayaqkının əvəzinə bunu göndərməyə çalış.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Dəstəklənməyən Fayl";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice Message";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Səsli Mesaj";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Səsucaldan";
 
 /* button text for back button */
-"BACK_BUTTON" = "Back";
+"BACK_BUTTON" = "Geri";
 
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could not be exported.";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Arxivləşdirilmiş məlumat ixrac edilə bilmədi.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Xətalı Xidməti Cavab";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning Up Backup";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Arxivin Təmizlənməsi";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Arxivləşmənin Başlanması";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Məlumatın İxracı";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
+"BACKUP_EXPORT_PHASE_EXPORT" = "Arxivin İxracı";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading Backup";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Arxivin Yüklənməsi";
 
 /* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Arxiv idxal edilə bilmədi.";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Arxivin Konfiqurasiyası";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloading Backup Data";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Arxiv Məlumatlarının Yüklənməsi";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Arxivləşdirilmənin Tamamlanması";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Importing backup.";
+"BACKUP_IMPORT_PHASE_IMPORT" = "Arxiv idxal edilir.";
 
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restoring Database";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Məlumat Bazasının Bərpası";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restoring Files";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Faylların Bərpası";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+"BACKUP_RESTORE_DECISION_TITLE" = "Arxivə Giriş Mümkündür";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+"BACKUP_RESTORE_DESCRIPTION" = "Arxivin Bərpası";
 
 /* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "Progress";
+"BACKUP_RESTORE_PROGRESS" = "İrəliləyiş";
 
 /* Label for the backup restore status. */
 "BACKUP_RESTORE_STATUS" = "Status";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "Gözlənilməz Arxivləşmə Xətası";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Bu qrupdan bir daha mesaj və yeniliklər almayacaqsan.";
@@ -237,16 +237,16 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Kilidlə";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" Qrupunu kilidləyir və oradan çıxırsan?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Block %@?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ qrupunu kilidləyirsən?";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blocked Groups";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Kilidlənmiş Qruplar";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blocked Users";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Kilidlənmiş İstifadəçilər";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Kilidi aç";
@@ -255,79 +255,79 @@
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Mövcud üzvlər səni yenə də qrupa əlavə edə biləcəklər.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Unblock This Group?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Bu qrupun kilidini açırsan?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@ qrupunun kilidini açırsan?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Kilidlə";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ kilidləndi.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "User Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Kilidlənmiş İstifadəçi";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Group Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Kilidlənmiş Qrup";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "You can't block yourself.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Sən özünü kilidləyə bilməzsən.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Xəta";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ has been unblocked.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ qrupunun kilidi açıldı.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Mövcud üzvlər səni yenidən qrupa əlavə edə bilərlər.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Kilidlə";
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Block %@?";
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "%@ qrupunu kilidləyirsən?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Kilidlənmiş istifadəçi sənə zəng edə, yaxud da mesaj göndərə bilməyəcək.`";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Davam et";
 
 /* Label for generic done button. */
-"BUTTON_DONE" = "Done";
+"BUTTON_DONE" = "Bitdi";
 
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Növbəti";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "Select";
+"BUTTON_SELECT" = "Seç";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+"CALL_AGAIN_BUTTON_TITLE" = "Yenidən Zəng Et";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal ilə zəng edə və səsli mesaj yaza bilmək üçün iOS-un Parametrlərində mikrofonu aktivləşdirə bilərsən.";
 
 /* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "Microphone Access Required";
+"CALL_AUDIO_PERMISSION_TITLE" = "Mikrofona Giiriş Mütləqdir";
 
 /* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Daxil Olan Zəng";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Zəng et";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Zəng edənin təhlükəsizlik rəqəmi dəyişdiyi üçün cavab verilməmiş zəng.";
 
 /* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Cavab Verilməmiş Zəng";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Cavabsız";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -336,22 +336,22 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "Zəng et";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Would you like to call %@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "%@ adlı şəxsə zəng etmək istəyirsən?";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Call?";
+"CALL_USER_ALERT_TITLE" = "Zəng edirsən?";
 
 /* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Accept incoming call";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Daxil olan zəngi qəbul et";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Səs";
 
 /* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline incoming call";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Daxil olan zəngi rədd et";
 
 /* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tap here to turn on your video";
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Videonu açmaq üçün bunu kliklə";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Zəngi bitir";
@@ -360,49 +360,49 @@
 "CALL_VIEW_MUTE_LABEL" = "Səssiz";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can enable iOS Call Integration in your Signal privacy settings to answer incoming calls from your lock screen.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Kilidli ekrandan gələn zəngləri cavablamaq üçün Signal-ın məxfilik parametrlərində iOS Zəng İnteqrasiyasını aktivləşdirə bilərsən.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can enable iOS Call Integration in your Signal privacy settings to see the name and phone number for incoming calls.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Gələn zənglərin məxsus olduğu şəxsin adını və nömrəsini görmək üçün Signal-ın məxfilik parametrlərində iOS Zəng İnteqrasiyasını aktivləşdirə bilərsən.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "İndi yox";
 
 /* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Show Privacy Settings";
+"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Məxfilik Parametrlərini Göstər";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Kameranin Üzünü Dəyiş";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to audio call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Səsli zəngə keç";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Videolu zəngə keç";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+"CALL_WINDOW_RETURN_TO_CALL" = "Zəngə qayıtmaq üçün toxun";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Call Back";
+"CALLBACK_BUTTON_TITLE" = "Geri Zəng Et";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal İstifadəçisi";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "This user can't be verified until you've exchanged messages with them.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Mesajlarını onunla paylaşmamış bu istifadəçi təsdiqlənməyəcək.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Xəta";
 
 /* Title for the 'censorship circumvention country' view. */
-"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Select Country";
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Ölkəni Seç";
 
 /* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Bərpa Etmə";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Bərpa edilə bilinən arxivin olub olmadığı müəyyənləşdirilmədi.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Xəta";
@@ -411,22 +411,22 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Bərpa et";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal sənin iCloud hesabının statusunu müəyyənləşdirə bilmədi. Signal məlumatlarını arxivləşdirə bilmək üçün iOS parametrlərindən iCloud Hesabına daxil ol.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "iCloud Hesabın yoxdur. Signal məlumatlarını arxivləşdirə bilmək üçün iOS parametrlərindən iCloud Hesabına daxil ol.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal arxivlər üçün iCloud hesabına daxil ola bilmədi. Signal məlumatlarını arxivləşdirə bilmək üçün Signal-a iOS parametrlərində iCloud Hesabına daxil ol olma icazəsi ver.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Söhbətləşmədə göndərilən mesajın rəngini seç.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Only you will see the color you choose.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Seçdiyin rəngi yalnız sən görəcəksən.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Conversation Color";
+"COLOR_PICKER_SHEET_TITLE" = "Söhbətləşmənin Rəngi";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Clipboard-la müqayisə et";
@@ -441,10 +441,10 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Dəvət et";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Signal istifadə edən əlaqələrini görə bilmək üçün iOS Parametrlərində əlaqələrə giriş icazəsini aktivləşdir.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Sənin mesajlarını silərək və server ilə sənin qeydiyyatını ləğv edərək bu aplikasiyanı sıfırlayacaqdır. Proses bitən kimi aplikasiya bağlanacaqdır.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Hesabınızı silmək istədiyinizi təsdiqləyirsiniz?";
@@ -459,61 +459,61 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Yeni alət qoş";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ yenidən quraşdırıla və ya cihaz dəyişdirilmiş ola bilər. Təhlükəsizliyi təmin etmək üçün təhlükəsizlik rəqəmini təsdiq et.";
 
 /* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Safety number with %@ has changed";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "%@ ilə olan təhlükəsizlik rəqəmin dəyişilmişdir";
 
 /* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "Təsdiqlə";
 
 /* Label for a contact's postal address. */
-"CONTACT_ADDRESS" = "Address";
+"CONTACT_ADDRESS" = "Ünvan";
 
 /* An indicator that a contact has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "Blocked";
+"CONTACT_CELL_IS_BLOCKED" = "Kilidlidir";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Not Verified";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Təsdiq Edilməyib";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Qeydiyyatdan Keçməmiş Nömrə";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Edit";
+"CONTACT_EDIT_NAME_BUTTON" = "Dəyiş";
 
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "Email";
 
 /* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "City";
+"CONTACT_FIELD_ADDRESS_CITY" = "Şəhər";
 
 /* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "Country";
+"CONTACT_FIELD_ADDRESS_COUNTRY" = "Ölkə";
 
 /* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Neighborhood";
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Qonşuluq";
 
 /* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
+"CONTACT_FIELD_ADDRESS_POBOX" = "Poçt";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postal Code";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Poçt İndeksi";
 
 /* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "Region";
+"CONTACT_FIELD_ADDRESS_REGION" = "Rayon";
 
 /* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "Street";
+"CONTACT_FIELD_ADDRESS_STREET" = "Küçə";
 
 /* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "Family Name";
+"CONTACT_FIELD_FAMILY_NAME" = "Soyad";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Given Name";
+"CONTACT_FIELD_GIVEN_NAME" = "Ad";
 
 /* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Middle Name";
+"CONTACT_FIELD_MIDDLE_NAME" = "Ata adı";
 
 /* Label for the 'name prefix' field of a contact. */
 "CONTACT_FIELD_NAME_PREFIX" = "Prefiks";
@@ -522,76 +522,76 @@
 "CONTACT_FIELD_NAME_SUFFIX" = "Sufiks";
 
 /* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "Organization";
+"CONTACT_FIELD_ORGANIZATION" = "Şirkət";
 
 /* Label for a contact's phone number. */
-"CONTACT_PHONE" = "Phone";
+"CONTACT_PHONE" = "Telefon nömrəsi";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "No email available.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Email mövcud deyil.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "No phone number available.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Telefon nömrəsi mövcud deyil.";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Select Contact";
+"CONTACT_PICKER_TITLE" = "Əlaqə Seç";
 
 /* Title for the 'Approve contact share' view. */
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Əlaqəni Paylaş";
 
 /* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Edit Name";
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Adı Dəyiş";
 
 /* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Invalid contact.";
+"CONTACT_SHARE_INVALID_CONTACT" = "Səhv əlaqə.";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Əlaqə zolağı seçilməyib.";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Open in Maps";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Xəritədə Aç";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send Email";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Email Göndər";
 
 /* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "Unnamed Contact";
+"CONTACT_WITHOUT_NAME" = "Adsız Əlaqə";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Geri addım mümkün deyil.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Söhbəti Silirsən?";
 
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
+"CONVERSATION_SEARCH_NO_RESULTS" = "Uyğun olanı yoxdur";
 
 /* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 match";
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 uyğun versiya";
 
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d versiyadan %d versiya uyğundur";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Söhbət quraşdırmaları";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Mövcud Əlaqəyə Əlavə Et";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Block This Group";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Bu Qrupu Kilidlə";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block This User";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bu İstifadəçini Kilidlə";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
-"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Contact Info";
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Əlaqə Məlumatı";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Conversation Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Söhbətləşmənin Rəngi";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Group Info";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Qrup Məlumatı";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Səssiz";
@@ -600,70 +600,70 @@
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Səssiz";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Not muted";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Səssiz deyil";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Mute for one day";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Bir gün səssiz olsun";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Mute for one hour";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Bir saat səssiz olsun";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mute for one minute";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Bir dəqiqə səssiz olsun";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Mute for one week";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Bir həftə səssiz olsun";
 
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Bir il səssiz olsun";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@ tarixinə qədər";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Yeni Əlaqə Yarat";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
+"CONVERSATION_SETTINGS_SEARCH" = "Söhbət Axtar";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Dəyişmək üçün Kliklə";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Səsini ver";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "This group can see your profile.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Bu qrup sənin profilini görə bilər.";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "This user can see your profile.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Bu istifadəçi sənin profilini görə bilər.";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Share Profile";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Profilini Paylaş";
 
 /* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Share Your Profile";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Profilini Paylaş";
 
 /* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Share Your Profile";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Profilini Paylaş";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Əlaqələrə əlavə et";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile with This User";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Bu İstifadəçi ilə Profilini Paylaş";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "This user is not in your contacts.";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Bu istifadəçi sənin əlaqə siyahında deyil.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages…";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Daha Çox Mesaj Yüklənir...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap for More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Daha Çoxu Üçün Kliklə";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Block This User";
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Bu İstifadəçini Kilidlə";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Sessiyanı sıfırlamaqla gələcəkdə %@ -dan ismarış ala biləcəksiniz, amma artıq oxunulmayan ismarışları görə bilməyəcəksiniz.";
@@ -675,19 +675,19 @@
 "CREATE_NEW_GROUP" = "Yeni qrup yarat";
 
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Move and Scale";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Yerini Dəyiş və Ölç";
 
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a few minutes.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Bu bir neçə dəqiqə zaman ala bilər.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Məlumat Bazasının Optimallaşdırılması";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@ Saat Əvvəl";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@ Dəqiqə Əvvəl";
 
 /* The present; the current time. */
 "DATE_NOW" = "İndi";
@@ -699,56 +699,56 @@
 "DATE_YESTERDAY" = "Dünən";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Girişləri köçürə bilmədik.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Girişləri qruplaşdıra bilmədik.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Girişləri yükləyə bilmədik.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "What would you like to do with the link to your debug log?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Xəta hesabatına olan linklə nə etmək istəyirsən?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Heç bir giriş tapılmadı.";
 
 /* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Open a Bug Report";
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Xəta Hesabatını Aç";
 
 /* Label for the 'copy link' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copy Link";
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Linki Köçür";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email Support";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email Dəstək";
 
 /* Label for the 'send to last thread' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Son Mövzuya Göndər";
 
 /* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send to Self";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Özünə Göndər";
 
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Paylaş";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
-"DEBUG_LOG_ALERT_TITLE" = "One More Step";
+"DEBUG_LOG_ALERT_TITLE" = "Daha Bir Addım";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Could not open Email app.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "Email aplikasiyasını aça bilmədik.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "The gist link was copied in your clipboard. You are about to be redirected to the GitHub issue list.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Əsas link sənin mübadilə buferinə köçürülüb. GitHub Problemləri siyahısına yönləndirilməkdəsən.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Yönləndirilməsi";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Bu telefon nömrəsini yenidən qeydiyyatdan keçir";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
+"DEREGISTRATION_WARNING" = "Cihaz qeydiyyatlı deyil. Sənin telefon nömrən Signal ilə başqa cihazda qeydiyyatlı ola bilər. Yenidən qeydiyyat üçün kliklə.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Son aktivlik: %@";
@@ -763,28 +763,28 @@
 "DISAPPEARING_MESSAGES" = "Yox olan ismarışlar";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Bu söhbətləşmədəki mesajlar %@ keçdikdən sonra yox olacaq.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Aktivləşdirəndə, bu söhbət daxilindı artıq göndərilən ismarışlar qeyb olacaq.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Currently messages disappear after %@";
+"DISAPPEARING_MESSAGES_HINT" = "Hal-hazırda mesajlar %@ ötdükdən sonra yox olur";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Disappearing messages settings";
+"DISAPPEARING_MESSAGES_LABEL" = "Yox olan mesaj parametrləri";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "İmtina";
 
 /* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Senzuranın Yerləşdiyi Sahə";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "iOS Parametrlərində giriş icazəsi verə bilərsən.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Needs Contact Access to Edit Contact Information";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Əlaqə Məlumatlarına Dəyişiklik Etmək Üçün Signal-ın Əlaqələrə Giriş İcazəsi Olmalıdır";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Qrupu dəyiş";
@@ -796,49 +796,49 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Qrupu dəyiş";
 
 /* Label for the cell that lets you add a new member to a group. */
-"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Add…";
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Əlavə et...";
 
 /* a title for the members section of the 'new/update group' view. */
-"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Members";
+"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Üzvlər";
 
 /* An indicator that a user is a new member of the group. */
-"EDIT_GROUP_NEW_MEMBER_LABEL" = "Added";
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "Əlavə edildi";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "Yenilə";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this group?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Bu qrupda etdiyin dəyişiklikləri yadda saxlamaq istəyirsən?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Unsaved Changes";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Yadda Saxlanmamış Dəyişikliklər";
 
 /* Short name for edit menu item to copy contents of media message. */
-"EDIT_ITEM_COPY_ACTION" = "Copy";
+"EDIT_ITEM_COPY_ACTION" = "Köçür";
 
 /* No comment provided by engineer. */
-"EDIT_TXT" = "Edit";
+"EDIT_TXT" = "Dəyiş";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the conversations on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Salam,\n\nSon zamanlar Signal-ı istifadə edirəm ki, söhbətlərimi iPhone-da məxfi şəkildə saxlaya bilim. Mən istərdim ki, sən də onu yükləyəsən və beləliklə biz əmin olaq ki, aramızda olan mesajlaşmanı yalnız biz görürük və səsli danışıqlarımızı yalnız biz eşidirik.\n\nSignal iPhone və Android-i dəstəkləyən cihazlarda işləyir. Onu burdan əldə et: %@\n\nSignal indi istifadə etdiyin mesajlaşma aplikasiyanla eyni qaydada işləyəcək. Biz şəkil və video göndərə, zəng edə bə qrup söhbətləşmələri başlada bilərik. Ən əla cəhəti odur ki, bunların heç birindən kiminsə xəbəri olmayacaq, hətta Signal-ı yaradanların da!\n\nSignal-ı yaratmış olan Open Whisper Systems haqqında ətraflı məlumat da ala bilərsən: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
+"EMAIL_INVITE_SUBJECT" = "Gəl Signal-a keçək";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Əlaqələrinin heç birinin Signal-ı yoxdur.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Niyə kimisə çağırmayasan?";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirm your PIN.";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "PIN-i təsdiq et.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Qeydiyyat Kilidini deaktiv edə bilmədik.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Qeydiyyat Kilidini aktivləşdirə bilmədik.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
 "ENABLE_2FA_VIEW_DISABLE_2FA" = "Söndür";
@@ -850,16 +850,16 @@
 "ENABLE_2FA_VIEW_NEXT_BUTTON" = "Növbəti";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN does not match.";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN uyğun deyil.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Qeydiyyat Kilid PIN-ini daxil et. Növbəti dəfə bu telefon nömrəsini Signal ilə qeydiyyatdan keçirdikdə bu PIN-i daxil etməyin tələb ediləcək.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "For increased security, enable a Registration Lock PIN that will be required in order to register this phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Daha üstün təhlükəsizlik üçün yenidən bu telefon nömrəni Signal ilə qeydiyyatdan keçirdikdə tələb ediləcək Qeydiyyat Kilid PIN-ini aktivləşdir.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registration Lock is enabled. You'll need to enter your PIN when registering your phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Qeydiyyat Kilidi aktivləşdirildi. Telefon nömrəni yenidən Signal ilə qeydiyyatdan keçirdikdə PIN-i daxil etməyin tələb ediləcək.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Qeydiyyat Kilidi";
@@ -868,139 +868,139 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Məşğul";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Zəng Alınmadı.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Əlaqələrə daxil ola bilmədik.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "İsmarış göndərilmədi...";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Köhnəlmiş məlumat olduğu üçün göndərilə bilmir.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to message user because you blocked them.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "İstifadəçini kilidlədiyin üçün ona yazmaq mümkün olmadı.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed to write and send attachment.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = " Yazmaq və faylın göndərilməsi alınmadı.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try again.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal inetrnetlə bağlantı yarada bilmədi. Zəhmət olmasa yenidən sına.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Message send failed due to a lack of valid recipients.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Təsdiq edilmiş qəbul edilicilərin sayının az olması səbəbilə mesajın göndərilməsi alınmadı.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Şəbəkə tələbi alınmadı.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Şəbəkə tələbinin vaxtı ötdü.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Xidmətdən xətalı cavab.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "This device is no longer registered with your phone number. Please reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Bu cihaz artıq sənin nömrənlə qeydiyyatdan keçməyib. Zəhmət olmasa Signal-ı yenidən quraşdır.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "SErverdə Xəta. Bir daha sınayın.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occurred.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Naməlum xəta baş verdi.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Contact is not a Signal user.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Əlaqə Signal istifadəçisi deyil.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Yükləmə xətası: Bu əlaqədən xahiş et ki, Signal-ı son versiyasına yenilədikdən sonra mesajı yenidən göndərsin.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Təkrar mesaj qəbul edildi.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Alanın açarı düzgün deyil.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Qəbul edilmiş mesaj sinxronlaşdırılmamışdı.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Received a message that is not compatible with this version.";
+"ERROR_MESSAGE_INVALID_VERSION" = "Bu versiya ilə uyğun olmayan mesaj qəbul edildi.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "Əlaqə üçün sessiya yoxdur.";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Safety number changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Təhlükəsizlik rəqəmi dəyişdi.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Your safety number with %@ has changed.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@ ilə olan təhlükəsizlik rəqəmin dəyişilmişdir.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "An unknown error occurred.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Naməlum xəta baş verdi.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Təhlükəsizlik rəqəmi dəyişdi.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Qeydiyyatsız İstifadəçi: %@";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
 "EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "İndi yox";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again later.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Bu əlaqə bilə bağlı çox sayda xəta. Lütfən daha sonra yenidən sına.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before sending this message again.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Sənin %@ ilə olan təhlükəsizlik rəqəmin yenicə dəyişilib. Bu mesajı yenidən göndərməmiş onu təsdiqləyə bilərsən.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
+"FAILED_VERIFICATION_TITLE" = "Təhlükəsizlik Rəqəminin Təsdiqi Alınmadı!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Təsdiq Edilmiş Kimi İşarələ";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset Session";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Sessiyanı Yenidən Başlat";
 
 /* Accessibility label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finish creating group";
+"FINISH_GROUP_CREATION_LABEL" = "Qrup yaratmağı tamamla";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this conversation.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Bu söhbətdə heç bir media yoxdur.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media…";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Daha Yeni Media Yüklənir...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Daha Köhnə Media Yüklənir...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Qoşma";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Tələb edilən GIF-i işlədə bilmədik. Zəhmət olmasa onlayn olduğunu yoxla.";
 
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
+"GIF_PICKER_ERROR_GENERIC" = "Naməlum xəta baş verdi.";
 
 /* Shown when selected GIF couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to Choose GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "GIF Seçə Bilmədik";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Zəhmət olmasa axtarışı daxil et.";
 
 /* Title for the 'GIF picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "GIF Search";
+"GIF_PICKER_VIEW_TITLE" = "GIF Axtarışı";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Tap to Retry.";
+"GIF_VIEW_SEARCH_ERROR" = "Xəta. Yenidən cəhd üçün Kliklə.";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "No Results.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Nəticə Yoxdur.";
 
 /* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Enter your search";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Axtarışı daxil et";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar dəyişdi.";
@@ -1009,7 +1009,7 @@
 "GROUP_CREATED" = "Qrup yaradıldı.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Not all members could be added to the group. Tap to retry.";
+"GROUP_CREATION_FAILED" = "Bütün üzvlər qrupa əlavə edilə bilmədi. Yenidən cəhd üçün kliklə.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Qrup idarəçiliyi";
@@ -1027,22 +1027,22 @@
 "GROUP_MEMBERS_CALL" = "Zəng et";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Clear Verification for All";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Hamısı üçün Təsdiqi Təmizlə";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "This will clear the verification of all group members whose safety numbers have changed since they were last verified.";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Bununla son dəfə təsdiq etdikdən sonra təhlükəsizlik rəqəmləri dəyişilən bütün qrup üzlərinin təsdiqi təmizlənəcək.";
 
 /* Title for the 'members' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Members";
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Üzvlər";
 
 /* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "No Longer Marked as Verified";
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Artıq Təsdiqlənmiş Kimi İşarələnməyib";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Mesajı Göndər";
 
 /* Button label for the 'show contact info' button */
-"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Contact Info";
+"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Əlaqə Məlumatı";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "İndiki başlıq '%@'. ";
@@ -1054,28 +1054,28 @@
 "GROUP_YOU_LEFT" = "Qrupdan çıxdın.";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arxivləşdirilmiş Söhbətlər";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "Blocked";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "Kilidlidir";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Axtar";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "%@ daxil olmaqla sənin bəzi əlaqələrin artıq Signal istifadəçiləridir";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "%@ və %@ daxil olmaqla sənin bəzi əlaqələrin artıq Signal istifadəçiləridir";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@, %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "%@, %@ və %@ daxil olmaqla sənin bəzi əlaqələrin artıq Signal istifadəçiləridir";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "İlk söhbətinə burada başla.";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "'%@' üçün nəticə tapılmadı";
 
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Arxiv";
@@ -1084,67 +1084,67 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "%@ fayldan artığını paylaşa bilməzsən.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Faylın seçilməsi alınmadı.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Connecting…";
+"IN_CALL_CONNECTING" = "Əlaqə yaradılır...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting…";
+"IN_CALL_RECONNECTING" = "Yenidən əlaqə yaradılır...";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Ringing…";
+"IN_CALL_RINGING" = "Zəng edilir...";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Answered. Securing…";
+"IN_CALL_SECURING" = "Cavab verdi. Təhlükəsizləşdirilir...";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call Ended.";
+"IN_CALL_TERMINATED" = "Zəng Bitdi.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Bu söhbətlər Gələnlər qutusunda arxivləşdirildi və yalnız yeni mesajlar qəbul edildiyi zaman görünəcəklər.";
 
 /* Message shown in the home view when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Mesajlar qutuna şans yarat ki, bir şey yazsın. Dostuna yazmağa başla.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Signal conversation list.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Signal-ın söhbətləşmə siyahısında olan əlaqələrini görə bilmək üçün iOS Parametrlərində əlaqələrə giriş icazəsini aktivləşdir.";
 
 /* info message text in conversation view */
 "INCOMING_CALL" = "Gələn zəng";
 
 /* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "You declined a call";
+"INCOMING_DECLINED_CALL" = "Sən zəngi rədd etdin.";
 
 /* info message text in conversation view */
 "INCOMING_INCOMPLETE_CALL" = "Gələn zəng";
 
 /* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Missed call because their safety number has changed.";
+"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Onun təhlükəsizlik rəqəmi dəyişdiyi üçün cavab verilməmiş zəng baş verdi.";
 
 /* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Invalid audio file.";
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Xətalı audio fayl.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "You can enable contacts access in the iOS Settings app to invite your friends to join Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Dostlarını Signal-a dəvət edə bilmək üçün iOS Parametrlərində əlaqələrə giriş icazəsini aktivləşdir.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Allow Contact Access";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Əlaqə Girişinə İcazə Ver";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invite Friends to Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Dostlarını Signal-a Dəvət Et";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Axtar";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Invite Friends";
+"INVITE_FRIENDS_PICKER_TITLE" = "Dostlarını Dəvət Et";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will start a group message and the recipients will be able to see each other.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Bir neçə istifadəçinin eyni zamanda çağırılması qrup mesajlaşmasını başladacaq və hamı bir-birini görə biləcək.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "%@ sonra ismarışlar yox olur.";
@@ -1159,13 +1159,13 @@
 "LEAVE_GROUP_ACTION" = "Qrupdan çıx.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid. Please make sure you are scanning the QR code that is displayed on the device you want to link.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Bu QR şifrə xətalıdır. Zəhmət olmasa əmin ol ki, əlaqə yaratmaq istədiyin cihazda nümayiş edilən QR şifrəni skan edirsən.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Aləti qoşma alınmadı";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your conversations, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Bu cihaz sənin qrup və əlaqələrini görə biləcək, söhbətlərinə giriş icazəsi olacaq və sənin adından mesaj göndərə biləcək.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Aləti qoşaq?";
@@ -1174,7 +1174,7 @@
 "LINK_DEVICE_RESTART" = "Yenidən sına";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan the QR code that is displayed on the device you want to link.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Əlaqə yaratmaq istədiyin cihazda nümayiş edilən QR şifrəni skan et.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "QR kodu skan et";
@@ -1183,7 +1183,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Yeni alət qoş";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Bağlantıya İlkin Baxış";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Qoşulmuş alətlər";
@@ -1192,16 +1192,16 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Alət qoşulmadı";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
+"LIST_GROUP_MEMBERS_ACTION" = "Qrup Üzvləri";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Daxil olur";
 
 /* Title for the 'long text message' view. */
-"LONG_TEXT_VIEW_TITLE" = "Message";
+"LONG_TEXT_VIEW_TITLE" = "Mesaj";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Bütün Medialar";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
@@ -1210,16 +1210,16 @@
 "MEDIA_FROM_DOCUMENT_PICKER_BUTTON" = "Sənəd";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Şəkil Kataloqu";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "%d Mesajı Sil";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Mesajı Sil";
 
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ on %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@-%@ civarında";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -1228,31 +1228,31 @@
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "Sən";
 
 /* Section header in media gallery collection view */
-"MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Bu Ay";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
+"MESSAGE_ACTION_COPY_MEDIA" = "Medianı Köçür";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+"MESSAGE_ACTION_COPY_TEXT" = "Mesajın Mətnini Köçür";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Bu Mesajı Sil";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will only be deleted on this device.";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Bu yalnız mövcud cihazdan silinəcək.";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "More Info";
+"MESSAGE_ACTION_DETAILS" = "Daha Ətraflı";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to This Message";
+"MESSAGE_ACTION_REPLY" = "Bu Mesajı Cavabla";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Medianı Yadda Saxla";
 
 /* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "Mesaj";
 
 /* Label for the recipient name in the 'message approval' dialog. */
 "MESSAGE_APPROVAL_RECIPIENT_LABEL" = "Hara:";
@@ -1261,16 +1261,16 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Yeni ismarış";
 
 /* Label for file size of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "File Size";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Faylı Ölçüsü";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME növü";
 
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Çatdırıldı";
 
 /* Status label for messages which are failed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Failed";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Alınmadı";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Oxundu";
@@ -1282,129 +1282,129 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Göndərildi";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Ötürüldü";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Uploading";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Yüklənir";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Message has no content or attachment.";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Mesajın mətni və faylı yoxdur.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Qəbul edildi";
 
 /* Label for the 'sender' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENDER" = "Sender";
+"MESSAGE_METADATA_VIEW_SENDER" = "Göndərən";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Göndərildi";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filename";
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Faylın Adı";
 
 /* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Message";
+"MESSAGE_METADATA_VIEW_TITLE" = "Mesaj";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Çatdırıldı";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Göndərilmə alınmadı.";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+"MESSAGE_STATUS_FAILED_SHORT" = "Alınmadı";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Oxundu";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Ötürüldü";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "Göndərmə alınmadı";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending…";
+"MESSAGE_STATUS_SENDING" = "Göndərilir...";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Göndərildi";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading…";
+"MESSAGE_STATUS_UPLOADING" = "Yüklənir...";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Yeni ismarış";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ artıq təsdiqlənmiş kimi işarələnməyib. Seçimlər üçün kliklə.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked This User";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "Bu İstifadəçini Kilidləmisən";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ artıq təsdiqlənmiş kimi işarələnməyib. Seçimlər üçün kliklə.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Bu Qrupun 1 Üzvünü Kilidləmisən";
 
 /* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "You Blocked This Group";
+"MESSAGES_VIEW_GROUP_BLOCKED" = "Bu Qrupu Kilidləmisən";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Bu Qrupun %@ Üzvünü Kilidləmisən";
 
 /* Text for banner in group conversation view that offers to share your profile with this group. */
-"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Share Your Profile With This Group?";
+"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Profilini Bu Qrupla Bölüşürsən?";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Bu qrupun birdən artıq üzvü artılq təsdiqlənmiş kimi işarələnməyib. Seçimlər üçün kliklə.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Parametrlər üçün bunu kliklə";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "New Messages";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "Yeni Mesajlar";
 
 /* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "There are more unread messages.";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Daha çox oxunmamış mesaj var.";
 
 /* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "There are more unread messages (including safety number changes).";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Daha çox oxunmamış mesaj var (təhlükəsizlik rəqəmi dəyişməsi daxil olmaqla).";
 
 /* info message text in conversation view */
 "MISSED_CALL" = "Cavabsız zəng";
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal ilə video zəng edə bilmək üçün iOS Parametrlərində kameraya girişi aktivləşdirə bilərsən.";
 
 /* Alert title
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal kameranıza giriş tələb edir.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Bu icazəni iOS Parametrlərində aktivləşdirə bilərsən.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal requires access to your photos for this feature.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Bu seçim üçün Signal-ın şəkillərinə giriş icazəsi olmalıdır.";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Bundan artıq cihazı bağlaya bilməzsən.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device and try again.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Hesabınla bağlaya biləcəyin maksimal cihaz sayına çatmısan. Letfən hansısa cihazı xaric et və yenidən cəhd et.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Səssiz rejimdə olan söhbətlər üçün xəbərdarlıq almayacaqsan.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ötür";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Please check if you are online and try again.";
+"NETWORK_ERROR_RECOVERY" = "Onlayn olduğuna əmin ol və yenidən sına.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Censorship Circumvention: On";
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Senzuranın Yerləşməsi: Aktiv";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTED" = "Qoşuldu";
@@ -1413,7 +1413,7 @@
 "NETWORK_STATUS_CONNECTING" = "Qoşulur";
 
 /* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "No Longer Registered";
+"NETWORK_STATUS_DEREGISTERED" = "Artıq Qeydiyyatlı Deyil";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_HEADER" = "Şəbəkə vəziyyəti";
@@ -1422,37 +1422,37 @@
 "NETWORK_STATUS_OFFLINE" = "Oflayn";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Find by Phone Number";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Telefon Nömrəsi İlə Tap";
 
 /* A label for the cell that lets you add a new non-contact member to a group. */
 "NEW_GROUP_ADD_NON_CONTACT" = "Telefon Nömrəsi ilə Əlavə et";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Qrup Şəkli Təyin Et";
 
 /* The title for the 'create group' button. */
-"NEW_GROUP_CREATE_BUTTON" = "Create";
+"NEW_GROUP_CREATE_BUTTON" = "Yarat";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Yeni qrup";
 
 /* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "Member";
+"NEW_GROUP_MEMBER_LABEL" = "Üzv";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ tərəfindən %@ istiqamətinə";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Qrup çatının adı";
 
 /* a title for the non-contacts section of the 'new group' view. */
-"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Other Users";
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Başqa İstifadəçilər";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to discard these changes?";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Bu dəyişiklikləri ləğv etmək istəyirsən?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Unsaved Changes";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Yadda Saxlanmamış Dəyişikliklər";
 
 /* No comment provided by engineer. */
 "new_message" = "Yeni ismarış";
@@ -1461,67 +1461,67 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Axtar";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find User";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "İstifadəçi Tap";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Əlaqələri Telefon Nömrələri ilə Tap";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Nəzərində Saxla";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "%@ yenidən başladılana qədən mesaj qəbul etmiş ola bilərsən.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Apple push çərçivəsinin bilinən xətalarına görə ismarışların öncəgörüntüsü göndəriləndən 30 saniyə sonra göstəriləcək. Ona görə tətbiqetmənin bu hissəsi tam doğru olmaya bilər.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "No Name or Content";
+"NOTIFICATIONS_NONE" = "Ad və Mətn Yoxdur";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
+"NOTIFICATIONS_SECTION_INAPP" = "Aplikasiya Açıq Olduğu Vaxt Oyna";
 
 /* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "Sounds";
+"NOTIFICATIONS_SECTION_SOUNDS" = "Səslər";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name and Content";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Ad və Mətn";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Name Only";
+"NOTIFICATIONS_SENDER_ONLY" = "Yalnız Ad";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Göstər";
 
 /* No comment provided by engineer. */
-"OK" = "OK";
+"OK" = "Oldu";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Bu telefon nömrəsi Qeydiyyat Kilidini aktivləşdirdi. Lütfən, Qeydiyyat Kilid PIN-ini daxil et.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_EXPLANATION_2" = "Your Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"ONBOARDING_2FA_EXPLANATION_2" = "Sənin Qeydiyyat Kilid PIN-in son addım zamanı telefon nömrənə göndərilmiş avtomatik təsdiq şifrəsindən fərqlidir.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "I forgot my PIN";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "PIN-i unutmuşam";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Qeydiyyat Kilidi";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
+"ONBOARDING_CAPTCHA_TITLE" = "Mesajlarına duz qat";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Enable Permissions";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "İcazələri Aktivləşdir";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Your contact information is always transmitted securely.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Sənin əlaqə məlumatların hər zaman təhlükəsiz olaraq ötürülür.";
 
 /* Label for the 'not now' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "İndi yox";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal can let you know when you get a message (and who it is from)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Sənə mesaj gələndə Signal səni xəbərdar edə bilər (və kim tərəfindən gəldiyini)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Başlamaq üçün telefon nömrəni daxil et";
@@ -1530,52 +1530,52 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Səhv nömrə";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Signal profiles are end-to-end encrypted and the Signal service never has access to this information.";
+"ONBOARDING_PROFILE_EXPLANATION" = "Signal profilləri başdan sonra qədər şifrəlidir və Signal heç vaxt bu məlumatlara giriş əldə edə bilməz.";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Your Name";
+"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Sənin Adın";
 
 /* Title of the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_TITLE" = "Profilini quraşdır";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Terms & Privacy Policy";
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Qaydalar və Məxfilik Siyasəti";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
+"ONBOARDING_SPLASH_TITLE" = "Məxfiliyini qoru.\nHər mesajda özünəməxsus ol.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
-"ONBOARDING_VERIFICATION_BACK_LINK" = "Wrong number?";
+"ONBOARDING_VERIFICATION_BACK_LINK" = "Nömrə səhvdir?";
 
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "I didn't get a code (available in %@)";
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Mən şifrəni əldə etmədim (%@ bölməsində mövcuddur)";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "This code is incorrect";
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "Bu şifrə səhvdir";
 
 /* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "I didn't get a code";
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Şifrəni əldə etmədim";
 
 /* Message for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Please ensure that you have cellular service and can receive SMS messages.";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Lütfən əmin ol ki, sənin mobil xidmətin aktivdir və SMS mesajları qəbul edə bilirsən.";
 
 /* Title for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "No code?";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Şifrə yoxdur?";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Resend code";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Şifrəni yenidən göndər";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Call me instead";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Əvəzində mənə zəng et";
 
 /* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Still no code?";
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Hələ də şifrə yoxdur?";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Enter the code we sent to %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "%@ nömrəsinə göndərdiyimiz şifrəni daxil et";
 
 /* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "We just resent a code to %@";
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "Elə indicə %@ nömrəsinə şifrəni yenidən göndərdik";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Quraşdırmalar";
@@ -1596,13 +1596,13 @@
 "OUTGOING_INCOMPLETE_CALL" = "Gedən zəng";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
+"OUTGOING_MISSED_CALL" = "Cababsiz çıxan zəng";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "Example: %@";
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "Nümunə: %@";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -1611,13 +1611,13 @@
 "PHONE_NUMBER_TYPE_HOME" = "Ev";
 
 /* Label for 'HomeFAX' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME_FAX" = "Home Fax";
+"PHONE_NUMBER_TYPE_HOME_FAX" = "Ev Faksı";
 
 /* Label for 'iPhone' phone numbers. */
 "PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
 
 /* Label for 'Main' phone numbers. */
-"PHONE_NUMBER_TYPE_MAIN" = "Main";
+"PHONE_NUMBER_TYPE_MAIN" = "Əsas";
 
 /* Label for 'Mobile' phone numbers. */
 "PHONE_NUMBER_TYPE_MOBILE" = "Mobil";
@@ -1626,10 +1626,10 @@
 "PHONE_NUMBER_TYPE_OTHER" = "Digər";
 
 /* Label for 'Other FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER_FAX" = "Other Fax";
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "Başqa Faks";
 
 /* Label for 'Pager' phone numbers. */
-"PHONE_NUMBER_TYPE_PAGER" = "Pager";
+"PHONE_NUMBER_TYPE_PAGER" = "Peycer";
 
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
 "PHONE_NUMBER_TYPE_UNKNOWN" = "Naməlum";
@@ -1638,52 +1638,52 @@
 "PHONE_NUMBER_TYPE_WORK" = "İş";
 
 /* Label for 'Work FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK_FAX" = "Work Fax";
+"PHONE_NUMBER_TYPE_WORK_FAX" = "İş Faksı";
 
 /* alert title, generic error preventing user from capturing a photo */
-"PHOTO_CAPTURE_GENERIC_ERROR" = "Unable to capture image.";
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Şəkli oxuya bilmirik.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Unable to capture image.";
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Şəkli oxuya bilmirik.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Failed to configure camera.";
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Kameranın konfiqurasiyası alınmadı.";
 
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Adsız Albom";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Medianı Oxut";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@ təsdiqlənmiş kimi işarələnməyib.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Təsdiq edildi";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ is verified.";
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ təsdiqlənmişdir.";
 
 /* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Learn More";
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Daha Ətraflı";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Tap to Scan";
+"PRIVACY_TAP_TO_SCAN" = "Skan Etmək üçün Kliklə";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Clear Verification";
+"PRIVACY_UNVERIFY_BUTTON" = "Təsdiqi Təmizlə";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Bu %@ ilə təhlükəsizlik rəqəminə oxşamır. Sən düzgün əlaqəni təsdiqləyirsən?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Mübadilə buferindəki rəqəm bu söhbətləşmə üçün düzgün təhlükəsizlik rəqəminə oxşamır.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal mübadilə buferində təhlükəsizlik rəqəmi tapa bilmədi. Sən onu düz köçürmüsən?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Signal-ın hər istifadəçi cütlüyü fərqli təhlükəsizlik rəqəmi bölüşür. Əmin ol ki, %@ \"sənin\" fərqli təhlükəsizlik rəqəmini nümayiş edir.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Signalın köhnə versiyasından istifadə edirsiniz. Yeniləməmişdən öncə təsdiqləməlisiniz.";
@@ -1692,16 +1692,16 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Tərəfdaşınız köhnə Signaldan istifadə edir. Siz təsdiqləməmişdən öncə o Signalı yeniləməlidir.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skan edilmiş şifrə təhlükəsizlik rəqəminə oxşamır. Hər ikiniz Signal-ın ən son versiyasını istifaə edirsiniz?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "%@ ilə hər iki tərəfli şifrələmənin təhlükəsizliyini yoxlamaq üçün, yuxarıdakı nömrələrlə alətlərindəki nömrələri yoxlayın.\n\nOnların telefonundakı kodu skan edə və ya sizin kodunuzu skan etməklərini istəyə bilərsiniz.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verify Safety Number";
+"PRIVACY_VERIFICATION_TITLE" = "Təhlükəsizlik Rəqəmini Təsdiq Et";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Mark as Verified";
+"PRIVACY_VERIFY_BUTTON" = "Təsdiq Edilmiş Kimi İşarələ";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Davam et";
@@ -1713,16 +1713,16 @@
 "PROFILE_NAME_LABEL_FORMAT" = "~%@";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Avatar";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profil Şəklini Təyin Et";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Clear Avatar";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Şəkli Təmizlə";
 
 /* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Your profile name is too long.";
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Profil adın çox uzundur.";
 
 /* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Profile update failed.";
+"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Profilin yenilənməsi alınmadı.";
 
 /* Default text for the profile name field of the profile view. */
 "PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Adını daxil et";
@@ -1731,10 +1731,10 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Şəkil";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible to your contacts, when you initiate new conversations, and when you share it with other users and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Yeni söhbətə başladığında, profilini digər istifadəçi və qruplarla bölüşdükdə sənin Signal Profilin əlaqələrinə görünəcəkdir.";
 
 /* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap here to learn more.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Əlavə məlumat üçün bunu kliklə.";
 
 /* Label for the profile name field of the profile view. */
 "PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profil Adı";
@@ -1743,10 +1743,10 @@
 "PROFILE_VIEW_SAVE_BUTTON" = "Yaddaşa yaz";
 
 /* Title for the profile view. */
-"PROFILE_VIEW_TITLE" = "Profile";
+"PROFILE_VIEW_TITLE" = "Profil";
 
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+"PUSH_MANAGER_MARKREAD" = "Oxunmuş Kimi İşarələ";
 
 /* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Cavab";
@@ -1761,22 +1761,22 @@
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Replying to %@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@ istifadəçisinə Cavab Verilir";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Replying to You";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Sənə Cavab Verilir";
 
 /* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Replying to Yourself";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Özünə Cavab Verirsən";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
-"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Orijinal mesaj tapılmadı.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Original message no longer available.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Orijinal mesaj artıq mövcud deyil.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Original message not found.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Orijinal mesaj tapılmadı.";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Qoşma";
@@ -1797,7 +1797,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "PIN-i unutmuşam.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration of this phone number will be possible without your Registration Lock PIN after 7 days have passed since the phone number was last active on Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Bu nömrənin Signal ilə son aktivliyindən 7 gün keçdikdən sonra bu telefon nömrəsi Qeydiyyat Kilid PIN-i olmadan qeydiyyatdan keçə biləcək.";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Təqdim et";
@@ -1806,13 +1806,13 @@
 "REGISTER_CONTACTS_WELCOME" = "Xoş gördük!";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Try Again";
+"REGISTER_FAILED_TRY_AGAIN" = "Yenidən Cəhd Et";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
+"REGISTER_RATE_LIMITING_BODY" = "Sən ard-arda cəhdlər etdin. Yenidən cəhd etmək üçün bir dəqiqə gözlə.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "You have tried too often. Please wait a minute before trying again.";
+"REGISTER_RATE_LIMITING_ERROR" = "Sən ard-arda cəhdlər etdin. Yenidən cəhd etmək üçün bir dəqiqə gözlə.";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Üzə çıxan xəbərdarlıqlar qeydə alınmadı.";
@@ -1830,13 +1830,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Sizə göndərilən kodu təsdiqləməyənə qədər hesabınızı aktivləşdirə bilmərik.";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "Registering now will disable Signal on any other device currently registered with this phone number.";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "İndi qeydiyyatdan keçsən, bu nömrənin qeydiyyatda olduğu bütün digər cihazlarda Signal deaktiv olacaq.";
 
 /* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Register this iPad";
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Bu iPad-i qeydiyyatdan keçir";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Already have a Signal account?";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "Artıq Signal hesabın var?";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Bu formatda telefon nömrəsi dəstəklənmir, Yardıma müraciət edin.";
@@ -1845,7 +1845,7 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefon nömrəsi";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "Mesaj göndərə bilmək üçün qeydiyyatdan keçməlisən.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Təsdiqləmə alınmadı";
@@ -1854,19 +1854,19 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Bizim göndəriyimizlə yazdığınız uyğun gəlmir. Bir daha yoxlamaq istəyirsiniz?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Incorrect Registration Lock PIN.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Xətalı Qeydiyyat Kilid PIN-i";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a valid phone number to register.";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Zəhmət olmasa qeydiyyat üçün düzgün telefon nömrəsi daxil et.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Invalid Phone Number";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Xətalı Telefon Nömrəsi";
 
 /* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Please enter a phone number to register.";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Zəhmət olmasa qeydiyyat üçün telefon nömrəsi daxil et.";
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "No Phone Number";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Telefon Nömrəsi Yoxdur";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Rədd";
@@ -1881,16 +1881,16 @@
 "REMINDER_2FA_BODY_HEADER" = "Xatırlatma:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Qeydiyyat Kilidin telefon nömrəni icazəsiz qeydiyyat cəhdlərindən qoruyur. Bu xüsusiyyət istənilən vaxt Signal-ın məxfilik parametrlərində deaktivasiya edilə bilər.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";
+"REMINDER_2FA_NAV_TITLE" = "Qeydiyyat Kilid PIN-ini Daxil Et";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "You can set a new PIN in your privacy settings.";
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Məxfilik parametlərində yeni PIN təyin edə bilərsən.";
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "That is not the correct PIN.";
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Bu düzgün PIN deyil.";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Üzə çıxan xəbərdarlıqları yenidən qeyd et";
@@ -1899,19 +1899,19 @@
 "RETRY_BUTTON_TEXT" = "Yenidən sına";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Add to Group Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Yenə də Qrupa Əlavə Et";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Call Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Yenə də Zəng Et";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Send Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Yenə də Göndər";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Bizim Signal Təhlükəsizlik Rəqəmimiz:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Sənin %@ ilə olan təhlükəsizlik rəqəmin dəyişildi. Onu təsdiq edə bilərsən.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Əlaqələrinizin alətində QR kodu skan edin.";
@@ -1920,40 +1920,40 @@
 "SCAN_QR_CODE_VIEW_TITLE" = "QR kodu skan et";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Ani";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "İdentifikasiyaya giriş əldə edilmədi.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "İdentifikasiya alınmadı.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Çox sayda identifikasiya cəhdi xətası. Lütfən daha sonra sına.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Ekran Kilidini istifadə edə bilmək üçün iOS Parametrlərində şifrə ifadəsini aktivləşdirməlisən.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Ekran Kilidini istifadə edə bilmək üçün iOS Parametrlərində şifrə ifadəsini aktivləşdirməlisən.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Ekran Kilidini istifadə edə bilmək üçün iOS Parametrlərində şifrə ifadəsini aktivləşdirməlisən.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Signal-ı açmaq üçün identifikasiya et.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "İdentifikasiya Alınmadı";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal-ın Kilidini Aç";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Ad və ya nömrə ilə axtar";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
-"SEARCH_SECTION_CONTACTS" = "Other Contacts";
+"SEARCH_SECTION_CONTACTS" = "Başqa Əlaqələr";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
 "SEARCH_SECTION_CONVERSATIONS" = "Söhbətlər";
@@ -1968,40 +1968,40 @@
 "SELECT_GIF_BUTTON" = "GIF";
 
 /* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Other Contacts";
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Başqa Əlaqələr";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Recent Chats";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Son Söhbətlər";
 
 /* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "Send Again";
+"SEND_AGAIN_BUTTON" = "Yenidən Göndər";
 
 /* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "Göndər";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
+"SEND_FAILED_NOTIFICATION_BODY" = "Mesajının göndərilməsi alınmadı.";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Sending invite failed, please try again later.";
+"SEND_INVITE_FAILURE" = "Dəvətin göndərilməsi alınmadı, lütfən daha nsonra yenidən sına.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "Dostunu Signal istifadə etməyə dəvət etdin!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invite via SMS: %@";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "SMS ilə dəvət et: %@";
 
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "Discard Media?";
+"SEND_MEDIA_ABANDON_TITLE" = "Medianı Xaric Edirsən?";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Medianı Xaric Et";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Kameraya Qayıt";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Return to Media Library";
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Media Kataloquna Qayıt";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Təhlükəsiz olmayan SMS-lə dostu dəvət edək?";
@@ -2013,37 +2013,37 @@
 "SETTINGS_ABOUT" = "Haqqında";
 
 /* Title for the 'block contact' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Block Contact";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Əlaqəni Kilidlə";
 
 /* Title for the 'block phone number' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Block Phone Number";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Telefon Nömrəsini Kilidlə";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Kilidlə";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censorship Circumvention";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Senzuradan Yan Keçmək";
 
 /* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Location: %@";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Yer: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "If enabled, Signal will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Signal is censored.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Aktivləşdirilsə, Signal senzuradan yan keçməyə cəhd edəcək. Signal izləndiyi yerdəsənsə, bunu etmə.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censorship circumvention has been activated based on your account's phone number.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Hesabının telefon nömrəsinə əsasən senzuradan yen keçmə aktivləşdirildi.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "You have manually disabled censorship circumvention.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Sən senzuradan yan keçmə seçimini dekativasiya etdin.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censorship circumvention can only be activated when connected to the internet.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Senzuradan yan keçmə yalnız internetlə əlaqə olduqda aktivləşdirilə bilər.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censorship circumvention is not necessary; you are already connected to the Signal service.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Senzuradan yan keçmə o qədər də vacib deyil; sən artıq Signal xidmətinə qoşulmusan.";
 
 /* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censorship Circumvention";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Senzuradan Yan Keçmə";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Düzəltmə girişini fəallaşdır";
@@ -2055,187 +2055,187 @@
 "SETTINGS_ADVANCED_TITLE" = "Əlavə";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (mövcud)";
 
 /* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "Backup";
+"SETTINGS_BACKUP" = "Arxivləşdir";
 
 /* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "Backup Now";
+"SETTINGS_BACKUP_BACKUP_NOW" = "İndi Arxivləşdir";
 
 /* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "Cancel Backup";
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "Arxivləşdirməni Ləğv Et";
 
 /* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Enabled";
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Arxivləşdirmə Aktiv Edildi";
 
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud-un Statusu";
 
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Arxivləşdirilmənin Bərpası Alınmadı";
 
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Arxivləşmə Bərpasında Boşluq";
 
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Arxivin Bərpası Baş Verməkdədir";
 
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Arxivin Bərpası Tamamlandı";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "Phase";
+"SETTINGS_BACKUP_PHASE" = "Mərhələ";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "Progress";
+"SETTINGS_BACKUP_PROGRESS" = "İnkişaf";
 
 /* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "Status";
 
 /* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Backup Failed";
+"SETTINGS_BACKUP_STATUS_FAILED" = "Arxivləşdirmə Alınmadı";
 
 /* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "Waiting";
+"SETTINGS_BACKUP_STATUS_IDLE" = "Gözləyirik";
 
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Backing Up";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Arxivləşdirilir";
 
 /* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Backup Successful";
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Arxivləşmə Müvəffəqiyyətlə Tamamlandı";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Blocked User";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Kilidli İstifadəçini Əlavə Et";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "You have no contacts on Signal.";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal-da əlaqən yoxdur.";
 
 /* A label that indicates the user's search has no matching results. */
-"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "No Search Results";
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Axtarışda Nəticə Yoxdur";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Blocked";
+"SETTINGS_BLOCK_LIST_TITLE" = "Kilidlidir";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Always Relay Calls";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Zəngləri Həmişə Yenidən Yayımla";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Signal serveri vasitəsilə zəngləri yenidən yayımlamaqla IP ünvanını əlaqələrindən gizli saxlamış olacaqsan. Aktivləşdirsən, zəngin keyfiyyəti biraz aşağı düşəcək.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
+"SETTINGS_CLEAR_HISTORY" = "Söhbətləşmə Tarixçəsini Təmizlə";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Signal Mesencer İstifadəçi Hüquqları \n GPLv3 ilə lisenziyalaşdırılmışdır";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Hesabı ləğv et";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
+"SETTINGS_DELETE_DATA_BUTTON" = "Bütün Məlumatları Sil";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Bütün tarixçəni silmək istədiyinə əminsən (mesajlar, fayllar, zənglər və s.)? Geriyə addım mümkün deyil.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Delete Everything";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Hərşeyi Sil";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Yardım.";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
+"SETTINGS_HISTORYLOG_TITLE" = "Söhbətləşmə Tarixçəsini Təmizlə";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Məlumat";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Invite Your Friends";
+"SETTINGS_INVITE_TITLE" = "Dostlarını Dəvət Et";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Məni @signalapp vasitəsilə tapa bilərsən. Onu əldə et: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Mesajın Səsi";
 
 /* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
+"SETTINGS_LEGAL_TERMS_CELL" = "Qaydalar və Məxfilik Siyasəti";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Linkə İlkin Baxışı Göndər";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "İlkin baxışlar İmgur, İnstagram, Pinterest, Reddit və Youtube linkləri üçün keçərlidir.";
 
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Linklərə İlkin Baxış";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Seçimlər";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Telefonun kilidli olduqda da Zəng və Mesaj xəbərdarlıqları görünəcək. Bu xəbərdarlıqlarda nəyin görünəcəyinə limit təyin edə bilərsən.";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Xəbərdarlığın Tərkibi";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Xəbərdarlıqlar";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Zəng Edənin Ad və Nömrəsini Göstər";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Show calls in the \"Recents\" list in the iOS Phone app.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOS Telefon aplikasiyasının \"Son Daxil Olanlar\" siyahısında zəngləri göstər.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Show Calls in Recents";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Zəngləri Son Daxil Olanlarda Göstər";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Call Integration";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Zəng İnteqrasiyası";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Təhlükəsizlik";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Read Receipts";
+"SETTINGS_READ_RECEIPT" = "Oxunmuşlar Haqqında Hesabat";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Mesajlarını kimsə oxuduqda bunu gör və paylaş. Bu fərdi seçimdir və bütün söhbətləşmələrə tətbiq edilir.";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Re-register";
+"SETTINGS_REREGISTER_BUTTON" = "Yenidən qeydiyyat";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekran Kilidi Müddəti";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Signal-ın ekran kilidini Touch ID, Face ID və ya sənin iOS cihazının şifrə ifadəsi vasitəsilə aç. Ekran Kilidi aktiv ola-ola sən zəng və mesaj qəbul edə biləcəksən. Signal-ın xəbərdarlıq parametrləri sənə nümayiş ediləcək məlumatları seçmək imkanı verir.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ekran Kilidi";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Ekran Kilidi";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Ekran Təhlükəsizliyini Aktivləşdir";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Signal-ın ilkin baxışlarının aplikasiya keçiricisində nümayişinin qarşısını al.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS-un Zəng İnteqrasiyası sənin Signal zənglərini kilidli ekranda və sistemin zəng tarixçəsində göstərir. Fərdi seçim olaraq əlaqələrinin ad və nömrələrini nümayiş edə bilərsən. iCloud aktiv edilərsə, bu zəng tarixçəsi Apple ilə payşalacaqdır.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Xəbərdarlıqlar";
 
 /* Header Label for the sounds section of settings views. */
-"SETTINGS_SECTION_SOUNDS" = "Sounds";
+"SETTINGS_SECTION_SOUNDS" = "Səslər";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+"SETTINGS_SECTION_TITLE_CALLING" = "Zənglər";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Ekran təhlükəsizliyi";
@@ -2256,25 +2256,25 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Qeydiyyat Kilidi";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "Yazışma İndikatorları";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Mesajlar yazılarkən xəbərdar ol və bölüş. Bu fərdi seçimdir və bütün söhbətləşmələrə tətbiq edilir.";
 
 /* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Learn More";
+"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Daha Ətraflı";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Möhürlənmiş Göndərən";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "İndikatorları Nümayiş Etdir";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Möhürlənmiş istifadəçidən daxil olan mesajlardakı \"Əlavə Məlumat\" seçimini edərkən status ikonasını göstər.";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "İstənilən Şəxsə İcazə Ver";
 
 /* table section footer */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Əlaqəndə olmayan və profilini bölüşmədiyin istifadəçilərin mesajı sənə möhürlənmiş olaraq göndərməsinə icazə ver.";
@@ -2283,49 +2283,49 @@
 "SETTINGS_VERSION" = "Versiya";
 
 /* action sheet item to open native mail app */
-"SHARE_ACTION_MAIL" = "Mail";
+"SHARE_ACTION_MAIL" = "Məktub";
 
 /* action sheet item to open native messages app */
-"SHARE_ACTION_MESSAGE" = "Message";
+"SHARE_ACTION_MESSAGE" = "Mesaj";
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Sənin %@ ilə olan təhlükəsizlik rəqəmin yenicə dəyişilib. Bu mesajı yenidən göndərməmiş əsas aplikasiyada təsdiqləyə bilərsən.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Loading…";
+"SHARE_EXTENSION_LOADING" = "Yüklənir...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Launch the Signal app to register.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Qeydiyyat üçün Signal aplikasiyasını başlat.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Not Registered";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Qeydiyyatdan Keçməmisən";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Yeniləmək və ya qeydiyyatdan keçmək üçün Signal aplikasiyasını başlat.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Not Ready";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Hazır Deyil";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Faylı Göndərə Bilmədik";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploading…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Yüklənir...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Unable to Prepare Attachment";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Faylı Hazırlaya Bilmədik";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Signal ilə Bölüş";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
+"SHOW_SAFETY_NUMBER_ACTION" = "Təhlükəsizlik Rəqəmini Göstər";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Show Conversation";
+"SHOW_THREAD_BUTTON_TITLE" = "Söhbətləşməni Göstər";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Səni Signalı yükləməyə dəvət edirəm! Link belədir:";
@@ -2334,55 +2334,55 @@
 "SOUNDS_NONE" = "Heç biri";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Sənin %@ ilə olan təhlükəsizlik rəqəmin uyğundur. Sən bu əlaqəni təsdiq edilmiş kimi işarələyə bilərsən.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Təhlükəsizlik Rəqədi Uyğundur!";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Təhlükəsizlik Rəqəmini Təsdiq Et";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ days";
+"TIME_AMOUNT_DAYS" = "%@ gün";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@ g";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ hours";
+"TIME_AMOUNT_HOURS" = "%@ saat";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ s";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@ minutes";
+"TIME_AMOUNT_MINUTES" = "%@ dəqiqə";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@ d";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@ seconds";
+"TIME_AMOUNT_SECONDS" = "%@ saniyə";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@ s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ day";
+"TIME_AMOUNT_SINGLE_DAY" = "%@ gün";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ hour";
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ saat";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minute";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ dəqiqə";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ week";
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ həftə";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ weeks";
+"TIME_AMOUNT_WEEKS" = "%@ həftə";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ h";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Ləğv Et";
@@ -2394,13 +2394,13 @@
 "UNARCHIVE_ACTION" = "Arxivləşdirmə";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "User not in your contacts. Would you like to block this user?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "İstifadəçi əlaqələrində yoxdurş Bu istifadəçini blok etmək istərdinmi?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Bilinməyən əlaqə";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Unknown Country";
+"UNKNOWN_COUNTRY_NAME" = "Tanınmayan Ölkə";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Naməlum";
@@ -2409,7 +2409,7 @@
 "UNLINK_ACTION" = "Qoşma";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "This device will no longer be able to send or receive messages if it is unlinked.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Bu cihaz bağlantı olmasa bir daha mesaj göndərə və qəbul edə bilməyəcək.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%@\" qoşmasın?";
@@ -2430,109 +2430,109 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Alətiniz bu imkandan istifadə edə bilmir.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "You cannot remove group members. They will either have to leave, or you can create a new group without this member.";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Sən qrup üzvlərini çıxara bilməzsən. Ya onlar özləri qrupu tərk etməlidirlər, ya da sən onlar olmayan yeni qrup açmalısan.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Dəstəklənmir";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Answering calls from your lock screen is easy with iOS call integration. We anonymize your caller by default, so it's private too.";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Ekranın kilidli olarkən zənglərə cavab vermək iOS-un zəng inteqrasiyası ilə mümkündür. Biz sənin zənini anonim edirik, beləliklə sən eyni zamanda gizli olursan.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Məxfilik parametrlərində daha ətraflı məlumat al.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Just Swipe to Answer";
+"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Cavab Vermək üçün Sadəcə Sürüşdür";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Turn On Typing Indicators";
+"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Yazışma İndikatorlarını Aktivləşdir";
 
 /* Body text for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Bir çox ən populyar veb saytların ilkin baxışı funksiyası indi dəstəklənir.";
 
 /* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Sən bu xüsusiyyəti Signal parametrlərində istənilən zaman aktiv və ya deaktiv edə bilərsən (Məxfilik > Link ilkin baxışlarını göndər).";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Link Previews";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Linklərə İlkin Baxış";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've chosen for each system contact.";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Sən indi başlanğıc və söhbət önü xəbərdarlıq səslərini seçə bilərsən və hər sisyem əlaqəsi üçün seçdiyin zəng səsləri istəyinə uyğun istifadə ediləcəkdir.";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Review Notification Settings";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Xəbərdarlıq Parametrlərinə Baxış Keçir";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Updated Call and Message Sounds";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Yenilənmiş Zəng və Mesaj Səsləri";
 
 /* button label shown one time, after user upgrades app */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Set up Your Profile";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Profilini Quraşdır";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "You can now share a profile photo and name with your friends on Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Sən indi Signal-dakı dostlarınla profil şəklini və adını bölüşə bilərsən.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Ready for Your Closeup?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Tamamlamağa Hazırsan?";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "You now have the option of seeing and sharing when messages have been read.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "İndi mesajların oxunan zaman bunu bilmək seçimin var.";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Enable read receipts in your privacy settings.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Məxfilik parametrlərində mesajların oxunma hesabarlarını aktivləşdirə bilərsən.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introducing Read Receipts";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Oxunmuşlar Haqqında Hesabatla Tanışlıq";
 
 /* Body text for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "İndi istəsən mesajlar yazılan zaman onu izləyə, yaxud bu məlumatı bölüşə bilərsən.";
 
 /* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Yazışma İndikatorları ilə Tanışlıq";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal now supports secure video calling. Just start a call like normal, tap the camera button, and wave hello.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal indi təhlükəsiz video zəngləri dəstəkləyir. Normal zəngə başla, kamera düyməsinə toxun və dostuna gülümsə.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hello Secure Video Calls!";
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Təhlükəsiz Video Zənglərə Eşq Olsun!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal tezliklə iOS 10 və ya daha üst versiyaları tələb edəcək. Zəhmət olmasa Parametrlər >> Ümumi >> Proqram Yenilikləri addımları ilə yenilikləri yüklə.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Upgrade iOS";
+"UPGRADE_IOS_ALERT_TITLE" = "iOS-u Yenilə";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "You marked %@ as not verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@ tərəfindən təsdiqlənməmiş kimi işarələnib.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "You marked %@ as not verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "%@ başqa cihazda təsdiqlənməmiş kimi işarələnib.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "You marked %@ as verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "%@ tərəfindən təsdiqlənmiş kimi işarələnib.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "You marked %@ as verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "%@ başqa cihazda təsdiqlənmiş kimi işarələnib.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "Verification state changed.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "Təsdiqlənmə statusu dəyişib.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "View Safety Number";
+"VERIFY_PRIVACY" = "Təhlükəsizlik Rəqəminə Bax";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";
+"VERIFY_PRIVACY_MULTIPLE" = "Təhlükəsizlik Rəqəmlərinə Baxış Keçir";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Ləğv Etmək üçün Sürüşdür";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Voice Message";
+"VOICE_MESSAGE_FILE_NAME" = "Səsli Mesaj";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tap and hold to record a voice message.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Səsli mesaj yazmaq üçün sıx və saxla.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Voice Message";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Səsli Mesaj";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop üçün yükləməni bitir.";

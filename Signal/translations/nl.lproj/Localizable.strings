@@ -60,7 +60,7 @@
 "APN_Message" = "Nieuw bericht!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kan niet opstarten. Stuur een foutopsporingslog naar support@signal.org zodat we dit probleem kunnen oplossen.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kan niet opstarten. Stuur alstublieft een foutopsporingslog naar support@signal.org zodat we dit probleem kunnen oplossen.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Fout";
@@ -138,7 +138,7 @@
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Bijlage is te groot.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Bijlage bevat inhoud die niet wordt ondersteund.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Bijlage bevat inhoud die niet wordt ondersteund of niet correct is geformatteerd.";
 
 /* Attachment error message for attachments with an invalid file format */
 "ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Bijlage is een ongeldig bestandstype.";
@@ -231,7 +231,7 @@
 "BACKUP_UNEXPECTED_ERROR" = "Onverwachte back-upfout";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Je ontvangt niet langer berichten of meldingen van deze groep.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Je zult niet langer berichten of meldingen van deze group  ontvangen.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokkeren";
@@ -351,7 +351,7 @@
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Inkomende oproep weigeren";
 
 /* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Druk hier om je camera aan te zetten";
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tik hier om je camera aan te zetten";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Gesprek beëindigen";
@@ -381,7 +381,7 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Schakel over naar video-oproep";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Druk om terug te gaan naar gesprek";
+"CALL_WINDOW_RETURN_TO_CALL" = "Tik om naar gesprek terug te keren";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Terugbellen";
@@ -627,7 +627,7 @@
 "CONVERSATION_SETTINGS_SEARCH" = "Zoek gesprek";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Druk om te wijzigen";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tik om te wijzigen";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Niet meer dempen";
@@ -660,7 +660,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Meer berichten laden…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Druk voor meer";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tik voor meer";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blokkeer deze persoon";
@@ -681,7 +681,7 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dit kan enkele minuten duren.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Database aan het optimaliseren";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Databank aan het optimaliseren";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
 "DATE_HOURS_AGO_FORMAT" = "%@ uur geleden";
@@ -787,13 +787,13 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal heeft toegang nodig tot je contacten om contactinformatie te bewerken";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Bewerk groep";
+"EDIT_GROUP_ACTION" = "Groep aanpassen";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contactpersonen";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Bewerk groep";
+"EDIT_GROUP_DEFAULT_TITLE" = "Groep aanpassen";
 
 /* Label for the cell that lets you add a new member to a group. */
 "EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Toevoegen…";
@@ -994,7 +994,7 @@
 "GIF_PICKER_VIEW_TITLE" = "GIF zoeken";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Fout. Druk om opnieuw te proberen.";
+"GIF_VIEW_SEARCH_ERROR" = "Fout, tik om opnieuw te proberen.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Geen resultaten.";
@@ -1039,10 +1039,10 @@
 "GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Niet langer gemarkeerd als geverifieerd";
 
 /* Button label for the 'send message to group member' button */
-"GROUP_MEMBERS_SEND_MESSAGE" = "Verstuur bericht";
+"GROUP_MEMBERS_SEND_MESSAGE" = "Verzend bericht";
 
 /* Button label for the 'show contact info' button */
-"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Contactipersoonsinformatie";
+"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Contactinformatie";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "De titel is nu “%@”.";
@@ -1276,7 +1276,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Gelezen";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Bezig met versturen";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Bezig met verzenden";
 
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Verzonden";
@@ -1297,7 +1297,7 @@
 "MESSAGE_METADATA_VIEW_SENDER" = "Afzender";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Verstuurd";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Verzonden";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Bestandsnaam";
@@ -1324,10 +1324,10 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Verzenden mislukt";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Bezig met versturen…";
+"MESSAGE_STATUS_SENDING" = "Bezig met verzenden…";
 
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "Verstuurd";
+"MESSAGE_STATUS_SENT" = "Verzonden";
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Bezig met uploaden…";
@@ -1734,7 +1734,7 @@
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Je Signal-profiel zal zichtbaar zijn voor je contacten, wanneer je nieuwe gesprekken begint, en wanneer je het deelt met andere gebruikers en groepen.";
 
 /* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Druk hier voor meer informatie.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tik hier voor meer informatie.";
 
 /* Label for the profile name field of the profile view. */
 "PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profielnaam";
@@ -1977,7 +1977,7 @@
 "SEND_AGAIN_BUTTON" = "Opnieuw verzenden";
 
 /* Label for the button to send a message */
-"SEND_BUTTON_TITLE" = "Verstuur";
+"SEND_BUTTON_TITLE" = "Verzend";
 
 /* notification body */
 "SEND_FAILED_NOTIFICATION_BODY" = "Het verzenden van je bericht is mislukt.";
@@ -2163,7 +2163,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Voorwaarden en privacybeleid";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Verstuur voorbeeldweergaven";
+"SETTINGS_LINK_PREVIEWS" = "Verzend voorbeeldweergaven";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Voorbeelden worden ondersteund voor koppelingen naar Imgur, Instagram, Pinterest, Reddit en YouTube.";
@@ -2190,7 +2190,7 @@
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Toon oproepen in de lijst ‘Recent’ in de Telefoon-app van iOS.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Toon oproepen in recent";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Toon oproepen in recente-oproepenlijst";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS-oproepintegratie";
@@ -2529,7 +2529,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "Audiobericht";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tik en houd ingedrukt om een audiobericht te verzenden.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tik en houd vast om een audiobericht te verzenden.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Audiobericht";
