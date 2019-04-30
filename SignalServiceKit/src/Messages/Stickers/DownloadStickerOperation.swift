@@ -6,19 +6,22 @@ import Foundation
 
 class DownloadStickerOperation: OWSOperation {
 
+    private let stickerInfo: StickerInfo
+    private let skipIfSaved: Bool
     private let success: (Data) -> Void
     private let failure: (Error) -> Void
-    private let stickerInfo: StickerInfo
 
     @objc public required init(stickerInfo: StickerInfo,
+                               skipIfSaved: Bool,
                                success : @escaping (Data) -> Void,
                                failure : @escaping (Error) -> Void) {
         assert(stickerInfo.packId.count > 0)
         assert(stickerInfo.packKey.count > 0)
 
+        self.stickerInfo = stickerInfo
+        self.skipIfSaved = skipIfSaved
         self.success = success
         self.failure = failure
-        self.stickerInfo = stickerInfo
 
         super.init()
 
@@ -33,7 +36,7 @@ class DownloadStickerOperation: OWSOperation {
 
     override public func run() {
 
-        if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
+        if skipIfSaved, StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
             Logger.verbose("Skipping redundant operation.")
             let error = StickerError.redundantOperation as NSError
             error.isRetryable = false

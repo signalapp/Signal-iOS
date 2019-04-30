@@ -409,14 +409,23 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    // TODO:
+    StickerPackInfo *_Nullable stickerPackInfo = self.viewItem.stickerInfo.packInfo;
+    if (!stickerPackInfo) {
+        OWSFailDebug(@"Missing stickerPackInfo.");
+        return;
+    }
+
+    StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:packView];
+    [UIApplication.sharedApplication.frontmostViewController presentViewController:navigationController
+                                                                          animated:YES
+                                                                        completion:nil];
 }
 
 - (void)handleMediaTapGesture:(CGPoint)locationInMessageBubble
 {
-    OWSAssertDebug(self.delegate);
-
-    // TODO:
+    OWSFailDebug(@"This method should never be called.");
 }
 
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble

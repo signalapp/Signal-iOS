@@ -28,7 +28,7 @@ public class StickerKeyboard: UIStackView {
 
             // We use nil for the "recents" special-case.
             if let stickerPack = stickerPack {
-                stickerCollectionView.showPack(stickerPack: stickerPack)
+                stickerCollectionView.showInstalledPack(stickerPack: stickerPack)
             } else {
                 stickerCollectionView.showRecents()
             }

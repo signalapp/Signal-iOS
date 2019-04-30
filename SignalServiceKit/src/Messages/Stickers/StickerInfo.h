@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *packId;
 @property (nonatomic, readonly) NSData *packKey;
 
+@property (class, readonly, nonatomic) StickerPackInfo *defaultValue;
+
 - (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey;
 
 - (NSString *)asKey;

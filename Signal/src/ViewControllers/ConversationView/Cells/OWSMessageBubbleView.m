@@ -1437,7 +1437,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             break;
         case OWSMessageGestureLocation_Sticker:
-            OWSFailDebug(@"Unexpected value..");
+            OWSFailDebug(@"Unexpected value.");
             break;
     }
 }
