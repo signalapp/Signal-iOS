@@ -1299,10 +1299,12 @@ NS_ASSUME_NONNULL_BEGIN
                 }
 
                 NSError *stickerError;
-                MessageSticker *_Nullable messageSticker =
-                    [MessageSticker buildValidatedMessageStickerWithDataMessage:dataMessage
-                                                                    transaction:transaction
-                                                                          error:&stickerError];
+                MessageSticker *_Nullable messageSticker = [MessageSticker
+                    buildValidatedMessageStickerWithDataMessage:dataMessage
+                                                    transaction:
+                                                        [[SDSAnyWriteTransaction alloc]
+                                                            initWithTransitional_yapWriteTransaction:transaction]
+                                                          error:&stickerError];
                 if (stickerError && ![MessageSticker isNoStickerError:stickerError]) {
                     OWSFailDebug(@"stickerError: %@", stickerError);
                 }
@@ -1382,10 +1384,11 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         NSError *stickerError;
-        MessageSticker *_Nullable messageSticker =
-            [MessageSticker buildValidatedMessageStickerWithDataMessage:dataMessage
-                                                            transaction:transaction
-                                                                  error:&stickerError];
+        MessageSticker *_Nullable messageSticker = [MessageSticker
+            buildValidatedMessageStickerWithDataMessage:dataMessage
+                                            transaction:[[SDSAnyWriteTransaction alloc]
+                                                            initWithTransitional_yapWriteTransaction:transaction]
+                                                  error:&stickerError];
         if (stickerError && ![MessageSticker isNoStickerError:stickerError]) {
             OWSFailDebug(@"stickerError: %@", stickerError);
         }

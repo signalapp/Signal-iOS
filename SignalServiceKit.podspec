@@ -34,7 +34,8 @@ An Objective-C library for communicating with the Signal messaging service.
   s.compiler_flags = "-fcxx-modules"
 
   s.prefix_header_file = 'SignalServiceKit/src/TSPrefix.h'
-  s.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
+  s.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC',
+                 'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'   }
 
   s.resources = ["SignalServiceKit/Resources/Certificates/*"]
 
@@ -53,9 +54,11 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'SignalCoreKit'
   s.dependency 'SignalMetadataKit'
   s.dependency 'GRDBCipher'
-
+  s.dependency 'libwebp'
   s.dependency 'PromiseKit', "~> 6.0"
 
+  s.ios.vendored_frameworks = 'Vendor/WebP.framework'
+		
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'SignalServiceKit/tests/**/*.{h,m,swift}'
   end

@@ -2789,6 +2789,7 @@ typedef enum : NSUInteger {
     self.lastMessageSentDate = [NSDate new];
     [self.conversationViewModel clearUnreadMessagesIndicator];
     self.inputToolbar.quotedReply = nil;
+    [self.inputToolbar clearStickerKeyboard];
 
     if (!Environment.shared.preferences.hasSentAMessage) {
         [Environment.shared.preferences setHasSentAMessage:YES];
@@ -5054,9 +5055,6 @@ typedef enum : NSUInteger {
                 animateWithDuration:0.0
                          animations:^{
                              [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
-                             if (scrollToBottom) {
-                                 [self scrollToBottomAnimated:NO];
-                             }
                              [BenchManager completeEventWithEventId:@"message-send"];
                          }];
         }

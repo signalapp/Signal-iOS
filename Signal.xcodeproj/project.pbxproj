@@ -275,6 +275,7 @@
 		34C2EEB22270CC8E00BCA1D0 /* StickerPackCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2EEB12270CC8D00BCA1D0 /* StickerPackCollectionView.swift */; };
 		34C2EEB42270D1CE00BCA1D0 /* StickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2EEB32270D1CE00BCA1D0 /* StickerView.swift */; };
 		34C2EEB62270FF7C00BCA1D0 /* LinearHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2EEB52270FF7B00BCA1D0 /* LinearHorizontalLayout.swift */; };
+		34C2EEB92272244600BCA1D0 /* OWSMessageStickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C2EEB72272244500BCA1D0 /* OWSMessageStickerView.m */; };
 		34C3C78D20409F320000134C /* Opening.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78C20409F320000134C /* Opening.m4r */; };
 		34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78E2040A4F70000134C /* sonarping.mp3 */; };
 		34C3C7922040B0DD0000134C /* OWSAudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -987,6 +988,8 @@
 		34C2EEB12270CC8D00BCA1D0 /* StickerPackCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerPackCollectionView.swift; sourceTree = "<group>"; };
 		34C2EEB32270D1CE00BCA1D0 /* StickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerView.swift; sourceTree = "<group>"; };
 		34C2EEB52270FF7B00BCA1D0 /* LinearHorizontalLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinearHorizontalLayout.swift; sourceTree = "<group>"; };
+		34C2EEB72272244500BCA1D0 /* OWSMessageStickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageStickerView.m; sourceTree = "<group>"; };
+		34C2EEB82272244500BCA1D0 /* OWSMessageStickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageStickerView.h; sourceTree = "<group>"; };
 		34C3C78C20409F320000134C /* Opening.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Opening.m4r; sourceTree = "<group>"; };
 		34C3C78E2040A4F70000134C /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sonarping.mp3; path = Signal/AudioFiles/sonarping.mp3; sourceTree = SOURCE_ROOT; };
 		34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioPlayer.h; sourceTree = "<group>"; };
@@ -2081,6 +2084,8 @@
 				34D920E620E179C200D51158 /* OWSMessageFooterView.m */,
 				348570A720F67574004FF32B /* OWSMessageHeaderView.h */,
 				348570A620F67574004FF32B /* OWSMessageHeaderView.m */,
+				34C2EEB82272244500BCA1D0 /* OWSMessageStickerView.h */,
+				34C2EEB72272244500BCA1D0 /* OWSMessageStickerView.m */,
 				34DBF000206BD5A400025978 /* OWSMessageTextView.h */,
 				34DBEFFF206BD5A400025978 /* OWSMessageTextView.m */,
 				3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */,
@@ -3261,6 +3266,7 @@
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
+				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -3286,6 +3292,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -3338,6 +3345,7 @@
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
+				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -3362,6 +3370,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -3707,6 +3716,7 @@
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
 				45FBC5D11DF8592E00E9B410 /* SignalCall.swift in Sources */,
 				340FC8BB204DAC8D007AEB0F /* OWSAddToContactViewController.m in Sources */,
+				34C2EEB92272244600BCA1D0 /* OWSMessageStickerView.m in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
 				452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */,
 				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,

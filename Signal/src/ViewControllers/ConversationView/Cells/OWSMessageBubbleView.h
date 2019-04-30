@@ -90,6 +90,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 - (void)prepareForReuse;
 
++ (UIFont *)senderNameFont;
 + (NSDictionary *)senderNamePrimaryAttributes;
 + (NSDictionary *)senderNameSecondaryAttributes;
 

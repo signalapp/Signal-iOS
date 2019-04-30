@@ -335,6 +335,8 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var hasCachedLayoutState: Bool = false
     var linkPreview: OWSLinkPreview?
     var linkPreviewAttachment: TSAttachment?
+    var stickerInfo: StickerInfo?
+    var stickerAttachment: TSAttachmentStream?
 
     override init() {
         super.init()

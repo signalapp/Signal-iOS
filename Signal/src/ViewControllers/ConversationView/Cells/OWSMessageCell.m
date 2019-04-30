@@ -6,6 +6,7 @@
 #import "OWSContactAvatarBuilder.h"
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageHeaderView.h"
+#import "OWSMessageStickerView.h"
 #import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSMessageHeaderView *headerView;
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
+@property (nonatomic) OWSMessageStickerView *messageStickerView;
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
 
@@ -51,15 +53,13 @@ NS_ASSUME_NONNULL_BEGIN
     _viewConstraints = [NSMutableArray new];
 
     self.messageBubbleView = [OWSMessageBubbleView new];
-    [self.contentView addSubview:self.messageBubbleView];
+    self.messageStickerView = [OWSMessageStickerView new];
 
     self.headerView = [OWSMessageHeaderView new];
 
     self.avatarView = [[AvatarImageView alloc] init];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
     [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
-
-    [self.messageBubbleView autoPinBottomToSuperviewMarginWithInset:0];
 
     self.contentView.userInteractionEnabled = YES;
 
@@ -82,6 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
     [super setConversationStyle:conversationStyle];
 
     self.messageBubbleView.conversationStyle = conversationStyle;
+    self.messageStickerView.conversationStyle = conversationStyle;
 }
 
 + (NSString *)cellReuseIdentifier
@@ -131,11 +132,24 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.viewItem.interaction);
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
     OWSAssertDebug(self.messageBubbleView);
+    OWSAssertDebug(self.messageStickerView);
 
-    self.messageBubbleView.viewItem = self.viewItem;
-    self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
-    [self.messageBubbleView configureViews];
-    [self.messageBubbleView loadContent];
+    UIView *messageView;
+    if (self.cellType == OWSMessageCellType_StickerMessage) {
+        messageView = self.messageStickerView;
+        self.messageStickerView.viewItem = self.viewItem;
+        self.messageStickerView.cellMediaCache = self.delegate.cellMediaCache;
+        [self.messageStickerView configureViews];
+        [self.messageStickerView loadContent];
+    } else {
+        messageView = self.messageBubbleView;
+        self.messageBubbleView.viewItem = self.viewItem;
+        self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
+        [self.messageBubbleView configureViews];
+        [self.messageBubbleView loadContent];
+    }
+    [self.contentView addSubview:messageView];
+    [messageView autoPinBottomToSuperviewMarginWithInset:0];
 
     if (self.viewItem.hasCellHeader) {
         CGFloat headerHeight =
@@ -148,21 +162,20 @@ NS_ASSUME_NONNULL_BEGIN
             [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeLeading],
             [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
             [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeTop],
-            [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerView],
+            [messageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerView],
         ]];
     } else {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTop],
+            [messageView autoPinEdgeToSuperviewEdge:ALEdgeTop],
         ]];
     }
 
     if (self.isIncoming) {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                                     withInset:self.conversationStyle.gutterLeading],
-            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
-                                                     withInset:self.conversationStyle.gutterTrailing
-                                                      relation:NSLayoutRelationGreaterThanOrEqual],
+            [messageView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.conversationStyle.gutterLeading],
+            [messageView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                          withInset:self.conversationStyle.gutterTrailing
+                                           relation:NSLayoutRelationGreaterThanOrEqual],
         ]];
     } else {
         if (self.shouldHaveSendFailureBadge) {
@@ -175,18 +188,18 @@ NS_ASSUME_NONNULL_BEGIN
             CGFloat sendFailureBadgeBottomMargin
                 = round(self.conversationStyle.lastTextLineAxis - self.sendFailureBadgeSize * 0.5f);
             [self.viewConstraints addObjectsFromArray:@[
-                [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                                         withInset:self.conversationStyle.gutterLeading
-                                                          relation:NSLayoutRelationGreaterThanOrEqual],
-                [self.sendFailureBadgeView autoPinLeadingToTrailingEdgeOfView:self.messageBubbleView
+                [messageView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                              withInset:self.conversationStyle.gutterLeading
+                                               relation:NSLayoutRelationGreaterThanOrEqual],
+                [self.sendFailureBadgeView autoPinLeadingToTrailingEdgeOfView:messageView
                                                                        offset:self.sendFailureBadgeSpacing],
                 // V-align the "send failure" badge with the
                 // last line of the text (if any, or where it
                 // would be).
-                [self.messageBubbleView autoPinEdge:ALEdgeBottom
-                                             toEdge:ALEdgeBottom
-                                             ofView:self.sendFailureBadgeView
-                                         withOffset:sendFailureBadgeBottomMargin],
+                [messageView autoPinEdge:ALEdgeBottom
+                                  toEdge:ALEdgeBottom
+                                  ofView:self.sendFailureBadgeView
+                              withOffset:sendFailureBadgeBottomMargin],
                 [self.sendFailureBadgeView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
                                                             withInset:self.conversationStyle.errorGutterTrailing],
                 [self.sendFailureBadgeView autoSetDimension:ALDimensionWidth toSize:self.sendFailureBadgeSize],
@@ -194,11 +207,10 @@ NS_ASSUME_NONNULL_BEGIN
             ]];
         } else {
             [self.viewConstraints addObjectsFromArray:@[
-                [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                                         withInset:self.conversationStyle.gutterLeading
-                                                          relation:NSLayoutRelationGreaterThanOrEqual],
-                [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
-                                                         withInset:self.conversationStyle.gutterTrailing],
+                [messageView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                              withInset:self.conversationStyle.gutterLeading
+                                               relation:NSLayoutRelationGreaterThanOrEqual],
+                [messageView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.conversationStyle.gutterTrailing],
             ]];
         }
     }
@@ -208,8 +220,8 @@ NS_ASSUME_NONNULL_BEGIN
             // V-align the "group sender" avatar with the
             // last line of the text (if any, or where it
             // would be).
-            [self.messageBubbleView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
-            [self.messageBubbleView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView],
+            [messageView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
+            [messageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView],
         ]];
     }
 }
@@ -237,11 +249,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ensureMediaLoadState
 {
     OWSAssertDebug(self.messageBubbleView);
+    OWSAssertDebug(self.messageStickerView);
 
     if (!self.isCellVisible) {
         [self.messageBubbleView unloadContent];
+        [self.messageStickerView unloadContent];
     } else {
         [self.messageBubbleView loadContent];
+        [self.messageStickerView loadContent];
     }
 }
 
@@ -321,12 +336,20 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.viewItem);
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
     OWSAssertDebug(self.messageBubbleView);
+    OWSAssertDebug(self.messageStickerView);
 
-    self.messageBubbleView.viewItem = self.viewItem;
-    self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
-    CGSize messageBubbleSize = [self.messageBubbleView measureSize];
+    CGSize messageSize;
+    if (self.cellType == OWSMessageCellType_StickerMessage) {
+        self.messageStickerView.viewItem = self.viewItem;
+        self.messageStickerView.cellMediaCache = self.delegate.cellMediaCache;
+        messageSize = [self.messageStickerView measureSize];
+    } else {
+        self.messageBubbleView.viewItem = self.viewItem;
+        self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
+        messageSize = [self.messageBubbleView measureSize];
+    }
 
-    CGSize cellSize = messageBubbleSize;
+    CGSize cellSize = messageSize;
 
     OWSAssertDebug(cellSize.width > 0 && cellSize.height > 0);
 
@@ -356,6 +379,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.messageBubbleView prepareForReuse];
     [self.messageBubbleView unloadContent];
+    [self.messageBubbleView removeFromSuperview];
+    [self.messageStickerView prepareForReuse];
+    [self.messageStickerView unloadContent];
+    [self.messageStickerView removeFromSuperview];
 
     [self.headerView removeFromSuperview];
 
@@ -408,7 +435,11 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    [self.messageBubbleView handleTapGesture:sender];
+    if (self.cellType == OWSMessageCellType_StickerMessage) {
+        // TODO:
+    } else {
+        [self.messageBubbleView handleTapGesture:sender];
+    }
 }
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
@@ -435,7 +466,15 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    CGPoint locationInMessageBubble = [sender locationInView:self.messageBubbleView];
+    UIView *messageView;
+    if (self.cellType == OWSMessageCellType_StickerMessage) {
+        messageView = self.messageStickerView;
+    } else {
+        messageView = self.messageBubbleView;
+    }
+
+    // TODO:
+    CGPoint locationInMessageBubble = [sender locationInView:messageView];
     switch ([self.messageBubbleView gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
         case OWSMessageGestureLocation_OversizeText:

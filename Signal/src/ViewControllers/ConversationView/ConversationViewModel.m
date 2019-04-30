@@ -706,6 +706,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewState.viewItems.count);
 
+    // We may have filtered out some of the view items.
+    // Ensure that these ids are culled from updatedItemSet.
+    [updatedItemSet intersectSet:[NSSet setWithArray:self.viewState.interactionIndexMap.allKeys]];
+
     [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:updatedItemSet];
 }
 
@@ -1243,7 +1247,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     [self ensureConversationProfileState];
 
     __block BOOL hasError = NO;
-    id<ConversationViewItem> (^tryToAddViewItem)(TSInteraction *)
+    _Nullable id<ConversationViewItem> (^tryToAddViewItem)(TSInteraction *)
         = ^(TSInteraction *interaction) {
               OWSAssertDebug(interaction.uniqueId.length > 0);
 
@@ -1256,6 +1260,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
               }
               OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
               viewItemCache[interaction.uniqueId] = viewItem;
+
+              if (viewItem.messageCellType == OWSMessageCellType_StickerMessage && viewItem.stickerAttachment == nil) {
+                  OWSLogVerbose(@"Filtering out sticker which is not yet downloaded.");
+                  return (id<ConversationViewItem>)nil;
+              }
+
               [viewItems addObject:viewItem];
 
               return viewItem;
@@ -1294,8 +1304,11 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                  loadedInteractions:interactions
                                                    canLoadMoreItems:canLoadMoreItems];
         if (offers && [interactionIds containsObject:offers.beforeInteractionId]) {
-            id<ConversationViewItem> offersItem = tryToAddViewItem(offers);
-            if ([offersItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
+            id<ConversationViewItem> _Nullable offersItem = tryToAddViewItem(offers);
+            if (!offersItem) {
+                OWSFailDebug(@"Contact offers should never be filtered out.");
+                // Do nothing.
+            } else if ([offersItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
                 OWSContactOffersInteraction *oldOffers = (OWSContactOffersInteraction *)offersItem.interaction;
                 BOOL didChange = (oldOffers.hasBlockOffer != offers.hasBlockOffer
                     || oldOffers.hasAddToContactsOffer != offers.hasAddToContactsOffer
@@ -1325,8 +1338,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 OWSFailDebug(@"Duplicate interaction: %@", outgoingMessage.uniqueId);
                 continue;
             }
-            tryToAddViewItem(outgoingMessage);
-            [interactionIds addObject:outgoingMessage.uniqueId];
+            if (tryToAddViewItem(outgoingMessage) != nil) {
+                [interactionIds addObject:outgoingMessage.uniqueId];
+            }
         }
     }
 

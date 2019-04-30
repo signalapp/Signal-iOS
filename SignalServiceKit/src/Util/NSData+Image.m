@@ -2,9 +2,11 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSData+Image.h"
 #import "MIMETypeUtil.h"
+#import "NSData+Image.h"
 #import "OWSFileSystem.h"
+#import "webp/decode.h"
+#import "webp/demux.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -17,6 +19,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Tiff,
     ImageFormat_Jpeg,
     ImageFormat_Bmp,
+    ImageFormat_Webp,
 };
 
 @implementation NSData (Image)
@@ -44,7 +47,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         return NO;
     }
 
-    if (![self ows_hasValidImageDimensionsWithIsAnimated:isAnimated]) {
+    if (![self ows_hasValidImageDimensionsWithIsAnimated:isAnimated imageFormat:imageFormat]) {
         return NO;
     }
 
@@ -102,8 +105,13 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     return YES;
 }
 
-- (BOOL)ows_hasValidImageDimensionsWithIsAnimated:(BOOL)isAnimated
+- (BOOL)ows_hasValidImageDimensionsWithIsAnimated:(BOOL)isAnimated imageFormat:(ImageFormat)imageFormat
 {
+    if (imageFormat == ImageFormat_Webp) {
+        CGSize imageSize = [self sizeForWebpData];
+        return [NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES];
+    }
+
     CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)self, NULL);
     if (imageSource == NULL) {
         return NO;
@@ -115,6 +123,11 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 + (BOOL)ows_hasValidImageDimensionsAtPath:(NSString *)path isAnimated:(BOOL)isAnimated
 {
+    if ([self isWebpFilePath:path]) {
+        CGSize imageSize = [self sizeForWebpFilePath:path];
+        return [self ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES];
+    }
+
     NSURL *url = [NSURL fileURLWithPath:path];
     if (!url) {
         return NO;
@@ -178,17 +191,30 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         return NO;
     }
 
+    return [self ows_isValidImageDimension:CGSizeMake(width, height) depthBytes:depthBytes isAnimated:isAnimated];
+}
+
++ (BOOL)ows_isValidImageDimension:(CGSize)imageSize depthBytes:(CGFloat)depthBytes isAnimated:(BOOL)isAnimated
+{
+    if (imageSize.width < 1 || imageSize.height < 1 || depthBytes < 1) {
+        // Invalid metadata.
+        return NO;
+    }
+
     // We only support (A)RGB and (A)Grayscale, so worst case is 4.
-    const CGFloat kWorseCastComponentsPerPixel = 4;
-    CGFloat bytesPerPixel = kWorseCastComponentsPerPixel * depthBytes;
+    const CGFloat kWorseCaseComponentsPerPixel = 4;
+    CGFloat bytesPerPixel = kWorseCaseComponentsPerPixel * depthBytes;
 
     const CGFloat kExpectedBytePerPixel = 4;
     CGFloat kMaxValidImageDimension
         = (isAnimated ? OWSMediaUtils.kMaxAnimatedImageDimensions : OWSMediaUtils.kMaxStillImageDimensions);
     CGFloat kMaxBytes = kMaxValidImageDimension * kMaxValidImageDimension * kExpectedBytePerPixel;
-    CGFloat actualBytes = width * height * bytesPerPixel;
+    CGFloat actualBytes = imageSize.width * imageSize.height * bytesPerPixel;
     if (actualBytes > kMaxBytes) {
-        OWSLogWarn(@"invalid dimensions width: %f, height %f, bytesPerPixel: %f", width, height, bytesPerPixel);
+        OWSLogWarn(@"invalid dimensions width: %f, height %f, bytesPerPixel: %f",
+            imageSize.width,
+            imageSize.height,
+            bytesPerPixel);
         return NO;
     }
 
@@ -228,6 +254,8 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         case ImageFormat_Bmp:
             return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageBmp1] ||
                 [mimeType isEqualToString:OWSMimeTypeImageBmp2]);
+        case ImageFormat_Webp:
+            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageWebp]);
     }
 }
 
@@ -258,6 +286,9 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     } else if (byte0 == 0x49 && byte1 == 0x49) {
         // Intel byte order TIFF
         return ImageFormat_Tiff;
+    } else if (byte0 == 0x52 && byte1 == 0x49) {
+        // First two letters of RIFF tag.
+        return ImageFormat_Webp;
     }
 
     return ImageFormat_Unknown;
@@ -320,6 +351,11 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         OWSLogError(@"Invalid image.");
         return CGSizeZero;
     }
+
+    if ([self isWebpFilePath:filePath]) {
+        return [NSData sizeForWebpFilePath:filePath];
+    }
+
     NSURL *url = [NSURL fileURLWithPath:filePath];
 
     // With CGImageSource we avoid loading the whole image into memory.
@@ -374,6 +410,10 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 + (BOOL)hasAlphaForValidImageFilePath:(NSString *)filePath
 {
+    if ([self isWebpFilePath:filePath]) {
+        return YES;
+    }
+
     NSURL *url = [NSURL fileURLWithPath:filePath];
 
     // With CGImageSource we avoid loading the whole image into memory.
@@ -402,6 +442,39 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     }
     CFRelease(source);
     return result;
+}
+
++ (BOOL)isWebpFilePath:(NSString *)filePath
+{
+    NSString *fileExtension = filePath.lastPathComponent.pathExtension.lowercaseString;
+    return [fileExtension isEqualToString:@"webp"];
+}
+
++ (CGSize)sizeForWebpFilePath:(NSString *)filePath
+{
+    NSError *error = nil;
+    NSData *_Nullable data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
+    if (!data || error) {
+        OWSLogError(@"Could not read image data: %@", error);
+        return CGSizeZero;
+    }
+    return [data sizeForWebpData];
+}
+
+- (CGSize)sizeForWebpData
+{
+    WebPData webPData = { 0 };
+    webPData.bytes = self.bytes;
+    webPData.size = self.length;
+    WebPDemuxer *demuxer = WebPDemux(&webPData);
+    if (!demuxer) {
+        return CGSizeZero;
+    }
+
+    uint32_t canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH);
+    uint32_t canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
+    WebPDemuxDelete(demuxer);
+    return CGSizeMake(canvasWidth, canvasHeight);
 }
 
 @end

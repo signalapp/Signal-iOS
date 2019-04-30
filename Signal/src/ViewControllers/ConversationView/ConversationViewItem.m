@@ -34,6 +34,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return @"OWSMessageCellType_MediaMessage";
         case OWSMessageCellType_OversizeTextDownloading:
             return @"OWSMessageCellType_OversizeTextDownloading";
+        case OWSMessageCellType_StickerMessage:
+            return @"OWSMessageCellType_StickerMessage";
     }
 }
 
@@ -92,6 +94,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) DisplayableText *displayableBodyText;
 @property (nonatomic, nullable) DisplayableText *displayableQuotedText;
 @property (nonatomic, nullable) OWSQuotedReplyModel *quotedReply;
+@property (nonatomic, nullable) StickerInfo *stickerInfo;
+@property (nonatomic, nullable) TSAttachmentStream *stickerAttachment;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
@@ -163,6 +167,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.mediaAlbumItems = nil;
     self.displayableQuotedText = nil;
     self.quotedReply = nil;
+    self.stickerInfo = nil;
+    self.stickerAttachment = nil;
     self.contactShare = nil;
     self.systemMessageText = nil;
     self.authorConversationColorName = nil;
@@ -223,6 +229,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (BOOL)isQuotedReply
 {
     return self.hasQuotedAttachment || self.hasQuotedText;
+}
+
+- (BOOL)isSticker
+{
+    return self.stickerInfo != nil;
 }
 
 - (BOOL)isExpiringMessage
@@ -624,6 +635,25 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
     }
 
+    // Check for stickers _before_ media album handling,
+    // since that logic may exit early.
+    if (message.messageSticker) {
+        self.stickerInfo = message.messageSticker.info;
+        TSAttachment *_Nullable stickerAttachment =
+            [TSAttachment anyFetchWithUniqueId:message.messageSticker.attachmentId transaction:transaction];
+        OWSAssertDebug(stickerAttachment);
+        if ([stickerAttachment isKindOfClass:[TSAttachmentStream class]]) {
+            TSAttachmentStream *stickerAttachmentStream = (TSAttachmentStream *)stickerAttachment;
+            CGSize mediaSize = [stickerAttachmentStream imageSize];
+            if (stickerAttachmentStream.isValidImage && mediaSize.width > 0 && mediaSize.height > 0) {
+                self.stickerAttachment = stickerAttachmentStream;
+            }
+        }
+        // Exit early; stickers shouldn't have body text or other attachments.
+        self.messageCellType = OWSMessageCellType_StickerMessage;
+        return;
+    }
+
     if (transaction.transitional_yapReadTransaction != nil) {
         TSAttachment *_Nullable oversizeTextAttachment =
             [message oversizeTextAttachmentWithTransaction:transaction.transitional_yapReadTransaction];
@@ -931,7 +961,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             [UIPasteboard.generalPasteboard setString:self.displayableBodyText.fullText];
             break;
         }
-        case OWSMessageCellType_Unknown: {
+        case OWSMessageCellType_Unknown:
+        case OWSMessageCellType_StickerMessage: {
             OWSFailDebug(@"No text to copy");
             break;
         }
@@ -979,6 +1010,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         case OWSMessageCellType_OversizeTextDownloading:
             OWSFailDebug(@"Can't copy not-yet-downloaded attachment");
+            return;
+        case OWSMessageCellType_StickerMessage:
+            if (self.stickerAttachment != nil) {
+                [self copyAttachmentToPasteboard:self.stickerAttachment];
+            } else {
+                OWSFailDebug(@"Sticked not yet downloaded.");
+            }
             return;
     }
 }
@@ -1036,6 +1074,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_OversizeTextDownloading:
             OWSFailDebug(@"Can't share not-yet-downloaded attachment");
             return;
+        case OWSMessageCellType_StickerMessage:
+            if (self.stickerAttachment != nil) {
+                [AttachmentSharing showShareUIForAttachment:self.stickerAttachment];
+            } else {
+                OWSFailDebug(@"Sticked not yet downloaded.");
+            }
+            return;
     }
 }
 
@@ -1065,6 +1110,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         case OWSMessageCellType_OversizeTextDownloading:
             return NO;
+        case OWSMessageCellType_StickerMessage:
+            return self.stickerAttachment != nil;
     }
 }
 
@@ -1106,6 +1153,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         case OWSMessageCellType_OversizeTextDownloading:
             return NO;
+        case OWSMessageCellType_StickerMessage:
+            return self.stickerAttachment != nil;
     }
 }
 
@@ -1134,6 +1183,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_OversizeTextDownloading:
             OWSFailDebug(@"Can't save not-yet-downloaded attachment");
             return;
+        case OWSMessageCellType_StickerMessage:
+            return [self saveSticker];
     }
 }
 
@@ -1184,6 +1235,22 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return [self saveMediaAlbumItems:mediaAlbumItems];
 }
 
+- (void)saveSticker
+{
+    OWSAssertDebug(self.stickerAttachment != nil);
+    OWSAssertDebug(self.stickerAttachment.isValidImage);
+
+    [[PHPhotoLibrary sharedPhotoLibrary]
+        performChanges:^{
+            [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:self.stickerAttachment.originalMediaURL];
+        }
+        completionHandler:^(BOOL success, NSError *error) {
+            if (error || !success) {
+                OWSFailDebug(@"Image save failed: %@", error);
+            }
+        }];
+}
+
 - (void)deleteAction
 {
     [self.interaction remove];
@@ -1213,6 +1280,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return self.firstValidAlbumAttachment != nil;
         case OWSMessageCellType_OversizeTextDownloading:
             return NO;
+        case OWSMessageCellType_StickerMessage:
+            return self.stickerAttachment != nil;
     }
 }
 
