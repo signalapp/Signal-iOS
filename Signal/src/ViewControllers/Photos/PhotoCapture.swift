@@ -89,10 +89,20 @@ class PhotoCapture: NSObject {
 
             if self.session.canAddOutput(movieOutput) {
                 self.session.addOutput(movieOutput)
-                if let connection = movieOutput.connection(with: .video) {
-                    if connection.isVideoStabilizationSupported {
-                        connection.preferredVideoStabilizationMode = .auto
+                guard let connection = movieOutput.connection(with: .video) else {
+                    throw PhotoCaptureError.initializationFailed
+                }
+                if connection.isVideoStabilizationSupported {
+                    connection.preferredVideoStabilizationMode = .auto
+                }
+                if #available(iOS 11.0, *) {
+                    guard movieOutput.availableVideoCodecTypes.contains(.h264) else {
+                        throw PhotoCaptureError.initializationFailed
                     }
+                    // Use the H.264 codec to encode the video rather than HEVC.
+                    // Before iOS11, HEVC wasn't supported and H.264 was the default.
+                    movieOutput.setOutputSettings([AVVideoCodecKey:
+                        AVVideoCodecType.h264], for: connection)
                 }
             }
         }.done(on: sessionQueue) {
@@ -399,10 +409,19 @@ extension PhotoCapture: CaptureOutputDelegate {
             return
         }
 
-        let dataSource = DataSourcePath.dataSource(with: outputFileURL, shouldDeleteOnDeallocation: true)
+        guard let dataSource = DataSourcePath.dataSource(with: outputFileURL, shouldDeleteOnDeallocation: true) else {
+            delegate?.photoCapture(self, processingDidError: PhotoCaptureError.captureFailed)
+            return
+        }
 
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
-        delegate?.photoCapture(self, didFinishProcessingAttachment: attachment)
+        // AVCaptureMovieFileOutput records to .mov, but for compatibility we need to send mp4's.
+        // Because we take care to record with h264 compression (not hevc), this conversion
+        // doesn't require re-encoding the media streams and happens quickly.
+        let (attachmentPromise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
+        attachmentPromise.map { [weak self] attachment in
+            guard let self = self else { return }
+            self.delegate?.photoCapture(self, didFinishProcessingAttachment: attachment)
+        }.retainUntilComplete()
     }
 }
 
