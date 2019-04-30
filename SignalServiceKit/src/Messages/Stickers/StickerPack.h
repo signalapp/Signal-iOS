@@ -8,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyWriteTransaction;
+@class StickerPack;
 
 @interface StickerPackItem : MTLModel
 
@@ -15,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *emojiString;
 
 - (instancetype)initWithStickerId:(UInt32)stickerId emojiString:(NSString *)emojiString;
+
+- (StickerInfo *)stickerInfoWithStickerPack:(StickerPack *)stickerPack;
 
 @end
 

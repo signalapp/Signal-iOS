@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation InstalledSticker
 
-- (instancetype)initWithInfo:(StickerInfo *)info
+- (instancetype)initWithInfo:(StickerInfo *)info emojiString:(nullable NSString *)emojiString
 {
     OWSAssertDebug(info.packId.length > 0);
     OWSAssertDebug(info.packKey.length > 0);
@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _info = info;
+    _emojiString = emojiString;
 
     return self;
 }
@@ -46,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+                     emojiString:(nullable NSString *)emojiString
                             info:(StickerInfo *)info
 {
     self = [super initWithUniqueId:uniqueId];
@@ -54,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    _emojiString = emojiString;
     _info = info;
 
     return self;

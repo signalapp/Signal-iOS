@@ -136,6 +136,13 @@ public class StickerManager: NSObject {
         }
     }
 
+    // TODO: Handle sorting.
+    private class func availableStickerPacks(transaction: SDSAnyReadTransaction) -> [StickerPack] {
+        return allStickerPacks(transaction: transaction).filter {
+            !$0.isInstalled
+        }
+    }
+
     @objc
     public class func isStickerPackSaved(stickerPackInfo: StickerPackInfo) -> Bool {
         var result = false
@@ -193,20 +200,26 @@ public class StickerManager: NSObject {
 
     @objc
     public class func installStickerPack(stickerPack: StickerPack) {
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            self.installStickerPack(stickerPack: stickerPack,
+                                    transaction: transaction)
+        }
+    }
+
+    private class func installStickerPack(stickerPack: StickerPack,
+                                         transaction: SDSAnyWriteTransaction) {
 
         if stickerPack.isInstalled {
             return
         }
 
-        databaseStorage.writeSwallowingErrors { (transaction) in
-            stickerPack.update(withIsInstalled: true, transaction: transaction)
+        stickerPack.update(withIsInstalled: true, transaction: transaction)
 
-            installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
+        installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
 
-            sendStickerSyncMessage(operationType: .remove,
-                                   packs: [stickerPack.info],
-                                   transaction: transaction)
-        }
+        sendStickerSyncMessage(operationType: .remove,
+                               packs: [stickerPack.info],
+                               transaction: transaction)
 
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
     }
@@ -307,14 +320,12 @@ public class StickerManager: NSObject {
             // If the pack is already installed, make sure all stickers are installed.
             if stickerPack.isInstalled {
                 installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
+            } else if shouldInstall {
+                self.installStickerPack(stickerPack: stickerPack, transaction: transaction)
             }
         }
 
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
-
-        if shouldInstall {
-            self.installStickerPack(stickerPack: stickerPack)
-        }
     }
 
     private class func installStickerPackContents(stickerPack: StickerPack,
@@ -323,15 +334,15 @@ public class StickerManager: NSObject {
         // Note: It's safe to kick off downloads of stickers that are already installed.
 
         // The cover.
-        tryToDownloadAndInstallSticker(stickerInfo: stickerPack.coverInfo)
+        tryToDownloadAndInstallSticker(stickerPack: stickerPack, item: stickerPack.cover)
 
         guard !onlyInstallCover else {
             return
         }
 
         // The stickers.
-        for stickerInfo in stickerPack.stickerInfos {
-            tryToDownloadAndInstallSticker(stickerInfo: stickerInfo)
+        for item in stickerPack.items {
+            tryToDownloadAndInstallSticker(stickerPack: stickerPack, item: item)
         }
     }
 
@@ -362,8 +373,10 @@ public class StickerManager: NSObject {
     #if DEBUG
     @objc
     public class func tryToInstallAllAvailableStickerPacks() {
-        for stickerPack in availableStickerPacks() {
-            installStickerPack(stickerPack: stickerPack)
+        databaseStorage.writeSwallowingErrors { (transaction) in
+            for stickerPack in self.availableStickerPacks(transaction: transaction) {
+                self.installStickerPack(stickerPack: stickerPack, transaction: transaction)
+            }
         }
 
         shared.refreshAvailableStickerPacks(shouldInstall: true)
@@ -414,9 +427,6 @@ public class StickerManager: NSObject {
         if isStickerInstalled(stickerInfo: stickerInfo) {
             return stickerUrl(stickerInfo: stickerInfo).path
         } else {
-            // Kick off download here on cache miss.
-            tryToDownloadAndInstallSticker(stickerInfo: stickerInfo)
-
             return nil
         }
     }
@@ -473,7 +483,8 @@ public class StickerManager: NSObject {
 
     @objc
     public class func installSticker(stickerInfo: StickerInfo,
-                                     stickerData: Data) {
+                                     stickerData: Data,
+                                     emojiString: String?) {
         assert(stickerData.count > 0)
 
         var hasInstalledSticker = false
@@ -494,7 +505,7 @@ public class StickerManager: NSObject {
                 return
             }
 
-            let installedSticker = InstalledSticker(info: stickerInfo)
+            let installedSticker = InstalledSticker(info: stickerInfo, emojiString: emojiString)
             databaseStorage.writeSwallowingErrors { (transaction) in
                 installedSticker.anySave(transaction: transaction)
             }
@@ -503,26 +514,44 @@ public class StickerManager: NSObject {
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
     }
 
-    private class func ensureStickerInstalled(stickerInfo: StickerInfo, transaction: SDSAnyReadTransaction) {
-        guard !isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction) else {
-            return
-        }
+    private class func tryToDownloadAndInstallSticker(stickerPack: StickerPack,
+                                                      item: StickerPackItem) {
 
-        DispatchQueue.global().async {
-            tryToDownloadAndInstallSticker(stickerInfo: stickerInfo)
-        }
-    }
-
-    private class func tryToDownloadAndInstallSticker(stickerInfo: StickerInfo) {
+        let stickerInfo: StickerInfo = item.stickerInfo(with: stickerPack)
+        let emojiString = item.emojiString
 
         let operation = DownloadStickerOperation(stickerInfo: stickerInfo,
                                                  success: { (stickerData) in
-                                                    self.installSticker(stickerInfo: stickerInfo, stickerData: stickerData)
+                                                    self.installSticker(stickerInfo: stickerInfo, stickerData: stickerData, emojiString: emojiString)
         },
                                                  failure: { (_) in
                                                     // Do nothing.
         })
         operationQueue.addOperation(operation)
+    }
+
+    @objc
+    public class func emojiForSticker(stickerInfo: StickerInfo,
+                                      transaction: SDSAnyReadTransaction) -> String? {
+
+        let uniqueId = InstalledSticker.uniqueId(for: stickerInfo)
+
+        guard let sticker = InstalledSticker.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+            return nil
+        }
+        guard let emojiString = sticker.emojiString else {
+            return nil
+        }
+        return firstEmoji(inEmojiString: emojiString)
+    }
+
+    @objc
+    public class func firstEmoji(inEmojiString emojiString: String?) -> String? {
+        guard let emojiString = emojiString else {
+            return nil
+        }
+
+        return emojiString.substring(to: 1)
     }
 
     // MARK: - Misc.

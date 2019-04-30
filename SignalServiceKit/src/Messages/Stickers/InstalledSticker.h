@@ -12,13 +12,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface InstalledSticker : TSYapDatabaseObject
 
 @property (nonatomic, readonly) StickerInfo *info;
+@property (nonatomic, readonly, nullable) NSString *emojiString;
 
 // Convenience accessors.
 @property (nonatomic, readonly) NSData *packId;
 @property (nonatomic, readonly) NSData *packKey;
 @property (nonatomic, readonly) UInt32 stickerId;
 
-- (instancetype)initWithInfo:(StickerInfo *)info;
+- (instancetype)initWithInfo:(StickerInfo *)info emojiString:(nullable NSString *)emojiString;
 
 // --- CODE GENERATION MARKER
 
@@ -27,8 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+                     emojiString:(nullable NSString *)emojiString
                             info:(StickerInfo *)info
-NS_SWIFT_NAME(init(uniqueId:info:));
+NS_SWIFT_NAME(init(uniqueId:emojiString:info:));
 
 // clang-format on
 

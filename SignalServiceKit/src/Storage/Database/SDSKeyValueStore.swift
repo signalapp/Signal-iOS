@@ -74,7 +74,7 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
-    public func setData(_ value: Data, key: String) {
+    public func setData(_ value: Data?, key: String) {
         writeData(value, forKey: key)
     }
 

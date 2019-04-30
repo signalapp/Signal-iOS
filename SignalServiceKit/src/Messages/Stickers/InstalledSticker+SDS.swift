@@ -32,13 +32,15 @@ extension InstalledStickerSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 1)
     // Base class properties
-    static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 2)
+    static let emojiStringColumn = SDSColumnMetadata(columnName: "emojiString", columnType: .unicodeString, isOptional: true, columnIndex: 2)
+    static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 3)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
     public static let table = SDSTableMetadata(tableName: "model_InstalledSticker", columns: [
         recordTypeColumn,
         uniqueIdColumn,
+        emojiStringColumn,
         infoColumn
         ])
 
@@ -70,10 +72,12 @@ extension InstalledStickerSerializer {
         case .installedSticker:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
+            let emojiString = try deserializer.optionalString(at: emojiStringColumn.columnIndex)
             let infoSerialized: Data = try deserializer.blob(at: infoColumn.columnIndex)
             let info: StickerInfo = try SDSDeserializer.unarchive(infoSerialized)
 
             return InstalledSticker(uniqueId: uniqueId,
+                                    emojiString: emojiString,
                                     info: info)
 
         default:
@@ -279,12 +283,14 @@ class InstalledStickerSerializer: SDSSerializer {
 
     public func updateColumnNames() -> [String] {
         return [
+            InstalledStickerSerializer.emojiStringColumn,
             InstalledStickerSerializer.infoColumn
             ].map { $0.columnName }
     }
 
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
+            self.model.emojiString ?? DatabaseValue.null,
             SDSDeserializer.archive(self.model.info) ?? DatabaseValue.null
 
         ]
