@@ -47,24 +47,11 @@ class PhotoCaptureViewController: OWSViewController {
         }
     }
 
-    // MARK: - Dependencies
-
-    var audioActivity: AudioActivity?
-    var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
-    }
-
     // MARK: - Overrides
 
     override func loadView() {
         self.view = UIView()
         self.view.backgroundColor = Theme.darkThemeBackgroundColor
-
-        let audioActivity = AudioActivity(audioDescription: "PhotoCaptureViewController", behavior: .playAndRecord)
-        self.audioActivity = audioActivity
-        if !self.audioSession.startAudioActivity(audioActivity) {
-            owsFailDebug("unexpectedly unable to start audio activity")
-        }
     }
 
     override func viewDidLoad() {
@@ -322,7 +309,7 @@ class PhotoCaptureViewController: OWSViewController {
         captureButton.delegate = photoCapture
         previewView = CapturePreviewView(session: photoCapture.session)
 
-        photoCapture.startCapture().done { [weak self] in
+        photoCapture.startVideoCapture().done { [weak self] in
             guard let self = self else { return }
             self.hasCaptureStarted = true
             self.showCaptureUI()
@@ -418,7 +405,6 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     func photoCaptureDidCancelVideo(_ photoCapture: PhotoCapture) {
-        owsFailDebug("If we ever allow this, we should test.")
         isRecordingMovie = false
         recordingTimerView.stopCounting()
         updateNavigationItems()
