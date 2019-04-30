@@ -196,7 +196,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt
-                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                             transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [self markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
                 sendReadReceipt:sendReadReceipt
@@ -205,7 +205,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
               sendReadReceipt:(BOOL)sendReadReceipt
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 

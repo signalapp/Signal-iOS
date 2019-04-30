@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSPrimaryStorage (PreKeyStore)
 
-- (NSArray<PreKeyRecord *> *)generatePreKeyRecords;
+- (NSArray<PreKeyRecord *> *)generatePreKeyRecords
 {
     NSMutableArray *preKeyRecords = [NSMutableArray array];
 

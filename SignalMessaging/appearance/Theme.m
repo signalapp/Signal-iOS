@@ -139,7 +139,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ? self.darkThemeNavbarIconColor : UIColor.ows_gray60Color);
 }
 
-+ (UIColor *)darkThemeNavbarIconColor;
++ (UIColor *)darkThemeNavbarIconColor
 {
     return UIColor.ows_gray25Color;
 }
@@ -200,7 +200,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return Theme.isDarkThemeEnabled ? self.darkThemeKeyboardAppearance : UIKeyboardAppearanceDefault;
 }
 
-+ (UIKeyboardAppearance)darkThemeKeyboardAppearance;
++ (UIKeyboardAppearance)darkThemeKeyboardAppearance
 {
     return UIKeyboardAppearanceDark;
 }

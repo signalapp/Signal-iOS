@@ -304,7 +304,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }]];
 }
 
-- (void)removeAttachment:(TSAttachment *)attachment transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)removeAttachment:(TSAttachment *)attachment transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug([self.attachmentIds containsObject:attachment.uniqueId]);
     [attachment removeWithTransaction:transaction];
@@ -543,8 +543,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                              }];
 }
 
-- (void)updateWithMessageSticker:(MessageSticker *)messageSticker
-                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)saveWithMessageSticker:(MessageSticker *)messageSticker
+                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSticker);
     OWSAssertDebug(transaction);

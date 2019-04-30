@@ -136,7 +136,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                    linkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
                                         transaction:(YapDatabaseReadTransaction *)transaction
-                                         completion:(BuildOutgoingMessageCompletionBlock)completionBlock;
+                                         completion:(BuildOutgoingMessageCompletionBlock)completionBlock
 {
     NSString *_Nullable truncatedText;
     NSArray<SignalAttachment *> *attachments = mediaAttachments;
@@ -218,7 +218,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return message;
 }
 
-+ (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
++ (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(contactShare);
@@ -251,7 +251,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return message;
 }
 
-+ (TSOutgoingMessage *)enqueueMessageWithSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread;
++ (TSOutgoingMessage *)enqueueMessageWithSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(stickerInfo);
@@ -299,8 +299,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                 return;
             }
 
-            [message saveWithTransaction:transaction];
-            [message updateWithMessageSticker:messageSticker transaction:transaction];
+            [message saveWithMessageSticker:messageSticker transaction:transaction];
 
             [self.messageSenderJobQueue addMessage:message transaction:transaction];
         }];

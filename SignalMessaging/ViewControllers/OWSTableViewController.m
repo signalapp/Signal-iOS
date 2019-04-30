@@ -187,7 +187,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)checkmarkItemWithText:(NSString *)text
                 accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
-                            actionBlock:(nullable OWSTableActionBlock)actionBlock;
+                            actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
     return [self itemWithText:text
         accessibilityIdentifier:accessibilityIdentifier
@@ -318,7 +318,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)actionItemWithText:(NSString *)text
              accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
-                         actionBlock:(nullable OWSTableActionBlock)actionBlock;
+                         actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
     OWSAssertDebug(text.length > 0);
     OWSAssertDebug(actionBlock);

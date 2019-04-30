@@ -357,7 +357,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                       expiresInSeconds:(uint32_t)expiresInSeconds;
+                       expiresInSeconds:(uint32_t)expiresInSeconds
 {
     // MJK TODO remove SenderTimestamp?
     return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]

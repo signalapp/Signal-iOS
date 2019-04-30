@@ -429,7 +429,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     }
 }
 
-- (void)loadAnotherPageOfMessagesWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (void)loadAnotherPageOfMessagesWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     BOOL hasEarlierUnseenMessages = self.dynamicInteractions.unreadIndicator.hasMoreUnseenMessages;
 
