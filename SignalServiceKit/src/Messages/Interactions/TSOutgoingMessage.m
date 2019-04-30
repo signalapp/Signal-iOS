@@ -542,15 +542,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    if (self.messageSticker != nil) {
-        BOOL willInsert = (self.uniqueId.length < 1
-            || nil == [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction.asAnyWrite]);
-        if (willInsert) {
-            // Update "Recent Stickers" list to reflect sends.
-            [StickerManager stickerWasSent:self.messageSticker.info transaction:transaction.asAnyWrite];
-        }
-    }
-
     if (!self.shouldBeSaved) {
         // There's no need to save this message, since it's not displayed to the user.
         //

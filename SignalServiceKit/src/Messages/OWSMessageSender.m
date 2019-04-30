@@ -1868,6 +1868,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // When we start a message send, all "failed" recipients should be marked as "sending".
     [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
 
+    if (message.messageSticker != nil) {
+        // Update "Recent Stickers" list to reflect sends.
+        [StickerManager stickerWasSent:message.messageSticker.info transaction:transaction.asAnyWrite];
+    }
+    
     return attachmentIds;
 }
 

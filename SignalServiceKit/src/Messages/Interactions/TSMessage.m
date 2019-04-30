@@ -549,7 +549,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     OWSAssertDebug(messageSticker);
     OWSAssertDebug(transaction);
 
-    [self setMessageSticker:messageSticker];
+    self.messageSticker = messageSticker;
     [self saveWithTransaction:transaction];
 }
 
