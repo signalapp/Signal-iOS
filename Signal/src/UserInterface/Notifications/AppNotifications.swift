@@ -350,7 +350,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         // While batch processing, some of the necessary changes have not been commited.
-        let rawMessageText = incomingMessage.previewText(with: SDSAnyReadTransaction(transitional_yapReadTransaction: transaction))
+        let rawMessageText = incomingMessage.previewText(with: transaction.asAnyRead())
 
         // iOS strips anything that looks like a printf formatting character from
         // the notification body, so if we want to dispay a literal "%" in a notification
@@ -462,7 +462,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
         }
 
-        let notificationBody = errorMessage.previewText(with: SDSAnyReadTransaction(transitional_yapReadTransaction: transaction))
+        let notificationBody = errorMessage.previewText(with: transaction.asAnyRead())
 
         guard let threadId = thread.uniqueId else {
             owsFailDebug("threadId was unexpectedly nil")
@@ -484,7 +484,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func notifyUser(forThreadlessErrorMessage errorMessage: TSErrorMessage, transaction: YapDatabaseReadWriteTransaction) {
-        let notificationBody = errorMessage.previewText(with: SDSAnyReadTransaction(transitional_yapReadTransaction: transaction))
+        let notificationBody = errorMessage.previewText(with: transaction.asAnyRead())
 
         transaction.addCompletionQueue(DispatchQueue.main) {
             let sound = self.checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil

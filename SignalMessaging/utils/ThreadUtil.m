@@ -466,8 +466,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     NSError *error;
     MessageSticker *_Nullable messageSticker =
         [MessageSticker buildValidatedMessageStickerFromDraft:stickerDraft
-                                                  transaction:[[SDSAnyWriteTransaction alloc]
-                                                                  initWithTransitional_yapWriteTransaction:transaction]
+                                                  transaction:transaction.asAnyWrite
                                                         error:&error];
     if (error && ![MessageSticker isNoStickerError:error]) {
         OWSFailDebug(@"error: %@", error);
