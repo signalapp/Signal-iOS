@@ -562,6 +562,7 @@
 		B821F2F62272CCD9002C88C0 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = B821F2F22272CCD9002C88C0 /* english.txt */; };
 		B821F2F82272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */; };
 		B821F2FA2272CEEE002C88C0 /* OnboardingPublicKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* OnboardingPublicKeyViewController.swift */; };
+		B8C915232277FDC30028E4A9 /* ECKeyPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C915222277FDC30028E4A9 /* ECKeyPair.swift */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
@@ -1351,6 +1352,7 @@
 		B821F2F22272CCD9002C88C0 /* english.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = english.txt; path = mnemonic/english.txt; sourceTree = "<group>"; };
 		B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingAccountDetailsViewController.swift; sourceTree = "<group>"; };
 		B821F2F92272CEEE002C88C0 /* OnboardingPublicKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPublicKeyViewController.swift; sourceTree = "<group>"; };
+		B8C915222277FDC30028E4A9 /* ECKeyPair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ECKeyPair.swift; path = ../../../SignalServiceKit/src/Util/ECKeyPair.swift; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B97940251832BD2400BD66CB /* UIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIUtil.h; sourceTree = "<group>"; };
@@ -2429,6 +2431,7 @@
 				B90418E4183E9DD40038554A /* DateUtil.h */,
 				3496956121A301A100DCFE74 /* Backup */,
 				B90418E5183E9DD40038554A /* DateUtil.m */,
+				B8C915222277FDC30028E4A9 /* ECKeyPair.swift */,
 				34B0796C1FCF46B000E248C2 /* MainAppContext.h */,
 				34B0796B1FCF46B000E248C2 /* MainAppContext.m */,
 				B821F2EC2272CBC0002C88C0 /* Mnemonic.swift */,
@@ -3693,6 +3696,7 @@
 				3448E16022134C89004B052E /* OnboardingSplashViewController.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
+				B8C915232277FDC30028E4A9 /* ECKeyPair.swift in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				34EA69402194933900702471 /* MediaDownloadView.swift in Sources */,

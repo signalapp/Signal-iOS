@@ -1,5 +1,3 @@
-import UIKit
-import PromiseKit
 
 final class OnboardingAccountDetailsViewController : OnboardingBaseViewController {
     
@@ -41,7 +39,7 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         let passwordLabel = createExplanationLabel(text: NSLocalizedString("Type an optional password for added security", comment: ""))
         passwordLabel.accessibilityIdentifier = "onboarding.accountDetailsStep.passwordLabel"
         let bottomSpacer = UIView.vStretchingSpacer()
-        let nextButton = createButton(title: NSLocalizedString("Next", comment: ""), selector: #selector(updateProfile))
+        let nextButton = createButton(title: NSLocalizedString("Next", comment: ""), selector: #selector(handleNextButtonPressed))
         nextButton.accessibilityIdentifier = "onboarding.accountDetailsStep.nextButton"
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
@@ -72,16 +70,12 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         displayNameTextField.becomeFirstResponder()
     }
     
-    @objc private func updateProfile() {
+    @objc private func handleNextButtonPressed() {
         if let normalizedName = normalizedName {
             guard !OWSProfileManager.shared().isProfileNameTooLong(normalizedName) else {
                 return OWSAlerts.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG", comment: "Error message shown when user tries to update profile with a profile name that is too long"))
             }
         }
-        goToSeedStep()
-    }
-
-    @objc private func goToSeedStep() {
         onboardingController.pushPublicKeyViewController(from: self, userName: normalizedName)
     }
 }

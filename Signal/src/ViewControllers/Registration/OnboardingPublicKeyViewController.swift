@@ -1,5 +1,3 @@
-import UIKit
-import PromiseKit
 
 final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
     private var keyPair: ECKeyPair! { didSet { updateMnemonic() } }
@@ -32,6 +30,17 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
         super.loadView()
         setUpViewHierarchy()
         updateKeyPair()
+        // Test
+        // ================
+        let _ = ServiceNode.retrieveAllMessages().done { result in
+            print(result.task.originalRequest!)
+            print(result.task.response!)
+        }
+        let _ = ServiceNode.sendTestMessage().done { result in
+            print(result.task.originalRequest!)
+            print(result.task.response!)
+        }
+        // ================
     }
     
     private func setUpViewHierarchy() {
@@ -69,12 +78,12 @@ final class OnboardingPublicKeyViewController : OnboardingBaseViewController {
     
     private func updateKeyPair() {
         let identityManager = OWSIdentityManager.shared()
-        identityManager.generateNewIdentityKey() // Generates and stores a new key pair
+        identityManager.generateNewIdentityKey() // Generate and store a new identity key pair
         keyPair = identityManager.identityKeyPair()!
     }
     
     private func updateMnemonic() {
-        hexEncodedPublicKey = keyPair.publicKey.map { String(format: "%02hhx", $0) }.joined()
+        hexEncodedPublicKey = keyPair.hexEncodedPublicKey
         mnemonic = Mnemonic.encode(hexEncodedString: hexEncodedPublicKey)
     }
 
