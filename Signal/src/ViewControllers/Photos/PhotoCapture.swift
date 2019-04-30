@@ -389,6 +389,9 @@ extension PhotoCapture: CaptureButtonDelegate {
     func didCancelLongPressCaptureButton(_ captureButton: CaptureButton) {
         Logger.verbose("")
         AssertIsOnMainThread()
+        sessionQueue.async {
+            self.stopAudioCapture()
+        }
         delegate?.photoCaptureDidCancelVideo(self)
     }
 

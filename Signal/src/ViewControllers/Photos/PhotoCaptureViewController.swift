@@ -405,7 +405,6 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     func photoCaptureDidCancelVideo(_ photoCapture: PhotoCapture) {
-        owsFailDebug("If we ever allow this, we should test.")
         isRecordingMovie = false
         recordingTimerView.stopCounting()
         updateNavigationItems()
