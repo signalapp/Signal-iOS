@@ -123,6 +123,15 @@ NS_ASSUME_NONNULL_BEGIN
     return outgoingMessage.messageState == TSOutgoingMessageStateFailed;
 }
 
+- (OWSMessageView *)messageView
+{
+    if (self.cellType == OWSMessageCellType_StickerMessage) {
+        return self.messageStickerView;
+    } else {
+        return self.messageBubbleView;
+    }
+}
+
 #pragma mark - Load
 
 - (void)loadForDisplay
@@ -134,20 +143,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.messageBubbleView);
     OWSAssertDebug(self.messageStickerView);
 
-    UIView *messageView;
-    if (self.cellType == OWSMessageCellType_StickerMessage) {
-        messageView = self.messageStickerView;
-        self.messageStickerView.viewItem = self.viewItem;
-        self.messageStickerView.cellMediaCache = self.delegate.cellMediaCache;
-        [self.messageStickerView configureViews];
-        [self.messageStickerView loadContent];
-    } else {
-        messageView = self.messageBubbleView;
-        self.messageBubbleView.viewItem = self.viewItem;
-        self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
-        [self.messageBubbleView configureViews];
-        [self.messageBubbleView loadContent];
-    }
+    OWSMessageView *messageView = self.messageView;
+    messageView.viewItem = self.viewItem;
+    messageView.cellMediaCache = self.delegate.cellMediaCache;
+    [messageView configureViews];
+    [messageView loadContent];
     [self.contentView addSubview:messageView];
     [messageView autoPinBottomToSuperviewMarginWithInset:0];
 
@@ -248,15 +248,12 @@ NS_ASSUME_NONNULL_BEGIN
 // * If cell is not visible, eagerly unload view contents.
 - (void)ensureMediaLoadState
 {
-    OWSAssertDebug(self.messageBubbleView);
-    OWSAssertDebug(self.messageStickerView);
+    OWSAssertDebug(self.messageView);
 
     if (!self.isCellVisible) {
-        [self.messageBubbleView unloadContent];
-        [self.messageStickerView unloadContent];
+        [self.messageView unloadContent];
     } else {
-        [self.messageBubbleView loadContent];
-        [self.messageStickerView loadContent];
+        [self.messageView loadContent];
     }
 }
 
@@ -335,19 +332,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.conversationStyle.viewWidth > 0);
     OWSAssertDebug(self.viewItem);
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-    OWSAssertDebug(self.messageBubbleView);
-    OWSAssertDebug(self.messageStickerView);
+    OWSAssertDebug(self.messageView);
 
-    CGSize messageSize;
-    if (self.cellType == OWSMessageCellType_StickerMessage) {
-        self.messageStickerView.viewItem = self.viewItem;
-        self.messageStickerView.cellMediaCache = self.delegate.cellMediaCache;
-        messageSize = [self.messageStickerView measureSize];
-    } else {
-        self.messageBubbleView.viewItem = self.viewItem;
-        self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
-        messageSize = [self.messageBubbleView measureSize];
-    }
+    self.messageView.viewItem = self.viewItem;
+    self.messageView.cellMediaCache = self.delegate.cellMediaCache;
+    CGSize messageSize = [self.messageView measureSize];
 
     CGSize cellSize = messageSize;
 
@@ -435,11 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (self.cellType == OWSMessageCellType_StickerMessage) {
-        // TODO:
-    } else {
-        [self.messageBubbleView handleTapGesture:sender];
-    }
+    [self.messageView handleTapGesture:sender];
 }
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
@@ -466,16 +451,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    UIView *messageView;
-    if (self.cellType == OWSMessageCellType_StickerMessage) {
-        messageView = self.messageStickerView;
-    } else {
-        messageView = self.messageBubbleView;
-    }
-
     // TODO:
-    CGPoint locationInMessageBubble = [sender locationInView:messageView];
-    switch ([self.messageBubbleView gestureLocationForLocation:locationInMessageBubble]) {
+    CGPoint locationInMessageBubble = [sender locationInView:self.messageView];
+    switch ([self.messageView gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
         case OWSMessageGestureLocation_OversizeText:
         case OWSMessageGestureLocation_LinkPreview: {
@@ -496,6 +474,10 @@ NS_ASSUME_NONNULL_BEGIN
                   didLongpressQuoteViewItem:self.viewItem];
             break;
         }
+        case OWSMessageGestureLocation_Sticker:
+            OWSAssertDebug(self.viewItem.stickerInfo != nil);
+            [self.delegate conversationCell:self didLongpressSticker:self.viewItem];
+            break;
     }
 }
 

@@ -157,7 +157,9 @@ private struct OWSThumbnailRequest {
         }
         let maxDimension = CGFloat(thumbnailRequest.thumbnailDimensionPoints)
         let thumbnailImage: UIImage
-        if attachment.isImage || attachment.isAnimated {
+        if attachment.contentType == OWSMimeTypeImageWebp {
+            thumbnailImage = try OWSMediaUtils.thumbnail(forWebpAtPath: originalFilePath, maxDimension: maxDimension)
+        } else if attachment.isImage || attachment.isAnimated {
             thumbnailImage = try OWSMediaUtils.thumbnail(forImageAtPath: originalFilePath, maxDimension: maxDimension)
         } else if attachment.isVideo {
             thumbnailImage = try OWSMediaUtils.thumbnail(forVideoAtPath: originalFilePath, maxDimension: maxDimension)

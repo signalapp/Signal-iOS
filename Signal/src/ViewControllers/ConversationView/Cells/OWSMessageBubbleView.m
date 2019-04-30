@@ -755,30 +755,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.shouldShowSenderName);
 
     self.senderNameLabel.textColor = self.bodyTextColor;
-    self.senderNameLabel.font = OWSMessageBubbleView.senderNameFont;
+    self.senderNameLabel.font = OWSMessageView.senderNameFont;
     self.senderNameLabel.attributedText = self.viewItem.senderName;
     self.senderNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-}
-
-+ (UIFont *)senderNameFont
-{
-    return UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
-}
-
-+ (NSDictionary *)senderNamePrimaryAttributes
-{
-    return @{
-        NSFontAttributeName : self.senderNameFont,
-        NSForegroundColorAttributeName : ConversationStyle.bubbleTextColorIncoming,
-    };
-}
-
-+ (NSDictionary *)senderNameSecondaryAttributes
-{
-    return @{
-        NSFontAttributeName : self.senderNameFont.ows_italic,
-        NSForegroundColorAttributeName : ConversationStyle.bubbleTextColorIncoming,
-    };
 }
 
 - (BOOL)hasTapForMore
@@ -1407,13 +1386,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Gestures
 
-- (void)addTapGestureHandler
-{
-    UITapGestureRecognizer *tap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-    [self addGestureRecognizer:tap];
-}
-
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
     OWSAssertDebug(self.delegate);
@@ -1463,6 +1435,9 @@ NS_ASSUME_NONNULL_BEGIN
             } else {
                 OWSFailDebug(@"Missing link preview.");
             }
+            break;
+        case OWSMessageGestureLocation_Sticker:
+            OWSFailDebug(@"Unexpected value..");
             break;
     }
 }

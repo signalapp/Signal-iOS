@@ -34,6 +34,7 @@
 #import "OWSDatabaseMigration.h"
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageCell.h"
+#import "OWSMessageStickerView.h"
 #import "OWSNavigationController.h"
 #import "OWSProgressView.h"
 #import "OWSQuotedMessageView.h"

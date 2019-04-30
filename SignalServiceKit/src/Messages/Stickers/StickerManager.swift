@@ -560,50 +560,48 @@ public class StickerManager: NSObject {
 
     // TODO: We may want to cull these in the orphan data cleaner.
     @objc
-    public class func addKnownStickerInfo(_ stickerInfo: StickerInfo) {
-        databaseStorage.writeSwallowingErrors { (transaction) in
-            let packInfo = stickerInfo.packInfo
-            let pack: KnownStickerPack
-            let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
-            if let existing = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) {
-                pack = existing
-            } else {
-                pack = KnownStickerPack(info: packInfo)
+    public class func addKnownStickerInfo(_ stickerInfo: StickerInfo,
+                                          transaction: SDSAnyWriteTransaction) {
+        let packInfo = stickerInfo.packInfo
+        let pack: KnownStickerPack
+        let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
+        if let existing = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) {
+            pack = existing
+        } else {
+            pack = KnownStickerPack(info: packInfo)
 
-                DispatchQueue.global().async {
-                    self.tryToDownloadStickerPacks(stickerPacks: [packInfo], shouldInstall: false)
-                }
+            DispatchQueue.global().async {
+                self.tryToDownloadStickerPacks(stickerPacks: [packInfo], shouldInstall: false)
             }
-            pack.referenceCount += 1
-            pack.anySave(transaction: transaction)
         }
+        pack.referenceCount += 1
+        pack.anySave(transaction: transaction)
     }
 
     @objc
-    public class func removeKnownStickerInfo(_ stickerInfo: StickerInfo) {
-        databaseStorage.writeSwallowingErrors { (transaction) in
-            let packInfo = stickerInfo.packInfo
-            let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
-            guard let pack = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-                owsFailDebug("Missing known sticker pack.")
-                return
-            }
-            pack.referenceCount -= 1
-            if pack.referenceCount < 1 {
-                pack.anyRemove(transaction: transaction)
+    public class func removeKnownStickerInfo(_ stickerInfo: StickerInfo,
+                                             transaction: SDSAnyWriteTransaction) {
+        let packInfo = stickerInfo.packInfo
+        let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
+        guard let pack = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+            owsFailDebug("Missing known sticker pack.")
+            return
+        }
+        pack.referenceCount -= 1
+        if pack.referenceCount < 1 {
+            pack.anyRemove(transaction: transaction)
 
-                // Clean up the pack metadata unless either:
-                //
-                // * It's a default sticker pack.
-                // * The pack has been installed.
-                if !self.shared.isDefaultStickerPack(stickerPackInfo: packInfo),
-                    let stickerPack = StickerPack.anyFetch(uniqueId: StickerPack.uniqueId(for: packInfo), transaction: transaction),
-                    !stickerPack.isInstalled {
-                    self.uninstallStickerPack(stickerPackInfo: packInfo)
-                }
-            } else {
-                pack.anySave(transaction: transaction)
+            // Clean up the pack metadata unless either:
+            //
+            // * It's a default sticker pack.
+            // * The pack has been installed.
+            if !self.shared.isDefaultStickerPack(stickerPackInfo: packInfo),
+                let stickerPack = StickerPack.anyFetch(uniqueId: StickerPack.uniqueId(for: packInfo), transaction: transaction),
+                !stickerPack.isInstalled {
+                self.uninstallStickerPack(stickerPackInfo: packInfo)
             }
+        } else {
+            pack.anySave(transaction: transaction)
         }
     }
 

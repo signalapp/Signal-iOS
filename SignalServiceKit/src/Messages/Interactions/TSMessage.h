@@ -99,8 +99,8 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (void)updateWithMessageSticker:(MessageSticker *)messageSticker
-                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)saveWithMessageSticker:(MessageSticker *)messageSticker
+                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

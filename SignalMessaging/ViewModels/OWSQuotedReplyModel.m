@@ -163,6 +163,36 @@ NS_ASSUME_NONNULL_BEGIN
                        thumbnailDownloadFailed:NO];
     }
 
+    if (conversationItem.stickerInfo || conversationItem.stickerAttachment) {
+        if (!conversationItem.stickerInfo || !conversationItem.stickerAttachment) {
+            OWSFailDebug(@"Incomplete sticker message.");
+            return nil;
+        }
+
+        TSAttachmentStream *quotedAttachment = conversationItem.stickerAttachment;
+        NSData *_Nullable stickerData = [NSData dataWithContentsOfFile:quotedAttachment.originalFilePath];
+        if (!stickerData) {
+            OWSFailDebug(@"Couldn't load sticker data.");
+            return nil;
+        }
+        UIImage *_Nullable thumbnailImage = [stickerData stillForWebpData];
+        if (!thumbnailImage) {
+            OWSFailDebug(@"Couldn't generate thumbnail for sticker.");
+            return nil;
+        }
+
+        return [[self alloc] initWithTimestamp:timestamp
+                                      authorId:authorId
+                                          body:nil
+                                    bodySource:TSQuotedMessageContentSourceLocal
+                                thumbnailImage:thumbnailImage
+                                   contentType:quotedAttachment.contentType
+                                sourceFilename:quotedAttachment.sourceFilename
+                              attachmentStream:quotedAttachment
+                    thumbnailAttachmentPointer:nil
+                       thumbnailDownloadFailed:NO];
+    }
+
     NSString *_Nullable quotedText = message.body;
     BOOL hasText = quotedText.length > 0;
 

@@ -1111,7 +1111,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_OversizeTextDownloading:
             return NO;
         case OWSMessageCellType_StickerMessage:
-            return self.stickerAttachment != nil;
+            return NO;
     }
 }
 
@@ -1154,7 +1154,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_OversizeTextDownloading:
             return NO;
         case OWSMessageCellType_StickerMessage:
-            return self.stickerAttachment != nil;
+            return NO;
     }
 }
 

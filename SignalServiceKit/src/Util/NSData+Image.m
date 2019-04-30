@@ -2,13 +2,14 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "MIMETypeUtil.h"
 #import "OWSFileSystem.h"
 #import "webp/decode.h"
 #import "webp/demux.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <YYImage/YYImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -475,6 +476,19 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     uint32_t canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
     WebPDemuxDelete(demuxer);
     return CGSizeMake(canvasWidth, canvasHeight);
+}
+
+- (nullable UIImage *)stillForWebpData
+{
+    OWSAssertDebug([self ows_guessImageFormat] == ImageFormat_Webp);
+    
+    CGImageRef _Nullable cgImage = YYCGImageCreateWithWebPData((__bridge CFDataRef)self, NO, NO, NO, NO);
+    if (!cgImage) {
+        return nil;
+    }
+
+    UIImage *uiImage = [UIImage imageWithCGImage:cgImage];
+    return uiImage;
 }
 
 @end
