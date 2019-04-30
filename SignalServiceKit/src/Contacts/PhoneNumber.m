@@ -90,7 +90,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 + (nullable PhoneNumber *)phoneNumberFromE164:(NSString *)text {
     return [[PhoneNumber alloc] initWithPhoneNumber:[NBPhoneNumber new] e164:text];
-    // Original code:
+    // Loki: Original code:
     // ========
 //    OWSAssertDebug(text != nil);
 //    OWSAssertDebug([text hasPrefix:COUNTRY_CODE_PREFIX]);

@@ -98,12 +98,7 @@ public class OnboardingController: NSObject {
     // MARK: - Transitions
 
     public func onboardingSplashDidComplete(viewController: UIViewController) {
-        AssertIsOnMainThread()
-
-        Logger.info("")
-
-        let view = OnboardingPermissionsViewController(onboardingController: self)
-        viewController.navigationController?.pushViewController(view, animated: true)
+        pushAccountDetailsViewController(from: viewController)
     }
 
     public func onboardingPermissionsWasSkipped(viewController: UIViewController) {
