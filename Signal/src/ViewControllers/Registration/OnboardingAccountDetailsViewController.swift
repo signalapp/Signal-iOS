@@ -1,13 +1,13 @@
 
 final class OnboardingAccountDetailsViewController : OnboardingBaseViewController {
     
-    private lazy var displayNameTextField: UITextField = {
+    private lazy var userNameTextField: UITextField = {
         let result = UITextField()
         result.textColor = Theme.primaryColor
         result.font = UIFont.ows_dynamicTypeBodyClamped
         result.textAlignment = .center
         result.placeholder = NSLocalizedString("Display Name (Optional)", comment: "")
-        result.accessibilityIdentifier = "onboarding.accountDetailsStep.displayNameTextField"
+        result.accessibilityIdentifier = "onboarding.accountDetailsStep.userNameTextField"
         return result
     }()
     
@@ -22,8 +22,8 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         return result
     }()
 
-    private var normalizedName: String? {
-        let result = displayNameTextField.text!.ows_stripped()
+    private var normalizedUserName: String? {
+        let result = userNameTextField.text!.ows_stripped()
         return !result.isEmpty ? result : nil
     }
     
@@ -46,7 +46,7 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
             topSpacer,
             displayNameLabel,
             UIView.spacer(withHeight: 8),
-            displayNameTextField,
+            userNameTextField,
             UIView.spacer(withHeight: 16),
             passwordLabel,
             UIView.spacer(withHeight: 8),
@@ -67,15 +67,15 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        displayNameTextField.becomeFirstResponder()
+        userNameTextField.becomeFirstResponder()
     }
     
     @objc private func handleNextButtonPressed() {
-        if let normalizedName = normalizedName {
+        if let normalizedName = normalizedUserName {
             guard !OWSProfileManager.shared().isProfileNameTooLong(normalizedName) else {
                 return OWSAlerts.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG", comment: "Error message shown when user tries to update profile with a profile name that is too long"))
             }
         }
-        onboardingController.pushKeyPairViewController(from: self, userName: normalizedName)
+        onboardingController.pushKeyPairViewController(from: self, userName: normalizedUserName)
     }
 }
