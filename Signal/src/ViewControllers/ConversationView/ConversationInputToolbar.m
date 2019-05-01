@@ -270,8 +270,6 @@ const CGFloat kMaxTextViewHeight = 98;
     hStack.spacing = 8;
 
     // Suggested Stickers
-    //
-    // TODO: inset = 12.
     const CGFloat suggestedStickerSize = 48;
     const CGFloat suggestedStickerSpacing = 12;
     _suggestedStickerView =

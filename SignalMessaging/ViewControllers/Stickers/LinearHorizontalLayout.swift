@@ -55,7 +55,6 @@ class LinearHorizontalLayout: UICollectionViewLayout {
         }
         let itemCount = collectionView.numberOfItems(inSection: 0)
         let insets = collectionView.contentInset
-//        let insets = UIEdgeInsets.zero
 
         guard itemCount > 0 else {
             contentSize = .zero
