@@ -19,12 +19,6 @@ public class StickerHorizontalListViewItem: NSObject {
 // MARK: -
 
 @objc
-public class StickerHorizontalListCell: UICollectionViewCell {
-}
-
-// MARK: -
-
-@objc
 public class StickerHorizontalListView: UICollectionView {
 
     private let cellSize: CGFloat
@@ -61,7 +55,7 @@ public class StickerHorizontalListView: UICollectionView {
 
         delegate = self
         dataSource = self
-        register(StickerHorizontalListCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
+        register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
 
         setContentHuggingHorizontalLow()
         setCompressionResistanceHorizontalLow()
@@ -100,10 +94,6 @@ extension StickerHorizontalListView: UICollectionViewDelegate {
 
         item.selectedBlock()
     }
-
-    public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        cell.layoutIfNeeded()
-    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -132,11 +122,9 @@ extension StickerHorizontalListView: UICollectionViewDataSource {
             return cell
         }
 
-        // TODO: Actual size?
-        let iconView = StickerView(stickerInfo: item.stickerInfo)
-
-        cell.contentView.addSubview(iconView)
-        iconView.autoPinEdgesToSuperviewEdges()
+        let stickerView = StickerView(stickerInfo: item.stickerInfo)
+        cell.contentView.addSubview(stickerView)
+        stickerView.autoPinEdgesToSuperviewEdges()
 
         return cell
     }

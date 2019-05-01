@@ -276,12 +276,10 @@ const CGFloat kMaxTextViewHeight = 98;
     const CGFloat suggestedStickerSpacing = 12;
     _suggestedStickerView =
         [[StickerHorizontalListView alloc] initWithCellSize:suggestedStickerSize spacing:suggestedStickerSpacing];
-    self.suggestedStickerView.backgroundColor = self.backgroundColor;
+    self.suggestedStickerView.backgroundColor = UIColor.clearColor;
     self.suggestedStickerView.contentInset = UIEdgeInsetsMake(
         suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing);
     self.suggestedStickerView.hidden = YES;
-    self.suggestedStickerView.hidden = NO;
-    [self.suggestedStickerView addRedBorder];
     [self.suggestedStickerView autoSetDimension:ALDimensionHeight
                                          toSize:suggestedStickerSize + 2 * suggestedStickerSpacing];
 
@@ -292,7 +290,6 @@ const CGFloat kMaxTextViewHeight = 98;
     [self addSubview:self.outerStack];
     [self.outerStack autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.outerStack autoPinEdgeToSuperviewSafeArea:ALEdgeBottom];
-    [self.outerStack addBackgroundViewWithBackgroundColor:UIColor.orangeColor];
 
     // See comments on updateContentLayout:.
     if (@available(iOS 11, *)) {
@@ -494,8 +491,6 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)ensureButtonVisibilityWithIsAnimated:(BOOL)isAnimated doLayout:(BOOL)doLayout
 {
-    [self updateSuggestedStickers];
-
     void (^updateBlock)(void) = ^{
         if (self.inputTextView.trimmedText.length > 0) {
             if (!self.attachmentButton.isHidden) {
@@ -528,6 +523,8 @@ const CGFloat kMaxTextViewHeight = 98;
                 self.sendButton.hidden = YES;
             }
         }
+
+        [self updateSuggestedStickers];
 
         if (doLayout) {
             [self layoutIfNeeded];
@@ -1272,7 +1269,6 @@ const CGFloat kMaxTextViewHeight = 98;
 
     _suggestedStickerInfos = suggestedStickerInfos;
 
-    didChange = YES;
     if (didChange) {
         [self updateSuggestedStickerView];
     }
