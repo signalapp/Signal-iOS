@@ -17,6 +17,7 @@
 #import "DateUtil.h"
 #import "DebugUIPage.h"
 #import "DebugUITableViewController.h"
+#import "ECKeyPair.h"
 #import "FingerprintViewController.h"
 #import "HomeViewCell.h"
 #import "HomeViewController.h"
@@ -77,7 +78,6 @@
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/DataSource.h>
-#import <SignalServiceKit/ECKeyPair.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>

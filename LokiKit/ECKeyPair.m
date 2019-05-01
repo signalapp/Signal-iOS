@@ -6,12 +6,12 @@ extern void curve25519_donna(unsigned char *output, const unsigned char *a, cons
 
 + (nonnull ECKeyPair *)generateKeyPairWithHexEncodedPrivateKey:(nonnull NSString *)hexEncodedPrivateKey {
     NSMutableData *privateKey = [NSMutableData new];
-    for (int i = 0; i < hexEncodedPrivateKey.length; i += 2) {
+    for (NSUInteger i = 0; i < hexEncodedPrivateKey.length; i += 2) {
         char buffer[3];
-        buffer[0] = [hexEncodedPrivateKey characterAtIndex:i];
-        buffer[1] = [hexEncodedPrivateKey characterAtIndex:i + 1];
+        buffer[0] = (char)[hexEncodedPrivateKey characterAtIndex:i];
+        buffer[1] = (char)[hexEncodedPrivateKey characterAtIndex:i + 1];
         buffer[2] = '\0';
-        unsigned char byte = strtol(buffer, NULL, 16);
+        unsigned char byte = (unsigned char)strtol(buffer, NULL, 16);
         [privateKey appendBytes:&byte length:1];
     }
     static const uint8_t basepoint[ECCKeyLength] = { 9 };

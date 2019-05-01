@@ -25,7 +25,8 @@ public struct ServiceNode {
     }
     
     public static func sendTestMessage() -> Promise<Response> {
-        let ttl = String(4 * 24 * 60 * 60 * 1000)
+        let hour = 60 * 60 * 1000
+        let ttl = String(4 * 24 * hour)
         let parameters = [
             "pubKey" : "0371e72be8dd42ff77105e474a3ac26a503d017fb4562409c639eaf5965f5b31", // TODO: Receiver's public key
             "ttl" : ttl,
