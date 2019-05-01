@@ -4483,9 +4483,7 @@ typedef enum : NSUInteger {
     ManageStickersViewController *manageStickersView = [ManageStickersViewController new];
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:manageStickersView];
-    [UIApplication.sharedApplication.frontmostViewController presentViewController:navigationController
-                                                                          animated:YES
-                                                                        completion:nil];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)voiceMemoGestureDidStart

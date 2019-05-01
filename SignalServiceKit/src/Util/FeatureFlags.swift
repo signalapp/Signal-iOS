@@ -46,7 +46,10 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let stickerReceive = true
-    
+
     @objc
     public static let stickerSend = true
+
+    @objc
+    public static let stickerSearch = true
 }

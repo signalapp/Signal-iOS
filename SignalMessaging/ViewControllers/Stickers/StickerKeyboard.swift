@@ -116,9 +116,7 @@ public class StickerKeyboard: UIStackView {
         headerView.layoutMargins = UIEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
         headerView.isLayoutMarginsRelativeArrangement = true
 
-        // TODO: Reverse this mini-feature flag.
-        let useSearchButton = false
-        if useSearchButton {
+        if FeatureFlags.stickerSearch {
             let searchButton = buildHeaderButton("search-24") { [weak self] in
                 self?.searchButtonWasTapped()
             }
