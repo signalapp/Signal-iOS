@@ -384,6 +384,15 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         }
     }
 
+    override public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let photoGridViewCell = cell as? PhotoGridViewCell else {
+            owsFailDebug("unexpected cell: \(cell)")
+            return
+        }
+
+        photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
+    }
+
     func galleryItem(at indexPath: IndexPath) -> MediaGalleryItem? {
         guard let sectionDate = self.galleryDates[safe: indexPath.section - 1] else {
             owsFailDebug("unknown section: \(indexPath.section)")
@@ -401,6 +410,17 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         }
 
         return galleryItem
+    }
+
+    func updateVisibleCells() {
+        for cell in collectionView.visibleCells {
+            guard let photoGridViewCell = cell as? PhotoGridViewCell else {
+                owsFailDebug("unexpected cell: \(cell)")
+                continue
+            }
+
+            photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
+        }
     }
 
     // MARK: UICollectionViewDelegateFlowLayout
@@ -432,14 +452,18 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         let approxItemWidth = screenWidth / CGFloat(kItemsPerPortraitRow)
 
         let itemCount = round(containerWidth / approxItemWidth)
-        let spaceWidth = (itemCount + 1) * type(of: self).kInterItemSpacing
-        let availableWidth = containerWidth - spaceWidth
+        let interSpaceWidth = (itemCount - 1) * type(of: self).kInterItemSpacing
+        let availableWidth = containerWidth - interSpaceWidth
 
         let itemWidth = floor(availableWidth / CGFloat(itemCount))
         let newItemSize = CGSize(width: itemWidth, height: itemWidth)
+        let remainingSpace = availableWidth - (itemCount * itemWidth)
 
         if (newItemSize != mediaTileViewLayout.itemSize) {
             mediaTileViewLayout.itemSize = newItemSize
+            // Inset any remaining space around the outside edges to ensure all inter-item spacing is exactly equal, otherwise
+            // we may get slightly different gaps between rows vs. columns
+            mediaTileViewLayout.sectionInset = UIEdgeInsets(top: 0, leading: remainingSpace / 2, bottom: 0, trailing: remainingSpace / 2)
             mediaTileViewLayout.invalidateLayout()
         }
     }
@@ -476,9 +500,13 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
     var isInBatchSelectMode = false {
         didSet {
-            collectionView!.allowsMultipleSelection = isInBatchSelectMode
-            updateSelectButton()
-            updateDeleteButton()
+            let didChange = isInBatchSelectMode != oldValue
+            if didChange {
+                collectionView!.allowsMultipleSelection = isInBatchSelectMode
+                updateVisibleCells()
+                updateSelectButton()
+                updateDeleteButton()
+            }
         }
     }
 

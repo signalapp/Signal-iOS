@@ -9,6 +9,15 @@ import PromiseKit
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: class {
+    // In the media send flow, partially swiping to go back from AttachmentApproval,
+    // then cancelling would render the mediaSend bottom buttons behind the attachment approval
+    // input toolbar.
+    //
+    // I erroneously thought that this would have been prevented the UINavigationControllerDelegate
+    // `didShowViewController` method but `didShowViewController" is not called upon canceling
+    // navigation, while that view controllers `didAppear` method is.
+    func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController)
+
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
                             didApproveAttachments attachments: [SignalAttachment], messageText: String?)
 
@@ -132,6 +141,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - View Lifecycle
 
     public override var prefersStatusBarHidden: Bool {
+        guard !OWSWindowManager.shared().hasCall() else {
+            return false
+        }
+
         return true
     }
 
@@ -185,8 +198,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("")
 
         super.viewDidAppear(animated)
-
         updateContents()
+        approvalDelegate?.attachmentApprovalDidAppear(self)
     }
 
     override public func viewWillDisappear(_ animated: Bool) {
@@ -269,14 +282,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // Show the caption UI if there's more than one attachment
             // OR if the attachment already has a caption.
             let attachmentCount = attachmentItemCollection.count
-            var shouldShowCaptionUI = attachmentCount > 0
+            var shouldShowCaptionUI = attachmentCount > 1
             if let captionText = firstViewController.attachmentItem.captionText, captionText.count > 0 {
                 shouldShowCaptionUI = true
             }
             if shouldShowCaptionUI {
-                let captionButton = navigationBarButton(imageName: "image_editor_caption",
-                                                        selector: #selector(didTapCaption(sender:)))
-                navigationBarItems.append(captionButton)
+                let addCaptionButton = navigationBarButton(imageName: "image_editor_add_caption",
+                                                           selector: #selector(didTapCaption(sender:)))
+                navigationBarItems.append(addCaptionButton)
             }
         }
 
@@ -311,10 +324,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // Nudge closer to the left edge to match default back button item.
             let kExtraLeftPadding: CGFloat = isRTL ? +0 : -8
 
-            // Give some extra hit area to the back button. This is a little smaller
-            // than the default back button, but makes sense for our left aligned title
-            // view in the MessagesViewController
-            let kExtraRightPadding: CGFloat = isRTL ? -0 : +10
+            // Give some extra hit area to the back button.
+            let kExtraRightPadding: CGFloat = isRTL ? -0 : +30
 
             // Extra hit area above/below
             let kExtraHeightPadding: CGFloat = 4
@@ -738,11 +749,7 @@ extension SignalAttachmentItem: GalleryRailItem {
     func buildRailItemView() -> UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-
-        getThumbnailImage().map { image in
-            imageView.image = image
-        }.retainUntilComplete()
-
+        imageView.image = getThumbnailImage()
         return imageView
     }
 }

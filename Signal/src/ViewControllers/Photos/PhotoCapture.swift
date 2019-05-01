@@ -6,13 +6,23 @@ import Foundation
 import PromiseKit
 
 protocol PhotoCaptureDelegate: AnyObject {
+
+    // MARK: Still Photo
+
+    func photoCaptureDidStartPhotoCapture(_ photoCapture: PhotoCapture)
     func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment)
     func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error)
+
+    // MARK: Video
 
     func photoCaptureDidBeginVideo(_ photoCapture: PhotoCapture)
     func photoCaptureDidCompleteVideo(_ photoCapture: PhotoCapture)
     func photoCaptureDidCancelVideo(_ photoCapture: PhotoCapture)
 
+    // MARK: Utility
+
+    func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool
+    func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture)
     var zoomScaleReferenceHeight: CGFloat? { get }
     var captureOrientation: AVCaptureVideoOrientation { get }
 }
@@ -34,28 +44,69 @@ class PhotoCapture: NSObject {
     }
     private(set) var desiredPosition: AVCaptureDevice.Position = .back
 
+    let recordingAudioActivity = AudioActivity(audioDescription: "PhotoCapture", behavior: .playAndRecord)
+
     override init() {
         self.session = AVCaptureSession()
         self.captureOutput = CaptureOutput()
     }
 
-    func startCapture() -> Promise<Void> {
+    // MARK: - Dependencies
+
+    var audioSession: OWSAudioSession {
+        return Environment.shared.audioSession
+    }
+
+    // MARK: -
+
+    var audioDeviceInput: AVCaptureDeviceInput?
+    func startAudioCapture() throws {
+        assertIsOnSessionQueue()
+
+        guard audioSession.startAudioActivity(recordingAudioActivity) else {
+            throw PhotoCaptureError.assertionError(description: "unable to capture audio activity")
+        }
+
+        self.session.beginConfiguration()
+        defer { self.session.commitConfiguration() }
+
+        let audioDevice = AVCaptureDevice.default(for: .audio)
+        // verify works without audio permissions
+        let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
+        if session.canAddInput(audioDeviceInput) {
+            //                self.session.addInputWithNoConnections(audioDeviceInput)
+            session.addInput(audioDeviceInput)
+            self.audioDeviceInput = audioDeviceInput
+        } else {
+            owsFailDebug("Could not add audio device input to the session")
+        }
+    }
+
+    func stopAudioCapture() {
+        assertIsOnSessionQueue()
+
+        self.session.beginConfiguration()
+        defer { self.session.commitConfiguration() }
+
+        guard let audioDeviceInput = self.audioDeviceInput else {
+            owsFailDebug("audioDevice was unexpectedly nil")
+            return
+        }
+        session.removeInput(audioDeviceInput)
+        self.audioDeviceInput = nil
+        audioSession.endAudioActivity(recordingAudioActivity)
+    }
+
+    func startVideoCapture() -> Promise<Void> {
         return sessionQueue.async(.promise) { [weak self] in
             guard let self = self else { return }
 
             self.session.beginConfiguration()
             defer { self.session.commitConfiguration() }
 
-            try self.updateCurrentInput(position: .back)
+            self.session.sessionPreset = .medium
 
-            let audioDevice = AVCaptureDevice.default(for: .audio)
-            // verify works without audio permissions
-            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
-            if self.session.canAddInput(audioDeviceInput) {
-                self.session.addInput(audioDeviceInput)
-            } else {
-                owsFailDebug("Could not add audio device input to the session")
-            }
+            try self.updateCurrentInput(position: .back)
 
             guard let photoOutput = self.captureOutput.photoOutput else {
                 throw PhotoCaptureError.initializationFailed
@@ -77,11 +128,20 @@ class PhotoCapture: NSObject {
 
             if self.session.canAddOutput(movieOutput) {
                 self.session.addOutput(movieOutput)
-                self.session.sessionPreset = .medium
-                if let connection = movieOutput.connection(with: .video) {
-                    if connection.isVideoStabilizationSupported {
-                        connection.preferredVideoStabilizationMode = .auto
+                guard let connection = movieOutput.connection(with: .video) else {
+                    throw PhotoCaptureError.initializationFailed
+                }
+                if connection.isVideoStabilizationSupported {
+                    connection.preferredVideoStabilizationMode = .auto
+                }
+                if #available(iOS 11.0, *) {
+                    guard movieOutput.availableVideoCodecTypes.contains(.h264) else {
+                        throw PhotoCaptureError.initializationFailed
                     }
+                    // Use the H.264 codec to encode the video rather than HEVC.
+                    // Before iOS11, HEVC wasn't supported and H.264 was the default.
+                    movieOutput.setOutputSettings([AVVideoCodecKey:
+                        AVVideoCodecType.h264], for: connection)
                 }
             }
         }.done(on: sessionQueue) {
@@ -165,6 +225,7 @@ class PhotoCapture: NSObject {
                at devicePoint: CGPoint,
                monitorSubjectAreaChange: Bool) {
         sessionQueue.async {
+            Logger.debug("focusMode: \(focusMode), exposureMode: \(exposureMode), devicePoint: \(devicePoint), monitorSubjectAreaChange:\(monitorSubjectAreaChange)")
             guard let device = self.captureDevice else {
                 owsFailDebug("device was unexpectedly nil")
                 return
@@ -279,6 +340,14 @@ extension PhotoCapture: CaptureButtonDelegate {
 
     func didTapCaptureButton(_ captureButton: CaptureButton) {
         Logger.verbose("")
+
+        guard let delegate = delegate else { return }
+        guard delegate.photoCaptureCanCaptureMoreItems(self) else {
+            delegate.photoCaptureDidTryToCaptureTooMany(self)
+            return
+        }
+
+        delegate.photoCaptureDidStartPhotoCapture(self)
         sessionQueue.async {
             self.captureOutput.takePhoto(delegate: self)
         }
@@ -288,21 +357,29 @@ extension PhotoCapture: CaptureButtonDelegate {
 
     func didBeginLongPressCaptureButton(_ captureButton: CaptureButton) {
         AssertIsOnMainThread()
-
         Logger.verbose("")
-        sessionQueue.async {
-            self.captureOutput.beginVideo(delegate: self)
 
-            DispatchQueue.main.async {
-                self.delegate?.photoCaptureDidBeginVideo(self)
-            }
+        guard let delegate = delegate else { return }
+        guard delegate.photoCaptureCanCaptureMoreItems(self) else {
+            delegate.photoCaptureDidTryToCaptureTooMany(self)
+            return
         }
+
+        sessionQueue.async(.promise) {
+            try self.startAudioCapture()
+            self.captureOutput.beginVideo(delegate: self)
+        }.done {
+            self.delegate?.photoCaptureDidBeginVideo(self)
+        }.catch { error in
+            self.delegate?.photoCapture(self, processingDidError: error)
+        }.retainUntilComplete()
     }
 
     func didCompleteLongPressCaptureButton(_ captureButton: CaptureButton) {
         Logger.verbose("")
         sessionQueue.async {
             self.captureOutput.completeVideo(delegate: self)
+            self.stopAudioCapture()
         }
         AssertIsOnMainThread()
         // immediately inform UI that capture is stopping
@@ -312,6 +389,9 @@ extension PhotoCapture: CaptureButtonDelegate {
     func didCancelLongPressCaptureButton(_ captureButton: CaptureButton) {
         Logger.verbose("")
         AssertIsOnMainThread()
+        sessionQueue.async {
+            self.stopAudioCapture()
+        }
         delegate?.photoCaptureDidCancelVideo(self)
     }
 
@@ -373,10 +453,19 @@ extension PhotoCapture: CaptureOutputDelegate {
             return
         }
 
-        let dataSource = DataSourcePath.dataSource(with: outputFileURL, shouldDeleteOnDeallocation: true)
+        guard let dataSource = DataSourcePath.dataSource(with: outputFileURL, shouldDeleteOnDeallocation: true) else {
+            delegate?.photoCapture(self, processingDidError: PhotoCaptureError.captureFailed)
+            return
+        }
 
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
-        delegate?.photoCapture(self, didFinishProcessingAttachment: attachment)
+        // AVCaptureMovieFileOutput records to .mov, but for compatibility we need to send mp4's.
+        // Because we take care to record with h264 compression (not hevc), this conversion
+        // doesn't require re-encoding the media streams and happens quickly.
+        let (attachmentPromise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
+        attachmentPromise.map { [weak self] attachment in
+            guard let self = self else { return }
+            self.delegate?.photoCapture(self, didFinishProcessingAttachment: attachment)
+        }.retainUntilComplete()
     }
 }
 
@@ -401,6 +490,8 @@ class CaptureOutput {
 
     let imageOutput: ImageCaptureOutput
     let movieOutput: AVCaptureMovieFileOutput
+
+    // MARK: - Init
 
     init() {
         if #available(iOS 10.0, *) {
@@ -512,6 +603,7 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
     private func buildCaptureSettings() -> AVCapturePhotoSettings {
         let photoSettings = AVCapturePhotoSettings()
         photoSettings.flashMode = flashMode
+        photoSettings.isHighResolutionPhotoEnabled = true
 
         photoSettings.isAutoStillImageStabilizationEnabled =
             photoOutput.isStillImageStabilizationSupported
@@ -613,6 +705,38 @@ extension AVCaptureVideoOrientation {
     }
 }
 
+extension AVCaptureDevice.FocusMode: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .locked:
+            return "FocusMode.locked"
+        case .autoFocus:
+            return "FocusMode.autoFocus"
+        case .continuousAutoFocus:
+            return "FocusMode.continuousAutoFocus"
+        @unknown default:
+            return "FocusMode.unknown"
+        }
+    }
+}
+
+extension AVCaptureDevice.ExposureMode: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .locked:
+            return "ExposureMode.locked"
+        case .autoExpose:
+            return "ExposureMode.autoExpose"
+        case .continuousAutoExposure:
+            return "ExposureMode.continuousAutoExposure"
+        case .custom:
+            return "ExposureMode.custom"
+        @unknown default:
+            return "ExposureMode.unknown"
+        }
+    }
+}
+
 extension AVCaptureVideoOrientation: CustomStringConvertible {
     public var description: String {
         switch self {
@@ -624,6 +748,8 @@ extension AVCaptureVideoOrientation: CustomStringConvertible {
             return "AVCaptureVideoOrientation.landscapeRight"
         case .landscapeLeft:
             return "AVCaptureVideoOrientation.landscapeLeft"
+        @unknown default:
+            return "AVCaptureVideoOrientation.unknown"
         }
     }
 }
@@ -645,6 +771,8 @@ extension UIDeviceOrientation: CustomStringConvertible {
             return "UIDeviceOrientation.faceUp"
         case .faceDown:
             return "UIDeviceOrientation.faceDown"
+        @unknown default:
+            return "UIDeviceOrientation.unknown"
         }
     }
 }
@@ -668,6 +796,8 @@ extension UIImage.Orientation: CustomStringConvertible {
             return "UIImageOrientation.leftMirrored"
         case .rightMirrored:
             return "UIImageOrientation.rightMirrored"
+        @unknown default:
+            return "UIImageOrientation.unknown"
         }
     }
 }

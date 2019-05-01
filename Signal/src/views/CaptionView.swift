@@ -27,13 +27,13 @@ public class CaptionContainerView: UIView {
     }
 
     func updatePagerTransition(ratioComplete: CGFloat) {
-        if let currentText = self.currentText, currentText.count > 1 {
+        if let currentText = self.currentText, currentText.count > 0 {
             currentCaptionView.alpha = 1 - ratioComplete
         } else {
             currentCaptionView.alpha = 0
         }
 
-        if let pendingText = self.pendingText, pendingText.count > 1 {
+        if let pendingText = self.pendingText, pendingText.count > 0 {
             pendingCaptionView.alpha = ratioComplete
         } else {
             pendingCaptionView.alpha = 0

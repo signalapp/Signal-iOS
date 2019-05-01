@@ -2166,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "傳送連結預覽";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "預覽功能支援 Imgur、 Instagram、 Pinterest、 Reddit 及 YouTube的連結。";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "連結預覽";

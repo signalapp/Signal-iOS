@@ -76,8 +76,10 @@ public class OWSProximityMonitoringManagerImpl: NSObject, OWSProximityMonitoring
         lifetimes = lifetimes.filter { $0.value != nil }
         if lifetimes.isEmpty {
             DispatchQueue.main.async {
-                Logger.debug("disabling proximity monitoring")
-                self.device.isProximityMonitoringEnabled = false
+                if self.device.isProximityMonitoringEnabled {
+                    Logger.debug("disabling proximity monitoring")
+                    self.device.isProximityMonitoringEnabled = false
+                }
             }
         } else {
             let lifetimes = self.lifetimes

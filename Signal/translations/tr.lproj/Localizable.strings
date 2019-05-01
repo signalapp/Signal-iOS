@@ -2166,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Bağlantı Ön İzlemelerini Gönder";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Ön izlemeler Imgur, Instagram, Pinterest, Reddit, ve YouTube bağlantıları için desteklenmektedir.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Bağlantı Ön İzlemeleri";

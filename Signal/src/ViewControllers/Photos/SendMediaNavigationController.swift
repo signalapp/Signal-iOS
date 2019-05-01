@@ -18,13 +18,23 @@ protocol SendMediaNavDelegate: AnyObject {
 @objc
 class SendMediaNavigationController: OWSNavigationController {
 
-    // This is a sensitive constant, if you change it make sure to check
-    // on iPhone5, 6, 6+, X, layouts.
-    static let bottomButtonsCenterOffset: CGFloat = -50
+    static var bottomButtonsCenterOffset: CGFloat {
+        return -1 * (CaptureButton.recordingDiameter / 2 + 4)
+    }
+
+    var attachmentCount: Int {
+        return attachmentDraftCollection.count
+    }
 
     // MARK: - Overrides
 
-    override var prefersStatusBarHidden: Bool { return true }
+    override var prefersStatusBarHidden: Bool {
+        guard !OWSWindowManager.shared().hasCall() else {
+            return false
+        }
+
+        return true
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,6 +64,15 @@ class SendMediaNavigationController: OWSNavigationController {
         mediaLibraryModeButton.autoPinEdge(toSuperviewMargin: .leading)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        DispatchQueue.main.async {
+            // pre-layout collectionPicker for snappier response should we use it
+            self.mediaLibraryViewController.view.layoutIfNeeded()
+            self.captureViewController.view.layoutIfNeeded()
+        }
+    }
+
     // MARK: -
 
     @objc
@@ -75,9 +94,16 @@ class SendMediaNavigationController: OWSNavigationController {
         return navController
     }
 
-    var isInBatchSelectMode = false {
-        didSet {
-            if oldValue != isInBatchSelectMode {
+    var isInBatchSelectMode: Bool {
+        get {
+            return self.batchModeButton.isSelected
+        }
+
+        set {
+            let didChange = newValue != isInBatchSelectMode
+            self.batchModeButton.isSelected = newValue
+
+            if didChange {
                 mediaLibraryViewController.batchSelectModeDidChange()
                 guard let topViewController = viewControllers.last else {
                     return
@@ -95,15 +121,30 @@ class SendMediaNavigationController: OWSNavigationController {
             cameraModeButton.isHidden = true
             mediaLibraryModeButton.isHidden = true
         case is ImagePickerGridController:
-            batchModeButton.isHidden = isInBatchSelectMode
-            doneButton.isHidden = !isInBatchSelectMode || (attachmentDraftCollection.count == 0 && mediaLibrarySelections.count == 0)
+            let showDoneButton = isInBatchSelectMode && attachmentCount > 0
+            doneButton.isHidden = !showDoneButton
+
+            batchModeButton.isHidden = showDoneButton
+            batchModeButton.isBeingPresentedOverPhotoCapture = false
+
             cameraModeButton.isHidden = false
+            cameraModeButton.isBeingPresentedOverPhotoCapture = false
+
             mediaLibraryModeButton.isHidden = true
+            mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
         case is PhotoCaptureViewController:
-            batchModeButton.isHidden = isInBatchSelectMode
-            doneButton.isHidden = !isInBatchSelectMode || (attachmentDraftCollection.count == 0 && mediaLibrarySelections.count == 0)
+            let showDoneButton = isInBatchSelectMode && attachmentCount > 0
+            doneButton.isHidden = !showDoneButton
+
+            batchModeButton.isHidden = showDoneButton
+            batchModeButton.isBeingPresentedOverPhotoCapture = true
+
             cameraModeButton.isHidden = true
+            cameraModeButton.isBeingPresentedOverPhotoCapture = true
+
             mediaLibraryModeButton.isHidden = false
+            mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = true
+
         default:
             owsFailDebug("unexpected topViewController: \(topViewController)")
         }
@@ -113,7 +154,7 @@ class SendMediaNavigationController: OWSNavigationController {
 
     func fadeTo(viewControllers: [UIViewController]) {
         let transition: CATransition = CATransition()
-        transition.duration = 0.1
+        transition.duration = 0.08
         transition.type = CATransitionType.fade
         view.layer.add(transition, forKey: nil)
         setViewControllers(viewControllers, animated: false)
@@ -122,15 +163,17 @@ class SendMediaNavigationController: OWSNavigationController {
     // MARK: - Events
 
     private func didTapBatchModeButton() {
-        // There's no way to _disable_ batch mode.
-        isInBatchSelectMode = true
+        isInBatchSelectMode = !isInBatchSelectMode
+        assert(isInBatchSelectMode || attachmentCount <= 1)
     }
 
     private func didTapCameraModeButton() {
+        BenchEventStart(title: "Show-Camera", eventId: "Show-Camera")
         fadeTo(viewControllers: [captureViewController])
     }
 
     private func didTapMediaLibraryModeButton() {
+        BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
         fadeTo(viewControllers: [mediaLibraryViewController])
     }
 
@@ -145,60 +188,34 @@ class SendMediaNavigationController: OWSNavigationController {
         return button
     }()
 
-    private lazy var batchModeButton: UIButton = {
-        let button = OWSButton(imageName: "media_send_batch_mode_disabled",
-                               tintColor: .ows_gray60,
-                               block: { [weak self] in self?.didTapBatchModeButton() })
-
-        let width: CGFloat = type(of: self).bottomButtonWidth
-        button.autoSetDimensions(to: CGSize(width: width, height: width))
-        button.layer.cornerRadius = width / 2
-        button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.backgroundColor = .ows_white
-        button.setShadow()
-
-        return button
+    private lazy var batchModeButton: SendMediaBottomButton = {
+        return SendMediaBottomButton(imageName: "create-album-filled-28",
+                                     tintColor: .ows_white,
+                                     diameter: type(of: self).bottomButtonWidth,
+                                     block: { [weak self] in self?.didTapBatchModeButton() })
     }()
 
-    private lazy var cameraModeButton: UIButton = {
-        let button = OWSButton(imageName: "settings-avatar-camera-2",
-                               tintColor: .ows_gray60,
-                               block: { [weak self] in self?.didTapCameraModeButton() })
-
-        let width: CGFloat = type(of: self).bottomButtonWidth
-        button.autoSetDimensions(to: CGSize(width: width, height: width))
-        button.layer.cornerRadius = width / 2
-        button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.backgroundColor = .ows_white
-        button.setShadow()
-
-        return button
+    private lazy var cameraModeButton: SendMediaBottomButton = {
+        return SendMediaBottomButton(imageName: "camera-filled-28",
+                                     tintColor: .ows_white,
+                                     diameter: type(of: self).bottomButtonWidth,
+                                     block: { [weak self] in self?.didTapCameraModeButton() })
     }()
 
-    private lazy var mediaLibraryModeButton: UIButton = {
-        let button = OWSButton(imageName: "actionsheet_camera_roll_black",
-                               tintColor: .ows_gray60,
-                               block: { [weak self] in self?.didTapMediaLibraryModeButton() })
-
-        let width: CGFloat = type(of: self).bottomButtonWidth
-        button.autoSetDimensions(to: CGSize(width: width, height: width))
-        button.layer.cornerRadius = width / 2
-        button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.backgroundColor = .ows_white
-        button.setShadow()
-
-        return button
+    private lazy var mediaLibraryModeButton: SendMediaBottomButton = {
+        return SendMediaBottomButton(imageName: "photo-filled-28",
+                                     tintColor: .ows_white,
+                                     diameter: type(of: self).bottomButtonWidth,
+                                     block: { [weak self] in self?.didTapMediaLibraryModeButton() })
     }()
 
     // MARK: State
 
     private var attachmentDraftCollection: AttachmentDraftCollection = .empty
 
-    private var attachments: [SignalAttachment] {
-        return attachmentDraftCollection.attachmentDrafts.map { $0.attachment }
+    private var attachmentPromises: [Promise<SignalAttachment>] {
+        return attachmentDraftCollection.attachmentDrafts.map { $0.attachmentPromise }
     }
-
-    private let mediaLibrarySelections: OrderedDictionary<PHAsset, MediaLibrarySelection> = OrderedDictionary()
 
     // MARK: Child VC's
 
@@ -216,13 +233,13 @@ class SendMediaNavigationController: OWSNavigationController {
         return vc
     }()
 
-    private func pushApprovalViewController() {
+    private func pushApprovalViewController(attachments: [SignalAttachment]) {
         guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
             owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
             return
         }
 
-        let approvalViewController = AttachmentApprovalViewController(mode: .sharedNavigation, attachments: self.attachments)
+        let approvalViewController = AttachmentApprovalViewController(mode: .sharedNavigation, attachments: attachments)
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
@@ -275,7 +292,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
         case is ImagePickerGridController:
             if attachmentDraftCollection.count == 1 && !isInBatchSelectMode {
                 isInBatchSelectMode = true
-                self.mediaLibraryViewController.batchSelectModeDidChange()
+                mediaLibraryViewController.reloadDataAndRestoreSelection()
             }
         default:
             break
@@ -311,15 +328,34 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
             return nil
         }
     }
+
+    // MARK: - Too Many
+
+    func showTooManySelectedToast() {
+        Logger.info("")
+
+        let toastFormat = NSLocalizedString("IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT",
+                                            comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.")
+
+        let toastText = String(format: toastFormat, NSNumber(value: SignalAttachment.maxAttachmentsAllowed))
+
+        let toastController = ToastController(text: toastText)
+
+        let kToastInset: CGFloat = 10
+        let bottomInset = kToastInset + view.layoutMargins.bottom
+
+        toastController.presentToastView(fromBottomOfView: view, inset: bottomInset)
+    }
 }
 
 extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
+
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didFinishProcessingAttachment attachment: SignalAttachment) {
         attachmentDraftCollection.append(.camera(attachment: attachment))
         if isInBatchSelectMode {
             updateButtons(topViewController: photoCaptureViewController)
         } else {
-            pushApprovalViewController()
+            pushApprovalViewController(attachments: [attachment])
         }
     }
 
@@ -328,10 +364,18 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         didRequestExit(dontAbandonText: dontAbandonText)
     }
 
+    func photoCaptureViewControllerDidTryToCaptureTooMany(_ photoCaptureViewController: PhotoCaptureViewController) {
+        showTooManySelectedToast()
+    }
+
+    func photoCaptureViewControllerCanCaptureMoreItems(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool {
+        return attachmentCount < SignalAttachment.maxAttachmentsAllowed
+    }
+
     func discardDraft() {
         assert(attachmentDraftCollection.attachmentDrafts.count <= 1)
         if let lastAttachmentDraft = attachmentDraftCollection.attachmentDrafts.last {
-            attachmentDraftCollection.remove(attachment: lastAttachmentDraft.attachment)
+            attachmentDraftCollection.remove(lastAttachmentDraft)
         }
         assert(attachmentDraftCollection.attachmentDrafts.count == 0)
     }
@@ -349,16 +393,11 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
     }
 
     func showApprovalAfterProcessingAnyMediaLibrarySelections() {
-        let mediaLibrarySelections: [MediaLibrarySelection] = self.mediaLibrarySelections.orderedValues
-
         let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
-            let attachmentPromises: [Promise<MediaLibraryAttachment>] = mediaLibrarySelections.map { $0.promise }
-
-            when(fulfilled: attachmentPromises).map { attachments in
+            when(fulfilled: self.attachmentDraftCollection.attachmentPromises).map { attachments in
                 Logger.debug("built all attachments")
                 modal.dismiss {
-                    self.attachmentDraftCollection.selectedFromPicker(attachments: attachments)
-                    self.pushApprovalViewController()
+                    self.pushApprovalViewController(attachments: attachments)
                 }
             }.catch { error in
                 Logger.error("failed to prepare attachments. error: \(error)")
@@ -374,53 +413,55 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, isAssetSelected asset: PHAsset) -> Bool {
-        return mediaLibrarySelections.hasValue(forKey: asset)
+        return attachmentDraftCollection.hasPickerAttachment(forAsset: asset)
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>) {
-        guard !mediaLibrarySelections.hasValue(forKey: asset) else {
+        guard !attachmentDraftCollection.hasPickerAttachment(forAsset: asset) else {
             return
         }
 
-        let libraryMedia = MediaLibrarySelection(asset: asset, signalAttachmentPromise: attachmentPromise)
-        mediaLibrarySelections.append(key: asset, value: libraryMedia)
+        let libraryMedia = MediaLibraryAttachment(asset: asset, signalAttachmentPromise: attachmentPromise)
+        attachmentDraftCollection.append(.picker(attachment: libraryMedia))
 
         updateButtons(topViewController: imagePicker)
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset) {
-        guard mediaLibrarySelections.hasValue(forKey: asset) else {
+        guard let draft = attachmentDraftCollection.pickerAttachment(forAsset: asset) else {
             return
         }
-        mediaLibrarySelections.remove(key: asset)
+        attachmentDraftCollection.remove(.picker(attachment: draft))
 
         updateButtons(topViewController: imagePicker)
     }
 
-    func imagePickerCanSelectAdditionalItems(_ imagePicker: ImagePickerGridController) -> Bool {
-        return attachmentDraftCollection.count <= SignalAttachment.maxAttachmentsAllowed
+    func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool {
+        return attachmentCount < SignalAttachment.maxAttachmentsAllowed
+    }
+
+    func imagePickerDidTryToSelectTooMany(_ imagePicker: ImagePickerGridController) {
+        showTooManySelectedToast()
     }
 }
 
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {
+
+    func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
+        updateButtons(topViewController: attachmentApproval)
+    }
+
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
         sendMediaNavDelegate?.sendMediaNav(self, didChangeMessageText: newMessageText)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
-        guard let removedDraft = attachmentDraftCollection.attachmentDrafts.first(where: { $0.attachment == attachment}) else {
+        guard let removedDraft = attachmentDraftCollection.attachmentDraft(forAttachment: attachment) else {
             owsFailDebug("removedDraft was unexpectedly nil")
             return
         }
 
-        switch removedDraft.source {
-        case .picker(attachment: let pickerAttachment):
-            mediaLibrarySelections.remove(key: pickerAttachment.asset)
-        case .camera(attachment: _):
-            break
-        }
-
-        attachmentDraftCollection.remove(attachment: attachment)
+        attachmentDraftCollection.remove(removedDraft)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
@@ -437,7 +478,6 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
 
         // regardless of which VC we're going "back" to, we're in "batch" mode at this point.
         isInBatchSelectMode = true
-        mediaLibraryViewController.batchSelectModeDidChange()
 
         popViewController(animated: true)
     }
@@ -449,12 +489,12 @@ private enum AttachmentDraft {
 }
 
 private extension AttachmentDraft {
-    var attachment: SignalAttachment {
+    var attachmentPromise: Promise<SignalAttachment> {
         switch self {
         case .camera(let cameraAttachment):
-            return cameraAttachment
+            return Promise.value(cameraAttachment)
         case .picker(let pickerAttachment):
-            return pickerAttachment.signalAttachment
+            return pickerAttachment.signalAttachmentPromise
         }
     }
 
@@ -462,6 +502,8 @@ private extension AttachmentDraft {
         return self
     }
 }
+
+extension AttachmentDraft: Equatable { }
 
 private struct AttachmentDraftCollection {
     private(set) var attachmentDrafts: [AttachmentDraft]
@@ -474,6 +516,10 @@ private struct AttachmentDraftCollection {
 
     var count: Int {
         return attachmentDrafts.count
+    }
+
+    var attachmentPromises: [Promise<SignalAttachment>] {
+        return attachmentDrafts.map { $0.attachmentPromise }
     }
 
     var pickerAttachments: [MediaLibraryAttachment] {
@@ -502,68 +548,53 @@ private struct AttachmentDraftCollection {
         attachmentDrafts.append(element)
     }
 
-    mutating func remove(attachment: SignalAttachment) {
-        attachmentDrafts = attachmentDrafts.filter { $0.attachment != attachment }
+    mutating func remove(_ element: AttachmentDraft) {
+        attachmentDrafts.removeAll { $0 == element }
     }
 
-    mutating func selectedFromPicker(attachments: [MediaLibraryAttachment]) {
-        let pickedAttachments: Set<MediaLibraryAttachment> = Set(attachments)
-        let oldPickerAttachments: Set<MediaLibraryAttachment> = Set(self.pickerAttachments)
-
-        for removedAttachment in oldPickerAttachments.subtracting(pickedAttachments) {
-            remove(attachment: removedAttachment.signalAttachment)
-        }
-
-        // enumerate over new attachments to maintain order from picker
-        for attachment in attachments {
-            guard !oldPickerAttachments.contains(attachment) else {
+    func attachmentDraft(forAttachment: SignalAttachment) -> AttachmentDraft? {
+        for attachmentDraft in attachmentDrafts {
+            guard let attachment = attachmentDraft.attachmentPromise.value else {
+                // method should only be used after draft promises have been resolved.
+                owsFailDebug("attachment was unexpectedly nil")
                 continue
             }
-            append(.picker(attachment: attachment))
+            if attachment == forAttachment {
+                return attachmentDraft
+            }
         }
-    }
-}
-
-private struct MediaLibrarySelection: Hashable, Equatable {
-    let asset: PHAsset
-    let signalAttachmentPromise: Promise<SignalAttachment>
-
-    var hashValue: Int {
-        return asset.hashValue
+        return nil
     }
 
-    var promise: Promise<MediaLibraryAttachment> {
-        let asset = self.asset
-        return signalAttachmentPromise.map { signalAttachment in
-            return MediaLibraryAttachment(asset: asset, signalAttachment: signalAttachment)
-        }
+    func pickerAttachment(forAsset asset: PHAsset) -> MediaLibraryAttachment? {
+        return pickerAttachments.first { $0.asset == asset }
     }
 
-    static func ==(lhs: MediaLibrarySelection, rhs: MediaLibrarySelection) -> Bool {
-        return lhs.asset == rhs.asset
+    func hasPickerAttachment(forAsset asset: PHAsset) -> Bool {
+        return pickerAttachment(forAsset: asset) != nil
     }
 }
 
 private struct MediaLibraryAttachment: Hashable, Equatable {
     let asset: PHAsset
-    let signalAttachment: SignalAttachment
+    let signalAttachmentPromise: Promise<SignalAttachment>
 
-    public var hashValue: Int {
-        return asset.hashValue
+    func hash(into hasher: inout Hasher) {
+        asset.hash(into: &hasher)
     }
 
-    public static func == (lhs: MediaLibraryAttachment, rhs: MediaLibraryAttachment) -> Bool {
+    static func ==(lhs: MediaLibraryAttachment, rhs: MediaLibraryAttachment) -> Bool {
         return lhs.asset == rhs.asset
     }
 }
 
 extension SendMediaNavigationController: DoneButtonDelegate {
     var doneButtonCount: Int {
-        return attachmentDraftCollection.count - attachmentDraftCollection.pickerAttachments.count + mediaLibrarySelections.count
+        return attachmentCount
     }
 
     fileprivate func doneButtonWasTapped(_ doneButton: DoneButton) {
-        assert(attachmentDraftCollection.count > 0 || mediaLibrarySelections.count > 0)
+        assert(attachmentDraftCollection.count > 0)
         showApprovalAfterProcessingAnyMediaLibrarySelections()
     }
 }

@@ -9,6 +9,8 @@ import PromiseKit
 protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didFinishProcessingAttachment attachment: SignalAttachment)
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController)
+    func photoCaptureViewControllerDidTryToCaptureTooMany(_ photoCaptureViewController: PhotoCaptureViewController)
+    func photoCaptureViewControllerCanCaptureMoreItems(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool
 }
 
 enum PhotoCaptureError: Error {
@@ -45,24 +47,11 @@ class PhotoCaptureViewController: OWSViewController {
         }
     }
 
-    // MARK: - Dependencies
-
-    var audioActivity: AudioActivity?
-    var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
-    }
-
     // MARK: - Overrides
 
     override func loadView() {
         self.view = UIView()
         self.view.backgroundColor = Theme.darkThemeBackgroundColor
-
-        let audioActivity = AudioActivity(audioDescription: "PhotoCaptureViewController", behavior: .playAndRecord)
-        self.audioActivity = audioActivity
-        if !self.audioSession.startAudioActivity(audioActivity) {
-            owsFailDebug("unexpectedly unable to start audio activity")
-        }
     }
 
     override func viewDidLoad() {
@@ -77,11 +66,30 @@ class PhotoCaptureViewController: OWSViewController {
         updateIconOrientations(isAnimated: false, captureOrientation: initialCaptureOrientation)
 
         view.addGestureRecognizer(pinchZoomGesture)
-        view.addGestureRecognizer(focusGesture)
+        view.addGestureRecognizer(tapToFocusGesture)
         view.addGestureRecognizer(doubleTapToSwitchCameraGesture)
+
+        tapToFocusGesture.require(toFail: doubleTapToSwitchCameraGesture)
+        doubleTapToSwitchCameraGesture.require(toFail: captureButton.tapGesture)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        UIDevice.current.ows_setOrientation(.portrait)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if hasCaptureStarted {
+            BenchEventComplete(eventId: "Show-Camera")
+        }
     }
 
     override var prefersStatusBarHidden: Bool {
+        guard !OWSWindowManager.shared().hasCall() else {
+            return false
+        }
+
         return true
     }
 
@@ -168,7 +176,7 @@ class PhotoCaptureViewController: OWSViewController {
         return UIPinchGestureRecognizer(target: self, action: #selector(didPinchZoom(pinchGesture:)))
     }()
 
-    lazy var focusGesture: UITapGestureRecognizer = {
+    lazy var tapToFocusGesture: UITapGestureRecognizer = {
         return UITapGestureRecognizer(target: self, action: #selector(didTapFocusExpose(tapGesture:)))
     }()
 
@@ -294,16 +302,18 @@ class PhotoCaptureViewController: OWSViewController {
         }
     }
 
+    var hasCaptureStarted = false
     private func setupPhotoCapture() {
         photoCapture = PhotoCapture()
         photoCapture.delegate = self
         captureButton.delegate = photoCapture
         previewView = CapturePreviewView(session: photoCapture.session)
 
-        photoCapture.startCapture().done { [weak self] in
+        photoCapture.startVideoCapture().done { [weak self] in
             guard let self = self else { return }
-
+            self.hasCaptureStarted = true
             self.showCaptureUI()
+            BenchEventComplete(eventId: "Show-Camera")
         }.catch { [weak self] error in
             guard let self = self else { return }
 
@@ -353,12 +363,31 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
     // MARK: - Photo
 
+    func photoCaptureDidStartPhotoCapture(_ photoCapture: PhotoCapture) {
+        let captureFeedbackView = UIView()
+        captureFeedbackView.backgroundColor = .black
+        view.insertSubview(captureFeedbackView, aboveSubview: previewView)
+        captureFeedbackView.autoPinEdgesToSuperviewEdges()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            captureFeedbackView.removeFromSuperview()
+        }
+    }
+
     func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment) {
         delegate?.photoCaptureViewController(self, didFinishProcessingAttachment: attachment)
     }
 
     func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error) {
         showFailureUI(error: error)
+    }
+
+    func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool {
+        guard let delegate = delegate else { return false }
+        return delegate.photoCaptureViewControllerCanCaptureMoreItems(self)
+    }
+
+    func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture) {
+        delegate?.photoCaptureViewControllerDidTryToCaptureTooMany(self)
     }
 
     // MARK: - Video
@@ -376,7 +405,6 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     func photoCaptureDidCancelVideo(_ photoCapture: PhotoCapture) {
-        owsFailDebug("If we ever allow this, we should test.")
         isRecordingMovie = false
         recordingTimerView.stopCounting()
         updateNavigationItems()
@@ -422,7 +450,7 @@ class CaptureButton: UIView {
     weak var delegate: CaptureButtonDelegate?
 
     let defaultDiameter: CGFloat = ScaleFromIPhone5To7Plus(60, 80)
-    let recordingDiameter: CGFloat = ScaleFromIPhone5To7Plus(68, 120)
+    static let recordingDiameter: CGFloat = ScaleFromIPhone5To7Plus(68, 120)
     var innerButtonSizeConstraints: [NSLayoutConstraint]!
     var zoomIndicatorSizeConstraints: [NSLayoutConstraint]!
 
@@ -481,8 +509,8 @@ class CaptureButton: UIView {
             initialTouchLocation = gesture.location(in: gesture.view)
             delegate?.didBeginLongPressCaptureButton(self)
             UIView.animate(withDuration: 0.2) {
-                self.innerButtonSizeConstraints.forEach { $0.constant = self.recordingDiameter }
-                self.zoomIndicatorSizeConstraints.forEach { $0.constant = self.recordingDiameter }
+                self.innerButtonSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
+                self.zoomIndicatorSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
                 self.superview?.layoutIfNeeded()
             }
         case .changed:
@@ -511,7 +539,7 @@ class CaptureButton: UIView {
 
             Logger.verbose("distance: \(distance), alpha: \(alpha)")
 
-            let zoomIndicatorDiameter = CGFloatLerp(recordingDiameter, 3, alpha)
+            let zoomIndicatorDiameter = CGFloatLerp(type(of: self).recordingDiameter, 3, alpha)
             self.zoomIndicatorSizeConstraints.forEach { $0.constant = zoomIndicatorDiameter }
             zoomIndicator.superview?.layoutIfNeeded()
 
