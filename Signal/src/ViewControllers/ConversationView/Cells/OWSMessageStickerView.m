@@ -415,12 +415,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
-    OWSNavigationController *navigationController =
-        [[OWSNavigationController alloc] initWithRootViewController:packView];
-    [UIApplication.sharedApplication.frontmostViewController presentViewController:navigationController
-                                                                          animated:YES
-                                                                        completion:nil];
+    [self.delegate showStickerPack:stickerPackInfo];
 }
 
 - (void)handleMediaTapGesture:(CGPoint)locationInMessageBubble

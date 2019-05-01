@@ -72,12 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (StickerPackInfo *)defaultValue
-{
-    return [[StickerPackInfo alloc] initWithPackId:[Randomness generateRandomBytes:(int)StickerManager.packIdLength]
-                                           packKey:[Randomness generateRandomBytes:(int)StickerManager.packKeyLength]];
-}
-
 - (NSString *)asKey
 {
     return self.packId.hexadecimalString;

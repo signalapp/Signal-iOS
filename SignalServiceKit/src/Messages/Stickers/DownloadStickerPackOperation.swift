@@ -7,19 +7,16 @@ import Foundation
 class DownloadStickerPackOperation: OWSOperation {
 
     private let stickerPackInfo: StickerPackInfo
-    private let skipIfSaved: Bool
-    private let success: (Data) -> Void
+    private let success: (StickerPack) -> Void
     private let failure: (Error) -> Void
 
     @objc public required init(stickerPackInfo: StickerPackInfo,
-                               skipIfSaved: Bool,
-                               success : @escaping (Data) -> Void,
+                               success : @escaping (StickerPack) -> Void,
                                failure : @escaping (Error) -> Void) {
         assert(stickerPackInfo.packId.count > 0)
         assert(stickerPackInfo.packKey.count > 0)
 
         self.stickerPackInfo = stickerPackInfo
-        self.skipIfSaved = skipIfSaved
         self.success = success
         self.failure = failure
 
@@ -36,11 +33,9 @@ class DownloadStickerPackOperation: OWSOperation {
 
     override public func run() {
 
-        if skipIfSaved, StickerManager.isStickerPackSaved(stickerPackInfo: stickerPackInfo) {
+        if let stickerPack = StickerManager.fetchStickerPack(stickerPackInfo: stickerPackInfo) {
             Logger.verbose("Skipping redundant operation.")
-            let error = StickerError.redundantOperation as NSError
-            error.isRetryable = false
-            return reportError(error)
+            return success(stickerPack)
         }
 
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
@@ -64,7 +59,10 @@ class DownloadStickerPackOperation: OWSOperation {
                                     let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerPackInfo.packKey)
                                     Logger.verbose("Decryption succeeded.")
 
-                                    self.success(plaintext)
+                                    let stickerPack = try self.parseStickerPackManifest(stickerPackInfo: self.stickerPackInfo,
+                                                                                   manifestData: plaintext)
+
+                                    self.success(stickerPack)
                                     self.reportSuccess()
                                 } catch let error as NSError {
                                     owsFailDebug("Decryption failed: \(error)")
@@ -86,6 +84,52 @@ class DownloadStickerPackOperation: OWSOperation {
                                 errorCopy.isRetryable = true
                                 self.reportError(errorCopy)
         })
+    }
+
+    private func parseStickerPackManifest(stickerPackInfo: StickerPackInfo,
+                                                manifestData: Data) throws -> StickerPack {
+        assert(manifestData.count > 0)
+
+        let manifestProto: SSKProtoPack
+        do {
+            manifestProto = try SSKProtoPack.parseData(manifestData)
+        } catch let error as NSError {
+            owsFailDebug("Couldn't parse protos: \(error)")
+            throw StickerError.invalidInput
+        }
+        let title = parseOptionalString(manifestProto.title)
+        let author = parseOptionalString(manifestProto.author)
+        let manifestCover = parsePackItem(manifestProto.cover)
+        var items = [StickerPackItem]()
+        for stickerProto in manifestProto.stickers {
+            if let item = parsePackItem(stickerProto) {
+                items.append(item)
+            }
+        }
+        guard let firstItem = items.first else {
+            owsFailDebug("Invalid manifest, no stickers")
+            throw StickerError.invalidInput
+        }
+        let cover = manifestCover ?? firstItem
+
+        let stickerPack = StickerPack(info: stickerPackInfo, title: title, author: author, cover: cover, stickers: items)
+        return stickerPack
+    }
+
+    private func parseOptionalString(_ value: String?) -> String? {
+        guard let value = value?.ows_stripped(), value.count > 0 else {
+            return nil
+        }
+        return value
+    }
+
+    private func parsePackItem(_ proto: SSKProtoPackSticker?) -> StickerPackItem? {
+        guard let proto = proto else {
+            return nil
+        }
+        let stickerId = proto.id
+        let emojiString = parseOptionalString(proto.emoji) ?? ""
+        return StickerPackItem(stickerId: stickerId, emojiString: emojiString)
     }
 
     override public func didFail(error: Error) {

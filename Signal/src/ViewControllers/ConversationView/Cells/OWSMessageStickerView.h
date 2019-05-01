@@ -6,7 +6,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class StickerPackInfo;
+
 @protocol OWSMessageStickerViewDelegate
+
+- (void)showStickerPack:(StickerPackInfo *)stickerPackInfo;
 
 @end
 

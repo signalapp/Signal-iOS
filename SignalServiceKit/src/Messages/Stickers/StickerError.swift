@@ -9,5 +9,4 @@ public enum StickerError: Int, Error {
     case invalidInput
     case noSticker
     case assertionFailure
-    case redundantOperation
 }

@@ -185,7 +185,7 @@ public class StickerManager: NSObject {
                 }
             }
 
-            sendStickerSyncMessage(operationType: .remove,
+            enqueueStickerSyncMessage(operationType: .remove,
                                    packs: [stickerPackInfo],
                                    transaction: transaction)
         }
@@ -216,11 +216,21 @@ public class StickerManager: NSObject {
 
         installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
 
-        sendStickerSyncMessage(operationType: .remove,
+        enqueueStickerSyncMessage(operationType: .remove,
                                packs: [stickerPack.info],
                                transaction: transaction)
 
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
+    }
+
+    @objc
+    public class func fetchStickerPack(stickerPackInfo: StickerPackInfo) -> StickerPack? {
+        var result: StickerPack?
+        databaseStorage.readSwallowingErrors { (transaction) in
+            result = fetchStickerPack(stickerPackInfo: stickerPackInfo,
+                                        transaction: transaction)
+        }
+        return result
     }
 
     @objc
@@ -231,55 +241,26 @@ public class StickerManager: NSObject {
     }
 
     private class func tryToDownloadAndSaveStickerPack(stickerPackInfo: StickerPackInfo,
-                                                      shouldInstall: Bool = false) {
-        return tryToDownloadAndParseStickerPack(stickerPackInfo: stickerPackInfo, skipIfSaved: true)
+                                                       shouldInstall: Bool = false) {
+        return tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
             .done(on: DispatchQueue.global()) { (stickerPack) in
-                try self.saveStickerPack(stickerPack: stickerPack,
-                                         shouldInstall: shouldInstall)
-        }.retainUntilComplete()
+                self.saveStickerPack(stickerPack: stickerPack,
+                                     shouldInstall: shouldInstall)
+            }.retainUntilComplete()
     }
 
     // This method is public so that we can download "transient" (uninstalled) sticker packs.
-    public class func tryToDownloadAndParseStickerPack(stickerPackInfo: StickerPackInfo,
-                                                       skipIfSaved: Bool) -> Promise<StickerPack> {
-        return tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo, skipIfSaved: skipIfSaved)
-            .map(on: DispatchQueue.global()) { (manifestData: Data) -> StickerPack in
-                return try parseStickerPackManifest(stickerPackInfo: stickerPackInfo,
-                                                    manifestData: manifestData)
-            }
-    }
-
-    private class func tryToDownloadStickerPack(stickerPackInfo: StickerPackInfo,
-                                                skipIfSaved: Bool) -> Promise<Data> {
-        let (promise, resolver) = Promise<Data>.pending()
+    public class func tryToDownloadStickerPack(stickerPackInfo: StickerPackInfo) -> Promise<StickerPack> {
+        let (promise, resolver) = Promise<StickerPack>.pending()
         let operation = DownloadStickerPackOperation(stickerPackInfo: stickerPackInfo,
-                                                     skipIfSaved: skipIfSaved,
                                                      success: resolver.fulfill,
                                                      failure: resolver.reject)
         operationQueue.addOperation(operation)
         return promise
     }
 
-    private class func parseOptionalString(_ value: String?) -> String? {
-        guard let value = value?.ows_stripped(), value.count > 0 else {
-            return nil
-        }
-        return value
-    }
-
-    private class func parsePackItem(_ proto: SSKProtoPackSticker?) -> StickerPackItem? {
-        guard let proto = proto else {
-            return nil
-        }
-        let stickerId = proto.id
-        let emojiString = parseOptionalString(proto.emoji) ?? ""
-        return StickerPackItem(stickerId: stickerId, emojiString: emojiString)
-    }
-
-    // This method tries to parse a downloaded manifest.
-    // If valid, we save the pack.
     public class func saveStickerPack(stickerPack: StickerPack,
-                                       shouldInstall: Bool = false) {
+                                      shouldInstall: Bool = false) {
 
         databaseStorage.writeSwallowingErrors { (transaction) in
             let oldCopy = fetchStickerPack(stickerPackInfo: stickerPack.info, transaction: transaction)
@@ -291,7 +272,7 @@ public class StickerManager: NSObject {
                 stickerPack.anySave(transaction: transaction)
             }
 
-            sendStickerSyncMessage(operationType: .install,
+            enqueueStickerSyncMessage(operationType: .install,
                                    packs: [stickerPack.info],
                                    transaction: transaction)
 
@@ -304,36 +285,6 @@ public class StickerManager: NSObject {
         }
 
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
-    }
-
-    private class func parseStickerPackManifest(stickerPackInfo: StickerPackInfo,
-                                                manifestData: Data) throws -> StickerPack {
-        assert(manifestData.count > 0)
-
-        let manifestProto: SSKProtoPack
-        do {
-            manifestProto = try SSKProtoPack.parseData(manifestData)
-        } catch let error as NSError {
-            owsFailDebug("Couldn't parse protos: \(error)")
-            throw StickerError.invalidInput
-        }
-        let title = parseOptionalString(manifestProto.title)
-        let author = parseOptionalString(manifestProto.author)
-        let manifestCover = parsePackItem(manifestProto.cover)
-        var items = [StickerPackItem]()
-        for stickerProto in manifestProto.stickers {
-            if let item = parsePackItem(stickerProto) {
-                items.append(item)
-            }
-        }
-        guard let firstItem = items.first else {
-            owsFailDebug("Invalid manifest, no stickers")
-            throw StickerError.invalidInput
-        }
-        let cover = manifestCover ?? firstItem
-
-        let stickerPack = StickerPack(info: stickerPackInfo, title: title, author: author, cover: cover, stickers: items)
-        return stickerPack
     }
 
     private class func installStickerPackContents(stickerPack: StickerPack,
@@ -540,7 +491,7 @@ public class StickerManager: NSObject {
             return
         }
 
-        tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo, skipIfSaved: true)
+        tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
             .done(on: DispatchQueue.global()) { (stickerData) in
                 self.installSticker(stickerInfo: stickerInfo, stickerData: stickerData, emojiString: emojiString)
             }.retainUntilComplete()
@@ -548,11 +499,9 @@ public class StickerManager: NSObject {
 
     // This method is public so that we can download "transient" (uninstalled) stickers.
     public class func tryToDownloadSticker(stickerPack: StickerPack,
-                                           stickerInfo: StickerInfo,
-                                           skipIfSaved: Bool) -> Promise<Data> {
+                                           stickerInfo: StickerInfo) -> Promise<Data> {
         let (promise, resolver) = Promise<Data>.pending()
         let operation = DownloadStickerOperation(stickerInfo: stickerInfo,
-                                                 skipIfSaved: skipIfSaved,
                                                  success: resolver.fulfill,
                                                  failure: resolver.reject)
         operationQueue.addOperation(operation)
@@ -789,7 +738,7 @@ public class StickerManager: NSObject {
     }
 
     // TODO: We could also send a sticker sync message after we link a new device.
-    private class func sendStickerSyncMessage(operationType: StickerPackOperationType,
+    private class func enqueueStickerSyncMessage(operationType: StickerPackOperationType,
                                               packs: [StickerPackInfo],
                                               transaction: SDSAnyWriteTransaction) {
         let message = OWSStickerPackSyncMessage(packs: packs, operationType: operationType)

@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) StickerPackInfo *packInfo;
 
+// This can be used as a placeholder value, e.g. when initializing a non-nil var of a`MTLModel`.
 @property (class, readonly, nonatomic) StickerInfo *defaultValue;
 
 - (BOOL)isValid;
@@ -32,8 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSData *packId;
 @property (nonatomic, readonly) NSData *packKey;
-
-@property (class, readonly, nonatomic) StickerPackInfo *defaultValue;
 
 - (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey;
 

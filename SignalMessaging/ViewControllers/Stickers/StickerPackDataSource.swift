@@ -16,14 +16,14 @@ public protocol StickerPackDataSourceDelegate: class {
 protocol StickerPackDataSource: class {
     func add(delegate: StickerPackDataSourceDelegate)
 
-    func info() -> StickerPackInfo
-    func title() -> String?
-    func author() -> String?
+    var info: StickerPackInfo? { get }
+    var title: String? { get }
+    var author: String? { get }
 
     func getStickerPack() -> StickerPack?
 
-    func installedCoverInfo() -> StickerInfo?
-    func installedStickerInfos() -> [StickerInfo]
+    var installedCoverInfo: StickerInfo? { get }
+    var installedStickerInfos: [StickerInfo] { get }
 
     func filePath(forSticker stickerInfo: StickerInfo) -> String?
 }
@@ -61,6 +61,11 @@ public class BaseStickerPackDataSource: NSObject {
     // MARK: Properties
 
     // This should only be set if the cover is available.
+    // It might not be available if:
+    //
+    // * We're still downloading the manifest.
+    // * We're still downloading the cover sticker data.
+    // * There is no cover associated with this data source (e.g. "recent stickers").
     fileprivate var coverInfo: StickerInfo? {
         didSet {
             AssertIsOnMainThread()
@@ -72,6 +77,7 @@ public class BaseStickerPackDataSource: NSObject {
     }
 
     // This should only be set for stickers which are available.
+    // See comment on coverInfo.
     fileprivate var stickerInfos = [StickerInfo]() {
         didSet {
             AssertIsOnMainThread()
@@ -188,15 +194,15 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
 // MARK: -
 
 extension InstalledStickerPackDataSource: StickerPackDataSource {
-    func info() -> StickerPackInfo {
+    var info: StickerPackInfo? {
         return stickerPackInfo
     }
 
-    func title() -> String? {
+    var title: String? {
         return stickerPack?.title
     }
 
-    func author() -> String? {
+    var author: String? {
         return stickerPack?.author
     }
 
@@ -204,13 +210,13 @@ extension InstalledStickerPackDataSource: StickerPackDataSource {
         return stickerPack
     }
 
-    func installedCoverInfo() -> StickerInfo? {
+    var installedCoverInfo: StickerInfo? {
         AssertIsOnMainThread()
 
         return coverInfo
     }
 
-    func installedStickerInfos() -> [StickerInfo] {
+    var installedStickerInfos: [StickerInfo] {
         AssertIsOnMainThread()
 
         return stickerInfos
@@ -293,7 +299,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 
         // If necessary, download and parse the pack's manifest.
         guard let stickerPack = stickerPack else {
-            StickerManager.tryToDownloadAndParseStickerPack(stickerPackInfo: stickerPackInfo, skipIfSaved: false)
+            StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
                 .done { [weak self] (stickerPack) in
                     guard let self = self else {
                         return
@@ -333,7 +339,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
             return true
         }
         // This sticker is not downloaded; try to download now.
-        StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo, skipIfSaved: false)
+        StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
             .map(on: DispatchQueue.global()) { (stickerData: Data) -> String in
                 let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: "webp")
                 try stickerData.write(to: URL(fileURLWithPath: filePath))
@@ -372,13 +378,13 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 // MARK: -
 
 extension TransientStickerPackDataSource: StickerPackDataSource {
-    func info() -> StickerPackInfo {
+    var info: StickerPackInfo? {
         AssertIsOnMainThread()
 
         return stickerPackInfo
     }
 
-    func title() -> String? {
+    var title: String? {
         AssertIsOnMainThread()
 
         if let stickerPack = installedDataSource.getStickerPack() {
@@ -388,7 +394,7 @@ extension TransientStickerPackDataSource: StickerPackDataSource {
         return stickerPack?.title
     }
 
-    func author() -> String? {
+    var author: String? {
         AssertIsOnMainThread()
 
         if let stickerPack = installedDataSource.getStickerPack() {
@@ -408,20 +414,20 @@ extension TransientStickerPackDataSource: StickerPackDataSource {
         return stickerPack
     }
 
-    func installedCoverInfo() -> StickerInfo? {
+    var installedCoverInfo: StickerInfo? {
         AssertIsOnMainThread()
 
-        if let coverInfo = installedDataSource.installedCoverInfo() {
+        if let coverInfo = installedDataSource.installedCoverInfo {
             return coverInfo
         }
 
         return coverInfo
     }
 
-    func installedStickerInfos() -> [StickerInfo] {
+    var installedStickerInfos: [StickerInfo] {
         AssertIsOnMainThread()
 
-        let installedStickerInfos = installedDataSource.installedStickerInfos()
+        let installedStickerInfos = installedDataSource.installedStickerInfos
         if installedStickerInfos.count > 0 {
             return installedStickerInfos
         }
@@ -482,17 +488,17 @@ public class RecentStickerPackDataSource: BaseStickerPackDataSource {
 // MARK: -
 
 extension RecentStickerPackDataSource: StickerPackDataSource {
-    func info() -> StickerPackInfo {
-        owsFailDebug("This method should never be called.")
-        return StickerPackInfo.defaultValue
-    }
-
-    func title() -> String? {
+    var info: StickerPackInfo? {
         owsFailDebug("This method should never be called.")
         return nil
     }
 
-    func author() -> String? {
+    var title: String? {
+        owsFailDebug("This method should never be called.")
+        return nil
+    }
+
+    var author: String? {
         owsFailDebug("This method should never be called.")
         return nil
     }
@@ -502,12 +508,12 @@ extension RecentStickerPackDataSource: StickerPackDataSource {
         return nil
     }
 
-    func installedCoverInfo() -> StickerInfo? {
+    var installedCoverInfo: StickerInfo? {
         owsFailDebug("This method should never be called.")
         return nil
     }
 
-    func installedStickerInfos() -> [StickerInfo] {
+    var installedStickerInfos: [StickerInfo] {
         AssertIsOnMainThread()
 
         return stickerInfos

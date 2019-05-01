@@ -102,7 +102,7 @@ public class StickerPackCollectionView: UICollectionView {
             return
         }
 
-        stickerInfos = stickerPackDataSource.installedStickerInfos()
+        stickerInfos = stickerPackDataSource.installedStickerInfos
 
         reloadData()
     }
