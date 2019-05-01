@@ -42,11 +42,6 @@ public protocol ImageEditorModelObserver: class {
 public class ImageEditorModel: NSObject {
 
     @objc
-    public static var isFeatureEnabled: Bool {
-        return true
-    }
-
-    @objc
     public let srcImagePath: String
 
     @objc

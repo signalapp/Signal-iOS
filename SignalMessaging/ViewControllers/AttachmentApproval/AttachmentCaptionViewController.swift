@@ -5,7 +5,7 @@
 import UIKit
 
 protocol AttachmentCaptionDelegate: class {
-    func captionView(_ captionView: AttachmentCaptionViewController, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem)
+    func captionView(_ captionView: AttachmentCaptionViewController, didChangeCaptionText captionText: String?, attachmentApprovalItem: AttachmentApprovalItem)
     func captionViewDidCancel()
 }
 
@@ -15,7 +15,7 @@ class AttachmentCaptionViewController: OWSViewController {
 
     weak var delegate: AttachmentCaptionDelegate?
 
-    private let attachmentItem: SignalAttachmentItem
+    private let attachmentApprovalItem: AttachmentApprovalItem
 
     private let originalCaptionText: String?
 
@@ -26,10 +26,10 @@ class AttachmentCaptionViewController: OWSViewController {
     private let kMaxCaptionCharacterCount = 240
 
     init(delegate: AttachmentCaptionDelegate,
-         attachmentItem: SignalAttachmentItem) {
+         attachmentApprovalItem: AttachmentApprovalItem) {
         self.delegate = delegate
-        self.attachmentItem = attachmentItem
-        self.originalCaptionText = attachmentItem.captionText
+        self.attachmentApprovalItem = attachmentApprovalItem
+        self.originalCaptionText = attachmentApprovalItem.captionText
 
         super.init(nibName: nil, bundle: nil)
 
@@ -121,7 +121,7 @@ class AttachmentCaptionViewController: OWSViewController {
     private func configureTextView() {
         textView.delegate = self
 
-        textView.text = attachmentItem.captionText
+        textView.text = attachmentApprovalItem.captionText
         textView.font = UIFont.ows_dynamicTypeBody
         textView.textColor = .white
 
@@ -159,7 +159,7 @@ class AttachmentCaptionViewController: OWSViewController {
         if didCancel {
             self.delegate?.captionViewDidCancel()
         } else {
-            self.delegate?.captionView(self, didChangeCaptionText: self.textView.text, attachmentItem: attachmentItem)
+            self.delegate?.captionView(self, didChangeCaptionText: self.textView.text, attachmentApprovalItem: attachmentApprovalItem)
         }
 
         self.dismiss(animated: true) {
