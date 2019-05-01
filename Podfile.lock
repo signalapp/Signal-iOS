@@ -26,12 +26,10 @@ PODS:
     - HKDFKit (~> 0.0.3)
     - SignalCoreKit
     - SwiftProtobuf
-  - CocoaLumberjack (3.4.2):
-    - CocoaLumberjack/Default (= 3.4.2)
-    - CocoaLumberjack/Extensions (= 3.4.2)
-  - CocoaLumberjack/Default (3.4.2)
-  - CocoaLumberjack/Extensions (3.4.2):
-    - CocoaLumberjack/Default
+  - CocoaLumberjack (3.5.3):
+    - CocoaLumberjack/Core (= 3.5.3)
+  - CocoaLumberjack/Core (3.5.3)
+  - CryptoSwift (1.0.0)
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
@@ -113,14 +111,14 @@ PODS:
     - Starscream
     - SwiftProtobuf
     - YapDatabase/SQLCipher
-  - SQLCipher (4.0.1):
-    - SQLCipher/standard (= 4.0.1)
-  - SQLCipher/common (4.0.1)
-  - SQLCipher/standard (4.0.1):
+  - SQLCipher (4.1.0):
+    - SQLCipher/standard (= 4.1.0)
+  - SQLCipher/common (4.1.0)
+  - SQLCipher/standard (4.1.0):
     - SQLCipher/common
-  - SSZipArchive (2.1.4)
+  - SSZipArchive (2.1.5)
   - Starscream (3.0.6)
-  - SwiftProtobuf (1.3.1)
+  - SwiftProtobuf (1.5.0)
   - YapDatabase/SQLCipher (3.1.1):
     - YapDatabase/SQLCipher/Core (= 3.1.1)
     - YapDatabase/SQLCipher/Extensions (= 3.1.1)
@@ -191,6 +189,7 @@ DEPENDENCIES:
   - AFNetworking
   - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
   - AxolotlKit/Tests (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
+  - CryptoSwift
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit`)
   - Curve25519Kit/Tests (from `https://github.com/signalapp/Curve25519Kit`)
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`)
@@ -208,7 +207,7 @@ DEPENDENCIES:
   - SignalServiceKit/Tests (from `.`)
   - SQLCipher (>= 4.0.1)
   - SSZipArchive
-  - "Starscream (from `git@github.com:signalapp/Starscream.git`, branch `signal-release`)"
+  - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
   - YYImage
 
@@ -216,6 +215,7 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - AFNetworking
     - CocoaLumberjack
+    - CryptoSwift
     - libPhoneNumber-iOS
     - PromiseKit
     - PureLayout
@@ -247,7 +247,7 @@ EXTERNAL SOURCES:
     :path: "."
   Starscream:
     :branch: signal-release
-    :git: "git@github.com:signalapp/Starscream.git"
+    :git: https://github.com/signalapp/Starscream.git
   YapDatabase:
     :branch: signal-release
     :git: https://github.com/signalapp/YapDatabase.git
@@ -269,14 +269,14 @@ CHECKOUT OPTIONS:
     :commit: 9599b1d9796280c97cb2f786f34984fc98a3b6ef
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :commit: 0326310d32744902539bd6a2f170ee7413805754
+    :commit: 521615304b0448b5edcab43d7fcef7724c7dd10c
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: 56f28fc3a6e35d548d034ef7d0009f233ca0aa62
     :git: https://github.com/signalapp/SignalMetadataKit
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
-    :git: "git@github.com:signalapp/Starscream.git"
+    :git: https://github.com/signalapp/Starscream.git
   YapDatabase:
     :commit: 8e2b69110efd9499a5b553fda0165d2cea4e818d
     :git: https://github.com/signalapp/YapDatabase.git
@@ -284,7 +284,8 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   AxolotlKit: bb02741a93400b915df1be3365ad13d3768b0103
-  CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
+  CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
+  CryptoSwift: d81eeaa59dc5a8d03720fe919a6fd07b51f7439f
   Curve25519Kit: b3e77b7152ebe95fee2b3fb6c955449492bc14f7
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   HKDFKit: 3b6dbbb9d59c221cc6c52c3aa915700cbf24e376
@@ -297,13 +298,13 @@ SPEC CHECKSUMS:
   SignalCoreKit: c2d8132cdedb95d35eb2f8ae7eac0957695d0a8b
   SignalMetadataKit: 6fa5e9a53c7f104568662521a2f3874672ff7a02
   SignalServiceKit: c637b66e485538dda76836a1ec560dc556035430
-  SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
-  SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
+  SQLCipher: efbdb52cdbe340bcd892b1b14297df4e07241b7f
+  SSZipArchive: cefe1364104a0231268a5deb8495bdf2861f52f0
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
-  SwiftProtobuf: 84cd6b8f4fd2fc3d9fbd80a0aaf2e957d52824ec
+  SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: b0748e1cca7826f2ed132c495589e6aea9b7d743
+PODFILE CHECKSUM: 71de0ab6116c92a1a144e5889d07cc57a0d61f77
 
 COCOAPODS: 1.5.3

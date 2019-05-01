@@ -50,7 +50,7 @@ def shared_pods
   pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework'
   #pod 'GRKOpenSSLFramework', path: '../GRKOpenSSLFramework'
 
-  pod 'Starscream', git: 'git@github.com:signalapp/Starscream.git', branch: 'signal-release'
+  pod 'Starscream', git: 'https://github.com/signalapp/Starscream.git', branch: 'signal-release'
   # pod 'Starscream', path: '../Starscream'
 
   ###
@@ -61,6 +61,7 @@ def shared_pods
   pod 'PureLayout', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'YYImage', :inhibit_warnings => true
+  pod 'CryptoSwift', :inhibit_warnings => true
 end
 
 target 'Signal' do
