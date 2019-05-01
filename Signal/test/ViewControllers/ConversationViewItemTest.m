@@ -11,7 +11,7 @@
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
-#import <YapDatabase/YapDatabaseConnection.h>
+#import <YapDatabase/YapDatabase.h>
 
 @interface ConversationViewItemTest : SignalBaseTest
 
