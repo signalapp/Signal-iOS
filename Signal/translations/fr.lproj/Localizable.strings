@@ -1515,7 +1515,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Accorder les autorisations";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Les renseignements de vos contacts sont toujours transmises de façon sécurisée.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Les renseignements de vos contacts sont toujours transmis de façon sécurisée.";
 
 /* Label for the 'not now' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Pas maintenant";
