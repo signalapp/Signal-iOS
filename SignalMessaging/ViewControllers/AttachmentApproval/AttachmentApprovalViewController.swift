@@ -68,12 +68,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     let kSpacingBetweenItems: CGFloat = 20
 
-    @objc
     required public init(mode: AttachmentApprovalViewControllerMode,
-                         attachments: [SignalAttachment]) {
-        assert(attachments.count > 0)
+                         attachmentItems: [SignalAttachmentItem]) {
+        assert(attachmentItems.count > 0)
         self.mode = mode
-        let attachmentItems = attachments.map { SignalAttachmentItem(attachment: $0 )}
         self.isAddMoreVisible = mode == .sharedNavigation
 
         self.attachmentItemCollection = AttachmentItemCollection(attachmentItems: attachmentItems, isAddMoreVisible: isAddMoreVisible)
@@ -97,7 +95,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     @objc
     public class func wrappedInNavController(attachments: [SignalAttachment], approvalDelegate: AttachmentApprovalViewControllerDelegate) -> OWSNavigationController {
-        let vc = AttachmentApprovalViewController(mode: .modal, attachments: attachments)
+        let attachmentItems = attachments.map { SignalAttachmentItem(attachment: $0) }
+        let vc = AttachmentApprovalViewController(mode: .modal, attachmentItems: attachmentItems)
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
         navController.ows_prefersStatusBarHidden = true
@@ -746,7 +745,7 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
 // MARK: GalleryRail
 
 extension SignalAttachmentItem: GalleryRailItem {
-    func buildRailItemView() -> UIView {
+    public func buildRailItemView() -> UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = getThumbnailImage()

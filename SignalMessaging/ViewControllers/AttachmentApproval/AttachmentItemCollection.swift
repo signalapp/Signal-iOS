@@ -21,25 +21,23 @@ class AddMoreRailItem: GalleryRailItem {
     }
 }
 
-class SignalAttachmentItem: Hashable {
+public class SignalAttachmentItem: Hashable {
 
     enum SignalAttachmentItemError: Error {
         case noThumbnail
     }
 
-    let attachment: SignalAttachment
+    public let attachment: SignalAttachment
 
     // This might be nil if the attachment is not a valid image.
     var imageEditorModel: ImageEditorModel?
 
-    init(attachment: SignalAttachment) {
+    public init(attachment: SignalAttachment) {
         self.attachment = attachment
 
         // Try and make a ImageEditorModel.
         // This will only apply for valid images.
-        if ImageEditorModel.isFeatureEnabled,
-            let dataUrl: URL = attachment.dataUrl,
-            dataUrl.isFileURL {
+        if let dataUrl: URL = attachment.dataUrl, dataUrl.isFileURL {
             let path = dataUrl.path
             do {
                 imageEditorModel = try ImageEditorModel(srcImagePath: path)
@@ -68,7 +66,7 @@ class SignalAttachmentItem: Hashable {
 
     // MARK: Equatable
 
-    static func == (lhs: SignalAttachmentItem, rhs: SignalAttachmentItem) -> Bool {
+    public static func == (lhs: SignalAttachmentItem, rhs: SignalAttachmentItem) -> Bool {
         return lhs.attachment == rhs.attachment
     }
 }
