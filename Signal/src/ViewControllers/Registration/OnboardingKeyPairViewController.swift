@@ -16,6 +16,10 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     private lazy var explanationLabel: UILabel = {
         let result = createExplanationLabel(text: NSLocalizedString("Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device.", comment: ""))
         result.accessibilityIdentifier = "onboarding.keyPairStep.explanationLabel"
+        result.textColor = Theme.primaryColor
+        var fontTraits = result.font.fontDescriptor.symbolicTraits
+        fontTraits.insert(.traitBold)
+        result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: result.font.pointSize)
         return result
     }()
     
@@ -134,7 +138,9 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     // MARK: General
     @objc private func enableCopyButton() {
         copyButton.isUserInteractionEnabled = true
-        copyButton.setTitle(NSLocalizedString("Copy", comment: ""))
+        UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
+            self.copyButton.setTitle(NSLocalizedString("Copy", comment: ""))
+        }, completion: nil)
     }
     
     // MARK: Updating
@@ -149,7 +155,9 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
             case .restore: return NSLocalizedString("Restore", comment: "")
             }
         }()
-        self.registerOrRestoreButton.setTitle(registerOrRestoreButtonTitle)
+        UIView.transition(with: registerOrRestoreButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
+            self.registerOrRestoreButton.setTitle(registerOrRestoreButtonTitle)
+        }, completion: nil)
     }
     
     private func updateKeyPair() {
@@ -170,7 +178,9 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     @objc private func copyMnemonic() {
         UIPasteboard.general.string = mnemonic
         copyButton.isUserInteractionEnabled = false
-        copyButton.setTitle(NSLocalizedString("Copied ✓", comment: ""))
+        UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
+            self.copyButton.setTitle(NSLocalizedString("Copied ✓", comment: ""))
+        }, completion: nil)
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
     }
     

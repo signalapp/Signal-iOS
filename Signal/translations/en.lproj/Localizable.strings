@@ -2559,3 +2559,8 @@
 "Restore" = "Restore";
 "Enter Your Mnemonic" = "Enter Your Mnemonic";
 "Restore Using Mnemonic" = "Restore Using Mnemonic";
+"Something went wrong. Please check your mnemonic and try again." = "Something went wrong. Please check your mnemonic and try again.";
+"Looks like you didn't enter enough words. Please check your mnemonic and try again." = "Looks like you didn't enter enough words. Please check your mnemonic and try again.";
+"You seem to be missing the last word of your mnemonic. Please check what you entered and try again." = "You seem to be missing the last word of your mnemonic. Please check what you entered and try again.";
+"There appears to be an invalid word in your mnemonic. Please check what you entered and try again." = "There appears to be an invalid word in your mnemonic. Please check what you entered and try again.";
+"Your mnemonic couldn't be verified. Please check what you entered and try again." = "Your mnemonic couldn't be verified. Please check what you entered and try again.";
