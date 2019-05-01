@@ -25,9 +25,9 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     weak var prepDelegate: AttachmentPrepViewControllerDelegate?
 
-    let attachmentItem: SignalAttachmentItem
+    let attachmentApprovalItem: AttachmentApprovalItem
     var attachment: SignalAttachment {
-        return attachmentItem.attachment
+        return attachmentApprovalItem.attachment
     }
 
     private var videoPlayer: OWSVideoPlayer?
@@ -47,8 +47,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     // MARK: - Initializers
 
-    init(attachmentItem: SignalAttachmentItem) {
-        self.attachmentItem = attachmentItem
+    init(attachmentApprovalItem: AttachmentApprovalItem) {
+        self.attachmentApprovalItem = attachmentApprovalItem
         super.init(nibName: nil, bundle: nil)
         assert(!attachment.hasError)
     }
@@ -101,7 +101,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         containerView.addSubview(mediaMessageView)
         mediaMessageView.autoPinEdgesToSuperviewEdges()
 
-        if let imageEditorModel = attachmentItem.imageEditorModel {
+        if let imageEditorModel = attachmentApprovalItem.imageEditorModel {
 
             let imageEditorView = ImageEditorView(model: imageEditorModel, delegate: self)
             if imageEditorView.configureSubviews() {

@@ -21,9 +21,9 @@ class AddMoreRailItem: GalleryRailItem {
     }
 }
 
-public class SignalAttachmentItem: Hashable {
+public class AttachmentApprovalItem: Hashable {
 
-    enum SignalAttachmentItemError: Error {
+    enum AttachmentApprovalItemError: Error {
         case noThumbnail
     }
 
@@ -66,48 +66,48 @@ public class SignalAttachmentItem: Hashable {
 
     // MARK: Equatable
 
-    public static func == (lhs: SignalAttachmentItem, rhs: SignalAttachmentItem) -> Bool {
+    public static func == (lhs: AttachmentApprovalItem, rhs: AttachmentApprovalItem) -> Bool {
         return lhs.attachment == rhs.attachment
     }
 }
 
 // MARK: -
 
-class AttachmentItemCollection {
-    private (set) var attachmentItems: [SignalAttachmentItem]
+class AttachmentApprovalItemCollection {
+    private (set) var attachmentApprovalItems: [AttachmentApprovalItem]
     let isAddMoreVisible: Bool
-    init(attachmentItems: [SignalAttachmentItem], isAddMoreVisible: Bool) {
-        self.attachmentItems = attachmentItems
+    init(attachmentApprovalItems: [AttachmentApprovalItem], isAddMoreVisible: Bool) {
+        self.attachmentApprovalItems = attachmentApprovalItems
         self.isAddMoreVisible = isAddMoreVisible
     }
 
-    func itemAfter(item: SignalAttachmentItem) -> SignalAttachmentItem? {
-        guard let currentIndex = attachmentItems.firstIndex(of: item) else {
+    func itemAfter(item: AttachmentApprovalItem) -> AttachmentApprovalItem? {
+        guard let currentIndex = attachmentApprovalItems.firstIndex(of: item) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return nil
         }
 
-        let nextIndex = attachmentItems.index(after: currentIndex)
+        let nextIndex = attachmentApprovalItems.index(after: currentIndex)
 
-        return attachmentItems[safe: nextIndex]
+        return attachmentApprovalItems[safe: nextIndex]
     }
 
-    func itemBefore(item: SignalAttachmentItem) -> SignalAttachmentItem? {
-        guard let currentIndex = attachmentItems.firstIndex(of: item) else {
+    func itemBefore(item: AttachmentApprovalItem) -> AttachmentApprovalItem? {
+        guard let currentIndex = attachmentApprovalItems.firstIndex(of: item) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return nil
         }
 
-        let prevIndex = attachmentItems.index(before: currentIndex)
+        let prevIndex = attachmentApprovalItems.index(before: currentIndex)
 
-        return attachmentItems[safe: prevIndex]
+        return attachmentApprovalItems[safe: prevIndex]
     }
 
-    func remove(item: SignalAttachmentItem) {
-        attachmentItems = attachmentItems.filter { $0 != item }
+    func remove(item: AttachmentApprovalItem) {
+        attachmentApprovalItems = attachmentApprovalItems.filter { $0 != item }
     }
 
     var count: Int {
-        return attachmentItems.count
+        return attachmentApprovalItems.count
     }
 }

@@ -213,8 +213,8 @@ class SendMediaNavigationController: OWSNavigationController {
 
     private var attachmentDraftCollection: AttachmentDraftCollection = .empty
 
-    private var attachmentItemPromises: [Promise<SignalAttachmentItem>] {
-        return attachmentDraftCollection.attachmentItemPromises
+    private var attachmentApprovalItemPromises: [Promise<AttachmentApprovalItem>] {
+        return attachmentDraftCollection.attachmentApprovalItemPromises
     }
 
     // MARK: Child VC's
@@ -233,13 +233,13 @@ class SendMediaNavigationController: OWSNavigationController {
         return vc
     }()
 
-    private func pushApprovalViewController(attachmentItems: [SignalAttachmentItem]) {
+    private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem]) {
         guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
             owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
             return
         }
 
-        let approvalViewController = AttachmentApprovalViewController(mode: .sharedNavigation, attachmentItems: attachmentItems)
+        let approvalViewController = AttachmentApprovalViewController(mode: .sharedNavigation, attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
@@ -356,7 +356,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         if isInBatchSelectMode {
             updateButtons(topViewController: photoCaptureViewController)
         } else {
-            pushApprovalViewController(attachmentItems: [cameraCaptureAttachment.signalAttachmentItem])
+            pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem])
         }
     }
 
@@ -395,10 +395,10 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 
     func showApprovalAfterProcessingAnyMediaLibrarySelections() {
         let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
-            when(fulfilled: self.attachmentDraftCollection.attachmentItemPromises).map { attachmentItems in
+            when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises).map { attachmentApprovalItems in
                 Logger.debug("built all attachments")
                 modal.dismiss {
-                    self.pushApprovalViewController(attachmentItems: attachmentItems)
+                    self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems)
                 }
             }.catch { error in
                 Logger.error("failed to prepare attachments. error: \(error)")
@@ -421,8 +421,8 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         guard !attachmentDraftCollection.hasPickerAttachment(forAsset: asset) else {
             return
         }
-        let attachmentItemPromise = attachmentPromise.map { SignalAttachmentItem(attachment: $0) }
-        let libraryMedia = MediaLibraryAttachment(asset: asset, signalAttachmentItemPromise: attachmentItemPromise)
+        let attachmentApprovalItemPromise = attachmentPromise.map { AttachmentApprovalItem(attachment: $0) }
+        let libraryMedia = MediaLibraryAttachment(asset: asset, attachmentApprovalItemPromise: attachmentApprovalItemPromise)
         attachmentDraftCollection.append(.picker(attachment: libraryMedia))
 
         updateButtons(topViewController: imagePicker)
@@ -490,12 +490,12 @@ private enum AttachmentDraft {
 }
 
 private extension AttachmentDraft {
-    var attachmentItemPromise: Promise<SignalAttachmentItem> {
+    var attachmentApprovalItemPromise: Promise<AttachmentApprovalItem> {
         switch self {
         case .camera(let cameraAttachment):
-            return cameraAttachment.signalAttachmentItemPromise
+            return cameraAttachment.attachmentApprovalItemPromise
         case .picker(let pickerAttachment):
-            return pickerAttachment.signalAttachmentItemPromise
+            return pickerAttachment.attachmentApprovalItemPromise
         }
     }
 
@@ -519,8 +519,8 @@ private struct AttachmentDraftCollection {
         return attachmentDrafts.count
     }
 
-    var attachmentItemPromises: [Promise<SignalAttachmentItem>] {
-        return attachmentDrafts.map { $0.attachmentItemPromise }
+    var attachmentApprovalItemPromises: [Promise<AttachmentApprovalItem>] {
+        return attachmentDrafts.map { $0.attachmentApprovalItemPromise }
     }
 
     var pickerAttachments: [MediaLibraryAttachment] {
@@ -555,12 +555,12 @@ private struct AttachmentDraftCollection {
 
     func attachmentDraft(forAttachment: SignalAttachment) -> AttachmentDraft? {
         for attachmentDraft in attachmentDrafts {
-            guard let attachmentItem = attachmentDraft.attachmentItemPromise.value else {
+            guard let attachmentApprovalItem = attachmentDraft.attachmentApprovalItemPromise.value else {
                 // method should only be used after draft promises have been resolved.
                 owsFailDebug("attachment was unexpectedly nil")
                 continue
             }
-            if attachmentItem.attachment == forAttachment {
+            if attachmentApprovalItem.attachment == forAttachment {
                 return attachmentDraft
             }
         }
@@ -578,13 +578,13 @@ private struct AttachmentDraftCollection {
 
 private struct CameraCaptureAttachment: Hashable, Equatable {
     let signalAttachment: SignalAttachment
-    let signalAttachmentItem: SignalAttachmentItem
-    let signalAttachmentItemPromise: Promise<SignalAttachmentItem>
+    let attachmentApprovalItem: AttachmentApprovalItem
+    let attachmentApprovalItemPromise: Promise<AttachmentApprovalItem>
 
     init(signalAttachment: SignalAttachment) {
         self.signalAttachment = signalAttachment
-        self.signalAttachmentItem = SignalAttachmentItem(attachment: signalAttachment)
-        self.signalAttachmentItemPromise = Promise.value(signalAttachmentItem)
+        self.attachmentApprovalItem = AttachmentApprovalItem(attachment: signalAttachment)
+        self.attachmentApprovalItemPromise = Promise.value(attachmentApprovalItem)
     }
 
     func hash(into hasher: inout Hasher) {
@@ -598,7 +598,7 @@ private struct CameraCaptureAttachment: Hashable, Equatable {
 
 private struct MediaLibraryAttachment: Hashable, Equatable {
     let asset: PHAsset
-    let signalAttachmentItemPromise: Promise<SignalAttachmentItem>
+    let attachmentApprovalItemPromise: Promise<AttachmentApprovalItem>
 
     func hash(into hasher: inout Hasher) {
         asset.hash(into: &hasher)

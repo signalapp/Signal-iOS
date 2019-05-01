@@ -28,7 +28,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
     }
 
     private var isEditingCaptions: Bool = false
-    private var currentAttachmentItem: SignalAttachmentItem?
+    private var currentAttachmentItem: AttachmentApprovalItem?
 
     let kGalleryRailViewHeight: CGFloat = 72
 
@@ -146,7 +146,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
     }
 
     public func update(isEditingCaptions: Bool,
-                       currentAttachmentItem: SignalAttachmentItem?,
+                       currentAttachmentItem: AttachmentApprovalItem?,
                        shouldHideControls: Bool) {
         // De-bounce
         guard self.isEditingCaptions != isEditingCaptions ||
