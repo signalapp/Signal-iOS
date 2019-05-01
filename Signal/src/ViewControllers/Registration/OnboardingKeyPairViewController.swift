@@ -42,9 +42,19 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     }()
     
     private lazy var restoreStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ mnemonicTextField, UIView.spacer(withHeight: 24), registerButton ])
+        let result = UIStackView(arrangedSubviews: [ errorLabel, UIView.spacer(withHeight: 32), mnemonicTextField, UIView.spacer(withHeight: 24), registerButton ])
         result.accessibilityIdentifier = "onboarding.keyPairStep.restoreStackView"
         result.axis = .vertical
+        return result
+    }()
+    
+    private lazy var errorLabel: UILabel = {
+        let result = createExplanationLabel(text: "")
+        result.accessibilityIdentifier = "onboarding.keyPairStep.errorLabel"
+        result.textColor = UIColor.red
+        var fontTraits = result.font.fontDescriptor.symbolicTraits
+        fontTraits.insert(.traitBold)
+        result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: result.font.pointSize)
         return result
     }()
     
@@ -129,16 +139,16 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     
     // MARK: Updating
     private func handleModeChanged() {
+        UIView.animate(withDuration: 0.25) {
+            self.registerStackView.alpha = (self.mode == .register ? 1 : 0)
+            self.restoreStackView.alpha = (self.mode == .restore ? 1 : 0)
+        }
         let registerOrRestoreButtonTitle: String = {
             switch mode {
             case .register: return NSLocalizedString("Register", comment: "")
             case .restore: return NSLocalizedString("Restore", comment: "")
             }
         }()
-        UIView.animate(withDuration: 0.25) {
-            self.registerStackView.alpha = (self.mode == .register ? 1 : 0)
-            self.restoreStackView.alpha = (self.mode == .restore ? 1 : 0)
-        }
         self.registerOrRestoreButton.setTitle(registerOrRestoreButtonTitle)
     }
     
@@ -180,10 +190,14 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
             do {
                 let hexEncodedPrivateKey = try Mnemonic.decode(mnemonic: mnemonic)
                 let keyPair = ECKeyPair.generate(withHexEncodedPrivateKey: hexEncodedPrivateKey)
-                // TODO: Store key pair
+                let databaseConnection = OWSIdentityManager.shared().value(forKey: "dbConnection") as! YapDatabaseConnection
+                databaseConnection.setObject(keyPair, forKey: "TSStorageManagerIdentityKeyStoreIdentityKey", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
                 hexEncodedPublicKey = keyPair.hexEncodedPublicKey
             } catch let error {
-                fatalError(error.localizedDescription) // TODO: Handle
+                let error = error as? Mnemonic.DecodingError ?? Mnemonic.DecodingError.generic
+                errorLabel.text = error.description
+                errorLabel.isHidden = false
+                return
             }
         }
         let accountManager = TSAccountManager.sharedInstance()

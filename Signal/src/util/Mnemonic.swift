@@ -45,6 +45,16 @@ enum Mnemonic {
     
     enum DecodingError : Error {
         case generic, inputTooShort, missingLastWord, invalidWord, verificationFailed
+        
+        var description: String {
+            switch self {
+            case .generic: return NSLocalizedString("Something went wrong. Please check your mnemonic and try again.", comment: "")
+            case .inputTooShort: return NSLocalizedString("Looks like you didn't enter enough words. Please check your mnemonic and try again.", comment: "")
+            case .missingLastWord: return NSLocalizedString("You seem to be missing the last word of your mnemonic. Please check what you entered and try again.", comment: "")
+            case .invalidWord: return NSLocalizedString("There appears to be an invalid word in your mnemonic. Please check what you entered and try again.", comment: "")
+            case .verificationFailed: return NSLocalizedString("Your mnemonic couldn't be verified. Please check what you entered and try again.", comment: "")
+            }
+        }
     }
     
     static func encode(hexEncodedString string: String, language: Language = .english) -> String {
