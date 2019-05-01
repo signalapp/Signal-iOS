@@ -26,7 +26,8 @@ public class StickerManager: NSObject {
 
     // MARK: - Dependencies
 
-    private class var shared: StickerManager {
+    @objc
+    public class var shared: StickerManager {
         return SSKEnvironment.shared.stickerManager
     }
 
@@ -565,6 +566,8 @@ public class StickerManager: NSObject {
                                             value: stickerId,
                                             transaction: transaction)
         }
+
+        shared.clearSuggestedStickersCache()
     }
 
     private class func removeStickerFromEmojiMap(_ installedSticker: InstalledSticker,
@@ -581,10 +584,38 @@ public class StickerManager: NSObject {
                                               value: stickerId,
                                               transaction: transaction)
         }
+
+        shared.clearSuggestedStickersCache()
+    }
+
+    private static let cacheQueue = DispatchQueue(label: "stickerManager.cacheQueue")
+    // This cache shoud only be accessed on cacheQueue.
+    private var suggestedStickersCache = NSCache<NSString, NSArray>()
+
+    // We clear the cache every time we install or uninstall a sticker.
+    private func clearSuggestedStickersCache() {
+        StickerManager.cacheQueue.sync {
+            self.suggestedStickersCache.removeAllObjects()
+        }
     }
 
     @objc
-    public class func suggestedStickers(forTextInput textInput: String) -> [InstalledSticker] {
+    public func suggestedStickers(forTextInput textInput: String) -> [InstalledSticker] {
+        var result = [InstalledSticker]()
+        StickerManager.cacheQueue.sync {
+            if let suggestions = suggestedStickersCache.object(forKey: textInput as NSString) as? [InstalledSticker] {
+                result = suggestions
+                return
+            }
+
+            let suggestions = StickerManager.suggestedStickers(forTextInput: textInput)
+            suggestedStickersCache.setObject(suggestions as NSArray, forKey: textInput as NSString)
+            result = suggestions
+        }
+        return result
+    }
+
+    internal class func suggestedStickers(forTextInput textInput: String) -> [InstalledSticker] {
         var result = [InstalledSticker]()
         databaseStorage.readSwallowingErrors { (transaction) in
             result = self.suggestedStickers(forTextInput: textInput, transaction: transaction)
@@ -592,9 +623,8 @@ public class StickerManager: NSObject {
         return result
     }
 
-    @objc
-    public class func suggestedStickers(forTextInput textInput: String,
-                                        transaction: SDSAnyReadTransaction) -> [InstalledSticker] {
+    internal class func suggestedStickers(forTextInput textInput: String,
+                                          transaction: SDSAnyReadTransaction) -> [InstalledSticker] {
         guard let emoji = firstEmoji(inEmojiString: textInput) else {
             // Text input contains no emoji.
             return []
