@@ -6,9 +6,9 @@ import Foundation
 
 class DownloadStickerOperation: OWSOperation {
 
+    private let stickerInfo: StickerInfo
     private let success: (Data) -> Void
     private let failure: (Error) -> Void
-    private let stickerInfo: StickerInfo
 
     @objc public required init(stickerInfo: StickerInfo,
                                success : @escaping (Data) -> Void,
@@ -16,9 +16,9 @@ class DownloadStickerOperation: OWSOperation {
         assert(stickerInfo.packId.count > 0)
         assert(stickerInfo.packKey.count > 0)
 
+        self.stickerInfo = stickerInfo
         self.success = success
         self.failure = failure
-        self.stickerInfo = stickerInfo
 
         super.init()
 
@@ -33,11 +33,15 @@ class DownloadStickerOperation: OWSOperation {
 
     override public func run() {
 
-        if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
-            Logger.verbose("Skipping redundant operation.")
-            let error = StickerError.redundantOperation as NSError
-            error.isRetryable = false
-            return reportError(error)
+        if let filePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo) {
+            do {
+                let stickerData = try Data(contentsOf: URL(fileURLWithPath: filePath))
+                Logger.verbose("Skipping redundant operation.")
+                return success(stickerData)
+            } catch let error as NSError {
+                owsFailDebug("Could not load installed sticker data: \(error)")
+                // Fall through and proceed with download.
+            }
         }
 
         // https://cdn.signal.org/stickers/<pack_id>/full/<sticker_id>

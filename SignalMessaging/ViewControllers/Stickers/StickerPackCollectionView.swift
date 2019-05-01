@@ -15,16 +15,20 @@ public protocol StickerPackCollectionViewDelegate {
 @objc
 public class StickerPackCollectionView: UICollectionView {
 
-    private enum Mode {
-        case pack
-        case recents
+    private var stickerPackDataSource: StickerPackDataSource? {
+        didSet {
+            AssertIsOnMainThread()
+
+            stickerPackDataSource?.add(delegate: self)
+
+            reloadStickers()
+
+            // Scroll to the top.
+            contentOffset = .zero
+        }
     }
 
-    private var mode: Mode = .pack
-
     private var stickerInfos = [StickerInfo]()
-
-    private var stickerPack: StickerPack?
 
     @objc
     public weak var stickerDelegate: StickerPackCollectionViewDelegate?
@@ -53,60 +57,38 @@ public class StickerPackCollectionView: UICollectionView {
         dataSource = self
         register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
         backgroundColor = Theme.offBackgroundColor
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(stickersOrPacksDidChange),
-                                               name: StickerManager.StickersOrPacksDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(recentStickersDidChange),
-                                               name: StickerManager.RecentStickersDidChange,
-                                               object: nil)
     }
 
     // MARK: Modes
 
     @objc
-    public func showPack(stickerPack: StickerPack) {
+    public func showInstalledPack(stickerPack: StickerPack) {
         AssertIsOnMainThread()
 
-        self.stickerPack = stickerPack
-        self.mode = .pack
+        self.stickerPackDataSource = InstalledStickerPackDataSource(stickerPackInfo: stickerPack.info)
+    }
 
-        reloadStickers()
-        // Scroll to the top.
-        contentOffset = .zero
+    @objc
+    public func showUninstalledPack(stickerPack: StickerPack) {
+        AssertIsOnMainThread()
+
+        self.stickerPackDataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPack.info)
     }
 
     @objc
     public func showRecents() {
         AssertIsOnMainThread()
 
-        self.stickerPack = nil
-        self.mode = .recents
+        self.stickerPackDataSource = RecentStickerPackDataSource()
+    }
 
-        reloadStickers()
-        // Scroll to the top.
-        contentOffset = .zero
+    func show(dataSource: StickerPackDataSource) {
+        AssertIsOnMainThread()
+
+        self.stickerPackDataSource = dataSource
     }
 
     // MARK: Events
-
-    @objc func stickersOrPacksDidChange() {
-        AssertIsOnMainThread()
-
-        reloadStickers()
-    }
-
-    @objc func recentStickersDidChange() {
-        AssertIsOnMainThread()
-
-        guard mode == .recents else {
-            return
-        }
-
-        reloadStickers()
-    }
 
     required public init(coder: NSCoder) {
         notImplemented()
@@ -115,20 +97,12 @@ public class StickerPackCollectionView: UICollectionView {
     private func reloadStickers() {
         AssertIsOnMainThread()
 
-        switch (mode) {
-        case .pack:
-            if let stickerPack = stickerPack {
-                // Only show installed stickers.
-                stickerInfos = StickerManager.installedStickers(forStickerPack: stickerPack)
-
-                // Download any missing stickers.
-                StickerManager.ensureDownloadsAsync(forStickerPack: stickerPack)
-            } else {
-                stickerInfos = []
-            }
-        case .recents:
-            stickerInfos = StickerManager.recentStickers()
+        guard let stickerPackDataSource = stickerPackDataSource else {
+            stickerInfos = []
+            return
         }
+
+        stickerInfos = stickerPackDataSource.installedStickerInfos
 
         reloadData()
     }
@@ -174,12 +148,23 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
             owsFailDebug("Invalid index path: \(indexPath)")
             return cell
         }
+        guard let stickerPackDataSource = stickerPackDataSource else {
+            owsFailDebug("Missing stickerPackDataSource.")
+            return cell
+        }
+        guard let filePath = stickerPackDataSource.filePath(forSticker: stickerInfo) else {
+            owsFailDebug("Missing sticker data file path.")
+            return cell
+        }
+        guard let stickerImage = YYImage(contentsOfFile: filePath) else {
+            owsFailDebug("Sticker could not be parsed.")
+            return cell
+        }
 
-        // TODO: Actual size?
-        let iconView = StickerView(stickerInfo: stickerInfo)
-
-        cell.contentView.addSubview(iconView)
-        iconView.autoPinEdgesToSuperviewEdges()
+        let stickerView = YYAnimatedImageView()
+        stickerView.image = stickerImage
+        cell.contentView.addSubview(stickerView)
+        stickerView.autoPinEdgesToSuperviewEdges()
 
         return cell
     }
@@ -232,5 +217,15 @@ extension StickerPackCollectionView {
             flowLayout.itemSize = itemSize
             flowLayout.invalidateLayout()
         }
+    }
+}
+
+// MARK: -
+
+extension StickerPackCollectionView: StickerPackDataSourceDelegate {
+    public func stickerPackDataDidChange() {
+        AssertIsOnMainThread()
+
+        reloadStickers()
     }
 }

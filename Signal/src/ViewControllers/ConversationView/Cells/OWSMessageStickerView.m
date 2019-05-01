@@ -409,14 +409,18 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    // TODO:
+    StickerPackInfo *_Nullable stickerPackInfo = self.viewItem.stickerInfo.packInfo;
+    if (!stickerPackInfo) {
+        OWSFailDebug(@"Missing stickerPackInfo.");
+        return;
+    }
+
+    [self.delegate showStickerPack:stickerPackInfo];
 }
 
 - (void)handleMediaTapGesture:(CGPoint)locationInMessageBubble
 {
-    OWSAssertDebug(self.delegate);
-
-    // TODO:
+    OWSFailDebug(@"This method should never be called.");
 }
 
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble

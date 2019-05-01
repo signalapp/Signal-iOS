@@ -27,6 +27,7 @@
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSMath.h"
 #import "OWSMessageCell.h"
+#import "OWSMessageStickerView.h"
 #import "OWSSystemMessageCell.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
@@ -127,6 +128,7 @@ typedef enum : NSUInteger {
     MessageDetailViewDelegate,
     MenuActionsViewControllerDelegate,
     OWSMessageBubbleViewDelegate,
+    OWSMessageStickerViewDelegate,
     UICollectionViewDelegate,
     UICollectionViewDataSource,
     UIDocumentMenuDelegate,
@@ -2594,6 +2596,18 @@ typedef enum : NSUInteger {
     [self.inputToolbar beginEditingTextMessage];
 }
 
+#pragma mark - OWSMessageStickerViewDelegate
+
+- (void)showStickerPack:(StickerPackInfo *)stickerPackInfo
+{
+    OWSAssertIsOnMainThread();
+
+    StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:packView];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
 #pragma mark - ContactEditingDelegate
 
 - (void)didFinishEditingContact
@@ -4643,6 +4657,7 @@ typedef enum : NSUInteger {
     if ([cell isKindOfClass:[OWSMessageCell class]]) {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
         messageCell.messageBubbleView.delegate = self;
+        messageCell.messageStickerView.delegate = self;
     }
     cell.conversationStyle = self.conversationStyle;
 
