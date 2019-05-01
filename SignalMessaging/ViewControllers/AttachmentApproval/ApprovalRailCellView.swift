@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 
 protocol ApprovalRailCellViewDelegate: class {
-    func approvalRailCellView(_ approvalRailCellView: ApprovalRailCellView, didRemoveItem attachmentItem: SignalAttachmentItem)
+    func approvalRailCellView(_ approvalRailCellView: ApprovalRailCellView, didRemoveItem attachmentApprovalItem: AttachmentApprovalItem)
     func canRemoveApprovalRailCellView(_ approvalRailCellView: ApprovalRailCellView) -> Bool
 }
 
@@ -20,12 +20,12 @@ public class ApprovalRailCellView: GalleryRailCellView {
         let button = OWSButton { [weak self] in
             guard let strongSelf = self else { return }
 
-            guard let attachmentItem = strongSelf.item as? SignalAttachmentItem else {
-                owsFailDebug("attachmentItem was unexpectedly nil")
+            guard let attachmentApprovalItem = strongSelf.item as? AttachmentApprovalItem else {
+                owsFailDebug("attachmentApprovalItem was unexpectedly nil")
                 return
             }
 
-            strongSelf.approvalRailCellDelegate?.approvalRailCellView(strongSelf, didRemoveItem: attachmentItem)
+            strongSelf.approvalRailCellDelegate?.approvalRailCellView(strongSelf, didRemoveItem: attachmentApprovalItem)
         }
 
         button.setImage(UIImage(named: "x-24")?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -72,8 +72,8 @@ public class ApprovalRailCellView: GalleryRailCellView {
         super.configure(item: item, delegate: delegate)
 
         var hasCaption = false
-        if let attachmentItem = item as? SignalAttachmentItem {
-            if let captionText = attachmentItem.captionText {
+        if let attachmentApprovalItem = item as? AttachmentApprovalItem {
+            if let captionText = attachmentApprovalItem.captionText {
                 hasCaption = captionText.count > 0
             }
         } else {

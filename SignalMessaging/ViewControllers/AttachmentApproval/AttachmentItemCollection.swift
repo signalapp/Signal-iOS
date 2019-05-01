@@ -21,25 +21,23 @@ class AddMoreRailItem: GalleryRailItem {
     }
 }
 
-class SignalAttachmentItem: Hashable {
+public class AttachmentApprovalItem: Hashable {
 
-    enum SignalAttachmentItemError: Error {
+    enum AttachmentApprovalItemError: Error {
         case noThumbnail
     }
 
-    let attachment: SignalAttachment
+    public let attachment: SignalAttachment
 
     // This might be nil if the attachment is not a valid image.
     var imageEditorModel: ImageEditorModel?
 
-    init(attachment: SignalAttachment) {
+    public init(attachment: SignalAttachment) {
         self.attachment = attachment
 
         // Try and make a ImageEditorModel.
         // This will only apply for valid images.
-        if ImageEditorModel.isFeatureEnabled,
-            let dataUrl: URL = attachment.dataUrl,
-            dataUrl.isFileURL {
+        if let dataUrl: URL = attachment.dataUrl, dataUrl.isFileURL {
             let path = dataUrl.path
             do {
                 imageEditorModel = try ImageEditorModel(srcImagePath: path)
@@ -68,48 +66,48 @@ class SignalAttachmentItem: Hashable {
 
     // MARK: Equatable
 
-    static func == (lhs: SignalAttachmentItem, rhs: SignalAttachmentItem) -> Bool {
+    public static func == (lhs: AttachmentApprovalItem, rhs: AttachmentApprovalItem) -> Bool {
         return lhs.attachment == rhs.attachment
     }
 }
 
 // MARK: -
 
-class AttachmentItemCollection {
-    private (set) var attachmentItems: [SignalAttachmentItem]
+class AttachmentApprovalItemCollection {
+    private (set) var attachmentApprovalItems: [AttachmentApprovalItem]
     let isAddMoreVisible: Bool
-    init(attachmentItems: [SignalAttachmentItem], isAddMoreVisible: Bool) {
-        self.attachmentItems = attachmentItems
+    init(attachmentApprovalItems: [AttachmentApprovalItem], isAddMoreVisible: Bool) {
+        self.attachmentApprovalItems = attachmentApprovalItems
         self.isAddMoreVisible = isAddMoreVisible
     }
 
-    func itemAfter(item: SignalAttachmentItem) -> SignalAttachmentItem? {
-        guard let currentIndex = attachmentItems.firstIndex(of: item) else {
+    func itemAfter(item: AttachmentApprovalItem) -> AttachmentApprovalItem? {
+        guard let currentIndex = attachmentApprovalItems.firstIndex(of: item) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return nil
         }
 
-        let nextIndex = attachmentItems.index(after: currentIndex)
+        let nextIndex = attachmentApprovalItems.index(after: currentIndex)
 
-        return attachmentItems[safe: nextIndex]
+        return attachmentApprovalItems[safe: nextIndex]
     }
 
-    func itemBefore(item: SignalAttachmentItem) -> SignalAttachmentItem? {
-        guard let currentIndex = attachmentItems.firstIndex(of: item) else {
+    func itemBefore(item: AttachmentApprovalItem) -> AttachmentApprovalItem? {
+        guard let currentIndex = attachmentApprovalItems.firstIndex(of: item) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return nil
         }
 
-        let prevIndex = attachmentItems.index(before: currentIndex)
+        let prevIndex = attachmentApprovalItems.index(before: currentIndex)
 
-        return attachmentItems[safe: prevIndex]
+        return attachmentApprovalItems[safe: prevIndex]
     }
 
-    func remove(item: SignalAttachmentItem) {
-        attachmentItems = attachmentItems.filter { $0 != item }
+    func remove(item: AttachmentApprovalItem) {
+        attachmentApprovalItems = attachmentApprovalItems.filter { $0 != item }
     }
 
     var count: Int {
-        return attachmentItems.count
+        return attachmentApprovalItems.count
     }
 }
