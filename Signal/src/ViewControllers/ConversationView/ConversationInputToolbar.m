@@ -64,6 +64,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, readonly) UIButton *stickerButton;
 @property (nonatomic, readonly) UIView *quotedReplyWrapper;
 @property (nonatomic, readonly) UIView *linkPreviewWrapper;
+@property (nonatomic, readonly) UIView *dismissStickerKeyboardView;
 
 @property (nonatomic) CGFloat textViewHeight;
 @property (nonatomic, readonly) NSLayoutConstraint *textViewHeightConstraint;
@@ -217,6 +218,7 @@ const CGFloat kMaxTextViewHeight = 98;
     UIStackView *vStack = [[UIStackView alloc]
         initWithArrangedSubviews:@[ self.quotedReplyWrapper, self.linkPreviewWrapper, self.inputTextView ]];
     vStack.axis = UILayoutConstraintAxisVertical;
+    vStack.alignment = UIStackViewAlignmentFill;
     [vStack setContentHuggingHorizontalLow];
     [vStack setCompressionResistanceHorizontalLow];
 
@@ -237,24 +239,8 @@ const CGFloat kMaxTextViewHeight = 98;
     [vStackWrapper setCompressionResistanceHorizontalLow];
 
     // H Stack
-    if (SSKFeatureFlags.stickerSend) {
-        _hStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-            self.cameraButton,
-            self.attachmentButton,
-            vStackWrapper,
-            self.stickerButton,
-            self.voiceMemoButton,
-            self.sendButton
-        ]];
-    } else {
-        _hStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-            self.cameraButton,
-            self.attachmentButton,
-            vStackWrapper,
-            self.voiceMemoButton,
-            self.sendButton
-        ]];
-    }
+    _hStack = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ self.cameraButton, vStackWrapper, self.attachmentButton, self.sendButton ]];
     self.hStack.axis = UILayoutConstraintAxisHorizontal;
     self.hStack.layoutMarginsRelativeArrangement = YES;
     self.hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
@@ -278,6 +264,36 @@ const CGFloat kMaxTextViewHeight = 98;
     vStackWrapper.preservesSuperviewLayoutMargins = NO;
     self.hStack.preservesSuperviewLayoutMargins = NO;
     self.preservesSuperviewLayoutMargins = NO;
+
+    // Dismiss Sticker Keyboard
+    //
+    // This view lets users dismiss the sticker keyboard by tapping on the text input.
+    // Be definition, the text input view is empty when the sticker keyboard is visible.
+    // The intention is to avoid "first responder" juggling.
+    _dismissStickerKeyboardView = [UIView new];
+    [self addSubview:self.dismissStickerKeyboardView];
+    [self.dismissStickerKeyboardView setContentHuggingLow];
+    [self.dismissStickerKeyboardView setCompressionResistanceLow];
+    [self.dismissStickerKeyboardView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:vStackWrapper];
+    [self.dismissStickerKeyboardView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:vStackWrapper];
+    [self.dismissStickerKeyboardView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:vStackWrapper];
+    [self.dismissStickerKeyboardView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.inputTextView];
+    self.dismissStickerKeyboardView.userInteractionEnabled = YES;
+    [self.dismissStickerKeyboardView
+        addGestureRecognizer:[[UITapGestureRecognizer alloc]
+                                 initWithTarget:self
+                                         action:@selector(handleTapDismissStickerKeyboard:)]];
+    self.dismissStickerKeyboardView.hidden = YES;
+
+    // Input buttons
+    [self addSubview:self.voiceMemoButton];
+    [self.voiceMemoButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.inputTextView];
+    [self.voiceMemoButton autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:vStackWrapper withOffset:-4];
+    if (SSKFeatureFlags.stickerSend) {
+        [self addSubview:self.stickerButton];
+        [self.stickerButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.voiceMemoButton];
+        [self.voiceMemoButton autoPinLeadingToTrailingEdgeOfView:self.stickerButton offset:0];
+    }
 
     // Border
     //
@@ -443,6 +459,9 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     void (^updateBlock)(void) = ^{
         if (self.inputTextView.trimmedText.length > 0) {
+            if (!self.attachmentButton.isHidden) {
+                self.attachmentButton.hidden = YES;
+            }
             if (!self.voiceMemoButton.isHidden) {
                 self.voiceMemoButton.hidden = YES;
             }
@@ -454,6 +473,9 @@ const CGFloat kMaxTextViewHeight = 98;
                 self.sendButton.hidden = NO;
             }
         } else {
+            if (self.attachmentButton.isHidden) {
+                self.attachmentButton.hidden = NO;
+            }
             if (self.voiceMemoButton.isHidden) {
                 self.voiceMemoButton.hidden = NO;
             }
@@ -969,6 +991,7 @@ const CGFloat kMaxTextViewHeight = 98;
     } else {
         self.inputTextView.inputView = nil;
     }
+    self.dismissStickerKeyboardView.hidden = !isStickerKeyboardActive;
 
     if (!self.inputTextView.isFirstResponder) {
         [self.inputTextView becomeFirstResponder];
@@ -1179,6 +1202,13 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSLogVerbose(@"");
 
     [self.inputToolbarDelegate presentManageStickersView];
+}
+
+- (void)handleTapDismissStickerKeyboard:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateRecognized) {
+        [self clearStickerKeyboard];
+    }
 }
 
 @end
