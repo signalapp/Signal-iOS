@@ -9,7 +9,6 @@ import UIKit
 class LinearHorizontalLayout: UICollectionViewLayout {
 
     private let itemSize: CGSize
-    private let inset: CGFloat
     private let spacing: CGFloat
 
     private var itemAttributesMap = [UICollectionViewLayoutAttributes]()
@@ -23,9 +22,8 @@ class LinearHorizontalLayout: UICollectionViewLayout {
         notImplemented()
     }
 
-    required init(itemSize: CGSize, inset: CGFloat = 0, spacing: CGFloat = 0) {
+    required init(itemSize: CGSize, spacing: CGFloat = 0) {
         self.itemSize = itemSize
-        self.inset = inset
         self.spacing = spacing
 
         super.init()
@@ -56,9 +54,8 @@ class LinearHorizontalLayout: UICollectionViewLayout {
             return
         }
         let itemCount = collectionView.numberOfItems(inSection: 0)
-
-        let vInset: CGFloat = inset
-        let hInset: CGFloat = inset
+        let insets = collectionView.contentInset
+//        let insets = UIEdgeInsets.zero
 
         guard itemCount > 0 else {
             contentSize = .zero
@@ -66,8 +63,9 @@ class LinearHorizontalLayout: UICollectionViewLayout {
         }
 
         for row in 0..<itemCount {
-            let itemX: CGFloat = hInset + CGFloat(row) * (itemSize.width + spacing)
-            let itemY: CGFloat = vInset
+            // TODO: We should ultimately make this layout RTL.
+            let itemX: CGFloat = insets.left + CGFloat(row) * (itemSize.width + spacing)
+            let itemY: CGFloat = insets.top
             let itemFrame = CGRect(x: itemX, y: itemY, width: itemSize.width, height: itemSize.height)
 
             let indexPath = NSIndexPath(row: row, section: 0)
@@ -76,8 +74,8 @@ class LinearHorizontalLayout: UICollectionViewLayout {
             itemAttributesMap.append(itemAttributes)
         }
 
-        contentSize = CGSize(width: hInset * 2 + CGFloat(itemCount) * itemSize.width + CGFloat(itemCount - 1) * spacing,
-                             height: vInset * 2 + itemSize.height)
+        contentSize = CGSize(width: insets.left + insets.right + CGFloat(itemCount) * itemSize.width + CGFloat(itemCount - 1) * spacing,
+                             height: insets.top + insets.bottom + itemSize.height)
     }
 
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {

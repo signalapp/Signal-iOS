@@ -104,7 +104,7 @@ public class StickerKeyboard: UIStackView {
 
     private static let packCoverSize: CGFloat = 24
     private static let packCoverSpacing: CGFloat = 12
-    private let packsCollectionView = StickerHorizontalListView(cellSize: StickerKeyboard.packCoverSize, inset: 0, spacing: StickerKeyboard.packCoverSpacing)
+    private let packsCollectionView = StickerHorizontalListView(cellSize: StickerKeyboard.packCoverSize, spacing: StickerKeyboard.packCoverSpacing)
 
     private func populateHeaderView() {
         backgroundColor = Theme.offBackgroundColor

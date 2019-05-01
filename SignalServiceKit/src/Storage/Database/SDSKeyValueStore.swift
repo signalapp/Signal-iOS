@@ -116,6 +116,28 @@ public class SDSKeyValueStore: NSObject {
         write(codingValue, forKey: key, transaction: transaction)
     }
 
+    // MARK: - Debugging
+
+    @objc
+    public func allKeys() -> [String] {
+        var result = [String]()
+        databaseStorage.readSwallowingErrors { (transaction) in
+            result = self.allKeys(transaction: transaction)
+        }
+        return result
+    }
+
+    @objc
+    public func allKeys(transaction: SDSAnyReadTransaction) -> [String] {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.allKeys(inCollection: collection)
+        case .grdbRead:
+            owsFailDebug("Not yet supported.")
+            return []
+        }
+    }
+
     // MARK: - Internal Methods
 
     private func read<T>(_ key: String) -> T? {

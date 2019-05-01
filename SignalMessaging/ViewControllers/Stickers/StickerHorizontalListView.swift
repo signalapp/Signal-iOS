@@ -5,13 +5,33 @@
 import Foundation
 
 @objc
+public class StickerHorizontalListViewItem: NSObject {
+    let stickerInfo: StickerInfo
+    let selectedBlock: () -> Void
+
+    @objc
+    public init(stickerInfo: StickerInfo, selectedBlock: @escaping () -> Void) {
+        self.stickerInfo = stickerInfo
+        self.selectedBlock = selectedBlock
+    }
+}
+
+// MARK: -
+
+@objc
+public class StickerHorizontalListCell: UICollectionViewCell {
+}
+
+// MARK: -
+
+@objc
 public class StickerHorizontalListView: UICollectionView {
 
-    public struct Item {
-        let stickerInfo: StickerInfo
-        let selectedBlock: () -> Void
-    }
+    private let cellSize: CGFloat
 
+    public typealias Item = StickerHorizontalListViewItem
+
+    @objc
     public var items = [Item]() {
         didSet {
             AssertIsOnMainThread()
@@ -24,18 +44,42 @@ public class StickerHorizontalListView: UICollectionView {
     private let cellReuseIdentifier = "cellReuseIdentifier"
 
     @objc
-    public required init(cellSize: CGFloat, inset: CGFloat = 0, spacing: CGFloat = 0) {
-        let layout = LinearHorizontalLayout(itemSize: CGSize(width: cellSize, height: cellSize), inset: inset, spacing: spacing)
+    public override var contentInset: UIEdgeInsets {
+        didSet {
+            updateHeightConstraint()
+        }
+    }
+
+    private var heightConstraint: NSLayoutConstraint?
+
+    @objc
+    public required init(cellSize: CGFloat, spacing: CGFloat = 0) {
+        self.cellSize = cellSize
+        let layout = LinearHorizontalLayout(itemSize: CGSize(width: cellSize, height: cellSize), spacing: spacing)
 
         super.init(frame: .zero, collectionViewLayout: layout)
 
         delegate = self
         dataSource = self
-        register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
+        register(StickerHorizontalListCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
 
         setContentHuggingHorizontalLow()
         setCompressionResistanceHorizontalLow()
-        autoSetDimension(.height, toSize: cellSize + 2 * inset)
+        heightConstraint = autoSetDimension(.height, toSize: 0)
+        updateHeightConstraint()
+    }
+
+    private func updateHeightConstraint() {
+        guard let heightConstraint = heightConstraint else {
+            owsFailDebug("Missing heightConstraint.")
+            return
+        }
+        let newValue = cellSize + contentInset.top + contentInset.bottom
+        if heightConstraint.constant == newValue {
+            return
+        }
+        heightConstraint.constant = newValue
+        invalidateIntrinsicContentSize()
     }
 
     required public init(coder: NSCoder) {
@@ -55,6 +99,10 @@ extension StickerHorizontalListView: UICollectionViewDelegate {
         }
 
         item.selectedBlock()
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        cell.layoutIfNeeded()
     }
 }
 
