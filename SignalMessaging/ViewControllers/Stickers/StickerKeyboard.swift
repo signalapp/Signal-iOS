@@ -89,8 +89,12 @@ public class StickerKeyboard: UIStackView {
     private func reloadStickers() {
         stickerPacks = StickerManager.installedStickerPacks()
 
-        packsCollectionView.collectionViewLayout.invalidateLayout()
-        packsCollectionView.reloadData()
+        let packItems = stickerPacks.map { (stickerPack) in
+            StickerHorizontalListView.Item(stickerInfo: stickerPack.coverInfo) { [weak self] in
+                self?.stickerPack = stickerPack
+            }
+        }
+        packsCollectionView.items = packItems
 
         guard stickerPacks.count > 0 else {
             stickerPack = nil
@@ -98,17 +102,13 @@ public class StickerKeyboard: UIStackView {
         }
     }
 
-    private let packsCollectionView = UICollectionView(frame: .zero, collectionViewLayout: buildCoverLayout())
-    private let cellReuseIdentifier = "cellReuseIdentifier"
-
     private static let packCoverSize: CGFloat = 24
     private static let packCoverSpacing: CGFloat = 12
-
-    private class func buildCoverLayout() -> UICollectionViewLayout {
-        return LinearHorizontalLayout(itemSize: CGSize(width: packCoverSize, height: packCoverSize), inset: 0, spacing: packCoverSpacing)
-    }
+    private let packsCollectionView = StickerHorizontalListView(cellSize: StickerKeyboard.packCoverSize, inset: 0, spacing: StickerKeyboard.packCoverSpacing)
 
     private func populateHeaderView() {
+        backgroundColor = Theme.offBackgroundColor
+
         headerView.spacing = StickerKeyboard.packCoverSpacing
         headerView.axis = .horizontal
         headerView.alignment = .center
@@ -129,14 +129,6 @@ public class StickerKeyboard: UIStackView {
         headerView.addArrangedSubview(recentsButton)
 
         packsCollectionView.backgroundColor = Theme.offBackgroundColor
-        packsCollectionView.delegate = self
-        packsCollectionView.dataSource = self
-        packsCollectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
-        backgroundColor = Theme.offBackgroundColor
-
-        packsCollectionView.setContentHuggingHorizontalLow()
-        packsCollectionView.setCompressionResistanceHorizontalLow()
-        packsCollectionView.autoSetDimension(.height, toSize: StickerKeyboard.packCoverSize)
         headerView.addArrangedSubview(packsCollectionView)
 
         let manageButton = buildHeaderButton("plus-24") { [weak self] in
@@ -203,56 +195,5 @@ extension StickerKeyboard: StickerPackCollectionViewDelegate {
         Logger.verbose("")
 
         delegate?.didSelectSticker(stickerInfo: stickerInfo)
-    }
-}
-
-// MARK: - UICollectionViewDelegate
-
-extension StickerKeyboard: UICollectionViewDelegate {
-    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        Logger.debug("")
-
-        guard let stickerPack = stickerPacks[safe: indexPath.row] else {
-            owsFailDebug("Invalid index path: \(indexPath)")
-            return
-        }
-
-        self.stickerPack = stickerPack
-    }
-}
-
-// MARK: - UICollectionViewDataSource
-
-extension StickerKeyboard: UICollectionViewDataSource {
-
-    public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
-        return stickerPacks.count
-    }
-
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        // We could eventually use cells that lazy-load the sticker views
-        // when the cells becomes visible and eagerly unload them.
-        // But we probably won't need to do that.
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath)
-        for subview in cell.contentView.subviews {
-            subview.removeFromSuperview()
-        }
-
-        guard let stickerPack = stickerPacks[safe: indexPath.row] else {
-            owsFailDebug("Invalid index path: \(indexPath)")
-            return cell
-        }
-
-        // TODO: Actual size?
-        let iconView = StickerView(stickerInfo: stickerPack.coverInfo)
-
-        cell.contentView.addSubview(iconView)
-        iconView.autoPinEdgesToSuperviewEdges()
-
-        return cell
     }
 }

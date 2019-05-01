@@ -75,6 +75,7 @@
 		342BF263227B2D4E005CEAA9 /* OWS100RemoveTSRecipientsMigration+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF258227B2D4E005CEAA9 /* OWS100RemoveTSRecipientsMigration+SDS.swift */; };
 		342BF264227B2D4E005CEAA9 /* OWS108CallLoggingPreference+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF259227B2D4E005CEAA9 /* OWS108CallLoggingPreference+SDS.swift */; };
 		342BF265227B2D4E005CEAA9 /* OWS107LegacySounds+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF25A227B2D4E005CEAA9 /* OWS107LegacySounds+SDS.swift */; };
+		342BF24D227A03F8005CEAA9 /* StickerHorizontalListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF24C227A03F7005CEAA9 /* StickerHorizontalListView.swift */; };
 		3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3430FE171F7751D4000EC51B /* GiphyAPI.swift */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
@@ -767,6 +768,7 @@
 		342BF258227B2D4E005CEAA9 /* OWS100RemoveTSRecipientsMigration+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWS100RemoveTSRecipientsMigration+SDS.swift"; sourceTree = "<group>"; };
 		342BF259227B2D4E005CEAA9 /* OWS108CallLoggingPreference+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWS108CallLoggingPreference+SDS.swift"; sourceTree = "<group>"; };
 		342BF25A227B2D4E005CEAA9 /* OWS107LegacySounds+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWS107LegacySounds+SDS.swift"; sourceTree = "<group>"; };
+		342BF24C227A03F7005CEAA9 /* StickerHorizontalListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerHorizontalListView.swift; sourceTree = "<group>"; };
 		3430FE171F7751D4000EC51B /* GiphyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyAPI.swift; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dripicons-v2.ttf"; sourceTree = "<group>"; };
@@ -1760,6 +1762,7 @@
 			children = (
 				34C2EEB52270FF7B00BCA1D0 /* LinearHorizontalLayout.swift */,
 				344DC9AE226E483C004E7322 /* ManageStickersViewController.swift */,
+				342BF24C227A03F7005CEAA9 /* StickerHorizontalListView.swift */,
 				34C2EEAF2270B8E100BCA1D0 /* StickerKeyboard.swift */,
 				34C2EEB12270CC8D00BCA1D0 /* StickerPackCollectionView.swift */,
 				3416BCAD2277A24000E761B4 /* StickerPackDataSource.swift */,
@@ -3599,6 +3602,7 @@
 				349ED992221EE80D008045B0 /* AppPreferences.swift in Sources */,
 				34AC09E7211B39B100997B47 /* MessageApprovalViewController.swift in Sources */,
 				34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */,
+				342BF24D227A03F8005CEAA9 /* StickerHorizontalListView.swift in Sources */,
 				451F8A441FD7156B005CB9DA /* BlockListUIUtils.m in Sources */,
 				34AC0A1E211B39EA00997B47 /* ThreadViewHelper.m in Sources */,
 				34BBC85A220C7ADA00857249 /* ImageEditorTextItem.swift in Sources */,
