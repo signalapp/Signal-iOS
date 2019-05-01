@@ -3427,6 +3427,13 @@ typedef enum : NSUInteger {
 
 #pragma mark Accessory View
 
+- (void)cameraButtonPressed
+{
+    OWSAssertIsOnMainThread();
+
+    [self takePictureOrVideo];
+}
+
 - (void)attachmentButtonPressed
 {
     [self dismissKeyBoard];

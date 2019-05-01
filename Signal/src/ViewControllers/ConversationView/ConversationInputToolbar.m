@@ -57,6 +57,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
 @property (nonatomic, readonly) ConversationInputTextView *inputTextView;
 @property (nonatomic, readonly) UIStackView *hStack;
+@property (nonatomic, readonly) UIButton *cameraButton;
 @property (nonatomic, readonly) UIButton *attachmentButton;
 @property (nonatomic, readonly) UIButton *sendButton;
 @property (nonatomic, readonly) UIButton *voiceMemoButton;
@@ -143,6 +144,18 @@ const CGFloat kMaxTextViewHeight = 98;
 
     _textViewHeightConstraint = [self.inputTextView autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
 
+    _cameraButton = [[UIButton alloc] init];
+    self.cameraButton.accessibilityLabel
+        = NSLocalizedString(@"CAMERA_BUTTON_LABEL", @"Accessibility label for camera button.");
+    self.cameraButton.accessibilityHint = NSLocalizedString(
+        @"CAMERA_BUTTON_HINT", @"Accessibility hint describing what you can do with the camera button");
+    [self.cameraButton addTarget:self
+                          action:@selector(cameraButtonPressed)
+                forControlEvents:UIControlEventTouchUpInside];
+    [self.cameraButton setTemplateImageName:@"camera-filled-24" tintColor:Theme.navbarIconColor];
+    [self.cameraButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _cameraButton);
+
     _attachmentButton = [[UIButton alloc] init];
     self.attachmentButton.accessibilityLabel
         = NSLocalizedString(@"ATTACHMENT_LABEL", @"Accessibility label for attaching photos");
@@ -151,10 +164,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.attachmentButton addTarget:self
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
-    UIImage *attachmentImage = [UIImage imageNamed:@"ic_circled_plus"];
-    [self.attachmentButton setImage:[attachmentImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                           forState:UIControlStateNormal];
-    self.attachmentButton.tintColor = Theme.navbarIconColor;
+    [self.attachmentButton setTemplateImageName:@"ic_circled_plus" tintColor:Theme.navbarIconColor];
     [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
@@ -168,21 +178,13 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _sendButton);
 
-    UIImage *voiceMemoIcon = [UIImage imageNamed:@"voice-memo-button"];
-    OWSAssertDebug(voiceMemoIcon);
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.voiceMemoButton setImage:[voiceMemoIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                          forState:UIControlStateNormal];
-    self.voiceMemoButton.imageView.tintColor = Theme.navbarIconColor;
+    [self.voiceMemoButton setTemplateImageName:@"voice-memo-button" tintColor:Theme.navbarIconColor];
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
-    UIImage *stickerIcon = [UIImage imageNamed:@"sticker-filled-24"];
-    OWSAssertDebug(stickerIcon);
     _stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.stickerButton setImage:[stickerIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                        forState:UIControlStateNormal];
-    self.stickerButton.imageView.tintColor = Theme.navbarIconColor;
+    [self.stickerButton setTemplateImageName:@"sticker-filled-24" tintColor:Theme.navbarIconColor];
     [self.stickerButton addTarget:self
                            action:@selector(stickerButtonPressed)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -218,8 +220,8 @@ const CGFloat kMaxTextViewHeight = 98;
     [vStack setContentHuggingHorizontalLow];
     [vStack setCompressionResistanceHorizontalLow];
 
-    // TODO: Change this layout.
-    for (UIView *button in @[ self.attachmentButton, self.stickerButton, self.voiceMemoButton, self.sendButton ]) {
+    for (UIView *button in
+        @[ self.cameraButton, self.attachmentButton, self.stickerButton, self.voiceMemoButton, self.sendButton ]) {
         [button setContentHuggingHorizontalHigh];
         [button setCompressionResistanceHorizontalHigh];
     }
@@ -237,6 +239,7 @@ const CGFloat kMaxTextViewHeight = 98;
     // H Stack
     if (SSKFeatureFlags.stickerSend) {
         _hStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+            self.cameraButton,
             self.attachmentButton,
             vStackWrapper,
             self.stickerButton,
@@ -244,8 +247,13 @@ const CGFloat kMaxTextViewHeight = 98;
             self.sendButton
         ]];
     } else {
-        _hStack = [[UIStackView alloc]
-            initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, self.voiceMemoButton, self.sendButton ]];
+        _hStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+            self.cameraButton,
+            self.attachmentButton,
+            vStackWrapper,
+            self.voiceMemoButton,
+            self.sendButton
+        ]];
     }
     self.hStack.axis = UILayoutConstraintAxisHorizontal;
     self.hStack.layoutMarginsRelativeArrangement = YES;
@@ -913,6 +921,15 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSAssertDebug(self.inputToolbarDelegate);
 
     [self.inputToolbarDelegate sendButtonPressed];
+}
+
+- (void)cameraButtonPressed
+{
+    OWSAssertDebug(self.inputToolbarDelegate);
+
+    [self clearStickerKeyboard];
+
+    [self.inputToolbarDelegate cameraButtonPressed];
 }
 
 - (void)attachmentButtonPressed
