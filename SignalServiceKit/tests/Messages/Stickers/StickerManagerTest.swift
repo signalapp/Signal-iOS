@@ -27,7 +27,7 @@ class StickerManagerTest: SSKBaseTestSwift {
     }
 
     func testAllEmoji() {
-        XCTAssertNil(StickerManager.firstEmoji(inEmojiString: nil))
+        XCTAssertEqual([], StickerManager.allEmoji(inEmojiString: nil))
         XCTAssertEqual(["🇨🇦"], StickerManager.allEmoji(inEmojiString: "🇨🇦"))
         XCTAssertEqual(["🇨🇦", "🇨🇦"], StickerManager.allEmoji(inEmojiString: "🇨🇦🇨🇦"))
         XCTAssertEqual(["🇹🇹", "🌼", "🇹🇹", "🌼", "🇹🇹"], StickerManager.allEmoji(inEmojiString: "🇹🇹🌼🇹🇹🌼🇹🇹"))
@@ -60,8 +60,11 @@ class StickerManagerTest: SSKBaseTestSwift {
         // (and nothing else) that is associated with the sticker.
         XCTAssertEqual(1, StickerManager.suggestedStickers(forTextInput: "🇨🇦").count)
         XCTAssertEqual(1, StickerManager.suggestedStickers(forTextInput: "🌼").count)
-        XCTAssertEqual(1, StickerManager.suggestedStickers(forTextInput: "🇹🇹").count)
+        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🇹🇹").count)
+        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "a🇨🇦").count)
+        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🇨🇦a").count)
         XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🇨🇦🇹🇹").count)
+        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🌼🇨🇦").count)
         XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "This is a flag: 🇨🇦").count)
 
         databaseStorage.writeSwallowingErrors { (transaction) in
