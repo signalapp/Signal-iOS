@@ -1,9 +1,9 @@
 [submodule "ThirdParty/Carthage"]
 	path = ThirdParty/Carthage
-	url = https://github.com/loki-project/loki-messenger-carthage.git
+	url = https://github.com/loki-project/loki-messenger-ios-carthage.git
 [submodule "Pods"]
 	path = Pods
-	url = https://github.com/loki-project/loki-messenger-pods.git
+	url = https://github.com/loki-project/loki-messenger-ios-pods.git
 [submodule "ThirdParty/WebRTC"]
 	path = ThirdParty/WebRTC
 	url = https://github.com/signalapp/signal-webrtc-ios-artifacts
