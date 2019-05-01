@@ -2556,3 +2556,6 @@
 "Copy" = "Copy";
 "Copied ✓" = "Copied ✓";
 "Register" = "Register";
+"Restore" = "Restore";
+"Enter Your Mnemonic" = "Enter Your Mnemonic";
+"Restore Using Mnemonic" = "Restore Using Mnemonic";
