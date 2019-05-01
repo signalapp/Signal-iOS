@@ -1,6 +1,6 @@
 import PromiseKit
 
-public struct ServiceNode {
+public struct LokiMessagingAPI {
     
     private static var snodeURL: String { return textSecureServerURL }
     private static var port: String { return "8080" }

@@ -94,11 +94,11 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
         updateKeyPair()
         // Test
         // ================
-        let _ = ServiceNode.retrieveAllMessages().done { result in
+        let _ = LokiMessagingAPI.retrieveAllMessages().done { result in
             print(result.task.originalRequest!)
             print(result.task.response!)
         }
-        let _ = ServiceNode.sendTestMessage().done { result in
+        let _ = LokiMessagingAPI.sendTestMessage().done { result in
             print(result.task.originalRequest!)
             print(result.task.response!)
         }

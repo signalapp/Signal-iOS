@@ -559,7 +559,7 @@
 		B821F2FA2272CEEE002C88C0 /* OnboardingKeyPairViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* OnboardingKeyPairViewController.swift */; };
 		B8DC3D7722795E2400D909D6 /* ECKeyPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DC3D7422795E2300D909D6 /* ECKeyPair.swift */; };
 		B8DC3D7822795E2400D909D6 /* ECKeyPair.m in Sources */ = {isa = PBXBuildFile; fileRef = B8DC3D7522795E2300D909D6 /* ECKeyPair.m */; };
-		B8DC3D7922795E2400D909D6 /* ServiceNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DC3D7622795E2400D909D6 /* ServiceNode.swift */; };
+		B8DC3D7922795E2400D909D6 /* LokiMessagingAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DC3D7622795E2400D909D6 /* LokiMessagingAPI.swift */; };
 		B8DC3D8022795E4000D909D6 /* portuguese.txt in Resources */ = {isa = PBXBuildFile; fileRef = B8DC3D7B22795E4000D909D6 /* portuguese.txt */; };
 		B8DC3D8122795E4000D909D6 /* spanish.txt in Resources */ = {isa = PBXBuildFile; fileRef = B8DC3D7C22795E4000D909D6 /* spanish.txt */; };
 		B8DC3D8222795E4000D909D6 /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DC3D7D22795E4000D909D6 /* Mnemonic.swift */; };
@@ -1352,7 +1352,7 @@
 		B8DC3D7322795E2300D909D6 /* ECKeyPair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECKeyPair.h; sourceTree = "<group>"; };
 		B8DC3D7422795E2300D909D6 /* ECKeyPair.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPair.swift; sourceTree = "<group>"; };
 		B8DC3D7522795E2300D909D6 /* ECKeyPair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECKeyPair.m; sourceTree = "<group>"; };
-		B8DC3D7622795E2400D909D6 /* ServiceNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceNode.swift; sourceTree = "<group>"; };
+		B8DC3D7622795E2400D909D6 /* LokiMessagingAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LokiMessagingAPI.swift; sourceTree = "<group>"; };
 		B8DC3D7B22795E4000D909D6 /* portuguese.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = portuguese.txt; sourceTree = "<group>"; };
 		B8DC3D7C22795E4000D909D6 /* spanish.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = spanish.txt; sourceTree = "<group>"; };
 		B8DC3D7D22795E4000D909D6 /* Mnemonic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
@@ -2617,7 +2617,7 @@
 				B8DC3D7322795E2300D909D6 /* ECKeyPair.h */,
 				B8DC3D7522795E2300D909D6 /* ECKeyPair.m */,
 				B8DC3D7422795E2300D909D6 /* ECKeyPair.swift */,
-				B8DC3D7622795E2400D909D6 /* ServiceNode.swift */,
+				B8DC3D7622795E2400D909D6 /* LokiMessagingAPI.swift */,
 			);
 			path = LokiKit;
 			sourceTree = "<group>";
@@ -3805,7 +3805,7 @@
 				340FC8BD204DAC8D007AEB0F /* ShowGroupMembersViewController.m in Sources */,
 				3496956F21A301A100DCFE74 /* OWSBackupLazyRestore.swift in Sources */,
 				459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */,
-				B8DC3D7922795E2400D909D6 /* ServiceNode.swift in Sources */,
+				B8DC3D7922795E2400D909D6 /* LokiMessagingAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
