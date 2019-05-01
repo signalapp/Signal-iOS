@@ -37,7 +37,9 @@ class DownloadStickerOperation: OWSOperation {
             do {
                 let stickerData = try Data(contentsOf: URL(fileURLWithPath: filePath))
                 Logger.verbose("Skipping redundant operation.")
-                return success(stickerData)
+                success(stickerData)
+                self.reportSuccess()
+                return
             } catch let error as NSError {
                 owsFailDebug("Could not load installed sticker data: \(error)")
                 // Fall through and proceed with download.
