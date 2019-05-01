@@ -22,6 +22,8 @@ public class StickerPackViewController: OWSViewController {
 
     private let dataSource: StickerPackDataSource
 
+    private let hasDismissButton: Bool
+
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -30,8 +32,9 @@ public class StickerPackViewController: OWSViewController {
     }
 
     @objc
-    public required init(stickerPackInfo: StickerPackInfo) {
+    public required init(stickerPackInfo: StickerPackInfo, hasDismissButton: Bool) {
         self.stickerPackInfo = stickerPackInfo
+        self.hasDismissButton = hasDismissButton
         self.dataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPackInfo)
 
         super.init(nibName: nil, bundle: nil)
@@ -87,7 +90,9 @@ public class StickerPackViewController: OWSViewController {
             navigationItem.rightBarButtonItem = nil
         }
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didPressDismiss))
+        if hasDismissButton {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didPressDismiss))
+        }
     }
 
     override public func viewDidLoad() {

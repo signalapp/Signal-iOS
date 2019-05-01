@@ -7,6 +7,7 @@ import Foundation
 @objc
 public protocol StickerKeyboardDelegate {
     func didSelectSticker(stickerInfo: StickerInfo)
+    func presentManageStickersView()
 }
 
 // MARK: -
@@ -115,10 +116,12 @@ public class StickerKeyboard: UIStackView {
         headerView.layoutMargins = UIEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
         headerView.isLayoutMarginsRelativeArrangement = true
 
-        let searchButton = buildHeaderButton("search-24") { [weak self] in
-            self?.searchButtonWasTapped()
+        if FeatureFlags.stickerSearch {
+            let searchButton = buildHeaderButton("search-24") { [weak self] in
+                self?.searchButtonWasTapped()
+            }
+            headerView.addArrangedSubview(searchButton)
         }
-        headerView.addArrangedSubview(searchButton)
 
         let recentsButton = buildHeaderButton("recent-outline-24") { [weak self] in
             self?.recentsButtonWasTapped()
@@ -187,7 +190,7 @@ public class StickerKeyboard: UIStackView {
 
         Logger.verbose("")
 
-        // TODO:
+        delegate?.presentManageStickersView()
     }
 }
 

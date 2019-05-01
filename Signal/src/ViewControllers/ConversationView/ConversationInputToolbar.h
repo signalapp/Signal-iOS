@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sendSticker:(StickerInfo *)stickerInfo;
 
+- (void)presentManageStickersView;
+
 #pragma mark - Voice Memo
 
 - (void)voiceMemoGestureDidStart;
