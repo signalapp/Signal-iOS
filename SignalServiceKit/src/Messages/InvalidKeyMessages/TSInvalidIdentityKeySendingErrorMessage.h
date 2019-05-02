@@ -42,11 +42,10 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeySendingErrorMessage :
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
-                            read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
                        messageId:(NSString *)messageId
                     preKeyBundle:(PreKeyBundle *)preKeyBundle
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:messageId:preKeyBundle:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:recipientId:messageId:preKeyBundle:));
 
 // clang-format on
 

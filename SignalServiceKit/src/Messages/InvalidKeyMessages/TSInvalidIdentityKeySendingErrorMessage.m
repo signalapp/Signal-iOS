@@ -56,7 +56,6 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
-                            read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
                        messageId:(NSString *)messageId
                     preKeyBundle:(PreKeyBundle *)preKeyBundle
@@ -78,7 +77,6 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                      schemaVersion:schemaVersion
          errorMessageSchemaVersion:errorMessageSchemaVersion
                          errorType:errorType
-                              read:read
                        recipientId:recipientId];
 
     if (!self) {

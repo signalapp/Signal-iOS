@@ -45,7 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
-                            read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                        contactId:(NSString *)contactId
 {
@@ -67,7 +66,6 @@ NS_ASSUME_NONNULL_BEGIN
                      customMessage:customMessage
           infoMessageSchemaVersion:infoMessageSchemaVersion
                        messageType:messageType
-                              read:read
            unregisteredRecipientId:unregisteredRecipientId];
 
     if (!self) {

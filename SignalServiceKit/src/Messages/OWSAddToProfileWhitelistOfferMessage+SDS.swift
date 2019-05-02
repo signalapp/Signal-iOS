@@ -67,7 +67,6 @@ class OWSAddToProfileWhitelistOfferMessageSerializer: SDSSerializer {
             TSInteractionSerializer.customMessageColumn,
             TSInteractionSerializer.infoMessageSchemaVersionColumn,
             TSInteractionSerializer.messageTypeColumn,
-            TSInteractionSerializer.readColumn,
             TSInteractionSerializer.unregisteredRecipientIdColumn,
             TSInteractionSerializer.contactIdColumn
             ].map { $0.columnName }
@@ -91,7 +90,6 @@ class OWSAddToProfileWhitelistOfferMessageSerializer: SDSSerializer {
             self.model.customMessage ?? DatabaseValue.null,
             self.model.infoMessageSchemaVersion,
             self.model.messageType.rawValue,
-            self.model.wasRead,
             self.model.unregisteredRecipientId ?? DatabaseValue.null,
             self.model.contactId
 

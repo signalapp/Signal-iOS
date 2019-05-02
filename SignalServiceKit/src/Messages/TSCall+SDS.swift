@@ -55,8 +55,7 @@ class TSCallSerializer: SDSSerializer {
             TSInteractionSerializer.timestampColumn,
             TSInteractionSerializer.uniqueThreadIdColumn,
             TSInteractionSerializer.callSchemaVersionColumn,
-            TSInteractionSerializer.callTypeColumn,
-            TSInteractionSerializer.readColumn
+            TSInteractionSerializer.callTypeColumn
             ].map { $0.columnName }
     }
 
@@ -66,8 +65,7 @@ class TSCallSerializer: SDSSerializer {
             self.model.timestamp,
             self.model.uniqueThreadId,
             self.model.callSchemaVersion,
-            self.model.callType.rawValue,
-            self.model.wasRead
+            self.model.callType.rawValue
 
         ]
         if OWSIsDebugBuild() {

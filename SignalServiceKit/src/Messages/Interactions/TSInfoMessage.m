@@ -123,7 +123,6 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
-                            read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
 {
     self = [super initWithUniqueId:uniqueId
@@ -149,7 +148,6 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     _customMessage = customMessage;
     _infoMessageSchemaVersion = infoMessageSchemaVersion;
     _messageType = messageType;
-    _read = read;
     _unregisteredRecipientId = unregisteredRecipientId;
 
     return self;

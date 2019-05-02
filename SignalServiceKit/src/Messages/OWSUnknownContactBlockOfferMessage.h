@@ -35,10 +35,9 @@ __attribute__((deprecated)) @interface OWSUnknownContactBlockOfferMessage : TSEr
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
-                            read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
                        contactId:(NSString *)contactId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:contactId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:recipientId:contactId:));
 
 // clang-format on
 

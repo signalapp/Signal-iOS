@@ -67,7 +67,6 @@ class TSInfoMessageSerializer: SDSSerializer {
             TSInteractionSerializer.customMessageColumn,
             TSInteractionSerializer.infoMessageSchemaVersionColumn,
             TSInteractionSerializer.messageTypeColumn,
-            TSInteractionSerializer.readColumn,
             TSInteractionSerializer.unregisteredRecipientIdColumn
             ].map { $0.columnName }
     }
@@ -90,7 +89,6 @@ class TSInfoMessageSerializer: SDSSerializer {
             self.model.customMessage ?? DatabaseValue.null,
             self.model.infoMessageSchemaVersion,
             self.model.messageType.rawValue,
-            self.model.wasRead,
             self.model.unregisteredRecipientId ?? DatabaseValue.null
 
         ]
