@@ -9,7 +9,7 @@ private extension UInt64 {
 // UInt8 Array specific stuff we need
 private extension Array where Element == UInt8 {
     
-    // Convert a UInt64 into an array
+    // Convert a UInt64 into an array of size 8
     init(_ uint64: UInt64) {
         let array = stride(from: 0, to: 64, by: 8).reversed().map {
             UInt8(uint64 >> $0 & 0x000000FF)
@@ -90,9 +90,8 @@ public enum ProofOfWork {
         let nonceTrials = config.isDevelopment ? NonceTrials.development : NonceTrials.production
         let target = calcTarget(ttl: config.ttl, payloadLength: payload.count, nonceTrials: nonceTrials)
         
-        // Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
-        let maxSafeInteger = UInt64(pow(2, 53) - 1)
-        var trialValue = [UInt8](maxSafeInteger)
+        // Start with most the max value we can
+        var trialValue = [UInt8](repeating: UInt8.max, count: nonceLength)
         
         let initialHash = payload.sha512()
         var nonce = [UInt8](repeating: 0, count: nonceLength)
