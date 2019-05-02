@@ -54,6 +54,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
     TSGroupMetaMessageRequestInfo,
 };
 
+@class SDSAnyWriteTransaction;
 @class SSKProtoAttachmentPointer;
 @class SSKProtoContentBuilder;
 @class SSKProtoDataMessageBuilder;
@@ -242,7 +243,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 //
 // NOTE: This method should only be used by Debug UI, etc.
 - (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
-                       transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                       transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This method is used to record a failed send to all "sending" recipients.
 - (void)updateWithSendingError:(NSError *)error
