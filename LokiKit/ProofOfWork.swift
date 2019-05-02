@@ -1,63 +1,40 @@
 import CryptoSwift
 
-private extension Int {
+private extension UInt64 {
     init(_ decimal: Decimal) {
-        let double = NSDecimalNumber(decimal: decimal).doubleValue
-        self.init(double)
-    }
-}
-
-private extension UInt8 {
-    init(_ decimal: Decimal) {
-        self.init(Int(decimal))
-    }
-}
-
-private extension Decimal {
-    /// Get the remainder of a Decimal
-    static func %(lhs: Decimal, rhs: Int) -> Decimal {
-        return Decimal(Int(lhs) % rhs)
-    }
-    
-    /// Divide a Decimal by an Int
-    static func /(lhs: Decimal, rhs: Int) -> Decimal {
-        return lhs / Decimal(rhs)
-    }
-
-    /// Convert a Decimal to a UInt8 array of a given length
-    func toArray(ofLength length: Int) -> [UInt8] {
-        return (0..<length).map { i in
-            let n = length - (i + 1)
-            // 256 ** n is the value of one bit in arr[i], modulus to carry over
-            // (self / 256**n) % 256;
-            let denominator = pow(256, n)
-            let fraction = self / denominator
-            
-            // fraction % 256
-            let remainder = fraction % 256
-            return UInt8(remainder)
-        }
+        self.init(truncating: decimal as NSDecimalNumber)
     }
 }
 
 // UInt8 Array specific stuff we need
 private extension Array where Element == UInt8 {
     
+    // Convert a UInt64 into an array
+    init(_ uint64: UInt64) {
+        let array = stride(from: 0, to: 64, by: 8).reversed().map {
+            UInt8(uint64 >> $0 & 0x000000FF)
+        }
+        self.init(array)
+    }
+    
     /// Compare if lhs array is greater than rhs array
     static func >(lhs: [UInt8], rhs: [UInt8]) -> Bool {
         guard lhs.count == rhs.count else { return false }
         
-        // lhs is greater than rhs if any value in lhs is greater than the corresponding value in the rhs
-        return zip(lhs, rhs).contains { $0 > $1 }
+        for i in (0..<lhs.count) {
+            // If the values are the same then move onto the next pair
+            if (lhs[i] == rhs[i]) { continue }
+            return lhs[i] > rhs[i]
+        }
+        return false
     }
-    
     
     /// Increment the UInt8 array by a given amount
     ///
     /// - Parameter amount: The amount to increment by
     /// - Returns: The incrememnted array
     func increment(by amount: Int) -> [UInt8] {
-        var newNonce = [UInt8](self)
+        var newNonce = self
         var increment = amount
         for i in (0..<newNonce.count).reversed() {
             guard increment > 0 else { break }
@@ -77,26 +54,27 @@ private extension Array where Element == UInt8 {
  */
 public enum ProofOfWork {
     
-    static let nonceLength = 8
+    // If this changes then we also have to use something other than UInt64 to support the new length
+    private static let nonceLength = 8
 
     // Modify this value for difficulty scaling
-    enum NonceTrials {
+    private enum NonceTrials {
         static let development = 10
         static let production = 100
     }
     
-    public struct Configuration {
+    struct Configuration {
         var pubKey: String
         var data: String
         var timestamp: Date
-        var ttl: UInt
+        var ttl: Int
         var isDevelopment = false
         
-        func getPayload() -> [UInt8] {
-            let timestampString = String(timestamp.timeIntervalSince1970)
+        var payload: [UInt8] {
+            let timestampString = String(Int(timestamp.timeIntervalSince1970))
             let ttlString = String(ttl)
             let payloadString = timestampString + ttlString + pubKey + data
-            return [UInt8](payloadString.utf8)
+            return payloadString.bytes
         }
     }
     
@@ -107,16 +85,16 @@ public enum ProofOfWork {
     ///
     /// - Parameter config: The configuration data
     /// - Returns: A nonce string or nil if it failed
-    public static func calculate(with config: Configuration) -> String? {
-        let payload = config.getPayload()
+    static func calculate(with config: Configuration) -> String? {
+        let payload = config.payload
         let nonceTrials = config.isDevelopment ? NonceTrials.development : NonceTrials.production
         let target = calcTarget(ttl: config.ttl, payloadLength: payload.count, nonceTrials: nonceTrials)
         
         // Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
-        let maxSafeInteger = pow(2, 53) - 1
-        var trialValue = maxSafeInteger.toArray(ofLength: nonceLength)
+        let maxSafeInteger = UInt64(pow(2, 53) - 1)
+        var trialValue = [UInt8](maxSafeInteger)
         
-        let initialHash = [UInt8](config.data.sha512().utf8)
+        let initialHash = payload.sha512()
         var nonce = [UInt8](repeating: 0, count: nonceLength)
     
         while trialValue > target {
@@ -132,25 +110,23 @@ public enum ProofOfWork {
     }
     
     /// Calculate the UInt8 target we need to reach
-    private static func calcTarget(ttl: UInt, payloadLength: Int, nonceTrials: Int) -> [UInt8] {
-        let decimalTTL = Decimal(ttl)
-        let decimalPayloadLength = Decimal(payloadLength)
-        let decimalNonceTrials = Decimal(nonceTrials)
-        
-        let decimalTwo16 = pow(2, 16) - 1
-        let decimalTwo64 = pow(2, 64) - 1
-        
+    private static func calcTarget(ttl: Int, payloadLength: Int, nonceTrials: Int) -> [UInt8] {
+        let two16 = UInt64(pow(2, 16) - 1)
+        let two64 = UInt64(pow(2, 64) - 1)
+  
         // ttl converted to seconds
-        let ttlSeconds = decimalTTL / 1000
-    
-        // Do all the calculations
-        let totalLength = decimalPayloadLength + Decimal(nonceLength)
-        let ttlMult = ttlSeconds * totalLength
-        let innerFrac = ttlMult / decimalTwo16
-        let lenPlusInnerFrac = totalLength + innerFrac
-        let denominator = decimalNonceTrials * lenPlusInnerFrac
-        let targetNum = decimalTwo64 / Int(denominator)
+        let ttlSeconds = ttl / 1000
 
-        return targetNum.toArray(ofLength: nonceLength)
+        // Do all the calculations
+        let totalLength = UInt64(payloadLength + nonceLength)
+        let ttlMult = UInt64(ttlSeconds) * totalLength
+        
+        // UInt64 values
+        let innerFrac = ttlMult / two16
+        let lenPlusInnerFrac = totalLength + innerFrac
+        let denominator = UInt64(nonceTrials) * lenPlusInnerFrac
+        let targetNum = two64 / denominator
+
+        return [UInt8](targetNum)
     }
 }
