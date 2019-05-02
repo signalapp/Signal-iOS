@@ -78,10 +78,10 @@ extension TSInteractionSerializer {
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
-    static let receivedAtTimestampColumn = SDSColumnMetadata(columnName: "receivedAtTimestamp", columnType: .int64, columnIndex: 2)
-    static let sortIdColumn = SDSColumnMetadata(columnName: "sortId", columnType: .int64, columnIndex: 3)
+    static let receivedAtTimestampColumn = SDSColumnMetadata(columnName: "receivedAtTimestamp", columnType: .int64, columnIndex: 3)
     static let timestampColumn = SDSColumnMetadata(columnName: "timestamp", columnType: .int64, columnIndex: 4)
     static let uniqueThreadIdColumn = SDSColumnMetadata(columnName: "uniqueThreadId", columnType: .unicodeString, columnIndex: 5)
     // Subclass properties
@@ -138,9 +138,9 @@ extension TSInteractionSerializer {
     //       tables that store models.
     public static let table = SDSTableMetadata(tableName: "model_TSInteraction", columns: [
         recordTypeColumn,
+        idColumn,
         uniqueIdColumn,
         receivedAtTimestampColumn,
-        sortIdColumn,
         timestampColumn,
         uniqueThreadIdColumn,
         attachmentFilenameMapColumn,
@@ -222,7 +222,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
 
@@ -236,7 +236,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -275,7 +275,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -325,7 +325,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -377,7 +377,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -427,7 +427,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -481,7 +481,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -536,7 +536,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -588,7 +588,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -642,7 +642,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -703,7 +703,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -757,7 +757,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -817,7 +817,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -866,7 +866,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -935,7 +935,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let callSchemaVersion = UInt(try deserializer.int64(at: callSchemaVersionColumn.columnIndex))
@@ -958,7 +958,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let beforeInteractionId = try deserializer.string(at: beforeInteractionIdColumn.columnIndex)
@@ -982,7 +982,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
 
@@ -1002,7 +1002,6 @@ extension TSInteractionSerializer {
 
 @objc
 extension TSInteraction {
-    @objc
     public func anySave(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -1036,7 +1035,6 @@ extension TSInteraction {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    @objc
     public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (TSInteraction) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
@@ -1054,7 +1052,6 @@ extension TSInteraction {
         dbCopy.anySave(transaction: transaction)
     }
 
-    @objc
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -1104,7 +1101,6 @@ extension TSInteraction {
     }
 
     // Fetches a single model by "unique id".
-    @objc
     public class func anyFetch(uniqueId: String,
                                transaction: SDSAnyReadTransaction) -> TSInteraction? {
         assert(uniqueId.count > 0)
@@ -1135,7 +1131,6 @@ extension TSInteraction {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    @objc
     public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (TSInteraction) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
@@ -1164,7 +1159,6 @@ extension TSInteraction {
     }
 
     // Does not order the results.
-    @objc
     public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSInteraction] {
         var result = [TSInteraction]()
         anyVisitAll(transaction: transaction) { (model) in
@@ -1238,7 +1232,6 @@ class TSInteractionSerializer: SDSSerializer {
     public func updateColumnNames() -> [String] {
         return [
             TSInteractionSerializer.receivedAtTimestampColumn,
-            TSInteractionSerializer.sortIdColumn,
             TSInteractionSerializer.timestampColumn,
             TSInteractionSerializer.uniqueThreadIdColumn
             ].map { $0.columnName }
@@ -1247,7 +1240,6 @@ class TSInteractionSerializer: SDSSerializer {
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
             self.model.receivedAtTimestamp,
-            self.model.sortId,
             self.model.timestamp,
             self.model.uniqueThreadId
 

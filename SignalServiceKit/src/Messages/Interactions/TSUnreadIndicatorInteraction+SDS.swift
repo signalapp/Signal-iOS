@@ -52,7 +52,6 @@ class TSUnreadIndicatorInteractionSerializer: SDSSerializer {
     public func updateColumnNames() -> [String] {
         return [
             TSInteractionSerializer.receivedAtTimestampColumn,
-            TSInteractionSerializer.sortIdColumn,
             TSInteractionSerializer.timestampColumn,
             TSInteractionSerializer.uniqueThreadIdColumn
             ].map { $0.columnName }
@@ -61,7 +60,6 @@ class TSUnreadIndicatorInteractionSerializer: SDSSerializer {
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
             self.model.receivedAtTimestamp,
-            self.model.sortId,
             self.model.timestamp,
             self.model.uniqueThreadId
 

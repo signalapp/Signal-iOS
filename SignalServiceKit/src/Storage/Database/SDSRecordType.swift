@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright © 2019 Signal. All rights reserved.
 //
 
 import Foundation

@@ -30,17 +30,19 @@ extension OWSMessageContentJobSerializer {
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
-    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .int64, columnIndex: 2)
-    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, columnIndex: 3)
-    static let plaintextDataColumn = SDSColumnMetadata(columnName: "plaintextData", columnType: .blob, isOptional: true, columnIndex: 4)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, columnIndex: 5)
+    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .int64, columnIndex: 3)
+    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, columnIndex: 4)
+    static let plaintextDataColumn = SDSColumnMetadata(columnName: "plaintextData", columnType: .blob, isOptional: true, columnIndex: 5)
+    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, columnIndex: 6)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
     public static let table = SDSTableMetadata(tableName: "model_OWSMessageContentJob", columns: [
         recordTypeColumn,
+        idColumn,
         uniqueIdColumn,
         createdAtColumn,
         envelopeDataColumn,
@@ -97,7 +99,6 @@ extension OWSMessageContentJobSerializer {
 
 @objc
 extension OWSMessageContentJob {
-    @objc
     public func anySave(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -131,7 +132,6 @@ extension OWSMessageContentJob {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    @objc
     public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (OWSMessageContentJob) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
@@ -149,7 +149,6 @@ extension OWSMessageContentJob {
         dbCopy.anySave(transaction: transaction)
     }
 
-    @objc
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -199,7 +198,6 @@ extension OWSMessageContentJob {
     }
 
     // Fetches a single model by "unique id".
-    @objc
     public class func anyFetch(uniqueId: String,
                                transaction: SDSAnyReadTransaction) -> OWSMessageContentJob? {
         assert(uniqueId.count > 0)
@@ -230,7 +228,6 @@ extension OWSMessageContentJob {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    @objc
     public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSMessageContentJob) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
@@ -259,7 +256,6 @@ extension OWSMessageContentJob {
     }
 
     // Does not order the results.
-    @objc
     public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSMessageContentJob] {
         var result = [OWSMessageContentJob]()
         anyVisitAll(transaction: transaction) { (model) in

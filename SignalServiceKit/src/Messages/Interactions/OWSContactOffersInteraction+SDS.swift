@@ -52,7 +52,6 @@ class OWSContactOffersInteractionSerializer: SDSSerializer {
     public func updateColumnNames() -> [String] {
         return [
             TSInteractionSerializer.receivedAtTimestampColumn,
-            TSInteractionSerializer.sortIdColumn,
             TSInteractionSerializer.timestampColumn,
             TSInteractionSerializer.uniqueThreadIdColumn,
             TSInteractionSerializer.beforeInteractionIdColumn,
@@ -66,7 +65,6 @@ class OWSContactOffersInteractionSerializer: SDSSerializer {
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
             self.model.receivedAtTimestamp,
-            self.model.sortId,
             self.model.timestamp,
             self.model.uniqueThreadId,
             self.model.beforeInteractionId,

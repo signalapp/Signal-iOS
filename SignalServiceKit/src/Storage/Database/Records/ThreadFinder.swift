@@ -80,14 +80,14 @@ struct GRDBThreadFinder: ThreadFinder {
             SELECT COUNT(*)
             FROM (
                 SELECT
-                    CASE maxInteractionSortId <= \(threadColumn: .archivedAsOfMessageSortId)
+                    CASE maxInteractionId <= \(threadColumn: .archivedAsOfMessageSortId)
                         WHEN 1 THEN 1
                         ELSE 0
                     END isArchived
                 FROM \(ThreadRecord.databaseTableName)
                 LEFT JOIN (
                     SELECT
-                        MAX(\(interactionColumn: .sortId)) as maxInteractionSortId,
+                        MAX(\(interactionColumn: .id)) as maxInteractionId,
                         \(interactionColumn: .threadUniqueId)
                     FROM \(InteractionRecord.databaseTableName)
                     GROUP BY \(interactionColumn: .threadUniqueId)
@@ -110,20 +110,20 @@ struct GRDBThreadFinder: ThreadFinder {
             FROM (
                 SELECT
                     \(ThreadRecord.databaseTableName).*,
-                    CASE maxInteractionSortId <= \(threadColumn: .archivedAsOfMessageSortId)
+                    CASE maxInteractionId <= \(threadColumn: .archivedAsOfMessageSortId)
                         WHEN 1 THEN 1
                         ELSE 0
                     END isArchived
                 FROM \(ThreadRecord.databaseTableName)
                 LEFT JOIN (
                     SELECT
-                        MAX(\(interactionColumn: .sortId)) as maxInteractionSortId,
+                        MAX(\(interactionColumn: .id)) as maxInteractionId,
                         \(interactionColumn: .threadUniqueId)
                     FROM \(InteractionRecord.databaseTableName)
                     GROUP BY \(interactionColumn: .threadUniqueId)
                 ) latestInteractions
                 ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
-                ORDER BY maxInteractionSortId DESC
+                ORDER BY maxInteractionId DESC
             )
             WHERE isArchived = ?
         """,

@@ -52,7 +52,6 @@ class TSInvalidIdentityKeySendingErrorMessageSerializer: SDSSerializer {
     public func updateColumnNames() -> [String] {
         return [
             TSInteractionSerializer.receivedAtTimestampColumn,
-            TSInteractionSerializer.sortIdColumn,
             TSInteractionSerializer.timestampColumn,
             TSInteractionSerializer.uniqueThreadIdColumn,
             TSInteractionSerializer.attachmentIdsColumn,
@@ -77,7 +76,6 @@ class TSInvalidIdentityKeySendingErrorMessageSerializer: SDSSerializer {
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
             self.model.receivedAtTimestamp,
-            self.model.sortId,
             self.model.timestamp,
             self.model.uniqueThreadId,
             SDSDeserializer.archive(self.model.attachmentIds) ?? DatabaseValue.null,
