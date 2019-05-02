@@ -483,7 +483,7 @@ public extension UIImageView {
 @objc
 public extension UISearchBar {
     @objc
-    func textField() -> UITextField? {
+    var textField: UITextField? {
         guard let textField = self.value(forKey: "_searchField") as? UITextField else {
             owsFailDebug("Couldn't find UITextField.")
             return nil

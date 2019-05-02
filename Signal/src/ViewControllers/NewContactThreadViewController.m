@@ -126,6 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
     searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
     [searchBar sizeToFit];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
+    searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"contact_search");
 
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
