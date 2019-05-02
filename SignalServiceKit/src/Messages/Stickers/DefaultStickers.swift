@@ -12,7 +12,7 @@ class DefaultStickerPacks {
             owsFailDebug("Invalid packId")
             return nil
         }
-        assert(packId.count == StickerManager.packIdLength)
+        assert(packId.count > 0)
         guard let packKey = Data.data(fromHex: packKeyHex) else {
             owsFailDebug("Invalid packKey")
             return nil

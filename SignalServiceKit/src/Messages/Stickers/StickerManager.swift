@@ -13,9 +13,6 @@ public class StickerManager: NSObject {
     // MARK: - Constants
 
     @objc
-    public static let packIdLength: UInt = 16
-
-    @objc
     public static let packKeyLength: UInt = 32
 
     // MARK: - Notifications

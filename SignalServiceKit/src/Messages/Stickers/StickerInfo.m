@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (StickerInfo *)defaultValue
 {
-    return [[StickerInfo alloc] initWithPackId:[Randomness generateRandomBytes:(int)StickerManager.packIdLength]
+    return [[StickerInfo alloc] initWithPackId:[Randomness generateRandomBytes:16]
                                        packKey:[Randomness generateRandomBytes:(int)StickerManager.packKeyLength]
                                      stickerId:0];
 }
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isValid
 {
-    return (self.packId.length == StickerManager.packIdLength && self.packKey.length == StickerManager.packKeyLength);
+    return (self.packId.length > 0 && self.packKey.length == StickerManager.packKeyLength);
 }
 
 @end
@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isValid
 {
-    return (self.packId.length == StickerManager.packIdLength && self.packKey.length == StickerManager.packKeyLength);
+    return (self.packId.length > 0 && self.packKey.length == StickerManager.packKeyLength);
 }
 
 @end
