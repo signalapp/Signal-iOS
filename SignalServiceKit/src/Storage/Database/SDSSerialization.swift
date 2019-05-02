@@ -11,7 +11,7 @@ public class SDSSerialization: NSObject {
 
     // MARK: - Save (Upsert)
 
-    class func save(entity: SDSSerializable,
+    public class func save(entity: SDSSerializable,
                     transaction: GRDBWriteTransaction) {
         let serializer = entity.serializer
         let tableMetadata = serializer.serializableColumnTableMetadata()
@@ -115,7 +115,7 @@ public class SDSSerialization: NSObject {
 
     // MARK: - Remove
 
-    class func delete(entity: SDSSerializable,
+    public class func delete(entity: SDSSerializable,
                     transaction: GRDBWriteTransaction) {
         let serializer = entity.serializer
         let database = transaction.database

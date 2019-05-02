@@ -29,21 +29,10 @@ $REPO_ROOT/Scripts/sds_codegen/sds_parse_swift_bridging.py --src-path  . --swift
 
 
 # We parse Obj-C source files (.m only, not .mm yet) to extract simple class descriptions (class name, base class, property names and types, etc.)
-#
-# Common
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Storage/TSYapDatabaseObject.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
-
-# Threads
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Contacts/TSThread.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Contacts/Threads/TSContactThread.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Contacts/Threads/TSGroupThread.m --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
-
-# Interactions
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path Signal/src/ViewControllers/ConversationView/TypingIndicatorInteraction.swift --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Messages --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
-
-# Other
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src/Messages/Stickers --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/ --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalShareExtension/ --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalMessaging --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+$REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path Signal --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
 
 # We parse Swift source files to extract simple class descriptions (class name, base class, property names and types, etc.)
 #
@@ -52,4 +41,10 @@ $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/src
 # $REPO_ROOT/Scripts/sds_codegen/sds_parse_swift.py --src-path SignalDataStoreCommon/
 
 # We generate Swift extensions to handle serialization, etc. for models.
-$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalServiceKit/  --search-path . --record-type-swift-path SignalServiceKit/src/Storage/Database/SDSRecordType.swift  --record-type-json-path $REPO_ROOT/Scripts/sds_codegen/sds_config/sds_record_type_map.json --config-json-path $REPO_ROOT/Scripts/sds_codegen/sds-config/sds-config.json
+RECORD_TYPE_SWIFT="SignalServiceKit/src/Storage/Database/SDSRecordType.swift"
+RECORD_TYPE_JSON="$REPO_ROOT/Scripts/sds_codegen/sds_config/sds_record_type_map.json"
+CONFIG_JSON="$REPO_ROOT/Scripts/sds_codegen/sds-config/sds-config.json"
+$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalServiceKit/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
+$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalShareExtension/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
+$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalMessaging/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
+$REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path Signal  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON

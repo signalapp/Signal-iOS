@@ -22,6 +22,15 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/NSAttributedString+OWS.h>
 #import <SignalMessaging/NewNonContactConversationViewController.h>
+#import <SignalMessaging/OWS100RemoveTSRecipientsMigration.h>
+#import <SignalMessaging/OWS101ExistingUsersBlockOnIdentityChange.h>
+#import <SignalMessaging/OWS102MoveLoggingPreferenceToUserDefaults.h>
+#import <SignalMessaging/OWS103EnableVideoCalling.h>
+#import <SignalMessaging/OWS104CreateRecipientIdentities.h>
+#import <SignalMessaging/OWS105AttachmentFilePaths.h>
+#import <SignalMessaging/OWS107LegacySounds.h>
+#import <SignalMessaging/OWS108CallLoggingPreference.h>
+#import <SignalMessaging/OWS109OutgoingMessageState.h>
 #import <SignalMessaging/OWSAnyTouchGestureRecognizer.h>
 #import <SignalMessaging/OWSAudioPlayer.h>
 #import <SignalMessaging/OWSContactAvatarBuilder.h>

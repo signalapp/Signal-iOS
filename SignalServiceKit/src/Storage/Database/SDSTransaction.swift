@@ -80,7 +80,7 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction {
         case grdbWrite(_ transaction: GRDBWriteTransaction)
     }
 
-    let writeTransaction: WriteTransactionType
+    public let writeTransaction: WriteTransactionType
 
     init(_ writeTransaction: WriteTransactionType) {
         self.writeTransaction = writeTransaction
