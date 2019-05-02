@@ -220,7 +220,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let beforeInteractionId = try deserializer.string(at: beforeInteractionIdColumn.columnIndex)
@@ -443,7 +443,7 @@ extension TSInteractionSerializer {
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
             let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
             let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
@@ -931,148 +931,6 @@ extension TSInteractionSerializer {
                                      sourceDeviceId: sourceDeviceId,
                                      wasReceivedByUD: wasReceivedByUD)
 
-<<<<<<< HEAD
-        case .outgoingMessage:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
-            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
-            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
-            let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
-            let body = try deserializer.optionalString(at: bodyColumn.columnIndex)
-            let contactShareSerialized: Data? = try deserializer.optionalBlob(at: contactShareColumn.columnIndex)
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt = try deserializer.uint64(at: expireStartedAtColumn.columnIndex)
-            let expiresAt = try deserializer.uint64(at: expiresAtColumn.columnIndex)
-            let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
-            let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
-            let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
-            let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
-            let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
-            let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
-            guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
-               throw SDSError.invalidValue
-            }
-            let hasLegacyMessageState = try deserializer.bool(at: hasLegacyMessageStateColumn.columnIndex)
-            let hasSyncedTranscript = try deserializer.bool(at: hasSyncedTranscriptColumn.columnIndex)
-            let isFromLinkedDevice = try deserializer.bool(at: isFromLinkedDeviceColumn.columnIndex)
-            let isVoiceMessage = try deserializer.bool(at: isVoiceMessageColumn.columnIndex)
-            let legacyMessageStateRaw = Int(try deserializer.int(at: legacyMessageStateColumn.columnIndex))
-            guard let legacyMessageState = TSOutgoingMessageState(rawValue: legacyMessageStateRaw) else {
-               throw SDSError.invalidValue
-            }
-            let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
-            let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
-            let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
-
-            return TSOutgoingMessage(uniqueId: uniqueId,
-                                     receivedAtTimestamp: receivedAtTimestamp,
-                                     sortId: sortId,
-                                     timestamp: timestamp,
-                                     uniqueThreadId: uniqueThreadId,
-                                     attachmentIds: attachmentIds,
-                                     body: body,
-                                     contactShare: contactShare,
-                                     expireStartedAt: expireStartedAt,
-                                     expiresAt: expiresAt,
-                                     expiresInSeconds: expiresInSeconds,
-                                     linkPreview: linkPreview,
-                                     messageSticker: messageSticker,
-                                     quotedMessage: quotedMessage,
-                                     schemaVersion: schemaVersion,
-                                     attachmentFilenameMap: attachmentFilenameMap,
-                                     customMessage: customMessage,
-                                     groupMetaMessage: groupMetaMessage,
-                                     hasLegacyMessageState: hasLegacyMessageState,
-                                     hasSyncedTranscript: hasSyncedTranscript,
-                                     isFromLinkedDevice: isFromLinkedDevice,
-                                     isVoiceMessage: isVoiceMessage,
-                                     legacyMessageState: legacyMessageState,
-                                     legacyWasDelivered: legacyWasDelivered,
-                                     mostRecentFailureText: mostRecentFailureText,
-                                     recipientStateMap: recipientStateMap)
-
-||||||| merged common ancestors
-        case .outgoingMessage:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
-            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
-            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
-            let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
-            let body = try deserializer.optionalString(at: bodyColumn.columnIndex)
-            let contactShareSerialized: Data? = try deserializer.optionalBlob(at: contactShareColumn.columnIndex)
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt = try deserializer.uint64(at: expireStartedAtColumn.columnIndex)
-            let expiresAt = try deserializer.uint64(at: expiresAtColumn.columnIndex)
-            let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
-            let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
-            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
-            let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
-            let attachmentFilenameMapSerialized: Data = try deserializer.blob(at: attachmentFilenameMapColumn.columnIndex)
-            let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
-            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
-            let groupMetaMessageRaw = Int(try deserializer.int(at: groupMetaMessageColumn.columnIndex))
-            guard let groupMetaMessage = TSGroupMetaMessage(rawValue: groupMetaMessageRaw) else {
-               throw SDSError.invalidValue
-            }
-            let hasLegacyMessageState = try deserializer.bool(at: hasLegacyMessageStateColumn.columnIndex)
-            let hasSyncedTranscript = try deserializer.bool(at: hasSyncedTranscriptColumn.columnIndex)
-            let isFromLinkedDevice = try deserializer.bool(at: isFromLinkedDeviceColumn.columnIndex)
-            let isVoiceMessage = try deserializer.bool(at: isVoiceMessageColumn.columnIndex)
-            let legacyMessageStateRaw = Int(try deserializer.int(at: legacyMessageStateColumn.columnIndex))
-            guard let legacyMessageState = TSOutgoingMessageState(rawValue: legacyMessageStateRaw) else {
-               throw SDSError.invalidValue
-            }
-            let legacyWasDelivered = try deserializer.bool(at: legacyWasDeliveredColumn.columnIndex)
-            let mostRecentFailureText = try deserializer.optionalString(at: mostRecentFailureTextColumn.columnIndex)
-            let recipientStateMapSerialized: Data? = try deserializer.optionalBlob(at: recipientStateMapColumn.columnIndex)
-            let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
-
-            return TSOutgoingMessage(uniqueId: uniqueId,
-                                     receivedAtTimestamp: receivedAtTimestamp,
-                                     sortId: sortId,
-                                     timestamp: timestamp,
-                                     uniqueThreadId: uniqueThreadId,
-                                     attachmentIds: attachmentIds,
-                                     body: body,
-                                     contactShare: contactShare,
-                                     expireStartedAt: expireStartedAt,
-                                     expiresAt: expiresAt,
-                                     expiresInSeconds: expiresInSeconds,
-                                     linkPreview: linkPreview,
-                                     messageSticker: messageSticker,
-                                     quotedMessage: quotedMessage,
-                                     schemaVersion: schemaVersion,
-                                     attachmentFilenameMap: attachmentFilenameMap,
-                                     customMessage: customMessage,
-                                     groupMetaMessage: groupMetaMessage,
-                                     hasLegacyMessageState: hasLegacyMessageState,
-                                     hasSyncedTranscript: hasSyncedTranscript,
-                                     isFromLinkedDevice: isFromLinkedDevice,
-                                     isVoiceMessage: isVoiceMessage,
-                                     legacyMessageState: legacyMessageState,
-                                     legacyWasDelivered: legacyWasDelivered,
-                                     mostRecentFailureText: mostRecentFailureText,
-                                     recipientStateMap: recipientStateMap)
-
-=======
->>>>>>> Generate SDS extensions for all models in Signal, SignalMessaging, SAE, SSK.
         case .call:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
@@ -1092,63 +950,7 @@ extension TSInteractionSerializer {
                           timestamp: timestamp,
                           uniqueThreadId: uniqueThreadId,
                           callSchemaVersion: callSchemaVersion,
-<<<<<<< HEAD
-                          callType: callType,
-                          read: read)
-
-        case .contactOffersInteraction:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
-            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
-            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
-            let beforeInteractionId = try deserializer.string(at: beforeInteractionIdColumn.columnIndex)
-            let hasAddToContactsOffer = try deserializer.bool(at: hasAddToContactsOfferColumn.columnIndex)
-            let hasAddToProfileWhitelistOffer = try deserializer.bool(at: hasAddToProfileWhitelistOfferColumn.columnIndex)
-            let hasBlockOffer = try deserializer.bool(at: hasBlockOfferColumn.columnIndex)
-            let recipientId = try deserializer.string(at: recipientIdColumn.columnIndex)
-
-            return OWSContactOffersInteraction(uniqueId: uniqueId,
-                                               receivedAtTimestamp: receivedAtTimestamp,
-                                               sortId: sortId,
-                                               timestamp: timestamp,
-                                               uniqueThreadId: uniqueThreadId,
-                                               beforeInteractionId: beforeInteractionId,
-                                               hasAddToContactsOffer: hasAddToContactsOffer,
-                                               hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer,
-                                               hasBlockOffer: hasBlockOffer,
-                                               recipientId: recipientId)
-||||||| merged common ancestors
-                          callType: callType,
-                          read: read)
-
-        case .contactOffersInteraction:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
-            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
-            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
-            let beforeInteractionId = try deserializer.string(at: beforeInteractionIdColumn.columnIndex)
-            let hasAddToContactsOffer = try deserializer.bool(at: hasAddToContactsOfferColumn.columnIndex)
-            let hasAddToProfileWhitelistOffer = try deserializer.bool(at: hasAddToProfileWhitelistOfferColumn.columnIndex)
-            let hasBlockOffer = try deserializer.bool(at: hasBlockOfferColumn.columnIndex)
-            let recipientId = try deserializer.string(at: recipientIdColumn.columnIndex)
-
-            return OWSContactOffersInteraction(uniqueId: uniqueId,
-                                               receivedAtTimestamp: receivedAtTimestamp,
-                                               sortId: sortId,
-                                               timestamp: timestamp,
-                                               uniqueThreadId: uniqueThreadId,
-                                               beforeInteractionId: beforeInteractionId,
-                                               hasAddToContactsOffer: hasAddToContactsOffer,
-                                               hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer,
-                                               hasBlockOffer: hasBlockOffer,
-                                               recipientId: recipientId)
-=======
                           callType: callType)
->>>>>>> Generate SDS extensions for all models in Signal, SignalMessaging, SAE, SSK.
 
         case .interaction:
 

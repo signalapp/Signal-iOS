@@ -62,8 +62,6 @@ def update_objc_snippet(file_path, snippet):
 
 global_class_map = {}
 global_subclass_map = {}
-
-global global_args
 global_args = None
 
 # ---- 
@@ -1465,7 +1463,6 @@ if __name__ == "__main__":
     parser.add_argument('--config-json-path', required=True, help='path of the json file with code generation config info.')
     args = parser.parse_args()
     
-    global global_args
     global_args = args
     
     src_path = os.path.abspath(args.src_path)

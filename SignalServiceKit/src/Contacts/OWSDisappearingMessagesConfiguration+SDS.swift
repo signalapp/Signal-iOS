@@ -30,15 +30,17 @@ extension OWSDisappearingMessagesConfigurationSerializer {
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
-    static let durationSecondsColumn = SDSColumnMetadata(columnName: "durationSeconds", columnType: .int, columnIndex: 2)
-    static let enabledColumn = SDSColumnMetadata(columnName: "enabled", columnType: .int, columnIndex: 3)
+    static let durationSecondsColumn = SDSColumnMetadata(columnName: "durationSeconds", columnType: .int, columnIndex: 3)
+    static let enabledColumn = SDSColumnMetadata(columnName: "enabled", columnType: .int, columnIndex: 4)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
     public static let table = SDSTableMetadata(tableName: "model_OWSDisappearingMessagesConfiguration", columns: [
         recordTypeColumn,
+        idColumn,
         uniqueIdColumn,
         durationSecondsColumn,
         enabledColumn
@@ -89,7 +91,6 @@ extension OWSDisappearingMessagesConfigurationSerializer {
 
 @objc
 extension OWSDisappearingMessagesConfiguration {
-    @objc
     public func anySave(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -123,7 +124,6 @@ extension OWSDisappearingMessagesConfiguration {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    @objc
     public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (OWSDisappearingMessagesConfiguration) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
@@ -141,7 +141,6 @@ extension OWSDisappearingMessagesConfiguration {
         dbCopy.anySave(transaction: transaction)
     }
 
-    @objc
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -191,7 +190,6 @@ extension OWSDisappearingMessagesConfiguration {
     }
 
     // Fetches a single model by "unique id".
-    @objc
     public class func anyFetch(uniqueId: String,
                                transaction: SDSAnyReadTransaction) -> OWSDisappearingMessagesConfiguration? {
         assert(uniqueId.count > 0)
@@ -222,7 +220,6 @@ extension OWSDisappearingMessagesConfiguration {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    @objc
     public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSDisappearingMessagesConfiguration) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
@@ -251,7 +248,6 @@ extension OWSDisappearingMessagesConfiguration {
     }
 
     // Does not order the results.
-    @objc
     public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSDisappearingMessagesConfiguration] {
         var result = [OWSDisappearingMessagesConfiguration]()
         anyVisitAll(transaction: transaction) { (model) in
