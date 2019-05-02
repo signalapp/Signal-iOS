@@ -48,6 +48,26 @@ const CGFloat kMaxTextViewHeight = 98;
 
 #pragma mark -
 
+@interface FirstResponderHostView : UIView
+
+// Redeclare this property as writable.
+@property (nonatomic, nullable) UIView *inputView;
+
+@end
+
+#pragma mark -
+
+@implementation FirstResponderHostView
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+@end
+
+#pragma mark -
+
 @interface ConversationInputToolbar () <ConversationTextViewToolbarDelegate,
     QuotedReplyPreviewDelegate,
     LinkPreviewViewDraftDelegate,
@@ -64,7 +84,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, readonly) UIButton *stickerButton;
 @property (nonatomic, readonly) UIView *quotedReplyWrapper;
 @property (nonatomic, readonly) UIView *linkPreviewWrapper;
-@property (nonatomic, readonly) UIView *dismissStickerKeyboardView;
+@property (nonatomic, readonly) FirstResponderHostView *stickerKeyboardResponder;
 
 @property (nonatomic) CGFloat textViewHeight;
 @property (nonatomic, readonly) NSLayoutConstraint *textViewHeightConstraint;
@@ -265,26 +285,6 @@ const CGFloat kMaxTextViewHeight = 98;
     self.hStack.preservesSuperviewLayoutMargins = NO;
     self.preservesSuperviewLayoutMargins = NO;
 
-    // Dismiss Sticker Keyboard
-    //
-    // This view lets users dismiss the sticker keyboard by tapping on the text input.
-    // Be definition, the text input view is empty when the sticker keyboard is visible.
-    // The intention is to avoid "first responder" juggling.
-    _dismissStickerKeyboardView = [UIView new];
-    [self addSubview:self.dismissStickerKeyboardView];
-    [self.dismissStickerKeyboardView setContentHuggingLow];
-    [self.dismissStickerKeyboardView setCompressionResistanceLow];
-    [self.dismissStickerKeyboardView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:vStackWrapper];
-    [self.dismissStickerKeyboardView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:vStackWrapper];
-    [self.dismissStickerKeyboardView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:vStackWrapper];
-    [self.dismissStickerKeyboardView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.inputTextView];
-    self.dismissStickerKeyboardView.userInteractionEnabled = YES;
-    [self.dismissStickerKeyboardView
-        addGestureRecognizer:[[UITapGestureRecognizer alloc]
-                                 initWithTarget:self
-                                         action:@selector(handleTapDismissStickerKeyboard:)]];
-    self.dismissStickerKeyboardView.hidden = YES;
-
     // Input buttons
     [self addSubview:self.voiceMemoButton];
     [self.voiceMemoButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.inputTextView];
@@ -311,6 +311,15 @@ const CGFloat kMaxTextViewHeight = 98;
     [borderView autoPinToEdgesOfView:vStackWrapper];
     [borderView setCompressionResistanceLow];
     [borderView setContentHuggingLow];
+
+    // Sticker Keyboard Responder
+
+    _stickerKeyboardResponder = [FirstResponderHostView new];
+    StickerKeyboard *stickerKeyboard = [StickerKeyboard new];
+    stickerKeyboard.delegate = self;
+    self.stickerKeyboardResponder.inputView = stickerKeyboard;
+    [self addSubview:self.stickerKeyboardResponder];
+    [self.stickerKeyboardResponder autoSetDimensionsToSize:CGSizeMake(1, 1)];
 
     [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
 }
@@ -442,17 +451,20 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)beginEditingTextMessage
 {
-    [self.inputTextView becomeFirstResponder];
+    if (!self.currentFirstResponder.isFirstResponder) {
+        [self.currentFirstResponder becomeFirstResponder];
+    }
 }
 
 - (void)endEditingTextMessage
 {
     [self.inputTextView resignFirstResponder];
+    [self.stickerKeyboardResponder resignFirstResponder];
 }
 
 - (BOOL)isInputTextViewFirstResponder
 {
-    return self.inputTextView.isFirstResponder;
+    return (self.inputTextView.isFirstResponder || self.stickerKeyboardResponder.isFirstResponder);
 }
 
 - (void)ensureButtonVisibilityWithIsAnimated:(BOOL)isAnimated doLayout:(BOOL)doLayout
@@ -984,19 +996,10 @@ const CGFloat kMaxTextViewHeight = 98;
 
     [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
 
-    if (isStickerKeyboardActive) {
-        StickerKeyboard *stickerKeyboard = [StickerKeyboard new];
-        stickerKeyboard.delegate = self;
-        self.inputTextView.inputView = stickerKeyboard;
-    } else {
-        self.inputTextView.inputView = nil;
+    if (!self.currentFirstResponder.isFirstResponder) {
+        [self.currentFirstResponder becomeFirstResponder];
     }
-    self.dismissStickerKeyboardView.hidden = !isStickerKeyboardActive;
-
-    if (!self.inputTextView.isFirstResponder) {
-        [self.inputTextView becomeFirstResponder];
-    }
-    [self.inputTextView reloadInputViews];
+    //    [self.currentFirstResponder reloadInputViews];
 }
 
 - (void)clearStickerKeyboard
@@ -1004,6 +1007,11 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSAssertIsOnMainThread();
 
     self.isStickerKeyboardActive = NO;
+}
+
+- (UIResponder *)currentFirstResponder
+{
+    return (self.isStickerKeyboardActive ? self.stickerKeyboardResponder : self.inputTextView);
 }
 
 #pragma mark - ConversationTextViewToolbarDelegate
