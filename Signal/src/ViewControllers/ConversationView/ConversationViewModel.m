@@ -174,7 +174,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 #pragma mark -
 
-@interface ConversationViewModel ()
+@interface ConversationViewModel () <ConversationViewDatabaseSnapshotDelegate>
 
 @property (nonatomic, weak) id<ConversationViewModelDelegate> delegate;
 
@@ -368,18 +368,22 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         }
     }];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(uiDatabaseDidUpdateExternally:)
-                                                 name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
-                                               object:self.primaryStorage.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(uiDatabaseWillUpdate:)
-                                                 name:OWSUIDatabaseConnectionWillUpdateNotification
-                                               object:self.primaryStorage.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(uiDatabaseDidUpdate:)
-                                                 name:OWSUIDatabaseConnectionDidUpdateNotification
-                                               object:self.primaryStorage.dbNotificationObject];
+    if (SSKFeatureFlags.useGRDB) {
+        [self.dbStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
+    } else {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(uiDatabaseDidUpdateExternally:)
+                                                     name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
+                                                   object:self.primaryStorage.dbNotificationObject];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(uiDatabaseWillUpdate:)
+                                                     name:OWSUIDatabaseConnectionWillUpdateNotification
+                                                   object:self.primaryStorage.dbNotificationObject];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(uiDatabaseDidUpdate:)
+                                                     name:OWSUIDatabaseConnectionDidUpdateNotification
+                                                   object:self.primaryStorage.dbNotificationObject];
+    }
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)
                                                  name:OWSApplicationWillEnterForegroundNotification
@@ -583,21 +587,51 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     }
 }
 
-#pragma mark - Storage access
+#pragma mark - GRDB Updates
 
-- (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
+- (void)conversationViewDatabaseSnapshotWillUpdate
 {
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
-
-    // External database modifications (e.g. changes from another process such as the SAE)
-    // are "flushed" using touchDbAsync when the app re-enters the foreground.
+    [self anyDBWillUpdate];
 }
+
+- (void)conversationViewDatabaseSnapshotDidUpdateWithTransactionChanges:
+    (ConversationViewDatabaseTransactionChanges *)transactionChanges
+{
+    __block NSError *dbError;
+    __block NSError *updateError;
+    __block NSSet<NSString *> *updatedInteractionIds;
+    [self.dbStorage.grdbStorage uiReadAndReturnError:&dbError
+                                               block:^(GRDBReadTransaction *transaction) {
+                                                   updatedInteractionIds = [transactionChanges
+                                                       updatedInteractionIdsForThreadId:self.thread.uniqueId
+                                                                            transaction:transaction
+                                                                                  error:&updateError];
+                                               }];
+
+    if (dbError || updateError || !updatedInteractionIds) {
+        OWSFailDebug(@"failure: %@, %@", dbError, updateError);
+        [self resetMappingWithSneakyTransaction];
+        return;
+    }
+
+    [self anyDBDidUpdateWithUpdatedInteractionIds:updatedInteractionIds];
+}
+
+- (void)conversationViewDatabaseSnapshotDidUpdateExternally
+{
+    [self anyDBDidUpdateExternally];
+}
+
+- (void)conversationViewDatabaseSnapshotDidReset
+{
+    [self resetMappingWithSneakyTransaction];
+}
+
+#pragma mark - YapDB Updates
 
 - (void)uiDatabaseWillUpdate:(NSNotification *)notification
 {
-    [self.delegate conversationViewModelWillUpdate];
+    [self anyDBWillUpdate];
 }
 
 - (void)uiDatabaseDidUpdate:(NSNotification *)notification
@@ -617,11 +651,17 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return;
     }
 
+    NSSet<NSString *> *updatedInteractionIds = [self.messageMapping updatedItemIdsFor:notifications];
+    [self anyDBDidUpdateWithUpdatedInteractionIds:updatedInteractionIds];
+}
+
+- (void)anyDBDidUpdateWithUpdatedInteractionIds:(NSSet<NSString *> *)updatedInteractionIds
+{
     __block ConversationMessageMappingDiff *_Nullable diff = nil;
     __block NSError *error;
     [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
         diff = [self.messageMapping updateAndCalculateDiffWithTransaction:transaction
-                                                            notifications:notifications
+                                                    updatedInteractionIds:updatedInteractionIds
                                                                     error:&error];
     }];
     if (error != nil || diff == nil) {
@@ -713,6 +753,31 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:updatedItemSet];
 }
+
+- (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
+{
+    [self anyDBDidUpdateExternally];
+}
+
+#pragma mark - AnyDB Update
+
+- (void)anyDBWillUpdate
+{
+    [self.delegate conversationViewModelWillUpdate];
+}
+
+- (void)anyDBDidUpdateExternally
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogVerbose(@"");
+
+    // External database modifications (e.g. changes from another process such as the SAE)
+    // are "flushed" using touchDbAsync when the app re-enters the foreground.
+    // GRDB TODO - remove touchDbAsync
+}
+
+#pragma mark -
 
 // A simpler version of the update logic we use when
 // only transient items have changed.

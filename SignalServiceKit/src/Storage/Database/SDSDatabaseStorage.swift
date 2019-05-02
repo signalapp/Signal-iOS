@@ -10,14 +10,9 @@ public class SDSDatabaseStorage: NSObject {
 
     // TODO hoist to environment
     @objc
-    public static let shared: SDSDatabaseStorage = try! SDSDatabaseStorage(raisingErrors: ())
+    public static let shared: SDSDatabaseStorage = SDSDatabaseStorage()
 
     static public var shouldLogDBQueries: Bool = false
-
-    @available(*, unavailable, message:"use other constructor instead.")
-    override init() {
-        fatalError("unavailable")
-    }
 
     private var hasPendingCrossProcessWrite = false
 
@@ -25,31 +20,16 @@ public class SDSDatabaseStorage: NSObject {
 
     // MARK: - Initialization / Setup
 
-    let adapter: SDSDatabaseStorageAdapter
+    lazy var yapStorage = type(of: self).createYapStorage()
 
     @objc
-    required init(raisingErrors: ()) throws {
-        adapter = SDSDatabaseStorage.createDefaultStorage()
+    public lazy var grdbStorage = type(of: self).createGrdbStorage()
 
+    @objc
+    override init() {
         super.init()
 
         addObservers()
-    }
-
-    required init(adapter: SDSDatabaseStorageAdapter, raisingErrors: ()) throws {
-        self.adapter = adapter
-
-        super.init()
-
-        addObservers()
-    }
-
-    class func createDefaultStorage() -> SDSDatabaseStorageAdapter {
-        if FeatureFlags.useGRDB {
-            return createGrdbStorage()
-        } else {
-            return createYapStorage()
-        }
     }
 
     private func addObservers() {
@@ -75,6 +55,8 @@ public class SDSDatabaseStorage: NSObject {
     }
 
     class func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
+        assert(FeatureFlags.useGRDB)
+
         let baseDir: URL
 
         if FeatureFlags.grdbMigratesFreshDBEveryLaunch {
@@ -92,25 +74,42 @@ public class SDSDatabaseStorage: NSObject {
         return YAPDBStorageAdapter()
     }
 
-    // `grdbStorage` is useful as an "escape hatch" while we're migrating to GRDB.
-    // When an adapter needs to access the backing grdb store directly.
-    public var grdbStorage: GRDBDatabaseStorageAdapter {
-        assert(FeatureFlags.useGRDB)
-        return adapter as! GRDBDatabaseStorageAdapter
-    }
-
     // MARK: -
 
     public func uiRead(block: @escaping (SDSAnyReadTransaction) -> Void) throws {
-        try adapter.uiRead(block: block)
+        if FeatureFlags.useGRDB {
+            try grdbStorage.uiRead { transaction in
+                block(transaction.asAnyRead)
+            }
+        } else {
+            yapStorage.uiRead { transaction in
+                block(transaction.asAnyRead)
+            }
+        }
     }
 
     public func read(block: @escaping (SDSAnyReadTransaction) -> Void) throws {
-        try adapter.read(block: block)
+        if FeatureFlags.useGRDB {
+            try grdbStorage.read { transaction in
+                block(transaction.asAnyRead)
+            }
+        } else {
+            yapStorage.read { transaction in
+                block(transaction.asAnyRead)
+            }
+        }
     }
 
     public func write(block: @escaping (SDSAnyWriteTransaction) -> Void) throws {
-        try adapter.write(block: block)
+        if FeatureFlags.useGRDB {
+            try grdbStorage.write { transaction in
+                block(transaction.asAnyWrite)
+            }
+        } else {
+            yapStorage.write { transaction in
+                block(transaction.asAnyWrite)
+            }
+        }
 
         self.notifyCrossProcessWrite()
     }
@@ -215,9 +214,11 @@ public class SDSDatabaseStorage: NSObject {
 }
 
 protocol SDSDatabaseStorageAdapter {
-    func uiRead(block: @escaping (SDSAnyReadTransaction) -> Void) throws
-    func read(block: @escaping (SDSAnyReadTransaction) -> Void) throws
-    func write(block: @escaping (SDSAnyWriteTransaction) -> Void) throws
+    associatedtype ReadTransaction
+    associatedtype WriteTransaction
+    func uiRead(block: @escaping (ReadTransaction) -> Void) throws
+    func read(block: @escaping (ReadTransaction) -> Void) throws
+    func write(block: @escaping (WriteTransaction) -> Void) throws
 }
 
 struct YAPDBStorageAdapter {
@@ -227,26 +228,27 @@ struct YAPDBStorageAdapter {
 }
 
 extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
-    func uiRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
+    func uiRead(block: @escaping (YapDatabaseReadTransaction) -> Void) {
         storage.uiDatabaseConnection.read { yapTransaction in
-            block(SDSAnyReadTransaction(.yapRead(yapTransaction)))
+            block(yapTransaction)
         }
     }
 
-    func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
+    func read(block: @escaping (YapDatabaseReadTransaction) -> Void) {
         storage.dbReadConnection.read { yapTransaction in
-            block(SDSAnyReadTransaction(.yapRead(yapTransaction)))
+            block(yapTransaction)
         }
     }
 
-    func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    func write(block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
         storage.dbReadWriteConnection.readWrite { yapTransaction in
-            block(SDSAnyWriteTransaction(.yapWrite(yapTransaction)))
+            block(yapTransaction)
         }
     }
 }
 
-public struct GRDBDatabaseStorageAdapter {
+@objc
+public class GRDBDatabaseStorageAdapter: NSObject {
 
     private let keyServiceName: String = "TSKeyChainService"
     private let keyName: String = "OWSDatabaseCipherKeySpec"
@@ -263,27 +265,18 @@ public struct GRDBDatabaseStorageAdapter {
         let dbURL = dbDir.appendingPathComponent("signal.sqlite", isDirectory: false)
         storage = try Storage(dbURL: dbURL, keyServiceName: keyServiceName, keyName: keyName)
 
+        super.init()
+
         // Schema migrations are currently simple and fast. If they grow to become long-running,
         // we'll want to ensure that it doesn't block app launch to avoid 0x8badfood.
         try migrator.migrate(pool)
 
-        let mutatingSelf = self
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
             do {
-                try mutatingSelf.verify()
+                try self.setupUIDatabase()
             } catch {
-                owsFailDebug("error: \(error)")
+                owsFail("unable to setup database: \(error)")
             }
-        }
-    }
-
-    func verify() throws {
-        try storage.pool.read { db in
-            guard let someCount = try UInt.fetchOne(db, sql: "SELECT COUNT(*) FROM sqlite_master") else {
-                owsFailDebug("failed to verify storage")
-                return
-            }
-            Logger.debug("verified storage: \(someCount)")
         }
     }
 
@@ -307,25 +300,71 @@ public struct GRDBDatabaseStorageAdapter {
         }
         return migrator
     }()
+
+    // MARK: - Database Snapshot
+
+    private var latestSnapshot: DatabaseSnapshot! {
+        return uiDatabaseObserver!.latestSnapshot
+    }
+
+    @objc
+    var uiDatabaseObserver: UIDatabaseObserver?
+
+    @objc
+    var homeViewDatabaseObserver: HomeViewDatabaseObserver?
+
+    @objc
+    var conversationViewDatabaseObserver: ConversationViewDatabaseObserver?
+
+    func setupUIDatabase() throws {
+        // UIDatabaseObserver is a general purpose observer, whose delegates
+        // are notified when things change, but are not given any specific details
+        // about the changes.
+        let uiDatabaseObserver = try UIDatabaseObserver(pool: pool)
+        self.uiDatabaseObserver = uiDatabaseObserver
+
+        // HomeViewDatabaseObserver is built on top of UIDatabaseObserver
+        // but includes the details necessary for rendering collection view
+        // batch updates.
+        let homeViewDatabaseObserver = HomeViewDatabaseObserver()
+        self.homeViewDatabaseObserver = homeViewDatabaseObserver
+        uiDatabaseObserver.appendSnapshotDelegate(homeViewDatabaseObserver)
+
+        // ConversationViewDatabaseObserver is built on top of UIDatabaseObserver
+        // but includes the details necessary for rendering collection view
+        // batch updates.
+        let conversationViewDatabaseObserver = ConversationViewDatabaseObserver()
+        self.conversationViewDatabaseObserver = conversationViewDatabaseObserver
+        uiDatabaseObserver.appendSnapshotDelegate(conversationViewDatabaseObserver)
+
+        return try pool.write { db in
+            db.add(transactionObserver: homeViewDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
+            db.add(transactionObserver: conversationViewDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
+        }
+    }
 }
 
 extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
-    func uiRead(block: @escaping (SDSAnyReadTransaction) -> Void) throws {
-        // TODO this should be based on a snapshot
-        try pool.read { database in
-            block(SDSAnyReadTransaction(.grdbRead(GRDBReadTransaction(database: database))))
+
+    @objc
+    func uiRead(block: @escaping (GRDBReadTransaction) -> Void) throws {
+        AssertIsOnMainThread()
+        latestSnapshot.read { database in
+            block(GRDBReadTransaction(database: database))
         }
     }
 
-    func read(block: @escaping (SDSAnyReadTransaction) -> Void) throws {
+    @objc
+    func read(block: @escaping (GRDBReadTransaction) -> Void) throws {
         try pool.read { database in
-            block(SDSAnyReadTransaction(.grdbRead(GRDBReadTransaction(database: database))))
+            block(GRDBReadTransaction(database: database))
         }
     }
 
-    func write(block: @escaping (SDSAnyWriteTransaction) -> Void) throws {
+    @objc
+    func write(block: @escaping (GRDBWriteTransaction) -> Void) throws {
         try pool.write { database in
-            block(SDSAnyWriteTransaction(.grdbWrite(GRDBWriteTransaction(database: database))))
+            block(GRDBWriteTransaction(database: database))
         }
     }
 }

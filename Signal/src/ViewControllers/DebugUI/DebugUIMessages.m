@@ -3827,7 +3827,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, deleteDelay), dispatch_get_main_queue(), ^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-                [self deleteRandomMessages:1 thread:thread transaction:transaction];
+                [self deleteRandomMessagesWithCount:1 thread:thread transaction:transaction];
             }];
         });
         [self thrashInsertAndDeleteForThread:thread counter:counter - 1];
@@ -3865,7 +3865,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                     [message markAsReadNowWithSendReadReceipt:NO
                                                   transaction:transaction.transitional_yapWriteTransaction];
                 } else {
-                    OWSLogWarn(@"failure: not yet implemented for GRDB");
+                    OWSLogWarn(@"GRDB TODO: not yet implemented");
                     [message anySaveWithTransaction:transaction];
                 }
                 break;
@@ -3921,7 +3921,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                     [message markAsReadNowWithSendReadReceipt:NO
                                                   transaction:transaction.transitional_yapWriteTransaction];
                 } else {
-                    OWSFailDebug(@"failure: not yet implemented for GRDB");
+                    OWSLogWarn(@"GRDB TODO: not yet implemented");
                     [message anySaveWithTransaction:transaction];
                 }
                 break;
@@ -4123,7 +4123,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         },
         ^(SDSAnyWriteTransaction *transaction) {
             NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
-            [self deleteRandomMessages:messageCount thread:thread transaction:transaction];
+            [self deleteRandomMessagesWithCount:messageCount thread:thread transaction:transaction];
         },
         ^(SDSAnyWriteTransaction *transaction) {
             NSUInteger messageCount = (NSUInteger)(1 + arc4random_uniform(4));
@@ -4153,42 +4153,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             actionBlock(transaction);
         }
     }];
-}
-
-+ (void)deleteRandomMessages:(NSUInteger)count
-                      thread:(TSThread *)thread
-                 transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSLogInfo(@"deleteRandomMessages: %zd", count);
-
-    if (!transaction.transitional_yapWriteTransaction) {
-        OWSFailDebug(@"failure: not yet implemented for GRDB");
-        return;
-    }
-
-    YapDatabaseViewTransaction *interactionsByThread =
-        [transaction.transitional_yapWriteTransaction ext:TSMessageDatabaseViewExtensionName];
-    NSUInteger messageCount = [interactionsByThread numberOfItemsInGroup:thread.uniqueId];
-
-    NSMutableArray<NSNumber *> *messageIndices = [NSMutableArray new];
-    for (NSUInteger messageIdx = 0; messageIdx < messageCount; messageIdx++) {
-        [messageIndices addObject:@(messageIdx)];
-    }
-    NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
-    for (NSUInteger i = 0; i < count && messageIndices.count > 0; i++) {
-        NSUInteger idx = (NSUInteger)arc4random_uniform((uint32_t)messageIndices.count);
-        NSNumber *messageIdx = messageIndices[idx];
-        [messageIndices removeObjectAtIndex:idx];
-
-        TSInteraction *_Nullable interaction =
-            [interactionsByThread objectAtIndex:messageIdx.unsignedIntegerValue inGroup:thread.uniqueId];
-        OWSAssertDebug(interaction);
-        [interactions addObject:interaction];
-    }
-
-    for (TSInteraction *interaction in interactions) {
-        [interaction anyRemoveWithTransaction:transaction];
-    }
 }
 
 + (void)deleteLastMessages:(NSUInteger)count thread:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction

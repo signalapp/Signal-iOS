@@ -234,7 +234,7 @@ public class ConversationMessageMapping: NSObject {
     // Updates and then calculates which items were inserted, removed or modified.
     @objc
     public func updateAndCalculateDiff(transaction: SDSAnyReadTransaction,
-                                       notifications: [NSNotification]) throws -> ConversationMessageMappingDiff {
+                                       updatedInteractionIds: Set<String>) throws -> ConversationMessageMappingDiff {
         let oldItemIds = Set(self.itemIds)
         try self.update(transaction: transaction)
         let newItemIds = Set(self.itemIds)
@@ -242,21 +242,21 @@ public class ConversationMessageMapping: NSObject {
         let removedItemIds = oldItemIds.subtracting(newItemIds)
         let addedItemIds = newItemIds.subtracting(oldItemIds)
         // We only notify for updated items that a) were previously loaded b) weren't also inserted or removed.
-        let updatedItemIds = (self.updatedItemIds(for: notifications)
-            .subtracting(addedItemIds)
+        let exclusivelyUpdatedInteractionIds = updatedInteractionIds.subtracting(addedItemIds)
             .subtracting(removedItemIds)
-            .intersection(oldItemIds))
+            .intersection(oldItemIds)
 
         return ConversationMessageMappingDiff(addedItemIds: addedItemIds,
                                               removedItemIds: removedItemIds,
-                                              updatedItemIds: updatedItemIds)
+                                              updatedItemIds: exclusivelyUpdatedInteractionIds)
     }
 
     // For performance reasons, the database modification notifications are used
     // to determine which items were modified.  If YapDatabase ever changes the
     // structure or semantics of these notifications, we'll need to update this
     // code to reflect that.
-    private func updatedItemIds(for notifications: [NSNotification]) -> Set<String> {
+    @objc
+    public func updatedItemIds(for notifications: [NSNotification]) -> Set<String> {
         // We'll move this into the Yap adapter when addressing updates/observation
         let viewName: String = TSMessageDatabaseViewExtensionName
 

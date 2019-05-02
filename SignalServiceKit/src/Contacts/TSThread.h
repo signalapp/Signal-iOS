@@ -10,6 +10,7 @@ BOOL IsNoteToSelfEnabled(void);
 
 @class OWSDisappearingMessagesConfiguration;
 @class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 
@@ -146,14 +147,14 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  *
  *  @param transaction Database transaction.
  */
-- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)archiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 /**
  *  Unarchives a thread
  *
  *  @param transaction Database transaction.
  */
-- (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)unarchiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)removeAllThreadInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
