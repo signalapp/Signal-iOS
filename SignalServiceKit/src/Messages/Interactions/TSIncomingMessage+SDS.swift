@@ -65,6 +65,7 @@ class TSIncomingMessageSerializer: SDSSerializer {
             TSInteractionSerializer.quotedMessageColumn,
             TSInteractionSerializer.schemaVersionColumn,
             TSInteractionSerializer.authorIdColumn,
+            TSInteractionSerializer.readColumn,
             TSInteractionSerializer.serverTimestampColumn,
             TSInteractionSerializer.sourceDeviceIdColumn,
             TSInteractionSerializer.wasReceivedByUDColumn
@@ -87,6 +88,7 @@ class TSIncomingMessageSerializer: SDSSerializer {
             SDSDeserializer.archive(self.model.quotedMessage) ?? DatabaseValue.null,
             self.model.schemaVersion,
             self.model.authorId,
+            self.model.wasRead,
             self.model.serverTimestamp ?? DatabaseValue.null,
             self.model.sourceDeviceId,
             self.model.wasReceivedByUD

@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
+                            read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
                        contactId:(NSString *)contactId
 {
@@ -64,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
                      schemaVersion:schemaVersion
          errorMessageSchemaVersion:errorMessageSchemaVersion
                          errorType:errorType
+                              read:read
                        recipientId:recipientId];
 
     if (!self) {

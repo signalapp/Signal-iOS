@@ -30,18 +30,20 @@ extension OWSUserProfileSerializer {
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
-    static let avatarFileNameColumn = SDSColumnMetadata(columnName: "avatarFileName", columnType: .unicodeString, isOptional: true, columnIndex: 2)
-    static let avatarUrlPathColumn = SDSColumnMetadata(columnName: "avatarUrlPath", columnType: .unicodeString, isOptional: true, columnIndex: 3)
-    static let profileKeyColumn = SDSColumnMetadata(columnName: "profileKey", columnType: .blob, isOptional: true, columnIndex: 4)
-    static let profileNameColumn = SDSColumnMetadata(columnName: "profileName", columnType: .unicodeString, isOptional: true, columnIndex: 5)
-    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, columnIndex: 6)
+    static let avatarFileNameColumn = SDSColumnMetadata(columnName: "avatarFileName", columnType: .unicodeString, isOptional: true, columnIndex: 3)
+    static let avatarUrlPathColumn = SDSColumnMetadata(columnName: "avatarUrlPath", columnType: .unicodeString, isOptional: true, columnIndex: 4)
+    static let profileKeyColumn = SDSColumnMetadata(columnName: "profileKey", columnType: .blob, isOptional: true, columnIndex: 5)
+    static let profileNameColumn = SDSColumnMetadata(columnName: "profileName", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, columnIndex: 7)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
     public static let table = SDSTableMetadata(tableName: "model_OWSUserProfile", columns: [
         recordTypeColumn,
+        idColumn,
         uniqueIdColumn,
         avatarFileNameColumn,
         avatarUrlPathColumn,
@@ -102,7 +104,6 @@ extension OWSUserProfileSerializer {
 
 @objc
 extension OWSUserProfile {
-    @objc
     public func anySave(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -136,7 +137,6 @@ extension OWSUserProfile {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    @objc
     public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (OWSUserProfile) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
@@ -154,7 +154,6 @@ extension OWSUserProfile {
         dbCopy.anySave(transaction: transaction)
     }
 
-    @objc
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -204,7 +203,6 @@ extension OWSUserProfile {
     }
 
     // Fetches a single model by "unique id".
-    @objc
     public class func anyFetch(uniqueId: String,
                                transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
         assert(uniqueId.count > 0)
@@ -235,7 +233,6 @@ extension OWSUserProfile {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    @objc
     public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSUserProfile) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
@@ -264,7 +261,6 @@ extension OWSUserProfile {
     }
 
     // Does not order the results.
-    @objc
     public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSUserProfile] {
         var result = [OWSUserProfile]()
         anyVisitAll(transaction: transaction) { (model) in

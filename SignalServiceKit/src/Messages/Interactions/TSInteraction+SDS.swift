@@ -124,14 +124,15 @@ extension TSInteractionSerializer {
     static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 42)
     static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 43)
     static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 44)
-    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 45)
-    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 46)
-    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 47)
-    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 48)
-    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int, isOptional: true, columnIndex: 49)
-    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 50)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 51)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 52)
+    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 45)
+    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 46)
+    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 47)
+    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 48)
+    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 49)
+    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int, isOptional: true, columnIndex: 50)
+    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 51)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 52)
+    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 53)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -181,6 +182,7 @@ extension TSInteractionSerializer {
         mostRecentFailureTextColumn,
         preKeyBundleColumn,
         quotedMessageColumn,
+        readColumn,
         recipientIdColumn,
         recipientStateMapColumn,
         schemaVersionColumn,
@@ -320,6 +322,7 @@ extension TSInteractionSerializer {
             guard let errorType = TSErrorMessageType(rawValue: errorTypeRaw) else {
                throw SDSError.invalidValue
             }
+            let read = try deserializer.bool(at: readColumn.columnIndex)
             let recipientId = try deserializer.optionalString(at: recipientIdColumn.columnIndex)
 
             return TSErrorMessage(uniqueId: uniqueId,
@@ -339,6 +342,7 @@ extension TSInteractionSerializer {
                                   schemaVersion: schemaVersion,
                                   errorMessageSchemaVersion: errorMessageSchemaVersion,
                                   errorType: errorType,
+                                  read: read,
                                   recipientId: recipientId)
 
         case .unknownContactBlockOfferMessage:
@@ -368,6 +372,7 @@ extension TSInteractionSerializer {
             guard let errorType = TSErrorMessageType(rawValue: errorTypeRaw) else {
                throw SDSError.invalidValue
             }
+            let read = try deserializer.bool(at: readColumn.columnIndex)
             let recipientId = try deserializer.optionalString(at: recipientIdColumn.columnIndex)
             let contactId = try deserializer.string(at: contactIdColumn.columnIndex)
 
@@ -388,6 +393,7 @@ extension TSInteractionSerializer {
                                                       schemaVersion: schemaVersion,
                                                       errorMessageSchemaVersion: errorMessageSchemaVersion,
                                                       errorType: errorType,
+                                                      read: read,
                                                       recipientId: recipientId,
                                                       contactId: contactId)
 
@@ -418,6 +424,7 @@ extension TSInteractionSerializer {
             guard let errorType = TSErrorMessageType(rawValue: errorTypeRaw) else {
                throw SDSError.invalidValue
             }
+            let read = try deserializer.bool(at: readColumn.columnIndex)
             let recipientId = try deserializer.optionalString(at: recipientIdColumn.columnIndex)
 
             return TSInvalidIdentityKeyErrorMessage(uniqueId: uniqueId,
@@ -437,6 +444,7 @@ extension TSInteractionSerializer {
                                                     schemaVersion: schemaVersion,
                                                     errorMessageSchemaVersion: errorMessageSchemaVersion,
                                                     errorType: errorType,
+                                                    read: read,
                                                     recipientId: recipientId)
 
         case .invalidIdentityKeySendingErrorMessage:
@@ -466,6 +474,7 @@ extension TSInteractionSerializer {
             guard let errorType = TSErrorMessageType(rawValue: errorTypeRaw) else {
                throw SDSError.invalidValue
             }
+            let read = try deserializer.bool(at: readColumn.columnIndex)
             let recipientId = try deserializer.optionalString(at: recipientIdColumn.columnIndex)
             let messageId = try deserializer.string(at: messageIdColumn.columnIndex)
             let preKeyBundleSerialized: Data = try deserializer.blob(at: preKeyBundleColumn.columnIndex)
@@ -488,6 +497,7 @@ extension TSInteractionSerializer {
                                                            schemaVersion: schemaVersion,
                                                            errorMessageSchemaVersion: errorMessageSchemaVersion,
                                                            errorType: errorType,
+                                                           read: read,
                                                            recipientId: recipientId,
                                                            messageId: messageId,
                                                            preKeyBundle: preKeyBundle)
@@ -519,6 +529,7 @@ extension TSInteractionSerializer {
             guard let errorType = TSErrorMessageType(rawValue: errorTypeRaw) else {
                throw SDSError.invalidValue
             }
+            let read = try deserializer.bool(at: readColumn.columnIndex)
             let recipientId = try deserializer.optionalString(at: recipientIdColumn.columnIndex)
             let authorId = try deserializer.string(at: authorIdColumn.columnIndex)
             let envelopeData = try deserializer.optionalBlob(at: envelopeDataColumn.columnIndex)
@@ -540,6 +551,7 @@ extension TSInteractionSerializer {
                                                              schemaVersion: schemaVersion,
                                                              errorMessageSchemaVersion: errorMessageSchemaVersion,
                                                              errorType: errorType,
+                                                             read: read,
                                                              recipientId: recipientId,
                                                              authorId: authorId,
                                                              envelopeData: envelopeData)
@@ -641,6 +653,7 @@ extension TSInteractionSerializer {
             guard let messageType = TSInfoMessageType(rawValue: messageTypeRaw) else {
                throw SDSError.invalidValue
             }
+            let read = try deserializer.bool(at: readColumn.columnIndex)
             let unregisteredRecipientId = try deserializer.optionalString(at: unregisteredRecipientIdColumn.columnIndex)
 
             return TSInfoMessage(uniqueId: uniqueId,
@@ -661,6 +674,7 @@ extension TSInteractionSerializer {
                                  customMessage: customMessage,
                                  infoMessageSchemaVersion: infoMessageSchemaVersion,
                                  messageType: messageType,
+                                 read: read,
                                  unregisteredRecipientId: unregisteredRecipientId)
 
         case .addToContactsOfferMessage:
@@ -691,6 +705,7 @@ extension TSInteractionSerializer {
             guard let messageType = TSInfoMessageType(rawValue: messageTypeRaw) else {
                throw SDSError.invalidValue
             }
+            let read = try deserializer.bool(at: readColumn.columnIndex)
             let unregisteredRecipientId = try deserializer.optionalString(at: unregisteredRecipientIdColumn.columnIndex)
             let contactId = try deserializer.string(at: contactIdColumn.columnIndex)
 
@@ -712,6 +727,7 @@ extension TSInteractionSerializer {
                                                 customMessage: customMessage,
                                                 infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                 messageType: messageType,
+                                                read: read,
                                                 unregisteredRecipientId: unregisteredRecipientId,
                                                 contactId: contactId)
 
@@ -743,6 +759,7 @@ extension TSInteractionSerializer {
             guard let messageType = TSInfoMessageType(rawValue: messageTypeRaw) else {
                throw SDSError.invalidValue
             }
+            let read = try deserializer.bool(at: readColumn.columnIndex)
             let unregisteredRecipientId = try deserializer.optionalString(at: unregisteredRecipientIdColumn.columnIndex)
             let isLocalChange = try deserializer.bool(at: isLocalChangeColumn.columnIndex)
             let recipientId = try deserializer.string(at: recipientIdColumn.columnIndex)
@@ -769,6 +786,7 @@ extension TSInteractionSerializer {
                                                      customMessage: customMessage,
                                                      infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                      messageType: messageType,
+                                                     read: read,
                                                      unregisteredRecipientId: unregisteredRecipientId,
                                                      isLocalChange: isLocalChange,
                                                      recipientId: recipientId,
@@ -802,6 +820,7 @@ extension TSInteractionSerializer {
             guard let messageType = TSInfoMessageType(rawValue: messageTypeRaw) else {
                throw SDSError.invalidValue
             }
+            let read = try deserializer.bool(at: readColumn.columnIndex)
             let unregisteredRecipientId = try deserializer.optionalString(at: unregisteredRecipientIdColumn.columnIndex)
             let contactId = try deserializer.string(at: contactIdColumn.columnIndex)
 
@@ -823,6 +842,7 @@ extension TSInteractionSerializer {
                                                         customMessage: customMessage,
                                                         infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                         messageType: messageType,
+                                                        read: read,
                                                         unregisteredRecipientId: unregisteredRecipientId,
                                                         contactId: contactId)
 
@@ -854,6 +874,7 @@ extension TSInteractionSerializer {
             guard let messageType = TSInfoMessageType(rawValue: messageTypeRaw) else {
                throw SDSError.invalidValue
             }
+            let read = try deserializer.bool(at: readColumn.columnIndex)
             let unregisteredRecipientId = try deserializer.optionalString(at: unregisteredRecipientIdColumn.columnIndex)
             let configurationDurationSeconds = UInt32(try deserializer.int64(at: configurationDurationSecondsColumn.columnIndex))
             let configurationIsEnabled = try deserializer.bool(at: configurationIsEnabledColumn.columnIndex)
@@ -878,6 +899,7 @@ extension TSInteractionSerializer {
                                                                  customMessage: customMessage,
                                                                  infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                                  messageType: messageType,
+                                                                 read: read,
                                                                  unregisteredRecipientId: unregisteredRecipientId,
                                                                  configurationDurationSeconds: configurationDurationSeconds,
                                                                  configurationIsEnabled: configurationIsEnabled,
@@ -907,6 +929,7 @@ extension TSInteractionSerializer {
             let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
             let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
             let authorId = try deserializer.string(at: authorIdColumn.columnIndex)
+            let read = try deserializer.bool(at: readColumn.columnIndex)
             let serverTimestamp = try deserializer.optionalUInt64AsNSNumber(at: serverTimestampColumn.columnIndex)
             let sourceDeviceId = UInt32(try deserializer.int64(at: sourceDeviceIdColumn.columnIndex))
             let wasReceivedByUD = try deserializer.bool(at: wasReceivedByUDColumn.columnIndex)
@@ -927,6 +950,7 @@ extension TSInteractionSerializer {
                                      quotedMessage: quotedMessage,
                                      schemaVersion: schemaVersion,
                                      authorId: authorId,
+                                     read: read,
                                      serverTimestamp: serverTimestamp,
                                      sourceDeviceId: sourceDeviceId,
                                      wasReceivedByUD: wasReceivedByUD)
@@ -943,6 +967,7 @@ extension TSInteractionSerializer {
             guard let callType = RPRecentCallType(rawValue: callTypeRaw) else {
                throw SDSError.invalidValue
             }
+            let read = try deserializer.bool(at: readColumn.columnIndex)
 
             return TSCall(uniqueId: uniqueId,
                           receivedAtTimestamp: receivedAtTimestamp,
@@ -950,7 +975,8 @@ extension TSInteractionSerializer {
                           timestamp: timestamp,
                           uniqueThreadId: uniqueThreadId,
                           callSchemaVersion: callSchemaVersion,
-                          callType: callType)
+                          callType: callType,
+                          read: read)
 
         case .interaction:
 

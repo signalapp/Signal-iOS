@@ -121,6 +121,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
+                            read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
 {
     self = [super initWithUniqueId:uniqueId
@@ -145,6 +146,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 
     _errorMessageSchemaVersion = errorMessageSchemaVersion;
     _errorType = errorType;
+    _read = read;
     _recipientId = recipientId;
 
     return self;

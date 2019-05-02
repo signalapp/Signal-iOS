@@ -97,6 +97,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
+                            read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
                         authorId:(NSString *)authorId
                     envelopeData:(nullable NSData *)envelopeData
@@ -118,6 +119,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                      schemaVersion:schemaVersion
          errorMessageSchemaVersion:errorMessageSchemaVersion
                          errorType:errorType
+                              read:read
                        recipientId:recipientId];
 
     if (!self) {

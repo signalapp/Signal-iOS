@@ -84,6 +84,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
                   uniqueThreadId:(NSString *)uniqueThreadId
                callSchemaVersion:(NSUInteger)callSchemaVersion
                         callType:(RPRecentCallType)callType
+                            read:(BOOL)read
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
@@ -97,6 +98,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
     _callSchemaVersion = callSchemaVersion;
     _callType = callType;
+    _read = read;
 
     return self;
 }

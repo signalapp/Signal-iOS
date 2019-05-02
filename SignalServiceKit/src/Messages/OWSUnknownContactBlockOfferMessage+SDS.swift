@@ -66,6 +66,7 @@ class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
             TSInteractionSerializer.schemaVersionColumn,
             TSInteractionSerializer.errorMessageSchemaVersionColumn,
             TSInteractionSerializer.errorTypeColumn,
+            TSInteractionSerializer.readColumn,
             TSInteractionSerializer.recipientIdColumn,
             TSInteractionSerializer.contactIdColumn
             ].map { $0.columnName }
@@ -88,6 +89,7 @@ class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
             self.model.schemaVersion,
             self.model.errorMessageSchemaVersion,
             self.model.errorType.rawValue,
+            self.model.wasRead,
             self.model.recipientId ?? DatabaseValue.null,
             self.model.contactId
 

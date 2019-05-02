@@ -53,6 +53,8 @@ NS_SWIFT_NAME(init(uniqueId:failureCount:label:sortId:status:));
 // --- CODE GENERATION MARKER
 
 @property (readonly, nonatomic) SSKJobRecordStatus status;
+
+// GRDB TODO: Replace sortId column with autoincremented id column
 @property (nonatomic, readonly) UInt64 sortId;
 
 - (BOOL)saveAsStartedWithTransaction:(YapDatabaseReadWriteTransaction *)transaction

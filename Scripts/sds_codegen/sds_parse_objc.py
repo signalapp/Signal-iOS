@@ -86,6 +86,22 @@ class ParsedClass:
         self.protocol_names.append(protocol_name)
         
     def get_inherited_property(self, name):
+        for protocol in self.class_protocols():
+            result = protocol.get_property(name)
+            if result is not None:
+                return result
+        return None
+    
+    def all_properties(self):
+        result = self.properties()
+        # We need to include any properties synthesized by this class
+        # but declared in a protocol.
+        for protocol in self.class_protocols():
+            result.extend(protocol.all_properties())
+        return result
+        
+    def class_protocols(self):
+        result = []
         for protocol_name in self.protocol_names:
             if protocol_name == self.name:
                 # There are classes that implement a protocol of the same name, e.g. MTLModel
@@ -103,11 +119,9 @@ class ParsedClass:
                 print 'file_path:', file_path
                 fail('Missing protocol:', protocol_name)
 
-            result = protocol.get_property(name)
-            if result is not None:
-                return result
+            result.append(protocol)
             
-        return None
+        return result
                 
 
 class ParsedProperty:
@@ -565,7 +579,8 @@ def emit_output(file_path, namespace):
             continue
         
         properties = []
-        for property in clazz.properties():
+        
+        for property in clazz.all_properties():
             if not property.is_synthesized:
                 print '\t', 'Ignoring property:', property.name
                 continue

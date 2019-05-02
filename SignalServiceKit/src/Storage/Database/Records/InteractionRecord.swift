@@ -284,6 +284,7 @@ public extension TSInteraction {
                                                                  customMessage: record.customMessage,
                                                                  infoMessageSchemaVersion: record.infoMessageSchemaVersion!,
                                                                  messageType: record.messageType!,
+                                                                 read: record.read!,
                                                                  unregisteredRecipientId: record.unregisteredRecipientId,
                                                                  configurationDurationSeconds: record.configurationDurationSeconds!,
                                                                  configurationIsEnabled: record.configurationIsEnabled!,
@@ -310,6 +311,7 @@ public extension TSInteraction {
                                                      customMessage: record.customMessage,
                                                      infoMessageSchemaVersion: record.infoMessageSchemaVersion!,
                                                      messageType: record.messageType!,
+                                                     read: record.read!,
                                                      unregisteredRecipientId: record.unregisteredRecipientId,
                                                      isLocalChange: record.isLocalChange!,
                                                      recipientId: record.recipientId!,
@@ -343,6 +345,7 @@ public extension TSInteraction {
                                   schemaVersion: record.schemaVersion!,
                                   errorMessageSchemaVersion: record.errorMessageSchemaVersion!,
                                   errorType: record.errorType!,
+                                  read: record.read!,
                                   recipientId: record.recipientId)
         case .groupThread:
             fatalError("wrong record type")
@@ -363,6 +366,7 @@ public extension TSInteraction {
                                      quotedMessage: record.decodedQuotedMessage,
                                      schemaVersion: record.schemaVersion!,
                                      authorId: record.authorId!,
+                                     read: record.read!,
                                      serverTimestamp: record.serverTimestamp == nil ? nil : NSNumber(value: record.serverTimestamp!),
                                      sourceDeviceId: record.sourceDeviceId!,
                                      wasReceivedByUD: record.wasReceivedByUD!)
@@ -385,6 +389,7 @@ public extension TSInteraction {
                                  customMessage: record.customMessage,
                                  infoMessageSchemaVersion: record.infoMessageSchemaVersion!,
                                  messageType: record.messageType!,
+                                 read: record.read!,
                                  unregisteredRecipientId: record.unregisteredRecipientId)
         case .interaction:
             fatalError("abtract class")

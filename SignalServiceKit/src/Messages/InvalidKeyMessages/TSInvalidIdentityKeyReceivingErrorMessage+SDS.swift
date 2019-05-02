@@ -66,6 +66,7 @@ class TSInvalidIdentityKeyReceivingErrorMessageSerializer: SDSSerializer {
             TSInteractionSerializer.schemaVersionColumn,
             TSInteractionSerializer.errorMessageSchemaVersionColumn,
             TSInteractionSerializer.errorTypeColumn,
+            TSInteractionSerializer.readColumn,
             TSInteractionSerializer.recipientIdColumn,
             TSInteractionSerializer.authorIdColumn,
             TSInteractionSerializer.envelopeDataColumn
@@ -89,6 +90,7 @@ class TSInvalidIdentityKeyReceivingErrorMessageSerializer: SDSSerializer {
             self.model.schemaVersion,
             self.model.errorMessageSchemaVersion,
             self.model.errorType.rawValue,
+            self.model.wasRead,
             self.model.recipientId ?? DatabaseValue.null,
             self.model.authorId,
             self.model.envelopeData ?? DatabaseValue.null

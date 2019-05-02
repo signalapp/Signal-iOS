@@ -103,6 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
                         authorId:(NSString *)authorId
+                            read:(BOOL)read
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
                  wasReceivedByUD:(BOOL)wasReceivedByUD
@@ -128,6 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _authorId = authorId;
+    _read = read;
     _serverTimestamp = serverTimestamp;
     _sourceDeviceId = sourceDeviceId;
     _wasReceivedByUD = wasReceivedByUD;
