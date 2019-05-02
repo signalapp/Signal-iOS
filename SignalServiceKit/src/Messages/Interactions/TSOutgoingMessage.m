@@ -939,12 +939,13 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 }
 
 - (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
-                       transaction:(YapDatabaseReadWriteTransaction *)transaction
+                       transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 OWSAssertDebug([interaction isKindOfClass:[TSOutgoingMessage class]]);
+                                 TSOutgoingMessage *message = (TSOutgoingMessage *)interaction;
                                  for (TSOutgoingMessageRecipientState *recipientState in message.recipientStateMap
                                           .allValues) {
                                      switch (messageState) {
