@@ -389,7 +389,9 @@ const CGFloat kMaxTextViewHeight = 98;
     [self ensureTextViewHeight];
     [self updateInputLinkPreview];
 
-    [self clearStickerKeyboard];
+    if (value.length > 0) {
+        [self clearStickerKeyboard];
+    }
 
     [self ensureButtonVisibilityWithIsAnimated:isAnimated doLayout:YES];
 }
@@ -401,7 +403,6 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)clearTextMessageAnimated:(BOOL)isAnimated
 {
-    [self clearStickerKeyboard];
     [self setMessageText:nil animated:isAnimated];
     [self.inputTextView.undoManager removeAllActions];
     self.wasLinkPreviewCancelled = NO;
@@ -679,8 +680,6 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)showVoiceMemoUI
 {
     OWSAssertIsOnMainThread();
-
-    [self clearStickerKeyboard];
 
     self.voiceMemoStartTime = [NSDate date];
 
@@ -984,16 +983,12 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     OWSAssertDebug(self.inputToolbarDelegate);
 
-    [self clearStickerKeyboard];
-
     [self.inputToolbarDelegate cameraButtonPressed];
 }
 
 - (void)attachmentButtonPressed
 {
     OWSAssertDebug(self.inputToolbarDelegate);
-
-    [self clearStickerKeyboard];
 
     [self.inputToolbarDelegate attachmentButtonPressed];
 }
