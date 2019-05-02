@@ -15,6 +15,7 @@
 #import "ConversationViewCell.h"
 #import "ConversationViewItem.h"
 #import "DateUtil.h"
+#import "DebugUIMessages.h"
 #import "DebugUIPage.h"
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"

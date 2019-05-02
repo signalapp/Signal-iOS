@@ -17,6 +17,8 @@ protocol InteractionFinderAdapter {
     func count(transaction: ReadTransaction) throws -> UInt
     func unreadCount(transaction: ReadTransaction) throws -> UInt
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
+
+    func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
 }
 
 @objc
@@ -90,7 +92,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             return yapAdapter.count(transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.count(transaction: grdbRead)
+            return try! grdbAdapter.count(transaction: grdbRead)
         }
     }
 
@@ -109,6 +111,15 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return try yapAdapter.enumerateInteractionIds(transaction: yapRead, block: block)
         case .grdbRead(let grdbRead):
             return try grdbAdapter.enumerateInteractionIds(transaction: grdbRead, block: block)
+        }
+    }
+
+    public func interaction(at index: UInt, transaction: SDSAnyReadTransaction) throws -> TSInteraction? {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return yapAdapter.interaction(at: index, transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return try grdbAdapter.interaction(at: index, transaction: grdbRead)
         }
     }
 }
@@ -193,6 +204,19 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         if let errorToRaise = errorToRaise {
             throw errorToRaise
         }
+    }
+
+    func interaction(at index: UInt, transaction: YapDatabaseReadTransaction) -> TSInteraction? {
+        guard let obj = interactionExt(transaction).object(at: index, inGroup: threadUniqueId) else {
+            return nil
+        }
+
+        guard let interaction = obj as? TSInteraction else {
+            owsFailDebug("unexpected interaction: \(type(of: obj))")
+            return nil
+        }
+
+        return interaction
     }
 
     // MARK: - private
@@ -328,6 +352,25 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
                 try block(uniqueId, &stop)
         }
+    }
+
+    func interaction(at index: UInt, transaction: GRDBReadTransaction) throws -> TSInteraction? {
+        let sql = """
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            ORDER BY \(interactionColumn: .id) DESC
+            LIMIT 1
+            OFFSET ?
+        """
+        let arguments: StatementArguments = [threadUniqueId, index]
+        guard let interactionRecord = try! InteractionRecord.fetchOne(transaction.database,
+                                                                      sql: sql,
+                                                                      arguments: arguments) else {
+                return nil
+        }
+
+        return TSInteraction.fromRecord(interactionRecord)
     }
 }
 
