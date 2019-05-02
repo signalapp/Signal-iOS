@@ -808,7 +808,6 @@ extension %sSerializer {
 
 @objc
 extension %s {
-    @objc
     public func anySave(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -842,7 +841,6 @@ extension %s {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    @objc
     public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (%s) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
@@ -860,7 +858,6 @@ extension %s {
         dbCopy.anySave(transaction: transaction)
     }
 
-    @objc
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -880,10 +877,10 @@ extension %s {
 // MARK: - %sCursor
 
 @objc
-public class %sCursor : NSObject {
-    private let cursor : SDSCursor<%s>
+public class %sCursor: NSObject {
+    private let cursor: SDSCursor<%s>
     
-    init(cursor : SDSCursor<%s>) {
+    init(cursor: SDSCursor<%s>) {
         self.cursor = cursor
     }
     
@@ -920,7 +917,6 @@ extension %s {
     }
 
     // Fetches a single model by "unique id".
-    @objc
     public class func anyFetch(uniqueId: String,
                                transaction: SDSAnyReadTransaction) -> %s? {
         assert(uniqueId.count > 0)
@@ -951,7 +947,6 @@ extension %s {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    @objc
     public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (%s) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
@@ -980,7 +975,6 @@ extension %s {
     }
     
     // Does not order the results.
-    @objc
     public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [%s] {
         var result = [%s]()
         anyVisitAll(transaction: transaction) { (model) in
@@ -1001,7 +995,7 @@ extension %s {
     public class func grdbFetchCursor(sql: String,
                                       arguments: [DatabaseValueConvertible]?,
                                       transaction: GRDBReadTransaction) -> %sCursor {
-        var statementArguments : StatementArguments?
+        var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
                 owsFail("Could not convert arguments.")
@@ -1054,7 +1048,7 @@ class %sSerializer: SDSSerializer {
         // * ...all columns that we set when updating.        
         return [
             %sSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName(),
+            uniqueIdColumnName()
             ] + updateColumnNames()
         
     }
@@ -1064,7 +1058,7 @@ class %sSerializer: SDSSerializer {
 ''' % ( override_keyword, table_class_name, override_keyword, )
 
     serialize_record_type = get_record_type_enum_name(clazz.name)
-    swift_body += '''            SDSRecordType.%s.rawValue,''' % ( str(serialize_record_type), )
+    swift_body += '''            SDSRecordType.%s.rawValue''' % ( str(serialize_record_type), )
 
     swift_body += '''
             ] + [uniqueIdColumnValue()] + updateColumnValues()
