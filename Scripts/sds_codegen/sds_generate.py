@@ -474,6 +474,16 @@ class ParsedProperty:
     def should_ignore_property(self):
         return should_ignore_property(self)
 
+    def column_source(self):
+        custom_name = custom_property_column_source(self)
+        if custom_name is not None:
+            return custom_name
+        else:
+            return self.name
+    
+    def has_custom_column_source(self):
+        return custom_property_column_source(self) is not None
+
     def deserializer_invocation(self, column_index_name, value_name):
         return self.type_info().deserializer_invocation(column_index_name, value_name, self.is_optional)
 
@@ -575,7 +585,8 @@ extension %sSerializer {
     // This defines all of the columns used in the table 
     // where this model (and any subclasses) are persisted.
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
 ''' % str(clazz.name)
 
         # Eventually we need a (persistent?) mechanism for guaranteeing
@@ -583,6 +594,7 @@ extension %sSerializer {
         # changes, class hierarchy changes, etc. 
         column_property_names = []
         column_property_names.append('recordType')
+        column_property_names.append('id')
         column_property_names.append('uniqueId')
 
         def write_column_metadata(property, force_optional=False):
@@ -600,15 +612,18 @@ extension %sSerializer {
             return '''    static let %sColumn = SDSColumnMetadata(columnName: "%s", columnType: %s%s, columnIndex: %s)
 ''' % ( str(column_name), str(column_name), database_column_type, optional_split, str(column_index) )
         
-        # print 'properties from:', clazz.name
-        if len(clazz.properties()) > 0:
+        # If a property has a custom column source, we don't redunantly create a column for that column 
+        base_properties = [property for property in clazz.properties() if not property.has_custom_column_source()]
+        if len(base_properties) > 0:
             swift_body += '    // Base class properties \n'
-            for property in clazz.properties():
+            for property in base_properties:
                 swift_body += write_column_metadata(property)
-        
-        if len(clazz.database_subclass_properties()) > 0:
+       
+        # If a property has a custom column source, we don't redunantly create a column for that column 
+        subclass_properties = [property for property in clazz.database_subclass_properties() if not property.has_custom_column_source()]
+        if len(subclass_properties) > 0:
             swift_body += '    // Subclass properties \n'
-            for property in clazz.database_subclass_properties():
+            for property in subclass_properties:
                 swift_body += write_column_metadata(property, force_optional=True)          
     
         database_table_name = 'model_%s' % str(clazz.name)
@@ -675,9 +690,8 @@ extension %sSerializer {
             has_local_properties = False
             for property in deserialize_properties:
                 database_column_type = property.database_column_type()
-                column_name = str(property.name)
-                column_index_name = '%sColumn.columnIndex' % ( str(column_name), )
-                value_name = '%s' % ( str(column_name), )
+                column_index_name = '%sColumn.columnIndex' % property.column_source()
+                value_name = '%s' % property.name
                 
                 if property.name != 'uniqueId':
                     for statement in property.deserializer_invocation(column_index_name, value_name):
@@ -1073,8 +1087,9 @@ class %sSerializer: SDSSerializer {
     public%s func updateColumnNames() -> [String] {
         return [
 ''' % ( override_keyword, )
-    
-    serialize_properties = properties_and_inherited_properties(clazz)
+   
+    # If a property has a custom column source, we don't redunantly create a column for that column 
+    serialize_properties = [property for property in properties_and_inherited_properties(clazz) if not property.has_custom_column_source()]
     for property in serialize_properties:
         if property.name == 'uniqueId':
             continue
@@ -1396,6 +1411,13 @@ def should_ignore_property(property):
     key = property.class_name + '.' + property.name
     return key in properties_to_ignore
 
+def custom_property_column_source(property):
+    custom_names = configuration_json.get('custom_property_column_sources')
+    if custom_names is None:
+        fail('Configuration JSON is missing dict of custom_property_column_sources during serialization.')
+    key = property.class_name + '.' + property.name
+    
+    return custom_names.get(key)
 
 def should_ignore_class(clazz):
     class_to_skip_serialization = configuration_json.get('class_to_skip_serialization')

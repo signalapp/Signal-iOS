@@ -65,7 +65,7 @@ extension TSErrorMessageType: DatabaseValueConvertible { }
 public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = TSInteractionSerializer.table.tableName
 
-    public let id: Int
+    public let id: UInt64
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -74,7 +74,6 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
 
     // Base class properties
     public let receivedAtTimestamp: UInt64
-    public let sortId: UInt64
     public let timestamp: UInt64
     public let threadUniqueId: String
 
@@ -145,7 +144,6 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
         case recordType
         case uniqueId
         case receivedAtTimestamp
-        case sortId
         case timestamp
         case threadUniqueId = "uniqueThreadId"
         case attachmentFilenameMap
@@ -259,7 +257,7 @@ public extension TSInteraction {
         case .contactOffersInteraction:
             return OWSContactOffersInteraction(uniqueId: record.uniqueId,
                                                receivedAtTimestamp: record.receivedAtTimestamp,
-                                               sortId: record.sortId,
+                                               sortId: record.id,
                                                timestamp: record.timestamp,
                                                uniqueThreadId: record.threadUniqueId,
                                                beforeInteractionId: record.beforeInteractionId!,
@@ -270,7 +268,7 @@ public extension TSInteraction {
         case .disappearingConfigurationUpdateInfoMessage:
             return OWSDisappearingConfigurationUpdateInfoMessage(uniqueId: record.uniqueId,
                                                                  receivedAtTimestamp: record.receivedAtTimestamp,
-                                                                 sortId: record.sortId,
+                                                                 sortId: record.id,
                                                                  timestamp: record.timestamp,
                                                                  uniqueThreadId: record.threadUniqueId,
                                                                  attachmentIds: record.decodedAttachmentIds!,
@@ -297,7 +295,7 @@ public extension TSInteraction {
         case .verificationStateChangeMessage:
             return OWSVerificationStateChangeMessage(uniqueId: record.uniqueId,
                                                      receivedAtTimestamp: record.receivedAtTimestamp,
-                                                     sortId: record.sortId,
+                                                     sortId: record.id,
                                                      timestamp: record.timestamp,
                                                      uniqueThreadId: record.threadUniqueId,
                                                      attachmentIds: record.decodedAttachmentIds!,
@@ -321,7 +319,7 @@ public extension TSInteraction {
         case .call:
             return TSCall(uniqueId: record.uniqueId,
                           receivedAtTimestamp: record.receivedAtTimestamp,
-                          sortId: record.sortId,
+                          sortId: record.id,
                           timestamp: record.timestamp,
                           uniqueThreadId: record.threadUniqueId,
                           callSchemaVersion: record.callSchemaVersion!,
@@ -332,7 +330,7 @@ public extension TSInteraction {
         case .errorMessage:
             return TSErrorMessage(uniqueId: record.uniqueId,
                                   receivedAtTimestamp: record.receivedAtTimestamp,
-                                  sortId: record.sortId,
+                                  sortId: record.id,
                                   timestamp: record.timestamp,
                                   uniqueThreadId: record.threadUniqueId,
                                   attachmentIds: record.decodedAttachmentIds!,
@@ -354,7 +352,7 @@ public extension TSInteraction {
         case .incomingMessage:
             return TSIncomingMessage(uniqueId: record.uniqueId,
                                      receivedAtTimestamp: record.receivedAtTimestamp,
-                                     sortId: record.sortId,
+                                     sortId: record.id,
                                      timestamp: record.timestamp,
                                      uniqueThreadId: record.threadUniqueId,
                                      attachmentIds: record.decodedAttachmentIds!,
@@ -375,7 +373,7 @@ public extension TSInteraction {
         case .infoMessage:
             return TSInfoMessage(uniqueId: record.uniqueId,
                                  receivedAtTimestamp: record.receivedAtTimestamp,
-                                 sortId: record.sortId,
+                                 sortId: record.id,
                                  timestamp: record.timestamp,
                                  uniqueThreadId: record.threadUniqueId,
                                  attachmentIds: record.decodedAttachmentIds!,
@@ -399,7 +397,7 @@ public extension TSInteraction {
             fatalError("abtract class")
             return TSMessage(uniqueId: record.uniqueId,
                              receivedAtTimestamp: record.receivedAtTimestamp,
-                             sortId: record.sortId,
+                             sortId: record.id,
                              timestamp: record.timestamp,
                              uniqueThreadId: record.threadUniqueId,
                              attachmentIds: record.decodedAttachmentIds!,
@@ -415,7 +413,7 @@ public extension TSInteraction {
         case .outgoingMessage:
             return TSOutgoingMessage(uniqueId: record.uniqueId,
                                      receivedAtTimestamp: record.receivedAtTimestamp,
-                                     sortId: record.sortId,
+                                     sortId: record.id,
                                      timestamp: record.timestamp,
                                      uniqueThreadId: record.threadUniqueId,
                                      attachmentIds: record.decodedAttachmentIds!,
@@ -446,7 +444,7 @@ public extension TSInteraction {
         case .unreadIndicatorInteraction:
             return TSUnreadIndicatorInteraction(uniqueId: record.uniqueId,
                                                 receivedAtTimestamp: record.receivedAtTimestamp,
-                                                sortId: record.sortId,
+                                                sortId: record.id,
                                                 timestamp: record.timestamp,
                                                 uniqueThreadId: record.threadUniqueId)
         @unknown default:

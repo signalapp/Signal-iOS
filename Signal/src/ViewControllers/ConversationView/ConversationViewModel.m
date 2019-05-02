@@ -1327,6 +1327,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         tryToAddViewItem(interaction);
     }
 
+    // GRDB TODO seems like this redundant sorting can go away with GRDB
     // This will usually be redundant, but this will resolve one of the symptoms
     // of the "corrupt YDB view" issue caused by multi-process writes.
     [viewItems sortUsingComparator:^NSComparisonResult(id<ConversationViewItem> left, id<ConversationViewItem> right) {

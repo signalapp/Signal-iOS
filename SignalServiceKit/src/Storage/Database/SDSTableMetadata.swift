@@ -15,6 +15,7 @@ public enum SDSColumnType: Int32 {
     case int
     case int64
     case double
+    case primaryKey
 }
 
 @objc
@@ -86,12 +87,11 @@ public class SDSTableMetadata: NSObject {
         // TODO: Assert that table name is valid.
 
         try database.create(table: tableName) { (table) in
-            // TODO: Do we want this column on every table?
-            table.autoIncrementedPrimaryKey("id")
-
             for columnMetadata in self.columns {
                 let column: ColumnDefinition
                 switch columnMetadata.columnType {
+                case .primaryKey:
+                    column = table.autoIncrementedPrimaryKey(columnMetadata.columnName)
                 case .unicodeString:
                     column = table.column(columnMetadata.columnName, .text)
                 case .blob:

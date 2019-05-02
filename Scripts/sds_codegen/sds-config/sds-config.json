@@ -13,6 +13,9 @@
 	"properties_to_ignore": [
 		"OWSDynamicOutgoingMessage.block"
 	],
+	"custom_property_column_sources": {
+		"TSInteraction.sortId": "id"
+	},
 	"class_to_skip_serialization": [
 		"OWSOutgoingSyncMessage",
 		"OWSEndSessionMessage",
