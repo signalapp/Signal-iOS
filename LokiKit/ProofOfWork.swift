@@ -1,34 +1,32 @@
-//
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
-//
 import CryptoSwift
 
-fileprivate extension Decimal {
+private extension Int {
+    init(_ decimal: Decimal) {
+        let double = NSDecimalNumber(decimal: decimal).doubleValue
+        self.init(double)
+    }
+}
+
+private extension UInt8 {
+    init(_ decimal: Decimal) {
+        self.init(Int(decimal))
+    }
+}
+
+private extension Decimal {
     /// Get the remainder of a Decimal
     static func %(lhs: Decimal, rhs: Int) -> Decimal {
-        return Decimal(lhs.intValue % rhs)
+        return Decimal(Int(lhs) % rhs)
     }
     
     /// Divide a Decimal by an Int
     static func /(lhs: Decimal, rhs: Int) -> Decimal {
         return lhs / Decimal(rhs)
     }
-    
-    /// Get the Int value of the decimal
-    var intValue: Int {
-        return Int(self.doubleValue)
-    }
-    
-    /// Get the Double value of the decimal
-    var doubleValue: Double {
-        return NSDecimalNumber(decimal: self).doubleValue
-    }
 
     /// Convert a Decimal to a UInt8 array of a given length
     func toArray(ofLength length: Int) -> [UInt8] {
-        var array = [UInt8](repeating: 0, count: length)
-        
-        for i in 0..<length {
+        return (0..<length).map { i in
             let n = length - (i + 1)
             // 256 ** n is the value of one bit in arr[i], modulus to carry over
             // (self / 256**n) % 256;
@@ -37,24 +35,20 @@ fileprivate extension Decimal {
             
             // fraction % 256
             let remainder = fraction % 256
-            array[i] = UInt8(remainder.intValue)
+            return UInt8(remainder)
         }
-        
-        return array
     }
 }
 
 // UInt8 Array specific stuff we need
-fileprivate extension Array where Element == UInt8 {
+private extension Array where Element == UInt8 {
     
     /// Compare if lhs array is greater than rhs array
     static func >(lhs: [UInt8], rhs: [UInt8]) -> Bool {
         guard lhs.count == rhs.count else { return false }
-        for i in 0..<lhs.count {
-            if (lhs[i] > rhs[i]) { return true }
-            if (lhs[i] < rhs[i]) { return false }
-        }
-        return false
+        
+        // lhs is greater than rhs if any value in lhs is greater than the corresponding value in the rhs
+        return zip(lhs, rhs).contains { $0 > $1 }
     }
     
     
@@ -155,7 +149,7 @@ public enum ProofOfWork {
         let innerFrac = ttlMult / decimalTwo16
         let lenPlusInnerFrac = totalLength + innerFrac
         let denominator = decimalNonceTrials * lenPlusInnerFrac
-        let targetNum = decimalTwo64 / denominator.intValue
+        let targetNum = decimalTwo64 / Int(denominator)
 
         return targetNum.toArray(ofLength: nonceLength)
     }
