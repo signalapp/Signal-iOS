@@ -4,7 +4,7 @@
 
 #import "OWSBackupJob.h"
 #import "OWSBackupIO.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>

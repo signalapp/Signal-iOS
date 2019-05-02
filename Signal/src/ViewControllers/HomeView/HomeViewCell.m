@@ -4,7 +4,7 @@
 
 #import "HomeViewCell.h"
 #import "OWSAvatarBuilder.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>

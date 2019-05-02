@@ -4,7 +4,7 @@
 
 #import "OWSGenericAttachmentView.h"
 #import "OWSBezierPathView.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"

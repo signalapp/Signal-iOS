@@ -5,7 +5,7 @@
 #import "DebugUIBackup.h"
 #import "OWSBackup.h"
 #import "OWSTableViewController.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
 

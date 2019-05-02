@@ -6,7 +6,7 @@
 #import "AddToGroupViewController.h"
 #import "AvatarViewHelper.h"
 #import "OWSNavigationController.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import "ViewControllerUtils.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/BlockListUIUtils.h>

@@ -3,7 +3,7 @@
 //
 
 #import "PinEntryView.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>

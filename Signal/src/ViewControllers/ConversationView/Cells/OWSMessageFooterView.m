@@ -6,7 +6,7 @@
 #import "DateUtil.h"
 #import "OWSLabel.h"
 #import "OWSMessageTimerView.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import <QuartzCore/QuartzCore.h>
 
 NS_ASSUME_NONNULL_BEGIN

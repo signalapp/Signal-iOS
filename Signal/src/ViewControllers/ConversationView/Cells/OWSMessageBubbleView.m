@@ -15,7 +15,7 @@
 #import "OWSMessageFooterView.h"
 #import "OWSMessageTextView.h"
 #import "OWSQuotedMessageView.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
 

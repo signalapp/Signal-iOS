@@ -6,7 +6,7 @@
 #import "ConversationViewItem.h"
 #import "Environment.h"
 #import "OWSBubbleView.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIColor+OWS.h>

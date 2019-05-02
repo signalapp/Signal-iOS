@@ -7,7 +7,7 @@
 #import "OWSBackup.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import "ThreadUtil.h"
 #import <AxolotlKit/PreKeyBundle.h>
 #import <SignalMessaging/AttachmentSharing.h>

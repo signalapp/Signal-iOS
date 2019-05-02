@@ -5,7 +5,7 @@
 #import "OWSLinkedDevicesTableViewController.h"
 #import "OWSDeviceTableViewCell.h"
 #import "OWSLinkDeviceViewController.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import "UIViewController+Permissions.h"
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSDevice.h>

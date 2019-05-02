@@ -3,7 +3,7 @@
 //
 
 #import "NotificationSettingsOptionsViewController.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import "SignalApp.h"
 #import <SignalMessaging/Environment.h>
 

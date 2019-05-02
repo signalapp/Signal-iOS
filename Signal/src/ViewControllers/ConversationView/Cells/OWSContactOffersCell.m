@@ -4,7 +4,7 @@
 
 #import "OWSContactOffersCell.h"
 #import "ConversationViewItem.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>

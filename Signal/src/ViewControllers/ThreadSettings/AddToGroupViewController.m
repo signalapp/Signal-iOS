@@ -5,7 +5,7 @@
 #import "AddToGroupViewController.h"
 #import "BlockListUIUtils.h"
 #import "ContactsViewHelper.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/SignalAccount.h>
 

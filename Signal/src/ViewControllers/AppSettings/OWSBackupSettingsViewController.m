@@ -4,7 +4,7 @@
 
 #import "OWSBackupSettingsViewController.h"
 #import "OWSBackup.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import "ThreadUtil.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/AttachmentSharing.h>

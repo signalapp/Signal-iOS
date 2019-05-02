@@ -3,7 +3,7 @@
 //
 
 #import "SignalsNavigationController.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSSignalService.h>

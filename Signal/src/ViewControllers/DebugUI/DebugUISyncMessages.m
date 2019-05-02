@@ -5,7 +5,7 @@
 #import "DebugUISyncMessages.h"
 #import "DebugUIContacts.h"
 #import "OWSTableViewController.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import "ThreadUtil.h"
 #import <AxolotlKit/PreKeyBundle.h>
 #import <PromiseKit/AnyPromise.h>

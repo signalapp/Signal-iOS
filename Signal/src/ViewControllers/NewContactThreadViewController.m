@@ -8,7 +8,7 @@
 #import "NewGroupViewController.h"
 #import "NewNonContactConversationViewController.h"
 #import "OWSTableViewController.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import "SignalApp.h"
 #import "UIColor+OWS.h"
 #import "UIView+OWS.h"
@@ -106,18 +106,21 @@ NS_ASSUME_NONNULL_BEGIN
                                                       target:self
                                                       action:@selector(dismissPressed)
                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"stop")];
-    // TODO: We should use separate RTL and LTR flavors of this asset.
-    UIImage *newGroupImage = [UIImage imageNamed:@"btnGroup--white"];
-    OWSAssertDebug(newGroupImage);
-    UIBarButtonItem *newGroupButton =
-        [[UIBarButtonItem alloc] initWithImage:newGroupImage
-                                         style:UIBarButtonItemStylePlain
-                                        target:self
-                                        action:@selector(showNewGroupView:)
-                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"new_group")];
-    newGroupButton.accessibilityLabel
-        = NSLocalizedString(@"CREATE_NEW_GROUP", @"Accessibility label for the create group new group button");
-    self.navigationItem.rightBarButtonItem = newGroupButton;
+    // Loki: Original code
+    // ========
+//    // TODO: We should use separate RTL and LTR flavors of this asset.
+//    UIImage *newGroupImage = [UIImage imageNamed:@"btnGroup--white"];
+//    OWSAssertDebug(newGroupImage);
+//    UIBarButtonItem *newGroupButton =
+//        [[UIBarButtonItem alloc] initWithImage:newGroupImage
+//                                         style:UIBarButtonItemStylePlain
+//                                        target:self
+//                                        action:@selector(showNewGroupView:)
+//                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"new_group")];
+//    newGroupButton.accessibilityLabel
+//        = NSLocalizedString(@"CREATE_NEW_GROUP", @"Accessibility label for the create group new group button");
+//    self.navigationItem.rightBarButtonItem = newGroupButton;
+    // ========
 
     // Search
     UISearchBar *searchBar = [OWSSearchBar new];
@@ -352,37 +355,40 @@ NS_ASSUME_NONNULL_BEGIN
         [contents addSection:reminderSection];
     }
 
-    OWSTableSection *staticSection = [OWSTableSection new];
-
-    // Find Non-Contacts by Phone Number
-    [staticSection
-        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
-                                                         @"A label the cell that lets you add a new member to a group.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                         NewContactThreadViewController, @"find_by_phone")
-                                     customRowHeight:UITableViewAutomaticDimension
-                                         actionBlock:^{
-                                             NewNonContactConversationViewController *viewController =
-                                                 [NewNonContactConversationViewController new];
-                                             viewController.nonContactConversationDelegate = weakSelf;
-                                             [weakSelf.navigationController pushViewController:viewController
-                                                                                      animated:YES];
-                                         }]];
-
-    if (self.contactsManager.isSystemContactsAuthorized) {
-        // Invite Contacts
-        [staticSection
-            addItem:[OWSTableItem
-                         disclosureItemWithText:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-                                                    @"Label for the cell that presents the 'invite contacts' workflow.")
-                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                    NewContactThreadViewController, @"invite_contacts")
-                                customRowHeight:UITableViewAutomaticDimension
-                                    actionBlock:^{
-                                        [weakSelf presentInviteFlow];
-                                    }]];
-    }
-    [contents addSection:staticSection];
+    // Loki: Original code
+    // ========
+//    OWSTableSection *staticSection = [OWSTableSection new];
+//
+//    // Find Non-Contacts by Phone Number
+//    [staticSection
+//        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
+//                                                         @"A label the cell that lets you add a new member to a group.")
+//                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+//                                                         NewContactThreadViewController, @"find_by_phone")
+//                                     customRowHeight:UITableViewAutomaticDimension
+//                                         actionBlock:^{
+//                                             NewNonContactConversationViewController *viewController =
+//                                                 [NewNonContactConversationViewController new];
+//                                             viewController.nonContactConversationDelegate = weakSelf;
+//                                             [weakSelf.navigationController pushViewController:viewController
+//                                                                                      animated:YES];
+//                                         }]];
+//
+//    if (self.contactsManager.isSystemContactsAuthorized) {
+//        // Invite Contacts
+//        [staticSection
+//            addItem:[OWSTableItem
+//                         disclosureItemWithText:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+//                                                    @"Label for the cell that presents the 'invite contacts' workflow.")
+//                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+//                                                    NewContactThreadViewController, @"invite_contacts")
+//                                customRowHeight:UITableViewAutomaticDimension
+//                                    actionBlock:^{
+//                                        [weakSelf presentInviteFlow];
+//                                    }]];
+//    }
+//    [contents addSection:staticSection];
+    // ========
 
     BOOL hasSearchText = self.searchText.length > 0;
 

@@ -6,7 +6,7 @@
 #import "AppDelegate.h"
 #import "ConversationViewController.h"
 #import "HomeViewController.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import "SignalsNavigationController.h"
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/DebugLogger.h>

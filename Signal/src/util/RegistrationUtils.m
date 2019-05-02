@@ -4,7 +4,7 @@
 
 #import "RegistrationUtils.h"
 #import "OWSNavigationController.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>

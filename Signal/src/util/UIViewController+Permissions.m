@@ -3,7 +3,7 @@
 //
 
 #import "UIViewController+Permissions.h"
-#import "Signal-Swift.h"
+#import "Session-Swift.h"
 #import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
 #import <SignalCoreKit/Threading.h>
