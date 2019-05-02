@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		242D3F4B227966A30035F945 /* ProofOfWork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 242D3F4A227966A20035F945 /* ProofOfWork.swift */; };
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
@@ -659,6 +660,7 @@
 		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
+		242D3F4A227966A20035F945 /* ProofOfWork.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProofOfWork.swift; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareButtonsView.m; sourceTree = "<group>"; };
 		3403B95C20EA9527001A1F44 /* OWSContactShareButtonsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactShareButtonsView.h; sourceTree = "<group>"; };
@@ -2618,6 +2620,7 @@
 				B8DC3D7522795E2300D909D6 /* ECKeyPair.m */,
 				B8DC3D7422795E2300D909D6 /* ECKeyPair.swift */,
 				B8DC3D7622795E2400D909D6 /* LokiMessagingAPI.swift */,
+				242D3F4A227966A20035F945 /* ProofOfWork.swift */,
 			);
 			path = LokiKit;
 			sourceTree = "<group>";
@@ -3641,6 +3644,7 @@
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
 				4CEB78C92178EBAB00F315D2 /* OWSSessionResetJobRecord.m in Sources */,
 				45794E861E00620000066731 /* CallUIAdapter.swift in Sources */,
+				242D3F4B227966A30035F945 /* ProofOfWork.swift in Sources */,
 				340FC8BA204DAC8D007AEB0F /* FingerprintViewScanController.m in Sources */,
 				4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */,
 				4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */,
