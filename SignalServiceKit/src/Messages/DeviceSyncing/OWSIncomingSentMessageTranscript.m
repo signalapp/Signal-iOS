@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         NSError *stickerError;
         _messageSticker = [MessageSticker buildValidatedMessageStickerWithDataMessage:_dataMessage
-                                                                          transaction:transaction
+                                                                          transaction:transaction.asAnyWrite
                                                                                 error:&stickerError];
         if (stickerError && ![MessageSticker isNoStickerError:stickerError]) {
             OWSFailDebug(@"stickerError: %@", stickerError);
