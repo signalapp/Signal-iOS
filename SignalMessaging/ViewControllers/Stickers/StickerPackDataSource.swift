@@ -84,7 +84,6 @@ public class BaseStickerPackDataSource: NSObject {
 
             let before = Set(oldValue.map { $0.asKey() })
             let after = Set(stickerInfos.map { $0.asKey() })
-            Logger.verbose("---- stickerInfos: \(before.count) -> \(after.count) ? \(before != after)")
             if before != after {
                 fireDidChange()
             }

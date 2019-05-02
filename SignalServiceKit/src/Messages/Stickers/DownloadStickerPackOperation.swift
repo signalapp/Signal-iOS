@@ -35,7 +35,9 @@ class DownloadStickerPackOperation: OWSOperation {
 
         if let stickerPack = StickerManager.fetchStickerPack(stickerPackInfo: stickerPackInfo) {
             Logger.verbose("Skipping redundant operation.")
-            return success(stickerPack)
+            success(stickerPack)
+            self.reportSuccess()
+            return
         }
 
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
