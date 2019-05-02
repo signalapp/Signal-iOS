@@ -53,3 +53,13 @@ def pretty_module_path(path):
     if path.startswith(git_repo_path):
        path = path[len(git_repo_path):] 
     return path
+
+def write_text_file_if_changed(file_path, text):
+    if os.path.exists(file_path):
+        with open(file_path, 'rt') as f:
+            oldText = f.read()
+            if oldText == text:
+                return
+        
+    with open(file_path, 'wt') as f:
+        f.write(text)

@@ -60,9 +60,14 @@ class ParsedClass:
         self.super_class_name = None
         self.counter = next_counter()
         self.finalize_method_name = None
+        self.namespace = None
+        self.protocol_names = []
 
     def get_property(self, name):
-        return self.property_map.get(name)
+        result = self.property_map.get(name)
+        if result is None:
+            result = self.get_inherited_property(name)
+        return result
 
     def add_property(self, property):
         self.property_map[property.name] = property
@@ -75,7 +80,35 @@ class ParsedClass:
 
     def property_names(self):
         return sorted(self.property_map.keys())
+
+    def inherit_from_protocol(self, namespace, protocol_name):
+        self.namespace = namespace
+        self.protocol_names.append(protocol_name)
         
+    def get_inherited_property(self, name):
+        for protocol_name in self.protocol_names:
+            if protocol_name == self.name:
+                # There are classes that implement a protocol of the same name, e.g. MTLModel
+                # Ignore them.
+                continue
+                
+            # print 'get_inherited_property:', name, self.name, protocol_name
+            
+            protocol = self.namespace.find_class(protocol_name)
+            if protocol is None:
+                if protocol_name.startswith('NS') or protocol_name.startswith('AV') or protocol_name.startswith('UI') or protocol_name.startswith('MF'):
+                    # Ignore built in protocols.
+                    continue
+                print 'clazz:', self.name
+                print 'file_path:', file_path
+                fail('Missing protocol:', protocol_name)
+
+            result = protocol.get_property(name)
+            if result is not None:
+                return result
+            
+        return None
+                
 
 class ParsedProperty:
     def __init__(self, name, objc_type, is_optional):
@@ -95,6 +128,10 @@ class Namespace:
         if clazz is None:
             clazz = ParsedClass(class_name)
             self.class_map[class_name] = clazz
+        return clazz
+
+    def find_class(self, class_name):
+        clazz = self.class_map.get(class_name)
         return clazz
     
     def class_names(self):
@@ -148,7 +185,11 @@ def process_objc_ast(namespace, file_path, raw_ast):
             # `-ObjCImplementationDecl 0x112510f20 <line:24:1, line:87:1> line:24:17 ObjCMessage
             # print 'implementation', line
             process_objc_implementation(namespace, file_path, lines, prefix, remainder)
-        # TODO: Category impl.
+        elif remainder.startswith('ObjCProtocolDecl '):
+            # `-ObjCImplementationDecl 0x112510f20 <line:24:1, line:87:1> line:24:17 ObjCMessage
+            # print 'implementation', line
+            process_objc_protocol_decl(namespace, file_path, lines, prefix, remainder)
+        # TODO: Category impl. 
         elif remainder.startswith('TypedefDecl '):
             # `-ObjCImplementationDecl 0x112510f20 <line:24:1, line:87:1> line:24:17 ObjCMessage
             # print 'implementation', line
@@ -290,6 +331,11 @@ def process_objc_implementation(namespace, file_path, lines, decl_prefix, decl_r
     if clazz is not None:
         clazz.is_implemented = True
 
+def process_objc_protocol_decl(namespace, file_path, lines, decl_prefix, decl_remainder):
+    print '\t', 'protocol decl', decl_remainder
+    clazz = process_objc_class(namespace, file_path, lines, decl_prefix, decl_remainder)
+    if clazz is not None:
+        clazz.is_implemented = True
 
 # |-ObjCCategoryDecl 0x10f5d3d58 <SignalDataStoreCommon/ObjCMessage.m:18:1, line:22:2> line:18:12
 # | |-ObjCInterface 0x10f5d3490 'ObjCMessage'
@@ -344,6 +390,9 @@ def process_objc_class(namespace, file_path, lines, decl_prefix, decl_remainder,
         elif remainder.startswith('ObjCMethodDecl '):
             # print 'property impl', line
             process_objc_method_decl(clazz, prefix, file_path, line, remainder)
+        elif remainder.startswith('ObjCProtocol '):
+            # print 'property impl', line
+            process_objc_protocol(namespace, clazz, prefix, file_path, line, remainder)
 
     return clazz
 
@@ -357,6 +406,30 @@ def process_objc_method_decl(clazz, prefix, file_path, line, remainder):
         return
     method_name = match.group(1).strip()
     clazz.finalize_method_name = method_name
+
+
+# | |-ObjCProtocol 0x7f879888b8a8 'AppContext'
+process_objc_protocol_regex = re.compile(r" '([^']+)'$")
+
+def process_objc_protocol(namespace, clazz, prefix, file_path, line, remainder):
+    # print '\t\t', 'process_objc_property_impl', remainder
+    
+    match = process_objc_protocol_regex.search(remainder)
+    if match is None:
+        return
+    protocol_name = match.group(1).strip()
+    clazz.inherit_from_protocol(namespace, protocol_name)
+    
+    # protocol = namespace.find_class(protocol_name)
+    # if protocol is None:
+    #     if protocol_name.startswith('NS'):
+    #         # Ignore built in protocols.
+    #         return
+    #     print 'clazz:', clazz.name
+    #     print 'file_path:', file_path
+    #     fail('Missing protocol:', protocol_name)
+    #
+    # clazz.inherit_from_protocol(protocol)
 
 
 # | |-ObjCPropertyImplDecl 0x1092f6d68 <col:1, col:13> col:13 someSynthesizedProperty synthesize
@@ -377,6 +450,13 @@ def process_objc_property_impl(clazz, prefix, file_path, line, remainder):
     property_name = match.group(1).strip()
     property = clazz.get_property(property_name)
     if property is None:
+        if clazz.name == 'AppDelegate' and property_name == 'window':
+            # We can't parse properties synthesized locally but
+            # declared in a protocol defined in the iOS frameworks.
+            # So, special case these propert(y/ies) - we don't need 
+            # to handle them.
+            return
+            
         print 'file_path:', file_path
         print 'line:', line
         print '\t', 'clazz', clazz.name, clazz.counter
@@ -395,6 +475,7 @@ def process_objc_property_impl(clazz, prefix, file_path, line, remainder):
 # | |-ObjCPropertyDecl 0x7f8157089a00 <line:37:1, col:28> col:28 shouldThreadBeVisible 'int' assign readwrite nonatomic unsafe_unretained
 # 
 # | |-ObjCPropertyDecl 0x7faf139af8e0 <line:37:1, col:28> col:28 shouldThreadBeVisible 'BOOL':'bool' assign readwrite nonatomic unsafe_unretained
+# | |-ObjCPropertyDecl 0x7f879889f460 <line:46:1, col:40> col:40 mainWindow 'UIWindow * _Nullable':'UIWindow *' readwrite atomic strong
 process_objc_property_regex = re.compile(r"^.+<.+> col:\d+(.+?)'(.+?)'(:'(.+)')?(.+)$")
 
 
@@ -435,7 +516,7 @@ def process_objc_property(clazz, prefix, file_path, line, remainder):
         property_type = property_type_1
     # property_type = property_type_1
         
-    # print '\t', property_name, 'property_type', property_type, 'property_type1', property_type_1, 'property_type2', property_type_2, 'property_type', property_type
+    print '\t', property_name, 'property_type', property_type, 'property_type1', property_type_1, 'property_type2', property_type_2, 'property_type', property_type
     
     property = clazz.get_property(property_name)
     if property is None:
@@ -447,14 +528,26 @@ def process_objc_property(clazz, prefix, file_path, line, remainder):
         if property.name != property_name:
             fail("Property names don't match", property.name, property_name)
         if property.is_optional != is_optional:
+            if clazz.name.startswith('DD'):
+                # CocoaLumberjack has nullability consistency issues.
+                # Ignore them.
+                return
+            print 'file_path:', file_path
+            print 'clazz:', clazz.name
             fail("Property is_optional don't match", property_name)
         if property.objc_type != property_type:
-            print 'file_path:', file_path
-            print 'remainder:', remainder
-            print 'property.objc_type:', property.objc_type
-            print 'property_type:', property_type
-            print 'property_name:', property_name
-            fail("Property types don't match", property.objc_type, property_type)
+            # There's a common pattern of using a mutable private property 
+            # and exposing a non-mutable public property to prevent 
+            # external modification of the property.
+            if property_type.startswith('NSMutable') and property.objc_type == 'NS' + property_type[len('NSMutable'):]:
+                property.objc_type = property_type
+            else:
+                print 'file_path:', file_path
+                print 'remainder:', remainder
+                print 'property.objc_type:', property.objc_type
+                print 'property_type:', property_type
+                print 'property_name:', property_name
+                fail("Property types don't match", property.objc_type, property_type)
             
         
     if not is_readonly:
@@ -603,15 +696,19 @@ def get_pch_include(file_path):
     ssk_path = os.path.join(git_repo_path, 'SignalServiceKit') + os.sep
     sm_path = os.path.join(git_repo_path, 'SignalMessaging') + os.sep
     s_path = os.path.join(git_repo_path, 'Signal') + os.sep
+    sae_path = os.path.join(git_repo_path, 'SignalShareExtension') + os.sep
     print 'ssk_path', ssk_path
     print 'sm_path', sm_path
     print 's_path', s_path
+    print 'sae_path', sae_path
     if file_path.startswith(ssk_path):
         return os.path.join(git_repo_path, "Pods/Target Support Files/SignalServiceKit/SignalServiceKit-prefix.pch")
     elif file_path.startswith(sm_path):
         return os.path.join(git_repo_path, "SignalMessaging/SignalMessaging-Prefix.pch")
     elif file_path.startswith(s_path):
         return os.path.join(git_repo_path, "Signal/Signal-Prefix.pch")
+    elif file_path.startswith(sae_path):
+        return os.path.join(git_repo_path, "SignalShareExtension/SignalShareExtension-Prefix.pch")
     else:
         fail("Couldn't determine .pch for file:", file_path)
 

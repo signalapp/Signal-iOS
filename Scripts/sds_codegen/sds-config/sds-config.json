@@ -8,10 +8,13 @@
 		"TSAttachmentStream.cachedImageWidth": "Double",
 		"TSAttachmentStream.cachedImageHeight": "Double",
 		"TSAttachmentStream.isValidImageCached": "Bool",
-		"TSAttachmentStream.isValidVideoCached": "Bool"
+		"TSAttachmentStream.isValidVideoCached": "Bool",
+		"OWSBackupFragment.uncompressedDataLength": "UInt64"
 	},
 	"properties_to_ignore": [
-		"OWSDynamicOutgoingMessage.block"
+		"OWSDynamicOutgoingMessage.block",
+		"OWSDisappearingMessagesConfiguration.originalDictionaryValue",
+		"OWSDisappearingMessagesConfiguration.newRecord"
 	],
 	"custom_property_column_sources": {
 		"TSInteraction.sortId": "id"
@@ -25,7 +28,8 @@
 		"OWSProfileKeyMessage",
 		"OWSOutgoingNullMessage",
 		"OWSOutgoingCallMessage",
-		"OWSReceiptsForSenderMessage"
+		"OWSReceiptsForSenderMessage",
+		"OWSUnknownDBObject"
 	],
 	"enum_properties": [
 		"TSThread.conversationColorName"
@@ -34,6 +38,8 @@
 		"TSInfoMessage.read": "wasRead",
 		"TSErrorMessage.read": "wasRead",
 		"TSIncomingMessage.read": "wasRead",
-		"TSCall.read": "wasRead"
+		"TSCall.read": "wasRead",
+		"OWSDisappearingMessagesConfiguration.enabled": "isEnabled",
+		"OWSDisappearingMessagesConfiguration.newRecord": "isNewRecord"
 	}
 }
