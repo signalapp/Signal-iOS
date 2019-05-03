@@ -18,30 +18,30 @@ private extension UInt64 {
     }
 }
 
-// UInt8 Array specific stuff we need
-private extension Array where Element == UInt8 {
-    /// Increment the UInt8 array by a given amount
+private extension MutableCollection where Element == UInt8, Index == Int {
+
+    /// Increment every element by the given amount
     ///
     /// - Parameter amount: The amount to increment by
-    /// - Returns: The incrememnted array
-    func increment(by amount: Int) -> [UInt8] {
-        var newNonce = self
+    /// - Returns: The incremented collection
+    func increment(by amount: Int) -> Self {
+        var result = self
         var increment = amount
-        for i in (0..<newNonce.count).reversed() {
+        for i in (0..<result.count).reversed() {
             guard increment > 0 else { break }
-            let sum = Int(newNonce[i]) + increment
-            newNonce[i] = UInt8(sum % 256)
+            let sum = Int(result[i]) + increment
+            result[i] = UInt8(sum % 256)
             increment = sum / 256
         }
-        return newNonce
+        return result
     }
 }
 
 /**
- * The main logic which handles proof of work.
+ * The main proof of work logic.
  *
- * This was copied from the messenger desktop.
- *  Ref: libloki/proof-of-work.js
+ * This was copied from the desktop messenger.
+ * Ref: libloki/proof-of-work.js
  */
 public enum ProofOfWork {
     
@@ -60,28 +60,27 @@ public enum ProofOfWork {
         var data: String
         var timestamp: Date
         var ttl: Int
-        
-        public init(pubKey: String, data: String, timestamp: Date, ttl: Int) {
-            self.pubKey = pubKey
-            self.data = data
-            self.timestamp = timestamp
-            self.ttl = ttl
-        }
-        
+
         var payload: [UInt8] {
             let timestampString = String(Int(timestamp.timeIntervalSince1970))
             let ttlString = String(ttl)
             let payloadString = timestampString + ttlString + pubKey + data
             return payloadString.bytes
         }
+
+        public init(pubKey: String, data: String, timestamp: Date, ttl: Int) {
+            self.pubKey = pubKey
+            self.data = data
+            self.timestamp = timestamp
+            self.ttl = ttl
+        }
     }
     
-    
-    /// Calculate a proof of work for the given configuration
+    /// Calculate a proof of work with the given configuration
     ///
     /// Ref: https://bitmessage.org/wiki/Proof_of_work
     ///
-    /// - Parameter config: The configuration data
+    /// - Parameter config: The configuration
     /// - Returns: A nonce string or nil if it failed
     public static func calculate(with config: Configuration) -> String? {
         let payload = config.payload
@@ -96,7 +95,7 @@ public enum ProofOfWork {
         while trialValue > target {
             nonce = nonce.increment(by: 1)
             
-            // This is different to the bitmessage pow
+            // This is different to the bitmessage POW
             // resultHash = hash(nonce + hash(data)) ==> hash(nonce + initialHash)
             let resultHash = (nonce + initialHash).sha512()
             let trialValueArray = Array(resultHash[0..<8])
@@ -106,7 +105,7 @@ public enum ProofOfWork {
         return nonce.toBase64()
     }
     
-    /// Calculate the UInt8 target we need to reach
+    /// Calculate the target we need to reach
     private static func calcTarget(ttl: Int, payloadLength: Int, nonceTrials: Int) -> UInt64 {
         let two16 = UInt64(pow(2, 16) - 1)
         let two64 = UInt64(pow(2, 64) - 1)
