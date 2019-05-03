@@ -97,7 +97,7 @@ public class SDSKeyValueStore: NSObject {
 
     @objc
     public func setObject(_ anyValue: Any?, key: String) {
-        databaseStorage.writeSwallowingErrors { (transaction) in
+        databaseStorage.write { (transaction) in
             self.setObject(anyValue, key: key, transaction: transaction)
         }
     }
@@ -121,7 +121,7 @@ public class SDSKeyValueStore: NSObject {
     @objc
     public func allKeys() -> [String] {
         var result = [String]()
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result = self.allKeys(transaction: transaction)
         }
         return result
@@ -142,7 +142,7 @@ public class SDSKeyValueStore: NSObject {
 
     private func read<T>(_ key: String) -> T? {
         var result: T?
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result = self.read(key, transaction: transaction)
         }
         return result
@@ -167,7 +167,7 @@ public class SDSKeyValueStore: NSObject {
 
     private func readData(_ key: String) -> Data? {
         var result: Data?
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result = self.readData(key, transaction: transaction)
         }
         return result
@@ -204,7 +204,7 @@ public class SDSKeyValueStore: NSObject {
     }
 
     private func write(_ value: NSCoding?, forKey key: String) {
-        databaseStorage.writeSwallowingErrors { (transaction) in
+        databaseStorage.write { (transaction) in
             self.write(value, forKey: key, transaction: transaction)
         }
     }
@@ -221,7 +221,7 @@ public class SDSKeyValueStore: NSObject {
     }
 
     private func writeData(_ data: Data?, forKey key: String) {
-        databaseStorage.writeSwallowingErrors { (transaction) in
+        databaseStorage.write { (transaction) in
             self.writeData(data, forKey: key, transaction: transaction)
         }
     }

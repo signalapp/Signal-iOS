@@ -151,7 +151,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     return Environment.shared.contactsManager;
 }
 
-- (SDSDatabaseStorage *)dbStorage
+- (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
 }
@@ -177,7 +177,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
     if (SSKFeatureFlags.useGRDB) {
-        [self.dbStorage.grdbStorage.homeViewDatabaseObserver appendSnapshotDelegate:self];
+        [self.databaseStorage.grdbStorage.homeViewDatabaseObserver appendSnapshotDelegate:self];
     } else {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseDidUpdateExternally:)
@@ -894,19 +894,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)resetMappings
 {
-    [BenchManager
-        benchWithTitle:@"HomeViewController#resetMappings"
-                 block:^{
-                     [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
-                         [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
-                                                                            transaction:transaction];
-                     }];
+    [BenchManager benchWithTitle:@"HomeViewController#resetMappings"
+                           block:^{
+                               [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                   [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
+                                                                                      transaction:transaction];
+                               }];
 
-                     [self updateHasArchivedThreadsRow];
-                     [self reloadTableViewData];
+                               [self updateHasArchivedThreadsRow];
+                               [self reloadTableViewData];
 
-                     [self updateViewState];
-                 }];
+                               [self updateViewState];
+                           }];
 }
 
 - (BOOL)isViewingArchive
@@ -936,7 +935,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertIsOnMainThread();
 
     __block NSArray<ExperienceUpgrade *> *unseenUpgrades;
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         if (transaction.transitional_yapReadTransaction) {
             unseenUpgrades = [ExperienceUpgradeFinder.sharedManager
                 allUnseenWithTransaction:transaction.transitional_yapReadTransaction];
@@ -1016,7 +1015,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     __block ThreadViewModel *_Nullable newThreadViewModel;
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord transaction:transaction];
     }];
     [self.threadViewModelCache setObject:newThreadViewModel forKey:threadRecord.uniqueId];
@@ -1310,7 +1309,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)deleteThread:(TSThread *)thread
 {
-    [self.dbStorage writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
             if (groupThread.isLocalUserInGroup) {
@@ -1336,7 +1335,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
-    [self.dbStorage writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         switch (self.homeViewMode) {
             case HomeViewMode_Inbox:
                 [thread archiveThreadWithTransaction:transaction];
@@ -1522,7 +1521,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertIsOnMainThread();
 
     __block ThreadMappingDiff *mappingDiff;
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         mappingDiff =
             [self.threadMapping updateAndCalculateDiffSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
                                                                             updatedItemIds:updatedItemIds

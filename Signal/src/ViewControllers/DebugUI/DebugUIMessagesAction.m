@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __block NSUInteger count = countParam;
-    [self.databaseStorage writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
         NSUInteger batchSize = 0;
         while (count > 0) {
             NSUInteger index = count;
