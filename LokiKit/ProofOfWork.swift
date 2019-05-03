@@ -53,11 +53,10 @@ public enum ProofOfWork {
     private static let nonceLength = 8
 
     private static let nonceTrialCount: Int = {
-        #if DEBUG
-            return 10
-        #else
-            return 100
-        #endif
+        switch BuildConfiguration.current {
+        case .debug: return 10
+        case .production: return 100
+        }
     }()
     
     struct Configuration {

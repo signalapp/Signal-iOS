@@ -558,6 +558,7 @@
 		B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */; };
 		B821F2F82272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */; };
 		B821F2FA2272CEEE002C88C0 /* OnboardingKeyPairViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* OnboardingKeyPairViewController.swift */; };
+		B858E395227BCB4F00C1722C /* BuildConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B858E394227BCB4F00C1722C /* BuildConfiguration.swift */; };
 		B8DC3D7722795E2400D909D6 /* ECKeyPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DC3D7422795E2300D909D6 /* ECKeyPair.swift */; };
 		B8DC3D7822795E2400D909D6 /* ECKeyPair.m in Sources */ = {isa = PBXBuildFile; fileRef = B8DC3D7522795E2300D909D6 /* ECKeyPair.m */; };
 		B8DC3D7922795E2400D909D6 /* LokiMessagingAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DC3D7622795E2400D909D6 /* LokiMessagingAPI.swift */; };
@@ -1351,6 +1352,7 @@
 		B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingAccountDetailsViewController.swift; sourceTree = "<group>"; };
 		B821F2F92272CEEE002C88C0 /* OnboardingKeyPairViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingKeyPairViewController.swift; sourceTree = "<group>"; };
+		B858E394227BCB4F00C1722C /* BuildConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildConfiguration.swift; sourceTree = "<group>"; };
 		B8DC3D7322795E2300D909D6 /* ECKeyPair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECKeyPair.h; sourceTree = "<group>"; };
 		B8DC3D7422795E2300D909D6 /* ECKeyPair.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPair.swift; sourceTree = "<group>"; };
 		B8DC3D7522795E2300D909D6 /* ECKeyPair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECKeyPair.m; sourceTree = "<group>"; };
@@ -2616,6 +2618,7 @@
 			isa = PBXGroup;
 			children = (
 				B8DC3D7A22795E2C00D909D6 /* Mnemonic */,
+				B858E394227BCB4F00C1722C /* BuildConfiguration.swift */,
 				B8DC3D7322795E2300D909D6 /* ECKeyPair.h */,
 				B8DC3D7522795E2300D909D6 /* ECKeyPair.m */,
 				B8DC3D7422795E2300D909D6 /* ECKeyPair.swift */,
@@ -3800,6 +3803,7 @@
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				34D1F0B01F867BFC0066283D /* OWSSystemMessageCell.m in Sources */,
+				B858E395227BCB4F00C1722C /* BuildConfiguration.swift in Sources */,
 				45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
 				34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,
