@@ -55,6 +55,10 @@ public class ManageStickersViewController: OWSTableViewController {
 
     // MARK: - Dependencies
 
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
     private var stickerManager: StickerManager {
         return SSKEnvironment.shared.stickerManager
     }
@@ -104,30 +108,32 @@ public class ManageStickersViewController: OWSTableViewController {
     private var availableStickerPacks = [StickerPack]()
 
     private func updateState() {
-        // Sort sticker packs by "date saved, descending" so that we feature
-        // packs that the user has just learned about.
-        installedStickerPacks = StickerManager.installedStickerPacks().sorted {
-            $0.dateCreated > $1.dateCreated
-        }
-        availableStickerPacks = StickerManager.availableStickerPacks().sorted {
-            // Sort "default" packs before "known" packs.
-            let isDefault0 = StickerManager.isDefaultStickerPack($0)
-            let isDefault1 = StickerManager.isDefaultStickerPack($1)
-            if isDefault0 && !isDefault1 {
-                return true
+        self.databaseStorage.read { (transaction) in
+            let allPacks = StickerManager.allStickerPacks(transaction: transaction)
+            // Only show packs with installed covers.
+            let packsWithCovers = allPacks.filter {
+                StickerManager.isStickerInstalled(stickerInfo: $0.coverInfo,
+                                                  transaction: transaction)
             }
-            if !isDefault0 && isDefault1 {
-                return false
+            // Sort sticker packs by "date saved, descending" so that we feature
+            // packs that the user has just learned about.
+            let installedPacks = packsWithCovers.filter { $0.isInstalled }
+            let availablePacks = packsWithCovers.filter { !$0.isInstalled }
+            self.installedStickerPacks = installedPacks.sorted {
+                $0.dateCreated > $1.dateCreated
             }
-            return $0.dateCreated > $1.dateCreated
-        }
-
-        Logger.verbose("updateState")
-        for stickerPack in installedStickerPacks {
-            Logger.verbose("installed: \(stickerPack.dateCreated.ows_millisecondsSince1970)")
-        }
-        for stickerPack in availableStickerPacks {
-            Logger.verbose("available: \(stickerPack.dateCreated.ows_millisecondsSince1970)")
+            self.availableStickerPacks = availablePacks.sorted {
+                // Sort "default" packs before "known" packs.
+                let isDefault0 = StickerManager.isDefaultStickerPack($0)
+                let isDefault1 = StickerManager.isDefaultStickerPack($1)
+                if isDefault0 && !isDefault1 {
+                    return true
+                }
+                if !isDefault0 && isDefault1 {
+                    return false
+                }
+                return $0.dateCreated > $1.dateCreated
+            }
         }
 
         updateTableContents()

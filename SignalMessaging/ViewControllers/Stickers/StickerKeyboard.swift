@@ -15,6 +15,14 @@ public protocol StickerKeyboardDelegate {
 @objc
 public class StickerKeyboard: UIStackView {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     @objc
     public weak var delegate: StickerKeyboardDelegate?
 
@@ -87,7 +95,9 @@ public class StickerKeyboard: UIStackView {
     }
 
     private func reloadStickers() {
-        stickerPacks = StickerManager.installedStickerPacks()
+        databaseStorage.read { (transaction) in
+            self.stickerPacks = StickerManager.installedStickerPacks(transaction: transaction)
+        }
 
         let packItems = stickerPacks.map { (stickerPack) in
             StickerHorizontalListView.Item(stickerInfo: stickerPack.coverInfo) { [weak self] in

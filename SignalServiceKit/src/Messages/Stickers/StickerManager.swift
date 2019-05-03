@@ -118,13 +118,6 @@ public class StickerManager: NSObject {
     }
 
     @objc
-    public class func installedStickerPacks() -> [StickerPack] {
-        return allStickerPacks().filter {
-            $0.isInstalled
-        }
-    }
-
-    @objc
     public class func installedStickerPacks(transaction: SDSAnyReadTransaction) -> [StickerPack] {
         return allStickerPacks(transaction: transaction).filter {
             $0.isInstalled
@@ -132,13 +125,7 @@ public class StickerManager: NSObject {
     }
 
     @objc
-    public class func availableStickerPacks() -> [StickerPack] {
-        return allStickerPacks().filter {
-            !$0.isInstalled
-        }
-    }
-
-    private class func availableStickerPacks(transaction: SDSAnyReadTransaction) -> [StickerPack] {
+    public class func availableStickerPacks(transaction: SDSAnyReadTransaction) -> [StickerPack] {
         return allStickerPacks(transaction: transaction).filter {
             !$0.isInstalled
         }
