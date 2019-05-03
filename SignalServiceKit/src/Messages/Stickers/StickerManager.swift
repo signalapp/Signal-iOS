@@ -687,7 +687,7 @@ public class StickerManager: NSObject {
     // MARK: - Recents
 
     private static let kRecentStickersKey = "recentStickers"
-    private static let kRecentStickersMaxCount: Int  = 25
+    private static let kRecentStickersMaxCount: Int = 25
 
     @objc
     public class func stickerWasSent(_ stickerInfo: StickerInfo,
