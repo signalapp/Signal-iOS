@@ -188,7 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.nonSignalContacts = nil;
 
     // Don't fire delegate "change" events during initialization.
-    if (!self.shouldNotifyDelegateOfUpdatedContacts) {
+    if (self.shouldNotifyDelegateOfUpdatedContacts) {
         [self.delegate contactsViewHelperDidUpdateContacts];
         self.hasUpdatedContactsAtLeastOnce = YES;
     }

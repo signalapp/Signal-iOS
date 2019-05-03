@@ -2564,3 +2564,4 @@
 "You seem to be missing the last word of your mnemonic. Please check what you entered and try again." = "You seem to be missing the last word of your mnemonic. Please check what you entered and try again.";
 "There appears to be an invalid word in your mnemonic. Please check what you entered and try again." = "There appears to be an invalid word in your mnemonic. Please check what you entered and try again.";
 "Your mnemonic couldn't be verified. Please check what you entered and try again." = "Your mnemonic couldn't be verified. Please check what you entered and try again.";
+"Search by name or public key" = "Search by name or public key";
