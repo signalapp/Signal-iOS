@@ -52,18 +52,19 @@ public enum ProofOfWork {
     // If this changes then we also have to use something other than UInt64 to support the new length
     private static let nonceLength = 8
 
-    // Modify this value for difficulty scaling
-    private enum NonceTrials {
-        static let development = 10
-        static let production = 100
-    }
+    private static let nonceTrialCount: Int = {
+        #if DEBUG
+            return 10
+        #else
+            return 100
+        #endif
+    }()
     
     struct Configuration {
         var pubKey: String
         var data: String
         var timestamp: Date
         var ttl: Int
-        var isDevelopment = false
         
         var payload: [UInt8] {
             let timestampString = String(Int(timestamp.timeIntervalSince1970))
@@ -82,8 +83,7 @@ public enum ProofOfWork {
     /// - Returns: A nonce string or nil if it failed
     static func calculate(with config: Configuration) -> String? {
         let payload = config.payload
-        let nonceTrials = config.isDevelopment ? NonceTrials.development : NonceTrials.production
-        let target = calcTarget(ttl: config.ttl, payloadLength: payload.count, nonceTrials: nonceTrials)
+        let target = calcTarget(ttl: config.ttl, payloadLength: payload.count, nonceTrials: nonceTrialCount)
         
         // Start with most the max value we can
         var trialValue = [UInt8](repeating: UInt8.max, count: nonceLength)
