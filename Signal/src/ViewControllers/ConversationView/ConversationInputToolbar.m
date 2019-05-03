@@ -672,7 +672,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     self.voiceMemoContentView = [UIView new];
     [self.voiceMemoUI addSubview:self.voiceMemoContentView];
-    [self.voiceMemoContentView ows_autoPinToSuperviewEdges];
+    [self.voiceMemoContentView autoPinEdgesToSuperviewMargins];
 
     self.recordingLabel = [UILabel new];
     self.recordingLabel.textColor = [UIColor ows_destructiveRedColor];
