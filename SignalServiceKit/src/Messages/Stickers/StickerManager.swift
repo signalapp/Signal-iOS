@@ -106,7 +106,7 @@ public class StickerManager: NSObject {
     @objc
     public class func allStickerPacks() -> [StickerPack] {
         var result = [StickerPack]()
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result += allStickerPacks(transaction: transaction)
         }
         return result
@@ -144,7 +144,7 @@ public class StickerManager: NSObject {
     @objc
     public class func isStickerPackSaved(stickerPackInfo: StickerPackInfo) -> Bool {
         var result = false
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result = isStickerPackSaved(stickerPackInfo: stickerPackInfo,
                                         transaction: transaction)
         }
@@ -161,7 +161,7 @@ public class StickerManager: NSObject {
     public class func uninstallStickerPack(stickerPackInfo: StickerPackInfo) {
 
         var completions = [CleanupCompletion]()
-        databaseStorage.writeSwallowingErrors { (transaction) in
+        databaseStorage.write { (transaction) in
             guard let stickerPack = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction) else {
                 Logger.info("Skipping uninstall; not installed.")
                 return
@@ -198,7 +198,7 @@ public class StickerManager: NSObject {
 
     @objc
     public class func installStickerPack(stickerPack: StickerPack) {
-        databaseStorage.writeSwallowingErrors { (transaction) in
+        databaseStorage.write { (transaction) in
             self.installStickerPack(stickerPack: stickerPack,
                                     transaction: transaction)
         }
@@ -225,7 +225,7 @@ public class StickerManager: NSObject {
     @objc
     public class func fetchStickerPack(stickerPackInfo: StickerPackInfo) -> StickerPack? {
         var result: StickerPack?
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result = fetchStickerPack(stickerPackInfo: stickerPackInfo,
                                       transaction: transaction)
         }
@@ -261,7 +261,7 @@ public class StickerManager: NSObject {
     public class func saveStickerPack(stickerPack: StickerPack,
                                       shouldInstall: Bool = false) {
 
-        databaseStorage.writeSwallowingErrors { (transaction) in
+        databaseStorage.write { (transaction) in
             let oldCopy = fetchStickerPack(stickerPackInfo: stickerPack.info, transaction: transaction)
 
             // Preserve old mutable state.
@@ -313,7 +313,7 @@ public class StickerManager: NSObject {
     @objc
     public class func installedStickers(forStickerPack stickerPack: StickerPack) -> [StickerInfo] {
         var result = [StickerInfo]()
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result = self.installedStickers(forStickerPack: stickerPack,
                                             transaction: transaction)
         }
@@ -342,7 +342,7 @@ public class StickerManager: NSObject {
     @objc
     public class func filepathForInstalledSticker(stickerInfo: StickerInfo) -> String? {
         var result: String?
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result = filepathForInstalledSticker(stickerInfo: stickerInfo,
                                                  transaction: transaction)
         }
@@ -364,7 +364,7 @@ public class StickerManager: NSObject {
     @objc
     public class func isStickerInstalled(stickerInfo: StickerInfo) -> Bool {
         var result = false
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result = isStickerInstalled(stickerInfo: stickerInfo,
                                         transaction: transaction)
         }
@@ -422,7 +422,7 @@ public class StickerManager: NSObject {
         assert(stickerData.count > 0)
 
         var hasInstalledSticker = false
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             hasInstalledSticker = nil != fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction)
         }
         if hasInstalledSticker {
@@ -440,7 +440,7 @@ public class StickerManager: NSObject {
             }
 
             let installedSticker = InstalledSticker(info: stickerInfo, emojiString: emojiString)
-            databaseStorage.writeSwallowingErrors { (transaction) in
+            databaseStorage.write { (transaction) in
                 installedSticker.anySave(transaction: transaction)
 
                 #if DEBUG
@@ -588,7 +588,7 @@ public class StickerManager: NSObject {
 
     internal class func suggestedStickers(forTextInput textInput: String) -> [InstalledSticker] {
         var result = [InstalledSticker]()
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result = self.suggestedStickers(forTextInput: textInput, transaction: transaction)
         }
         return result
@@ -666,7 +666,7 @@ public class StickerManager: NSObject {
     @objc
     public class func allKnownStickerPacks() -> [StickerPackInfo] {
         var result = [StickerPackInfo]()
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             KnownStickerPack.anyVisitAll(transaction: transaction) { (knownStickerPack) in
                 result.append(knownStickerPack.info)
                 return true
@@ -685,7 +685,7 @@ public class StickerManager: NSObject {
                                                  shouldInstall: Bool) {
 
         var stickerPacksToDownload = [StickerPackInfo]()
-        StickerManager.databaseStorage.readSwallowingErrors { (transaction) in
+        StickerManager.databaseStorage.read { (transaction) in
             for stickerPackInfo in stickerPacks {
                 if !StickerManager.isStickerPackSaved(stickerPackInfo: stickerPackInfo, transaction: transaction) {
                     stickerPacksToDownload.append(stickerPackInfo)
@@ -726,7 +726,7 @@ public class StickerManager: NSObject {
     @objc
     public class func recentStickers() -> [StickerInfo] {
         var result = [StickerInfo]()
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result = self.recentStickers(transaction: transaction)
         }
         return result
@@ -775,7 +775,7 @@ public class StickerManager: NSObject {
 
     private class func ensureAllStickerDownloadsAsync() {
         DispatchQueue.global().async {
-            databaseStorage.readSwallowingErrors { (transaction) in
+            databaseStorage.read { (transaction) in
                 for stickerPack in self.allStickerPacks(transaction: transaction) {
                     ensureDownloads(forStickerPack: stickerPack, transaction: transaction)
                 }
@@ -786,7 +786,7 @@ public class StickerManager: NSObject {
     @objc
     public class func ensureDownloadsAsync(forStickerPack stickerPack: StickerPack) {
         DispatchQueue.global().async {
-            databaseStorage.readSwallowingErrors { (transaction) in
+            databaseStorage.read { (transaction) in
                 ensureDownloads(forStickerPack: stickerPack, transaction: transaction)
             }
         }
@@ -824,7 +824,7 @@ public class StickerManager: NSObject {
     @objc
     public class func uninstallAllStickerPacks() {
         var stickerPacks = [StickerPack]()
-        databaseStorage.writeSwallowingErrors { (_) in
+        databaseStorage.write { (_) in
             stickerPacks = installedStickerPacks()
         }
 
@@ -835,7 +835,7 @@ public class StickerManager: NSObject {
 
     @objc
     public class func tryToInstallAllAvailableStickerPacks() {
-        databaseStorage.writeSwallowingErrors { (transaction) in
+        databaseStorage.write { (transaction) in
             for stickerPack in self.availableStickerPacks(transaction: transaction) {
                 self.installStickerPack(stickerPack: stickerPack, transaction: transaction)
             }

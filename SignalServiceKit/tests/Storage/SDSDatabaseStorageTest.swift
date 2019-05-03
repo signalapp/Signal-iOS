@@ -10,7 +10,7 @@ extension TSThread {
     @objc
     public class func anyFetchAll(databaseStorage: SDSDatabaseStorage) -> [TSThread] {
         var result = [TSThread]()
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result += anyFetchAll(transaction: transaction)
         }
         return result
@@ -23,7 +23,7 @@ extension TSInteraction {
     @objc
     public class func anyFetchAll(databaseStorage: SDSDatabaseStorage) -> [TSInteraction] {
         var result = [TSInteraction]()
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             result += anyFetchAll(transaction: transaction)
         }
         return result

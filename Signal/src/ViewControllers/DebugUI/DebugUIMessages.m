@@ -264,7 +264,7 @@ NS_ASSUME_NONNULL_BEGIN
                   OWSSyncGroupsRequestMessage *syncGroupsRequestMessage = [[OWSSyncGroupsRequestMessage alloc]
                       initWithThread:thread
                              groupId:[Randomness generateRandomBytes:kGroupIdLength]];
-                  [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+                  [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
                       if (transaction.transitional_yapWriteTransaction) {
                           [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage
                                                      transaction:transaction.transitional_yapWriteTransaction];
@@ -361,24 +361,24 @@ NS_ASSUME_NONNULL_BEGIN
     return self.class.databaseStorage;
 }
 
-+ (void)readSwallowingErrorsWithBlock:(void (^)(SDSAnyReadTransaction *transaction))block
++ (void)readWithBlock:(void (^)(SDSAnyReadTransaction *transaction))block
 {
-    [self.databaseStorage readSwallowingErrorsWithBlock:block];
+    [self.databaseStorage readWithBlock:block];
 }
 
-- (void)readSwallowingErrorsWithBlock:(void (^)(SDSAnyReadTransaction *transaction))block
+- (void)readWithBlock:(void (^)(SDSAnyReadTransaction *transaction))block
 {
-    [self.class readSwallowingErrorsWithBlock:block];
+    [self.class readWithBlock:block];
 }
 
-+ (void)writeSwallowingErrorsWithBlock:(void (^)(SDSAnyWriteTransaction *transaction))block
++ (void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *transaction))block
 {
-    [self.databaseStorage writeSwallowingErrorsWithBlock:block];
+    [self.databaseStorage writeWithBlock:block];
 }
 
-- (void)writeSwallowingErrorsWithBlock:(void (^)(SDSAnyWriteTransaction *transaction))block
+- (void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *transaction))block
 {
-    [self.class writeSwallowingErrorsWithBlock:block];
+    [self.class writeWithBlock:block];
 }
 
 #pragma mark -
@@ -399,7 +399,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
     __block TSOutgoingMessage *message;
-    [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if (!transaction.transitional_yapWriteTransaction) {
             OWSFailDebug(@"failure: not yet implemented for GRDB");
             return;
@@ -1784,7 +1784,7 @@ NS_ASSUME_NONNULL_BEGIN
                 thread:(TSThread *)thread
            messageBody:(nullable NSString *)messageBody
 {
-    [self readSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         if (!transaction.transitional_yapReadTransaction) {
             OWSFailDebug(@"failure: not yet implemented for GRDB");
             return;
@@ -3501,7 +3501,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     NSMutableArray<TSInteraction *> *result = [NSMutableArray new];
 
-    [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if ([thread isKindOfClass:[TSContactThread class]]) {
             TSContactThread *contactThread = (TSContactThread *)thread;
 
@@ -3695,7 +3695,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     OWSAssertDebug(thread);
 
     NSArray<TSInteraction *> *messages = [self unsavedSystemMessagesInThread:thread];
-    [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         for (TSInteraction *message in messages) {
             [message anySaveWithTransaction:transaction];
         }
@@ -3708,7 +3708,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     NSArray<TSInteraction *> *messages = [self unsavedSystemMessagesInThread:thread];
     TSInteraction *message = messages[(NSUInteger)arc4random_uniform((uint32_t)messages.count)];
-    [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [message anySaveWithTransaction:transaction];
     }];
 }
@@ -3795,7 +3795,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     const NSUInteger kMaxBatchSize = 2500;
     if (counter < kMaxBatchSize) {
-        [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+        [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
             [self sendFakeMessages:counter thread:thread isTextOnly:isTextOnly transaction:transaction];
         }];
     } else {
@@ -3803,7 +3803,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             NSUInteger remainder = counter;
             while (remainder > 0) {
                 NSUInteger batchSize = MIN(kMaxBatchSize, remainder);
-                [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+                [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
                     [self sendFakeMessages:batchSize thread:thread isTextOnly:isTextOnly transaction:transaction];
                 }];
                 remainder -= batchSize;
@@ -3826,7 +3826,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     uint32_t deleteDelay = arc4random_uniform((uint32_t)(0.01 * NSEC_PER_SEC));
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, deleteDelay), dispatch_get_main_queue(), ^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+            [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
                 [self deleteRandomMessagesWithCount:1 thread:thread transaction:transaction];
             }];
         });
@@ -3978,7 +3978,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
 
     __block TSGroupThread *thread;
-    [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
         if (!transaction.transitional_yapWriteTransaction) {
             OWSFailDebug(@"failure: not yet implemented for GRDB");
             return;
@@ -3998,7 +3998,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             if (!transaction.transitional_yapWriteTransaction) {
                 OWSFailDebug(@"failure: not yet implemented for GRDB");
                 return;
@@ -4078,7 +4078,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         return;
     }
 
-    [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if (!transaction.transitional_yapWriteTransaction) {
             OWSFailDebug(@"failure: not yet implemented for GRDB");
         }
@@ -4146,7 +4146,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             [self resurrectNewOutgoingMessages2:messageCount thread:thread transaction:transaction];
         },
     ];
-    [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSUInteger actionCount = 1 + (NSUInteger)arc4random_uniform(3);
         for (NSUInteger actionIdx = 0; actionIdx < actionCount; actionIdx++) {
             TransactionBlock actionBlock = actionBlocks[(NSUInteger)arc4random_uniform((uint32_t)actionBlocks.count)];
@@ -4293,7 +4293,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         OWSLogInfo(@"resurrectNewOutgoingMessages1.2: %zd", count);
-        [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             for (TSOutgoingMessage *message in messages) {
                 [message anyRemoveWithTransaction:transaction];
             }
@@ -4347,14 +4347,14 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         OWSLogInfo(@"resurrectNewOutgoingMessages2.2: %zd", count);
-        [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             for (TSOutgoingMessage *message in messages) {
                 [message anyRemoveWithTransaction:transaction];
             }
         }];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             OWSLogInfo(@"resurrectNewOutgoingMessages2.3: %zd", count);
-            [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                 for (TSOutgoingMessage *message in messages) {
                     [message anySaveWithTransaction:transaction];
                 }
@@ -4387,7 +4387,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     [recipientIds removeObject:[TSAccountManager localNumber]];
     NSString *recipientId = (recipientIds.count > 0 ? recipientIds.firstObject : @"+19174054215");
 
-    [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         for (NSNumber *timestamp in timestamps) {
             NSString *randomText = [self randomText];
             {
@@ -4487,7 +4487,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                      @"https://кц.рф/some/path",
                                      @"http://foo.кц.рф"];
 
-    [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         for (NSString *string in strings) {
             // DO NOT log these strings with the debugger attached.
             //        OWSLogInfo(@"%@", string);
@@ -4532,7 +4532,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         @"non-crashing string",
     ];
 
-    [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         for (NSString *string in strings) {
             // DO NOT log these strings with the debugger attached.
             //        OWSLogInfo(@"%@", string);
@@ -4577,7 +4577,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     ];
 
     [self
-        writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             for (NSString *string in strings) {
                 OWSLogInfo(@"sending zalgo");
 
@@ -4652,7 +4652,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 + (void)deleteAllMessagesInThread:(TSThread *)thread
 {
-    [self writeSwallowingErrorsWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if (transaction.transitional_yapWriteTransaction) {
             [thread removeAllThreadInteractionsWithTransaction:transaction.transitional_yapWriteTransaction];
         } else {
@@ -4976,7 +4976,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         [attachments addObject:attachment];
     }
 
-    [self readSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         if (!transaction.transitional_yapReadTransaction) {
             OWSFailDebug(@"failure: not yet supported for GRDB");
             return;

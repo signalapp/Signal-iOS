@@ -76,10 +76,15 @@ public class SDSDatabaseStorage: NSObject {
 
     // MARK: -
 
-    public func uiRead(block: @escaping (SDSAnyReadTransaction) -> Void) throws {
+    @objc
+    public func uiRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
         if FeatureFlags.useGRDB {
-            try grdbStorage.uiRead { transaction in
-                block(transaction.asAnyRead)
+            do {
+                try grdbStorage.uiRead { transaction in
+                    block(transaction.asAnyRead)
+                }
+            } catch {
+                owsFail("error: \(error)")
             }
         } else {
             yapStorage.uiRead { transaction in
@@ -88,10 +93,15 @@ public class SDSDatabaseStorage: NSObject {
         }
     }
 
-    public func read(block: @escaping (SDSAnyReadTransaction) -> Void) throws {
+    @objc
+    public func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
         if FeatureFlags.useGRDB {
-            try grdbStorage.read { transaction in
-                block(transaction.asAnyRead)
+            do {
+                try grdbStorage.read { transaction in
+                    block(transaction.asAnyRead)
+                }
+            } catch {
+                owsFail("error: \(error)")
             }
         } else {
             yapStorage.read { transaction in
@@ -100,10 +110,15 @@ public class SDSDatabaseStorage: NSObject {
         }
     }
 
-    public func write(block: @escaping (SDSAnyWriteTransaction) -> Void) throws {
+    @objc
+    public func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
         if FeatureFlags.useGRDB {
-            try grdbStorage.write { transaction in
-                block(transaction.asAnyWrite)
+            do {
+                try grdbStorage.write { transaction in
+                    block(transaction.asAnyWrite)
+                }
+            } catch {
+                owsFail("error: \(error)")
             }
         } else {
             yapStorage.write { transaction in
@@ -112,42 +127,6 @@ public class SDSDatabaseStorage: NSObject {
         }
 
         self.notifyCrossProcessWrite()
-    }
-
-    // MARK: - Error Swallowing
-
-    // The original yap db access methods don't throw, but the grdb ones can.
-    // To minimize disruption at the callsite while migrating, we have these
-    // non-throw versions which simply swallow errors.
-    //
-    // Eventually we probably want to migrate away from these *SwallowingErrors flavors,
-    // in favor of explicitly handling errors where possible.
-
-    @objc
-    public func uiReadSwallowingErrors(block: @escaping (SDSAnyReadTransaction) -> Void) {
-        do {
-            try uiRead(block: block)
-        } catch {
-            owsFailDebug("error: \(error)")
-        }
-    }
-
-    @objc
-    public func readSwallowingErrors(block: @escaping (SDSAnyReadTransaction) -> Void) {
-        do {
-            try read(block: block)
-        } catch {
-            owsFailDebug("error: \(error)")
-        }
-    }
-
-    @objc
-    public func writeSwallowingErrors(block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        do {
-            try write(block: block)
-        } catch {
-            owsFailDebug("error: \(error)")
-        }
     }
 
     // MARK: - Cross Process Notifications

@@ -133,7 +133,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
     }
 
     private func ensureState() {
-        databaseStorage.readSwallowingErrors { (transaction) in
+        databaseStorage.read { (transaction) in
             // Update Sticker Pack.
             guard let stickerPack = StickerManager.fetchStickerPack(stickerPackInfo: self.stickerPackInfo,
                                                                     transaction: transaction) else {

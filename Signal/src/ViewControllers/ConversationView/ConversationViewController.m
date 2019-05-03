@@ -326,7 +326,7 @@ typedef enum : NSUInteger {
     return SSKEnvironment.shared.tsAccountManager;
 }
 
-- (SDSDatabaseStorage *)dbStorage
+- (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
 }
@@ -645,7 +645,7 @@ typedef enum : NSUInteger {
     [self.loadMoreHeader autoSetDimension:ALDimensionHeight toSize:kLoadMoreHeaderHeight];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _loadMoreHeader);
 
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self updateShowLoadMoreHeaderWithTransaction:transaction];
     }];
 }
@@ -867,7 +867,7 @@ typedef enum : NSUInteger {
 
 - (void)resetContentAndLayoutWithSneakyTransaction
 {
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self resetContentAndLayoutWithTransaction:transaction];
     }];
 }
@@ -1764,10 +1764,9 @@ typedef enum : NSUInteger {
         benchWithTitle:@"loading more interactions"
                  block:^{
                      if (self.collectionView.contentOffset.y < loadMoreThreshold) {
-                         [self.dbStorage
-                             uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
-                                 [self.conversationViewModel loadAnotherPageOfMessagesWithTransaction:transaction];
-                             }];
+                         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                             [self.conversationViewModel loadAnotherPageOfMessagesWithTransaction:transaction];
+                         }];
                      }
                  }];
 }
@@ -2524,7 +2523,7 @@ typedef enum : NSUInteger {
     OWSAssertDebug(quotedReply.authorId.length > 0);
 
     __block NSIndexPath *_Nullable indexPath;
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         indexPath =
             [self.conversationViewModel ensureLoadWindowContainsQuotedReply:quotedReply transaction:transaction];
     }];
@@ -3572,7 +3571,7 @@ typedef enum : NSUInteger {
 
 - (void)updateLastVisibleSortIdWithSneakyTransaction
 {
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self updateLastVisibleSortIdWithTransaction:transaction];
     }];
 }
@@ -4353,7 +4352,7 @@ typedef enum : NSUInteger {
 - (void)scrollToInteractionId:(NSString *)interactionId
 {
     __block NSIndexPath *_Nullable indexPath;
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         indexPath =
             [self.conversationViewModel ensureLoadWindowContainsInteractionId:interactionId transaction:transaction];
     }];
@@ -4964,7 +4963,7 @@ typedef enum : NSUInteger {
 
 - (void)conversationViewModelDidUpdateWithSneakyTransaction:(ConversationUpdate *)conversationUpdate
 {
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self conversationViewModelDidUpdate:conversationUpdate transaction:transaction];
     }];
 }

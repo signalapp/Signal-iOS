@@ -252,7 +252,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     return self.primaryStorage.uiDatabaseConnection;
 }
 
-- (SDSDatabaseStorage *)dbStorage
+- (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
 }
@@ -361,7 +361,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
     [self.primaryStorage updateUIDatabaseConnectionToLatest];
 
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self createNewMessageMappingWithTransaction:transaction];
         if (![self reloadViewItemsWithTransaction:transaction]) {
             OWSFailDebug(@"failed to reload view items in configureForThread.");
@@ -369,7 +369,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     }];
 
     if (SSKFeatureFlags.useGRDB) {
-        [self.dbStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
+        [self.databaseStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
     } else {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseDidUpdateExternally:)
@@ -545,7 +545,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     self.dynamicInteractions = dynamicInteractions;
 
     if (didChange && updateIfNecessary) {
-        [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             if (![self reloadViewItemsWithTransaction:transaction]) {
                 OWSFailDebug(@"Failed to reload view items.");
             }
@@ -600,13 +600,13 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     __block NSError *dbError;
     __block NSError *updateError;
     __block NSSet<NSString *> *updatedInteractionIds;
-    [self.dbStorage.grdbStorage uiReadAndReturnError:&dbError
-                                               block:^(GRDBReadTransaction *transaction) {
-                                                   updatedInteractionIds = [transactionChanges
-                                                       updatedInteractionIdsForThreadId:self.thread.uniqueId
-                                                                            transaction:transaction
-                                                                                  error:&updateError];
-                                               }];
+    [self.databaseStorage.grdbStorage uiReadAndReturnError:&dbError
+                                                     block:^(GRDBReadTransaction *transaction) {
+                                                         updatedInteractionIds = [transactionChanges
+                                                             updatedInteractionIdsForThreadId:self.thread.uniqueId
+                                                                                  transaction:transaction
+                                                                                        error:&updateError];
+                                                     }];
 
     if (dbError || updateError || !updatedInteractionIds) {
         OWSFailDebug(@"failure: %@, %@", dbError, updateError);
@@ -659,7 +659,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 {
     __block ConversationMessageMappingDiff *_Nullable diff = nil;
     __block NSError *error;
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         diff = [self.messageMapping updateAndCalculateDiffWithTransaction:transaction
                                                     updatedInteractionIds:updatedInteractionIds
                                                                     error:&error];
@@ -1065,7 +1065,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 // want to change view scroll state in this case.
 - (void)resetMappingWithSneakyTransaction
 {
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self resetMappingWithTransaction:transaction];
     }];
 }
@@ -1294,7 +1294,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 {
     __block BOOL result;
 
-    [self.dbStorage uiReadSwallowingErrorsWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         result = [self reloadViewItemsWithTransaction:transaction];
     }];
 
