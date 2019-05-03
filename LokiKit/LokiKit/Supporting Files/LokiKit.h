@@ -1,4 +1,4 @@
-@import UIKit
+#import <UIKit/UIKit.h>
 
 //! Project version number for LokiKit.
 FOUNDATION_EXPORT double LokiKitVersionNumber;
