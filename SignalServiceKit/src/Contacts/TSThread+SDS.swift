@@ -17,12 +17,12 @@ extension TSThread: SDSSerializable {
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
-        case let model as TSContactThread:
-            assert(type(of: model) == TSContactThread.self)
-            return TSContactThreadSerializer(model: model)
         case let model as TSGroupThread:
             assert(type(of: model) == TSGroupThread.self)
             return TSGroupThreadSerializer(model: model)
+        case let model as TSContactThread:
+            assert(type(of: model) == TSContactThread.self)
+            return TSContactThreadSerializer(model: model)
         default:
             return TSThreadSerializer(model: self)
         }

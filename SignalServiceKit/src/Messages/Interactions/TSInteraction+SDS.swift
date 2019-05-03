@@ -17,30 +17,27 @@ extension TSInteraction: SDSSerializable {
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
-        case let model as OWSContactOffersInteraction:
-            assert(type(of: model) == OWSContactOffersInteraction.self)
-            return OWSContactOffersInteractionSerializer(model: model)
-        case let model as TSCall:
-            assert(type(of: model) == TSCall.self)
-            return TSCallSerializer(model: model)
+        case let model as TSUnreadIndicatorInteraction:
+            assert(type(of: model) == TSUnreadIndicatorInteraction.self)
+            return TSUnreadIndicatorInteractionSerializer(model: model)
+        case let model as TSOutgoingMessage:
+            assert(type(of: model) == TSOutgoingMessage.self)
+            return TSOutgoingMessageSerializer(model: model)
         case let model as OWSVerificationStateChangeMessage:
             assert(type(of: model) == OWSVerificationStateChangeMessage.self)
             return OWSVerificationStateChangeMessageSerializer(model: model)
         case let model as OWSDisappearingConfigurationUpdateInfoMessage:
             assert(type(of: model) == OWSDisappearingConfigurationUpdateInfoMessage.self)
             return OWSDisappearingConfigurationUpdateInfoMessageSerializer(model: model)
-        case let model as OWSAddToContactsOfferMessage:
-            assert(type(of: model) == OWSAddToContactsOfferMessage.self)
-            return OWSAddToContactsOfferMessageSerializer(model: model)
         case let model as OWSAddToProfileWhitelistOfferMessage:
             assert(type(of: model) == OWSAddToProfileWhitelistOfferMessage.self)
             return OWSAddToProfileWhitelistOfferMessageSerializer(model: model)
+        case let model as OWSAddToContactsOfferMessage:
+            assert(type(of: model) == OWSAddToContactsOfferMessage.self)
+            return OWSAddToContactsOfferMessageSerializer(model: model)
         case let model as TSInfoMessage:
             assert(type(of: model) == TSInfoMessage.self)
             return TSInfoMessageSerializer(model: model)
-        case let model as TSOutgoingMessage:
-            assert(type(of: model) == TSOutgoingMessage.self)
-            return TSOutgoingMessageSerializer(model: model)
         case let model as TSIncomingMessage:
             assert(type(of: model) == TSIncomingMessage.self)
             return TSIncomingMessageSerializer(model: model)
@@ -62,9 +59,12 @@ extension TSInteraction: SDSSerializable {
         case let model as TSMessage:
             assert(type(of: model) == TSMessage.self)
             return TSMessageSerializer(model: model)
-        case let model as TSUnreadIndicatorInteraction:
-            assert(type(of: model) == TSUnreadIndicatorInteraction.self)
-            return TSUnreadIndicatorInteractionSerializer(model: model)
+        case let model as TSCall:
+            assert(type(of: model) == TSCall.self)
+            return TSCallSerializer(model: model)
+        case let model as OWSContactOffersInteraction:
+            assert(type(of: model) == OWSContactOffersInteraction.self)
+            return OWSContactOffersInteractionSerializer(model: model)
         default:
             return TSInteractionSerializer(model: self)
         }
