@@ -84,6 +84,7 @@ end
 
 post_install do |installer|
   enable_extension_support_for_purelayout(installer)
+  configure_warning_flags(installer)
 end
 
 # PureLayout by default makes use of UIApplication, and must be configured to be built for an extension.
@@ -99,3 +100,17 @@ def enable_extension_support_for_purelayout(installer)
   end
 end
 
+# We want some warning to be treated as errors. 
+#
+# NOTE: We have to manually keep this list in sync with what's in our
+# Signal.xcodeproj config in Xcode go to: 
+#   Signal Project > Build Settings > Other Warning Flags
+def configure_warning_flags(installer)
+  installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |build_configuration|
+          build_configuration.build_settings['WARNING_CFLAGS'] = ['$(inherited)', 
+                                                                  '-Werror=incompatible-pointer-types',
+                                                                  '-Werror=protocol']
+      end
+  end
+end
