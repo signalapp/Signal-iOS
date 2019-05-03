@@ -1,8 +1,8 @@
 
-enum BuildConfiguration {
+public enum BuildConfiguration {
     case debug, production
     
-    static let current: BuildConfiguration = {
+    public static let current: BuildConfiguration = {
         #if DEBUG
             return .debug
         #else

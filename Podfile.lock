@@ -44,11 +44,11 @@ PODS:
     - CocoaLumberjack
     - SignalCoreKit
   - libPhoneNumber-iOS (0.9.13)
-  - LokiKit (0.0.1):
+  - LokiKit (1.0.0):
     - CryptoSwift
     - Curve25519Kit
     - SignalCoreKit
-  - LokiKit/Tests (0.0.1):
+  - LokiKit/Tests (1.0.0):
     - CryptoSwift
     - Curve25519Kit
     - SignalCoreKit
@@ -304,7 +304,7 @@ SPEC CHECKSUMS:
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   HKDFKit: 3b6dbbb9d59c221cc6c52c3aa915700cbf24e376
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
-  LokiKit: e18a5ac18b9f2b788b0fa7d0619d9a2a0511dd54
+  LokiKit: 75ed73c7fcc09fef1f2ec053c7eabf139e015890
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   PromiseKit: c609029bdd801f792551a504c695c7d3098b42cd
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
@@ -312,7 +312,7 @@ SPEC CHECKSUMS:
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: c2d8132cdedb95d35eb2f8ae7eac0957695d0a8b
   SignalMetadataKit: 6fa5e9a53c7f104568662521a2f3874672ff7a02
-  SignalServiceKit: 81b569196f3da6c3964f33b688f7b9ea2bc9a271
+  SignalServiceKit: 001d38050259216a4478a0a485d761d38add073d
   SQLCipher: efbdb52cdbe340bcd892b1b14297df4e07241b7f
   SSZipArchive: cefe1364104a0231268a5deb8495bdf2861f52f0
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
@@ -322,4 +322,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: c2f870c82713a0d73cf24dfe89e1a37ade0bc166
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.1

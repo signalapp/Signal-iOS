@@ -4,8 +4,8 @@ import CryptoSwift
 public enum Mnemonic {
     
     public struct Language : Hashable {
-        let filename: String
-        let prefixLength: Int
+        fileprivate let filename: String
+        fileprivate let prefixLength: Int
         
         public static let english = Language(filename: "english", prefixLength: 3)
         public static let japanese = Language(filename: "japanese", prefixLength: 3)
@@ -20,11 +20,12 @@ public enum Mnemonic {
             self.prefixLength = prefixLength
         }
         
-        func loadWordSet() -> [String] {
+        fileprivate func loadWordSet() -> [String] {
             if let cachedResult = Language.wordSetCache[self] {
                 return cachedResult
             } else {
-                let url = Bundle.main.url(forResource: filename, withExtension: "txt")!
+                let bundleID = "com.niels-andriesse.loki-network.Loki-Messenger.LokiKit"
+                let url = Bundle(identifier: bundleID)!.url(forResource: filename, withExtension: "txt")!
                 let contents = try! String(contentsOf: url)
                 let result = contents.split(separator: ",").map { String($0) }
                 Language.wordSetCache[self] = result
@@ -32,7 +33,7 @@ public enum Mnemonic {
             }
         }
         
-        func loadTruncatedWordSet() -> [String] {
+        fileprivate func loadTruncatedWordSet() -> [String] {
             if let cachedResult = Language.truncatedWordSetCache[self] {
                 return cachedResult
             } else {
