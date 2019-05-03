@@ -337,6 +337,11 @@ public class StickerManager: NSObject {
         return result
     }
 
+    @objc
+    public class func isDefaultStickerPack(_ stickerPack: StickerPack) -> Bool {
+        return DefaultStickerPacks.isDefaultStickerPack(stickerPackInfo: stickerPack.info)
+    }
+
     // MARK: - Stickers
 
     @objc

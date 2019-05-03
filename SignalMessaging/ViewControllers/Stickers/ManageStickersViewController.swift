@@ -104,11 +104,30 @@ public class ManageStickersViewController: OWSTableViewController {
     private var availableStickerPacks = [StickerPack]()
 
     private func updateState() {
+        // Sort sticker packs by "date saved, descending" so that we feature
+        // packs that the user has just learned about.
         installedStickerPacks = StickerManager.installedStickerPacks().sorted {
             $0.dateSaved > $1.dateSaved
         }
         availableStickerPacks = StickerManager.availableStickerPacks().sorted {
-            $0.dateSaved > $1.dateSaved
+            // Sort "default" packs before "known" packs.
+            let isDefault0 = StickerManager.isDefaultStickerPack($0)
+            let isDefault1 = StickerManager.isDefaultStickerPack($1)
+            if isDefault0 && !isDefault1 {
+                return true
+            }
+            if !isDefault0 && isDefault1 {
+                return false
+            }
+            return $0.dateSaved > $1.dateSaved
+        }
+
+        Logger.verbose("updateState")
+        for stickerPack in installedStickerPacks {
+            Logger.verbose("installed: \(stickerPack.dateSaved.ows_millisecondsSince1970)")
+        }
+        for stickerPack in availableStickerPacks {
+            Logger.verbose("available: \(stickerPack.dateSaved.ows_millisecondsSince1970)")
         }
 
         updateTableContents()
