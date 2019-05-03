@@ -114,21 +114,64 @@ public class MessageSticker: MTLModel {
         let packKey: Data = stickerProto.packKey
         let stickerID: UInt32 = stickerProto.stickerID
         let dataProto: SSKProtoAttachmentPointer = stickerProto.data
+        let stickerInfo = StickerInfo(packId: packID, packKey: packKey, stickerId: stickerID)
+
+        let attachment = try saveAttachment(dataProto: dataProto,
+                                            stickerInfo: stickerInfo,
+                                            transaction: transaction)
+        guard let attachmentId = attachment.uniqueId else {
+            throw StickerError.assertionFailure
+        }
+
+        let messageSticker = MessageSticker(info: stickerInfo, attachmentId: attachmentId)
+        guard messageSticker.isValid else {
+            throw StickerError.invalidInput
+        }
+        return messageSticker
+    }
+
+    private class func saveAttachment(dataProto: SSKProtoAttachmentPointer,
+                                      stickerInfo: StickerInfo,
+                                      transaction: SDSAnyWriteTransaction) throws -> TSAttachment {
+
+        // As an optimization, if the sticker is already installed,
+        // try to derive an TSAttachmentStream using that.
+        if let attachment = attachmentForInstalledSticker(dataProto: dataProto,
+                                                          stickerInfo: stickerInfo,
+                                                          transaction: transaction) {
+            return attachment
+        }
 
         guard let attachmentPointer = TSAttachmentPointer(fromProto: dataProto, albumMessage: nil) else {
             throw StickerError.invalidInput
         }
         attachmentPointer.anySave(transaction: transaction)
-        guard let attachmentId = attachmentPointer.uniqueId else {
-            throw StickerError.assertionFailure
-        }
+        return attachmentPointer
+    }
 
-        let info = StickerInfo(packId: packID, packKey: packKey, stickerId: stickerID)
-        let messageSticker = MessageSticker(info: info, attachmentId: attachmentId)
-        guard messageSticker.isValid else {
-            throw StickerError.invalidInput
+    private class func attachmentForInstalledSticker(dataProto: SSKProtoAttachmentPointer,
+                                                     stickerInfo: StickerInfo,
+                                                     transaction: SDSAnyWriteTransaction) -> TSAttachmentStream? {
+        guard let filePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo, transaction: transaction) else {
+            // Sticker is not installed.
+            return nil
         }
-        return messageSticker
+        guard let fileSize = OWSFileSystem.fileSize(ofPath: filePath) else {
+            owsFailDebug("Could not determine file size for installed sticker.")
+            return nil
+        }
+        guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: false) else {
+            owsFailDebug("Could not create data source for installed sticker.")
+            return nil
+        }
+        let contentType = dataProto.contentType ?? OWSMimeTypeImageWebp
+        let attachment = TSAttachmentStream(contentType: contentType, byteCount: fileSize.uint32Value, sourceFilename: nil, caption: nil, albumMessageId: nil)
+        guard attachment.write(dataSource) else {
+            owsFailDebug("Could not write data source for path: \(filePath)")
+            return nil
+        }
+        attachment.anySave(transaction: transaction)
+        return attachment
     }
 
     @objc
