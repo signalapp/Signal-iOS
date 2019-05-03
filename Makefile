@@ -29,14 +29,14 @@ dependencies:
 
 build: dependencies
 	cd $(WORKING_DIR) && \
-		$(XCODE_BUILD) build | xcpretty
+		$(XCODE_BUILD) build | bundle exec xcpretty
 
 test:
 	bundle exec fastlane test
 
 clean: clean_carthage
 	cd $(WORKING_DIR) && \
-		$(XCODE_BUILD) clean | xcpretty
+		$(XCODE_BUILD) clean | bundle exec xcpretty
 
 clean_carthage:
 	cd $(THIRD_PARTY_DIR) && \
