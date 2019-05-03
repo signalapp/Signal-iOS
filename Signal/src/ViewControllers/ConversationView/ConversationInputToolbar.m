@@ -1032,8 +1032,6 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSAssertIsOnMainThread();
 
     self.isStickerKeyboardActive = NO;
-    // TODO: We may want to endEditingMessage, once we've reworked
-    // our usage of clearStickerKeyboard.
 }
 
 - (UIResponder *)desiredFirstResponder
