@@ -2,7 +2,7 @@ import PromiseKit
 
 public struct LokiMessagingAPI {
     
-    private static var snodeURL: String { return textSecureServerURL }
+    private static var baseURL: String { return textSecureServerURL }
     private static var port: String { return "8080" }
     private static var apiVersion: String { return "v1" }
     
@@ -19,7 +19,7 @@ public struct LokiMessagingAPI {
     
     // MARK: API
     private static func invoke(_ method: Method, parameters: [String:String] = [:]) -> Promise<Response> {
-        let url = URL(string: "\(snodeURL):\(port)/\(apiVersion)/storage_rpc")!
+        let url = URL(string: "\(baseURL):\(port)/\(apiVersion)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         return TSNetworkManager.shared().makePromise(request: request)
     }

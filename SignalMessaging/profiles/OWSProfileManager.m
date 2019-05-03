@@ -294,7 +294,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSUserProfile *userProfile = self.localUserProfile;
     OWSAssertDebug(userProfile);
     
-    /* Loki: We don't support avatar uploads yet */
+    // Loki: We don't support avatar uploads yet
     OWSLogVerbose(@"Updating local profile on service with no avatar.");
     tryToUpdateService(nil, nil);
 

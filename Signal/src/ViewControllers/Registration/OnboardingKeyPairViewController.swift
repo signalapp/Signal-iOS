@@ -205,7 +205,7 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
                 hexEncodedPublicKey = keyPair.hexEncodedPublicKey
             } catch let error {
                 let error = error as? Mnemonic.DecodingError ?? Mnemonic.DecodingError.generic
-                errorLabel.text = error.description
+                errorLabel.text = error.errorDescription
                 errorLabel.isHidden = false
                 return
             }

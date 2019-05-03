@@ -43,10 +43,10 @@ enum Mnemonic {
         }
     }
     
-    enum DecodingError : Error {
+    enum DecodingError : LocalizedError {
         case generic, inputTooShort, missingLastWord, invalidWord, verificationFailed
         
-        var description: String {
+        var errorDescription: String {
             switch self {
             case .generic: return NSLocalizedString("Something went wrong. Please check your mnemonic and try again.", comment: "")
             case .inputTooShort: return NSLocalizedString("Looks like you didn't enter enough words. Please check your mnemonic and try again.", comment: "")
@@ -63,7 +63,7 @@ enum Mnemonic {
         let prefixLength = language.prefixLength
         var result: [String] = []
         let n = wordSet.count
-        let characterCount = string.indices.count
+        let characterCount = string.indices.count // Safe for this particular case
         for chunkStartIndexAsInt in stride(from: 0, to: characterCount, by: 8) {
             let chunkStartIndex = string.index(string.startIndex, offsetBy: chunkStartIndexAsInt)
             let chunkEndIndex = string.index(chunkStartIndex, offsetBy: 8)
@@ -95,7 +95,7 @@ enum Mnemonic {
         let n = truncatedWordSet.count
         // Check preconditions
         guard words.count >= 12 else { throw DecodingError.inputTooShort }
-        guard words.count % 3 != 0 else { throw DecodingError.missingLastWord }
+        guard !words.count.isMultiple(of: 3) else { throw DecodingError.missingLastWord }
         // Get checksum word
         let checksumWord = words.popLast()!
         // Decode

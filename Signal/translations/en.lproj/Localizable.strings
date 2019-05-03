@@ -2543,8 +2543,7 @@
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
 
-// -- Loki --
-
+// Loki:
 "Loki Messenger can let you know when you get a message (and who it is from)" = "Loki Messenger can let you know when you get a message (and who it is from)";
 "Create Your Loki Messenger Account" = "Create Your Loki Messenger Account";
 "Enter a name to be shown to your contacts" = "Enter a name to be shown to your contacts";
