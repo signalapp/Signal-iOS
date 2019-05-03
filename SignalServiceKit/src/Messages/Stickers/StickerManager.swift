@@ -442,17 +442,8 @@ public class StickerManager: NSObject {
     @objc
     public class func installSticker(stickerInfo: StickerInfo,
                                      stickerData: Data,
-                                     emojiString: String?) {
-        installSticker(stickerInfo: stickerInfo,
-                       stickerData: stickerData,
-                       emojiString: emojiString,
-                       async: true)
-    }
-
-    internal class func installSticker(stickerInfo: StickerInfo,
-                                      stickerData: Data,
-                                      emojiString: String?,
-                                      async: Bool) {
+                                     emojiString: String?,
+                                     completion: (() -> Void)? = nil) {
         assert(stickerData.count > 0)
 
         var hasInstalledSticker = false
@@ -464,7 +455,7 @@ public class StickerManager: NSObject {
             return
         }
 
-        let writeDataAndSave = {
+        DispatchQueue.global().async {
             let url = stickerUrl(stickerInfo: stickerInfo)
             do {
                 try stickerData.write(to: url, options: .atomic)
@@ -489,12 +480,10 @@ public class StickerManager: NSObject {
 
                 self.addStickerToEmojiMap(installedSticker, transaction: transaction)
             }
-        }
 
-        if async {
-            DispatchQueue.global().async(execute: writeDataAndSave)
-        } else {
-            writeDataAndSave()
+            if let completion = completion {
+                completion()
+            }
         }
 
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
