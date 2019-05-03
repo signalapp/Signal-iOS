@@ -1456,12 +1456,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2482B0C8227BD34D00143B38 /* Loki */ = {
+		2482B0C8227BD34D00143B38 /* Loki Utilities */ = {
 			isa = PBXGroup;
 			children = (
 				2482B0C9227BD34D00143B38 /* LokiMessagingAPI.swift */,
 			);
-			path = Loki;
+			path = "Loki Utilities";
 			sourceTree = "<group>";
 		};
 		34074F54203D0722004596AE /* Sounds */ = {
@@ -2429,7 +2429,6 @@
 				3496956121A301A100DCFE74 /* Backup */,
 				B90418E4183E9DD40038554A /* DateUtil.h */,
 				B90418E5183E9DD40038554A /* DateUtil.m */,
-				2482B0C8227BD34D00143B38 /* Loki */,
 				34B0796C1FCF46B000E248C2 /* MainAppContext.h */,
 				34B0796B1FCF46B000E248C2 /* MainAppContext.m */,
 				34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */,
@@ -2680,6 +2679,7 @@
 				B67EBF5C19194AC60084CCFD /* Settings.bundle */,
 				B657DDC91911A40500F45B0C /* Signal.entitlements */,
 				34074F54203D0722004596AE /* Sounds */,
+				2482B0C8227BD34D00143B38 /* Loki Utilities */,
 				76EB03C118170B33006006FC /* src */,
 				D221A094169C9E5E00537ABF /* Supporting Files */,
 				B660F66C1C29867F00687D6E /* test */,

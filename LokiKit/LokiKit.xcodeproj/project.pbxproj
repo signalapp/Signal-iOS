@@ -51,7 +51,7 @@
 		24B23963227BBA2D008EFC1C /* LokiKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LokiKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		24B23968227BBA2D008EFC1C /* LokiKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiKitTests.swift; sourceTree = "<group>"; };
 		24B2396A227BBA2D008EFC1C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		24B2398B227BBB21008EFC1C /* LokiKit.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; fileEncoding = 4; path = LokiKit.podspec; sourceTree = SOURCE_ROOT; };
+		24B2398B227BBB21008EFC1C /* LokiKit.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; fileEncoding = 4; path = LokiKit.podspec; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		24B2398E227BBEDA008EFC1C /* CryptoSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CryptoSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		24B23990227BBEDC008EFC1C /* Curve25519Kit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Curve25519Kit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		24B23992227BBEE2008EFC1C /* SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,10 +92,10 @@
 			isa = PBXGroup;
 			children = (
 				2470AF5E227BD02E00D2F01F /* japanese.txt */,
-				2470AF5F227BD02E00D2F01F /* Mnemonic.swift */,
 				2470AF60227BD02E00D2F01F /* english.txt */,
 				2470AF61227BD02E00D2F01F /* spanish.txt */,
 				2470AF62227BD02E00D2F01F /* portuguese.txt */,
+				2470AF5F227BD02E00D2F01F /* Mnemonic.swift */,
 			);
 			path = Mnemonic;
 			sourceTree = "<group>";
