@@ -17,7 +17,6 @@
 #import "DateUtil.h"
 #import "DebugUIPage.h"
 #import "DebugUITableViewController.h"
-#import "ECKeyPair.h"
 #import "FingerprintViewController.h"
 #import "HomeViewCell.h"
 #import "HomeViewController.h"
@@ -126,3 +125,4 @@
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
 #import <YYImage/YYImage.h>
+#import <LokiKit/LokiKit.h>

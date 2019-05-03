@@ -1,4 +1,5 @@
 import PromiseKit
+import LokiKit
 
 public struct LokiMessagingAPI {
     
