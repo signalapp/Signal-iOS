@@ -1,6 +1,7 @@
 import CryptoSwift
 
 private extension UInt64 {
+    
     init(_ decimal: Decimal) {
         self.init(truncating: decimal as NSDecimalNumber)
     }
@@ -17,16 +18,10 @@ private extension Array where Element == UInt8 {
         self.init(array)
     }
     
-    /// Compare if lhs array is greater than rhs array
-    static func >(lhs: [UInt8], rhs: [UInt8]) -> Bool {
+    static func > (lhs: [UInt8], rhs: [UInt8]) -> Bool {
         guard lhs.count == rhs.count else { return false }
-        
-        for i in (0..<lhs.count) {
-            // If the values are the same then move onto the next pair
-            if (lhs[i] == rhs[i]) { continue }
-            return lhs[i] > rhs[i]
-        }
-        return false
+        guard let (lhsElement, rhsElement) = zip(lhs, rhs).first(where: { $0 != $1 }) else { return false }
+        return lhsElement > rhsElement
     }
     
     /// Increment the UInt8 array by a given amount
