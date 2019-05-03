@@ -479,21 +479,6 @@ public class StickerManager: NSObject {
     // MARK: - Emoji
 
     @objc
-    public class func emojiForSticker(stickerInfo: StickerInfo,
-                                      transaction: SDSAnyReadTransaction) -> String? {
-
-        let uniqueId = InstalledSticker.uniqueId(for: stickerInfo)
-
-        guard let sticker = InstalledSticker.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-            return nil
-        }
-        guard let emojiString = sticker.emojiString else {
-            return nil
-        }
-        return firstEmoji(inEmojiString: emojiString)
-    }
-
-    @objc
     public class func allEmoji(inEmojiString emojiString: String?) -> [String] {
         guard let emojiString = emojiString else {
             return []
