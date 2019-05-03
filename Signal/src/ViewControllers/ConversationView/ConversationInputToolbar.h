@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)attachmentButtonPressed;
 
+- (void)cameraButtonPressed;
+
 - (void)sendSticker:(StickerInfo *)stickerInfo;
 
 - (void)presentManageStickersView;
@@ -48,9 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<ConversationInputToolbarDelegate> inputToolbarDelegate;
 
-- (void)beginEditingTextMessage;
-- (void)endEditingTextMessage;
-- (BOOL)isInputTextViewFirstResponder;
+- (void)beginEditingMessage;
+- (void)endEditingMessage;
+- (BOOL)isInputViewFirstResponder;
 
 - (void)setInputTextViewDelegate:(id<ConversationInputTextViewDelegate>)value;
 

@@ -48,6 +48,26 @@ const CGFloat kMaxTextViewHeight = 98;
 
 #pragma mark -
 
+@interface FirstResponderHostView : UIView
+
+// Redeclare this property as writable.
+@property (nonatomic, nullable) UIView *inputView;
+
+@end
+
+#pragma mark -
+
+@implementation FirstResponderHostView
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+@end
+
+#pragma mark -
+
 @interface ConversationInputToolbar () <ConversationTextViewToolbarDelegate,
     QuotedReplyPreviewDelegate,
     LinkPreviewViewDraftDelegate,
@@ -57,12 +77,14 @@ const CGFloat kMaxTextViewHeight = 98;
 
 @property (nonatomic, readonly) ConversationInputTextView *inputTextView;
 @property (nonatomic, readonly) UIStackView *hStack;
+@property (nonatomic, readonly) UIButton *cameraButton;
 @property (nonatomic, readonly) UIButton *attachmentButton;
 @property (nonatomic, readonly) UIButton *sendButton;
 @property (nonatomic, readonly) UIButton *voiceMemoButton;
 @property (nonatomic, readonly) UIButton *stickerButton;
 @property (nonatomic, readonly) UIView *quotedReplyWrapper;
 @property (nonatomic, readonly) UIView *linkPreviewWrapper;
+@property (nonatomic, readonly) FirstResponderHostView *stickerKeyboardResponder;
 
 @property (nonatomic) CGFloat textViewHeight;
 @property (nonatomic, readonly) NSLayoutConstraint *textViewHeightConstraint;
@@ -143,6 +165,18 @@ const CGFloat kMaxTextViewHeight = 98;
 
     _textViewHeightConstraint = [self.inputTextView autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
 
+    _cameraButton = [[UIButton alloc] init];
+    self.cameraButton.accessibilityLabel
+        = NSLocalizedString(@"CAMERA_BUTTON_LABEL", @"Accessibility label for camera button.");
+    self.cameraButton.accessibilityHint = NSLocalizedString(
+        @"CAMERA_BUTTON_HINT", @"Accessibility hint describing what you can do with the camera button");
+    [self.cameraButton addTarget:self
+                          action:@selector(cameraButtonPressed)
+                forControlEvents:UIControlEventTouchUpInside];
+    [self.cameraButton setTemplateImageName:@"camera-filled-24" tintColor:Theme.navbarIconColor];
+    [self.cameraButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _cameraButton);
+
     _attachmentButton = [[UIButton alloc] init];
     self.attachmentButton.accessibilityLabel
         = NSLocalizedString(@"ATTACHMENT_LABEL", @"Accessibility label for attaching photos");
@@ -151,10 +185,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.attachmentButton addTarget:self
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
-    UIImage *attachmentImage = [UIImage imageNamed:@"ic_circled_plus"];
-    [self.attachmentButton setImage:[attachmentImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                           forState:UIControlStateNormal];
-    self.attachmentButton.tintColor = Theme.navbarIconColor;
+    [self.attachmentButton setTemplateImageName:@"ic_circled_plus" tintColor:Theme.navbarIconColor];
     [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
@@ -168,21 +199,13 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _sendButton);
 
-    UIImage *voiceMemoIcon = [UIImage imageNamed:@"voice-memo-button"];
-    OWSAssertDebug(voiceMemoIcon);
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.voiceMemoButton setImage:[voiceMemoIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                          forState:UIControlStateNormal];
-    self.voiceMemoButton.imageView.tintColor = Theme.navbarIconColor;
+    [self.voiceMemoButton setTemplateImageName:@"voice-memo-button" tintColor:Theme.navbarIconColor];
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
-    UIImage *stickerIcon = [UIImage imageNamed:@"sticker-filled-24"];
-    OWSAssertDebug(stickerIcon);
     _stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.stickerButton setImage:[stickerIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                        forState:UIControlStateNormal];
-    self.stickerButton.imageView.tintColor = Theme.navbarIconColor;
+    [self.stickerButton setTemplateImageName:@"sticker-filled-24" tintColor:Theme.navbarIconColor];
     [self.stickerButton addTarget:self
                            action:@selector(stickerButtonPressed)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -215,11 +238,12 @@ const CGFloat kMaxTextViewHeight = 98;
     UIStackView *vStack = [[UIStackView alloc]
         initWithArrangedSubviews:@[ self.quotedReplyWrapper, self.linkPreviewWrapper, self.inputTextView ]];
     vStack.axis = UILayoutConstraintAxisVertical;
+    vStack.alignment = UIStackViewAlignmentFill;
     [vStack setContentHuggingHorizontalLow];
     [vStack setCompressionResistanceHorizontalLow];
 
-    // TODO: Change this layout.
-    for (UIView *button in @[ self.attachmentButton, self.stickerButton, self.voiceMemoButton, self.sendButton ]) {
+    for (UIView *button in
+        @[ self.cameraButton, self.attachmentButton, self.stickerButton, self.voiceMemoButton, self.sendButton ]) {
         [button setContentHuggingHorizontalHigh];
         [button setCompressionResistanceHorizontalHigh];
     }
@@ -235,18 +259,8 @@ const CGFloat kMaxTextViewHeight = 98;
     [vStackWrapper setCompressionResistanceHorizontalLow];
 
     // H Stack
-    if (SSKFeatureFlags.stickerSend) {
-        _hStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-            self.attachmentButton,
-            vStackWrapper,
-            self.stickerButton,
-            self.voiceMemoButton,
-            self.sendButton
-        ]];
-    } else {
-        _hStack = [[UIStackView alloc]
-            initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, self.voiceMemoButton, self.sendButton ]];
-    }
+    _hStack = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ self.cameraButton, vStackWrapper, self.attachmentButton, self.sendButton ]];
     self.hStack.axis = UILayoutConstraintAxisHorizontal;
     self.hStack.layoutMarginsRelativeArrangement = YES;
     self.hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
@@ -271,6 +285,16 @@ const CGFloat kMaxTextViewHeight = 98;
     self.hStack.preservesSuperviewLayoutMargins = NO;
     self.preservesSuperviewLayoutMargins = NO;
 
+    // Input buttons
+    [self addSubview:self.voiceMemoButton];
+    [self.voiceMemoButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.inputTextView];
+    [self.voiceMemoButton autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:vStackWrapper withOffset:-4];
+    if (SSKFeatureFlags.stickerSend) {
+        [self addSubview:self.stickerButton];
+        [self.stickerButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.voiceMemoButton];
+        [self.voiceMemoButton autoPinLeadingToTrailingEdgeOfView:self.stickerButton offset:0];
+    }
+
     // Border
     //
     // The border must reside _outside_ of vStackWrapper so
@@ -287,6 +311,15 @@ const CGFloat kMaxTextViewHeight = 98;
     [borderView autoPinToEdgesOfView:vStackWrapper];
     [borderView setCompressionResistanceLow];
     [borderView setContentHuggingLow];
+
+    // Sticker Keyboard Responder
+
+    _stickerKeyboardResponder = [FirstResponderHostView new];
+    StickerKeyboard *stickerKeyboard = [StickerKeyboard new];
+    stickerKeyboard.delegate = self;
+    self.stickerKeyboardResponder.inputView = stickerKeyboard;
+    [self addSubview:self.stickerKeyboardResponder];
+    [self.stickerKeyboardResponder autoSetDimensionsToSize:CGSizeMake(1, 1)];
 
     [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
 }
@@ -416,25 +449,31 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 }
 
-- (void)beginEditingTextMessage
+- (void)beginEditingMessage
 {
-    [self.inputTextView becomeFirstResponder];
+    if (!self.desiredFirstResponder.isFirstResponder) {
+        [self.desiredFirstResponder becomeFirstResponder];
+    }
 }
 
-- (void)endEditingTextMessage
+- (void)endEditingMessage
 {
     [self.inputTextView resignFirstResponder];
+    [self.stickerKeyboardResponder resignFirstResponder];
 }
 
-- (BOOL)isInputTextViewFirstResponder
+- (BOOL)isInputViewFirstResponder
 {
-    return self.inputTextView.isFirstResponder;
+    return (self.inputTextView.isFirstResponder || self.stickerKeyboardResponder.isFirstResponder);
 }
 
 - (void)ensureButtonVisibilityWithIsAnimated:(BOOL)isAnimated doLayout:(BOOL)doLayout
 {
     void (^updateBlock)(void) = ^{
         if (self.inputTextView.trimmedText.length > 0) {
+            if (!self.attachmentButton.isHidden) {
+                self.attachmentButton.hidden = YES;
+            }
             if (!self.voiceMemoButton.isHidden) {
                 self.voiceMemoButton.hidden = YES;
             }
@@ -446,6 +485,9 @@ const CGFloat kMaxTextViewHeight = 98;
                 self.sendButton.hidden = NO;
             }
         } else {
+            if (self.attachmentButton.isHidden) {
+                self.attachmentButton.hidden = NO;
+            }
             if (self.voiceMemoButton.isHidden) {
                 self.voiceMemoButton.hidden = NO;
             }
@@ -915,6 +957,15 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.inputToolbarDelegate sendButtonPressed];
 }
 
+- (void)cameraButtonPressed
+{
+    OWSAssertDebug(self.inputToolbarDelegate);
+
+    [self clearStickerKeyboard];
+
+    [self.inputToolbarDelegate cameraButtonPressed];
+}
+
 - (void)attachmentButtonPressed
 {
     OWSAssertDebug(self.inputToolbarDelegate);
@@ -931,6 +982,9 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSLogVerbose(@"");
 
     self.isStickerKeyboardActive = !self.isStickerKeyboardActive;
+    if (self.isStickerKeyboardActive) {
+        [self beginEditingMessage];
+    }
 }
 
 #pragma mark - Sticker Keyboard
@@ -945,18 +999,14 @@ const CGFloat kMaxTextViewHeight = 98;
 
     [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
 
-    if (isStickerKeyboardActive) {
-        StickerKeyboard *stickerKeyboard = [StickerKeyboard new];
-        stickerKeyboard.delegate = self;
-        self.inputTextView.inputView = stickerKeyboard;
+    if (self.isInputViewFirstResponder) {
+        // If either keyboard is presented, make sure the correct
+        // keyboard is presented.
+        [self beginEditingMessage];
     } else {
-        self.inputTextView.inputView = nil;
+        // Make sure neither keyboard is presented.
+        [self endEditingMessage];
     }
-
-    if (!self.inputTextView.isFirstResponder) {
-        [self.inputTextView becomeFirstResponder];
-    }
-    [self.inputTextView reloadInputViews];
 }
 
 - (void)clearStickerKeyboard
@@ -964,6 +1014,13 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSAssertIsOnMainThread();
 
     self.isStickerKeyboardActive = NO;
+    // TODO: We may want to endEditingMessage, once we've reworked
+    // our usage of clearStickerKeyboard.
+}
+
+- (UIResponder *)desiredFirstResponder
+{
+    return (self.isStickerKeyboardActive ? self.stickerKeyboardResponder : self.inputTextView);
 }
 
 #pragma mark - ConversationTextViewToolbarDelegate
