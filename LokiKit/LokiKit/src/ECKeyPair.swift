@@ -1,5 +1,5 @@
 
-extension ECKeyPair {
+public extension ECKeyPair {
     
     var hexEncodedPrivateKey: String {
         return privateKey.map { String(format: "%02hhx", $0) }.joined()

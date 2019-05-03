@@ -1,4 +1,5 @@
 #import "ECKeyPair.h"
+#import <SignalCoreKit/OWSAsserts.h>
 
 extern void curve25519_donna(unsigned char *output, const unsigned char *a, const unsigned char *b);
 

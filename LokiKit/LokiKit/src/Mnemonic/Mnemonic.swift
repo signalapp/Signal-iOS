@@ -1,16 +1,16 @@
 import CryptoSwift
 
 /// Based on [mnemonic.js](https://github.com/loki-project/loki-messenger/blob/development/libloki/modules/mnemonic.js) .
-enum Mnemonic {
+public enum Mnemonic {
     
-    struct Language : Hashable {
+    public struct Language : Hashable {
         let filename: String
         let prefixLength: Int
         
-        static let english = Language(filename: "english", prefixLength: 3)
-        static let japanese = Language(filename: "japanese", prefixLength: 3)
-        static let portuguese = Language(filename: "portuguese", prefixLength: 4)
-        static let spanish = Language(filename: "spanish", prefixLength: 4)
+        public static let english = Language(filename: "english", prefixLength: 3)
+        public static let japanese = Language(filename: "japanese", prefixLength: 3)
+        public static let portuguese = Language(filename: "portuguese", prefixLength: 4)
+        public static let spanish = Language(filename: "spanish", prefixLength: 4)
         
         private static var wordSetCache: [Language:[String]] = [:]
         private static var truncatedWordSetCache: [Language:[String]] = [:]
@@ -43,10 +43,10 @@ enum Mnemonic {
         }
     }
     
-    enum DecodingError : Error {
+    public enum DecodingError : Error {
         case generic, inputTooShort, missingLastWord, invalidWord, verificationFailed
         
-        var description: String {
+        public var description: String {
             switch self {
             case .generic: return NSLocalizedString("Something went wrong. Please check your mnemonic and try again.", comment: "")
             case .inputTooShort: return NSLocalizedString("Looks like you didn't enter enough words. Please check your mnemonic and try again.", comment: "")
@@ -57,7 +57,7 @@ enum Mnemonic {
         }
     }
     
-    static func encode(hexEncodedString string: String, language: Language = .english) -> String {
+    public static func encode(hexEncodedString string: String, language: Language = .english) -> String {
         var string = string
         let wordSet = language.loadWordSet()
         let prefixLength = language.prefixLength
@@ -87,7 +87,7 @@ enum Mnemonic {
         return result.joined(separator: " ")
     }
     
-    static func decode(mnemonic: String, language: Language = .english) throws -> String {
+    public static func decode(mnemonic: String, language: Language = .english) throws -> String {
         var words = mnemonic.split(separator: " ").map { String($0) }
         let truncatedWordSet = language.loadTruncatedWordSet()
         let prefixLength = language.prefixLength

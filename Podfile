@@ -6,6 +6,12 @@ use_frameworks!
 def shared_pods
 
   ###
+  # Loki Kit
+  ###
+
+  pod 'LokiKit', path: './LokiKit', testspecs: ["Tests"]
+
+  ###
   # OWS Pods
   ###
 
@@ -64,7 +70,12 @@ def shared_pods
   pod 'CryptoSwift', :inhibit_warnings => true
 end
 
+workspace 'Signal'
+project 'Signal'
+project 'LokiKit/LokiKit'
+
 target 'Signal' do
+  project 'Signal'
   shared_pods
   pod 'SSZipArchive', :inhibit_warnings => true
 
@@ -74,11 +85,19 @@ target 'Signal' do
 end
 
 target 'SignalShareExtension' do
+  project 'Signal'
   shared_pods
 end
 
 target 'SignalMessaging' do
+  project 'Signal'
   shared_pods
+end
+
+target 'LokiKit' do
+  project 'LokiKit/LokiKit'
+  pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
+  pod 'CryptoSwift', :inhibit_warnings => true
 end
 
 post_install do |installer|
