@@ -601,18 +601,15 @@ public class StickerManager: NSObject {
 
     @objc
     public func suggestedStickers(forTextInput textInput: String) -> [InstalledSticker] {
-        var result = [InstalledSticker]()
-        StickerManager.cacheQueue.sync {
+        return StickerManager.cacheQueue.sync {
             if let suggestions = suggestedStickersCache.object(forKey: textInput as NSString) as? [InstalledSticker] {
-                result = suggestions
-                return
+                return suggestions
             }
 
             let suggestions = StickerManager.suggestedStickers(forTextInput: textInput)
             suggestedStickersCache.setObject(suggestions as NSArray, forKey: textInput as NSString)
-            result = suggestions
+            return suggestions
         }
-        return result
     }
 
     internal class func suggestedStickers(forTextInput textInput: String) -> [InstalledSticker] {
