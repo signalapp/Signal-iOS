@@ -76,9 +76,11 @@ public class SDSDatabaseStorage: NSObject {
 
     // MARK: -
 
+    var useGRDB: Bool = FeatureFlags.useGRDB
+
     @objc
     public func uiRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
-        if FeatureFlags.useGRDB {
+        if useGRDB {
             do {
                 try grdbStorage.uiRead { transaction in
                     block(transaction.asAnyRead)
@@ -95,7 +97,7 @@ public class SDSDatabaseStorage: NSObject {
 
     @objc
     public func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
-        if FeatureFlags.useGRDB {
+        if useGRDB {
             do {
                 try grdbStorage.read { transaction in
                     block(transaction.asAnyRead)
@@ -112,7 +114,7 @@ public class SDSDatabaseStorage: NSObject {
 
     @objc
     public func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        if FeatureFlags.useGRDB {
+        if useGRDB {
             do {
                 try grdbStorage.write { transaction in
                     block(transaction.asAnyWrite)

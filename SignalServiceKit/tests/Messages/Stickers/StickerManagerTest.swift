@@ -74,7 +74,7 @@ class StickerManagerTest: SSKBaseTestSwift {
         XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🌼🇨🇦").count)
         XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "This is a flag: 🇨🇦").count)
 
-        databaseStorage.writeSwallowingErrors { (transaction) in
+        databaseStorage.write { (transaction) in
             // Don't bother calling completion.
             _ = StickerManager.uninstallSticker(stickerInfo: stickerInfo,
                                                 transaction: transaction)
@@ -122,7 +122,7 @@ class StickerManagerTest: SSKBaseTestSwift {
         XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "🌼🇨🇦").count)
         XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "This is a flag: 🇨🇦").count)
 
-        databaseStorage.writeSwallowingErrors { (transaction) in
+        databaseStorage.write { (transaction) in
             // Don't bother calling completion.
             _ = StickerManager.uninstallSticker(stickerInfo: stickerInfo,
                                                 transaction: transaction)
