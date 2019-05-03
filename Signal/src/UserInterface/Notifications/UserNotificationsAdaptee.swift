@@ -89,7 +89,10 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
                 } else if error != nil {
                     Logger.error("failed with error: \(error!)")
                 } else {
-                    owsFailDebug("error was unexpectedly nil")
+                    // Loki: Original code
+                    // ========
+                    // owsFailDebug("error was unexpectedly nil")
+                    // ========
                     Logger.error("failed without error.")
                 }
 
