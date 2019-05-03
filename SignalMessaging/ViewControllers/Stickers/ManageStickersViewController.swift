@@ -104,8 +104,12 @@ public class ManageStickersViewController: OWSTableViewController {
     private var availableStickerPacks = [StickerPack]()
 
     private func updateState() {
-        installedStickerPacks = StickerManager.installedStickerPacks()
-        availableStickerPacks = StickerManager.availableStickerPacks()
+        installedStickerPacks = StickerManager.installedStickerPacks().sorted {
+            $0.dateSaved > $1.dateSaved
+        }
+        availableStickerPacks = StickerManager.availableStickerPacks().sorted {
+            $0.dateSaved > $1.dateSaved
+        }
 
         updateTableContents()
     }

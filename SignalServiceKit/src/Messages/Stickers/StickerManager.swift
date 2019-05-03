@@ -823,13 +823,19 @@ public class StickerManager: NSObject {
     #if DEBUG
     @objc
     public class func uninstallAllStickerPacks() {
-        var stickerPacks = [StickerPack]()
-        databaseStorage.write { (_) in
-            stickerPacks = installedStickerPacks()
-        }
-
+        let stickerPacks = installedStickerPacks()
         for stickerPack in stickerPacks {
             uninstallStickerPack(stickerPackInfo: stickerPack.info)
+        }
+    }
+
+    @objc
+    public class func removeAllStickerPacks() {
+        let stickerPacks = allStickerPacks()
+        databaseStorage.write { (transaction) in
+            for stickerPack in stickerPacks {
+                stickerPack.anyRemove(transaction: transaction)
+            }
         }
     }
 
