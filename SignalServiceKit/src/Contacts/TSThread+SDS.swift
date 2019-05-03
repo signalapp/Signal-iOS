@@ -96,6 +96,32 @@ extension TSThreadSerializer {
             throw SDSError.invalidResult
         }
         switch recordType {
+        case .contactThread:
+
+            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
+            let archivalDate = try deserializer.optionalDate(at: archivalDateColumn.columnIndex)
+            let archivedAsOfMessageSortId = try deserializer.optionalBoolAsNSNumber(at: archivedAsOfMessageSortIdColumn.columnIndex)
+            let conversationColorName = ConversationColorName(rawValue: try deserializer.string(at: conversationColorNameColumn.columnIndex))
+            let creationDate = try deserializer.date(at: creationDateColumn.columnIndex)
+            let isArchivedByLegacyTimestampForSorting = try deserializer.bool(at: isArchivedByLegacyTimestampForSortingColumn.columnIndex)
+            let lastMessageDate = try deserializer.optionalDate(at: lastMessageDateColumn.columnIndex)
+            let messageDraft = try deserializer.optionalString(at: messageDraftColumn.columnIndex)
+            let mutedUntilDate = try deserializer.optionalDate(at: mutedUntilDateColumn.columnIndex)
+            let shouldThreadBeVisible = try deserializer.bool(at: shouldThreadBeVisibleColumn.columnIndex)
+            let hasDismissedOffers = try deserializer.bool(at: hasDismissedOffersColumn.columnIndex)
+
+            return TSContactThread(uniqueId: uniqueId,
+                                   archivalDate: archivalDate,
+                                   archivedAsOfMessageSortId: archivedAsOfMessageSortId,
+                                   conversationColorName: conversationColorName,
+                                   creationDate: creationDate,
+                                   isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
+                                   lastMessageDate: lastMessageDate,
+                                   messageDraft: messageDraft,
+                                   mutedUntilDate: mutedUntilDate,
+                                   shouldThreadBeVisible: shouldThreadBeVisible,
+                                   hasDismissedOffers: hasDismissedOffers)
+
         case .groupThread:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
@@ -122,32 +148,6 @@ extension TSThreadSerializer {
                                  mutedUntilDate: mutedUntilDate,
                                  shouldThreadBeVisible: shouldThreadBeVisible,
                                  groupModel: groupModel)
-
-        case .contactThread:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let archivalDate = try deserializer.optionalDate(at: archivalDateColumn.columnIndex)
-            let archivedAsOfMessageSortId = try deserializer.optionalBoolAsNSNumber(at: archivedAsOfMessageSortIdColumn.columnIndex)
-            let conversationColorName = ConversationColorName(rawValue: try deserializer.string(at: conversationColorNameColumn.columnIndex))
-            let creationDate = try deserializer.date(at: creationDateColumn.columnIndex)
-            let isArchivedByLegacyTimestampForSorting = try deserializer.bool(at: isArchivedByLegacyTimestampForSortingColumn.columnIndex)
-            let lastMessageDate = try deserializer.optionalDate(at: lastMessageDateColumn.columnIndex)
-            let messageDraft = try deserializer.optionalString(at: messageDraftColumn.columnIndex)
-            let mutedUntilDate = try deserializer.optionalDate(at: mutedUntilDateColumn.columnIndex)
-            let shouldThreadBeVisible = try deserializer.bool(at: shouldThreadBeVisibleColumn.columnIndex)
-            let hasDismissedOffers = try deserializer.bool(at: hasDismissedOffersColumn.columnIndex)
-
-            return TSContactThread(uniqueId: uniqueId,
-                                   archivalDate: archivalDate,
-                                   archivedAsOfMessageSortId: archivedAsOfMessageSortId,
-                                   conversationColorName: conversationColorName,
-                                   creationDate: creationDate,
-                                   isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
-                                   lastMessageDate: lastMessageDate,
-                                   messageDraft: messageDraft,
-                                   mutedUntilDate: mutedUntilDate,
-                                   shouldThreadBeVisible: shouldThreadBeVisible,
-                                   hasDismissedOffers: hasDismissedOffers)
 
         case .thread:
 

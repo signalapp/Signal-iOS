@@ -666,6 +666,7 @@ extension %sSerializer {
 '''
 
         deserialize_classes = all_descendents_of_class(clazz) + [clazz]
+        deserialize_classes.sort(key=lambda value: value.name)
         
         for deserialize_class in deserialize_classes:
             if should_ignore_class(deserialize_class):

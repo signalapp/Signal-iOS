@@ -122,6 +122,35 @@ extension TSAttachmentSerializer {
             throw SDSError.invalidResult
         }
         switch recordType {
+        case .attachment:
+
+            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
+            let albumMessageId = try deserializer.optionalString(at: albumMessageIdColumn.columnIndex)
+            let attachmentSchemaVersion = UInt(try deserializer.int64(at: attachmentSchemaVersionColumn.columnIndex))
+            let attachmentTypeRaw = UInt(try deserializer.int(at: attachmentTypeColumn.columnIndex))
+            guard let attachmentType = TSAttachmentType(rawValue: attachmentTypeRaw) else {
+               throw SDSError.invalidValue
+            }
+            let byteCount = UInt32(try deserializer.int64(at: byteCountColumn.columnIndex))
+            let caption = try deserializer.optionalString(at: captionColumn.columnIndex)
+            let contentType = try deserializer.string(at: contentTypeColumn.columnIndex)
+            let encryptionKey = try deserializer.optionalBlob(at: encryptionKeyColumn.columnIndex)
+            let isDownloaded = try deserializer.bool(at: isDownloadedColumn.columnIndex)
+            let serverId = try deserializer.uint64(at: serverIdColumn.columnIndex)
+            let sourceFilename = try deserializer.optionalString(at: sourceFilenameColumn.columnIndex)
+
+            return TSAttachment(uniqueId: uniqueId,
+                                albumMessageId: albumMessageId,
+                                attachmentSchemaVersion: attachmentSchemaVersion,
+                                attachmentType: attachmentType,
+                                byteCount: byteCount,
+                                caption: caption,
+                                contentType: contentType,
+                                encryptionKey: encryptionKey,
+                                isDownloaded: isDownloaded,
+                                serverId: serverId,
+                                sourceFilename: sourceFilename)
+
         case .attachmentPointer:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
@@ -216,35 +245,6 @@ extension TSAttachmentSerializer {
                                       isValidImageCached: isValidImageCached,
                                       isValidVideoCached: isValidVideoCached,
                                       localRelativeFilePath: localRelativeFilePath)
-
-        case .attachment:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let albumMessageId = try deserializer.optionalString(at: albumMessageIdColumn.columnIndex)
-            let attachmentSchemaVersion = UInt(try deserializer.int64(at: attachmentSchemaVersionColumn.columnIndex))
-            let attachmentTypeRaw = UInt(try deserializer.int(at: attachmentTypeColumn.columnIndex))
-            guard let attachmentType = TSAttachmentType(rawValue: attachmentTypeRaw) else {
-               throw SDSError.invalidValue
-            }
-            let byteCount = UInt32(try deserializer.int64(at: byteCountColumn.columnIndex))
-            let caption = try deserializer.optionalString(at: captionColumn.columnIndex)
-            let contentType = try deserializer.string(at: contentTypeColumn.columnIndex)
-            let encryptionKey = try deserializer.optionalBlob(at: encryptionKeyColumn.columnIndex)
-            let isDownloaded = try deserializer.bool(at: isDownloadedColumn.columnIndex)
-            let serverId = try deserializer.uint64(at: serverIdColumn.columnIndex)
-            let sourceFilename = try deserializer.optionalString(at: sourceFilenameColumn.columnIndex)
-
-            return TSAttachment(uniqueId: uniqueId,
-                                albumMessageId: albumMessageId,
-                                attachmentSchemaVersion: attachmentSchemaVersion,
-                                attachmentType: attachmentType,
-                                byteCount: byteCount,
-                                caption: caption,
-                                contentType: contentType,
-                                encryptionKey: encryptionKey,
-                                isDownloaded: isDownloaded,
-                                serverId: serverId,
-                                sourceFilename: sourceFilename)
 
         default:
             owsFail("Invalid record type \(recordType)")

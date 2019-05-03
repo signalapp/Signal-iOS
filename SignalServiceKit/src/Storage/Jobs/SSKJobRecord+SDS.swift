@@ -17,12 +17,12 @@ extension SSKJobRecord: SDSSerializable {
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
-        case let model as OWSSessionResetJobRecord:
-            assert(type(of: model) == OWSSessionResetJobRecord.self)
-            return OWSSessionResetJobRecordSerializer(model: model)
         case let model as SSKMessageSenderJobRecord:
             assert(type(of: model) == SSKMessageSenderJobRecord.self)
             return SSKMessageSenderJobRecordSerializer(model: model)
+        case let model as OWSSessionResetJobRecord:
+            assert(type(of: model) == OWSSessionResetJobRecord.self)
+            return OWSSessionResetJobRecordSerializer(model: model)
         default:
             return SSKJobRecordSerializer(model: self)
         }
@@ -92,32 +92,6 @@ extension SSKJobRecordSerializer {
             throw SDSError.invalidResult
         }
         switch recordType {
-        case .sSKMessageSenderJobRecord:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let failureCount = UInt(try deserializer.int64(at: failureCountColumn.columnIndex))
-            let label = try deserializer.string(at: labelColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
-            let statusRaw = UInt(try deserializer.int(at: statusColumn.columnIndex))
-            guard let status = SSKJobRecordStatus(rawValue: statusRaw) else {
-               throw SDSError.invalidValue
-            }
-            let invisibleMessageSerialized: Data? = try deserializer.optionalBlob(at: invisibleMessageColumn.columnIndex)
-            let invisibleMessage: TSOutgoingMessage? = try SDSDeserializer.optionalUnarchive(invisibleMessageSerialized)
-            let messageId = try deserializer.optionalString(at: messageIdColumn.columnIndex)
-            let removeMessageAfterSending = try deserializer.bool(at: removeMessageAfterSendingColumn.columnIndex)
-            let threadId = try deserializer.optionalString(at: threadIdColumn.columnIndex)
-
-            return SSKMessageSenderJobRecord(uniqueId: uniqueId,
-                                             failureCount: failureCount,
-                                             label: label,
-                                             sortId: sortId,
-                                             status: status,
-                                             invisibleMessage: invisibleMessage,
-                                             messageId: messageId,
-                                             removeMessageAfterSending: removeMessageAfterSending,
-                                             threadId: threadId)
-
         case .sessionResetJobRecord:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
@@ -153,6 +127,32 @@ extension SSKJobRecordSerializer {
                                 label: label,
                                 sortId: sortId,
                                 status: status)
+
+        case .sSKMessageSenderJobRecord:
+
+            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
+            let failureCount = UInt(try deserializer.int64(at: failureCountColumn.columnIndex))
+            let label = try deserializer.string(at: labelColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let statusRaw = UInt(try deserializer.int(at: statusColumn.columnIndex))
+            guard let status = SSKJobRecordStatus(rawValue: statusRaw) else {
+               throw SDSError.invalidValue
+            }
+            let invisibleMessageSerialized: Data? = try deserializer.optionalBlob(at: invisibleMessageColumn.columnIndex)
+            let invisibleMessage: TSOutgoingMessage? = try SDSDeserializer.optionalUnarchive(invisibleMessageSerialized)
+            let messageId = try deserializer.optionalString(at: messageIdColumn.columnIndex)
+            let removeMessageAfterSending = try deserializer.bool(at: removeMessageAfterSendingColumn.columnIndex)
+            let threadId = try deserializer.optionalString(at: threadIdColumn.columnIndex)
+
+            return SSKMessageSenderJobRecord(uniqueId: uniqueId,
+                                             failureCount: failureCount,
+                                             label: label,
+                                             sortId: sortId,
+                                             status: status,
+                                             invisibleMessage: invisibleMessage,
+                                             messageId: messageId,
+                                             removeMessageAfterSending: removeMessageAfterSending,
+                                             threadId: threadId)
 
         default:
             owsFail("Invalid record type \(recordType)")
