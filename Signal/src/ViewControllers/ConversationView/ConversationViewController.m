@@ -1256,7 +1256,7 @@ typedef enum : NSUInteger {
         if (self.isShowingSearchUI) {
             shouldBecomeFirstResponder = !self.searchController.uiSearchController.searchBar.isFirstResponder;
         } else {
-            shouldBecomeFirstResponder = !self.inputToolbar.isInputTextViewFirstResponder;
+            shouldBecomeFirstResponder = !self.inputToolbar.isInputViewFirstResponder;
         }
 
         if (shouldBecomeFirstResponder) {
@@ -2593,7 +2593,7 @@ typedef enum : NSUInteger {
     }
 
     self.inputToolbar.quotedReply = quotedReply;
-    [self.inputToolbar beginEditingTextMessage];
+    [self.inputToolbar beginEditingMessage];
 }
 
 #pragma mark - OWSMessageStickerViewDelegate
@@ -3694,12 +3694,12 @@ typedef enum : NSUInteger {
 
 - (void)popKeyBoard
 {
-    [self.inputToolbar beginEditingTextMessage];
+    [self.inputToolbar beginEditingMessage];
 }
 
 - (void)dismissKeyBoard
 {
-    [self.inputToolbar endEditingTextMessage];
+    [self.inputToolbar endEditingMessage];
 }
 
 #pragma mark Drafts

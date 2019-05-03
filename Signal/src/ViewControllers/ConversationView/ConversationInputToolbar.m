@@ -449,20 +449,20 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 }
 
-- (void)beginEditingTextMessage
+- (void)beginEditingMessage
 {
-    if (!self.currentFirstResponder.isFirstResponder) {
-        [self.currentFirstResponder becomeFirstResponder];
+    if (!self.desiredFirstResponder.isFirstResponder) {
+        [self.desiredFirstResponder becomeFirstResponder];
     }
 }
 
-- (void)endEditingTextMessage
+- (void)endEditingMessage
 {
     [self.inputTextView resignFirstResponder];
     [self.stickerKeyboardResponder resignFirstResponder];
 }
 
-- (BOOL)isInputTextViewFirstResponder
+- (BOOL)isInputViewFirstResponder
 {
     return (self.inputTextView.isFirstResponder || self.stickerKeyboardResponder.isFirstResponder);
 }
@@ -982,6 +982,9 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSLogVerbose(@"");
 
     self.isStickerKeyboardActive = !self.isStickerKeyboardActive;
+    if (self.isStickerKeyboardActive) {
+        [self beginEditingMessage];
+    }
 }
 
 #pragma mark - Sticker Keyboard
@@ -996,10 +999,14 @@ const CGFloat kMaxTextViewHeight = 98;
 
     [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
 
-    if (!self.currentFirstResponder.isFirstResponder) {
-        [self.currentFirstResponder becomeFirstResponder];
+    if (self.isInputViewFirstResponder) {
+        // If either keyboard is presented, make sure the correct
+        // keyboard is presented.
+        [self beginEditingMessage];
+    } else {
+        // Make sure neither keyboard is presented.
+        [self endEditingMessage];
     }
-    //    [self.currentFirstResponder reloadInputViews];
 }
 
 - (void)clearStickerKeyboard
@@ -1007,9 +1014,11 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSAssertIsOnMainThread();
 
     self.isStickerKeyboardActive = NO;
+    // TODO: We may want to endEditingMessage, once we've reworked
+    // our usage of clearStickerKeyboard.
 }
 
-- (UIResponder *)currentFirstResponder
+- (UIResponder *)desiredFirstResponder
 {
     return (self.isStickerKeyboardActive ? self.stickerKeyboardResponder : self.inputTextView);
 }
@@ -1210,13 +1219,6 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSLogVerbose(@"");
 
     [self.inputToolbarDelegate presentManageStickersView];
-}
-
-- (void)handleTapDismissStickerKeyboard:(UIGestureRecognizer *)sender
-{
-    if (sender.state == UIGestureRecognizerStateRecognized) {
-        [self clearStickerKeyboard];
-    }
 }
 
 @end
