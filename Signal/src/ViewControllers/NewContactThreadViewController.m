@@ -393,6 +393,18 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL hasSearchText = self.searchText.length > 0;
 
     if (hasSearchText) {
+
+        // Loki:
+        // ========
+        OWSTableSection *newConversationSection = [OWSTableSection new];
+        [newConversationSection
+         addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"Start a Conversation", @"")
+                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"start_conversation")
+                                      customRowHeight:UITableViewAutomaticDimension
+                                          actionBlock:^{ NSLog(@"Start a Conversation"); }]];
+        [contents addSection:newConversationSection];
+        // ========
+
         for (OWSTableSection *section in [self contactsSectionsForSearch]) {
             [contents addSection:section];
         }
