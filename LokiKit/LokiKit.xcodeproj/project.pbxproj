@@ -466,6 +466,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E08CB8D0C89F4717B2D51D41 /* Pods-LokiKit.debug.xcconfig */;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
@@ -493,6 +494,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D5C29CCA1A7CDF6063649ED2 /* Pods-LokiKit.release.xcconfig */;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
