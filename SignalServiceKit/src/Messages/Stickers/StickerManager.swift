@@ -51,7 +51,8 @@ public class StickerManager: NSObject {
         return operationQueue
     }()
 
-    private static let store = SDSKeyValueStore(collection: "StickerManager")
+    private static let recentStickersStore = SDSKeyValueStore(collection: "recentStickers")
+    private static let emojiMapStore = SDSKeyValueStore(collection: "emojiMap")
 
     // MARK: - Initializers
 
@@ -186,8 +187,8 @@ public class StickerManager: NSObject {
             }
 
             enqueueStickerSyncMessage(operationType: .remove,
-                                   packs: [stickerPackInfo],
-                                   transaction: transaction)
+                                      packs: [stickerPackInfo],
+                                      transaction: transaction)
         }
 
         for completion in completions {
@@ -217,8 +218,8 @@ public class StickerManager: NSObject {
         installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
 
         enqueueStickerSyncMessage(operationType: .remove,
-                               packs: [stickerPack.info],
-                               transaction: transaction)
+                                  packs: [stickerPack.info],
+                                  transaction: transaction)
 
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
     }
@@ -228,7 +229,7 @@ public class StickerManager: NSObject {
         var result: StickerPack?
         databaseStorage.readSwallowingErrors { (transaction) in
             result = fetchStickerPack(stickerPackInfo: stickerPackInfo,
-                                        transaction: transaction)
+                                      transaction: transaction)
         }
         return result
     }
@@ -273,8 +274,8 @@ public class StickerManager: NSObject {
             }
 
             enqueueStickerSyncMessage(operationType: .install,
-                                   packs: [stickerPack.info],
-                                   transaction: transaction)
+                                      packs: [stickerPack.info],
+                                      transaction: transaction)
 
             // If the pack is already installed, make sure all stickers are installed.
             if stickerPack.isInstalled {
@@ -401,15 +402,15 @@ public class StickerManager: NSObject {
         return nil != fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction)
     }
 
-    private typealias CleanupCompletion = () -> Void
+    internal typealias CleanupCompletion = () -> Void
 
     // Returns a completion handler that cleans up the sticker data on disk.
     // We want to do these deletions after the transaction is complete
     // so that: a) other transactions aren't blocked. b) we only delete these
     // files if the transaction is committed, ensuring the invariant that
     // all installed stickers have a corresponding sticker data file.
-    private class func uninstallSticker(stickerInfo: StickerInfo,
-                                        transaction: SDSAnyWriteTransaction) -> CleanupCompletion? {
+    internal class func uninstallSticker(stickerInfo: StickerInfo,
+                                         transaction: SDSAnyWriteTransaction) -> CleanupCompletion? {
 
         guard let installedSticker = fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction) else {
             Logger.info("Skipping uninstall; not installed.")
@@ -417,8 +418,9 @@ public class StickerManager: NSObject {
         }
         installedSticker.anyRemove(transaction: transaction)
 
-        removeFromRecentStickers(stickerInfo,
-                                 transaction: transaction)
+        removeFromRecentStickers(stickerInfo, transaction: transaction)
+
+        removeStickerFromEmojiMap(installedSticker, transaction: transaction)
 
         return {
             let url = stickerUrl(stickerInfo: stickerInfo)
@@ -440,7 +442,8 @@ public class StickerManager: NSObject {
     @objc
     public class func installSticker(stickerInfo: StickerInfo,
                                      stickerData: Data,
-                                     emojiString: String?) {
+                                     emojiString: String?,
+                                     completion: (() -> Void)? = nil) {
         assert(stickerData.count > 0)
 
         var hasInstalledSticker = false
@@ -474,6 +477,12 @@ public class StickerManager: NSObject {
                     owsFailDebug("Missing sticker data for installed sticker.")
                 }
                 #endif
+
+                self.addStickerToEmojiMap(installedSticker, transaction: transaction)
+            }
+
+            if let completion = completion {
+                completion()
             }
         }
 
@@ -508,6 +517,8 @@ public class StickerManager: NSObject {
         return promise
     }
 
+    // MARK: - Emoji
+
     @objc
     public class func emojiForSticker(stickerInfo: StickerInfo,
                                       transaction: SDSAnyReadTransaction) -> String? {
@@ -524,12 +535,82 @@ public class StickerManager: NSObject {
     }
 
     @objc
-    public class func firstEmoji(inEmojiString emojiString: String?) -> String? {
+    public class func allEmoji(inEmojiString emojiString: String?) -> [String] {
         guard let emojiString = emojiString else {
-            return nil
+            return []
         }
 
-        return emojiString.substring(to: 1)
+        return emojiString.map(String.init).filter {
+            $0.containsOnlyEmoji
+        }
+    }
+
+    @objc
+    public class func firstEmoji(inEmojiString emojiString: String?) -> String? {
+        return allEmoji(inEmojiString: emojiString).first
+    }
+
+    private class func addStickerToEmojiMap(_ installedSticker: InstalledSticker,
+                                            transaction: SDSAnyWriteTransaction) {
+
+        guard let emojiString = installedSticker.emojiString else {
+            return
+        }
+        guard let stickerId = installedSticker.uniqueId else {
+            owsFailDebug("Sticker is missing unique id.")
+            return
+        }
+        for emoji in allEmoji(inEmojiString: emojiString) {
+            emojiMapStore.appendToStringSet(key: emoji,
+                                            value: stickerId,
+                                            transaction: transaction)
+        }
+    }
+
+    private class func removeStickerFromEmojiMap(_ installedSticker: InstalledSticker,
+                                                 transaction: SDSAnyWriteTransaction) {
+        guard let emojiString = installedSticker.emojiString else {
+            return
+        }
+        guard let stickerId = installedSticker.uniqueId else {
+            owsFailDebug("Sticker is missing unique id.")
+            return
+        }
+        for emoji in allEmoji(inEmojiString: emojiString) {
+            emojiMapStore.removeFromStringSet(key: emoji,
+                                              value: stickerId,
+                                              transaction: transaction)
+        }
+    }
+
+    @objc
+    public class func suggestedStickers(forTextInput textInput: String) -> [InstalledSticker] {
+        var result = [InstalledSticker]()
+        databaseStorage.readSwallowingErrors { (transaction) in
+            result = self.suggestedStickers(forTextInput: textInput, transaction: transaction)
+        }
+        return result
+    }
+
+    @objc
+    public class func suggestedStickers(forTextInput textInput: String,
+                                        transaction: SDSAnyReadTransaction) -> [InstalledSticker] {
+        guard let emoji = firstEmoji(inEmojiString: textInput) else {
+            // Text input contains no emoji.
+            return []
+        }
+        guard emoji == textInput else {
+            // Text input contains more than just a single emoji.
+            return []
+        }
+        let stickerIds = emojiMapStore.stringSet(forKey: emoji, transaction: transaction)
+        return stickerIds.compactMap { (stickerId) in
+            guard let installedSticker = InstalledSticker.anyFetch(uniqueId: stickerId, transaction: transaction) else {
+                owsFailDebug("Missing installed sticker.")
+                return nil
+            }
+            return installedSticker
+        }
     }
 
     // MARK: - Known Sticker Packs
@@ -624,34 +705,17 @@ public class StickerManager: NSObject {
     @objc
     public class func stickerWasSent(_ stickerInfo: StickerInfo,
                                      transaction: SDSAnyWriteTransaction) {
-        let key = stickerInfo.asKey()
-        // Prepend key to ensure descending order of recency.
-        var recentStickerKeys = [key]
-        if let storedValue = store.getObject(kRecentStickersKey) as? [String] {
-            recentStickerKeys += storedValue.filter {
-                $0 != key
-            }
-        }
-        store.setObject(recentStickerKeys, key: kRecentStickersKey, transaction: transaction)
-
+        recentStickersStore.appendToStringSet(key: kRecentStickersKey,
+                                              value: stickerInfo.asKey(),
+                                              transaction: transaction)
         NotificationCenter.default.postNotificationNameAsync(RecentStickersDidChange, object: nil)
     }
 
     private class func removeFromRecentStickers(_ stickerInfo: StickerInfo,
                                                 transaction: SDSAnyWriteTransaction) {
-        let key = stickerInfo.asKey()
-        var recentStickerKeys = [String]()
-        if let storedValue = store.getObject(kRecentStickersKey) as? [String] {
-            guard storedValue.contains(key) else {
-                // No work to do.
-                return
-            }
-            recentStickerKeys += storedValue.filter {
-                $0 != key
-            }
-        }
-        store.setObject(recentStickerKeys, key: kRecentStickersKey, transaction: transaction)
-
+        recentStickersStore.removeFromStringSet(key: kRecentStickersKey,
+                                                value: stickerInfo.asKey(),
+                                                transaction: transaction)
         NotificationCenter.default.postNotificationNameAsync(RecentStickersDidChange, object: nil)
     }
 
@@ -671,20 +735,19 @@ public class StickerManager: NSObject {
     //
     // Only returns installed stickers.
     private class func recentStickers(transaction: SDSAnyReadTransaction) -> [StickerInfo] {
+        let keys = recentStickersStore.stringSet(forKey: kRecentStickersKey, transaction: transaction)
         var result = [StickerInfo]()
-        if let keys = store.getObject(kRecentStickersKey, transaction: transaction) as? [String] {
-            for key in keys {
-                guard let sticker = InstalledSticker.anyFetch(uniqueId: key, transaction: transaction) else {
-                    owsFailDebug("Couldn't fetch sticker")
-                    continue
-                }
-                #if DEBUG
-                if nil == self.filepathForInstalledSticker(stickerInfo: sticker.info, transaction: transaction) {
-                    owsFailDebug("Missing sticker data for installed sticker.")
-                }
-                #endif
-                result.append(sticker.info)
+        for key in keys {
+            guard let sticker = InstalledSticker.anyFetch(uniqueId: key, transaction: transaction) else {
+                owsFailDebug("Couldn't fetch sticker")
+                continue
             }
+            #if DEBUG
+            if nil == self.filepathForInstalledSticker(stickerInfo: sticker.info, transaction: transaction) {
+                owsFailDebug("Missing sticker data for installed sticker.")
+            }
+            #endif
+            result.append(sticker.info)
         }
         return result
     }
@@ -739,8 +802,8 @@ public class StickerManager: NSObject {
 
     // TODO: We could also send a sticker sync message after we link a new device.
     private class func enqueueStickerSyncMessage(operationType: StickerPackOperationType,
-                                              packs: [StickerPackInfo],
-                                              transaction: SDSAnyWriteTransaction) {
+                                                 packs: [StickerPackInfo],
+                                                 transaction: SDSAnyWriteTransaction) {
         let message = OWSStickerPackSyncMessage(packs: packs, operationType: operationType)
 
         switch transaction.writeTransaction {
@@ -780,4 +843,52 @@ public class StickerManager: NSObject {
         shared.tryToDownloadDefaultStickerPacks(shouldInstall: true)
     }
     #endif
+}
+
+// MARK: -
+
+// These methods are used to maintain a "string set":
+// A set (no duplicates) of strings stored as a list.
+// As a bonus, the set is stored in order of descending recency.
+extension SDSKeyValueStore {
+    func appendToStringSet(key: String,
+                           value: String,
+                           transaction: SDSAnyWriteTransaction) {
+        // Prepend value to ensure descending order of recency.
+        var stringSet = [value]
+        if let storedValue = getObject(key) as? [String] {
+            stringSet += storedValue.filter {
+                $0 != value
+            }
+        }
+        setObject(stringSet, key: key, transaction: transaction)
+    }
+
+    func removeFromStringSet(key: String,
+                             value: String,
+                             transaction: SDSAnyWriteTransaction) {
+        var stringSet = [String]()
+        if let storedValue = getObject(key) as? [String] {
+            guard storedValue.contains(value) else {
+                // No work to do.
+                return
+            }
+            stringSet += storedValue.filter {
+                $0 != value
+            }
+        }
+        setObject(stringSet, key: key, transaction: transaction)
+    }
+
+    func stringSet(forKey key: String,
+                   transaction: SDSAnyReadTransaction) -> [String] {
+        guard let object = self.getObject(key, transaction: transaction) else {
+            return []
+        }
+        guard let stringSet = object as? [String] else {
+            owsFailDebug("Value has unexpected type.")
+            return []
+        }
+        return stringSet
+    }
 }

@@ -76,7 +76,6 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
 @property (nonatomic, readonly) ConversationInputTextView *inputTextView;
-@property (nonatomic, readonly) UIStackView *hStack;
 @property (nonatomic, readonly) UIButton *cameraButton;
 @property (nonatomic, readonly) UIButton *attachmentButton;
 @property (nonatomic, readonly) UIButton *sendButton;
@@ -85,6 +84,9 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, readonly) UIView *quotedReplyWrapper;
 @property (nonatomic, readonly) UIView *linkPreviewWrapper;
 @property (nonatomic, readonly) FirstResponderHostView *stickerKeyboardResponder;
+@property (nonatomic, readonly) StickerHorizontalListView *suggestedStickerView;
+@property (nonatomic) NSArray<StickerInfo *> *suggestedStickerInfos;
+@property (nonatomic, readonly) UIStackView *outerStack;
 
 @property (nonatomic) CGFloat textViewHeight;
 @property (nonatomic, readonly) NSLayoutConstraint *textViewHeightConstraint;
@@ -259,30 +261,48 @@ const CGFloat kMaxTextViewHeight = 98;
     [vStackWrapper setCompressionResistanceHorizontalLow];
 
     // H Stack
-    _hStack = [[UIStackView alloc]
+    UIStackView *hStack = [[UIStackView alloc]
         initWithArrangedSubviews:@[ self.cameraButton, vStackWrapper, self.attachmentButton, self.sendButton ]];
-    self.hStack.axis = UILayoutConstraintAxisHorizontal;
-    self.hStack.layoutMarginsRelativeArrangement = YES;
-    self.hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
-    self.hStack.alignment = UIStackViewAlignmentBottom;
-    self.hStack.spacing = 8;
+    hStack.axis = UILayoutConstraintAxisHorizontal;
+    hStack.layoutMarginsRelativeArrangement = YES;
+    hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
+    hStack.alignment = UIStackViewAlignmentBottom;
+    hStack.spacing = 8;
 
-    [self addSubview:self.hStack];
-    [self.hStack autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [self.hStack autoPinEdgeToSuperviewSafeArea:ALEdgeBottom];
-    [self.hStack setContentHuggingHorizontalLow];
-    [self.hStack setCompressionResistanceHorizontalLow];
+    // Suggested Stickers
+    const CGFloat suggestedStickerSize = 48;
+    const CGFloat suggestedStickerSpacing = 12;
+    _suggestedStickerView =
+        [[StickerHorizontalListView alloc] initWithCellSize:suggestedStickerSize spacing:suggestedStickerSpacing];
+    self.suggestedStickerView.backgroundColor = UIColor.clearColor;
+    self.suggestedStickerView.contentInset = UIEdgeInsetsMake(
+        suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing);
+    self.suggestedStickerView.hidden = YES;
+    [self.suggestedStickerView autoSetDimension:ALDimensionHeight
+                                         toSize:suggestedStickerSize + 2 * suggestedStickerSpacing];
+
+    // "Outer" Stack
+    _outerStack = [[UIStackView alloc] initWithArrangedSubviews:@[ self.suggestedStickerView, hStack ]];
+    self.outerStack.axis = UILayoutConstraintAxisVertical;
+    self.outerStack.alignment = UIStackViewAlignmentFill;
+    [self addSubview:self.outerStack];
+    [self.outerStack autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [self.outerStack autoPinEdgeToSuperviewSafeArea:ALEdgeBottom];
 
     // See comments on updateContentLayout:.
     if (@available(iOS 11, *)) {
+        self.suggestedStickerView.insetsLayoutMarginsFromSafeArea = NO;
         vStack.insetsLayoutMarginsFromSafeArea = NO;
         vStackWrapper.insetsLayoutMarginsFromSafeArea = NO;
-        self.hStack.insetsLayoutMarginsFromSafeArea = NO;
+        hStack.insetsLayoutMarginsFromSafeArea = NO;
+        self.outerStack.insetsLayoutMarginsFromSafeArea = NO;
         self.insetsLayoutMarginsFromSafeArea = NO;
     }
+    self.suggestedStickerView.preservesSuperviewLayoutMargins = NO;
     vStack.preservesSuperviewLayoutMargins = NO;
     vStackWrapper.preservesSuperviewLayoutMargins = NO;
-    self.hStack.preservesSuperviewLayoutMargins = NO;
+    hStack.preservesSuperviewLayoutMargins = NO;
+    self.outerStack.preservesSuperviewLayoutMargins = NO;
     self.preservesSuperviewLayoutMargins = NO;
 
     // Input buttons
@@ -501,6 +521,9 @@ const CGFloat kMaxTextViewHeight = 98;
                 self.sendButton.hidden = YES;
             }
         }
+
+        [self updateSuggestedStickers];
+
         if (doLayout) {
             [self layoutIfNeeded];
         }
@@ -525,8 +548,8 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 
     self.layoutContraints = @[
-        [self.hStack autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:self.receivedSafeAreaInsets.left],
-        [self.hStack autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:self.receivedSafeAreaInsets.right],
+        [self.outerStack autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:self.receivedSafeAreaInsets.left],
+        [self.outerStack autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:self.receivedSafeAreaInsets.right],
     ];
 }
 
@@ -1219,6 +1242,63 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSLogVerbose(@"");
 
     [self.inputToolbarDelegate presentManageStickersView];
+}
+
+#pragma mark - Suggested Stickers
+
+- (void)updateSuggestedStickers
+{
+    NSString *inputText = self.inputTextView.trimmedText;
+    NSArray<InstalledSticker *> *suggestedStickers = [StickerManager suggestedStickersForTextInput:inputText];
+    NSMutableArray<StickerInfo *> *infos = [NSMutableArray new];
+    for (InstalledSticker *installedSticker in suggestedStickers) {
+        [infos addObject:installedSticker.info];
+    }
+    self.suggestedStickerInfos = [infos copy];
+}
+
+- (void)setSuggestedStickerInfos:(NSArray<StickerInfo *> *)suggestedStickerInfos
+{
+    BOOL didChange = ![NSObject isNullableObject:_suggestedStickerInfos equalTo:suggestedStickerInfos];
+
+    _suggestedStickerInfos = suggestedStickerInfos;
+
+    if (didChange) {
+        [self updateSuggestedStickerView];
+    }
+}
+
+- (void)updateSuggestedStickerView
+{
+    if (self.suggestedStickerInfos.count < 1) {
+        self.suggestedStickerView.hidden = YES;
+        return;
+    }
+    __weak __typeof(self) weakSelf = self;
+    BOOL shouldReset = self.suggestedStickerView.isHidden;
+    NSMutableArray<StickerHorizontalListViewItem *> *items = [NSMutableArray new];
+    for (StickerInfo *stickerInfo in self.suggestedStickerInfos) {
+        [items addObject:[[StickerHorizontalListViewItem alloc] initWithStickerInfo:stickerInfo
+                                                                      selectedBlock:^{
+                                                                          [weakSelf
+                                                                              didSelectSuggestedSticker:stickerInfo];
+                                                                      }]];
+    }
+    self.suggestedStickerView.items = items;
+    self.suggestedStickerView.hidden = NO;
+    if (shouldReset) {
+        self.suggestedStickerView.contentOffset = CGPointZero;
+    }
+}
+
+- (void)didSelectSuggestedSticker:(StickerInfo *)stickerInfo
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogVerbose(@"");
+
+    [self clearTextMessageAnimated:YES];
+    [self.inputToolbarDelegate sendSticker:stickerInfo];
 }
 
 @end
