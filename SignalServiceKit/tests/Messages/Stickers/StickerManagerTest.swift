@@ -100,10 +100,14 @@ class StickerManagerTest: SSKBaseTestSwift {
 
         let stickerInfo = StickerInfo.defaultValue
         let stickerData = Randomness.generateRandomBytes(1)!
+
+        let expectation = self.expectation(description: "Wait for sticker to be installed.")
         StickerManager.installSticker(stickerInfo: stickerInfo,
                                       stickerData: stickerData,
-                                      emojiString: "🌼🇨🇦",
-                                      async: false)
+                                      emojiString: "🌼🇨🇦") {
+                                        expectation.fulfill()
+        }
+        waitForExpectations(timeout: 1.0, handler: nil)
 
         XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "").count)
         XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "Hey Bob, what's up?").count)
