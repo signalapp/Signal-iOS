@@ -13,9 +13,6 @@ public class StickerManager: NSObject {
     // MARK: - Constants
 
     @objc
-    public static let packIdLength: UInt = 16
-
-    @objc
     public static let packKeyLength: UInt = 32
 
     // MARK: - Notifications
@@ -73,7 +70,7 @@ public class StickerManager: NSObject {
     @objc
     public class func refreshContents() {
         // Try to download the manifests for "default" sticker packs.
-        shared.tryToDownloadDefaultStickerPacks(shouldInstall: false)
+        tryToDownloadDefaultStickerPacks(shouldInstall: false)
 
         // Try to download the manifests for "known" sticker packs.
         tryToDownloadKnownStickerPacks()
@@ -173,7 +170,7 @@ public class StickerManager: NSObject {
 
             // Uninstall the cover and stickers - but retain the cover
             // if this is a default sticker pack.
-            if !shared.isDefaultStickerPack(stickerPackInfo: stickerPack.info) {
+            if !DefaultStickerPacks.isDefaultStickerPack(stickerPackInfo: stickerPack.info) {
                 if let completion = uninstallSticker(stickerInfo: stickerPack.coverInfo,
                                                      transaction: transaction) {
                     completions.append(completion)
@@ -307,33 +304,10 @@ public class StickerManager: NSObject {
         }
     }
 
-    // A mapping of sticker pack keys to sticker pack info.
-    private var defaultStickerPackMap: [String: StickerPackInfo] = StickerManager.parseDefaultStickerPacks()
-
-    private class func parseDefaultStickerPacks() -> [String: StickerPackInfo] {
-        guard let packId = Data.data(fromHex: "0123456789abcdef0123456789abcdef") else {
-            owsFailDebug("Invalid packId")
-            return [:]
-        }
-        assert(packId.count == StickerManager.packIdLength)
-        guard let packKey = Data.data(fromHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789") else {
-            owsFailDebug("Invalid packKey")
-            return [:]
-        }
-        assert(packKey.count == StickerManager.packKeyLength)
-
-        let samplePack = StickerPackInfo(packId: packId, packKey: packKey)
-        return [samplePack.asKey(): samplePack]
-    }
-
-    private func isDefaultStickerPack(stickerPackInfo: StickerPackInfo) -> Bool {
-        return nil != defaultStickerPackMap[stickerPackInfo.asKey()]
-    }
-
-    private func tryToDownloadDefaultStickerPacks(shouldInstall: Bool) {
-        let stickerPacks = Array(defaultStickerPackMap.values)
-        StickerManager.tryToDownloadStickerPacks(stickerPacks: stickerPacks,
-                                                 shouldInstall: shouldInstall)
+    private class func tryToDownloadDefaultStickerPacks(shouldInstall: Bool) {
+        let stickerPacks = DefaultStickerPacks.all
+        tryToDownloadStickerPacks(stickerPacks: stickerPacks,
+                                  shouldInstall: shouldInstall)
     }
 
     @objc
@@ -679,7 +653,7 @@ public class StickerManager: NSObject {
             //
             // * It's a default sticker pack.
             // * The pack has been installed.
-            if !self.shared.isDefaultStickerPack(stickerPackInfo: packInfo),
+            if !DefaultStickerPacks.isDefaultStickerPack(stickerPackInfo: packInfo),
                 let stickerPack = StickerPack.anyFetch(uniqueId: StickerPack.uniqueId(for: packInfo), transaction: transaction),
                 !stickerPack.isInstalled {
                 self.uninstallStickerPack(stickerPackInfo: packInfo)
@@ -867,7 +841,7 @@ public class StickerManager: NSObject {
             }
         }
 
-        shared.tryToDownloadDefaultStickerPacks(shouldInstall: true)
+        tryToDownloadDefaultStickerPacks(shouldInstall: true)
     }
     #endif
 }
