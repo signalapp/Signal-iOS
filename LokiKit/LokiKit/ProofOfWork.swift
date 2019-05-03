@@ -59,11 +59,18 @@ public enum ProofOfWork {
         }
     }()
     
-    struct Configuration {
+    public struct Configuration {
         var pubKey: String
         var data: String
         var timestamp: Date
         var ttl: Int
+        
+        public init(pubKey: String, data: String, timestamp: Date, ttl: Int) {
+            self.pubKey = pubKey
+            self.data = data
+            self.timestamp = timestamp
+            self.ttl = ttl
+        }
         
         var payload: [UInt8] {
             let timestampString = String(Int(timestamp.timeIntervalSince1970))
@@ -80,7 +87,7 @@ public enum ProofOfWork {
     ///
     /// - Parameter config: The configuration data
     /// - Returns: A nonce string or nil if it failed
-    static func calculate(with config: Configuration) -> String? {
+    public static func calculate(with config: Configuration) -> String? {
         let payload = config.payload
         let target = calcTarget(ttl: config.ttl, payloadLength: payload.count, nonceTrials: nonceTrialCount)
         
