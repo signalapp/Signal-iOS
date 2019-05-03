@@ -1250,10 +1250,6 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     NSString *inputText = self.inputTextView.trimmedText;
     NSArray<InstalledSticker *> *suggestedStickers = [StickerManager suggestedStickersForTextInput:inputText];
-    if (suggestedStickers.count < 1) {
-        self.suggestedStickerInfos = @[];
-        return;
-    }
     NSMutableArray<StickerInfo *> *infos = [NSMutableArray new];
     for (InstalledSticker *installedSticker in suggestedStickers) {
         [infos addObject:installedSticker.info];
@@ -1301,7 +1297,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     OWSLogVerbose(@"");
 
-    [self clearTextMessageAnimated:NO];
+    [self clearTextMessageAnimated:YES];
     [self.inputToolbarDelegate sendSticker:stickerInfo];
 }
 

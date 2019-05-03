@@ -187,8 +187,8 @@ public class StickerManager: NSObject {
             }
 
             enqueueStickerSyncMessage(operationType: .remove,
-                                   packs: [stickerPackInfo],
-                                   transaction: transaction)
+                                      packs: [stickerPackInfo],
+                                      transaction: transaction)
         }
 
         for completion in completions {
@@ -218,8 +218,8 @@ public class StickerManager: NSObject {
         installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
 
         enqueueStickerSyncMessage(operationType: .remove,
-                               packs: [stickerPack.info],
-                               transaction: transaction)
+                                  packs: [stickerPack.info],
+                                  transaction: transaction)
 
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
     }
@@ -229,7 +229,7 @@ public class StickerManager: NSObject {
         var result: StickerPack?
         databaseStorage.readSwallowingErrors { (transaction) in
             result = fetchStickerPack(stickerPackInfo: stickerPackInfo,
-                                        transaction: transaction)
+                                      transaction: transaction)
         }
         return result
     }
@@ -274,8 +274,8 @@ public class StickerManager: NSObject {
             }
 
             enqueueStickerSyncMessage(operationType: .install,
-                                   packs: [stickerPack.info],
-                                   transaction: transaction)
+                                      packs: [stickerPack.info],
+                                      transaction: transaction)
 
             // If the pack is already installed, make sure all stickers are installed.
             if stickerPack.isInstalled {
@@ -562,8 +562,8 @@ public class StickerManager: NSObject {
         }
         for emoji in allEmoji(inEmojiString: emojiString) {
             emojiMapStore.appendToStringSet(key: emoji,
-                                                  value: stickerId,
-                                                  transaction: transaction)
+                                            value: stickerId,
+                                            transaction: transaction)
         }
     }
 
@@ -594,7 +594,7 @@ public class StickerManager: NSObject {
 
     @objc
     public class func suggestedStickers(forTextInput textInput: String,
-                                      transaction: SDSAnyReadTransaction) -> [InstalledSticker] {
+                                        transaction: SDSAnyReadTransaction) -> [InstalledSticker] {
         guard let emoji = firstEmoji(inEmojiString: textInput) else {
             // Text input contains no emoji.
             return []
@@ -802,8 +802,8 @@ public class StickerManager: NSObject {
 
     // TODO: We could also send a sticker sync message after we link a new device.
     private class func enqueueStickerSyncMessage(operationType: StickerPackOperationType,
-                                              packs: [StickerPackInfo],
-                                              transaction: SDSAnyWriteTransaction) {
+                                                 packs: [StickerPackInfo],
+                                                 transaction: SDSAnyWriteTransaction) {
         let message = OWSStickerPackSyncMessage(packs: packs, operationType: operationType)
 
         switch transaction.writeTransaction {
