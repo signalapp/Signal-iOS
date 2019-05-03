@@ -1249,7 +1249,7 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)updateSuggestedStickers
 {
     NSString *inputText = self.inputTextView.trimmedText;
-    NSArray<InstalledSticker *> *suggestedStickers = [StickerManager suggestedStickersForTextInput:inputText];
+    NSArray<InstalledSticker *> *suggestedStickers = [StickerManager.shared suggestedStickersForTextInput:inputText];
     NSMutableArray<StickerInfo *> *infos = [NSMutableArray new];
     for (InstalledSticker *installedSticker in suggestedStickers) {
         [infos addObject:installedSticker.info];
