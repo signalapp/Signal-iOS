@@ -1318,6 +1318,7 @@ typedef enum : NSUInteger {
     [self markVisibleMessagesAsRead];
     [self cancelVoiceMemo];
     [self.cellMediaCache removeAllObjects];
+    [self.inputToolbar clearStickerKeyboard];
 
     self.isUserScrolling = NO;
 }
@@ -1730,8 +1731,6 @@ typedef enum : NSUInteger {
 
 - (void)showConversationSettingsAndShowVerification:(BOOL)showVerification
 {
-    [self.inputToolbar clearStickerKeyboard];
-
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
     [settingsVC configureWithThread:self.thread uiDatabaseConnection:self.uiDatabaseConnection];
@@ -2423,8 +2422,6 @@ typedef enum : NSUInteger {
     OWSAssertDebug(conversationItem);
     OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
-    [self.inputToolbar clearStickerKeyboard];
-
     LongTextViewController *viewController = [[LongTextViewController alloc] initWithViewItem:conversationItem];
     viewController.delegate = self;
     [self.navigationController pushViewController:viewController animated:YES];
@@ -2436,8 +2433,6 @@ typedef enum : NSUInteger {
     OWSAssertDebug(conversationItem);
     OWSAssertDebug(conversationItem.contactShare);
     OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
-
-    [self.inputToolbar clearStickerKeyboard];
 
     ContactViewController *view = [[ContactViewController alloc] initWithContactShare:conversationItem.contactShare];
     [self.navigationController pushViewController:view animated:YES];
@@ -2564,8 +2559,6 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(conversationItem);
     OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
-
-    [self.inputToolbar clearStickerKeyboard];
 
     TSMessage *message = (TSMessage *)conversationItem.interaction;
     MessageDetailViewController *detailVC =
@@ -2813,7 +2806,6 @@ typedef enum : NSUInteger {
     self.lastMessageSentDate = [NSDate new];
     [self.conversationViewModel clearUnreadMessagesIndicator];
     self.inputToolbar.quotedReply = nil;
-    [self.inputToolbar clearStickerKeyboard];
 
     if (!Environment.shared.preferences.hasSentAMessage) {
         [Environment.shared.preferences setHasSentAMessage:YES];
