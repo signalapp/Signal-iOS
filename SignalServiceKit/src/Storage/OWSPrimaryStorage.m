@@ -213,7 +213,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
     [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
-    [SSKJobRecordFinder asyncRegisterDatabaseExtensionObjCWithStorage:self];
+    [YAPDBJobRecordFinder asyncRegisterDatabaseExtensionObjCWithStorage:self];
 
     [self.database
         flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
