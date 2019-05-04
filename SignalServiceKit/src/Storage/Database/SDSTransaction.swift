@@ -27,6 +27,13 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
     var asAnyWrite: SDSAnyWriteTransaction {
         return SDSAnyWriteTransaction(.grdbWrite(self))
     }
+
+    internal var completions: [(DispatchQueue, () -> Void)] = []
+
+    @objc
+    public func addCompletion(queue: DispatchQueue = DispatchQueue.main, block: @escaping () -> Void) {
+        completions.append((queue, block))
+    }
 }
 
 // MARK: -
@@ -125,12 +132,12 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction {
         }
     }
 
-    public var transitional_grdbWriteTransaction: GRDBWriteTransaction? {
+    public func addCompletion(queue: DispatchQueue = DispatchQueue.main, block: @escaping () -> Void) {
         switch writeTransaction {
-        case .yapWrite:
-            return nil
-        case .grdbWrite(let transaction):
-            return transaction
+        case .yapWrite(let yapWrite):
+            yapWrite.addCompletionQueue(queue, completionBlock: block)
+        case .grdbWrite(let grdbWrite):
+            grdbWrite.addCompletion(queue: queue, block: block)
         }
     }
 }

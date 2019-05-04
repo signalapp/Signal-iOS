@@ -342,8 +342,13 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
     @objc
     func write(block: @escaping (GRDBWriteTransaction) -> Void) throws {
+        var transaction: GRDBWriteTransaction!
         try pool.write { database in
-            block(GRDBWriteTransaction(database: database))
+            transaction = GRDBWriteTransaction(database: database)
+            block(transaction)
+        }
+        for (queue, block) in transaction.completions {
+            queue.async(execute: block)
         }
     }
 }
