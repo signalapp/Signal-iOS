@@ -245,9 +245,9 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     return OutageDetection.sharedManager;
 }
 
-- (OWSPrimaryStorage *)primaryStorage
+- (SDSDatabaseStorage *)databaseStorage
 {
-    return SSKEnvironment.shared.primaryStorage;
+    return SDSDatabaseStorage.shared;
 }
 
 - (id<NotificationsProtocol>)notificationsManager
@@ -795,12 +795,11 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
             }
 
             if (!success) {
-                [[self.primaryStorage newDatabaseConnection]
-                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                        [self.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                           transaction:transaction];
-                    }];
+                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+                    [self.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                       transaction:transaction];
+                }];
             }
 
             dispatch_async(dispatch_get_main_queue(), ^{

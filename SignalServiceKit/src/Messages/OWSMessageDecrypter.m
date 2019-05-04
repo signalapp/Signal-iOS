@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageDecrypter.h"
@@ -294,7 +294,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
                 [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                    transaction:transaction];
+                                                                                    transaction:transaction.asAnyWrite];
             }];
     }
 
@@ -585,7 +585,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         if (envelope.source.length == 0) {
             TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                transaction:transaction];
+                                                                                transaction:transaction.asAnyWrite];
             return;
         }
 
@@ -629,7 +629,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
     [SSKEnvironment.shared.notificationsManager notifyUserForErrorMessage:errorMessage
                                                                    thread:contactThread
-                                                              transaction:transaction];
+                                                              transaction:transaction.asAnyWrite];
 }
 
 @end

@@ -15,7 +15,8 @@ public class GRDBReadTransaction: NSObject {
         self.database = database
     }
 
-    var asAnyRead: SDSAnyReadTransaction {
+    @objc
+    public var asAnyRead: SDSAnyReadTransaction {
         return SDSAnyReadTransaction(.grdbRead(self))
     }
 }
@@ -24,7 +25,8 @@ public class GRDBReadTransaction: NSObject {
 
 @objc
 public class GRDBWriteTransaction: GRDBReadTransaction {
-    var asAnyWrite: SDSAnyWriteTransaction {
+    @objc
+    public var asAnyWrite: SDSAnyWriteTransaction {
         return SDSAnyWriteTransaction(.grdbWrite(self))
     }
 
@@ -76,15 +78,6 @@ public class SDSAnyReadTransaction: NSObject {
             return nil
         }
     }
-
-    public var transitional_grdbReadTransaction: GRDBReadTransaction? {
-        switch readTransaction {
-        case .yapRead:
-            return nil
-        case .grdbRead(let transaction):
-            return transaction
-        }
-    }
 }
 
 @objc
@@ -103,8 +96,8 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction {
         switch writeTransaction {
         case .yapWrite(let yapWrite):
             readTransaction = ReadTransactionType.yapRead(yapWrite)
-        case .grdbWrite(let transaction):
-            readTransaction = ReadTransactionType.grdbRead(transaction)
+        case .grdbWrite(let grdbWrite):
+            readTransaction = ReadTransactionType.grdbRead(grdbWrite)
         }
 
         super.init(readTransaction)

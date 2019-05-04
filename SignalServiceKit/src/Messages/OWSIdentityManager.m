@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIdentityManager.h"
@@ -548,7 +548,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     [SSKEnvironment.shared.notificationsManager notifyUserForErrorMessage:errorMessage
                                                                    thread:contactThread
-                                                              transaction:transaction];
+                                                              transaction:transaction.asAnyWrite];
 }
 
 - (void)enqueueSyncMessageForVerificationStateForRecipientId:(NSString *)recipientId

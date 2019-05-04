@@ -170,7 +170,7 @@ class DebugUINotifications: DebugUIPage {
 
                 self.notificationPresenter.notifyUser(for: incomingMessage,
                                                      in: thread,
-                                                     transaction: transaction)
+                                                     transaction: transaction.asAnyWrite)
             }
         }
     }
@@ -183,7 +183,7 @@ class DebugUINotifications: DebugUIPage {
                                               failedMessageType: TSErrorMessageType.invalidMessage)
 
             self.readWrite { transaction in
-                self.notificationPresenter.notifyUser(for: errorMessage, thread: thread, transaction: transaction)
+                self.notificationPresenter.notifyUser(for: errorMessage, thread: thread, transaction: transaction.asAnyWrite)
             }
         }
     }
@@ -195,7 +195,7 @@ class DebugUINotifications: DebugUIPage {
                 let errorMessage = TSErrorMessage.corruptedMessageInUnknownThread()
 
                 self.notificationPresenter.notifyUser(forThreadlessErrorMessage: errorMessage,
-                                                     transaction: transaction)
+                                                      transaction: transaction.asAnyWrite)
             }
         }
     }

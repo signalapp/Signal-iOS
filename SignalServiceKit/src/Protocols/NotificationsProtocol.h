@@ -4,11 +4,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class TSErrorMessage;
 @class TSIncomingMessage;
 @class TSThread;
-@class YapDatabaseReadTransaction;
-@class YapDatabaseReadWriteTransaction;
 
 @protocol ContactsManagerProtocol;
 
@@ -16,14 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)incomingMessage
                             inThread:(TSThread *)thread
-                         transaction:(YapDatabaseReadTransaction *)transaction;
+                         transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)error
                            thread:(TSThread *)thread
-                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                      transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)notifyUserForThreadlessErrorMessage:(TSErrorMessage *)error
-                                transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)clearAllNotifications;
 
