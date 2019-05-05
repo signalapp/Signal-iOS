@@ -207,7 +207,6 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
             } catch let error {
                 let error = error as? Mnemonic.DecodingError ?? Mnemonic.DecodingError.generic
                 errorLabel.text = error.errorDescription
-                errorLabel.isHidden = false
                 return
             }
         }

@@ -47,7 +47,7 @@ public enum Mnemonic {
     public enum DecodingError : LocalizedError {
         case generic, inputTooShort, missingLastWord, invalidWord, verificationFailed
         
-        public var errorDescription: String {
+        public var errorDescription: String? {
             switch self {
             case .generic: return NSLocalizedString("Something went wrong. Please check your mnemonic and try again.", comment: "")
             case .inputTooShort: return NSLocalizedString("Looks like you didn't enter enough words. Please check your mnemonic and try again.", comment: "")
