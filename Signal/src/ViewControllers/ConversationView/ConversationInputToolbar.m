@@ -439,6 +439,7 @@ const CGFloat kMaxTextViewHeight = 98;
     _quotedReply = quotedReply;
 
     if (!quotedReply) {
+        [self ensureButtonVisibilityWithIsAnimated:YES doLayout:NO];
         return;
     }
 
@@ -455,6 +456,8 @@ const CGFloat kMaxTextViewHeight = 98;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, quotedMessagePreview);
 
     self.linkPreviewView.hasAsymmetricalRounding = !self.quotedReply;
+
+    [self clearStickerKeyboard];
 }
 
 - (CGFloat)quotedMessageTopMargin
@@ -491,17 +494,14 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)ensureButtonVisibilityWithIsAnimated:(BOOL)isAnimated doLayout:(BOOL)doLayout
 {
     void (^updateBlock)(void) = ^{
-        if (self.inputTextView.trimmedText.length > 0) {
+        BOOL hasTextInput = self.inputTextView.trimmedText.length > 0;
+        if (hasTextInput) {
             if (!self.attachmentButton.isHidden) {
                 self.attachmentButton.hidden = YES;
             }
             if (!self.voiceMemoButton.isHidden) {
                 self.voiceMemoButton.hidden = YES;
             }
-            if (!self.stickerButton.isHidden) {
-                self.stickerButton.hidden = YES;
-            }
-
             if (self.sendButton.isHidden) {
                 self.sendButton.hidden = NO;
             }
@@ -512,14 +512,21 @@ const CGFloat kMaxTextViewHeight = 98;
             if (self.voiceMemoButton.isHidden) {
                 self.voiceMemoButton.hidden = NO;
             }
+            if (!self.sendButton.isHidden) {
+                self.sendButton.hidden = YES;
+            }
+        }
+
+        BOOL showStickerButton = !hasTextInput && self.quotedReply == nil;
+        if (showStickerButton) {
             if (self.stickerButton.isHidden) {
                 self.stickerButton.hidden = NO;
             }
             self.stickerButton.imageView.tintColor
                 = (self.isStickerKeyboardActive ? Theme.primaryColor : Theme.navbarIconColor);
-
-            if (!self.sendButton.isHidden) {
-                self.sendButton.hidden = YES;
+        } else {
+            if (!self.stickerButton.isHidden) {
+                self.stickerButton.hidden = YES;
             }
         }
 
