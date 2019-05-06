@@ -356,7 +356,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // LOKI: Convert Signal JSON messages to Loki messages
 // Refer to OWSMessageServiceParams for the Signal JSON params
-+ (NSDictionary *)lokiMessagesFromMessages:(NSArray *)messages
++ (NSArray *)lokiMessagesFromMessages:(NSArray *)messages
                                 nonceArray:(NSArray *)nonceArray
                                        ttl:(NSNumber *)ttl {
     NSMutableArray *modifiedMessages = [[NSMutableArray alloc] init];
@@ -394,15 +394,18 @@ NS_ASSUME_NONNULL_BEGIN
                                                  ttl: (NSNumber *)ttl
 {
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
+    // This doesn't apply to loki since we don't have linked device support.
     OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(messages.count > 0);
     
-    NSDictionary *lokiMessages = [self lokiMessagesFromMessages:messages nonceArray:nonceArray ttl:ttl];
-   
+    // Convert to loki json format
+    NSArray *lokiMessages = [self lokiMessagesFromMessages:messages nonceArray:nonceArray ttl:ttl];
+    OWSAssertDebug(lokiMessages.count > 0);
+    
+    // Just send the first message
     NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientId];
-    NSDictionary *parameters = @{
-                                 @"messages" : lokiMessages,
-                                 };
-    
+    NSDictionary *parameters = [lokiMessages objectAtIndex:0];
+   
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
     return request;
 }

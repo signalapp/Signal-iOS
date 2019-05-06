@@ -1118,6 +1118,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // so that we can learn from the service whether or not there are
         // linked devices that we don't know about.
         OWSLogWarn(@"Sending a message with no device messages.");
+        
+        // LOKI: We don't handle linked devices yet so it's better to just exit early
+        // This would only occur if we're sending a message to ourself
+        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+        [error setIsRetryable:NO];
+        return messageSend.failure(error);
     }
     
     // TODO: Update message here to show the pow cog icon
@@ -1514,7 +1520,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         messageSend.isLocalNumber,
         messageSend.isUDSend);
 
+    // LOKI: Since we don't support multi-device sending yet, just send it to the primary device
+    NSMutableArray<NSNumber *> *deviceIds = @[@(OWSDevicePrimaryDeviceId)];
+
+    /* Original code
     NSMutableArray<NSNumber *> *deviceIds = [recipient.devices mutableCopy];
+     */
+    
     OWSAssertDebug(deviceIds);
 
     if (messageSend.isLocalNumber) {
