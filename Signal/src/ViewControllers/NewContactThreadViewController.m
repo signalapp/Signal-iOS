@@ -18,6 +18,7 @@
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -396,16 +397,17 @@ NS_ASSUME_NONNULL_BEGIN
     if (hasSearchText) {
         // Loki:
         // ========
+        NSString *publicKey = self.searchBar.text;
+        
+        // TODO: Validate public key and show an error if something's wrong
+        
         OWSTableSection *newConversationSection = [OWSTableSection new];
         [newConversationSection
          addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"Start a Conversation", @"")
                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"start_conversation")
                                       customRowHeight:UITableViewAutomaticDimension
                                           actionBlock:^{
-                                              typeof(self) strongSelf = weakSelf;
-                                              if (!strongSelf) { return; }
-                                              NSString *publicKey = strongSelf.searchBar.text;
-                                              [strongSelf newConversationWithRecipientId:publicKey];
+                                              [weakSelf newConversationWithRecipientId:publicKey];
                                           }]];
         [contents addSection:newConversationSection];
         // ========

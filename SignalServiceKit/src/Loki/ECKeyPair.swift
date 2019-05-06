@@ -10,7 +10,7 @@ public extension ECKeyPair {
         return "05" + publicKey.map { String(format: "%02hhx", $0) }.joined()
     }
     
-    static func isValidHexEncodedPublicKey(candidate: String) -> Bool {
+    @objc public static func isValidHexEncodedPublicKey(candidate: String) -> Bool {
         // Check that it's a valid hexadecimal encoding
         let allowedCharacters = CharacterSet(charactersIn: "0123456789ABCDEF")
         guard candidate.uppercased().unicodeScalars.allSatisfy({ allowedCharacters.contains($0) }) else { return false }
