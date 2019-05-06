@@ -459,7 +459,10 @@ NS_ASSUME_NONNULL_BEGIN
         // No Contacts
         OWSTableSection *contactsSection = [OWSTableSection new];
 
-        if (self.contactsManager.isSystemContactsAuthorized) {
+        // Loki: Original code
+        // ========
+//        if (self.contactsManager.isSystemContactsAuthorized) {
+        // ========
             if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
 
                 [contactsSection
@@ -490,7 +493,10 @@ NS_ASSUME_NONNULL_BEGIN
                     [OWSTableItem itemWithCustomCell:loadingCell customRowHeight:40 actionBlock:nil];
                 [contactsSection addItem:loadingItem];
             }
-        }
+        // Loki: Original code
+        // ========
+//        }
+        // ========
 
         return @[ contactsSection ];
     }
@@ -759,7 +765,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showContactAppropriateViews
 {
-    if (self.contactsManager.isSystemContactsAuthorized) {
+    // Loki: Original code
+    // ========
+//    if (self.contactsManager.isSystemContactsAuthorized) {
+    // ========
         if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce && self.contactsViewHelper.signalAccounts.count < 1
             && ![Environment.shared.preferences hasDeclinedNoContactsView]) {
             self.isNoContactsModeActive = YES;
@@ -768,11 +777,14 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         [self showSearchBar:YES];
-    } else {
-        // don't show "no signal contacts", show "no contact access"
-        self.isNoContactsModeActive = NO;
-        [self showSearchBar:NO];
-    }
+    // Loki: Original code
+    // ========
+//    } else {
+//        // don't show "no signal contacts", show "no contact access"
+//        self.isNoContactsModeActive = NO;
+//        [self showSearchBar:NO];
+//    }
+    // ========
 }
 
 - (void)setIsNoContactsModeActive:(BOOL)isNoContactsModeActive
