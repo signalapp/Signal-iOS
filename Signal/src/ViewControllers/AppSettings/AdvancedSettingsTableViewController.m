@@ -113,16 +113,19 @@ NS_ASSUME_NONNULL_BEGIN
 
     [contents addSection:loggingSection];
 
-    OWSTableSection *pushNotificationsSection = [OWSTableSection new];
-    pushNotificationsSection.headerTitle
-        = NSLocalizedString(@"PUSH_REGISTER_TITLE", @"Used in table section header and alert view title contexts");
-    [pushNotificationsSection addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"REREGISTER_FOR_PUSH", nil)
-                                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                                           self, @"reregister_push_notifications")
-                                                           actionBlock:^{
-                                                               [weakSelf syncPushTokens];
-                                                           }]];
-    [contents addSection:pushNotificationsSection];
+    // Loki: Original code
+    // ========
+//    OWSTableSection *pushNotificationsSection = [OWSTableSection new];
+//    pushNotificationsSection.headerTitle
+//        = NSLocalizedString(@"PUSH_REGISTER_TITLE", @"Used in table section header and alert view title contexts");
+//    [pushNotificationsSection addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"REREGISTER_FOR_PUSH", nil)
+//                                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+//                                                                           self, @"reregister_push_notifications")
+//                                                           actionBlock:^{
+//                                                               [weakSelf syncPushTokens];
+//                                                           }]];
+//    [contents addSection:pushNotificationsSection];
+    // ========
 
     // Censorship circumvention has certain disadvantages so it should only be
     // used if necessary.  Therefore:

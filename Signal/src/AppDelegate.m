@@ -719,9 +719,12 @@ static NSTimeInterval launchStartedAt;
                 // usually sufficient, but e.g. on iOS11, users who have disabled "Allow Notifications" and disabled
                 // "Background App Refresh" will not be able to obtain an APN token. Enabling those settings does not
                 // restart the app, so we check every activation for users who haven't yet registered.
-                __unused AnyPromise *promise =
-                    [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
-                                                    preferences:Environment.shared.preferences];
+                // Loki: Original code
+                // ========
+//                __unused AnyPromise *promise =
+//                    [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
+//                                                    preferences:Environment.shared.preferences];
+                // ========
             }
 
             if ([OWS2FAManager sharedManager].isDueForReminder) {
@@ -1218,9 +1221,12 @@ static NSTimeInterval launchStartedAt;
         [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
 
         // This should happen at any launch, background or foreground.
-        __unused AnyPromise *pushTokenpromise =
-            [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
-                                            preferences:Environment.shared.preferences];
+        // Loki: Original code
+        // ========
+//        __unused AnyPromise *pushTokenpromise =
+//            [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
+//                                            preferences:Environment.shared.preferences];
+        // ========
     }
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
