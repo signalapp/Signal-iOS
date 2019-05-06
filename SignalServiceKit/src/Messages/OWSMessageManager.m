@@ -1514,7 +1514,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  transaction:transaction.asAnyWrite];
 
     if (incomingMessage.messageSticker != nil) {
-        [StickerManager.shared setHasReceivedStickersWithTransaction:transaction.asAnyWrite];
+        [StickerManager.shared setHasUsedStickersWithTransaction:transaction.asAnyWrite];
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{

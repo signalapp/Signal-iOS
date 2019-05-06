@@ -182,7 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (outgoingMessage.messageSticker != nil) {
-        [StickerManager.shared setHasReceivedStickersWithTransaction:transaction.asAnyWrite];
+        [StickerManager.shared setHasUsedStickersWithTransaction:transaction.asAnyWrite];
     }
 }
 

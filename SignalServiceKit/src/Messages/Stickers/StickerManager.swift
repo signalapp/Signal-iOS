@@ -195,6 +195,10 @@ public class StickerManager: NSObject {
 
         stickerPack.update(withIsInstalled: true, transaction: transaction)
 
+        if !isDefaultStickerPack(stickerPack) {
+            shared.setHasUsedStickers(transaction: transaction)
+        }
+
         installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
 
         enqueueStickerSyncMessage(operationType: .remove,
@@ -734,7 +738,7 @@ public class StickerManager: NSObject {
     private static let serialQueue = DispatchQueue(label: "org.signal.videoCaptureController")
 
     @objc
-    public func setHasReceivedStickers(transaction: SDSAnyWriteTransaction) {
+    public func setHasUsedStickers(transaction: SDSAnyWriteTransaction) {
         AssertIsOnMainThread()
 
         guard !isStickerSendEnabledCached else {
