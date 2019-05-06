@@ -44,14 +44,6 @@ PODS:
     - CocoaLumberjack
     - SignalCoreKit
   - libPhoneNumber-iOS (0.9.13)
-  - LokiKit (1.0.0):
-    - CryptoSwift
-    - Curve25519Kit
-    - SignalCoreKit
-  - LokiKit/Tests (1.0.0):
-    - CryptoSwift
-    - Curve25519Kit
-    - SignalCoreKit
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
@@ -91,10 +83,10 @@ PODS:
     - AFNetworking
     - AxolotlKit
     - CocoaLumberjack
+    - CryptoSwift
     - Curve25519Kit
     - GRKOpenSSLFramework
     - libPhoneNumber-iOS
-    - LokiKit
     - Mantle
     - PromiseKit (~> 6.0)
     - Reachability
@@ -108,10 +100,10 @@ PODS:
     - AFNetworking
     - AxolotlKit
     - CocoaLumberjack
+    - CryptoSwift
     - Curve25519Kit
     - GRKOpenSSLFramework
     - libPhoneNumber-iOS
-    - LokiKit
     - Mantle
     - PromiseKit (~> 6.0)
     - Reachability
@@ -126,7 +118,7 @@ PODS:
   - SQLCipher/common (4.1.0)
   - SQLCipher/standard (4.1.0):
     - SQLCipher/common
-  - SSZipArchive (2.1.5)
+  - SSZipArchive (2.2.1)
   - Starscream (3.0.6)
   - SwiftProtobuf (1.5.0)
   - YapDatabase/SQLCipher (3.1.1):
@@ -205,8 +197,6 @@ DEPENDENCIES:
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`)
   - HKDFKit (from `https://github.com/signalapp/HKDFKit.git`)
   - HKDFKit/Tests (from `https://github.com/signalapp/HKDFKit.git`)
-  - LokiKit (from `./LokiKit`)
-  - LokiKit/Tests (from `./LokiKit`)
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - PromiseKit (= 6.5.3)
   - PureLayout
@@ -248,8 +238,6 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   HKDFKit:
     :git: https://github.com/signalapp/HKDFKit.git
-  LokiKit:
-    :path: "./LokiKit"
   Mantle:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
@@ -304,7 +292,6 @@ SPEC CHECKSUMS:
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   HKDFKit: 3b6dbbb9d59c221cc6c52c3aa915700cbf24e376
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
-  LokiKit: 75ed73c7fcc09fef1f2ec053c7eabf139e015890
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   PromiseKit: c609029bdd801f792551a504c695c7d3098b42cd
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
@@ -312,14 +299,14 @@ SPEC CHECKSUMS:
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: c2d8132cdedb95d35eb2f8ae7eac0957695d0a8b
   SignalMetadataKit: 6fa5e9a53c7f104568662521a2f3874672ff7a02
-  SignalServiceKit: 001d38050259216a4478a0a485d761d38add073d
+  SignalServiceKit: 54fde76bc75b63bd5e9088acdbd3be0ff7e154d0
   SQLCipher: efbdb52cdbe340bcd892b1b14297df4e07241b7f
-  SSZipArchive: cefe1364104a0231268a5deb8495bdf2861f52f0
+  SSZipArchive: 8e859da2520142e09166bc9161967db296e9d02f
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: c2f870c82713a0d73cf24dfe89e1a37ade0bc166
+PODFILE CHECKSUM: beb49888a2355e89f15280fcfa5105ddc59a5c0a
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.5.3
