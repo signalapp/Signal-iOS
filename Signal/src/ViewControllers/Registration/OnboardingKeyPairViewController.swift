@@ -200,7 +200,9 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
             do {
                 let hexEncodedPrivateKey = try Mnemonic.decode(mnemonic: mnemonic)
                 let keyPair = ECKeyPair.generate(withHexEncodedPrivateKey: hexEncodedPrivateKey)
+                // Use KVC to access dbConnection even though it's private
                 let databaseConnection = OWSIdentityManager.shared().value(forKey: "dbConnection") as! YapDatabaseConnection
+                // OWSPrimaryStorageIdentityKeyStoreIdentityKey is private so just use its value directly
                 databaseConnection.setObject(keyPair, forKey: "TSStorageManagerIdentityKeyStoreIdentityKey", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
                 hexEncodedPublicKey = keyPair.hexEncodedPublicKey
             } catch let error {
