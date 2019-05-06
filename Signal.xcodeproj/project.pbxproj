@@ -63,6 +63,7 @@
 		342950852124C9750000B063 /* OWSTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 342950812124C9750000B063 /* OWSTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		342950882124CB0A0000B063 /* OWSSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 342950862124CB0A0000B063 /* OWSSearchBar.m */; };
 		342950892124CB0A0000B063 /* OWSSearchBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 342950872124CB0A0000B063 /* OWSSearchBar.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		342BF24D227A03F8005CEAA9 /* StickerHorizontalListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF24C227A03F7005CEAA9 /* StickerHorizontalListView.swift */; };
 		342BF24F227B2CF5005CEAA9 /* OWSUserProfile+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF24E227B2CF4005CEAA9 /* OWSUserProfile+SDS.swift */; };
 		342BF25B227B2D4E005CEAA9 /* OWS101ExistingUsersBlockOnIdentityChange+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF250227B2D4D005CEAA9 /* OWS101ExistingUsersBlockOnIdentityChange+SDS.swift */; };
 		342BF25C227B2D4E005CEAA9 /* OWSResaveCollectionDBMigration+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF251227B2D4D005CEAA9 /* OWSResaveCollectionDBMigration+SDS.swift */; };
@@ -75,7 +76,6 @@
 		342BF263227B2D4E005CEAA9 /* OWS100RemoveTSRecipientsMigration+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF258227B2D4E005CEAA9 /* OWS100RemoveTSRecipientsMigration+SDS.swift */; };
 		342BF264227B2D4E005CEAA9 /* OWS108CallLoggingPreference+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF259227B2D4E005CEAA9 /* OWS108CallLoggingPreference+SDS.swift */; };
 		342BF265227B2D4E005CEAA9 /* OWS107LegacySounds+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF25A227B2D4E005CEAA9 /* OWS107LegacySounds+SDS.swift */; };
-		342BF24D227A03F8005CEAA9 /* StickerHorizontalListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342BF24C227A03F7005CEAA9 /* StickerHorizontalListView.swift */; };
 		3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3430FE171F7751D4000EC51B /* GiphyAPI.swift */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
@@ -756,6 +756,7 @@
 		342950812124C9750000B063 /* OWSTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSTextField.h; sourceTree = "<group>"; };
 		342950862124CB0A0000B063 /* OWSSearchBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSearchBar.m; sourceTree = "<group>"; };
 		342950872124CB0A0000B063 /* OWSSearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSearchBar.h; sourceTree = "<group>"; };
+		342BF24C227A03F7005CEAA9 /* StickerHorizontalListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerHorizontalListView.swift; sourceTree = "<group>"; };
 		342BF24E227B2CF4005CEAA9 /* OWSUserProfile+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSUserProfile+SDS.swift"; sourceTree = "<group>"; };
 		342BF250227B2D4D005CEAA9 /* OWS101ExistingUsersBlockOnIdentityChange+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWS101ExistingUsersBlockOnIdentityChange+SDS.swift"; sourceTree = "<group>"; };
 		342BF251227B2D4D005CEAA9 /* OWSResaveCollectionDBMigration+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSResaveCollectionDBMigration+SDS.swift"; sourceTree = "<group>"; };
@@ -768,7 +769,6 @@
 		342BF258227B2D4E005CEAA9 /* OWS100RemoveTSRecipientsMigration+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWS100RemoveTSRecipientsMigration+SDS.swift"; sourceTree = "<group>"; };
 		342BF259227B2D4E005CEAA9 /* OWS108CallLoggingPreference+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWS108CallLoggingPreference+SDS.swift"; sourceTree = "<group>"; };
 		342BF25A227B2D4E005CEAA9 /* OWS107LegacySounds+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWS107LegacySounds+SDS.swift"; sourceTree = "<group>"; };
-		342BF24C227A03F7005CEAA9 /* StickerHorizontalListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerHorizontalListView.swift; sourceTree = "<group>"; };
 		3430FE171F7751D4000EC51B /* GiphyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyAPI.swift; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dripicons-v2.ttf"; sourceTree = "<group>"; };
@@ -4225,6 +4225,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_RECEIVER_WEAK = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SEMICOLON_BEFORE_METHOD_BODY = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -4273,13 +4274,14 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"-fobjc-arc-exceptions",
-					"-Werror=protocol",
-				);
+				OTHER_CFLAGS = "-fobjc-arc-exceptions";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 4.0;
 				VALIDATE_PRODUCT = YES;
+				WARNING_CFLAGS = (
+					"-Werror=incompatible-pointer-types",
+					"-Werror=protocol",
+				);
 			};
 			name = Debug;
 		};
@@ -4303,6 +4305,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_RECEIVER_WEAK = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_SEMICOLON_BEFORE_METHOD_BODY = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -4349,12 +4352,15 @@
 				OTHER_CFLAGS = (
 					"-DNS_BLOCK_ASSERTIONS=1",
 					"-fobjc-arc-exceptions",
-					"-Werror=protocol",
 				);
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.0;
 				VALIDATE_PRODUCT = YES;
+				WARNING_CFLAGS = (
+					"-Werror=incompatible-pointer-types",
+					"-Werror=protocol",
+				);
 			};
 			name = "App Store Release";
 		};
