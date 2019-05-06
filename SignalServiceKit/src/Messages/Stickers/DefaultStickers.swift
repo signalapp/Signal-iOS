@@ -4,10 +4,11 @@
 
 import Foundation
 
-class DefaultStickerPacks {
-    private init() {}
+class DefaultStickerPack {
+    public let info: StickerPackInfo
+    public let shouldAutoInstall: Bool
 
-    private class func parse(packIdHex: String, packKeyHex: String) -> StickerPackInfo? {
+    private init?(packIdHex: String, packKeyHex: String, shouldAutoInstall: Bool) {
         guard let packId = Data.data(fromHex: packIdHex) else {
             owsFailDebug("Invalid packId")
             return nil
@@ -19,20 +20,51 @@ class DefaultStickerPacks {
         }
         assert(packKey.count == StickerManager.packKeyLength)
 
-        return StickerPackInfo(packId: packId, packKey: packKey)
+        self.info = StickerPackInfo(packId: packId, packKey: packKey)
+        self.shouldAutoInstall = shouldAutoInstall
     }
 
-    // TODO: Replace with production values.
-    static let all: [StickerPackInfo] = [
-        parse(packIdHex: "0123456789abcdef0123456789abcdef",
-              packKeyHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"),
-        parse(packIdHex: "aaaaaaaabbbbbbbb",
-              packKeyHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"),
-        parse(packIdHex: "aaaaaaaacccccccc",
-              packKeyHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789")
+    private class func parseAll() -> [StickerPackInfo: DefaultStickerPack] {
+        // TODO: Replace with production values.
+        let packs = [
+        DefaultStickerPack(packIdHex: "0123456789abcdef0123456789abcdef",
+        packKeyHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+        shouldAutoInstall: true),
+        DefaultStickerPack(packIdHex: "aaaaaaaabbbbbbbb",
+                           packKeyHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+                           shouldAutoInstall: false),
+        DefaultStickerPack(packIdHex: "aaaaaaaacccccccc",
+                           packKeyHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+                           shouldAutoInstall: true)
         ].compactMap { $0 }
 
+        var result = [StickerPackInfo: DefaultStickerPack]()
+        for pack in packs {
+            result[pack.info] = pack
+        }
+
+        return result
+    }
+
+    private static let all = DefaultStickerPack.parseAll()
+
+    static var packsToAutoInstall: [StickerPackInfo] {
+        return all.values.filter {
+            $0.shouldAutoInstall
+            }.map {
+                $0.info
+        }
+    }
+
+    static var packsToNotAutoInstall: [StickerPackInfo] {
+        return all.values.filter {
+            !$0.shouldAutoInstall
+            }.map {
+                $0.info
+        }
+    }
+
     class func isDefaultStickerPack(stickerPackInfo: StickerPackInfo) -> Bool {
-        return all.contains(stickerPackInfo)
+        return all[stickerPackInfo] != nil
     }
 }

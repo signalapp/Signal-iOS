@@ -172,7 +172,7 @@ public class StickerManager: NSObject {
 
         // Uninstall the cover and stickers - but retain the cover
         // if this is a default sticker pack.
-        if !DefaultStickerPacks.isDefaultStickerPack(stickerPackInfo: stickerPack.info) {
+        if !DefaultStickerPack.isDefaultStickerPack(stickerPackInfo: stickerPack.info) {
             uninstallSticker(stickerInfo: stickerPack.coverInfo,
                              transaction: transaction)
         }
@@ -298,9 +298,10 @@ public class StickerManager: NSObject {
     }
 
     private class func tryToDownloadDefaultStickerPacks(shouldInstall: Bool) {
-        let stickerPacks = DefaultStickerPacks.all
-        tryToDownloadStickerPacks(stickerPacks: stickerPacks,
-                                  shouldInstall: shouldInstall)
+        tryToDownloadStickerPacks(stickerPacks: DefaultStickerPack.packsToAutoInstall,
+                                  shouldInstall: true)
+        tryToDownloadStickerPacks(stickerPacks: DefaultStickerPack.packsToNotAutoInstall,
+                                  shouldInstall: false)
     }
 
     @objc
@@ -332,7 +333,7 @@ public class StickerManager: NSObject {
 
     @objc
     public class func isDefaultStickerPack(_ stickerPack: StickerPack) -> Bool {
-        return DefaultStickerPacks.isDefaultStickerPack(stickerPackInfo: stickerPack.info)
+        return DefaultStickerPack.isDefaultStickerPack(stickerPackInfo: stickerPack.info)
     }
 
     // MARK: - Stickers
@@ -649,7 +650,7 @@ public class StickerManager: NSObject {
             //
             // * It's a default sticker pack.
             // * The pack has been installed.
-            if !DefaultStickerPacks.isDefaultStickerPack(stickerPackInfo: packInfo),
+            if !DefaultStickerPack.isDefaultStickerPack(stickerPackInfo: packInfo),
                 let stickerPack = StickerPack.anyFetch(uniqueId: StickerPack.uniqueId(for: packInfo), transaction: transaction),
                 !stickerPack.isInstalled {
                 self.uninstallStickerPack(stickerPackInfo: packInfo,
