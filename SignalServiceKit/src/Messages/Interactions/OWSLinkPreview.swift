@@ -125,7 +125,7 @@ public class OWSLinkPreview: MTLModel {
         }
         let urlString = previewProto.url
 
-        guard URL(string: urlString) != nil else {
+        guard let url = URL(string: urlString) else {
             Logger.error("Could not parse preview URL.")
             throw LinkPreviewError.invalidInput
         }
@@ -140,7 +140,7 @@ public class OWSLinkPreview: MTLModel {
             throw LinkPreviewError.invalidInput
         }
 
-        guard isValidLinkUrl(urlString) else {
+        guard isValidLink(url: url) else {
             Logger.verbose("Invalid link URL \(urlString).")
             Logger.error("Invalid link URL.")
             throw LinkPreviewError.invalidInput
@@ -359,20 +359,14 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
-    public class func isValidLinkUrl(_ urlString: String) -> Bool {
-        guard let url = URL(string: urlString) else {
-            return false
-        }
+    public class func isValidLink(url: URL) -> Bool {
         return whitelistedDomain(forUrl: url,
                                  domainWhitelist: OWSLinkPreview.linkDomainWhitelist,
                                  allowSubdomains: false) != nil
     }
 
     @objc
-    public class func isValidMediaUrl(_ urlString: String) -> Bool {
-        guard let url = URL(string: urlString) else {
-            return false
-        }
+    public class func isValidMedia(url: URL) -> Bool {
         return whitelistedDomain(forUrl: url,
                                  domainWhitelist: OWSLinkPreview.mediaDomainWhitelist,
                                  allowSubdomains: true) != nil
@@ -498,9 +492,8 @@ public class OWSLinkPreview: MTLModel {
                 owsFailDebug("Match missing url")
                 continue
             }
-            let urlString = matchURL.absoluteString
-            if isValidLinkUrl(urlString) {
-                let matchResult = URLMatchResult(urlString: urlString, matchRange: match.range)
+            if isValidLink(url: matchURL) {
+                let matchResult = URLMatchResult(urlString: matchURL.absoluteString, matchRange: match.range)
                 urlMatches.append(matchResult)
             }
         }
@@ -724,16 +717,19 @@ public class OWSLinkPreview: MTLModel {
             let contents = try parse(linkData: linkData)
 
             let title = contents.title
-            guard let imageUrl = contents.imageUrl else {
+            guard let imageUrlString = contents.imageUrl else {
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
-
-            guard isValidMediaUrl(imageUrl) else {
+            guard let imageUrl = URL(string: imageUrlString) else {
+                Logger.error("Invalid imageUrlString.")
+                return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            }
+            guard isValidMedia(url: imageUrl) else {
                 Logger.error("Invalid image URL.")
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
-            guard let imageFileExtension = fileExtension(forImageUrl: imageUrl) else {
-                Logger.error("Image URL has unknown or invalid file extension: \(imageUrl).")
+            guard let imageFileExtension = fileExtension(forImageUrl: imageUrlString) else {
+                Logger.error("Image URL has unknown or invalid file extension: \(imageUrlString).")
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
             guard let imageMimeType = mimetype(forImageFileExtension: imageFileExtension) else {
@@ -741,7 +737,7 @@ public class OWSLinkPreview: MTLModel {
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
 
-            return downloadImage(url: imageUrl, imageMimeType: imageMimeType)
+            return downloadImage(url: imageUrlString, imageMimeType: imageMimeType)
                 .map(on: DispatchQueue.global()) { (imageData: Data) -> OWSLinkPreviewDraft in
                     // We always recompress images to Jpeg.
                     let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, jpegImageData: imageData)
