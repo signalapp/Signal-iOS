@@ -442,7 +442,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                 // TODO: Add analytics.
                 TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
                 [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                    transaction:transaction];
+                                                                                    transaction:transaction.asAnyWrite];
             };
 
             @try {

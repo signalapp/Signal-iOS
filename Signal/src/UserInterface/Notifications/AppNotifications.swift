@@ -343,14 +343,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
+    public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: SDSAnyReadTransaction) {
 
         guard !thread.isMuted else {
             return
         }
 
         // While batch processing, some of the necessary changes have not been commited.
-        let rawMessageText = incomingMessage.previewText(with: transaction.asAnyRead)
+        let rawMessageText = incomingMessage.previewText(with: transaction)
 
         // iOS strips anything that looks like a printf formatting character from
         // the notification body, so if we want to dispay a literal "%" in a notification
@@ -452,7 +452,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: YapDatabaseReadWriteTransaction) {
+    public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
 
         let notificationTitle: String?
         switch self.previewType {
@@ -462,7 +462,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
         }
 
-        let notificationBody = errorMessage.previewText(with: transaction.asAnyRead)
+        let notificationBody = errorMessage.previewText(with: transaction)
 
         guard let threadId = thread.uniqueId else {
             owsFailDebug("threadId was unexpectedly nil")
@@ -473,7 +473,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.threadId: threadId
         ]
 
-        transaction.addCompletionQueue(DispatchQueue.main) {
+        transaction.addCompletion {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .errorMessage,
                                 title: notificationTitle,
@@ -483,10 +483,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyUser(forThreadlessErrorMessage errorMessage: TSErrorMessage, transaction: YapDatabaseReadWriteTransaction) {
-        let notificationBody = errorMessage.previewText(with: transaction.asAnyRead)
+    public func notifyUser(forThreadlessErrorMessage errorMessage: TSErrorMessage, transaction: SDSAnyWriteTransaction) {
+        let notificationBody = errorMessage.previewText(with: transaction)
 
-        transaction.addCompletionQueue(DispatchQueue.main) {
+        transaction.addCompletion {
             let sound = self.checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil
             self.adaptee.notify(category: .threadlessErrorMessage,
                                 title: nil,

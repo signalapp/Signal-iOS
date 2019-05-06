@@ -128,18 +128,11 @@ public class ConversationViewDatabaseTransactionChanges: NSObject {
 extension ConversationViewDatabaseObserver: DatabaseSnapshotDelegate {
     public func databaseSnapshotSourceDidCommit(db: Database) {
         AssertIsOnUIDatabaseObserverSerialQueue()
-        do {
-            let pendingInteractionChanges = self.pendingInteractionChanges
-            self.pendingInteractionChanges = Set()
+        let pendingInteractionChanges = self.pendingInteractionChanges
+        self.pendingInteractionChanges = Set()
 
-            DispatchQueue.main.async {
-                self.committedInteractionChanges = pendingInteractionChanges
-            }
-        } catch {
-            owsFailDebug("error: \(error)")
-            DispatchQueue.main.async {
-                self.committedInteractionChanges = nil
-            }
+        DispatchQueue.main.async {
+            self.committedInteractionChanges = pendingInteractionChanges
         }
     }
 

@@ -15,7 +15,8 @@ public class GRDBReadTransaction: NSObject {
         self.database = database
     }
 
-    var asAnyRead: SDSAnyReadTransaction {
+    @objc
+    public var asAnyRead: SDSAnyReadTransaction {
         return SDSAnyReadTransaction(.grdbRead(self))
     }
 }
@@ -24,8 +25,16 @@ public class GRDBReadTransaction: NSObject {
 
 @objc
 public class GRDBWriteTransaction: GRDBReadTransaction {
-    var asAnyWrite: SDSAnyWriteTransaction {
+    @objc
+    public var asAnyWrite: SDSAnyWriteTransaction {
         return SDSAnyWriteTransaction(.grdbWrite(self))
+    }
+
+    internal var completions: [(DispatchQueue, () -> Void)] = []
+
+    @objc
+    public func addCompletion(queue: DispatchQueue, block: @escaping () -> Void) {
+        completions.append((queue, block))
     }
 }
 
@@ -69,15 +78,6 @@ public class SDSAnyReadTransaction: NSObject {
             return nil
         }
     }
-
-    public var transitional_grdbReadTransaction: GRDBReadTransaction? {
-        switch readTransaction {
-        case .yapRead:
-            return nil
-        case .grdbRead(let transaction):
-            return transaction
-        }
-    }
 }
 
 @objc
@@ -96,8 +96,8 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction {
         switch writeTransaction {
         case .yapWrite(let yapWrite):
             readTransaction = ReadTransactionType.yapRead(yapWrite)
-        case .grdbWrite(let transaction):
-            readTransaction = ReadTransactionType.grdbRead(transaction)
+        case .grdbWrite(let grdbWrite):
+            readTransaction = ReadTransactionType.grdbRead(grdbWrite)
         }
 
         super.init(readTransaction)
@@ -125,12 +125,12 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction {
         }
     }
 
-    public var transitional_grdbWriteTransaction: GRDBWriteTransaction? {
+    public func addCompletion(queue: DispatchQueue = DispatchQueue.main, block: @escaping () -> Void) {
         switch writeTransaction {
-        case .yapWrite:
-            return nil
-        case .grdbWrite(let transaction):
-            return transaction
+        case .yapWrite(let yapWrite):
+            yapWrite.addCompletionQueue(queue, completionBlock: block)
+        case .grdbWrite(let grdbWrite):
+            grdbWrite.addCompletion(queue: queue, block: block)
         }
     }
 }
