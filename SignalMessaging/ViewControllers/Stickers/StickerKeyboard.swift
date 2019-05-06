@@ -102,7 +102,9 @@ public class StickerKeyboard: UIStackView {
 
     private func reloadStickers() {
         databaseStorage.read { (transaction) in
-            self.stickerPacks = StickerManager.installedStickerPacks(transaction: transaction)
+            self.stickerPacks = StickerManager.installedStickerPacks(transaction: transaction).sorted {
+                $0.dateCreated > $1.dateCreated
+            }
         }
 
         let packItems = stickerPacks.map { (stickerPack) in
