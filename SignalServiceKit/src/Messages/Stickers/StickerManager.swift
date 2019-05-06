@@ -735,7 +735,7 @@ public class StickerManager: NSObject {
 
     private let kHasReceivedStickersKey = "hasReceivedStickersKey"
     private var isStickerSendEnabledCached = false
-    private static let serialQueue = DispatchQueue(label: "org.signal.videoCaptureController")
+    private static let serialQueue = DispatchQueue(label: "org.signal.stickers")
 
     @objc
     public func setHasUsedStickers(transaction: SDSAnyWriteTransaction) {
