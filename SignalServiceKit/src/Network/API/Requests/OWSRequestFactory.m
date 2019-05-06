@@ -354,14 +354,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [accountAttributes copy];
 }
 
-// LOKI: Convert Signal JSON messages to Loki messages
+// Loki: Convert Signal JSON messages to Loki messages
 // Refer to OWSMessageServiceParams for the Signal JSON params
 + (NSDictionary *)lokiMessagesFromMessages:(NSArray *)messages
                                 nonceArray:(NSArray *)nonceArray
                                        ttl:(NSNumber *)ttl {
-    NSMutableArray *modifiedMessages = [[NSMutableArray alloc] init];
+    NSMutableArray *modifiedMessages = [NSMutableArray new];
     for (NSDictionary *message in messages) {
-        NSMutableDictionary *lokiMessage = [[NSMutableDictionary alloc] init];
+        NSMutableDictionary *lokiMessage = [NSMutableDictionary new];
         
         // Params for our message server
         lokiMessage[@"pubKey"] = message[@"destination"];
@@ -387,21 +387,19 @@ NS_ASSUME_NONNULL_BEGIN
     return filtered.count > 0 ? [filtered objectAtIndex:0] : nil;
 }
 
-// LOKI: This is the function below with our changes
+// Loki: This is the function below with our changes
 + (TSRequest *)submitLokiMessageRequestWithRecipient:(NSString *)recipientId
                                             messages:(NSArray *)messages
                                           nonceArray:(NSArray *)nonceArray
-                                                 ttl: (NSNumber *)ttl
+                                                 ttl:(NSNumber *)ttl
 {
-    // NOTE: messages may be empty; See comments in OWSDeviceManager.
+    // Messages may be empty; see comments in OWSDeviceManager
     OWSAssertDebug(recipientId.length > 0);
     
     NSDictionary *lokiMessages = [self lokiMessagesFromMessages:messages nonceArray:nonceArray ttl:ttl];
    
     NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientId];
-    NSDictionary *parameters = @{
-                                 @"messages" : lokiMessages,
-                                 };
+    NSDictionary *parameters = @{ @"messages" : lokiMessages };
     
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
     return request;

@@ -43,8 +43,7 @@ private extension MutableCollection where Element == UInt8, Index == Int {
  * This was copied from the desktop messenger.
  * Ref: libloki/proof-of-work.js
  */
-@objc public class ProofOfWork: NSObject {
-    private override init() {}
+@objc public class ProofOfWork : NSObject {
     
     // If this changes then we also have to use something other than UInt64 to support the new length
     private static let nonceLength = 8
@@ -55,6 +54,8 @@ private extension MutableCollection where Element == UInt8, Index == Int {
         case .production: return 100
         }
     }()
+
+    private override init() { }
     
     /// Calculate a proof of work with the given configuration
     ///
@@ -66,7 +67,7 @@ private extension MutableCollection where Element == UInt8, Index == Int {
     ///   - timestamp: The timestamp
     ///   - ttl: The message time to live
     /// - Returns: A nonce string or nil if it failed
-    @objc public class func calculate(forData data: String, pubKey: String, timestamp: UInt64, ttl: Int) -> String? {
+    @objc public static func calculate(data: String, pubKey: String, timestamp: UInt64, ttl: Int) -> String? {
         let payload = getPayload(pubKey: pubKey, data: data, timestamp: timestamp, ttl: ttl)
         let target = calcTarget(ttl: ttl, payloadLength: payload.count, nonceTrials: nonceTrialCount)
         
@@ -90,7 +91,7 @@ private extension MutableCollection where Element == UInt8, Index == Int {
     }
     
     /// Get the proof of work payload
-    private class func getPayload(pubKey: String, data: String, timestamp: UInt64, ttl: Int) -> [UInt8] {
+    private static func getPayload(pubKey: String, data: String, timestamp: UInt64, ttl: Int) -> [UInt8] {
         let timestampString = String(timestamp)
         let ttlString = String(ttl)
         let payloadString = timestampString + ttlString + pubKey + data
@@ -98,7 +99,7 @@ private extension MutableCollection where Element == UInt8, Index == Int {
     }
     
     /// Calculate the target we need to reach
-    private class func calcTarget(ttl: Int, payloadLength: Int, nonceTrials: Int) -> UInt64 {
+    private static func calcTarget(ttl: Int, payloadLength: Int, nonceTrials: Int) -> UInt64 {
         let two16 = UInt64(pow(2, 16) - 1)
         let two64 = UInt64(pow(2, 64) - 1)
   

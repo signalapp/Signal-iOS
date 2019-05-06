@@ -918,27 +918,27 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (AnyPromise *)calculateProofOfWorkForDeviceMessages:(NSArray<NSDictionary *> *)deviceMessages
                                                   ttl:(NSNumber *)ttl
 {
-    // LOKI: Calculate the proof of work for each device message
-    NSMutableArray *promises = [[NSMutableArray alloc] init];
+    // Loki: Calculate the proof of work for each device message
+    NSMutableArray *promises = [NSMutableArray new];
     for (NSDictionary<NSString *, id> *deviceMessage in deviceMessages) {
         AnyPromise *promise = [AnyPromise promiseWithValue:deviceMessage]
             .thenOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(NSDictionary<NSString *, id> *message) {
-                NSTimeInterval timestampInterval = [[NSDate date] timeIntervalSince1970];
+                NSTimeInterval timestampInterval = [[NSDate new] timeIntervalSince1970];
                 NSNumber *timestamp = [NSNumber numberWithDouble:timestampInterval];
                 
                 NSString *destination = message[@"destination"];
                 NSString *data = message[@"content"];
-                
-                NSString *_Nullable nonce = [ProofOfWork calculateForData:data pubKey:destination timestamp:timestamp.unsignedIntegerValue ttl:ttl.integerValue];
+
+                NSString *_Nullable nonce = [ProofOfWork calculateWithData:data pubKey:destination timestamp:timestamp.unsignedIntegerValue ttl:ttl.integerValue];
                 
                 // Return our timestamp along with the nonce
                 // These will help us identify which nonce belongs to which message
                 return @{
-                         @"destination": destination,
-                         @"deviceId": message[@"destinationDeviceId"],
-                         @"timestamp": timestamp,
-                         @"nonce": nonce
-                         };
+                         @"destination" : destination,
+                         @"deviceId" : message[@"destinationDeviceId"],
+                         @"timestamp" : timestamp,
+                         @"nonce" : nonce
+                        };
             });
         [promises addObject:promise];
     }
@@ -1122,38 +1122,40 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     
     // TODO: Update message here to show the pow cog icon
     
-    // LOKI: Calculate the proof of work for each device message
+    // Loki: Calculate the proof of work for each device message
     NSNumber *ttl = [NSNumber numberWithInteger:@(4 * 24 * 60 * 60)];
-    AnyPromise *PoWPromise = [self calculateProofOfWorkForDeviceMessages:deviceMessages ttl:ttl];
-    [PoWPromise
+    AnyPromise *powPromise = [self calculateProofOfWorkForDeviceMessages:deviceMessages ttl:ttl];
+    [powPromise
         .thenOn([OWSDispatch sendingQueue], ^(NSArray *nonceArray) {
             OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Message Send"
-               requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
-                   // Loki Changes:
-                   return [OWSRequestFactory submitLokiMessageRequestWithRecipient:recipient.recipientId
+                requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
+                    // Loki
+                    // ========
+                    return [OWSRequestFactory submitLokiMessageRequestWithRecipient:recipient.recipientId
                                                                           messages:deviceMessages
                                                                         nonceArray:nonceArray
                                                                                ttl:ttl];
-                   /* Original Code:
-                   return [OWSRequestFactory submitMessageRequestWithRecipient:recipient.recipientId
+                    // ========
+                    /* Original code:
+                    return [OWSRequestFactory submitMessageRequestWithRecipient:recipient.recipientId
                                                                       messages:deviceMessages
                                                                      timeStamp:message.timestamp
                                                                    udAccessKey:udAccessKey];
                     */
-               }
+                }
                 udAuthFailureBlock:^{
                     // Note the UD auth failure so subsequent retries
                     // to this recipient also use basic auth.
                     [messageSend setHasUDAuthFailed];
                 }
-             websocketFailureBlock:^{
-                 // Note the websocket failure so subsequent retries
-                 // to this recipient also use REST.
-                 messageSend.hasWebsocketSendFailed = YES;
-             }
-                       recipientId:recipient.recipientId
-                          udAccess:messageSend.udAccess
-                 canFailoverUDAuth:NO];
+                websocketFailureBlock:^{
+                    // Note the websocket failure so subsequent retries
+                    // to this recipient also use REST.
+                    messageSend.hasWebsocketSendFailed = YES;
+                }
+                recipientId:recipient.recipientId
+                udAccess:messageSend.udAccess
+                canFailoverUDAuth:NO];
             return requestMaker;
         })
         .thenOn([OWSDispatch sendingQueue], ^(OWSRequestMaker *requestMaker) {

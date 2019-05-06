@@ -62,7 +62,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 + (TSRequest *)submitLokiMessageRequestWithRecipient:(NSString *)recipientId
                                             messages:(NSArray *)messages
                                           nonceArray:(NSArray *)nonceArray
-                                                 ttl: (NSNumber *)ttl;
+                                                 ttl:(NSNumber *)ttl;
 
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
                                         messages:(NSArray *)messages
