@@ -149,7 +149,7 @@ public class SDSDatabaseStorage: NSObject {
         return value
     }
 
-    public func writeReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T?) -> T? {
+    public func writeReturningResult<T>(block: @escaping (SDSAnyWriteTransaction) -> T?) -> T? {
         var value: T?
         write { (transaction) in
             value = block(transaction)
