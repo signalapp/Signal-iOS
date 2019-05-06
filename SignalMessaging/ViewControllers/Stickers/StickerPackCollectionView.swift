@@ -30,6 +30,10 @@ public class StickerPackCollectionView: UICollectionView {
 
     private var stickerInfos = [StickerInfo]()
 
+    public var stickerCount: Int {
+        return stickerInfos.count
+    }
+
     @objc
     public weak var stickerDelegate: StickerPackCollectionViewDelegate?
 

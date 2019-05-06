@@ -54,7 +54,13 @@ public class StickerKeyboard: UIStackView {
 
         // By default, show the "recent" stickers.
         assert(nil == stickerPack)
+
         stickerCollectionView.showRecents()
+
+        // If there are no recents, default to showing the first sticker pack.
+        if stickerCollectionView.stickerCount < 1 {
+            stickerPack = stickerPacks.first
+        }
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
