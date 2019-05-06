@@ -929,7 +929,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 NSString *destination = message[@"destination"];
                 NSString *data = message[@"content"];
 
-                NSString *_Nullable nonce = [ProofOfWork calculateWithData:data pubKey:destination timestamp:timestamp.unsignedIntegerValue ttl:ttl.integerValue];
+                NSString *nonce = [ProofOfWork calculateWithData:data pubKey:destination timestamp:timestamp.unsignedIntegerValue ttl:ttl.integerValue];
                 
                 // Return our timestamp along with the nonce
                 // These will help us identify which nonce belongs to which message
@@ -943,7 +943,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [promises addObject:promise];
     }
     
-    // Wait for all the PoW Calculations to finish
+    // Wait for all the PoW calculations to finish
     return PMKWhen(promises);
 }
 
@@ -1126,7 +1126,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return messageSend.failure(error);
     }
     
-    // TODO: Update message here to show the pow cog icon
+    // TODO: Update message here to show the POW cog icon
     
     // Loki: Calculate the proof of work for each device message
     NSNumber *ttl = [NSNumber numberWithInteger:@(4 * 24 * 60 * 60)];

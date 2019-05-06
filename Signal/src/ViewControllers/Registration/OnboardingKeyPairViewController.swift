@@ -96,17 +96,6 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
         setUpViewHierarchy()
         handleModeChanged() // Perform initial update
         updateKeyPair()
-        // Test
-        // ================
-        let _ = LokiMessagingAPI.retrieveAllMessages().done { result in
-            print(result.task.originalRequest!)
-            print(result.task.response!)
-        }
-        let _ = LokiMessagingAPI.sendTestMessage().done { result in
-            print(result.task.originalRequest!)
-            print(result.task.response!)
-        }
-        // ================
     }
     
     private func setUpViewHierarchy() {
