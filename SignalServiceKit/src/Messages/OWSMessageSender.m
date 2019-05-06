@@ -929,7 +929,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 NSString *destination = message[@"destination"];
                 NSString *data = message[@"content"];
 
-                NSString *_Nullable nonce = [ProofOfWork calculateForData:data pubKey:destination timestamp:timestamp.unsignedIntegerValue ttl:ttl.integerValue];
+                NSString *_Nullable nonce = [ProofOfWork calculateWithData:data pubKey:destination timestamp:timestamp.unsignedIntegerValue ttl:ttl.integerValue];
                 
                 // Return our timestamp along with the nonce
                 // These will help us identify which nonce belongs to which message
@@ -1126,7 +1126,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return messageSend.failure(error);
     }
     
-    // TODO: Update message here to show the pow cog icon
+    // Update the state to show that proof of work is being calculated
+    [self calculatingProofOfWorkFor:messageSend];
     
     // Loki: Calculate the proof of work for each device message
     NSNumber *ttl = [NSNumber numberWithInteger:@(4 * 24 * 60 * 60)];
@@ -1203,6 +1204,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                             responseData:responseData];
             });
         }) retainUntilComplete];
+}
+
+- (void)calculatingProofOfWorkFor:(OWSMessageSend *)messageSend
+{
+    OWSAssertDebug(messageSend);
+    dispatch_async([OWSDispatch sendingQueue], ^{
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [messageSend.message updateIsCalculatingProofOfWorkWithTransaction:transaction];
+        }];
+    });
 }
 
 - (void)messageSendDidSucceed:(OWSMessageSend *)messageSend

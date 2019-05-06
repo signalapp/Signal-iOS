@@ -141,6 +141,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @property (nonatomic, readonly) BOOL isOnline;
 
+// Loki: Bool to indicate if proof of work is being calculated for this message
+@property (atomic, readonly) BOOL isCalculatingPoW;
+
 /**
  * The data representation of this message, to be encrypted, before being sent.
  */
@@ -182,6 +185,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (nullable TSOutgoingMessageRecipientState *)recipientStateForRecipientId:(NSString *)recipientId;
 
 #pragma mark - Update With... Methods
+
+// When sending a message, when proof of work calculation is started, we should mark it as such
+- (void)updateIsCalculatingProofOfWorkWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This method is used to record a successful send to one recipient.
 - (void)updateWithSentRecipient:(NSString *)recipientId
