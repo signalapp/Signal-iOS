@@ -127,6 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
     _searchBar = searchBar;
     searchBar.delegate = self;
     searchBar.placeholder = NSLocalizedString(@"Search by name or public key", @"");
+    searchBar.autocapitalizationType = UITextAutocapitalizationTypeNone;
     [searchBar sizeToFit];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
 
