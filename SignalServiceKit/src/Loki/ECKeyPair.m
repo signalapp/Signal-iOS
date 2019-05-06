@@ -1,5 +1,4 @@
 #import "ECKeyPair.h"
-#import <SignalCoreKit/OWSAsserts.h>
 
 extern void curve25519_donna(unsigned char *output, const unsigned char *a, const unsigned char *b);
 
@@ -19,6 +18,7 @@ extern void curve25519_donna(unsigned char *output, const unsigned char *a, cons
     NSMutableData *publicKey = [NSMutableData dataWithLength:ECCKeyLength];
     if (!publicKey) { OWSFail(@"Could not allocate buffer"); }
     curve25519_donna(publicKey.mutableBytes, privateKey.mutableBytes, basepoint);
+    // Use KVC to access privateKey and publicKey even though they're private
     ECKeyPair *result = [ECKeyPair new];
     [result setValue:[privateKey copy] forKey:@"privateKey"];
     [result setValue:[publicKey copy] forKey:@"publicKey"];

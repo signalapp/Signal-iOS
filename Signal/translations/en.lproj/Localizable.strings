@@ -2566,3 +2566,5 @@
 "Your mnemonic couldn't be verified. Please check what you entered and try again." = "Your mnemonic couldn't be verified. Please check what you entered and try again.";
 "Search by name or public key" = "Search by name or public key";
 "Start a Conversation" = "Start a Conversation";
+"Invalid public key" = "Invalid public key";
+"No search results" = "No search results";

@@ -18,6 +18,7 @@
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -394,18 +395,28 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL hasSearchText = self.searchText.length > 0;
 
     if (hasSearchText) {
-
         // Loki:
         // ========
-        OWSTableSection *newConversationSection = [OWSTableSection new];
-        [newConversationSection
-         addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"Start a Conversation", @"")
-                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"start_conversation")
-                                      customRowHeight:UITableViewAutomaticDimension
-                                          actionBlock:^{ NSLog(@"Start a Conversation"); }]];
-        [contents addSection:newConversationSection];
+        NSString *publicKey = self.searchBar.text;
+        BOOL isValid = [ECKeyPair isValidHexEncodedPublicKeyWithCandidate:publicKey];
+        if (!isValid) {
+            OWSTableSection *invalidPublicKeySection = [OWSTableSection new];
+            [invalidPublicKeySection
+             addItem:[OWSTableItem softCenterLabelItemWithText:NSLocalizedString(@"Invalid public key", @"")
+                                               customRowHeight:UITableViewAutomaticDimension]];
+            [contents addSection:invalidPublicKeySection];
+        } else {
+            OWSTableSection *newConversationSection = [OWSTableSection new];
+            [newConversationSection
+             addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"Start a Conversation", @"")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"start_conversation")
+                                          customRowHeight:UITableViewAutomaticDimension
+                                              actionBlock:^{
+                                                  [weakSelf newConversationWithRecipientId:publicKey];
+                                              }]];
+            [contents addSection:newConversationSection];
+        }
         // ========
-
         for (OWSTableSection *section in [self contactsSectionsForSearch]) {
             [contents addSection:section];
         }
@@ -723,13 +734,18 @@ NS_ASSUME_NONNULL_BEGIN
         [sections addObject:inviteeSection];
     }
 
+    // Loki:
+    // ========
+    NSString *publicKey = self.searchBar.text;
+    BOOL isValidPublicKey = [ECKeyPair isValidHexEncodedPublicKeyWithCandidate:publicKey];
+    // ========
 
-    if (!hasSearchResults) {
+    if (isValidPublicKey && !hasSearchResults) {
         // No Search Results
         OWSTableSection *noResultsSection = [OWSTableSection new];
         [noResultsSection
             addItem:[OWSTableItem softCenterLabelItemWithText:
-                                      NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS",
+                                      NSLocalizedString(@"No search results",
                                           @"A label that indicates the user's search has no matching results.")
                                               customRowHeight:UITableViewAutomaticDimension]];
 
