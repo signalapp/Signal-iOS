@@ -1127,7 +1127,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
     
     // Update the state to show that proof of work is being calculated
-    [self calculatingProofOfWorkFor:messageSend];
+    [self calculatingProofOfWorkForMessage:messageSend];
     
     // Loki: Calculate the proof of work for each device message
     NSNumber *ttl = [NSNumber numberWithInteger:@(4 * 24 * 60 * 60)];
@@ -1206,7 +1206,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }) retainUntilComplete];
 }
 
-- (void)calculatingProofOfWorkFor:(OWSMessageSend *)messageSend
+- (void)calculatingProofOfWorkForMessage:(OWSMessageSend *)messageSend
 {
     OWSAssertDebug(messageSend);
     dispatch_async([OWSDispatch sendingQueue], ^{
