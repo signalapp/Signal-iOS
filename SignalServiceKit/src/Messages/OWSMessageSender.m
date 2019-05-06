@@ -929,7 +929,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 NSString *destination = message[@"destination"];
                 NSString *data = message[@"content"];
 
-                NSString *_Nullable nonce = [ProofOfWork calculateWithData:data pubKey:destination timestamp:timestamp.unsignedIntegerValue ttl:ttl.integerValue];
+                NSString *_Nullable nonce = [ProofOfWork calculateForData:data pubKey:destination timestamp:timestamp.unsignedIntegerValue ttl:ttl.integerValue];
                 
                 // Return our timestamp along with the nonce
                 // These will help us identify which nonce belongs to which message
