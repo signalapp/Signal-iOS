@@ -366,7 +366,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Params for our message server
         lokiMessage[@"pubKey"] = message[@"destination"];
         lokiMessage[@"data"] = message[@"content"];
-        lokiMessage[@"ttl"] = ttl;
+        lokiMessage[@"ttl"] = [ttl stringValue];
         
         NSDictionary *_Nullable nonce = [self getNonceFromArray:nonceArray forMessage:message];
         if (nonce) {
@@ -379,7 +379,6 @@ NS_ASSUME_NONNULL_BEGIN
     
     return modifiedMessages;
 }
-
 
 + (NSDictionary *_Nullable)getNonceFromArray:(NSArray *)nonceArray forMessage:(NSDictionary *)message {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"destination == %@ AND deviceId == %d", message[@"destination"], message[@"destinationDeviceId"]];
@@ -405,9 +404,8 @@ NS_ASSUME_NONNULL_BEGIN
     // Loki: Just send the first message
     NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientId];
     NSDictionary *parameters = [lokiMessages objectAtIndex:0];
-   
-    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
-    return request;
+
+    return [LokiMessagingAPI sendMessage:parameters];
 }
 
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId

@@ -929,7 +929,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 NSString *destination = message[@"destination"];
                 NSString *data = message[@"content"];
 
-                NSString *_Nullable nonce = [ProofOfWork calculateWithData:data pubKey:destination timestamp:timestamp.unsignedIntegerValue ttl:ttl.integerValue];
+                NSString *nonce = [ProofOfWork calculateWithData:data pubKey:destination timestamp:timestamp.unsignedIntegerValue ttl:ttl.integerValue];
+
                 
                 // Return our timestamp along with the nonce
                 // These will help us identify which nonce belongs to which message
@@ -943,7 +944,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [promises addObject:promise];
     }
     
-    // Wait for all the PoW Calculations to finish
+    // Wait for all the PoW calculations to finish
     return PMKWhen(promises);
 }
 
