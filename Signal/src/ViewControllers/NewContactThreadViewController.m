@@ -402,7 +402,12 @@ NS_ASSUME_NONNULL_BEGIN
          addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"Start a Conversation", @"")
                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"start_conversation")
                                       customRowHeight:UITableViewAutomaticDimension
-                                          actionBlock:^{ NSLog(@"Start a Conversation"); }]];
+                                          actionBlock:^{
+                                              typeof(self) strongSelf = weakSelf;
+                                              if (!strongSelf) { return; }
+                                              NSString *publicKey = strongSelf.searchBar.text;
+                                              [strongSelf newConversationWithRecipientId:publicKey];
+                                          }]];
         [contents addSection:newConversationSection];
         // ========
 
