@@ -915,6 +915,38 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return deviceMessages;
 }
 
+- (AnyPromise *)calculateProofOfWorkForDeviceMessages:(NSArray<NSDictionary *> *)deviceMessages
+                                                  ttl:(NSNumber *)ttl
+{
+    // LOKI: Calculate the proof of work for each device message
+    NSMutableArray *promises = [[NSMutableArray alloc] init];
+    for (NSDictionary<NSString *, id> *deviceMessage in deviceMessages) {
+        AnyPromise *promise = [AnyPromise promiseWithValue:deviceMessage]
+            .thenOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(NSDictionary<NSString *, id> *message) {
+                NSTimeInterval timestampInterval = [[NSDate date] timeIntervalSince1970];
+                NSNumber *timestamp = [NSNumber numberWithDouble:timestampInterval];
+                
+                NSString *destination = message[@"destination"];
+                NSString *data = message[@"content"];
+                
+                NSString *_Nullable nonce = [ProofOfWork calculateForData:data pubKey:destination timestamp:timestamp.unsignedIntegerValue ttl:ttl.integerValue];
+                
+                // Return our timestamp along with the nonce
+                // These will help us identify which nonce belongs to which message
+                return @{
+                         @"destination": destination,
+                         @"deviceId": message[@"destinationDeviceId"],
+                         @"timestamp": timestamp,
+                         @"nonce": nonce
+                         };
+            });
+        [promises addObject:promise];
+    }
+    
+    // Wait for all the PoW Calculations to finish
+    return PMKWhen(promises);
+}
+
 - (void)sendMessageToRecipient:(OWSMessageSend *)messageSend
 {
     OWSAssertDebug(messageSend);
@@ -1087,65 +1119,82 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // linked devices that we don't know about.
         OWSLogWarn(@"Sending a message with no device messages.");
     }
-
-    OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Message Send"
-        requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
-            return [OWSRequestFactory submitMessageRequestWithRecipient:recipient.recipientId
-                                                               messages:deviceMessages
-                                                              timeStamp:message.timestamp
-                                                            udAccessKey:udAccessKey];
-        }
-        udAuthFailureBlock:^{
-            // Note the UD auth failure so subsequent retries
-            // to this recipient also use basic auth.
-            [messageSend setHasUDAuthFailed];
-        }
-        websocketFailureBlock:^{
-            // Note the websocket failure so subsequent retries
-            // to this recipient also use REST.
-            messageSend.hasWebsocketSendFailed = YES;
-        }
-        recipientId:recipient.recipientId
-        udAccess:messageSend.udAccess
-        canFailoverUDAuth:NO];
-    [[requestMaker makeRequestObjc]
-            .then(^(OWSRequestMakerResult *result) {
-                dispatch_async([OWSDispatch sendingQueue], ^{
-                    [self messageSendDidSucceed:messageSend
-                                 deviceMessages:deviceMessages
-                                    wasSentByUD:result.wasSentByUD
-                             wasSentByWebsocket:result.wasSentByWebsocket];
-                });
-            })
-            .catch(^(NSError *error) {
-                dispatch_async([OWSDispatch sendingQueue], ^{
-                    NSUInteger statusCode = 0;
-                    NSData *_Nullable responseData = nil;
-                    if ([error.domain isEqualToString:@"SignalServiceKit.RequestMakerUDAuthError"]) {
-                        // Try again.
-                        OWSLogInfo(@"UD request auth failed; failing over to non-UD request.");
-                        [error setIsRetryable:YES];
-                    } else if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
-                        statusCode = error.code;
-
-                        NSError *_Nullable underlyingError = error.userInfo[NSUnderlyingErrorKey];
-                        if (underlyingError) {
-                            responseData
-                                = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-                        } else {
-                            OWSFailDebug(@"Missing underlying error: %@", error);
-                        }
+    
+    // TODO: Update message here to show the pow cog icon
+    
+    // LOKI: Calculate the proof of work for each device message
+    NSNumber *ttl = [NSNumber numberWithInteger:@(4 * 24 * 60 * 60)];
+    AnyPromise *PoWPromise = [self calculateProofOfWorkForDeviceMessages:deviceMessages ttl:ttl];
+    [PoWPromise
+        .thenOn([OWSDispatch sendingQueue], ^(NSArray *nonceArray) {
+            OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Message Send"
+               requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
+                   // Loki Changes:
+                   return [OWSRequestFactory submitLokiMessageRequestWithRecipient:recipient.recipientId
+                                                                          messages:deviceMessages
+                                                                        nonceArray:nonceArray
+                                                                               ttl:ttl];
+                   /* Original Code:
+                   return [OWSRequestFactory submitMessageRequestWithRecipient:recipient.recipientId
+                                                                      messages:deviceMessages
+                                                                     timeStamp:message.timestamp
+                                                                   udAccessKey:udAccessKey];
+                    */
+               }
+                udAuthFailureBlock:^{
+                    // Note the UD auth failure so subsequent retries
+                    // to this recipient also use basic auth.
+                    [messageSend setHasUDAuthFailed];
+                }
+             websocketFailureBlock:^{
+                 // Note the websocket failure so subsequent retries
+                 // to this recipient also use REST.
+                 messageSend.hasWebsocketSendFailed = YES;
+             }
+                       recipientId:recipient.recipientId
+                          udAccess:messageSend.udAccess
+                 canFailoverUDAuth:NO];
+            return requestMaker;
+        })
+        .thenOn([OWSDispatch sendingQueue], ^(OWSRequestMaker *requestMaker) {
+            return [requestMaker makeRequestObjc];
+        }).then(^(OWSRequestMakerResult *result) {
+            dispatch_async([OWSDispatch sendingQueue], ^{
+                [self messageSendDidSucceed:messageSend
+                             deviceMessages:deviceMessages
+                                wasSentByUD:result.wasSentByUD
+                         wasSentByWebsocket:result.wasSentByWebsocket];
+            });
+        })
+        .catch(^(NSError *error) {
+            dispatch_async([OWSDispatch sendingQueue], ^{
+                NSUInteger statusCode = 0;
+                NSData *_Nullable responseData = nil;
+                if ([error.domain isEqualToString:@"SignalServiceKit.RequestMakerUDAuthError"]) {
+                    // Try again.
+                    OWSLogInfo(@"UD request auth failed; failing over to non-UD request.");
+                    [error setIsRetryable:YES];
+                } else if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
+                    statusCode = error.code;
+                    
+                    NSError *_Nullable underlyingError = error.userInfo[NSUnderlyingErrorKey];
+                    if (underlyingError) {
+                        responseData
+                        = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
                     } else {
-                        OWSFailDebug(@"Unexpected error: %@", error);
+                        OWSFailDebug(@"Missing underlying error: %@", error);
                     }
-
-                    [self messageSendDidFail:messageSend
-                              deviceMessages:deviceMessages
-                                  statusCode:statusCode
-                                       error:error
-                                responseData:responseData];
-                });
-            }) retainUntilComplete];
+                } else {
+                    OWSFailDebug(@"Unexpected error: %@", error);
+                }
+                
+                [self messageSendDidFail:messageSend
+                          deviceMessages:deviceMessages
+                              statusCode:statusCode
+                                   error:error
+                            responseData:responseData];
+            });
+        }) retainUntilComplete];
 }
 
 - (void)messageSendDidSucceed:(OWSMessageSend *)messageSend

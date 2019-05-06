@@ -354,6 +354,58 @@ NS_ASSUME_NONNULL_BEGIN
     return [accountAttributes copy];
 }
 
+// LOKI: Convert Signal JSON messages to Loki messages
++ (NSDictionary *)lokiMessagesFromMessages:(NSArray *)messages
+                                nonceArray:(NSArray *)nonceArray
+                                       ttl:(NSNumber *)ttl {
+    NSMutableArray *modifiedMessages = [[NSMutableArray alloc] init];
+    for (NSDictionary *message in messages) {
+        NSMutableDictionary *lokiMessage = [[NSMutableDictionary alloc] init];
+        
+        // Params for our message server
+        lokiMessage[@"pubKey"] = message[@"destination"];
+        lokiMessage[@"data"] = message[@"content"];
+        lokiMessage[@"ttl"] = ttl;
+        
+        NSDictionary *_Nullable nonce = [self getNonceFromArray:nonceArray forMessage:message];
+        if (nonce) {
+            lokiMessage[@"timestamp"] = nonce[@"timestmap"];
+            lokiMessage[@"nonce"] = nonce[@"nonce"];
+        }
+        
+        [modifiedMessages addObject:lokiMessage];
+    }
+    
+    return modifiedMessages;
+}
+
+
++ (NSDictionary *_Nullable)getNonceFromArray:(NSArray *)nonceArray forMessage:(NSDictionary *)message {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"destination == %@ AND deviceId == %d", message[@"destination"], message[@"destinationDeviceId"]];
+    NSArray *filtered = [nonceArray filteredArrayUsingPredicate:predicate];
+    return filtered.count > 0 ? [filtered objectAtIndex:0] : nil;
+}
+
+// LOKI: This is the function below with our changes
++ (TSRequest *)submitLokiMessageRequestWithRecipient:(NSString *)recipientId
+                                            messages:(NSArray *)messages
+                                          nonceArray:(NSArray *)nonceArray
+                                                 ttl: (NSNumber *)ttl
+{
+    // NOTE: messages may be empty; See comments in OWSDeviceManager.
+    OWSAssertDebug(recipientId.length > 0);
+    
+    NSDictionary *lokiMessages = [self lokiMessagesFromMessages:messages nonceArray:nonceArray ttl:ttl];
+   
+    NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientId];
+    NSDictionary *parameters = @{
+                                 @"messages" : lokiMessages,
+                                 };
+    
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
+    return request;
+}
+
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
                                         messages:(NSArray *)messages
                                        timeStamp:(uint64_t)timeStamp

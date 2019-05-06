@@ -43,7 +43,8 @@ private extension MutableCollection where Element == UInt8, Index == Int {
  * This was copied from the desktop messenger.
  * Ref: libloki/proof-of-work.js
  */
-public enum ProofOfWork {
+@objc public class ProofOfWork: NSObject {
+    private override init() {}
     
     // If this changes then we also have to use something other than UInt64 to support the new length
     private static let nonceLength = 8
@@ -55,36 +56,19 @@ public enum ProofOfWork {
         }
     }()
     
-    public struct Configuration {
-        var pubKey: String
-        var data: String
-        var timestamp: Date
-        var ttl: Int
-
-        var payload: [UInt8] {
-            let timestampString = String(Int(timestamp.timeIntervalSince1970))
-            let ttlString = String(ttl)
-            let payloadString = timestampString + ttlString + pubKey + data
-            return payloadString.bytes
-        }
-
-        public init(pubKey: String, data: String, timestamp: Date, ttl: Int) {
-            self.pubKey = pubKey
-            self.data = data
-            self.timestamp = timestamp
-            self.ttl = ttl
-        }
-    }
-    
     /// Calculate a proof of work with the given configuration
     ///
     /// Ref: https://bitmessage.org/wiki/Proof_of_work
     ///
-    /// - Parameter config: The configuration
+    /// - Parameters:
+    ///   - data: The message data
+    ///   - pubKey: The message recipient
+    ///   - timestamp: The timestamp
+    ///   - ttl: The message time to live
     /// - Returns: A nonce string or nil if it failed
-    public static func calculate(with config: Configuration) -> String? {
-        let payload = config.payload
-        let target = calcTarget(ttl: config.ttl, payloadLength: payload.count, nonceTrials: nonceTrialCount)
+    @objc public class func calculate(forData data: String, pubKey: String, timestamp: UInt64, ttl: Int) -> String? {
+        let payload = getPayload(pubKey: pubKey, data: data, timestamp: timestamp, ttl: ttl)
+        let target = calcTarget(ttl: ttl, payloadLength: payload.count, nonceTrials: nonceTrialCount)
         
         // Start with the max value
         var trialValue = UInt64.max
@@ -105,8 +89,16 @@ public enum ProofOfWork {
         return nonce.toBase64()
     }
     
+    /// Get the proof of work payload
+    private class func getPayload(pubKey: String, data: String, timestamp: UInt64, ttl: Int) -> [UInt8] {
+        let timestampString = String(timestamp)
+        let ttlString = String(ttl)
+        let payloadString = timestampString + ttlString + pubKey + data
+        return payloadString.bytes
+    }
+    
     /// Calculate the target we need to reach
-    private static func calcTarget(ttl: Int, payloadLength: Int, nonceTrials: Int) -> UInt64 {
+    private class func calcTarget(ttl: Int, payloadLength: Int, nonceTrials: Int) -> UInt64 {
         let two16 = UInt64(pow(2, 16) - 1)
         let two64 = UInt64(pow(2, 64) - 1)
   
