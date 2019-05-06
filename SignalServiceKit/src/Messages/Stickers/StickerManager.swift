@@ -687,13 +687,15 @@ public class StickerManager: NSObject {
     // MARK: - Recents
 
     private static let kRecentStickersKey = "recentStickers"
+    private static let kRecentStickersMaxCount: Int = 25
 
     @objc
     public class func stickerWasSent(_ stickerInfo: StickerInfo,
                                      transaction: SDSAnyWriteTransaction) {
         recentStickersStore.appendToStringSet(key: kRecentStickersKey,
                                               value: stickerInfo.asKey(),
-                                              transaction: transaction)
+                                              transaction: transaction,
+                                              maxCount: kRecentStickersMaxCount)
         NotificationCenter.default.postNotificationNameAsync(RecentStickersDidChange, object: nil)
     }
 
@@ -848,13 +850,17 @@ public class StickerManager: NSObject {
 extension SDSKeyValueStore {
     func appendToStringSet(key: String,
                            value: String,
-                           transaction: SDSAnyWriteTransaction) {
+                           transaction: SDSAnyWriteTransaction,
+                           maxCount: Int? = nil) {
         // Prepend value to ensure descending order of recency.
         var stringSet = [value]
         if let storedValue = getObject(key) as? [String] {
             stringSet += storedValue.filter {
                 $0 != value
             }
+        }
+        if let maxCount = maxCount {
+            stringSet = Array(stringSet.prefix(maxCount))
         }
         setObject(stringSet, key: key, transaction: transaction)
     }
