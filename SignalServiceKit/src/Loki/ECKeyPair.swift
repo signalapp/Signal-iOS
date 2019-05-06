@@ -6,6 +6,7 @@ public extension ECKeyPair {
     }
     
     var hexEncodedPublicKey: String {
+        // Prefixing with "05" is necessary for what seems to be a sort of Signal public key versioning system
         return "05" + publicKey.map { String(format: "%02hhx", $0) }.joined()
     }
 }
