@@ -859,9 +859,8 @@ extension SDSKeyValueStore {
                 $0 != value
             }
         }
-        if let maxCount = maxCount,
-            stringSet.count > maxCount {
-            stringSet = Array(stringSet[0..<maxCount])
+        if let maxCount = maxCount {
+            stringSet = Array(stringSet.prefix(maxCount))
         }
         setObject(stringSet, key: key, transaction: transaction)
     }
