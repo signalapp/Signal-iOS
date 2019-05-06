@@ -1819,7 +1819,7 @@ typedef enum : NSUInteger {
     OWSAssert(message);
 
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.attachmentDownloads downloadAttachmentsForMessage:message
+        [self.attachmentDownloads downloadAllAttachmentsForMessage:message
             transaction:transaction
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);

@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSMessage : TSInteraction <OWSPreviewText>
 
+// NOTE: These correspond to just the "body" attachments.
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
 @property (nonatomic, readonly, nullable) NSString *body;
 @property (nonatomic, readonly) uint32_t expiresInSeconds;
@@ -75,9 +76,10 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)hasAttachments;
-- (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (void)removeAttachment:(TSAttachment *)attachment
              transaction:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(removeAttachment(_:transaction:));
