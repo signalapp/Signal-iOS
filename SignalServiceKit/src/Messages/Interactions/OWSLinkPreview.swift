@@ -70,8 +70,6 @@ public class OWSLinkPreviewDraft: NSObject {
 
 @objc
 public class OWSLinkPreview: MTLModel {
-    @objc
-    public static let featureEnabled = true
 
     @objc
     public var urlString: String?
@@ -118,9 +116,6 @@ public class OWSLinkPreview: MTLModel {
     public class func buildValidatedLinkPreview(dataMessage: SSKProtoDataMessage,
                                                 body: String?,
                                                 transaction: YapDatabaseReadWriteTransaction) throws -> OWSLinkPreview {
-        guard OWSLinkPreview.featureEnabled else {
-            throw LinkPreviewError.noPreview
-        }
         guard let previewProto = dataMessage.preview.first else {
             throw LinkPreviewError.noPreview
         }
@@ -183,9 +178,6 @@ public class OWSLinkPreview: MTLModel {
     @objc
     public class func buildValidatedLinkPreview(fromInfo info: OWSLinkPreviewDraft,
                                                 transaction: YapDatabaseReadWriteTransaction) throws -> OWSLinkPreview {
-        guard OWSLinkPreview.featureEnabled else {
-            throw LinkPreviewError.noPreview
-        }
         guard SSKPreferences.areLinkPreviewsEnabled else {
             throw LinkPreviewError.noPreview
         }
@@ -438,10 +430,6 @@ public class OWSLinkPreview: MTLModel {
 
         // Exit early if link previews are not enabled in order to avoid
         // tainting the cache.
-        guard OWSLinkPreview.featureEnabled else {
-            return nil
-        }
-
         guard SSKPreferences.areLinkPreviewsEnabled else {
             return nil
         }
@@ -491,9 +479,6 @@ public class OWSLinkPreview: MTLModel {
     }
 
     class func allPreviewUrlMatches(forMessageBodyText body: String) -> [URLMatchResult] {
-        guard OWSLinkPreview.featureEnabled else {
-            return []
-        }
         guard SSKPreferences.areLinkPreviewsEnabled else {
             return []
         }
@@ -547,9 +532,6 @@ public class OWSLinkPreview: MTLModel {
 
         // Exit early if link previews are not enabled in order to avoid
         // tainting the cache.
-        guard OWSLinkPreview.featureEnabled else {
-            return
-        }
         guard SSKPreferences.areLinkPreviewsEnabled else {
             return
         }
@@ -565,9 +547,6 @@ public class OWSLinkPreview: MTLModel {
     }
 
     public class func tryToBuildPreviewInfo(previewUrl: String?) -> Promise<OWSLinkPreviewDraft> {
-        guard OWSLinkPreview.featureEnabled else {
-            return Promise(error: LinkPreviewError.featureDisabled)
-        }
         guard SSKPreferences.areLinkPreviewsEnabled else {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
