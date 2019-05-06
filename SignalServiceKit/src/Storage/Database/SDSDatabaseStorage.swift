@@ -131,6 +131,32 @@ public class SDSDatabaseStorage: NSObject {
         self.notifyCrossProcessWrite()
     }
 
+    // MARK: - Value Methods
+
+    public func uiReadReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T?) -> T? {
+        var value: T?
+        uiRead { (transaction) in
+            value = block(transaction)
+        }
+        return value
+    }
+
+    public func readReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T?) -> T? {
+        var value: T?
+        read { (transaction) in
+            value = block(transaction)
+        }
+        return value
+    }
+
+    public func writeReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T?) -> T? {
+        var value: T?
+        write { (transaction) in
+            value = block(transaction)
+        }
+        return value
+    }
+
     // MARK: - Cross Process Notifications
 
     private func handleCrossProcessWrite() {

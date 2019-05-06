@@ -58,8 +58,8 @@ public class SDSKeyValueStore: NSObject {
     // MARK: - Bool
 
     @objc
-    public func getBool(_ key: String, defaultValue: Bool = false) -> Bool {
-        if let value: NSNumber = read(key) {
+    public func getBool(_ key: String, defaultValue: Bool = false, transaction: SDSAnyReadTransaction) -> Bool {
+        if let value: NSNumber = read(key, transaction: transaction) {
             return value.boolValue
         } else {
             return defaultValue
@@ -67,8 +67,22 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
+    public func getBool(_ key: String, defaultValue: Bool = false) -> Bool {
+        return databaseStorage.readReturningResult { (transaction) in
+            return self.getBool(key, defaultValue: defaultValue, transaction: transaction)
+        } ?? defaultValue
+    }
+
+    @objc
     public func setBool(_ value: Bool, key: String) {
-        write(NSNumber(booleanLiteral: value), forKey: key)
+        databaseStorage.write { (transaction) in
+            self.setBool(value, key: key, transaction: transaction)
+        }
+    }
+
+    @objc
+    public func setBool(_ value: Bool, key: String, transaction: SDSAnyWriteTransaction) {
+        write(NSNumber(booleanLiteral: value), forKey: key, transaction: transaction)
     }
 
     // MARK: - Data
@@ -120,11 +134,9 @@ public class SDSKeyValueStore: NSObject {
 
     @objc
     public func allKeys() -> [String] {
-        var result = [String]()
-        databaseStorage.read { (transaction) in
-            result = self.allKeys(transaction: transaction)
-        }
-        return result
+        return databaseStorage.readReturningResult { (transaction) in
+            return self.allKeys(transaction: transaction)
+        } ?? []
     }
 
     @objc
@@ -141,11 +153,9 @@ public class SDSKeyValueStore: NSObject {
     // MARK: - Internal Methods
 
     private func read<T>(_ key: String) -> T? {
-        var result: T?
-        databaseStorage.read { (transaction) in
-            result = self.read(key, transaction: transaction)
+        return databaseStorage.readReturningResult { (transaction) in
+            return self.read(key, transaction: transaction)
         }
-        return result
     }
 
     private func read<T>(_ key: String, transaction: SDSAnyReadTransaction) -> T? {
@@ -182,15 +192,12 @@ public class SDSKeyValueStore: NSObject {
     }
 
     private func readData(_ key: String) -> Data? {
-        var result: Data?
-        databaseStorage.read { (transaction) in
-            result = self.readData(key, transaction: transaction)
+        return databaseStorage.readReturningResult { (transaction) in
+            return self.readData(key, transaction: transaction)
         }
-        return result
     }
 
     private func readData(_ key: String, transaction: SDSAnyReadTransaction) -> Data? {
-
         let collection = self.collection
 
         switch transaction.readTransaction {

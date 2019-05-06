@@ -177,9 +177,6 @@ public class MessageSticker: MTLModel {
     @objc
     public class func buildValidatedMessageSticker(fromDraft draft: MessageStickerDraft,
                                                    transaction: SDSAnyWriteTransaction) throws -> MessageSticker {
-        guard FeatureFlags.stickerSend else {
-            throw StickerError.assertionFailure
-        }
         let attachmentId = try MessageSticker.saveAttachment(stickerData: draft.stickerData,
                                                              transaction: transaction)
 

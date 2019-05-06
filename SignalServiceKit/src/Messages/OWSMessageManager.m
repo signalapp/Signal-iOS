@@ -1513,6 +1513,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     inThread:thread
                                                                  transaction:transaction.asAnyWrite];
 
+    if (incomingMessage.messageSticker != nil) {
+        [StickerManager.shared setHasReceivedStickersWithTransaction:transaction.asAnyWrite];
+    }
+
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.typingIndicators didReceiveIncomingMessageInThread:thread
                                                      recipientId:envelope.source
