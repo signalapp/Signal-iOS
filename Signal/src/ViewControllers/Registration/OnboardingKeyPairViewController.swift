@@ -1,3 +1,4 @@
+
 final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     private var mode: Mode = .register { didSet { if mode != oldValue { handleModeChanged() } } }
     private var keyPair: ECKeyPair! { didSet { updateMnemonic() } }

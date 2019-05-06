@@ -394,7 +394,6 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL hasSearchText = self.searchText.length > 0;
 
     if (hasSearchText) {
-
         // Loki:
         // ========
         OWSTableSection *newConversationSection = [OWSTableSection new];
@@ -410,7 +409,6 @@ NS_ASSUME_NONNULL_BEGIN
                                           }]];
         [contents addSection:newConversationSection];
         // ========
-
         for (OWSTableSection *section in [self contactsSectionsForSearch]) {
             [contents addSection:section];
         }

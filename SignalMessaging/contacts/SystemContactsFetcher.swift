@@ -232,7 +232,6 @@ public class SystemContactsFetcher: NSObject {
         switch authorizationStatus {
         case .notDetermined:
             return completion(nil)
-
             // Loki: Original code
             // ========
 //            if CurrentAppContext().isInBackground() {
