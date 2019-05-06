@@ -355,6 +355,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // LOKI: Convert Signal JSON messages to Loki messages
+// Refer to OWSMessageServiceParams for the Signal JSON params
 + (NSDictionary *)lokiMessagesFromMessages:(NSArray *)messages
                                 nonceArray:(NSArray *)nonceArray
                                        ttl:(NSNumber *)ttl {
