@@ -112,13 +112,11 @@ public class StickerManager: NSObject {
         return result
     }
 
-    // TODO: Handle sorting.
     @objc
     public class func allStickerPacks(transaction: SDSAnyReadTransaction) -> [StickerPack] {
         return StickerPack.anyFetchAll(transaction: transaction)
     }
 
-    // TODO: Handle sorting.
     @objc
     public class func installedStickerPacks() -> [StickerPack] {
         return allStickerPacks().filter {
@@ -126,7 +124,13 @@ public class StickerManager: NSObject {
         }
     }
 
-    // TODO: Handle sorting.
+    @objc
+    public class func installedStickerPacks(transaction: SDSAnyReadTransaction) -> [StickerPack] {
+        return allStickerPacks(transaction: transaction).filter {
+            $0.isInstalled
+        }
+    }
+
     @objc
     public class func availableStickerPacks() -> [StickerPack] {
         return allStickerPacks().filter {
@@ -134,7 +138,6 @@ public class StickerManager: NSObject {
         }
     }
 
-    // TODO: Handle sorting.
     private class func availableStickerPacks(transaction: SDSAnyReadTransaction) -> [StickerPack] {
         return allStickerPacks(transaction: transaction).filter {
             !$0.isInstalled
@@ -158,40 +161,30 @@ public class StickerManager: NSObject {
     }
 
     @objc
-    public class func uninstallStickerPack(stickerPackInfo: StickerPackInfo) {
+    public class func uninstallStickerPack(stickerPackInfo: StickerPackInfo,
+                                           transaction: SDSAnyWriteTransaction) {
 
-        var completions = [CleanupCompletion]()
-        databaseStorage.write { (transaction) in
-            guard let stickerPack = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction) else {
-                Logger.info("Skipping uninstall; not installed.")
-                return
-            }
-            stickerPack.update(withIsInstalled: false, transaction: transaction)
+        guard let stickerPack = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction) else {
+            Logger.info("Skipping uninstall; not installed.")
+            return
+        }
+        stickerPack.update(withIsInstalled: false, transaction: transaction)
 
-            // Uninstall the cover and stickers - but retain the cover
-            // if this is a default sticker pack.
-            if !DefaultStickerPacks.isDefaultStickerPack(stickerPackInfo: stickerPack.info) {
-                if let completion = uninstallSticker(stickerInfo: stickerPack.coverInfo,
-                                                     transaction: transaction) {
-                    completions.append(completion)
-                }
-            }
-
-            for stickerInfo in stickerPack.stickerInfos {
-                if let completion = uninstallSticker(stickerInfo: stickerInfo,
-                                                     transaction: transaction) {
-                    completions.append(completion)
-                }
-            }
-
-            enqueueStickerSyncMessage(operationType: .remove,
-                                      packs: [stickerPackInfo],
-                                      transaction: transaction)
+        // Uninstall the cover and stickers - but retain the cover
+        // if this is a default sticker pack.
+        if !DefaultStickerPacks.isDefaultStickerPack(stickerPackInfo: stickerPack.info) {
+            uninstallSticker(stickerInfo: stickerPack.coverInfo,
+                             transaction: transaction)
         }
 
-        for completion in completions {
-            completion()
+        for stickerInfo in stickerPack.stickerInfos {
+            uninstallSticker(stickerInfo: stickerInfo,
+                             transaction: transaction)
         }
+
+        enqueueStickerSyncMessage(operationType: .remove,
+                                  packs: [stickerPackInfo],
+                                  transaction: transaction)
 
         NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
     }
@@ -337,6 +330,11 @@ public class StickerManager: NSObject {
         return result
     }
 
+    @objc
+    public class func isDefaultStickerPack(_ stickerPack: StickerPack) -> Bool {
+        return DefaultStickerPacks.isDefaultStickerPack(stickerPackInfo: stickerPack.info)
+    }
+
     // MARK: - Stickers
 
     @objc
@@ -379,17 +377,12 @@ public class StickerManager: NSObject {
 
     internal typealias CleanupCompletion = () -> Void
 
-    // Returns a completion handler that cleans up the sticker data on disk.
-    // We want to do these deletions after the transaction is complete
-    // so that: a) other transactions aren't blocked. b) we only delete these
-    // files if the transaction is committed, ensuring the invariant that
-    // all installed stickers have a corresponding sticker data file.
     internal class func uninstallSticker(stickerInfo: StickerInfo,
-                                         transaction: SDSAnyWriteTransaction) -> CleanupCompletion? {
+                                         transaction: SDSAnyWriteTransaction) {
 
         guard let installedSticker = fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction) else {
             Logger.info("Skipping uninstall; not installed.")
-            return nil
+            return
         }
         installedSticker.anyRemove(transaction: transaction)
 
@@ -397,7 +390,10 @@ public class StickerManager: NSObject {
 
         removeStickerFromEmojiMap(installedSticker, transaction: transaction)
 
-        return {
+        // Cleans up the sticker data on disk. We want to do these deletions
+        // after the transaction is complete so that other transactions aren't
+        // blocked.
+        DispatchQueue.global(qos: .background).async {
             let url = stickerUrl(stickerInfo: stickerInfo)
             OWSFileSystem.deleteFileIfExists(url.path)
         }
@@ -656,7 +652,8 @@ public class StickerManager: NSObject {
             if !DefaultStickerPacks.isDefaultStickerPack(stickerPackInfo: packInfo),
                 let stickerPack = StickerPack.anyFetch(uniqueId: StickerPack.uniqueId(for: packInfo), transaction: transaction),
                 !stickerPack.isInstalled {
-                self.uninstallStickerPack(stickerPackInfo: packInfo)
+                self.uninstallStickerPack(stickerPackInfo: packInfo,
+                                          transaction: transaction)
             }
         } else {
             pack.anySave(transaction: transaction)
@@ -823,13 +820,22 @@ public class StickerManager: NSObject {
     #if DEBUG
     @objc
     public class func uninstallAllStickerPacks() {
-        var stickerPacks = [StickerPack]()
-        databaseStorage.write { (_) in
-            stickerPacks = installedStickerPacks()
+        databaseStorage.write { (transaction) in
+            let stickerPacks = installedStickerPacks(transaction: transaction)
+            for stickerPack in stickerPacks {
+                uninstallStickerPack(stickerPackInfo: stickerPack.info,
+                                     transaction: transaction)
+            }
         }
+    }
 
-        for stickerPack in stickerPacks {
-            uninstallStickerPack(stickerPackInfo: stickerPack.info)
+    @objc
+    public class func removeAllStickerPacks() {
+        databaseStorage.write { (transaction) in
+            let stickerPacks = allStickerPacks(transaction: transaction)
+            for stickerPack in stickerPacks {
+                stickerPack.anyRemove(transaction: transaction)
+            }
         }
     }
 

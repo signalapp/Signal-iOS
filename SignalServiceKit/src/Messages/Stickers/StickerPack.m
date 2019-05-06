@@ -64,6 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
     _author = author;
     _cover = cover;
     _items = items;
+    _dateCreated = [NSDate new];
 
     return self;
 }
@@ -101,6 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                           author:(nullable NSString *)author
                            cover:(StickerPackItem *)cover
+                       dateCreated:(NSDate *)dateCreated
                             info:(StickerPackInfo *)info
                      isInstalled:(BOOL)isInstalled
                            items:(NSArray<StickerPackItem *> *)items
@@ -114,6 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _author = author;
     _cover = cover;
+    _dateCreated = dateCreated;
     _info = info;
     _isInstalled = isInstalled;
     _items = items;

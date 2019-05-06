@@ -666,6 +666,7 @@ extension %sSerializer {
 '''
 
         deserialize_classes = all_descendents_of_class(clazz) + [clazz]
+        deserialize_classes.sort(key=lambda value: value.name)
         
         for deserialize_class in deserialize_classes:
             if should_ignore_class(deserialize_class):
@@ -1358,7 +1359,9 @@ def all_descendents_of_class(clazz):
     
     # print 'descendents of:', clazz.name
     # print '\t', global_subclass_map.get(clazz.name, [])
-    for subclass in global_subclass_map.get(clazz.name, []):
+    subclasses = global_subclass_map.get(clazz.name, [])
+    subclasses.sort(key=lambda value: value.name)
+    for subclass in subclasses:
         result.append(subclass)
         result.extend(all_descendents_of_class(subclass))
         

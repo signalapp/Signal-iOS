@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) StickerInfo *coverInfo;
 @property (nonatomic, readonly) NSArray<StickerInfo *> *stickerInfos;
 
+@property (nonatomic, readonly) NSDate *dateCreated;
 @property (nonatomic, readonly) BOOL isInstalled;
 
 - (instancetype)initWithInfo:(StickerPackInfo *)info
@@ -55,11 +56,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                           author:(nullable NSString *)author
                            cover:(StickerPackItem *)cover
+                       dateCreated:(NSDate *)dateCreated
                             info:(StickerPackInfo *)info
                      isInstalled:(BOOL)isInstalled
                            items:(NSArray<StickerPackItem *> *)items
                            title:(nullable NSString *)title
-NS_SWIFT_NAME(init(uniqueId:author:cover:info:isInstalled:items:title:));
+NS_SWIFT_NAME(init(uniqueId:author:cover:dateCreated:info:isInstalled:items:title:));
 
 // clang-format on
 
