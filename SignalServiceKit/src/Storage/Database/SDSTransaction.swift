@@ -33,7 +33,7 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
     internal var completions: [(DispatchQueue, () -> Void)] = []
 
     @objc
-    public func addCompletion(queue: DispatchQueue = DispatchQueue.main, block: @escaping () -> Void) {
+    public func addCompletion(queue: DispatchQueue, block: @escaping () -> Void) {
         completions.append((queue, block))
     }
 }
