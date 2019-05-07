@@ -1495,7 +1495,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // Loki: Since we don't support multi-device sending yet, just send it to the primary device
     NSMutableArray<NSNumber *> *deviceIds = [NSMutableArray arrayWithObject:@(OWSDevicePrimaryDeviceId)];
 
-    /* Original code:
+    /* Loki: Original code:
     NSMutableArray<NSNumber *> *deviceIds = [recipient.devices mutableCopy];
      */
 

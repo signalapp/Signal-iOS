@@ -42,7 +42,7 @@ public struct LokiMessage {
         }
     }
     
-    public func toJSON() -> [String:String] {
+    public func toJSON() -> JSON {
         var result = [ "destination" : destination, "data" : data.description, "ttl" : String(ttl) ]
         if let timestamp = timestamp, let nonce = nonce {
             result["timestamp"] = String(timestamp)
