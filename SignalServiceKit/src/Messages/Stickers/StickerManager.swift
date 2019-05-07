@@ -938,6 +938,8 @@ public class StickerManager: NSObject {
         databaseStorage.write { (transaction) in
             let stickerPacks = allStickerPacks(transaction: transaction)
             for stickerPack in stickerPacks {
+                uninstallStickerPack(stickerPackInfo: stickerPack.info,
+                                     transaction: transaction)
                 stickerPack.anyRemove(transaction: transaction)
             }
         }
