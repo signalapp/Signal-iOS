@@ -5,6 +5,7 @@ WORKING_DIR = ./
 THIRD_PARTY_DIR = $(WORKING_DIR)/ThirdParty
 SCHEME = Signal
 XCODE_BUILD = xcrun xcodebuild -workspace $(SCHEME).xcworkspace -scheme $(SCHEME) -sdk iphonesimulator
+SETUP_HOOK_PATH = $(HOME)/.ci/setup.sh
 
 .PHONY: build test retest clean dependencies
 
@@ -15,6 +16,7 @@ update_dependencies:
 	carthage update --platform iOS
 
 setup:
+	[ -x ${SETUP_HOOK_PATH} ] && ${SETUP_HOOK_PATH}
 	rbenv install -s
 	gem install bundler
 	bundle install
@@ -27,14 +29,14 @@ dependencies:
 
 build: dependencies
 	cd $(WORKING_DIR) && \
-		$(XCODE_BUILD) build | xcpretty
+		$(XCODE_BUILD) build | bundle exec xcpretty
 
 test:
 	bundle exec fastlane test
 
 clean: clean_carthage
 	cd $(WORKING_DIR) && \
-		$(XCODE_BUILD) clean | xcpretty
+		$(XCODE_BUILD) clean | bundle exec xcpretty
 
 clean_carthage:
 	cd $(THIRD_PARTY_DIR) && \
