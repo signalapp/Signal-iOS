@@ -604,8 +604,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     private func string(for messageReceiptStatus: MessageReceiptStatus) -> String {
         switch messageReceiptStatus {
         case .calculatingPoW:
-            return NSLocalizedString("Calculating proof of work",
-                                     comment: "Status label for messages which are calculating proof of work.")
+            return NSLocalizedString("Calculating proof of work", comment: "")
         case .uploading:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",
                               comment: "Status label for messages which are uploading.")

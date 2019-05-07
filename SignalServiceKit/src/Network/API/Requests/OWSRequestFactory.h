@@ -59,11 +59,6 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                                 captchaToken:(nullable NSString *)captchaToken
                                                    transport:(TSVerificationTransport)transport;
 
-+ (TSRequest *)submitLokiMessageRequestWithRecipient:(NSString *)recipientId
-                                            messages:(NSArray *)messages
-                                          nonceArray:(NSArray *)nonceArray
-                                                 ttl:(NSNumber *)ttl;
-
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
                                         messages:(NSArray *)messages
                                        timeStamp:(uint64_t)timeStamp
