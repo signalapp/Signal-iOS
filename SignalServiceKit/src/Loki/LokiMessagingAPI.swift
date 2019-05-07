@@ -9,7 +9,7 @@ import PromiseKit
     
     // MARK: Types
     private enum Method : String {
-        case retrieveAllMessages = "retrieve"
+        case retrieveNewMessages = "retrieve"
         case sendMessage = "store"
     }
     
@@ -48,11 +48,11 @@ import PromiseKit
             "pubKey" : OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey,
             "lastHash" : "" // TODO: Implement
         ]
-        return invoke(.retrieveAllMessages, parameters: parameters)
+        return invoke(.retrieveNewMessages, parameters: parameters)
     }
     
     // MARK: Obj-C API
-    @objc public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, requiringPoW isPoWRequired: Bool, completionHandler: ((Any?, NSError?) -> Void)? = nil) {
+    @objc public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, requiringPoW isPoWRequired: Bool, completionHandler: ((RawResponse?, NSError?) -> Void)? = nil) {
         sendSignalMessage(signalMessage, to: destination, requiringPoW: isPoWRequired).done { completionHandler?($0, nil) }.catch { completionHandler?(nil, $0 as NSError) }
     }
 }
