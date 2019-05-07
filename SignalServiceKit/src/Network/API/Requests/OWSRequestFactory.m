@@ -354,60 +354,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [accountAttributes copy];
 }
 
-// Loki: Convert Signal JSON messages to Loki messages
-// Refer to OWSMessageServiceParams for the Signal JSON params
-+ (NSArray *)lokiMessagesFromMessages:(NSArray *)messages
-                                nonceArray:(NSArray *)nonceArray
-                                       ttl:(NSNumber *)ttl {
-    NSMutableArray *modifiedMessages = [NSMutableArray new];
-    for (NSDictionary *message in messages) {
-        NSMutableDictionary *lokiMessage = [NSMutableDictionary new];
-        
-        // Params for our message server
-        lokiMessage[@"pubKey"] = message[@"destination"];
-        lokiMessage[@"data"] = message[@"content"];
-        lokiMessage[@"ttl"] = [ttl stringValue];
-        
-        NSDictionary *_Nullable nonce = [self getNonceFromArray:nonceArray forMessage:message];
-        if (nonce) {
-            lokiMessage[@"timestamp"] = nonce[@"timestmap"];
-            lokiMessage[@"nonce"] = nonce[@"nonce"];
-        }
-        
-        [modifiedMessages addObject:lokiMessage];
-    }
-    
-    return modifiedMessages;
-}
-
-+ (NSDictionary *_Nullable)getNonceFromArray:(NSArray *)nonceArray forMessage:(NSDictionary *)message {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"destination == %@ AND deviceId == %d", message[@"destination"], message[@"destinationDeviceId"]];
-    NSArray *filtered = [nonceArray filteredArrayUsingPredicate:predicate];
-    return filtered.count > 0 ? [filtered objectAtIndex:0] : nil;
-}
-
-// Loki: This is the function below with our changes
-+ (TSRequest *)submitLokiMessageRequestWithRecipient:(NSString *)recipientId
-                                            messages:(NSArray *)messages
-                                          nonceArray:(NSArray *)nonceArray
-                                                 ttl:(NSNumber *)ttl
-{
-    // Messages may be empty; see comments in OWSDeviceManager.
-    // This doesn't apply to Loki since we don't have linked device support.
-    OWSAssertDebug(recipientId.length > 0);
-    OWSAssertDebug(messages.count > 0);
-
-    // Convert to Loki JSON format
-    NSArray *lokiMessages = [self lokiMessagesFromMessages:messages nonceArray:nonceArray ttl:ttl];
-    OWSAssertDebug(lokiMessages.count > 0);
-    
-    // Loki: Just send the first message
-    NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientId];
-    NSDictionary *parameters = [lokiMessages objectAtIndex:0];
-
-    return [TSRequest new]; // TODO: Just here to make things build
-}
-
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
                                         messages:(NSArray *)messages
                                        timeStamp:(uint64_t)timeStamp

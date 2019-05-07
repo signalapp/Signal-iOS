@@ -915,39 +915,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return deviceMessages;
 }
 
-- (AnyPromise *)calculateProofOfWorkForDeviceMessages:(NSArray<NSDictionary *> *)deviceMessages
-                                                  ttl:(NSNumber *)ttl
-{
-    // Loki: Calculate the proof of work for each device message
-    NSMutableArray *promises = [NSMutableArray new];
-    for (NSDictionary<NSString *, id> *deviceMessage in deviceMessages) {
-        AnyPromise *promise = [AnyPromise promiseWithValue:deviceMessage]
-            .thenOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(NSDictionary<NSString *, id> *message) {
-                NSTimeInterval timestampInterval = [[NSDate new] timeIntervalSince1970];
-                NSNumber *timestamp = [NSNumber numberWithDouble:timestampInterval];
-                
-                NSString *destination = message[@"destination"];
-                NSString *data = message[@"content"];
-
-                NSString *nonce = [ProofOfWork calculateWithData:data pubKey:destination timestamp:timestamp.unsignedIntegerValue ttl:ttl.integerValue];
-
-                
-                // Return our timestamp along with the nonce
-                // These will help us identify which nonce belongs to which message
-                return @{
-                         @"destination" : destination,
-                         @"deviceId" : message[@"destinationDeviceId"],
-                         @"timestamp" : timestamp,
-                         @"nonce" : nonce
-                        };
-            });
-        [promises addObject:promise];
-    }
-    
-    // Wait for all the PoW calculations to finish
-    return PMKWhen(promises);
-}
-
 - (void)sendMessageToRecipient:(OWSMessageSend *)messageSend
 {
     OWSAssertDebug(messageSend);
