@@ -34,11 +34,13 @@ class DownloadStickerPackOperation: OWSOperation {
     override public func run() {
 
         if let stickerPack = StickerManager.fetchStickerPack(stickerPackInfo: stickerPackInfo) {
-            Logger.verbose("Skipping redundant operation.")
+            Logger.verbose("Skipping redundant operation: \(stickerPackInfo).")
             success(stickerPack)
             self.reportSuccess()
             return
         }
+
+        Logger.verbose("Downloading: \(stickerPackInfo).")
 
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
         let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)/manifest.proto"
@@ -55,14 +57,12 @@ class DownloadStickerPackOperation: OWSOperation {
                                     owsFailDebug("Unexpected response: \(type(of: response))")
                                     return
                                 }
-                                Logger.verbose("Download succeeded.")
 
                                 do {
                                     let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerPackInfo.packKey)
-                                    Logger.verbose("Decryption succeeded.")
 
                                     let stickerPack = try self.parseStickerPackManifest(stickerPackInfo: self.stickerPackInfo,
-                                                                                   manifestData: plaintext)
+                                                                                        manifestData: plaintext)
 
                                     self.success(stickerPack)
                                     self.reportSuccess()
@@ -89,7 +89,7 @@ class DownloadStickerPackOperation: OWSOperation {
     }
 
     private func parseStickerPackManifest(stickerPackInfo: StickerPackInfo,
-                                                manifestData: Data) throws -> StickerPack {
+                                          manifestData: Data) throws -> StickerPack {
         assert(manifestData.count > 0)
 
         let manifestProto: SSKProtoPack

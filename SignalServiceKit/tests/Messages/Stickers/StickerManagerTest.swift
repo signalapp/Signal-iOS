@@ -134,4 +134,18 @@ class StickerManagerTest: SSKBaseTestSwift {
         XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "🇨🇦🇹🇹").count)
         XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "This is a flag: 🇨🇦").count)
     }
+
+    func testInfos() {
+        let packId = Randomness.generateRandomBytes(16)!
+        let packKey = Randomness.generateRandomBytes(Int32(StickerManager.packKeyLength))!
+        let stickerId: UInt32 = 0
+
+        XCTAssertEqual(StickerPackInfo(packId: packId, packKey: packKey),
+                       StickerPackInfo(packId: packId, packKey: packKey))
+        XCTAssertTrue(StickerPackInfo(packId: packId, packKey: packKey) == StickerPackInfo(packId: packId, packKey: packKey))
+
+        XCTAssertEqual(StickerInfo(packId: packId, packKey: packKey, stickerId: stickerId),
+                       StickerInfo(packId: packId, packKey: packKey, stickerId: stickerId))
+        XCTAssertTrue(StickerInfo(packId: packId, packKey: packKey, stickerId: stickerId) == StickerInfo(packId: packId, packKey: packKey, stickerId: stickerId))
+    }
 }

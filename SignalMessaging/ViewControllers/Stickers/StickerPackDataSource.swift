@@ -154,7 +154,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
             // Update Stickers.
             if self.coverInfo == nil {
                 let coverInfo = stickerPack.coverInfo
-                if StickerManager.isStickerInstalled(stickerInfo: coverInfo) {
+                if StickerManager.isStickerInstalled(stickerInfo: coverInfo, transaction: transaction) {
                     self.coverInfo = coverInfo
                 }
             }
@@ -298,18 +298,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 
         // If necessary, download and parse the pack's manifest.
         guard let stickerPack = stickerPack else {
-            StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
-                .done { [weak self] (stickerPack) in
-                    guard let self = self else {
-                        return
-                    }
-                    guard self.stickerPack == nil else {
-                        return
-                    }
-                    self.stickerPack = stickerPack
-                    self.ensureState()
-                    self.fireDidChange()
-            }.retainUntilComplete()
+            downloadStickerPack()
             return
         }
 
@@ -329,14 +318,60 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         self.stickerInfos = downloadedStickerInfos
     }
 
+    // This should only be accessed on the main thread.
+    private var downloadKeySet = Set<String>()
+
+    private func downloadStickerPack() {
+        AssertIsOnMainThread()
+
+        let key = stickerPackInfo.asKey()
+        guard !downloadKeySet.contains(key) else {
+            // Download already in flight.
+            return
+        }
+        downloadKeySet.insert(key)
+
+        StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
+            .done { [weak self] (stickerPack) in
+                guard let self = self else {
+                    return
+                }
+                guard self.stickerPack == nil else {
+                    return
+                }
+                self.stickerPack = stickerPack
+                assert(self.downloadKeySet.contains(key))
+                self.downloadKeySet.remove(key)
+                self.ensureState()
+                self.fireDidChange()
+            }.catch(on: DispatchQueue.global()) {  [weak self] (error) in
+                owsFailDebug("error: \(error)")
+                guard let self = self else {
+                    return
+                }
+                assert(self.downloadKeySet.contains(key))
+                self.downloadKeySet.remove(key)
+            }.retainUntilComplete()
+    }
+
     // Returns true if sticker is already downloaded.
     // If not, kicks off the download.
     private func ensureStickerDownload(stickerPack: StickerPack,
                                        stickerInfo: StickerInfo) -> Bool {
+        AssertIsOnMainThread()
+
         guard nil == self.filePath(forSticker: stickerInfo) else {
             // This sticker is already downloaded.
             return true
         }
+
+        let key = stickerInfo.asKey()
+        guard !downloadKeySet.contains(key) else {
+            // Download already in flight.
+            return false
+        }
+        downloadKeySet.insert(key)
+
         // This sticker is not downloaded; try to download now.
         StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
             .map(on: DispatchQueue.global()) { (stickerData: Data) -> String in
@@ -347,9 +382,16 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
                 guard let self = self else {
                     return
                 }
+                assert(self.downloadKeySet.contains(key))
+                self.downloadKeySet.remove(key)
                 self.set(filePath: filePath, forSticker: stickerInfo)
-            }.catch(on: DispatchQueue.global()) { (error) in
+            }.catch(on: DispatchQueue.global()) { [weak self] (error) in
                 owsFailDebug("error: \(error)")
+                guard let self = self else {
+                    return
+                }
+                assert(self.downloadKeySet.contains(key))
+                self.downloadKeySet.remove(key)
             }.retainUntilComplete()
         return false
     }

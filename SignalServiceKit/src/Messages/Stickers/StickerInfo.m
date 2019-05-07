@@ -50,6 +50,11 @@ NS_ASSUME_NONNULL_BEGIN
     return (self.packId.length > 0 && self.packKey.length == StickerManager.packKeyLength);
 }
 
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"%@, %d", self.packId.hexadecimalString, (int)self.stickerId];
+}
+
 @end
 
 #pragma mark -
@@ -80,6 +85,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isValid
 {
     return (self.packId.length > 0 && self.packKey.length == StickerManager.packKeyLength);
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"%@", self.packId.hexadecimalString];
 }
 
 @end
