@@ -390,10 +390,10 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "CAMERA_BUTTON_HINT";
+"CAMERA_BUTTON_HINT" = "Take a picture and then send it";
 
 /* Accessibility label for camera button. */
-"CAMERA_BUTTON_LABEL" = "CAMERA_BUTTON_LABEL";
+"CAMERA_BUTTON_LABEL" = "Camera";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "This user can't be verified until you've exchanged messages with them.";
