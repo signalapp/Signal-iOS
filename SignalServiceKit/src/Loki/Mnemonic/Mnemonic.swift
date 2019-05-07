@@ -5,7 +5,7 @@ public enum Mnemonic {
     
     public struct Language : Hashable {
         fileprivate let filename: String
-        fileprivate let prefixLength: Int
+        fileprivate let prefixLength: UInt
         
         public static let english = Language(filename: "english", prefixLength: 3)
         public static let japanese = Language(filename: "japanese", prefixLength: 3)
@@ -15,7 +15,7 @@ public enum Mnemonic {
         private static var wordSetCache: [Language:[String]] = [:]
         private static var truncatedWordSetCache: [Language:[String]] = [:]
         
-        private init(filename: String, prefixLength: Int) {
+        private init(filename: String, prefixLength: UInt) {
             self.filename = filename
             self.prefixLength = prefixLength
         }
@@ -128,7 +128,7 @@ public enum Mnemonic {
         return String(p1 + p2 + p3 + p4)
     }
     
-    private static func determineChecksumIndex(for x: [String], prefixLength: Int) -> Int {
+    private static func determineChecksumIndex(for x: [String], prefixLength: UInt) -> Int {
         let checksum = Array(x.map { $0.prefix(length: prefixLength) }.joined().utf8).crc32()
         return Int(checksum) % x.count
     }
@@ -136,7 +136,7 @@ public enum Mnemonic {
 
 private extension String {
     
-    func prefix(length: Int) -> String {
-        return String(self[startIndex..<index(startIndex, offsetBy: length)])
+    func prefix(length: UInt) -> String {
+        return String(self[startIndex..<index(startIndex, offsetBy: Int(length))])
     }
 }

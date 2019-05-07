@@ -43,12 +43,12 @@ import PromiseKit
     }
     
     public static func sendMessage(_ lokiMessage: LokiMessage) -> Promise<RawResponse> {
-        let target = Target(address: "http://13.238.53.205", port: 8080)
+        let target = Target(address: "http://13.238.53.205", port: 8080) // TODO: Temporary
         return invoke(.sendMessage, on: target, with: lokiMessage.toJSON())
     }
     
     public static func retrieveAllMessages() -> Promise<RawResponse> {
-        let target = Target(address: "http://13.238.53.205", port: 8080)
+        let target = Target(address: "http://13.238.53.205", port: 8080) // TODO: Temporary
         let parameters = [
             "pubKey" : OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey,
             "lastHash" : "" // TODO: Implement
