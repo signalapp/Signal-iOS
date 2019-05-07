@@ -240,6 +240,9 @@ static NSTimeInterval launchStartedAt;
     // This block will be cleared in storageIsReady.
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 
+    if (CurrentAppContext().isRunningTests) {
+        return YES;
+    }
     [AppSetup
         setupEnvironmentWithAppSpecificSingletonBlock:^{
             // Create AppEnvironment.
@@ -253,10 +256,6 @@ static NSTimeInterval launchStartedAt;
         }];
 
     [UIUtil setupSignalAppearence];
-
-    if (CurrentAppContext().isRunningTests) {
-        return YES;
-    }
 
     UIWindow *mainWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window = mainWindow;
