@@ -92,8 +92,7 @@ public class StickerManager: NSObject {
     }
 
     // MARK: - Paths
-
-    // TODO: Clean up sticker data on orphan data cleaner.
+s
     // TODO: Clean up sticker data if user deletes all user data.
     @objc
     public class func cacheDirUrl() -> URL {
@@ -905,7 +904,7 @@ public class StickerManager: NSObject {
                     stickersToUninstall.append(sticker)
                 }
                 if stickersToUninstall.count > 0 {
-                    Logger.verbose("Removing \(stickersToUninstall.count) orphan stickers.")
+                    owsFailDebug("Removing \(stickersToUninstall.count) orphan stickers.")
                 }
                 for sticker in stickersToUninstall {
                     self.uninstallSticker(stickerInfo: sticker.info, transaction: transaction)
