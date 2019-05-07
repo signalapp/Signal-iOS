@@ -740,11 +740,11 @@ public class OWSLinkPreviewManager: NSObject {
                 Logger.error("Invalid image URL.")
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
-            guard let imageFileExtension = fileExtension(forImageUrl: imageUrlString) else {
+            guard let imageFileExtension = type(of: self).fileExtension(forImageUrl: imageUrlString) else {
                 Logger.error("Image URL has unknown or invalid file extension: \(imageUrlString).")
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
-            guard let imageMimeType = mimetype(forImageFileExtension: imageFileExtension) else {
+            guard let imageMimeType = type(of: self).mimetype(forImageFileExtension: imageFileExtension) else {
                 Logger.error("Image URL has unknown or invalid content type: \(imageUrl).")
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
@@ -798,7 +798,7 @@ public class OWSLinkPreviewManager: NSObject {
         return OWSLinkPreviewContents(title: title, imageUrl: imageUrlString)
     }
 
-    func fileExtension(forImageUrl urlString: String) -> String? {
+    class func fileExtension(forImageUrl urlString: String) -> String? {
         guard let imageUrl = URL(string: urlString) else {
             Logger.error("Could not parse image URL.")
             return nil
@@ -811,7 +811,7 @@ public class OWSLinkPreviewManager: NSObject {
         return imageFileExtension
     }
 
-    func mimetype(forImageFileExtension imageFileExtension: String) -> String? {
+    class func mimetype(forImageFileExtension imageFileExtension: String) -> String? {
         guard imageFileExtension.count > 0 else {
             return nil
         }
