@@ -149,6 +149,22 @@ public class SDSKeyValueStore: NSObject {
     }
 
     private func read<T>(_ key: String, transaction: SDSAnyReadTransaction) -> T? {
+        // YDB values are serialized by YDB.
+        // GRDB values are serialized to data by this class.
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            guard let rawObject = ydbTransaction.object(forKey: key, inCollection: collection) else {
+                return nil
+            }
+            guard let object = rawObject as? T else {
+                owsFailDebug("Value has unexpected type.")
+                return nil
+            }
+            return object
+        case .grdbRead:
+            break
+        }
+
         guard let encoded = readData(key, transaction: transaction) else {
             return nil
         }
@@ -211,6 +227,18 @@ public class SDSKeyValueStore: NSObject {
 
     // TODO: Codable? NSCoding? Other serialization?
     private func write(_ value: NSCoding?, forKey key: String, transaction: SDSAnyWriteTransaction) {
+        // YDB values are serialized by YDB.
+        // GRDB values are serialized to data by this class.
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            if let value = value {
+                ydbTransaction.setObject(value, forKey: key, inCollection: collection)
+            } else {
+                ydbTransaction.removeObject(forKey: key, inCollection: collection)
+            }
+        case .grdbWrite:
+            break
+        }
 
         if let value = value {
             let encoded = NSKeyedArchiver.archivedData(withRootObject: value)
