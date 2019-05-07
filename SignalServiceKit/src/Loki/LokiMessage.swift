@@ -25,14 +25,14 @@ public struct LokiMessage {
             DispatchQueue.global(qos: .default).async {
                 let destination = signalMessage["destination"]!
                 let data = signalMessage["content"]!
-                let ttl = LokiMessagingAPI.defaultTTL
+                let ttl = LokiAPI.defaultMessageTTL
                 if isPoWRequired {
                     let timestamp = UInt64(Date().timeIntervalSince1970)
                     if let nonce = ProofOfWork.calculate(data: data, pubKey: destination, timestamp: timestamp, ttl: ttl) {
                         let result = LokiMessage(destination: destination, data: data, ttl: ttl, timestamp: timestamp, nonce: nonce)
                         seal.fulfill(result)
                     } else {
-                        seal.reject(LokiMessagingAPI.Error.proofOfWorkCalculationFailed)
+                        seal.reject(LokiAPI.Error.proofOfWorkCalculationFailed)
                     }
                 } else {
                     let result = LokiMessage(destination: destination, data: data, ttl: ttl, timestamp: nil, nonce: nil)

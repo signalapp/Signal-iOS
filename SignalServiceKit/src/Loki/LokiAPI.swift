@@ -1,9 +1,9 @@
 import PromiseKit
 
-@objc public final class LokiMessagingAPI : NSObject {
+@objc public final class LokiAPI : NSObject {
     
-    private static let apiVersion = "v1"
-    public static let defaultTTL: UInt64 = 4 * 24 * 60 * 60
+    private static let version = "v1"
+    public static let defaultMessageTTL: UInt64 = 4 * 24 * 60 * 60
     
     // MARK: Types
     private enum Method : String {
@@ -12,7 +12,7 @@ import PromiseKit
         case getSwarm = "get_snodes_for_pubkey"
     }
     
-    public struct Target {
+    public struct Target : Hashable {
         let address: String
         let port: UInt16
     }
@@ -34,7 +34,7 @@ import PromiseKit
     
     // MARK: API
     private static func invoke(_ method: Method, on target: Target, with parameters: [String:String] = [:]) -> Promise<RawResponse> {
-        let url = URL(string: "\(target.address):\(target.port)/\(apiVersion)/storage_rpc")!
+        let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
     }
@@ -50,15 +50,15 @@ import PromiseKit
             "pubKey" : OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey,
             "lastHash" : "" // TODO: Implement
         ]
-        return getRandomSnode().then { invoke(.getMessages, on: $0, with: parameters) } // TODO: This shouldn't be a random snode
+        return getRandomSnode().then { invoke(.getMessages, on: $0, with: parameters) } // TODO: Use getSwarm()
     }
     
     public static func sendMessage(_ lokiMessage: LokiMessage) -> Promise<RawResponse> {
-        return getRandomSnode().then { invoke(.sendMessage, on: $0, with: lokiMessage.toJSON()) } // TODO: This shouldn't be a random snode
+        return getRandomSnode().then { invoke(.sendMessage, on: $0, with: lokiMessage.toJSON()) } // TODO: Use getSwarm()
     }
     
-    public static func getSwarm(for publicKey: String) -> Promise<RawResponse> {
-        return getRandomSnode().then { invoke(.getSwarm, on: $0, with: [ "pubKey" : publicKey ]) }
+    public static func getSwarm(for hexEncodedPublicKey: String) -> Promise<Set<Target>> {
+        return getRandomSnode().then { invoke(.getSwarm, on: $0, with: [ "pubKey" : hexEncodedPublicKey ]) }.map { rawResponse in return [] } // TODO: Parse targets from raw response
     }
     
     // MARK: Obj-C API
