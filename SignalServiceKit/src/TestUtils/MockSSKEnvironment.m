@@ -51,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSPrimaryStorage *primaryStorage = [MockSSKEnvironment createPrimaryStorageForTests];
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
+    OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
     TSNetworkManager *networkManager = [OWSFakeNetworkManager new];
     OWSMessageSender *messageSender = [OWSFakeMessageSender new];
     SSKMessageSenderJobQueue *messageSenderJobQueue = [SSKMessageSenderJobQueue new];
@@ -78,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
 
     self = [super initWithContactsManager:contactsManager
+                       linkPreviewManager:linkPreviewManager
                             messageSender:messageSender
                     messageSenderJobQueue:messageSenderJobQueue
                            profileManager:[OWSFakeProfileManager new]
