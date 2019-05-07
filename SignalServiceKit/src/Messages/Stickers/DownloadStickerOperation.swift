@@ -82,10 +82,11 @@ class DownloadStickerOperation: OWSOperation {
                                 }
                                 Logger.error("Download failed: \(error)")
 
-                                // TODO: We need to discriminate retry-able errors from
-                                //       404s, etc.  We might want to abort on all 4xx and 5xx.
                                 let errorCopy = error as NSError
-                                errorCopy.isRetryable = true
+
+                                // We do not retry 4xx and 5xx.
+                                errorCopy.isRetryable = !errorCopy.has4xxOr5xxResponseCode()
+
                                 self.reportError(errorCopy)
         })
     }
