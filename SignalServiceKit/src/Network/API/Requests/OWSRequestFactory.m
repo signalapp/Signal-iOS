@@ -405,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientId];
     NSDictionary *parameters = [lokiMessages objectAtIndex:0];
 
-    return [LokiMessagingAPI sendMessage:parameters];
+    return [TSRequest new]; // TODO: Just here to make things build
 }
 
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
