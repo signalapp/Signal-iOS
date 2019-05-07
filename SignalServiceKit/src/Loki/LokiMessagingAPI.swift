@@ -2,8 +2,6 @@ import PromiseKit
 
 @objc public final class LokiMessagingAPI : NSObject {
     
-    private static let baseURL = "http://13.238.53.205" // TODO: Temporary
-    private static let port = "8080" // TODO: Temporary
     private static let apiVersion = "v1"
     public static let defaultTTL: UInt64 = 4 * 24 * 60 * 60
     
@@ -11,6 +9,11 @@ import PromiseKit
     private enum Method : String {
         case retrieveNewMessages = "retrieve"
         case sendMessage = "store"
+    }
+    
+    private struct Target {
+        let address: String
+        let port: UInt16
     }
     
     public typealias RawResponse = Any
@@ -29,8 +32,8 @@ import PromiseKit
     override private init() { }
     
     // MARK: API
-    private static func invoke(_ method: Method, parameters: [String:String] = [:]) -> Promise<RawResponse> {
-        let url = URL(string: "\(baseURL):\(port)/\(apiVersion)/storage_rpc")!
+    private static func invoke(_ method: Method, on target: Target, with parameters: [String:String] = [:]) -> Promise<RawResponse> {
+        let url = URL(string: "\(target.address):\(target.port)/\(apiVersion)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
     }
@@ -40,15 +43,17 @@ import PromiseKit
     }
     
     public static func sendMessage(_ lokiMessage: LokiMessage) -> Promise<RawResponse> {
-        return invoke(.sendMessage, parameters: lokiMessage.toJSON())
+        let target = Target(address: "http://13.238.53.205", port: 8080)
+        return invoke(.sendMessage, on: target, with: lokiMessage.toJSON())
     }
     
     public static func retrieveAllMessages() -> Promise<RawResponse> {
+        let target = Target(address: "http://13.238.53.205", port: 8080)
         let parameters = [
             "pubKey" : OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey,
             "lastHash" : "" // TODO: Implement
         ]
-        return invoke(.retrieveNewMessages, parameters: parameters)
+        return invoke(.retrieveNewMessages, on: target, with: parameters)
     }
     
     // MARK: Obj-C API
