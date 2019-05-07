@@ -20,13 +20,13 @@ public struct LokiMessage {
         self.nonce = nonce
     }
     
-    public static func fromSignalMessage(_ signalMessage: SignalMessage, requiringPOW isPOWRequired: Bool) -> Promise<LokiMessage> {
+    public static func fromSignalMessage(_ signalMessage: SignalMessage, requiringPoW isPoWRequired: Bool) -> Promise<LokiMessage> {
         return Promise<LokiMessage> { seal in
             DispatchQueue.global(qos: .default).async {
                 let destination = signalMessage["destination"]!
                 let data = signalMessage["content"]!
                 let ttl = LokiMessagingAPI.defaultTTL
-                if isPOWRequired {
+                if isPoWRequired {
                     let timestamp = UInt64(Date().timeIntervalSince1970)
                     if let nonce = ProofOfWork.calculate(data: data, pubKey: destination, timestamp: timestamp, ttl: Int(ttl)) {
                         let result = LokiMessage(destination: destination, data: data, ttl: ttl, timestamp: timestamp, nonce: nonce)

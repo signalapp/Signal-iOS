@@ -80,7 +80,7 @@ private extension MutableCollection where Element == UInt8, Index == Int {
         while trialValue > target {
             nonce = nonce.increment(by: 1)
             
-            // This is different to the bitmessage POW
+            // This is different to the bitmessage PoW
             // resultHash = hash(nonce + hash(data)) ==> hash(nonce + initialHash)
             let resultHash = (nonce + initialHash).sha512()
             let trialValueArray = Array(resultHash[0..<8])
