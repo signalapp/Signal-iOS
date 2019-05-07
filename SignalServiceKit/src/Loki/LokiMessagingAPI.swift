@@ -7,11 +7,12 @@ import PromiseKit
     
     // MARK: Types
     private enum Method : String {
-        case retrieveNewMessages = "retrieve"
+        case getMessages = "retrieve"
         case sendMessage = "store"
+        case getSwarm = "get_snodes_for_pubkey"
     }
     
-    private struct Target {
+    public struct Target {
         let address: String
         let port: UInt16
     }
@@ -38,26 +39,30 @@ import PromiseKit
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
     }
     
-    public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, requiringPoW isPoWRequired: Bool) -> Promise<RawResponse> {
-        return LokiMessage.fromSignalMessage(signalMessage, requiringPoW: isPoWRequired).then(sendMessage)
+    public static func getRandomSnode() -> Promise<Target> {
+        return Promise<Target> { seal in
+            seal.fulfill(Target(address: "http://13.238.53.205", port: 8080)) // TODO: Temporary
+        }
     }
     
-    public static func sendMessage(_ lokiMessage: LokiMessage) -> Promise<RawResponse> {
-        let target = Target(address: "http://13.238.53.205", port: 8080) // TODO: Temporary
-        return invoke(.sendMessage, on: target, with: lokiMessage.toJSON())
-    }
-    
-    public static func retrieveAllMessages() -> Promise<RawResponse> {
-        let target = Target(address: "http://13.238.53.205", port: 8080) // TODO: Temporary
+    public static func getMessages() -> Promise<RawResponse> {
         let parameters = [
             "pubKey" : OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey,
             "lastHash" : "" // TODO: Implement
         ]
-        return invoke(.retrieveNewMessages, on: target, with: parameters)
+        return getRandomSnode().then { invoke(.getMessages, on: $0, with: parameters) } // TODO: This shouldn't be a random snode
+    }
+    
+    public static func sendMessage(_ lokiMessage: LokiMessage) -> Promise<RawResponse> {
+        return getRandomSnode().then { invoke(.sendMessage, on: $0, with: lokiMessage.toJSON()) } // TODO: This shouldn't be a random snode
+    }
+    
+    public static func getSwarm(for publicKey: String) -> Promise<RawResponse> {
+        return getRandomSnode().then { invoke(.getSwarm, on: $0, with: [ "pubKey" : publicKey ]) }
     }
     
     // MARK: Obj-C API
     @objc public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, requiringPoW isPoWRequired: Bool, completionHandler: ((RawResponse?, NSError?) -> Void)? = nil) {
-        sendSignalMessage(signalMessage, to: destination, requiringPoW: isPoWRequired).done { completionHandler?($0, nil) }.catch { completionHandler?(nil, $0 as NSError) }
+        LokiMessage.fromSignalMessage(signalMessage, requiringPoW: isPoWRequired).then(sendMessage).done { completionHandler?($0, nil) }.catch { completionHandler?(nil, $0 as NSError) }
     }
 }
