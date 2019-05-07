@@ -882,6 +882,38 @@ public class StickerManager: NSObject {
         }
     }
 
+    private class func cleanupOrphans() {
+        DispatchQueue.global().async {
+            databaseStorage.write { (transaction) in
+                var stickerPackMap = [String: StickerPack]()
+                for stickerPack in StickerPack.anyFetchAll(transaction: transaction) {
+                    stickerPackMap[stickerPack.info.asKey()] = stickerPack
+                }
+
+                var stickersToUninstall = [InstalledSticker]()
+                for sticker in InstalledSticker.anyFetchAll(transaction: transaction) {
+                    guard let pack = stickerPackMap[sticker.info.packInfo.asKey()] else {
+                        stickersToUninstall.append(sticker)
+                        continue
+                    }
+                    if pack.isInstalled {
+                        continue
+                    }
+                    if pack.coverInfo == sticker.info {
+                        continue
+                    }
+                    stickersToUninstall.append(sticker)
+                }
+                if stickersToUninstall.count > 0 {
+                    Logger.verbose("Removing \(stickersToUninstall.count) orphan stickers.")
+                }
+                for sticker in stickersToUninstall {
+                    self.uninstallSticker(stickerInfo: sticker.info, transaction: transaction)
+                }
+            }
+        }
+    }
+
     // MARK: - Debug
 
     // This is only intended for use while debugging.
