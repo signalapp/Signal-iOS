@@ -16,7 +16,7 @@ extern void curve25519_donna(unsigned char *output, const unsigned char *a, cons
     }
     static const uint8_t basepoint[ECCKeyLength] = { 9 };
     NSMutableData *publicKey = [NSMutableData dataWithLength:ECCKeyLength];
-    if (!publicKey) { OWSFail(@"Could not allocate buffer"); }
+    if (!publicKey) { OWSFail(@"Couldn't allocate buffer."); }
     curve25519_donna(publicKey.mutableBytes, privateKey.mutableBytes, basepoint);
     // Use KVC to access privateKey and publicKey even though they're private
     ECKeyPair *result = [ECKeyPair new];

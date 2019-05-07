@@ -1,6 +1,6 @@
 import PromiseKit
 
-@objc public final class LokiMessage : NSObject {
+public struct LokiMessage {
     /// The hex encoded public key of the receiver.
     let destination: String
     /// The content of the message.
@@ -12,7 +12,7 @@ import PromiseKit
     /// The base 64 encoded proof of work.
     let nonce: String
     
-    init(destination: String, data: LosslessStringConvertible, ttl: UInt64, timestamp: UInt64, nonce: String) {
+    public init(destination: String, data: LosslessStringConvertible, ttl: UInt64, timestamp: UInt64, nonce: String) {
         self.destination = destination
         self.data = data
         self.ttl = ttl
@@ -37,7 +37,7 @@ import PromiseKit
         }
     }
     
-    func toJSON() -> [String:String] {
+    public func toJSON() -> [String:String] {
         return [
             "destination" : destination,
             "data" : data.description,
