@@ -909,6 +909,9 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 - (BOOL)shouldSocketBeOpen
 {
     OWSAssertIsOnMainThread();
+    
+    // Loki: Since we don't use websockets, disable them.
+    return NO;
 
     // Don't open socket in app extensions.
     if (!CurrentAppContext().isMainApp) {
