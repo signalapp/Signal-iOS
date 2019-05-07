@@ -359,15 +359,15 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     // NOTE: UIImageOrientation and CGImagePropertyOrientation values
     //       DO NOT match.
     switch (orientation) {
-        case kCGImagePropertyOrientationUp: // EXIF = 1
-        case kCGImagePropertyOrientationUpMirrored: // EXIF = 2
-        case kCGImagePropertyOrientationDown: // EXIF = 3
-        case kCGImagePropertyOrientationDownMirrored: // EXIF = 4
+        case kCGImagePropertyOrientationUp:
+        case kCGImagePropertyOrientationUpMirrored:
+        case kCGImagePropertyOrientationDown:
+        case kCGImagePropertyOrientationDownMirrored:
             return imageSize;
-        case kCGImagePropertyOrientationLeft: // EXIF = 5
-        case kCGImagePropertyOrientationLeftMirrored: // EXIF = 6
-        case kCGImagePropertyOrientationRightMirrored: // EXIF = 7
-        case kCGImagePropertyOrientationRight: // EXIF = 8
+        case kCGImagePropertyOrientationLeft:
+        case kCGImagePropertyOrientationLeftMirrored:
+        case kCGImagePropertyOrientationRightMirrored:
+        case kCGImagePropertyOrientationRight:
             return CGSizeMake(imageSize.height, imageSize.width);
         default:
             return imageSize;
