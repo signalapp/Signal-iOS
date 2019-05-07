@@ -52,7 +52,7 @@ import PromiseKit
     }
     
     // MARK: Obj-C API
-    @objc public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, requiringPOW isPOWRequired: Bool, completionHandler: @escaping (Any?, NSError?) -> Void) {
-        sendSignalMessage(signalMessage, to: destination, requiringPOW: isPOWRequired).done { completionHandler($0.responseObject, nil) }.catch { completionHandler(nil, $0 as NSError) }
+    @objc public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, requiringPOW isPOWRequired: Bool, completionHandler: ((Any?, NSError?) -> Void)? = nil) {
+        sendSignalMessage(signalMessage, to: destination, requiringPOW: isPOWRequired).done { completionHandler?($0.responseObject, nil) }.catch { completionHandler?(nil, $0 as NSError) }
     }
 }

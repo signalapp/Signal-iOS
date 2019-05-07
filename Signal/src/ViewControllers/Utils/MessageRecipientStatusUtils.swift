@@ -111,8 +111,7 @@ public class MessageRecipientStatusUtils: NSObject {
             return (.failed, NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages"))
         case .sending:
             if outgoingMessage.isCalculatingPoW {
-                return (.calculatingPoW, NSLocalizedString("Calculating proof of work",
-                                                    comment: "message status while calculating proof of work."))
+                return (.calculatingPoW, NSLocalizedString("Calculating proof of work", comment: ""))
             }
 
             if outgoingMessage.hasAttachments() {

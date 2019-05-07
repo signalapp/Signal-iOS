@@ -43,7 +43,7 @@ private extension MutableCollection where Element == UInt8, Index == Int {
  * This was copied from the desktop messenger.
  * Ref: libloki/proof-of-work.js
  */
-@objc public class ProofOfWork : NSObject {
+@objc public final class ProofOfWork : NSObject {
     
     // If this changes then we also have to use something other than UInt64 to support the new length
     private static let nonceLength = 8
