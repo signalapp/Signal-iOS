@@ -739,17 +739,19 @@ public class StickerManager: NSObject {
 
     @objc
     public func setHasUsedStickers(transaction: SDSAnyWriteTransaction) {
-        AssertIsOnMainThread()
-
-        guard !isStickerSendEnabledCached else {
+        var shouldSet = false
+        StickerManager.serialQueue.sync {
+            guard !self.isStickerSendEnabledCached else {
+                return
+            }
+            self.isStickerSendEnabledCached = true
+            shouldSet = true
+        }
+        guard shouldSet else {
             return
         }
 
         StickerManager.store.setBool(true, key: kHasReceivedStickersKey, transaction: transaction)
-
-        StickerManager.serialQueue.async {
-            self.isStickerSendEnabledCached = true
-        }
     }
 
     @objc
@@ -917,7 +919,7 @@ extension SDSKeyValueStore {
             return []
         }
         guard let stringSet = object as? [String] else {
-            owsFailDebug("Value has unexpected type.")
+            owsFailDebug("Value has unexpected type \(type(of: object)).")
             return []
         }
         return stringSet
