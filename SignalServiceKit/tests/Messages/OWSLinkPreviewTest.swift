@@ -383,22 +383,22 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         self.waitForExpectations(timeout: 5.0, handler: nil)
     }
 
-    func testLinkParsingWithRealData7() {
+    func testLinkParsingWithRealData_instagram_web_link() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_web_button_share_sheet")
+        linkPreviewManager.downloadLink(url: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_web_button_share_sheet")
             .done { (linkData) in
                 let content = try! self.linkPreviewManager.parse(linkData: linkData)
                 XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.title, "Walter \"MFPallytime\" on Instagram: “Lol gg”")
+                XCTAssertEqual(content.title, "Signal on Instagram: “I link therefore I am: https://signal.org/blog/i-link-therefore-i-am/”")
                 // Actual URL can change based on network response
-                //     https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com
+                //
                 // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
                 // to remove it or stub the network response
-                XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/47690175_2275988962411653_1145978227188801192_n.jpg\\?.*$",
+                XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/50654775_634096837020403_4737154112061769375_n.jpg\\?.*$",
                                actualText: content.imageUrl!)
-//                XCTAssertEqual(content.imageUrl, "https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com")
+//                XCTAssertEqual(content.imageUrl, "https://scontent-iad3-1.cdninstagram.com/vp/88656d9c10074b97b503d3b7b86eba84/5D774562/t51.2885-15/e35/50654775_634096837020403_4737154112061769375_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com")
 
                 expectation.fulfill()
             }.catch { (error) in
@@ -410,21 +410,22 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         self.waitForExpectations(timeout: 5.0, handler: nil)
     }
 
-    func testLinkParsingWithRealData8() {
+    func testLinkParsingWithRealData_instagram_app_sharesheet() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_share_sheet&igshid=94c7ihqjfmbm")
+        linkPreviewManager.downloadLink(url: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_share_sheet&igshid=1bgo1ur9m9hi5")
             .done { (linkData) in
                 let content = try! self.linkPreviewManager.parse(linkData: linkData)
                 XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.title, "Walter \"MFPallytime\" on Instagram: “Lol gg”")
+                XCTAssertEqual(content.title, "Signal on Instagram: “I link therefore I am: https://signal.org/blog/i-link-therefore-i-am/”")
                 // Actual URL can change based on network response
-                //     https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com
+                //
                 // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
                 // to remove it or stub the network response
-                XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/47690175_2275988962411653_1145978227188801192_n.jpg\\?.*$",
-                            actualText: content.imageUrl!)
+                XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/50654775_634096837020403_4737154112061769375_n.jpg\\?.*$",
+                               actualText: content.imageUrl!)
+                //                XCTAssertEqual(content.imageUrl, "https://scontent-iad3-1.cdninstagram.com/vp/88656d9c10074b97b503d3b7b86eba84/5D774562/t51.2885-15/e35/50654775_634096837020403_4737154112061769375_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com")
 
                 expectation.fulfill()
             }.catch { (error) in
