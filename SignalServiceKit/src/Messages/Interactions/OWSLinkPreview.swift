@@ -258,7 +258,7 @@ public class OWSLinkPreview: MTLModel {
 }
 
 @objc
-class OWSLinkPreviewManager: NSObject {
+public class OWSLinkPreviewManager: NSObject {
 
     // MARK: - Whitelists
 
