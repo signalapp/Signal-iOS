@@ -28,7 +28,7 @@ public struct LokiMessage {
                 let ttl = LokiMessagingAPI.defaultTTL
                 if isPoWRequired {
                     let timestamp = UInt64(Date().timeIntervalSince1970)
-                    if let nonce = ProofOfWork.calculate(data: data, pubKey: destination, timestamp: timestamp, ttl: Int(ttl)) {
+                    if let nonce = ProofOfWork.calculate(data: data, pubKey: destination, timestamp: timestamp, ttl: ttl) {
                         let result = LokiMessage(destination: destination, data: data, ttl: ttl, timestamp: timestamp, nonce: nonce)
                         seal.fulfill(result)
                     } else {

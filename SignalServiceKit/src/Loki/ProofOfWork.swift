@@ -66,9 +66,9 @@ private extension MutableCollection where Element == UInt8, Index == Int {
     ///   - pubKey: The message recipient
     ///   - timestamp: The timestamp
     ///   - ttl: The message time to live
-    /// - Returns: A nonce string or nil if it failed
-    @objc public static func calculate(data: String, pubKey: String, timestamp: UInt64, ttl: Int) -> String? {
-        let payload = getPayload(pubKey: pubKey, data: data, timestamp: timestamp, ttl: ttl)
+    /// - Returns: A nonce string or `nil` if it failed
+    @objc public static func calculate(data: String, pubKey: String, timestamp: UInt64, ttl: UInt64) -> String? {
+        let payload = createPayload(pubKey: pubKey, data: data, timestamp: timestamp, ttl: ttl)
         let target = calcTarget(ttl: ttl, payloadLength: payload.count, nonceTrials: nonceTrialCount)
         
         // Start with the max value
@@ -91,7 +91,7 @@ private extension MutableCollection where Element == UInt8, Index == Int {
     }
     
     /// Get the proof of work payload
-    private static func getPayload(pubKey: String, data: String, timestamp: UInt64, ttl: Int) -> [UInt8] {
+    private static func createPayload(pubKey: String, data: String, timestamp: UInt64, ttl: UInt64) -> [UInt8] {
         let timestampString = String(timestamp)
         let ttlString = String(ttl)
         let payloadString = timestampString + ttlString + pubKey + data
@@ -99,16 +99,13 @@ private extension MutableCollection where Element == UInt8, Index == Int {
     }
     
     /// Calculate the target we need to reach
-    private static func calcTarget(ttl: Int, payloadLength: Int, nonceTrials: Int) -> UInt64 {
+    private static func calcTarget(ttl: UInt64, payloadLength: Int, nonceTrials: Int) -> UInt64 {
         let two16 = UInt64(pow(2, 16) - 1)
         let two64 = UInt64(pow(2, 64) - 1)
-  
-        // ttl converted to seconds
-        let ttlSeconds = ttl / 1000
 
         // Do all the calculations
         let totalLength = UInt64(payloadLength + nonceLength)
-        let ttlMult = UInt64(ttlSeconds) * totalLength
+        let ttlMult = ttl * totalLength
         
         // UInt64 values
         let innerFrac = ttlMult / two16
