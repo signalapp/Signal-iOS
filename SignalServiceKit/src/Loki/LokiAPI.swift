@@ -1,19 +1,5 @@
 import PromiseKit
 
-// Helper function for objc apis
-private extension Promise where T == Any {
-    func recoverNetworkError(on queue: DispatchQueue) -> Promise<T> {
-        return self.recover(on: queue) { error -> Promise<T> in
-            switch error {
-            case NetworkManagerError.taskError(_, let underlyingError):
-                throw underlyingError
-            default:
-                throw error
-            }
-        }
-    }
-}
-
 @objc public final class LokiAPI : NSObject {
     
     private static let version = "v1"
@@ -81,8 +67,7 @@ private extension Promise where T == Any {
     
     // MARK: Obj-C API
     @objc public static func objc_getMessages() -> AnyPromise {
-        let promise = getMessages()
-            .recoverNetworkError(on: DispatchQueue.global())
+        let promise = getMessages().recoverNetworkError(on: DispatchQueue.global())
         let anyPromise = AnyPromise(promise)
         anyPromise.retainUntilComplete()
         return anyPromise
@@ -95,5 +80,21 @@ private extension Promise where T == Any {
         let anyPromise = AnyPromise(promise)
         anyPromise.retainUntilComplete()
         return anyPromise
+    }
+}
+
+// MARK: - Convenience
+
+private extension Promise where T == Any {
+
+    func recoverNetworkError(on queue: DispatchQueue) -> Promise<T> {
+        return self.recover(on: queue) { error -> Promise<T> in
+            switch error {
+            case NetworkManagerError.taskError(_, let underlyingError):
+                throw underlyingError
+            default:
+                throw error
+            }
+        }
     }
 }
