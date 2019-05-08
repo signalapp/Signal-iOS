@@ -214,6 +214,25 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         }
 
         switch (envelope.type) {
+            case SSKProtoEnvelopeTypeFriendRequest: {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [self decryptFriendRequestMessage:envelope
+                         envelopeData:envelopeData
+                         successBlock:^(OWSMessageDecryptResult *result) {
+                             OWSLogDebug(@"decrypted friend request message.");
+                             successBlock(result, transaction);
+                         }
+                         failureBlock:^(NSError * _Nullable error) {
+                             OWSLogError(@"decrypting friend request message from address: %@ failed "
+                                         @"with error: %@",
+                                envelopeAddress(envelope),
+                                error);
+                             failureBlock();
+                         }];
+                }];
+                // Return to avoid double-acknowledging
+                return;
+            }
             case SSKProtoEnvelopeTypeCiphertext: {
                 [self throws_decryptSecureMessage:envelope
                     envelopeData:envelopeData
@@ -299,6 +318,43 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     }
 
     failureBlock();
+}
+
+- (void)decryptFriendRequestMessage:(SSKProtoEnvelope *)envelope
+                       envelopeData:(NSData *)envelopeData
+                       successBlock:(void (^)(OWSMessageDecryptResult *result))successBlock
+                       failureBlock:(void (^)(NSError *_Nullable error))failureBlock
+{
+    OWSAssertDebug(envelope);
+    OWSAssertDebug(envelopeData);
+    OWSAssertDebug(successBlock);
+    OWSAssertDebug(failureBlock);
+    
+    NSData *encryptedData = envelope.content;
+    if (!encryptedData) {
+        OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, @"Envelope has no content");
+        return failureBlock(error);
+    }
+    
+    NSString *recipientId = envelope.source;
+    FallBackSessionCipher *ciper = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId
+                                                                     identityKeyStore:self.identityManager];
+    
+    // Decrypt it!!
+    NSData *_Nullable plaintextData = [ciper decryptWithMessage:encryptedData];
+    if (!plaintextData) {
+        NSString *errorString = [NSString stringWithFormat:@"Failed to decrypt friend request message for %@", recipientId];
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorString);
+        return failureBlock(error);
+    }
+   
+    OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
+                                                                        plaintextData:plaintextData
+                                                                               source:envelope.source
+                                                                         sourceDevice:envelope.sourceDevice
+                                                                          isUDMessage:NO];
+    successBlock(result);
 }
 
 - (void)throws_decryptSecureMessage:(SSKProtoEnvelope *)envelope
