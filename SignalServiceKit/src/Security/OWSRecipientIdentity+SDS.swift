@@ -45,6 +45,25 @@ public struct OWSRecipientIdentityRecord: Codable, FetchableRecord, PersistableR
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: OWSRecipientIdentityRecord.CodingKeys) {
+        appendLiteral(OWSRecipientIdentityRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension OWSRecipientIdentity {
+    class func fromRecord(_ record: OWSRecipientIdentityRecord) -> OWSRecipientIdentity? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension OWSRecipientIdentity: SDSSerializable {

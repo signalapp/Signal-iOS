@@ -39,6 +39,25 @@ public struct OWSMessageDecryptJobRecord: Codable, FetchableRecord, PersistableR
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: OWSMessageDecryptJobRecord.CodingKeys) {
+        appendLiteral(OWSMessageDecryptJobRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension OWSMessageDecryptJob {
+    class func fromRecord(_ record: OWSMessageDecryptJobRecord) -> OWSMessageDecryptJob? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension OWSMessageDecryptJob: SDSSerializable {

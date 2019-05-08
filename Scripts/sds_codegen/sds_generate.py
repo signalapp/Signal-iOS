@@ -661,7 +661,28 @@ public struct %sRecord: Codable, FetchableRecord, PersistableRecord, TableRecord
 ''' % ( ( str(clazz.name), ) )
 
         swift_body += '''}
-'''
+
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: %sRecord.CodingKeys) {
+        appendLiteral(%sRecord.columnName(column))
+    }
+}
+''' % ( ( str(clazz.name), ) * 2 )
+
+        swift_body += '''// MARK: - Record Deserialization
+
+public extension %s {
+    class func fromRecord(_ record: %sRecord) -> %s? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+''' % ( ( str(clazz.name), ) * 3 )
 
     if not has_sds_superclass:
         swift_body += '''

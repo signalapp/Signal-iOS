@@ -41,6 +41,25 @@ public struct OWSLinkedDeviceReadReceiptRecord: Codable, FetchableRecord, Persis
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: OWSLinkedDeviceReadReceiptRecord.CodingKeys) {
+        appendLiteral(OWSLinkedDeviceReadReceiptRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension OWSLinkedDeviceReadReceipt {
+    class func fromRecord(_ record: OWSLinkedDeviceReadReceiptRecord) -> OWSLinkedDeviceReadReceipt? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension OWSLinkedDeviceReadReceipt: SDSSerializable {

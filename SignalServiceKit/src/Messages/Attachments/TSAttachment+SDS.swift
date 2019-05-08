@@ -85,6 +85,25 @@ public struct TSAttachmentRecord: Codable, FetchableRecord, PersistableRecord, T
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: TSAttachmentRecord.CodingKeys) {
+        appendLiteral(TSAttachmentRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension TSAttachment {
+    class func fromRecord(_ record: TSAttachmentRecord) -> TSAttachment? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension TSAttachment: SDSSerializable {

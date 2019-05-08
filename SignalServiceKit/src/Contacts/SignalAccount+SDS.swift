@@ -43,6 +43,25 @@ public struct SignalAccountRecord: Codable, FetchableRecord, PersistableRecord, 
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: SignalAccountRecord.CodingKeys) {
+        appendLiteral(SignalAccountRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension SignalAccount {
+    class func fromRecord(_ record: SignalAccountRecord) -> SignalAccount? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension SignalAccount: SDSSerializable {

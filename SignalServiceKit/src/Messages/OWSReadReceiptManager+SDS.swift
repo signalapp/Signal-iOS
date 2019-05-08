@@ -39,6 +39,25 @@ public struct TSRecipientReadReceiptRecord: Codable, FetchableRecord, Persistabl
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: TSRecipientReadReceiptRecord.CodingKeys) {
+        appendLiteral(TSRecipientReadReceiptRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension TSRecipientReadReceipt {
+    class func fromRecord(_ record: TSRecipientReadReceiptRecord) -> TSRecipientReadReceipt? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension TSRecipientReadReceipt: SDSSerializable {

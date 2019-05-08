@@ -37,6 +37,25 @@ public struct SignalRecipientRecord: Codable, FetchableRecord, PersistableRecord
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: SignalRecipientRecord.CodingKeys) {
+        appendLiteral(SignalRecipientRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension SignalRecipient {
+    class func fromRecord(_ record: SignalRecipientRecord) -> SignalRecipient? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension SignalRecipient: SDSSerializable {

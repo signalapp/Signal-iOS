@@ -39,6 +39,25 @@ public struct InstalledStickerRecord: Codable, FetchableRecord, PersistableRecor
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: InstalledStickerRecord.CodingKeys) {
+        appendLiteral(InstalledStickerRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension InstalledSticker {
+    class func fromRecord(_ record: InstalledStickerRecord) -> InstalledSticker? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension InstalledSticker: SDSSerializable {

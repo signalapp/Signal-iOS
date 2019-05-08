@@ -43,6 +43,25 @@ public struct OWSMessageContentJobRecord: Codable, FetchableRecord, PersistableR
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: OWSMessageContentJobRecord.CodingKeys) {
+        appendLiteral(OWSMessageContentJobRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension OWSMessageContentJob {
+    class func fromRecord(_ record: OWSMessageContentJobRecord) -> OWSMessageContentJob? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension OWSMessageContentJob: SDSSerializable {

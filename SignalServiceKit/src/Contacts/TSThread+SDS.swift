@@ -59,6 +59,25 @@ public struct TSThreadRecord: Codable, FetchableRecord, PersistableRecord, Table
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: TSThreadRecord.CodingKeys) {
+        appendLiteral(TSThreadRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension TSThread {
+    class func fromRecord(_ record: TSThreadRecord) -> TSThread? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension TSThread: SDSSerializable {

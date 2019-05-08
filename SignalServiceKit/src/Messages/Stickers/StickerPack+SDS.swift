@@ -49,6 +49,25 @@ public struct StickerPackRecord: Codable, FetchableRecord, PersistableRecord, Ta
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: StickerPackRecord.CodingKeys) {
+        appendLiteral(StickerPackRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension StickerPack {
+    class func fromRecord(_ record: StickerPackRecord) -> StickerPack? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension StickerPack: SDSSerializable {

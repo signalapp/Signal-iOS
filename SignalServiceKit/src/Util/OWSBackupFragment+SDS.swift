@@ -47,6 +47,25 @@ public struct OWSBackupFragmentRecord: Codable, FetchableRecord, PersistableReco
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: OWSBackupFragmentRecord.CodingKeys) {
+        appendLiteral(OWSBackupFragmentRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension OWSBackupFragment {
+    class func fromRecord(_ record: OWSBackupFragmentRecord) -> OWSBackupFragment? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension OWSBackupFragment: SDSSerializable {

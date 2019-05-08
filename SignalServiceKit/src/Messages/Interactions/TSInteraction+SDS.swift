@@ -139,6 +139,25 @@ public struct TSInteractionRecord: Codable, FetchableRecord, PersistableRecord, 
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: TSInteractionRecord.CodingKeys) {
+        appendLiteral(TSInteractionRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension TSInteraction {
+    class func fromRecord(_ record: TSInteractionRecord) -> TSInteraction? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension TSInteraction: SDSSerializable {

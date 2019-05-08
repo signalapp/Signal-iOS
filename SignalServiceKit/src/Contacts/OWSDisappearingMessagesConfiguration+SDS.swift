@@ -39,6 +39,25 @@ public struct OWSDisappearingMessagesConfigurationRecord: Codable, FetchableReco
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: OWSDisappearingMessagesConfigurationRecord.CodingKeys) {
+        appendLiteral(OWSDisappearingMessagesConfigurationRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension OWSDisappearingMessagesConfiguration {
+    class func fromRecord(_ record: OWSDisappearingMessagesConfigurationRecord) -> OWSDisappearingMessagesConfiguration? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension OWSDisappearingMessagesConfiguration: SDSSerializable {

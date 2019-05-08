@@ -43,6 +43,25 @@ public struct OWSDeviceRecord: Codable, FetchableRecord, PersistableRecord, Tabl
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: OWSDeviceRecord.CodingKeys) {
+        appendLiteral(OWSDeviceRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension OWSDevice {
+    class func fromRecord(_ record: OWSDeviceRecord) -> OWSDevice? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension OWSDevice: SDSSerializable {

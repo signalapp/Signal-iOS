@@ -55,6 +55,25 @@ public struct SSKJobRecordRecord: Codable, FetchableRecord, PersistableRecord, T
 
 }
 
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(column: SSKJobRecordRecord.CodingKeys) {
+        appendLiteral(SSKJobRecordRecord.columnName(column))
+    }
+}
+// MARK: - Record Deserialization
+
+public extension SSKJobRecord {
+    class func fromRecord(_ record: SSKJobRecordRecord) -> SSKJobRecord? {
+        switch record.recordType {
+        @unknown default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            return nil
+        }
+    }
+}
+
 // MARK: - SDSSerializable
 
 extension SSKJobRecord: SDSSerializable {
