@@ -185,7 +185,7 @@ void AssertIsOnSendingQueue()
     // Sanity check preconditions
     if (self.message.hasAttachments) {
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            for (TSAttachment *attachment in [self.message attachmentsWithTransaction:transaction]) {
+            for (TSAttachment *attachment in [self.message allAttachmentsWithTransaction:transaction]) {
                 if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
                     error = OWSErrorMakeFailedToSendOutgoingMessageError();
                     break;

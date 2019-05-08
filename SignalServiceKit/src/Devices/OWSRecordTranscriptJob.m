@@ -172,13 +172,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (outgoingMessage.hasAttachments) {
         [self.attachmentDownloads
-            downloadAttachmentsForMessage:outgoingMessage
-                              transaction:transaction
-                                  success:attachmentHandler
-                                  failure:^(NSError *error) {
-                                      OWSLogError(
-                                          @"failed to fetch transcripts attachments for message: %@", outgoingMessage);
-                                  }];
+            downloadAllAttachmentsForMessage:outgoingMessage
+                                 transaction:transaction
+                                     success:attachmentHandler
+                                     failure:^(NSError *error) {
+                                         OWSLogError(@"failed to fetch transcripts attachments for message: %@",
+                                             outgoingMessage);
+                                     }];
     }
 }
 

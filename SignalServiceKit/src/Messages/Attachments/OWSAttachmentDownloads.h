@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -26,15 +26,25 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
 - (nullable NSNumber *)downloadProgressForAttachmentId:(NSString *)attachmentId;
 
+// This will try to download all un-downloaded _body_ attachments for a given message.
+// Any attachments for the message which are already downloaded are skipped BUT
+// they are included in the success callback.
+//
+// success/failure are always called on a worker queue.
+- (void)downloadBodyAttachmentsForMessage:(TSMessage *)message
+                              transaction:(YapDatabaseReadTransaction *)transaction
+                                  success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
+                                  failure:(void (^)(NSError *error))failure;
+
 // This will try to download all un-downloaded attachments for a given message.
 // Any attachments for the message which are already downloaded are skipped BUT
 // they are included in the success callback.
 //
 // success/failure are always called on a worker queue.
-- (void)downloadAttachmentsForMessage:(TSMessage *)message
-                          transaction:(YapDatabaseReadTransaction *)transaction
-                              success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
-                              failure:(void (^)(NSError *error))failure;
+- (void)downloadAllAttachmentsForMessage:(TSMessage *)message
+                             transaction:(YapDatabaseReadTransaction *)transaction
+                                 success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
+                                 failure:(void (^)(NSError *error))failure;
 
 // This will try to download a single attachment.
 //

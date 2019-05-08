@@ -822,7 +822,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogDebug(@"incoming attachment message: %@", message.debugDescription);
 
-    [self.attachmentDownloads downloadAttachmentsForMessage:message
+    [self.attachmentDownloads downloadBodyAttachmentsForMessage:message
         transaction:transaction
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSLogDebug(@"successfully fetched attachments: %lu for message: %@",

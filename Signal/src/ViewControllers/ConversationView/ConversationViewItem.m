@@ -620,23 +620,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
     }
 
-    // Check for quoted replies _before_ media album handling,
-    // since that logic may exit early.
-    if (transaction.transitional_yapReadTransaction != nil) {
-        if (message.quotedMessage) {
-            self.quotedReply =
-                [OWSQuotedReplyModel quotedReplyWithQuotedMessage:message.quotedMessage
-                                                      transaction:transaction.transitional_yapReadTransaction];
-
-            if (self.quotedReply.body.length > 0) {
-                self.displayableQuotedText =
-                    [self displayableQuotedTextForText:self.quotedReply.body interactionId:message.uniqueId];
-            }
-        }
-    }
-
-    // Check for stickers _before_ media album handling,
-    // since that logic may exit early.
+    // Check for stickers _before_ media or quoted reply handling;
+    // stickers should not have quoted replies and should never
+    // have media.
     if (message.messageSticker) {
         self.stickerInfo = message.messageSticker.info;
         TSAttachment *_Nullable stickerAttachment =
@@ -652,6 +638,21 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         // Exit early; stickers shouldn't have body text or other attachments.
         self.messageCellType = OWSMessageCellType_StickerMessage;
         return;
+    }
+
+    // Check for quoted replies _before_ media album handling,
+    // since that logic may exit early.
+    if (transaction.transitional_yapReadTransaction != nil) {
+        if (message.quotedMessage) {
+            self.quotedReply =
+                [OWSQuotedReplyModel quotedReplyWithQuotedMessage:message.quotedMessage
+                                                      transaction:transaction.transitional_yapReadTransaction];
+
+            if (self.quotedReply.body.length > 0) {
+                self.displayableQuotedText =
+                    [self displayableQuotedTextForText:self.quotedReply.body interactionId:message.uniqueId];
+            }
+        }
     }
 
     if (transaction.transitional_yapReadTransaction != nil) {

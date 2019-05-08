@@ -254,7 +254,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSAttachment *_Nullable attachmentToQuote = nil;
     if (quotedMessage.attachmentIds.count > 0) {
-        attachmentToQuote = [quotedMessage attachmentsWithTransaction:transaction].firstObject;
+        attachmentToQuote = [quotedMessage bodyAttachmentsWithTransaction:transaction].firstObject;
     } else if (quotedMessage.linkPreview && quotedMessage.linkPreview.imageAttachmentId.length > 0) {
         attachmentToQuote =
             [TSAttachment fetchObjectWithUniqueID:quotedMessage.linkPreview.imageAttachmentId transaction:transaction];

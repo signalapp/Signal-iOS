@@ -271,10 +271,21 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return [result copy];
 }
 
-- (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [TSMessage attachmentsWithIds:self.attachmentIds transaction:transaction];
+}
+
+- (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [TSMessage attachmentsWithIds:self.allAttachmentIds transaction:transaction];
+}
+
++ (NSArray<TSAttachment *> *)attachmentsWithIds:(NSArray<NSString *> *)attachmentIds
+                                    transaction:(YapDatabaseReadTransaction *)transaction
 {
     NSMutableArray<TSAttachment *> *attachments = [NSMutableArray new];
-    for (NSString *attachmentId in self.attachmentIds) {
+    for (NSString *attachmentId in attachmentIds) {
         TSAttachment *_Nullable attachment =
             [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         if (attachment) {
@@ -284,20 +295,20 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return [attachments copy];
 }
 
-- (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
-                                            contentType:(NSString *)contentType
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+                                                contentType:(NSString *)contentType
 {
-    NSArray<TSAttachment *> *attachments = [self attachmentsWithTransaction:transaction];
+    NSArray<TSAttachment *> *attachments = [self bodyAttachmentsWithTransaction:transaction];
     return [attachments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(TSAttachment *evaluatedObject,
                                                         NSDictionary<NSString *, id> *_Nullable bindings) {
         return [evaluatedObject.contentType isEqualToString:contentType];
     }]];
 }
 
-- (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
-                                      exceptContentType:(NSString *)contentType
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+                                          exceptContentType:(NSString *)contentType
 {
-    NSArray<TSAttachment *> *attachments = [self attachmentsWithTransaction:transaction];
+    NSArray<TSAttachment *> *attachments = [self bodyAttachmentsWithTransaction:transaction];
     return [attachments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(TSAttachment *evaluatedObject,
                                                         NSDictionary<NSString *, id> *_Nullable bindings) {
         return ![evaluatedObject.contentType isEqualToString:contentType];
@@ -330,12 +341,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    return [self attachmentsWithTransaction:transaction contentType:OWSMimeTypeOversizeTextMessage].firstObject;
+    return [self bodyAttachmentsWithTransaction:transaction contentType:OWSMimeTypeOversizeTextMessage].firstObject;
 }
 
 - (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    return [self attachmentsWithTransaction:transaction exceptContentType:OWSMimeTypeOversizeTextMessage];
+    return [self bodyAttachmentsWithTransaction:transaction exceptContentType:OWSMimeTypeOversizeTextMessage];
 }
 
 - (nullable NSString *)oversizeTextWithTransaction:(YapDatabaseReadTransaction *)transaction
