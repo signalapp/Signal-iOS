@@ -232,7 +232,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark - Queue Processing
 
-@interface OWSMessageDecryptQueue : NSObject
+@interface YAPDBMessageDecryptQueue : NSObject
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageDecryptJobFinder *finder;
@@ -246,7 +246,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark -
 
-@implementation OWSMessageDecryptQueue
+@implementation YAPDBMessageDecryptQueue
 
 - (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection finder:(OWSMessageDecryptJobFinder *)finder
 {
@@ -441,7 +441,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @interface OWSMessageReceiver ()
 
-@property (nonatomic, readonly) OWSMessageDecryptQueue *processingQueue;
+@property (nonatomic, readonly) YAPDBMessageDecryptQueue *yapProcessingQueue;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
@@ -462,14 +462,14 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     // For coherency we use the same dbConnection to persist and read the unprocessed envelopes
     YapDatabaseConnection *dbConnection = [primaryStorage newDatabaseConnection];
     OWSMessageDecryptJobFinder *finder = [[OWSMessageDecryptJobFinder alloc] initWithDBConnection:dbConnection];
-    OWSMessageDecryptQueue *processingQueue =
-        [[OWSMessageDecryptQueue alloc] initWithDBConnection:dbConnection finder:finder];
+    YAPDBMessageDecryptQueue *yapProcessingQueue =
+        [[YAPDBMessageDecryptQueue alloc] initWithDBConnection:dbConnection finder:finder];
 
-    _processingQueue = processingQueue;
+    _yapProcessingQueue = yapProcessingQueue;
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (CurrentAppContext().isMainApp) {
-            [self.processingQueue drainQueue];
+            [self.yapProcessingQueue drainQueue];
         }
     }];
 
@@ -513,8 +513,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"Unexpectedly large message.");
     }
 
-    [self.processingQueue enqueueEnvelopeData:envelopeData];
-    [self.processingQueue drainQueue];
+    [self.yapProcessingQueue enqueueEnvelopeData:envelopeData];
+    [self.yapProcessingQueue drainQueue];
 }
 
 @end
