@@ -130,6 +130,9 @@ struct SignalServiceProtos_Envelope {
     case receipt // = 5
     case unidentifiedSender // = 6
 
+    /// Loki: Contains prekeys and a message; uses simple encryption
+    case friendRequest // = 101
+
     init() {
       self = .unknown
     }
@@ -142,6 +145,7 @@ struct SignalServiceProtos_Envelope {
       case 3: self = .prekeyBundle
       case 5: self = .receipt
       case 6: self = .unidentifiedSender
+      case 101: self = .friendRequest
       default: return nil
       }
     }
@@ -154,6 +158,7 @@ struct SignalServiceProtos_Envelope {
       case .prekeyBundle: return 3
       case .receipt: return 5
       case .unidentifiedSender: return 6
+      case .friendRequest: return 101
       }
     }
 
@@ -316,11 +321,146 @@ struct SignalServiceProtos_Content {
   /// Clears the value of `typingMessage`. Subsequent reads from it will return its default value.
   mutating func clearTypingMessage() {_uniqueStorage()._typingMessage = nil}
 
+  /// Loki
+  var prekeyBundleMessage: SignalServiceProtos_PrekeyBundleMessage {
+    get {return _storage._prekeyBundleMessage ?? SignalServiceProtos_PrekeyBundleMessage()}
+    set {_uniqueStorage()._prekeyBundleMessage = newValue}
+  }
+  /// Returns true if `prekeyBundleMessage` has been explicitly set.
+  var hasPrekeyBundleMessage: Bool {return _storage._prekeyBundleMessage != nil}
+  /// Clears the value of `prekeyBundleMessage`. Subsequent reads from it will return its default value.
+  mutating func clearPrekeyBundleMessage() {_uniqueStorage()._prekeyBundleMessage = nil}
+
+  /// Loki
+  var lokiAddressMessage: SignalServiceProtos_LokiAddressMessage {
+    get {return _storage._lokiAddressMessage ?? SignalServiceProtos_LokiAddressMessage()}
+    set {_uniqueStorage()._lokiAddressMessage = newValue}
+  }
+  /// Returns true if `lokiAddressMessage` has been explicitly set.
+  var hasLokiAddressMessage: Bool {return _storage._lokiAddressMessage != nil}
+  /// Clears the value of `lokiAddressMessage`. Subsequent reads from it will return its default value.
+  mutating func clearLokiAddressMessage() {_uniqueStorage()._lokiAddressMessage = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
+}
+
+/// Loki
+struct SignalServiceProtos_PrekeyBundleMessage {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var identityKey: Data {
+    get {return _identityKey ?? SwiftProtobuf.Internal.emptyData}
+    set {_identityKey = newValue}
+  }
+  /// Returns true if `identityKey` has been explicitly set.
+  var hasIdentityKey: Bool {return self._identityKey != nil}
+  /// Clears the value of `identityKey`. Subsequent reads from it will return its default value.
+  mutating func clearIdentityKey() {self._identityKey = nil}
+
+  var deviceID: UInt32 {
+    get {return _deviceID ?? 0}
+    set {_deviceID = newValue}
+  }
+  /// Returns true if `deviceID` has been explicitly set.
+  var hasDeviceID: Bool {return self._deviceID != nil}
+  /// Clears the value of `deviceID`. Subsequent reads from it will return its default value.
+  mutating func clearDeviceID() {self._deviceID = nil}
+
+  var prekeyID: UInt32 {
+    get {return _prekeyID ?? 0}
+    set {_prekeyID = newValue}
+  }
+  /// Returns true if `prekeyID` has been explicitly set.
+  var hasPrekeyID: Bool {return self._prekeyID != nil}
+  /// Clears the value of `prekeyID`. Subsequent reads from it will return its default value.
+  mutating func clearPrekeyID() {self._prekeyID = nil}
+
+  var signedKeyID: UInt32 {
+    get {return _signedKeyID ?? 0}
+    set {_signedKeyID = newValue}
+  }
+  /// Returns true if `signedKeyID` has been explicitly set.
+  var hasSignedKeyID: Bool {return self._signedKeyID != nil}
+  /// Clears the value of `signedKeyID`. Subsequent reads from it will return its default value.
+  mutating func clearSignedKeyID() {self._signedKeyID = nil}
+
+  var prekey: Data {
+    get {return _prekey ?? SwiftProtobuf.Internal.emptyData}
+    set {_prekey = newValue}
+  }
+  /// Returns true if `prekey` has been explicitly set.
+  var hasPrekey: Bool {return self._prekey != nil}
+  /// Clears the value of `prekey`. Subsequent reads from it will return its default value.
+  mutating func clearPrekey() {self._prekey = nil}
+
+  var signedKey: Data {
+    get {return _signedKey ?? SwiftProtobuf.Internal.emptyData}
+    set {_signedKey = newValue}
+  }
+  /// Returns true if `signedKey` has been explicitly set.
+  var hasSignedKey: Bool {return self._signedKey != nil}
+  /// Clears the value of `signedKey`. Subsequent reads from it will return its default value.
+  mutating func clearSignedKey() {self._signedKey = nil}
+
+  var signature: Data {
+    get {return _signature ?? SwiftProtobuf.Internal.emptyData}
+    set {_signature = newValue}
+  }
+  /// Returns true if `signature` has been explicitly set.
+  var hasSignature: Bool {return self._signature != nil}
+  /// Clears the value of `signature`. Subsequent reads from it will return its default value.
+  mutating func clearSignature() {self._signature = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _identityKey: Data? = nil
+  fileprivate var _deviceID: UInt32? = nil
+  fileprivate var _prekeyID: UInt32? = nil
+  fileprivate var _signedKeyID: UInt32? = nil
+  fileprivate var _prekey: Data? = nil
+  fileprivate var _signedKey: Data? = nil
+  fileprivate var _signature: Data? = nil
+}
+
+/// Loki
+struct SignalServiceProtos_LokiAddressMessage {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// The naming is a bit different from desktop because of swift auto generation
+  var ptpAddress: String {
+    get {return _ptpAddress ?? String()}
+    set {_ptpAddress = newValue}
+  }
+  /// Returns true if `ptpAddress` has been explicitly set.
+  var hasPtpAddress: Bool {return self._ptpAddress != nil}
+  /// Clears the value of `ptpAddress`. Subsequent reads from it will return its default value.
+  mutating func clearPtpAddress() {self._ptpAddress = nil}
+
+  var ptpPort: UInt32 {
+    get {return _ptpPort ?? 0}
+    set {_ptpPort = newValue}
+  }
+  /// Returns true if `ptpPort` has been explicitly set.
+  var hasPtpPort: Bool {return self._ptpPort != nil}
+  /// Clears the value of `ptpPort`. Subsequent reads from it will return its default value.
+  mutating func clearPtpPort() {self._ptpPort = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _ptpAddress: String? = nil
+  fileprivate var _ptpPort: UInt32? = nil
 }
 
 struct SignalServiceProtos_CallMessage {
@@ -638,6 +778,16 @@ struct SignalServiceProtos_DataMessage {
     get {return _storage._preview}
     set {_uniqueStorage()._preview = newValue}
   }
+
+  /// Loki: The current user's profile
+  var profile: SignalServiceProtos_DataMessage.Contact {
+    get {return _storage._profile ?? SignalServiceProtos_DataMessage.Contact()}
+    set {_uniqueStorage()._profile = newValue}
+  }
+  /// Returns true if `profile` has been explicitly set.
+  var hasProfile: Bool {return _storage._profile != nil}
+  /// Clears the value of `profile`. Subsequent reads from it will return its default value.
+  mutating func clearProfile() {_uniqueStorage()._profile = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2396,6 +2546,7 @@ extension SignalServiceProtos_Envelope.TypeEnum: SwiftProtobuf._ProtoNameProvidi
     3: .same(proto: "PREKEY_BUNDLE"),
     5: .same(proto: "RECEIPT"),
     6: .same(proto: "UNIDENTIFIED_SENDER"),
+    101: .same(proto: "FRIEND_REQUEST"),
   ]
 }
 
@@ -2456,6 +2607,8 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     4: .same(proto: "nullMessage"),
     5: .same(proto: "receiptMessage"),
     6: .same(proto: "typingMessage"),
+    101: .same(proto: "prekeyBundleMessage"),
+    102: .same(proto: "lokiAddressMessage"),
   ]
 
   fileprivate class _StorageClass {
@@ -2465,6 +2618,8 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     var _nullMessage: SignalServiceProtos_NullMessage? = nil
     var _receiptMessage: SignalServiceProtos_ReceiptMessage? = nil
     var _typingMessage: SignalServiceProtos_TypingMessage? = nil
+    var _prekeyBundleMessage: SignalServiceProtos_PrekeyBundleMessage? = nil
+    var _lokiAddressMessage: SignalServiceProtos_LokiAddressMessage? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -2477,6 +2632,8 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
       _nullMessage = source._nullMessage
       _receiptMessage = source._receiptMessage
       _typingMessage = source._typingMessage
+      _prekeyBundleMessage = source._prekeyBundleMessage
+      _lokiAddressMessage = source._lokiAddressMessage
     }
   }
 
@@ -2498,6 +2655,8 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
         case 4: try decoder.decodeSingularMessageField(value: &_storage._nullMessage)
         case 5: try decoder.decodeSingularMessageField(value: &_storage._receiptMessage)
         case 6: try decoder.decodeSingularMessageField(value: &_storage._typingMessage)
+        case 101: try decoder.decodeSingularMessageField(value: &_storage._prekeyBundleMessage)
+        case 102: try decoder.decodeSingularMessageField(value: &_storage._lokiAddressMessage)
         default: break
         }
       }
@@ -2524,6 +2683,12 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
       if let v = _storage._typingMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
       }
+      if let v = _storage._prekeyBundleMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 101)
+      }
+      if let v = _storage._lokiAddressMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 102)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2539,10 +2704,112 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
         if _storage._nullMessage != rhs_storage._nullMessage {return false}
         if _storage._receiptMessage != rhs_storage._receiptMessage {return false}
         if _storage._typingMessage != rhs_storage._typingMessage {return false}
+        if _storage._prekeyBundleMessage != rhs_storage._prekeyBundleMessage {return false}
+        if _storage._lokiAddressMessage != rhs_storage._lokiAddressMessage {return false}
         return true
       }
       if !storagesAreEqual {return false}
     }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_PrekeyBundleMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PrekeyBundleMessage"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "identityKey"),
+    2: .same(proto: "deviceID"),
+    3: .same(proto: "prekeyID"),
+    4: .same(proto: "signedKeyID"),
+    5: .same(proto: "prekey"),
+    6: .same(proto: "signedKey"),
+    7: .same(proto: "signature"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularBytesField(value: &self._identityKey)
+      case 2: try decoder.decodeSingularUInt32Field(value: &self._deviceID)
+      case 3: try decoder.decodeSingularUInt32Field(value: &self._prekeyID)
+      case 4: try decoder.decodeSingularUInt32Field(value: &self._signedKeyID)
+      case 5: try decoder.decodeSingularBytesField(value: &self._prekey)
+      case 6: try decoder.decodeSingularBytesField(value: &self._signedKey)
+      case 7: try decoder.decodeSingularBytesField(value: &self._signature)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._identityKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    }
+    if let v = self._deviceID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
+    }
+    if let v = self._prekeyID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    }
+    if let v = self._signedKeyID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 4)
+    }
+    if let v = self._prekey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
+    }
+    if let v = self._signedKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
+    }
+    if let v = self._signature {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 7)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_PrekeyBundleMessage, rhs: SignalServiceProtos_PrekeyBundleMessage) -> Bool {
+    if lhs._identityKey != rhs._identityKey {return false}
+    if lhs._deviceID != rhs._deviceID {return false}
+    if lhs._prekeyID != rhs._prekeyID {return false}
+    if lhs._signedKeyID != rhs._signedKeyID {return false}
+    if lhs._prekey != rhs._prekey {return false}
+    if lhs._signedKey != rhs._signedKey {return false}
+    if lhs._signature != rhs._signature {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_LokiAddressMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".LokiAddressMessage"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "ptpAddress"),
+    2: .same(proto: "ptpPort"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self._ptpAddress)
+      case 2: try decoder.decodeSingularUInt32Field(value: &self._ptpPort)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._ptpAddress {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    }
+    if let v = self._ptpPort {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_LokiAddressMessage, rhs: SignalServiceProtos_LokiAddressMessage) -> Bool {
+    if lhs._ptpAddress != rhs._ptpAddress {return false}
+    if lhs._ptpPort != rhs._ptpPort {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -2837,6 +3104,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     8: .same(proto: "quote"),
     9: .same(proto: "contact"),
     10: .same(proto: "preview"),
+    101: .same(proto: "profile"),
   ]
 
   fileprivate class _StorageClass {
@@ -2850,6 +3118,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _quote: SignalServiceProtos_DataMessage.Quote? = nil
     var _contact: [SignalServiceProtos_DataMessage.Contact] = []
     var _preview: [SignalServiceProtos_DataMessage.Preview] = []
+    var _profile: SignalServiceProtos_DataMessage.Contact? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -2866,6 +3135,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _quote = source._quote
       _contact = source._contact
       _preview = source._preview
+      _profile = source._profile
     }
   }
 
@@ -2891,6 +3161,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 8: try decoder.decodeSingularMessageField(value: &_storage._quote)
         case 9: try decoder.decodeRepeatedMessageField(value: &_storage._contact)
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._preview)
+        case 101: try decoder.decodeSingularMessageField(value: &_storage._profile)
         default: break
         }
       }
@@ -2929,6 +3200,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if !_storage._preview.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._preview, fieldNumber: 10)
       }
+      if let v = _storage._profile {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 101)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2948,6 +3222,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._quote != rhs_storage._quote {return false}
         if _storage._contact != rhs_storage._contact {return false}
         if _storage._preview != rhs_storage._preview {return false}
+        if _storage._profile != rhs_storage._profile {return false}
         return true
       }
       if !storagesAreEqual {return false}

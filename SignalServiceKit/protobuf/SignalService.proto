@@ -61,7 +61,7 @@ message Content {
   optional ReceiptMessage       receiptMessage      = 5;
   optional TypingMessage        typingMessage       = 6;
   optional PrekeyBundleMessage  prekeyBundleMessage = 101; // Loki
-  optional LokiAddressMessage   LokiAddressMessage  = 102; // Loki
+  optional LokiAddressMessage   lokiAddressMessage  = 102; // Loki
 }
 
 message PrekeyBundleMessage { // Loki
@@ -75,8 +75,10 @@ message PrekeyBundleMessage { // Loki
 }
 
 message LokiAddressMessage { // Loki
-  optional string p2pAddress  = 1;
-  optional uint32 p2pPort     = 2;
+  // The naming is a bit different from desktop because of swift auto generation
+  // It doesn't like p2p much :(
+  optional string ptpAddress  = 1;
+  optional uint32 ptpPort     = 2;
 }
 
 message CallMessage {
