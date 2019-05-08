@@ -717,7 +717,13 @@ static NSTimeInterval launchStartedAt;
             [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
-
+            
+            [LokiAPI getMessages:^(id response, NSError *error) {
+                // TODO: Use the response
+            }];
+            
+            // TODO: Ping friends to let them know we're online
+            
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying to register for remote notifications since user hasn't registered yet.");
                 // Push tokens don't normally change while the app is launched, so checking once during launch is
@@ -1152,6 +1158,7 @@ static NSTimeInterval launchStartedAt;
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [LokiAPI getMessages:^(id response, NSError *error) {
             if (response != nil) {
+                // TODO: Use the response
                 completionHandler(UIBackgroundFetchResultNewData);
             } else {
                 completionHandler(UIBackgroundFetchResultFailed);
