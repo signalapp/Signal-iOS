@@ -1112,7 +1112,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSDictionary *signalMessage = deviceMessages.firstObject;
     BOOL isPoWRequired = YES; // TODO: Base on message type
     [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId requiringPoW:isPoWRequired]
-        .thenOn([OWSDispatch sendingQueue], ^(id result) {
+        .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             [self messageSendDidSucceed:messageSend
                          deviceMessages:deviceMessages
                             wasSentByUD:false

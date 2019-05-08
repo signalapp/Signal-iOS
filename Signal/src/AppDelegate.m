@@ -720,7 +720,6 @@ static NSTimeInterval launchStartedAt;
             
             [[LokiAPI objc_getMessages].then(^(id result) {
                 // TODO: Handle result
-                
              }).catch(^(NSError *error) {
                 
              }) retainUntilComplete];
@@ -1160,11 +1159,17 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"performing background fetch");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [[LokiAPI objc_getMessages].then(^(id result) {
+            // Show notification (TODO: use actual data for this)
+            UNMutableNotificationContent *notificationContent = [UNMutableNotificationContent new];
+            notificationContent.title = @"Spiderman";
+            notificationContent.body = @"Oh hello, can you help me fight crime for a bit?";
+            UNNotificationRequest *notificationRequest = [UNNotificationRequest requestWithIdentifier:[NSUUID UUID].UUIDString content:notificationContent trigger:nil];
+            [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:notificationRequest withCompletionHandler:nil];
+            // Invoke completion handler
             completionHandler(UIBackgroundFetchResultNewData);
          }).catch(^(NSError *error) {
             completionHandler(UIBackgroundFetchResultFailed);
          }) retainUntilComplete];
-
         // Loki: Original code
         // ========
 //        __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
