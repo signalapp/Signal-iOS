@@ -71,7 +71,7 @@ public class StickerPackViewController: OWSViewController {
             }
 
             // We need to consult StickerManager for the latest "isInstalled"
-            //  state, since the data source may be caching stale state.
+            // state, since the data source may be caching stale state.
             let isInstalled = StickerManager.isStickerPackInstalled(stickerPackInfo: stickerPack.info)
             if isInstalled {
                 self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),

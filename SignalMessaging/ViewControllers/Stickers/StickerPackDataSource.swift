@@ -344,7 +344,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
                 self.downloadKeySet.remove(key)
                 self.ensureState()
                 self.fireDidChange()
-            }.catch(on: DispatchQueue.global()) {  [weak self] (error) in
+            }.catch {  [weak self] (error) in
                 owsFailDebug("error: \(error)")
                 guard let self = self else {
                     return
@@ -385,7 +385,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
                 assert(self.downloadKeySet.contains(key))
                 self.downloadKeySet.remove(key)
                 self.set(filePath: filePath, forSticker: stickerInfo)
-            }.catch(on: DispatchQueue.global()) { [weak self] (error) in
+            }.catch { [weak self] (error) in
                 owsFailDebug("error: \(error)")
                 guard let self = self else {
                     return

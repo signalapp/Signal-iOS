@@ -56,6 +56,10 @@ public class StickerManager: NSObject {
     public enum InstallMode: Int {
         case doNotInstall
         case install
+        // For default packs that should be auto-installed,
+        // we only want to install the first time we save them.
+        // If a user subsequently uninstalls the pack, we want
+        // to honor that.
         case installIfUnsaved
     }
 
@@ -890,18 +894,19 @@ public class StickerManager: NSObject {
                 }
 
                 var stickersToUninstall = [InstalledSticker]()
-                for sticker in InstalledSticker.anyFetchAll(transaction: transaction) {
+                InstalledSticker.anyVisitAll(transaction: transaction) { (sticker) in
                     guard let pack = stickerPackMap[sticker.info.packInfo.asKey()] else {
                         stickersToUninstall.append(sticker)
-                        continue
+                        return true
                     }
                     if pack.isInstalled {
-                        continue
+                        return true
                     }
                     if pack.coverInfo == sticker.info {
-                        continue
+                        return true
                     }
                     stickersToUninstall.append(sticker)
+                    return true
                 }
                 if stickersToUninstall.count > 0 {
                     owsFailDebug("Removing \(stickersToUninstall.count) orphan stickers.")
