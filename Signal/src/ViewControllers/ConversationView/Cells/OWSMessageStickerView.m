@@ -136,7 +136,13 @@ NS_ASSUME_NONNULL_BEGIN
     self.bodyMediaView = bodyMediaView;
     bodyMediaView.userInteractionEnabled = NO;
 
-    [self.stackView addArrangedSubview:bodyMediaView];
+    // Wrap the sticker view - otherwise, a long header or footer
+    // will horizontally stretch the sticker content.
+    UIStackView *bodyViewWrapper = [[UIStackView alloc] initWithArrangedSubviews:@[ bodyMediaView ]];
+    bodyViewWrapper.axis = UILayoutConstraintAxisVertical;
+    bodyViewWrapper.alignment = UIStackViewAlignmentLeading;
+
+    [self.stackView addArrangedSubview:bodyViewWrapper];
 
     [self.footerView configureWithConversationViewItem:self.viewItem
                                      conversationStyle:self.conversationStyle
@@ -152,6 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self autoSetDimension:ALDimensionWidth toSize:bubbleSize.width],
         [bodyMediaView autoSetDimension:ALDimensionWidth toSize:bodyMediaSize.width],
         [bodyMediaView autoSetDimension:ALDimensionHeight toSize:bodyMediaSize.height],
+        [bodyViewWrapper autoSetDimension:ALDimensionHeight toSize:bodyMediaSize.height],
     ]];
 }
 
