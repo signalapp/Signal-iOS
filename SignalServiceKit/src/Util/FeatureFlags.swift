@@ -32,7 +32,11 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var useGRDB: Bool {
-        return false
+        if OWSIsDebugBuild() {
+            return true
+        } else {
+            return false
+        }
     }
 
     // Temporary flag helpful for development, where blowing away GRDB and re-running
