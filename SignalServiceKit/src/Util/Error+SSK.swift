@@ -26,10 +26,14 @@ extension NSError {
     }
 
     @objc
-    public func has4xxOr5xxResponseCode() -> Bool {
+    public func hasFatalResponseCode() -> Bool {
         guard let responseCode = httpResponseCode() else {
             return false
         }
-        return 400 <= responseCode && responseCode <= 599
+        if responseCode == 429 {
+            // "Too Many Requests", retry with backoff.
+            return false
+        }
+        return 400 <= responseCode && responseCode <= 499
     }
 }

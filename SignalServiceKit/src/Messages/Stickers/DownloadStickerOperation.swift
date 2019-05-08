@@ -22,7 +22,7 @@ class DownloadStickerOperation: OWSOperation {
 
         super.init()
 
-        self.remainingRetries = 10
+        self.remainingRetries = 4
     }
 
     // MARK: Dependencies
@@ -84,8 +84,7 @@ class DownloadStickerOperation: OWSOperation {
 
                                 let errorCopy = error as NSError
 
-                                // We do not retry 4xx and 5xx.
-                                errorCopy.isRetryable = !errorCopy.has4xxOr5xxResponseCode()
+                                errorCopy.isRetryable = !errorCopy.hasFatalResponseCode()
 
                                 self.reportError(errorCopy)
         })
