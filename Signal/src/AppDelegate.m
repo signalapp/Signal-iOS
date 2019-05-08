@@ -718,12 +718,10 @@ static NSTimeInterval launchStartedAt;
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
             
-            [[LokiAPI getMessagesObjc]
-             .then(^(id result) {
-                // TODO: handle result
+            [[LokiAPI objc_getMessages].then(^(id result) {
+                // TODO: Handle result
                 
-             })
-             .catch(^(NSError *error) {
+             }).catch(^(NSError *error) {
                 
              }) retainUntilComplete];
            
@@ -1161,11 +1159,9 @@ static NSTimeInterval launchStartedAt;
 {
     OWSLogInfo(@"performing background fetch");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [[LokiAPI getMessagesObjc]
-         .then(^(id result) {
+        [[LokiAPI objc_getMessages].then(^(id result) {
             completionHandler(UIBackgroundFetchResultNewData);
-         })
-         .catch(^(NSError *error) {
+         }).catch(^(NSError *error) {
             completionHandler(UIBackgroundFetchResultFailed);
          }) retainUntilComplete];
 

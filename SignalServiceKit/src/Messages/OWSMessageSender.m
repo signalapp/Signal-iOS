@@ -1111,31 +1111,27 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // Convert the message to a Loki message and send it using the Loki messaging API
     NSDictionary *signalMessage = deviceMessages.firstObject;
     BOOL isPoWRequired = YES; // TODO: Base on message type
-    
-    [[LokiAPI sendSignalMessage:signalMessage to:recipient.recipientId requiringPoW:isPoWRequired]
+    [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId requiringPoW:isPoWRequired]
         .thenOn([OWSDispatch sendingQueue], ^(id result) {
             [self messageSendDidSucceed:messageSend
                          deviceMessages:deviceMessages
                             wasSentByUD:false
                      wasSentByWebsocket:false];
         })
-        .catchOn([OWSDispatch sendingQueue], ^(NSError *error) {
+        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
             NSUInteger statusCode = 0;
             NSData *_Nullable responseData = nil;
             if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
                 statusCode = error.code;
-                
                 NSError *_Nullable underlyingError = error.userInfo[NSUnderlyingErrorKey];
                 if (underlyingError) {
-                    responseData
-                    = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+                    responseData = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
                 } else {
                     OWSFailDebug(@"Missing underlying error: %@", error);
                 }
             } else {
                 OWSFailDebug(@"Unexpected error: %@", error);
             }
-            
             [self messageSendDidFail:messageSend
                       deviceMessages:deviceMessages
                           statusCode:statusCode
