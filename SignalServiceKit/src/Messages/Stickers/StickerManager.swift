@@ -691,11 +691,12 @@ public class StickerManager: NSObject {
             guard let latestCopy = StickerPack.anyFetch(uniqueId: StickerPack.uniqueId(for: packInfo), transaction: transaction) else {
                 return
             }
-            if latestCopy.isInstalled {
-                self.uninstallStickerPack(stickerPackInfo: packInfo,
-                                          uninstallCover: true,
-                                          transaction: transaction)
+            guard !latestCopy.isInstalled else {
+                return
             }
+            self.uninstallStickerPack(stickerPackInfo: packInfo,
+                                      uninstallCover: true,
+                                      transaction: transaction)
             latestCopy.anyRemove(transaction: transaction)
         } else {
             pack.anySave(transaction: transaction)
