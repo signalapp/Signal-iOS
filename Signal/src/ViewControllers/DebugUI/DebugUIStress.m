@@ -34,16 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self.class.messageSenderJobQueue;
 }
 
-- (YapDatabaseConnection *)dbConnection
-{
-    return self.class.dbConnection;
-}
-
-+ (YapDatabaseConnection *)dbConnection
-{
-    return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
-}
-
 + (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;

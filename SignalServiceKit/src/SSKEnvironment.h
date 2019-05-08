@@ -24,6 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSPrimaryStorage;
 @class OWSReadReceiptManager;
 @class SDSDatabaseStorage;
+@class SSKPreKeyStore;
+@class SSKSessionStore;
+@class SSKSignedPreKeyStore;
 @class StickerManager;
 @class TSAccountManager;
 @class TSNetworkManager;
@@ -52,6 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(OWSBlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
+                           sessionStore:(SSKSessionStore *)sessionStore
+                      signedPreKeyStore:(SSKSignedPreKeyStore *)signedPreKeyStore
+                            preKeyStore:(SSKPreKeyStore *)preKeyStore
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
@@ -92,6 +98,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSMessageManager *messageManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSIdentityManager *identityManager;
+@property (nonatomic, readonly) SSKSessionStore *sessionStore;
+@property (nonatomic, readonly) SSKSignedPreKeyStore *signedPreKeyStore;
+@property (nonatomic, readonly) SSKPreKeyStore *preKeyStore;
 @property (nonatomic, readonly) id<OWSUDManager> udManager;
 @property (nonatomic, readonly) OWSMessageDecrypter *messageDecrypter;
 @property (nonatomic, readonly) OWSBatchMessageProcessor *batchMessageProcessor;
@@ -107,6 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) id<SSKReachabilityManager> reachabilityManager;
 @property (nonatomic, readonly) id<OWSTypingIndicators> typingIndicators;
 @property (nonatomic, readonly) OWSAttachmentDownloads *attachmentDownloads;
+
 @property (nonatomic, readonly) StickerManager *stickerManager;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 
@@ -116,7 +126,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, nullable) id<NotificationsProtocol> notificationsManager;
 
 @property (atomic, readonly) YapDatabaseConnection *objectReadWriteConnection;
-@property (atomic, readonly) YapDatabaseConnection *sessionStoreDBConnection;
 @property (atomic, readonly) YapDatabaseConnection *migrationDBConnection;
 @property (atomic, readonly) YapDatabaseConnection *analyticsDBConnection;
 

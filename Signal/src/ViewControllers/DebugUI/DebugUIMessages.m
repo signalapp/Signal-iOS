@@ -17,9 +17,9 @@
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
+#import <SignalServiceKit/SSKSessionStore.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
@@ -3782,9 +3782,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
                   TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:phoneNumber.toE164];
                   [self sendFakeMessages:messageCount thread:contactThread];
-                  OWSLogError(@"Create fake thread: %@, interactions: %lu",
-                      phoneNumber.toE164,
-                      (unsigned long)contactThread.numberOfInteractions);
+                  [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                      NSUInteger interactionCount = [contactThread numberOfInteractionsWithTransaction:transaction];
+                      OWSLogError(@"Create fake thread: %@, interactions: %lu",
+                          phoneNumber.toE164,
+                          (unsigned long)interactionCount);
+                  }];
               }];
 }
 
@@ -4086,13 +4089,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        if (!transaction.transitional_yapWriteTransaction) {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
         [SSKEnvironment.shared.batchMessageProcessor enqueueEnvelopeData:envelopeData
                                                            plaintextData:plaintextData
                                                          wasReceivedByUD:NO
-                                                             transaction:transaction.transitional_yapWriteTransaction];
+                                                             transaction:transaction];
     }];
 }
 

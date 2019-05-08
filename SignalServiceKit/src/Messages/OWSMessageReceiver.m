@@ -410,7 +410,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     [self.messageDecrypter decryptEnvelope:envelope
         envelopeData:job.envelopeData
-        successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
+        successBlock:^(OWSMessageDecryptResult *result, SDSAnyWriteTransaction *transaction) {
             OWSAssertDebug(transaction);
 
             // We persist the decrypted envelope data in the same transaction within which
@@ -443,7 +443,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @property (nonatomic, readonly) YAPDBMessageDecryptQueue *yapProcessingQueue;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
-
+@property (nonatomic, readonly) SSKMessageDecryptJobQueue *processingQueue;
 @end
 
 #pragma mark -
@@ -466,6 +466,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         [[YAPDBMessageDecryptQueue alloc] initWithDBConnection:dbConnection finder:finder];
 
     _yapProcessingQueue = yapProcessingQueue;
+
+    _processingQueue = [SSKMessageDecryptJobQueue new];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (CurrentAppContext().isMainApp) {
@@ -513,8 +515,13 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"Unexpectedly large message.");
     }
 
-    [self.yapProcessingQueue enqueueEnvelopeData:envelopeData];
-    [self.yapProcessingQueue drainQueue];
+    if (SSKFeatureFlags.useGRDB) {
+        // We *could* use this processing Queue for Yap *and* GRDB
+        [self.processingQueue enqueueEnvelopeData:envelopeData];
+    } else {
+        [self.yapProcessingQueue enqueueEnvelopeData:envelopeData];
+        [self.yapProcessingQueue drainQueue];
+    }
 }
 
 @end

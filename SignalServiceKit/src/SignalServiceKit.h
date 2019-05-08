@@ -20,6 +20,7 @@
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSSyncManagerProtocol.h>
 #import <SignalServiceKit/SSKJobRecord.h>
+#import <SignalServiceKit/SSKMessageDecryptJobRecord.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/StickerPack.h>
@@ -30,3 +31,4 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
+#import <SignalServiceKit/YAPDBMessageContentJobFinder.h>

@@ -17,7 +17,7 @@
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
+#import <SignalServiceKit/SSKSessionStore.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
 
@@ -521,8 +521,9 @@ typedef void (^CustomLayoutBlock)(void);
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
         [OWSPrimaryStorage.sharedManager.newDatabaseConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId
-                                                                                          transaction:transaction]
+                BOOL isVerified =
+                    [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId
+                                                                            transaction:transaction.asAnyWrite]
                     == OWSVerificationStateVerified;
 
                 OWSVerificationState newVerificationState
@@ -531,7 +532,7 @@ typedef void (^CustomLayoutBlock)(void);
                                                              identityKey:self.identityKey
                                                              recipientId:self.recipientId
                                                    isUserInitiatedChange:YES
-                                                             transaction:transaction];
+                                                             transaction:transaction.asAnyWrite];
             }];
 
         [self dismissViewControllerAnimated:YES completion:nil];

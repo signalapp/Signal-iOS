@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPrimaryStorage.h"
@@ -10,11 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 // Used for testing
 extern NSString *const OWSPrimaryStorageSignedPreKeyStoreCollection;
 
-@interface OWSPrimaryStorage (SignedPreKeyStore) <SignedPreKeyStore>
+@interface SSKSignedPreKeyStore : NSObject <SignedPreKeyStore>
 
 - (SignedPreKeyRecord *)generateRandomSignedRecord;
-
-- (nullable SignedPreKeyRecord *)loadSignedPrekeyOrNil:(int)signedPreKeyId;
 
 // Returns nil if no current signed prekey id is found.
 - (nullable NSNumber *)currentSignedPrekeyId;
@@ -25,7 +23,7 @@ extern NSString *const OWSPrimaryStorageSignedPreKeyStoreCollection;
 
 - (int)prekeyUpdateFailureCount;
 - (void)clearPrekeyUpdateFailureCount;
-- (int)incrementPrekeyUpdateFailureCount;
+- (NSInteger)incrementPrekeyUpdateFailureCount;
 
 - (nullable NSDate *)firstPrekeyUpdateFailureDate;
 - (void)setFirstPrekeyUpdateFailureDate:(nonnull NSDate *)value;

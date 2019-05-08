@@ -354,14 +354,10 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 }
 #pragma clang diagnostic pop
 
-- (NSUInteger)numberOfInteractions
+- (NSUInteger)numberOfInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    __block NSUInteger count;
-    [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
-        count = [interactionsByThread numberOfItemsInGroup:self.uniqueId];
-    }];
-    return count;
+    OWSAssertDebug(transaction);
+    return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] countWithTransaction:transaction];
 }
 
 - (NSArray<id<OWSReadTracking>> *)unseenMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction

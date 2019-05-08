@@ -93,8 +93,8 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection
     }
 
-    var primaryStorage: OWSPrimaryStorage {
-        return SSKEnvironment.shared.primaryStorage
+    var sessionStore: SSKSessionStore {
+        return SSKEnvironment.shared.sessionStore
     }
 
     var messageSender: MessageSender {
@@ -111,7 +111,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         if firstAttempt {
             self.dbConnection.readWrite { transaction in
                 Logger.info("deleting sessions for recipient: \(self.recipientId)")
-                self.primaryStorage.deleteAllSessions(forContact: self.recipientId, transaction: transaction)
+                self.sessionStore.deleteAllSessions(forContact: self.recipientId, transaction: transaction.asAnyWrite)
             }
             firstAttempt = false
         }
@@ -126,7 +126,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
                 // Archive the just-created session since the recipient should delete their corresponding
                 // session upon receiving and decrypting our EndSession message.
                 // Otherwise if we send another message before them, they wont have the session to decrypt it.
-                self.primaryStorage.archiveAllSessions(forContact: self.recipientId, transaction: transaction)
+                self.sessionStore.archiveAllSessions(forContact: self.recipientId, transaction: transaction.asAnyWrite)
 
                 let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                             in: self.contactThread,
@@ -184,7 +184,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             // Archive the just-created session since the recipient should delete their corresponding
             // session upon receiving and decrypting our EndSession message.
             // Otherwise if we send another message before them, they wont have the session to decrypt it.
-            self.primaryStorage.archiveAllSessions(forContact: self.recipientId, transaction: transaction)
+            self.sessionStore.archiveAllSessions(forContact: self.recipientId, transaction: transaction.asAnyWrite)
         }
     }
 }

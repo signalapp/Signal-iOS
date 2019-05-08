@@ -109,6 +109,7 @@ public class StickerManager: NSObject {
             }
 
             StickerManager.cleanupOrphans()
+
         }
     }
 

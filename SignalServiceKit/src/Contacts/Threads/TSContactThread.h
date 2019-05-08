@@ -44,8 +44,13 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
++ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
+                                anyTransaction:(SDSAnyWriteTransaction *)transaction;
+
 // Unlike getOrCreateThreadWithContactId, this will _NOT_ create a thread if one does not already exist.
 + (nullable instancetype)getThreadWithContactId:(NSString *)contactId transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable instancetype)getThreadWithContactId:(NSString *)contactId
+                                 anyTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (NSString *)contactIdentifier;
 

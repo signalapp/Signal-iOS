@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
         presentFromViewController:fromViewController
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      NSString *phoneNumber = self.tsAccountManager.reregisterationPhoneNumber;
+                      NSString *phoneNumber = self.tsAccountManager.reregistrationPhoneNumber;
                       [self.tsAccountManager registerWithPhoneNumber:phoneNumber
                           captchaToken:nil
                           success:^{

@@ -35,6 +35,13 @@ public class SDSKeyValueStore: NSObject {
         super.init()
     }
 
+    // MARK: Class Helpers
+
+    @objc
+    public class func key(int: Int) -> String {
+        return NSNumber(value: int).stringValue
+    }
+
     // MARK: - String
 
     @objc
@@ -49,6 +56,22 @@ public class SDSKeyValueStore: NSObject {
             return
         }
         write(value as NSString, forKey: key, transaction: transaction)
+    }
+
+    // MARK: - Date
+
+    @objc
+    public func getDate(_ key: String, transaction: SDSAnyReadTransaction) -> Date? {
+        guard let epochInterval: NSNumber = read(key, transaction: transaction) else {
+            return nil
+        }
+        return Date(timeIntervalSince1970: epochInterval.doubleValue)
+    }
+
+    @objc
+    public func setDate(_ value: Date, key: String, transaction: SDSAnyWriteTransaction) {
+        let epochInterval = NSNumber(value: value.timeIntervalSince1970)
+        setObject(epochInterval, key: key, transaction: transaction)
     }
 
     // MARK: - Bool
@@ -79,6 +102,21 @@ public class SDSKeyValueStore: NSObject {
         writeData(value, forKey: key, transaction: transaction)
     }
 
+    // MARK: - Numeric
+
+    @objc
+    public func getInt(_ key: String, transaction: SDSAnyReadTransaction) -> Int {
+        guard let number: NSNumber = read(key, transaction: transaction) else {
+            return 0
+        }
+        return number.intValue
+    }
+
+    @objc
+    public func setInt(_ value: Int, key: String, transaction: SDSAnyWriteTransaction) {
+        setObject(NSNumber(value: value), key: key, transaction: transaction)
+    }
+
     // MARK: - Object
 
     @objc
@@ -100,7 +138,61 @@ public class SDSKeyValueStore: NSObject {
         write(codingValue, forKey: key, transaction: transaction)
     }
 
-    // MARK: - Debugging
+    @objc
+    public func removeValue(forKey: String, transaction: SDSAnyWriteTransaction) {
+        write(nil, forKey: forKey, transaction: transaction)
+    }
+
+    @objc
+    public func removeAll(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let yapWrite):
+            yapWrite.removeAllObjects(inCollection: collection)
+        case .grdbWrite(let grdbWrite):
+            let sql = """
+                DELETE
+                FROM \(SDSKeyValueStore.table.tableName)
+                WHERE \(SDSKeyValueStore.collectionColumn.columnName) == ?
+            """
+            do {
+                try grdbWrite.database.execute(sql: sql, arguments: [collection])
+            } catch {
+                owsFail("error: \(error)")
+            }
+        }
+    }
+
+    @objc
+    public func enumerateKeysAndObjects(transaction: SDSAnyReadTransaction, block: @escaping (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeysAndObjects(inCollection: collection) { (key: String, value: Any, stopPtr: UnsafeMutablePointer<ObjCBool>) in
+                block(key, value, stopPtr)
+            }
+        case .grdbRead(let grdbRead):
+            var stop: ObjCBool = false
+            // PERF - we could enumerate with a single query rather than
+            // fetching keys then fetching objects one by one. In practice
+            // the collections that use this are pretty small.
+            for key in allKeys(grdbTransaction: grdbRead) {
+                guard !stop.boolValue else {
+                    return
+                }
+                guard let value: Any = read(key, transaction: transaction) else {
+                    owsFailDebug("value was unexpectedly nil")
+                    continue
+                }
+                block(key, value, &stop)
+            }
+        }
+    }
+
+    @objc
+    public func allValues(transaction: SDSAnyReadTransaction) -> [Any] {
+        return allKeys(transaction: transaction).map { key in
+            return self.read(key, transaction: transaction)
+        }
+    }
 
     @objc
     public func allKeys(transaction: SDSAnyReadTransaction) -> [String] {
@@ -108,15 +200,37 @@ public class SDSKeyValueStore: NSObject {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.allKeys(inCollection: collection)
         case .grdbRead(let grdbRead):
+            return allKeys(grdbTransaction: grdbRead)
+        }
+    }
+
+    @objc
+    func numberOfKeys(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: collection)
+        case .grdbRead(let grdbRead):
             let sql = """
-            SELECT \(SDSKeyValueStore.keyColumn.columnName)
+            SELECT COUNT(*)
             FROM \(SDSKeyValueStore.table.tableName)
             WHERE \(SDSKeyValueStore.collectionColumn.columnName) == ?
             """
-            return try! String.fetchAll(grdbRead.database,
-                                        sql: sql,
-                                        arguments: [collection])
+            do {
+                guard let numberOfKeys = try UInt.fetchOne(grdbRead.database,
+                                                           sql: sql,
+                                                           arguments: [collection]) else {
+                                                            throw OWSErrorMakeAssertionError("numberOfKeys was unexpectedly nil")
+                }
+                return numberOfKeys
+            } catch {
+                owsFail("error: \(error)")
+            }
         }
+    }
+
+    @objc
+    var asObjC: SDSKeyValueStoreObjC {
+        return SDSKeyValueStoreObjC(sdsKeyValueStore: self)
     }
 
     // MARK: - Internal Methods
@@ -255,5 +369,16 @@ public class SDSKeyValueStore: NSObject {
         // TODO: We could use setArgumentsWithValidation for more safety.
         statement.unsafeSetArguments(statementArguments)
         try statement.execute()
+    }
+
+    private func allKeys(grdbTransaction: GRDBReadTransaction) -> [String] {
+        let sql = """
+        SELECT \(SDSKeyValueStore.keyColumn.columnName)
+        FROM \(SDSKeyValueStore.table.tableName)
+        WHERE \(SDSKeyValueStore.collectionColumn.columnName) == ?
+        """
+        return try! String.fetchAll(grdbTransaction.database,
+                                    sql: sql,
+                                    arguments: [collection])
     }
 }

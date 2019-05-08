@@ -78,11 +78,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [self objectForKey:key inCollection:collection ofExpectedType:[PreKeyRecord class]];
 }
 
-- (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection
-{
-    return [self objectForKey:key inCollection:collection ofExpectedType:[SignedPreKeyRecord class]];
-}
-
 - (int)intForKey:(NSString *)key inCollection:(NSString *)collection
 {
     NSNumber *_Nullable number = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
@@ -165,17 +160,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(collection.length > 0);
 
     [self setObject:@(value) forKey:key inCollection:collection];
-}
-
-- (int)incrementIntForKey:(NSString *)key inCollection:(NSString *)collection
-{
-    __block int value = 0;
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        value = [[transaction objectForKey:key inCollection:collection] intValue];
-        value++;
-        [transaction setObject:@(value) forKey:key inCollection:collection];
-    }];
-    return value;
 }
 
 - (void)setDate:(NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection

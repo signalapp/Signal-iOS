@@ -198,7 +198,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
                         withName:[TSDatabaseSecondaryIndexes registerTimeStampIndexExtensionName]];
 
     [OWSMessageReceiver asyncRegisterDatabaseExtension:self];
-    [OWSBatchMessageProcessor asyncRegisterDatabaseExtension:self];
+    [YAPDBMessageContentJobFinder asyncRegisterDatabaseExtension:self];
 
     [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
     [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];

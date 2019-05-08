@@ -498,6 +498,7 @@
 		4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C21D5D7223AC60F00EF8A77 /* PhotoCapture.swift */; };
 		4C23A5F2215C4ADE00534937 /* SheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C23A5F1215C4ADE00534937 /* SheetViewController.swift */; };
 		4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */; };
+		4C3A556F228C7937000E4935 /* PrivateMethodsForMigration.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3A556E228C7937000E4935 /* PrivateMethodsForMigration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C3E245C21F29FCE000AE092 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA5F792211E1F06008C2708 /* Toast.swift */; };
 		4C3E245D21F2B395000AE092 /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */; };
 		4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */; };
@@ -1274,6 +1275,7 @@
 		4C21D5D7223AC60F00EF8A77 /* PhotoCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCapture.swift; sourceTree = "<group>"; };
 		4C23A5F1215C4ADE00534937 /* SheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetViewController.swift; sourceTree = "<group>"; };
 		4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarTableViewCell.swift; sourceTree = "<group>"; };
+		4C3A556E228C7937000E4935 /* PrivateMethodsForMigration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrivateMethodsForMigration.h; sourceTree = "<group>"; };
 		4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParamParserTest.swift; sourceTree = "<group>"; };
 		4C3EF801210918740007EBF7 /* SSKProtoEnvelopeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKProtoEnvelopeTest.swift; sourceTree = "<group>"; };
 		4C4AE69F224AF21900D4AF6F /* SendMediaNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMediaNavigationController.swift; sourceTree = "<group>"; };
@@ -1840,6 +1842,7 @@
 				34ABB2C32090C59700C727A6 /* OWSResaveCollectionDBMigration.h */,
 				34ABB2C22090C59600C727A6 /* OWSResaveCollectionDBMigration.m */,
 				342BF251227B2D4D005CEAA9 /* OWSResaveCollectionDBMigration+SDS.swift */,
+				4C3A556E228C7937000E4935 /* PrivateMethodsForMigration.h */,
 			);
 			path = migrations;
 			sourceTree = "<group>";
@@ -2786,6 +2789,7 @@
 				34612A001FD5F31400532771 /* OWS105AttachmentFilePaths.h in Headers */,
 				346129F61FD5F31400532771 /* OWS103EnableVideoCalling.h in Headers */,
 				346129A91FD1F0E000532771 /* OWSFormat.h in Headers */,
+				4C3A556F228C7937000E4935 /* PrivateMethodsForMigration.h in Headers */,
 				34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */,
 				4503F1C4204711D300CEE724 /* OWS107LegacySounds.h in Headers */,
 				346129711FD1D74C00532771 /* SignalKeyingStorage.h in Headers */,

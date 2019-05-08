@@ -27,7 +27,7 @@
 {
     [super setUp];
 
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         self.thread = [TSContactThread getOrCreateThreadWithContactId:@"aStupidId" transaction:transaction];
 
         [self.thread saveWithTransaction:transaction];
@@ -62,7 +62,7 @@
                                                        contactShare:nil
                                                         linkPreview:nil];
 
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [newMessage saveWithTransaction:transaction];
         messageId = newMessage.uniqueId;
     }];
@@ -129,7 +129,7 @@
           @"privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
     __block TSGroupThread *thread;
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd"
                                                                                           memberIds:[@[] mutableCopy]
                                                                                               image:nil

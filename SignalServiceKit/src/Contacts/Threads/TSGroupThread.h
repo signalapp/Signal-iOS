@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
 @class YapDatabaseReadWriteTransaction;
 
@@ -51,8 +53,10 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId;
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId anyTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable instancetype)threadWithGroupId:(NSData *)groupId anyTransaction:(SDSAnyReadTransaction *)transaction;
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
 
@@ -62,7 +66,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 
 // all group threads containing recipient as a member
 + (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId
-                                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                              transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)leaveGroupWithSneakyTransaction;
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;

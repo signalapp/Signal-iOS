@@ -21,6 +21,9 @@
 #import "OWSOutgoingReceiptManager.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
+#import "SSKPreKeyStore.h"
+#import "SSKSessionStore.h"
+#import "SSKSignedPreKeyStore.h"
 #import "TSAccountManager.h"
 #import "TSSocketManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -50,22 +53,25 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init
 {
     OWSPrimaryStorage *primaryStorage = [MockSSKEnvironment createPrimaryStorageForTests];
+    SDSDatabaseStorage *databaseStorage = [[SDSDatabaseStorage alloc] init];
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
     OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
     TSNetworkManager *networkManager = [OWSFakeNetworkManager new];
     OWSMessageSender *messageSender = [OWSFakeMessageSender new];
     MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
 
-    OWSMessageManager *messageManager = [[OWSMessageManager alloc] initWithPrimaryStorage:primaryStorage];
+    OWSMessageManager *messageManager = [OWSMessageManager new];
     OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
-    OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
+    OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
+    SSKSessionStore *sessionStore = [SSKSessionStore new];
+    SSKPreKeyStore *preKeyStore = [SSKPreKeyStore new];
+    SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
     id<OWSUDManager> udManager = [[OWSUDManagerImpl alloc] initWithPrimaryStorage:primaryStorage];
-    OWSMessageDecrypter *messageDecrypter = [[OWSMessageDecrypter alloc] initWithPrimaryStorage:primaryStorage];
-    OWSBatchMessageProcessor *batchMessageProcessor =
-        [[OWSBatchMessageProcessor alloc] initWithPrimaryStorage:primaryStorage];
+    OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
+    OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
     OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
     TSSocketManager *socketManager = [[TSSocketManager alloc] init];
-    TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
+    TSAccountManager *tsAccountManager = [TSAccountManager new];
     OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];
     OWSDisappearingMessagesJob *disappearingMessagesJob =
         [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
@@ -78,7 +84,6 @@ NS_ASSUME_NONNULL_BEGIN
     id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
     OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
     StickerManager *stickerManager = [[StickerManager alloc] init];
-    SDSDatabaseStorage *databaseStorage = [[SDSDatabaseStorage alloc] init];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -91,6 +96,9 @@ NS_ASSUME_NONNULL_BEGIN
                            messageManager:messageManager
                           blockingManager:blockingManager
                           identityManager:identityManager
+                             sessionStore:sessionStore
+                        signedPreKeyStore:signedPreKeyStore
+                              preKeyStore:preKeyStore
                                 udManager:udManager
                          messageDecrypter:messageDecrypter
                     batchMessageProcessor:batchMessageProcessor
@@ -127,6 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configure
 {
+    [self.databaseStorage clearGRDBStorageForTests];
     __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     [OWSStorage registerExtensionsWithMigrationBlock:^() {
         dispatch_semaphore_signal(semaphore);

@@ -19,14 +19,14 @@
 #import "OWSOperation.h"
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSOutgoingSyncMessage.h"
-#import "OWSPrimaryStorage+PreKeyStore.h"
-#import "OWSPrimaryStorage+SignedPreKeyStore.h"
-#import "OWSPrimaryStorage+sessionStore.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "OWSUploadOperation.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "SSKEnvironment.h"
+#import "SSKPreKeyStore.h"
+#import "SSKSessionStore.h"
+#import "SSKSignedPreKeyStore.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
@@ -311,6 +311,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (OWSIdentityManager *)identityManager
 {
     return SSKEnvironment.shared.identityManager;
+}
+
+- (SSKSessionStore *)sessionStore
+{
+    return SSKEnvironment.shared.sessionStore;
+}
+
+- (SSKPreKeyStore *)preKeyStore
+{
+    return SSKEnvironment.shared.preKeyStore;
+}
+
+- (SSKSignedPreKeyStore *)signedPreKeyStore
+{
+    return SSKEnvironment.shared.signedPreKeyStore;
 }
 
 #pragma mark -
@@ -1347,9 +1362,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             if (extraDevices && extraDevices.count > 0) {
                 OWSLogInfo(@"Deleting sessions for extra devices: %@", extraDevices);
                 for (NSNumber *extraDeviceId in extraDevices) {
-                    [self.primaryStorage deleteSessionForContact:recipient.uniqueId
-                                                        deviceId:extraDeviceId.intValue
-                                                     transaction:transaction];
+                    [self.sessionStore deleteSessionForContact:recipient.uniqueId
+                                                      deviceId:extraDeviceId.intValue
+                                                   transaction:transaction.asAnyWrite];
                 }
             }
 
@@ -1523,14 +1538,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
 
-    OWSPrimaryStorage *storage = self.primaryStorage;
     SignalRecipient *recipient = messageSend.recipient;
     NSString *recipientId = recipient.recipientId;
     OWSAssertDebug(recipientId.length > 0);
 
     __block BOOL hasSession;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        hasSession = [storage containsSession:recipientId deviceId:[deviceId intValue] transaction:transaction];
+        hasSession = [self.sessionStore containsSession:recipientId
+                                               deviceId:[deviceId intValue]
+                                            transaction:transaction.asAnyWrite];
     }];
     if (hasSession) {
         return;
@@ -1574,9 +1590,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSRaiseException(
             missingPrekeyBundleException, @"Can't get a prekey bundle from the server with required information");
     } else {
-        SessionBuilder *builder = [[SessionBuilder alloc] initWithSessionStore:storage
-                                                                   preKeyStore:storage
-                                                             signedPreKeyStore:storage
+        SessionBuilder *builder = [[SessionBuilder alloc] initWithSessionStore:self.sessionStore
+                                                                   preKeyStore:self.preKeyStore
+                                                             signedPreKeyStore:self.signedPreKeyStore
                                                               identityKeyStore:self.identityManager
                                                                    recipientId:recipientId
                                                                       deviceId:[deviceId intValue]];
@@ -1661,14 +1677,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(plainText);
     OWSAssertDebug(transaction);
 
-    OWSPrimaryStorage *storage = self.primaryStorage;
     TSOutgoingMessage *message = messageSend.message;
     SignalRecipient *recipient = messageSend.recipient;
     NSString *recipientId = recipient.recipientId;
     OWSAssertDebug(recipientId.length > 0);
 
-    // This may throw an exception.
-    if (![storage containsSession:recipientId deviceId:[deviceId intValue] transaction:transaction]) {
+    if (![self.sessionStore containsSession:recipientId
+                                   deviceId:[deviceId intValue]
+                                transaction:transaction.asAnyWrite]) {
         NSString *missingSessionException = @"missingSessionException";
         OWSRaiseException(missingSessionException,
             @"Unexpectedly missing session for recipient: %@, device: %@",
@@ -1676,9 +1692,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             deviceId);
     }
 
-    SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storage
-                                                            preKeyStore:storage
-                                                      signedPreKeyStore:storage
+    SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:self.sessionStore
+                                                            preKeyStore:self.preKeyStore
+                                                      signedPreKeyStore:self.signedPreKeyStore
                                                        identityKeyStore:self.identityManager
                                                             recipientId:recipientId
                                                                deviceId:[deviceId intValue]];
@@ -1688,9 +1704,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (messageSend.isUDSend) {
         NSError *error;
         SMKSecretSessionCipher *_Nullable secretCipher =
-            [[SMKSecretSessionCipher alloc] initWithSessionStore:self.primaryStorage
-                                                     preKeyStore:self.primaryStorage
-                                               signedPreKeyStore:self.primaryStorage
+            [[SMKSecretSessionCipher alloc] initWithSessionStore:self.sessionStore
+                                                     preKeyStore:self.preKeyStore
+                                               signedPreKeyStore:self.signedPreKeyStore
                                                    identityStore:self.identityManager
                                                            error:&error];
         if (error || !secretCipher) {
@@ -1789,9 +1805,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (NSUInteger i = 0; i < [devices count]; i++) {
                 int deviceNumber = [devices[i] intValue];
-                [[OWSPrimaryStorage sharedManager] deleteSessionForContact:identifier
-                                                                  deviceId:deviceNumber
-                                                               transaction:transaction];
+                [self.sessionStore deleteSessionForContact:identifier
+                                                  deviceId:deviceNumber
+                                               transaction:transaction.asAnyWrite];
             }
         }];
         completionHandler();

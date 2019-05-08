@@ -9,7 +9,6 @@
 #import "NotificationsProtocol.h"
 #import "OWSBackgroundTask.h"
 #import "OWSMessageManager.h"
-#import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSQueues.h"
 #import "OWSStorage.h"
@@ -19,10 +18,6 @@
 #import "TSErrorMessage.h"
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseAutoView.h>
-#import <YapDatabase/YapDatabaseConnection.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
-#import <YapDatabase/YapDatabaseViewTypes.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -102,159 +97,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-#pragma mark - Finder
-
-NSString *const OWSMessageContentJobFinderExtensionName = @"OWSMessageContentJobFinderExtensionName2";
-NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJobFinderExtensionGroup2";
-
-@interface OWSMessageContentJobFinder : NSObject
-
-@end
-
-#pragma mark -
-
-@interface OWSMessageContentJobFinder ()
-
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
-
-@end
-
-#pragma mark -
-
-@implementation OWSMessageContentJobFinder
-
-- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
-{
-    OWSSingletonAssert();
-
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _dbConnection = dbConnection;
-
-    return self;
-}
-
-- (NSArray<OWSMessageContentJob *> *)nextJobsForBatchSize:(NSUInteger)maxBatchSize
-{
-    NSMutableArray<OWSMessageContentJob *> *jobs = [NSMutableArray new];
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        YapDatabaseViewTransaction *viewTransaction = [transaction ext:OWSMessageContentJobFinderExtensionName];
-        OWSAssertDebug(viewTransaction != nil);
-        [viewTransaction enumerateKeysAndObjectsInGroup:OWSMessageContentJobFinderExtensionGroup
-                                             usingBlock:^(NSString *_Nonnull collection,
-                                                 NSString *_Nonnull key,
-                                                 id _Nonnull object,
-                                                 NSUInteger index,
-                                                 BOOL *_Nonnull stop) {
-                                                 OWSMessageContentJob *job = object;
-                                                 [jobs addObject:job];
-                                                 if (jobs.count >= maxBatchSize) {
-                                                     *stop = YES;
-                                                 }
-                                             }];
-    }];
-
-    return [jobs copy];
-}
-
-- (void)addJobWithEnvelopeData:(NSData *)envelopeData
-                 plaintextData:(NSData *_Nullable)plaintextData
-               wasReceivedByUD:(BOOL)wasReceivedByUD
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(envelopeData);
-    OWSAssertDebug(transaction);
-
-    OWSMessageContentJob *job = [[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData
-                                                                     plaintextData:plaintextData
-                                                                   wasReceivedByUD:wasReceivedByUD];
-    [job saveWithTransaction:transaction];
-}
-
-- (void)removeJobsWithIds:(NSArray<NSString *> *)uniqueIds
-{
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [transaction removeObjectsForKeys:uniqueIds inCollection:[OWSMessageContentJob collection]];
-    }];
-}
-
-+ (YapDatabaseView *)databaseExtension
-{
-    YapDatabaseViewSorting *sorting =
-        [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *transaction,
-            NSString *group,
-            NSString *collection1,
-            NSString *key1,
-            id object1,
-            NSString *collection2,
-            NSString *key2,
-            id object2) {
-
-            if (![object1 isKindOfClass:[OWSMessageContentJob class]]) {
-                OWSFailDebug(@"Unexpected object: %@ in collection: %@", [object1 class], collection1);
-                return NSOrderedSame;
-            }
-            OWSMessageContentJob *job1 = (OWSMessageContentJob *)object1;
-
-            if (![object2 isKindOfClass:[OWSMessageContentJob class]]) {
-                OWSFailDebug(@"Unexpected object: %@ in collection: %@", [object2 class], collection2);
-                return NSOrderedSame;
-            }
-            OWSMessageContentJob *job2 = (OWSMessageContentJob *)object2;
-
-            return [job1.createdAt compare:job2.createdAt];
-        }];
-
-    YapDatabaseViewGrouping *grouping =
-        [YapDatabaseViewGrouping withObjectBlock:^NSString *_Nullable(YapDatabaseReadTransaction *_Nonnull transaction,
-            NSString *_Nonnull collection,
-            NSString *_Nonnull key,
-            id _Nonnull object) {
-            if (![object isKindOfClass:[OWSMessageContentJob class]]) {
-                OWSFailDebug(@"Unexpected object: %@ in collection: %@", object, collection);
-                return nil;
-            }
-
-            // Arbitrary string - all in the same group. We're only using the view for sorting.
-            return OWSMessageContentJobFinderExtensionGroup;
-        }];
-
-    YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
-    options.allowedCollections =
-        [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[OWSMessageContentJob collection]]];
-
-    return [[YapDatabaseAutoView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
-}
-
-
-+ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage
-{
-    YapDatabaseView *existingView = [storage registeredExtension:OWSMessageContentJobFinderExtensionName];
-    if (existingView) {
-        OWSFailDebug(@"%@ was already initialized.", OWSMessageContentJobFinderExtensionName);
-        // already initialized
-        return;
-    }
-    [storage asyncRegisterExtension:[self databaseExtension] withName:OWSMessageContentJobFinderExtensionName];
-}
-
-@end
-
 #pragma mark - Queue Processing
 
 @interface OWSMessageContentQueue : NSObject
 
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
-@property (nonatomic, readonly) OWSMessageContentJobFinder *finder;
+@property (nonatomic, readonly) AnyMessageContentJobFinder *finder;
 @property (nonatomic) BOOL isDrainingQueue;
 @property (atomic) BOOL isAppInBackground;
-
-- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
-                              finder:(OWSMessageContentJobFinder *)finder NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
 
 @end
 
@@ -262,7 +111,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 @implementation OWSMessageContentQueue
 
-- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection finder:(OWSMessageContentJobFinder *)finder
+- (instancetype)init
 {
     OWSSingletonAssert();
 
@@ -271,8 +120,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
         return self;
     }
 
-    _dbConnection = dbConnection;
-    _finder = finder;
+    _finder = [AnyMessageContentJobFinder new];
     _isDrainingQueue = NO;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -303,7 +151,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Singletons
+#pragma mark - Dependencies
 
 - (OWSMessageManager *)messageManager
 {
@@ -317,6 +165,11 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
 
     return SSKEnvironment.shared.tsAccountManager;
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
 }
 
 #pragma mark - Notifications
@@ -357,7 +210,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 - (void)enqueueEnvelopeData:(NSData *)envelopeData
               plaintextData:(NSData *_Nullable)plaintextData
             wasReceivedByUD:(BOOL)wasReceivedByUD
-                transaction:(YapDatabaseReadWriteTransaction *)transaction
+                transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(envelopeData);
     OWSAssertDebug(transaction);
@@ -398,7 +251,10 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     // We want a value that is just high enough to yield perf benefits.
     const NSUInteger kIncomingMessageBatchSize = 32;
 
-    NSArray<OWSMessageContentJob *> *batchJobs = [self.finder nextJobsForBatchSize:kIncomingMessageBatchSize];
+    __block NSArray<OWSMessageContentJob *> *batchJobs;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        batchJobs = [self.finder nextJobsWithBatchSize:kIncomingMessageBatchSize transaction:transaction];
+    }];
     OWSAssertDebug(batchJobs);
     if (batchJobs.count < 1) {
         self.isDrainingQueue = NO;
@@ -410,7 +266,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
     NSArray<OWSMessageContentJob *> *processedJobs = [self processJobs:batchJobs];
 
-    [self.finder removeJobsWithIds:processedJobs.uniqueIds];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.finder removeJobsWithUniqueIds:processedJobs.uniqueIds transaction:transaction];
+    }];
 
     OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
@@ -434,15 +292,14 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     AssertOnDispatchQueue(self.serialQueue);
 
     NSMutableArray<OWSMessageContentJob *> *processedJobs = [NSMutableArray new];
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         for (OWSMessageContentJob *job in jobs) {
 
-            void (^reportFailure)(YapDatabaseReadWriteTransaction *transaction) = ^(
-                YapDatabaseReadWriteTransaction *transaction) {
+            void (^reportFailure)(SDSAnyWriteTransaction *transaction) = ^(SDSAnyWriteTransaction *transaction) {
                 // TODO: Add analytics.
                 TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
                 [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                    transaction:transaction.asAnyWrite];
+                                                                                    transaction:transaction];
             };
 
             @try {
@@ -481,7 +338,6 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 @interface OWSBatchMessageProcessor ()
 
 @property (nonatomic, readonly) OWSMessageContentQueue *processingQueue;
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
 
@@ -489,7 +345,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 @implementation OWSBatchMessageProcessor
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)init
 {
     OWSSingletonAssert();
 
@@ -498,13 +354,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
         return self;
     }
 
-    // For coherency we use the same dbConnection to persist and read the unprocessed envelopes
-    YapDatabaseConnection *dbConnection = [primaryStorage newDatabaseConnection];
-    OWSMessageContentJobFinder *finder = [[OWSMessageContentJobFinder alloc] initWithDBConnection:dbConnection];
-    OWSMessageContentQueue *processingQueue =
-        [[OWSMessageContentQueue alloc] initWithDBConnection:dbConnection finder:finder];
-
-    _processingQueue = processingQueue;
+    _processingQueue = [OWSMessageContentQueue new];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (CurrentAppContext().isMainApp) {
@@ -515,24 +365,12 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     return self;
 }
 
-#pragma mark - class methods
-
-+ (NSString *)databaseExtensionName
-{
-    return OWSMessageContentJobFinderExtensionName;
-}
-
-+ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage
-{
-    [OWSMessageContentJobFinder asyncRegisterDatabaseExtension:storage];
-}
-
 #pragma mark - instance methods
 
 - (void)enqueueEnvelopeData:(NSData *)envelopeData
               plaintextData:(NSData *_Nullable)plaintextData
             wasReceivedByUD:(BOOL)wasReceivedByUD
-                transaction:(YapDatabaseReadWriteTransaction *)transaction
+                transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (envelopeData.length < 1) {
         OWSFailDebug(@"Empty envelope.");
@@ -548,10 +386,10 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
     // The new envelope won't be visible to the finder until this transaction commits,
     // so drainQueue in the transaction completion.
-    [transaction addCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-                    completionBlock:^{
-                        [self.processingQueue drainQueue];
-                    }];
+    [transaction addCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                  block:^{
+                                      [self.processingQueue drainQueue];
+                                  }];
 }
 
 @end

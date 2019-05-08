@@ -46,6 +46,28 @@ extension OWS115GRDBMigration {
         return SDSDatabaseStorage.shared.grdbStorage
     }
 
+    var tsAccountManager: TSAccountManager {
+        return SSKEnvironment.shared.tsAccountManager
+    }
+
+    var identityManager: OWSIdentityManager {
+        return OWSIdentityManager.shared()
+    }
+
+    var sessionStore: SSKSessionStore {
+        return SSKEnvironment.shared.sessionStore
+    }
+
+    var preKeyStore: SSKPreKeyStore {
+        return SSKEnvironment.shared.preKeyStore
+    }
+
+    var signedPreKeyStore: SSKSignedPreKeyStore {
+        return SSKEnvironment.shared.signedPreKeyStore
+    }
+
+    // MARK: -
+
     func run() throws {
         Logger.info("")
 
@@ -62,36 +84,125 @@ extension OWS115GRDBMigration {
         dbReadConnection.beginLongLivedReadTransaction()
 
         try storage.write { grdbTransaction in
-            var threadFinder: LegacyUnorderedFinder<TSThread>!
-            var attachmentFinder: LegacyUnorderedFinder<TSAttachment>!
-            var interactionFinder: LegacyInteractionFinder!
+            // Custom Finders - For more complex cases
             var jobRecordFinder: LegacyJobRecordFinder!
-            dbReadConnection.read { transaction in
-                threadFinder = LegacyUnorderedFinder(transaction: transaction)
-                attachmentFinder = LegacyUnorderedFinder(transaction: transaction)
-                interactionFinder = LegacyInteractionFinder(transaction: transaction)
-                jobRecordFinder = LegacyJobRecordFinder(transaction: transaction)
+            var interactionFinder: LegacyInteractionFinder!
+            var decryptJobFinder: LegacyUnorderedFinder<OWSMessageDecryptJob>!
+
+            // LegacyUnorderedFinder - These are simple to migrate
+            var attachmentFinder: LegacyUnorderedFinder<TSAttachment>!
+            var contentJobFinder: LegacyUnorderedFinder<OWSMessageContentJob>!
+            var recipientIdentityFinder: LegacyUnorderedFinder<OWSRecipientIdentity>!
+            var threadFinder: LegacyUnorderedFinder<TSThread>!
+
+            // KeyValue Finders
+            var sessionStoreFinder: LegacyKeyValueFinder<[Int: SessionRecord]>!
+            var preKeyStoreFinder: LegacyKeyValueFinder<PreKeyRecord>!
+            var preKeyMetadataFinder: LegacyKeyValueFinder<Any>!
+            var signedPreKeyStoreFinder: LegacyKeyValueFinder<SignedPreKeyRecord>!
+            var signedPreKeyMetadataFinder: LegacyKeyValueFinder<Any>!
+
+            var ownIdentityFinder: LegacyKeyValueFinder<ECKeyPair>!
+            var queuedVerificationStateSyncMessagesFinder: LegacyKeyValueFinder<String>!
+            var tsAccountManagerFinder: LegacyKeyValueFinder<Any>!
+
+            dbReadConnection.read { yapTransaction in
+                jobRecordFinder = LegacyJobRecordFinder(transaction: yapTransaction)
+                interactionFinder = LegacyInteractionFinder(transaction: yapTransaction)
+                decryptJobFinder = LegacyUnorderedFinder(transaction: yapTransaction)
+
+                // protocol store finders
+                preKeyStoreFinder = LegacyKeyValueFinder(store: self.preKeyStore.keyStore, transaction: yapTransaction)
+                preKeyMetadataFinder = LegacyKeyValueFinder(store: self.preKeyStore.metadataStore, transaction: yapTransaction)
+
+                signedPreKeyStoreFinder = LegacyKeyValueFinder(store: self.signedPreKeyStore.keyStore, transaction: yapTransaction)
+                signedPreKeyMetadataFinder = LegacyKeyValueFinder(store: self.signedPreKeyStore.metadataStore, transaction: yapTransaction)
+
+                ownIdentityFinder = LegacyKeyValueFinder(store: self.identityManager.ownIdentityKeyValueStore, transaction: yapTransaction)
+
+                sessionStoreFinder = LegacyKeyValueFinder(store: self.sessionStore.keyValueStore, transaction: yapTransaction)
+                queuedVerificationStateSyncMessagesFinder = LegacyKeyValueFinder(store: self.identityManager.queuedVerificationStateSyncMessagesKeyValueStore, transaction: yapTransaction)
+                tsAccountManagerFinder = LegacyKeyValueFinder(store: self.tsAccountManager.keyValueStore, transaction: yapTransaction)
+
+                // unordered finders
+                attachmentFinder = LegacyUnorderedFinder(transaction: yapTransaction)
+                contentJobFinder = LegacyUnorderedFinder(transaction: yapTransaction)
+                recipientIdentityFinder = LegacyUnorderedFinder(transaction: yapTransaction)
+                threadFinder = LegacyUnorderedFinder(transaction: yapTransaction)
             }
 
+            // custom migrations
             try! self.migrateJobRecords(jobRecordFinder: jobRecordFinder, transaction: grdbTransaction)
             try! self.migrateInteractions(interactionFinder: interactionFinder, transaction: grdbTransaction)
+            try! self.migrateMappedCollectionObjects(label: "DecryptJobs", finder: decryptJobFinder, memorySamplerRatio: 0.1, transaction: grdbTransaction) { (legacyJob: OWSMessageDecryptJob) -> SSKMessageDecryptJobRecord in
 
+                // migrate any job records from the one-off decrypt job queue to a record for the new generic durable job queue
+                return SSKMessageDecryptJobRecord(envelopeData: legacyJob.envelopeData, label: SSKMessageDecryptJobQueue.jobRecordLabel)
+            }
+
+            // migrate keyvalue stores
+            try! self.migrateKeyValueStore(label: "sessionStore", finder: sessionStoreFinder, memorySamplerRatio: 1.0, transaction: grdbTransaction)
+
+            try! self.migrateKeyValueStore(label: "ownIdentity", finder: ownIdentityFinder, memorySamplerRatio: 1.0, transaction: grdbTransaction)
+            try! self.migrateKeyValueStore(label: "queuedVerificationStateSyncMessages", finder: queuedVerificationStateSyncMessagesFinder, memorySamplerRatio: 0.3, transaction: grdbTransaction)
+            try! self.migrateKeyValueStore(label: "tsAccountManager", finder: tsAccountManagerFinder, memorySamplerRatio: 0.3, transaction: grdbTransaction)
+
+            try! self.migrateKeyValueStore(label: "preKey Store", finder: preKeyStoreFinder, memorySamplerRatio: 0.3, transaction: grdbTransaction)
+            try! self.migrateKeyValueStore(label: "preKey Metadata", finder: preKeyMetadataFinder, memorySamplerRatio: 0.3, transaction: grdbTransaction)
+            try! self.migrateKeyValueStore(label: "signedPreKey Store", finder: signedPreKeyStoreFinder, memorySamplerRatio: 0.3, transaction: grdbTransaction)
+            try! self.migrateKeyValueStore(label: "signedPreKey Metadata", finder: signedPreKeyMetadataFinder, memorySamplerRatio: 0.3, transaction: grdbTransaction)
+
+            // unordered migrations
             try! self.migrateUnorderedRecords(label: "threads", finder: threadFinder, memorySamplerRatio: 0.2, transaction: grdbTransaction)
             try! self.migrateUnorderedRecords(label: "attachments", finder: attachmentFinder, memorySamplerRatio: 0.003, transaction: grdbTransaction)
+            try! self.migrateUnorderedRecords(label: "contentJob", finder: contentJobFinder, memorySamplerRatio: 0.05, transaction: grdbTransaction)
+            try! self.migrateUnorderedRecords(label: "recipientIdentities", finder: recipientIdentityFinder, memorySamplerRatio: 0.02, transaction: grdbTransaction)
 
+            // Logging queries is helpful for normal debugging, but expensive during a migration
             SDSDatabaseStorage.shouldLogDBQueries = true
         }
     }
 
     private func migrateUnorderedRecords<T>(label: String, finder: LegacyUnorderedFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws where T: TSYapDatabaseObject & SDSSerializable {
-        try Bench(title: "Migrate \(T.self)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
+        try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
             var recordCount = 0
-            try finder.enumerateRecords { legacyRecord in
+            try finder.enumerateLegacyObjects { legacyRecord in
                 recordCount += 1
                 try SDSSerialization.insert(entity: legacyRecord, database: transaction.database)
                 memorySampler.sample()
             }
             Logger.info("completed with recordCount: \(recordCount)")
+        }
+    }
+
+    private func migrateKeyValueStore<T>(label: String, finder: LegacyKeyValueFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws {
+        try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
+            var recordCount = 0
+            try finder.enumerateLegacyKeysAndObjects { legacyKey, legacyObject in
+                recordCount += 1
+                finder.store.setObject(legacyObject, key: legacyKey, transaction: transaction.asAnyWrite)
+                memorySampler.sample()
+            }
+            Logger.info("completed with recordCount: \(recordCount)")
+        }
+    }
+
+    private func migrateMappedCollectionObjects<SourceType, DestinationType>(label: String,
+                                                                     finder: LegacyObjectFinder<SourceType>,
+                                                                     memorySamplerRatio: Float,
+                                                                     transaction: GRDBWriteTransaction,
+                                                                     buildRecord: @escaping (SourceType) -> DestinationType
+        ) throws where DestinationType: SDSSerializable {
+
+        try Bench(title: "Migrate \(SourceType.self)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
+            var recordCount = 0
+            try finder.enumerateLegacyObjects { legacyObject in
+                let record = buildRecord(legacyObject)
+                recordCount += 1
+                try SDSSerialization.insert(entity: record, database: transaction.database)
+                memorySampler.sample()
+            }
+            Logger.info("Migrate \(SourceType.self) completed with recordCount: \(recordCount)")
         }
     }
 
@@ -123,25 +234,53 @@ extension OWS115GRDBMigration {
     }
 }
 
-private class LegacyUnorderedFinder<RecordType> where RecordType: TSYapDatabaseObject {
+private class LegacyObjectFinder<T> {
+    let collection: String
+
     // HACK: normally we don't want to retain transactions, as it allows them to escape their
     // closure. This is a work around since YapDB transactions want to be on their own sync queue
     // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
     // one DB inside a GRDB transaction on another DB is currently not possible.
     let transaction: YapDatabaseReadTransaction
 
-    init(transaction: YapDatabaseReadTransaction) {
+    init(collection: String, transaction: YapDatabaseReadTransaction) {
+        self.collection = collection
         self.transaction = transaction
     }
 
-    public func enumerateRecords(block: @escaping (RecordType) throws -> Void ) throws {
-        try transaction.enumerateKeysAndObjects(inCollection: RecordType.collection()) { (_: String, yapObject: Any, _: UnsafeMutablePointer<ObjCBool>) throws -> Void in
-            guard let thread = yapObject as? RecordType else {
-                owsFailDebug("unexpected yapObject: \(type(of: yapObject))")
+    public func enumerateLegacyKeysAndObjects(block: @escaping (String, T) throws -> Void ) throws {
+        try transaction.enumerateKeysAndObjects(inCollection: collection) { (collectionKey: String, collectionObj: Any, _: UnsafeMutablePointer<ObjCBool>) throws -> Void in
+            guard let legacyObj = collectionObj as? T else {
+                owsFailDebug("unexpected collectionObj: \(type(of: collectionObj)) collectionKey: \(collectionKey)")
                 return
             }
-            try block(thread)
+            try block(collectionKey, legacyObj)
         }
+    }
+
+    public func enumerateLegacyObjects(block: @escaping (T) throws -> Void ) throws {
+        try transaction.enumerateKeysAndObjects(inCollection: collection) { (_: String, collectionObj: Any, _: UnsafeMutablePointer<ObjCBool>) throws -> Void in
+            guard let legacyObj = collectionObj as? T else {
+                owsFailDebug("unexpected collectionObj: \(type(of: collectionObj))")
+                return
+            }
+            try block(legacyObj)
+        }
+    }
+}
+
+private class LegacyKeyValueFinder<T>: LegacyObjectFinder<T> {
+    let store: SDSKeyValueStore
+
+    init(store: SDSKeyValueStore, transaction: YapDatabaseReadTransaction) {
+        self.store = store
+        super.init(collection: store.collection, transaction: transaction)
+    }
+}
+
+private class LegacyUnorderedFinder<RecordType>: LegacyObjectFinder<RecordType> where RecordType: TSYapDatabaseObject {
+    init(transaction: YapDatabaseReadTransaction) {
+        super.init(collection: RecordType.collection(), transaction: transaction)
     }
 }
 
@@ -152,7 +291,7 @@ private class LegacyInteractionFinder {
     // closure. This is a work around since YapDB transactions want to be on their own sync queue
     // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
     // one DB inside a GRDB transaction on another DB is currently not possible.
-    var ext: YapDatabaseAutoViewTransaction
+    let ext: YapDatabaseAutoViewTransaction
     init(transaction: YapDatabaseReadTransaction) {
         self.ext = transaction.extension(extensionName) as! YapDatabaseAutoViewTransaction
     }

@@ -52,6 +52,7 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/OWSWindowManager.h>
+#import <SignalMessaging/PrivateMethodsForMigration.h>
 #import <SignalMessaging/ScreenLockViewController.h>
 #import <SignalMessaging/SelectRecipientViewController.h>
 #import <SignalMessaging/SharingThreadPickerViewController.h>

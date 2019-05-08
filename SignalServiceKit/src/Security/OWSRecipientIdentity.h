@@ -12,6 +12,7 @@ typedef NS_ENUM(NSUInteger, OWSVerificationState) {
     OWSVerificationStateNoLongerVerified,
 };
 
+@class SDSAnyWriteTransaction;
 @class SSKProtoVerified;
 
 NSString *OWSVerificationStateToString(OWSVerificationState verificationState);
@@ -32,7 +33,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
 @property (atomic, readonly) OWSVerificationState verificationState;
 
 - (void)updateWithVerificationState:(OWSVerificationState)verificationState
-                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                        transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Initializers
 

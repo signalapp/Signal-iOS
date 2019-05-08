@@ -207,7 +207,7 @@ public extension JobQueue {
             Logger.info("marking old `running` JobRecords as ready: \(runningRecords.count)")
             for record in runningRecords {
                 guard let jobRecord = record as? JobRecordType else {
-                    owsFailDebug("unexpectred jobRecord: \(record)")
+                    owsFailDebug("unexpected jobRecord: \(record)")
                     continue
                 }
                 do {

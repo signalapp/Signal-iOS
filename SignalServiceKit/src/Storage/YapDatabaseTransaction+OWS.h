@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)dataForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable ECKeyPair *)keyPairForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable PreKeyRecord *)preKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
-- (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
 
 @end
 

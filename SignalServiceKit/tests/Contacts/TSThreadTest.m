@@ -37,7 +37,9 @@
         [[TSContactThread alloc] initWithUniqueId:[TSContactThread threadIdFromContactId:@"+13334445555"]];
     [thread save];
 
-    XCTAssertEqual(0, [thread numberOfInteractions]);
+    [self readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
+    }];
 
     TSIncomingMessage *incomingMessage =
         [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:10000
@@ -72,10 +74,14 @@
                                                    ephemeralMessage:nil];
     [outgoingMessage save];
 
-    XCTAssertEqual(2, [thread numberOfInteractions]);
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        XCTAssertEqual(2, [thread numberOfInteractionsWithTransaction:transaction.asAnyRead]);
+    }];
 
     [thread remove];
-    XCTAssertEqual(0, [thread numberOfInteractions]);
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction.asAnyRead]);
+    }];
     XCTAssertEqual(0, [TSInteraction numberOfKeysInCollection]);
 }
 
@@ -86,7 +92,9 @@
     [thread save];
 
     // Sanity check
-    XCTAssertEqual(0, [thread numberOfInteractions]);
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction.asAnyRead]);
+    }];
 
     TSAttachmentStream *incomingAttachment =
         [AttachmentStreamFactory createWithContentType:@"image/jpeg" dataSource:DataSourceValue.emptyDataSource];
@@ -138,11 +146,15 @@
     [outgoingMessage save];
 
     // Sanity check
-    XCTAssertEqual(2, [thread numberOfInteractions]);
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        XCTAssertEqual(2, [thread numberOfInteractionsWithTransaction:transaction.asAnyRead]);
+    }];
 
     // Actual Test Follows
     [thread remove];
-    XCTAssertEqual(0, [thread numberOfInteractions]);
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction.asAnyRead]);
+    }];
 
     BOOL incomingFileStillExists =
         [[NSFileManager defaultManager] fileExistsAtPath:[incomingAttachment originalFilePath]];

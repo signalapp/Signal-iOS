@@ -19,7 +19,6 @@ public class SSKBaseTestSwift: XCTestCase {
         SetCurrentAppContext(TestAppContext())
 
         MockSSKEnvironment.activate()
-        SDSDatabaseStorage.shared.clearGRDBStorageForTests()
     }
 
     @objc

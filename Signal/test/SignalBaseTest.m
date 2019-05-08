@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
     [SSKEnvironment clearSharedForTests];
 
     SetCurrentAppContext([TestAppContext new]);
-    [SDSDatabaseStorage.shared clearGRDBStorageForTests];
     [MockSSKEnvironment activate];
     [MockEnvironment activate];
 }
@@ -35,15 +34,24 @@ NS_ASSUME_NONNULL_BEGIN
     [super tearDown];
 }
 
-- (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+-(void)readWithBlock:(void (^)(SDSAnyReadTransaction *))block
+{
+    [SDSDatabaseStorage.shared readWithBlock:block];
+}
+
+-(void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *))block
+{
+    [SDSDatabaseStorage.shared writeWithBlock:block];
+}
+
+- (void)yapReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
 {
     OWSAssert(block);
 
     [[SSKEnvironment.shared.primaryStorage newDatabaseConnection] readWithBlock:block];
 }
 
-
-- (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
+- (void)yapWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
     OWSAssert(block);
 

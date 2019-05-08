@@ -164,7 +164,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         if tsAccountManager.isReregistering() {
             // If re-registering, pre-populate the country (country code, calling code, country name)
             // and phone number state.
-            guard let phoneNumberE164 = tsAccountManager.reregisterationPhoneNumber() else {
+            guard let phoneNumberE164 = tsAccountManager.reregistrationPhoneNumber() else {
                 owsFailDebug("Could not resume re-registration; missing phone number.")
                 return
             }

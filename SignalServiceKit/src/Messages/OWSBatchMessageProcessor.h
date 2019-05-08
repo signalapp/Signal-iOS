@@ -8,8 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class OWSPrimaryStorage;
 @class OWSStorage;
+@class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
-@class YapDatabaseReadWriteTransaction;
 
 @interface OWSMessageContentJob : TSYapDatabaseObject
 
@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
                      wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 
@@ -52,16 +53,10 @@ NS_SWIFT_NAME(init(uniqueId:createdAt:envelopeData:plaintextData:wasReceivedByUD
 // in the order in which they were received.
 @interface OWSBatchMessageProcessor : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
-
-+ (NSString *)databaseExtensionName;
-+ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage;
-
 - (void)enqueueEnvelopeData:(NSData *)envelopeData
               plaintextData:(NSData *_Nullable)plaintextData
             wasReceivedByUD:(BOOL)wasReceivedByUD
-                transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

@@ -101,7 +101,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 /**
  *  @return The number of interactions in this thread.
  */
-- (NSUInteger)numberOfInteractions;
+- (NSUInteger)numberOfInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  * Get all messages in the thread we weren't able to decrypt
