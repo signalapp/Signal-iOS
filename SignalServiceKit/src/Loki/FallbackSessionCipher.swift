@@ -1,7 +1,8 @@
-import Curve25519Kit
 import CryptoSwift
+import Curve25519Kit
 
 private extension String {
+
     // Convert hex string to Data
     var hexData: Data {
         var hex = self
@@ -19,14 +20,15 @@ private extension String {
     }
 }
 
-/// A fallback session cipher which uses the the recipients pubkey to encrypt data
-@objc public final class FallBackSessionCipher: NSObject {
-    
-    // The length of the iv
-    private let ivLength: Int32 = 16;
-    
+/// A fallback session cipher which uses the the recipients public key to encrypt data
+@objc public final class FallBackSessionCipher : NSObject {
     // The pubkey hex string of the recipient
     private let recipientId: String
+    // The identity manager
+    private let identityKeyStore: OWSIdentityManager
+
+    // The length of the iv
+    private let ivLength: Int32 = 16;
     
     // The pubkey representation of the hex id
     private lazy var recipientPubKey: Data = {
@@ -41,24 +43,17 @@ private extension String {
         return recipientId.hexData
     }()
     
-    // The identity manager
-    private let identityKeyStore: OWSIdentityManager
-    
     // Our identity key
-    private lazy var myIdentityKeyPair: ECKeyPair? = {
-        return identityKeyStore.identityKeyPair()
-    }()
+    private lazy var userIdentityKeyPair: ECKeyPair? = identityKeyStore.identityKeyPair()
     
     // A symmetric key used for encryption and decryption
     private lazy var symmetricKey: Data? = {
-        guard let myIdentityKeyPair = myIdentityKeyPair else {
-            return nil
-        }
+        guard let userIdentityKeyPair = userIdentityKeyPair else { return nil }
         
-        return try? Curve25519.generateSharedSecret(fromPublicKey: recipientPubKey, privateKey: myIdentityKeyPair.privateKey)
+        return try? Curve25519.generateSharedSecret(fromPublicKey: recipientPubKey, privateKey: userIdentityKeyPair.privateKey)
     }()
     
-    /// Creare a FallBackSessionCipher.
+    /// Create a FallBackSessionCipher.
     /// This is a very basic cipher and should only be used in special cases such as Friend Requests.
     ///
     /// - Parameters:
@@ -73,10 +68,10 @@ private extension String {
     /// Encrypt a message
     ///
     /// - Parameter message: The message to encrypt
-    /// - Returns: The encypted message or nil if it failed
+    /// - Returns: The encypted message or `nil` if it failed
     @objc public func encrypt(message: Data) -> Data? {
+        guard let symmetricKey = symmetricKey else { return nil }
         do {
-            let symmetricKey = self.symmetricKey!
             return try diffieHellmanEncrypt(plainText: message, symmetricKey: symmetricKey)
         } catch {
             Logger.warn("FallBackSessionCipher: Failed to encrypt message")
@@ -87,10 +82,10 @@ private extension String {
     /// Decrypt a message
     ///
     /// - Parameter message: The message to decrypt
-    /// - Returns: The decrypted message or nil if it failed
+    /// - Returns: The decrypted message or `nil` if it failed
     @objc public func decrypt(message: Data) -> Data? {
+        guard let symmetricKey = symmetricKey else { return nil }
         do {
-            let symmetricKey = self.symmetricKey!
             return try diffieHellmanDecrypt(cipherText: message, symmetricKey: symmetricKey)
         } catch {
             Logger.warn("FallBackSessionCipher: Failed to decrypt message")
