@@ -110,6 +110,9 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 
 - (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary;
 
+- (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary
+                                          transaction:(SDSAnyReadTransaction *)transaction;
+
 - (void)clearUnreadMessagesIndicator;
 
 - (void)loadAnotherPageOfMessagesWithTransaction:(SDSAnyReadTransaction *)transaction;

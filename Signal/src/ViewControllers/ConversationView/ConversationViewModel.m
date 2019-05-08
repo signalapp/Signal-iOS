@@ -527,7 +527,20 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 - (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary
 {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self ensureDynamicInteractionsAndUpdateIfNecessary:updateIfNecessary transaction:transaction];
+    }];
+}
+
+- (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary
+                                          transaction:(SDSAnyReadTransaction *)transaction
+{
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(transaction != nil);
+
+    if (!transaction.transitional_yapReadTransaction) {
+        return;
+    }
 
     const NSUInteger currentMaxRangeSize = self.messageMapping.desiredLength;
     const NSUInteger maxRangeSize = MAX(kConversationInitialMaxRangeSize, currentMaxRangeSize);
@@ -536,22 +549,20 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         [ThreadUtil ensureDynamicInteractionsForThread:self.thread
                                        contactsManager:self.contactsManager
                                        blockingManager:self.blockingManager
-                                          dbConnection:self.editingDatabaseConnection
                            hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
                                    lastUnreadIndicator:self.dynamicInteractions.unreadIndicator
                                         focusMessageId:self.focusMessageIdOnOpen
-                                          maxRangeSize:maxRangeSize];
+                                          maxRangeSize:maxRangeSize
+                                           transaction:transaction.transitional_yapReadTransaction];
     BOOL didChange = ![NSObject isNullableObject:self.dynamicInteractions equalTo:dynamicInteractions];
     self.dynamicInteractions = dynamicInteractions;
 
     if (didChange && updateIfNecessary) {
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            if (![self reloadViewItemsWithTransaction:transaction]) {
-                OWSFailDebug(@"Failed to reload view items.");
-            }
+        if (![self reloadViewItemsWithTransaction:transaction]) {
+            OWSFailDebug(@"Failed to reload view items.");
+        }
 
-            [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate transaction:transaction];
-        }];
+        [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate transaction:transaction];
     }
 }
 
