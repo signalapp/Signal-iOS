@@ -58,7 +58,7 @@ import PromiseKit
     }
     
     public static func ping(_ hexEncodedPublicKey: String) -> Promise<RawResponse> {
-        return getRandomSnode().then { invoke(.sendMessage, on: $0, with: [ "destination" : hexEncodedPublicKey ]) } // TODO: Use getSwarm() and figure out correct parameters
+        return getRandomSnode().then { invoke(.sendMessage, on: $0, with: [ "pubKey" : hexEncodedPublicKey ]) } // TODO: Use getSwarm() and figure out correct parameters
     }
     
     public static func getSwarm(for hexEncodedPublicKey: String) -> Promise<Set<Target>> {
