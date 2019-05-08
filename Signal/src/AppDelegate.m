@@ -645,14 +645,19 @@ static NSTimeInterval launchStartedAt;
 - (void)enableBackgroundRefreshIfNecessary
 {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (OWS2FAManager.sharedManager.is2FAEnabled && [self.tsAccountManager isRegisteredAndReady]) {
-            // Ping server once a day to keep-alive 2FA clients.
-            const NSTimeInterval kBackgroundRefreshInterval = 24 * 60 * 60;
-            [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:kBackgroundRefreshInterval];
-        } else {
-            [[UIApplication sharedApplication]
-                setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
-        }
+        const NSTimeInterval minimumBackgroundFetchInterval = 5 * 60; // This seems to be the lower bound on what iOS allows
+        [UIApplication.sharedApplication setMinimumBackgroundFetchInterval:minimumBackgroundFetchInterval];
+        // Loki: Original code
+        // ========
+//        if (OWS2FAManager.sharedManager.is2FAEnabled && [self.tsAccountManager isRegisteredAndReady]) {
+//            // Ping server once a day to keep-alive 2FA clients.
+//            const NSTimeInterval kBackgroundRefreshInterval = 24 * 60 * 60;
+//            [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:kBackgroundRefreshInterval];
+//        } else {
+//            [[UIApplication sharedApplication]
+//                setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
+//        }
+        // ========
     }];
 }
 
@@ -1145,21 +1150,31 @@ static NSTimeInterval launchStartedAt;
 {
     OWSLogInfo(@"performing background fetch");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
-            // HACK: Call completion handler after n seconds.
-            //
-            // We don't currently have a convenient API to know when message fetching is *done* when
-            // working with the websocket.
-            //
-            // We *could* substantially rewrite the TSSocketManager to take advantage of the `empty` message
-            // But once our REST endpoint is fixed to properly de-enqueue fallback notifications, we can easily
-            // use the rest endpoint here rather than the websocket and circumvent making changes to critical code.
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [LokiAPI getMessages:^(id response, NSError *error) {
+            if (response != nil) {
                 completionHandler(UIBackgroundFetchResultNewData);
-                job = nil;
-            });
-        });
-        [job retainUntilComplete];
+            } else {
+                completionHandler(UIBackgroundFetchResultFailed);
+            }
+        }];
+        // Loki: Original code
+        // ========
+//        __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
+//            // HACK: Call completion handler after n seconds.
+//            //
+//            // We don't currently have a convenient API to know when message fetching is *done* when
+//            // working with the websocket.
+//            //
+//            // We *could* substantially rewrite the TSSocketManager to take advantage of the `empty` message
+//            // But once our REST endpoint is fixed to properly de-enqueue fallback notifications, we can easily
+//            // use the rest endpoint here rather than the websocket and circumvent making changes to critical code.
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                completionHandler(UIBackgroundFetchResultNewData);
+//                job = nil;
+//            });
+//        });
+//        [job retainUntilComplete];
+        // ========
     }];
 }
 
