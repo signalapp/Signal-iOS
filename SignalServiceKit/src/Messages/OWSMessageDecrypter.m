@@ -223,8 +223,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                              successBlock(result, transaction);
                          }
                          failureBlock:^(NSError * _Nullable error) {
-                             OWSLogError(@"decrypting friend request message from address: %@ failed "
-                                         @"with error: %@",
+                             OWSLogError(@"decrypting friend request message from address: %@ failed with error: %@",
                                 envelopeAddress(envelope),
                                 error);
                              failureBlock();
@@ -338,11 +337,10 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     }
     
     NSString *recipientId = envelope.source;
-    FallBackSessionCipher *ciper = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId
-                                                                     identityKeyStore:self.identityManager];
+    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId identityKeyStore:self.identityManager];
     
     // Decrypt it!!
-    NSData *_Nullable plaintextData = [ciper decryptWithMessage:encryptedData];
+    NSData *_Nullable plaintextData = [cipher decryptWithMessage:encryptedData];
     if (!plaintextData) {
         NSString *errorString = [NSString stringWithFormat:@"Failed to decrypt friend request message for %@", recipientId];
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorString);
