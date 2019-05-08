@@ -8,6 +8,8 @@ public struct LokiMessage {
     /// The time to live for the message.
     let ttl: UInt64
     /// When the proof of work was calculated, if applicable.
+    ///
+    /// - Note: Expressed as seconds since 00:00:00 UTC on 1 January 1970.
     let timestamp: UInt64?
     /// The base 64 encoded proof of work, if applicable.
     let nonce: String?

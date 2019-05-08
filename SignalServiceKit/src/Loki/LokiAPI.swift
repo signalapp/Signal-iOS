@@ -57,6 +57,10 @@ import PromiseKit
         return getRandomSnode().then { invoke(.sendMessage, on: $0, with: lokiMessage.toJSON()) } // TODO: Use getSwarm()
     }
     
+    public static func ping(_ hexEncodedPublicKey: String) -> Promise<RawResponse> {
+        return getRandomSnode().then { invoke(.sendMessage, on: $0, with: [ "destination" : hexEncodedPublicKey ]) } // TODO: Use getSwarm() and figure out correct parameters
+    }
+    
     public static func getSwarm(for hexEncodedPublicKey: String) -> Promise<Set<Target>> {
         return getRandomSnode().then { invoke(.getSwarm, on: $0, with: [ "pubKey" : hexEncodedPublicKey ]) }.map { rawResponse in return [] } // TODO: Parse targets from raw response
     }
