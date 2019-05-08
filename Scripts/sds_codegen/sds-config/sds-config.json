@@ -17,7 +17,8 @@
 		"OWSDisappearingMessagesConfiguration.newRecord"
 	],
 	"custom_property_column_sources": {
-		"TSInteraction.sortId": "id"
+		"TSInteraction.sortId": "id",
+		"SSKJobRecord.sortId": "id"
 	},
 	"class_to_skip_serialization": [
 		"OWSOutgoingSyncMessage",

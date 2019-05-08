@@ -53,7 +53,6 @@ class OWSSessionResetJobRecordSerializer: SDSSerializer {
         return [
             SSKJobRecordSerializer.failureCountColumn,
             SSKJobRecordSerializer.labelColumn,
-            SSKJobRecordSerializer.sortIdColumn,
             SSKJobRecordSerializer.statusColumn,
             SSKJobRecordSerializer.contactThreadIdColumn
             ].map { $0.columnName }
@@ -63,7 +62,6 @@ class OWSSessionResetJobRecordSerializer: SDSSerializer {
         let result: [DatabaseValueConvertible] = [
             self.model.failureCount,
             self.model.label,
-            self.model.sortId,
             self.model.status.rawValue,
             self.model.contactThreadId
 
