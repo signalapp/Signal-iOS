@@ -166,6 +166,7 @@ public class StickerManager: NSObject {
 
     @objc
     public class func uninstallStickerPack(stickerPackInfo: StickerPackInfo,
+                                           uninstallCover: Bool,
                                            transaction: SDSAnyWriteTransaction) {
 
         guard let stickerPack = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction) else {
@@ -176,6 +177,11 @@ public class StickerManager: NSObject {
         Logger.verbose("Uninstalling sticker pack: \(stickerPackInfo).")
 
         stickerPack.update(withIsInstalled: false, transaction: transaction)
+
+        if uninstallCover {
+            uninstallSticker(stickerInfo: stickerPack.coverInfo,
+                             transaction: transaction)
+        }
 
         for stickerInfo in stickerPack.stickerInfos {
             if stickerInfo == stickerPack.coverInfo {
@@ -683,6 +689,7 @@ public class StickerManager: NSObject {
                 let stickerPack = StickerPack.anyFetch(uniqueId: StickerPack.uniqueId(for: packInfo), transaction: transaction),
                 !stickerPack.isInstalled {
                 self.uninstallStickerPack(stickerPackInfo: packInfo,
+                                          uninstallCover: true,
                                           transaction: transaction)
             }
         } else {
@@ -930,6 +937,7 @@ public class StickerManager: NSObject {
             let stickerPacks = installedStickerPacks(transaction: transaction)
             for stickerPack in stickerPacks {
                 uninstallStickerPack(stickerPackInfo: stickerPack.info,
+                                     uninstallCover: false,
                                      transaction: transaction)
             }
         }
@@ -941,6 +949,7 @@ public class StickerManager: NSObject {
             let stickerPacks = allStickerPacks(transaction: transaction)
             for stickerPack in stickerPacks {
                 uninstallStickerPack(stickerPackInfo: stickerPack.info,
+                                     uninstallCover: true,
                                      transaction: transaction)
                 stickerPack.anyRemove(transaction: transaction)
             }

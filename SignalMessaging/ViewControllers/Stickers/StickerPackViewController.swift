@@ -141,7 +141,9 @@ public class StickerPackViewController: OWSViewController {
         Logger.verbose("")
 
         StickerPackViewController.databaseStorage.write { (transaction) in
-            StickerManager.uninstallStickerPack(stickerPackInfo: self.stickerPackInfo, transaction: transaction)
+            StickerManager.uninstallStickerPack(stickerPackInfo: self.stickerPackInfo,
+                                                uninstallCover: false,
+                                                transaction: transaction)
         }
 
         updateNavigationBar()
