@@ -196,6 +196,9 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
     // Disable default cookie handling for all requests.
     sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
+    
+    // LOKI: We need to accept text/plain for now as the storage server returns this to us
+    sessionManager.responseSerializer.acceptableContentTypes = [sessionManager.responseSerializer.acceptableContentTypes setByAddingObject:@"text/plain"];
 
     return sessionManager;
 }
