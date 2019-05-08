@@ -685,13 +685,18 @@ public class StickerManager: NSObject {
             //
             // * It's a default sticker pack.
             // * The pack has been installed.
-            if !DefaultStickerPack.isDefaultStickerPack(stickerPackInfo: packInfo),
-                let stickerPack = StickerPack.anyFetch(uniqueId: StickerPack.uniqueId(for: packInfo), transaction: transaction),
-                !stickerPack.isInstalled {
+            guard !DefaultStickerPack.isDefaultStickerPack(stickerPackInfo: packInfo) else {
+                return
+            }
+            guard let latestCopy = StickerPack.anyFetch(uniqueId: StickerPack.uniqueId(for: packInfo), transaction: transaction) else {
+                return
+            }
+            if latestCopy.isInstalled {
                 self.uninstallStickerPack(stickerPackInfo: packInfo,
                                           uninstallCover: true,
                                           transaction: transaction)
             }
+            latestCopy.anyRemove(transaction: transaction)
         } else {
             pack.anySave(transaction: transaction)
         }
