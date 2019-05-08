@@ -66,7 +66,7 @@ import PromiseKit
     }
     
     // MARK: Obj-C API
-    @objc public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, requiringPoW isPoWRequired: Bool, completionHandler: ((RawResponse?, NSError?) -> Void)? = nil) {
-        LokiMessage.fromSignalMessage(signalMessage, requiringPoW: isPoWRequired).then(sendMessage).done { completionHandler?($0, nil) }.catch { completionHandler?(nil, $0 as NSError) }
+    @objc public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, requiringPoW isPoWRequired: Bool, completionHandler: @escaping (RawResponse?, NSError?) -> Void) {
+        LokiMessage.fromSignalMessage(signalMessage, requiringPoW: isPoWRequired).then(sendMessage).done { completionHandler($0, nil) }.catch { completionHandler(nil, $0 as NSError) }
     }
 }

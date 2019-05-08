@@ -25,8 +25,8 @@ public struct LokiMessage {
     public static func fromSignalMessage(_ signalMessage: SignalMessage, requiringPoW isPoWRequired: Bool) -> Promise<LokiMessage> {
         return Promise<LokiMessage> { seal in
             DispatchQueue.global(qos: .default).async {
-                let destination = signalMessage["destination"]!
-                let data = signalMessage["content"]!
+                let destination = signalMessage["destination"] as! String
+                let data = signalMessage["content"] as! String
                 let ttl = LokiAPI.defaultMessageTTL
                 if isPoWRequired {
                     let timestamp = UInt64(Date().timeIntervalSince1970)

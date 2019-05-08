@@ -1,2 +1,2 @@
 
-public typealias SignalMessage = [String:String]
+public typealias SignalMessage = [String:Any]
