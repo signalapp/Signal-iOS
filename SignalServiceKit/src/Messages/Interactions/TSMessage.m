@@ -254,6 +254,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (self.quotedMessage) {
         [result addObjectsFromArray:self.quotedMessage.thumbnailAttachmentStreamIds];
+
+        if (self.quotedMessage.thumbnailAttachmentPointerId != nil) {
+            [result addObject:self.quotedMessage.thumbnailAttachmentPointerId];
+        }
     }
 
     if (self.contactShare.avatarAttachmentId) {

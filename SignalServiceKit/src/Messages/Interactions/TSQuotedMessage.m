@@ -258,6 +258,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (quotedMessage.linkPreview && quotedMessage.linkPreview.imageAttachmentId.length > 0) {
         attachmentToQuote =
             [TSAttachment fetchObjectWithUniqueID:quotedMessage.linkPreview.imageAttachmentId transaction:transaction];
+    } else if (quotedMessage.messageSticker && quotedMessage.messageSticker.attachmentId.length > 0) {
+        attachmentToQuote =
+            [TSAttachment fetchObjectWithUniqueID:quotedMessage.messageSticker.attachmentId transaction:transaction];
     }
     if (![attachmentToQuote isKindOfClass:[TSAttachmentStream class]]) {
         return nil;
