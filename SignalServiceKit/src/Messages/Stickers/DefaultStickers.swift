@@ -30,10 +30,10 @@ class DefaultStickerPack {
         DefaultStickerPack(packIdHex: "0123456789abcdef0123456789abcdef",
         packKeyHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
         shouldAutoInstall: true),
-        DefaultStickerPack(packIdHex: "aaaaaaaabbbbbbbb",
+        DefaultStickerPack(packIdHex: "aaaaaaaabbbbbbbbcccccccc00000000",
                            packKeyHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
                            shouldAutoInstall: false),
-        DefaultStickerPack(packIdHex: "aaaaaaaacccccccc",
+        DefaultStickerPack(packIdHex: "aaaaaaaabbbbbbbbcccccccc11111111",
                            packKeyHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
                            shouldAutoInstall: true)
         ].compactMap { $0 }
