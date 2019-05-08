@@ -79,6 +79,9 @@ public class ProfileFetcherJob: NSObject {
     public func run(recipientIds: [String]) {
         AssertIsOnMainThread()
 
+        /* Loki: Original Code
+         * Disabled as we don't have an endpoint for fetching profiles
+         * =========================
         guard CurrentAppContext().isMainApp else {
             // Only refresh profiles in the MainApp to decrease the chance of missed SN notifications
             // in the AppExtension for our users who choose not to verify contacts.
@@ -103,6 +106,7 @@ public class ProfileFetcherJob: NSObject {
                 self.getAndUpdateProfile(recipientId: recipientId)
             }
         }
+        */
     }
 
     enum ProfileFetcherJobError: Error {

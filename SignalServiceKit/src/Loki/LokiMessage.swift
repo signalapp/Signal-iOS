@@ -9,7 +9,7 @@ public struct LokiMessage {
     let ttl: UInt64
     /// When the proof of work was calculated, if applicable.
     ///
-    /// - Note: Expressed as seconds since 00:00:00 UTC on 1 January 1970.
+    /// - Note: Expressed as milliseconds since 00:00:00 UTC on 1 January 1970.
     let timestamp: UInt64?
     /// The base 64 encoded proof of work, if applicable.
     let nonce: String?
@@ -29,7 +29,8 @@ public struct LokiMessage {
                 let data = signalMessage["content"] as! String
                 let ttl = LokiAPI.defaultMessageTTL
                 if isPoWRequired {
-                    let timestamp = UInt64(Date().timeIntervalSince1970)
+                    // timeIntervalSince1970 returns timestamp in seconds but the storage server only accepts timestamp in milliseconds
+                    let timestamp = UInt64(Date().timeIntervalSince1970 * 1000)
                     if let nonce = ProofOfWork.calculate(data: data, pubKey: destination, timestamp: timestamp, ttl: ttl) {
                         let result = LokiMessage(destination: destination, data: data, ttl: ttl, timestamp: timestamp, nonce: nonce)
                         seal.fulfill(result)
