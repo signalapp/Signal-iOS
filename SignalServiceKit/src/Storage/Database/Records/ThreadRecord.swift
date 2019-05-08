@@ -62,9 +62,6 @@ public enum ThreadRecordType: Int {
     case group = 2
 }
 
-extension ThreadRecordType: Codable { }
-extension ThreadRecordType: DatabaseValueConvertible { }
-
 public struct ThreadRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = TSThreadSerializer.table.tableName
 
@@ -104,8 +101,6 @@ public struct ThreadRecord: Codable, FetchableRecord, PersistableRecord, TableRe
         return column.rawValue
     }
 }
-
-extension SDSRecordType: Codable { }
 
 public extension String.StringInterpolation {
     mutating func appendInterpolation(threadColumn: ThreadRecord.CodingKeys) {

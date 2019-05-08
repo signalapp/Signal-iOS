@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                           author:(nullable NSString *)author
                            cover:(StickerPackItem *)cover
-                       dateCreated:(NSDate *)dateCreated
+                     dateCreated:(NSDate *)dateCreated
                             info:(StickerPackInfo *)info
                      isInstalled:(BOOL)isInstalled
                            items:(NSArray<StickerPackItem *> *)items

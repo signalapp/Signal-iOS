@@ -41,27 +41,6 @@ public extension InteractionRecordType {
     }
 }
 
-extension InteractionRecordType: Codable { }
-extension InteractionRecordType: DatabaseValueConvertible { }
-
-extension RPRecentCallType: Codable { }
-extension RPRecentCallType: DatabaseValueConvertible { }
-
-extension TSGroupMetaMessage: Codable { }
-extension TSGroupMetaMessage: DatabaseValueConvertible { }
-
-extension TSInfoMessageType: Codable { }
-extension TSInfoMessageType: DatabaseValueConvertible { }
-
-extension TSOutgoingMessageState: Codable { }
-extension TSOutgoingMessageState: DatabaseValueConvertible { }
-
-extension OWSVerificationState: Codable { }
-extension OWSVerificationState: DatabaseValueConvertible { }
-
-extension TSErrorMessageType: Codable { }
-extension TSErrorMessageType: DatabaseValueConvertible { }
-
 public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = TSInteractionSerializer.table.tableName
 

@@ -17,33 +17,33 @@ extension OWSDatabaseMigration: SDSSerializable {
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
-        case let model as OWS108CallLoggingPreference:
-            assert(type(of: model) == OWS108CallLoggingPreference.self)
-            return OWS108CallLoggingPreferenceSerializer(model: model)
-        case let model as OWS107LegacySounds:
-            assert(type(of: model) == OWS107LegacySounds.self)
-            return OWS107LegacySoundsSerializer(model: model)
         case let model as OWS109OutgoingMessageState:
             assert(type(of: model) == OWS109OutgoingMessageState.self)
             return OWS109OutgoingMessageStateSerializer(model: model)
         case let model as OWSResaveCollectionDBMigration:
             assert(type(of: model) == OWSResaveCollectionDBMigration.self)
             return OWSResaveCollectionDBMigrationSerializer(model: model)
-        case let model as OWS102MoveLoggingPreferenceToUserDefaults:
-            assert(type(of: model) == OWS102MoveLoggingPreferenceToUserDefaults.self)
-            return OWS102MoveLoggingPreferenceToUserDefaultsSerializer(model: model)
-        case let model as OWS104CreateRecipientIdentities:
-            assert(type(of: model) == OWS104CreateRecipientIdentities.self)
-            return OWS104CreateRecipientIdentitiesSerializer(model: model)
+        case let model as OWS108CallLoggingPreference:
+            assert(type(of: model) == OWS108CallLoggingPreference.self)
+            return OWS108CallLoggingPreferenceSerializer(model: model)
+        case let model as OWS107LegacySounds:
+            assert(type(of: model) == OWS107LegacySounds.self)
+            return OWS107LegacySoundsSerializer(model: model)
         case let model as OWS105AttachmentFilePaths:
             assert(type(of: model) == OWS105AttachmentFilePaths.self)
             return OWS105AttachmentFilePathsSerializer(model: model)
-        case let model as OWS101ExistingUsersBlockOnIdentityChange:
-            assert(type(of: model) == OWS101ExistingUsersBlockOnIdentityChange.self)
-            return OWS101ExistingUsersBlockOnIdentityChangeSerializer(model: model)
+        case let model as OWS104CreateRecipientIdentities:
+            assert(type(of: model) == OWS104CreateRecipientIdentities.self)
+            return OWS104CreateRecipientIdentitiesSerializer(model: model)
         case let model as OWS103EnableVideoCalling:
             assert(type(of: model) == OWS103EnableVideoCalling.self)
             return OWS103EnableVideoCallingSerializer(model: model)
+        case let model as OWS102MoveLoggingPreferenceToUserDefaults:
+            assert(type(of: model) == OWS102MoveLoggingPreferenceToUserDefaults.self)
+            return OWS102MoveLoggingPreferenceToUserDefaultsSerializer(model: model)
+        case let model as OWS101ExistingUsersBlockOnIdentityChange:
+            assert(type(of: model) == OWS101ExistingUsersBlockOnIdentityChange.self)
+            return OWS101ExistingUsersBlockOnIdentityChangeSerializer(model: model)
         case let model as OWS100RemoveTSRecipientsMigration:
             assert(type(of: model) == OWS100RemoveTSRecipientsMigration.self)
             return OWS100RemoveTSRecipientsMigrationSerializer(model: model)
@@ -102,29 +102,11 @@ extension OWSDatabaseMigrationSerializer {
 
             return OWS100RemoveTSRecipientsMigration(uniqueId: uniqueId)
 
-        case ._103EnableVideoCalling:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWS103EnableVideoCalling(uniqueId: uniqueId)
-
         case ._101ExistingUsersBlockOnIdentityChange:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
 
             return OWS101ExistingUsersBlockOnIdentityChange(uniqueId: uniqueId)
-
-        case ._105AttachmentFilePaths:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWS105AttachmentFilePaths(uniqueId: uniqueId)
-
-        case ._104CreateRecipientIdentities:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWS104CreateRecipientIdentities(uniqueId: uniqueId)
 
         case ._102MoveLoggingPreferenceToUserDefaults:
 
@@ -132,17 +114,23 @@ extension OWSDatabaseMigrationSerializer {
 
             return OWS102MoveLoggingPreferenceToUserDefaults(uniqueId: uniqueId)
 
-        case .resaveCollectionDBMigration:
+        case ._103EnableVideoCalling:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
 
-            return OWSResaveCollectionDBMigration(uniqueId: uniqueId)
+            return OWS103EnableVideoCalling(uniqueId: uniqueId)
 
-        case ._109OutgoingMessageState:
+        case ._104CreateRecipientIdentities:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
 
-            return OWS109OutgoingMessageState(uniqueId: uniqueId)
+            return OWS104CreateRecipientIdentities(uniqueId: uniqueId)
+
+        case ._105AttachmentFilePaths:
+
+            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
+
+            return OWS105AttachmentFilePaths(uniqueId: uniqueId)
 
         case ._107LegacySounds:
 
@@ -156,11 +144,23 @@ extension OWSDatabaseMigrationSerializer {
 
             return OWS108CallLoggingPreference(uniqueId: uniqueId)
 
+        case ._109OutgoingMessageState:
+
+            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
+
+            return OWS109OutgoingMessageState(uniqueId: uniqueId)
+
         case .databaseMigration:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
 
             return OWSDatabaseMigration(uniqueId: uniqueId)
+
+        case .resaveCollectionDBMigration:
+
+            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
+
+            return OWSResaveCollectionDBMigration(uniqueId: uniqueId)
 
         default:
             owsFail("Invalid record type \(recordType)")
