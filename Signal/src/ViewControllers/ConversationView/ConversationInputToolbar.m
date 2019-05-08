@@ -309,11 +309,9 @@ const CGFloat kMaxTextViewHeight = 98;
     [self addSubview:self.voiceMemoButton];
     [self.voiceMemoButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.inputTextView];
     [self.voiceMemoButton autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:vStackWrapper withOffset:-4];
-    if (SSKFeatureFlags.stickerSend) {
-        [self addSubview:self.stickerButton];
-        [self.stickerButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.voiceMemoButton];
-        [self.voiceMemoButton autoPinLeadingToTrailingEdgeOfView:self.stickerButton offset:0];
-    }
+    [self addSubview:self.stickerButton];
+    [self.stickerButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.voiceMemoButton];
+    [self.voiceMemoButton autoPinLeadingToTrailingEdgeOfView:self.stickerButton offset:0];
 
     // Border
     //
@@ -517,17 +515,17 @@ const CGFloat kMaxTextViewHeight = 98;
             }
         }
 
-        BOOL showStickerButton = !hasTextInput && self.quotedReply == nil;
-        if (showStickerButton) {
+        BOOL hideStickerButton = hasTextInput || self.quotedReply != nil || !StickerManager.shared.isStickerSendEnabled;
+        if (hideStickerButton) {
+            if (!self.stickerButton.isHidden) {
+                self.stickerButton.hidden = YES;
+            }
+        } else {
             if (self.stickerButton.isHidden) {
                 self.stickerButton.hidden = NO;
             }
             self.stickerButton.imageView.tintColor
                 = (self.isStickerKeyboardActive ? Theme.primaryColor : Theme.navbarIconColor);
-        } else {
-            if (!self.stickerButton.isHidden) {
-                self.stickerButton.hidden = YES;
-            }
         }
 
         [self updateSuggestedStickers];

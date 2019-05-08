@@ -49,7 +49,7 @@ public class StickerManager: NSObject {
         return operationQueue
     }()
 
-    private static let recentStickersStore = SDSKeyValueStore(collection: "recentStickers")
+    private static let store = SDSKeyValueStore(collection: "recentStickers")
     private static let emojiMapStore = SDSKeyValueStore(collection: "emojiMap")
 
     // MARK: - Initializers
@@ -59,6 +59,9 @@ public class StickerManager: NSObject {
         super.init()
 
         // Resume sticker and sticker pack downloads when app is ready.
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            StickerManager.shared.updateIsStickerSendEnabled()
+        }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             StickerManager.refreshContents()
         }
@@ -192,6 +195,10 @@ public class StickerManager: NSObject {
         }
 
         stickerPack.update(withIsInstalled: true, transaction: transaction)
+
+        if !isDefaultStickerPack(stickerPack) {
+            shared.setHasUsedStickers(transaction: transaction)
+        }
 
         installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
 
@@ -677,7 +684,7 @@ public class StickerManager: NSObject {
     @objc
     public class func stickerWasSent(_ stickerInfo: StickerInfo,
                                      transaction: SDSAnyWriteTransaction) {
-        recentStickersStore.appendToStringSet(key: kRecentStickersKey,
+        store.appendToStringSet(key: kRecentStickersKey,
                                               value: stickerInfo.asKey(),
                                               transaction: transaction,
                                               maxCount: kRecentStickersMaxCount)
@@ -686,7 +693,7 @@ public class StickerManager: NSObject {
 
     private class func removeFromRecentStickers(_ stickerInfo: StickerInfo,
                                                 transaction: SDSAnyWriteTransaction) {
-        recentStickersStore.removeFromStringSet(key: kRecentStickersKey,
+        store.removeFromStringSet(key: kRecentStickersKey,
                                                 value: stickerInfo.asKey(),
                                                 transaction: transaction)
         NotificationCenter.default.postNotificationNameAsync(RecentStickersDidChange, object: nil)
@@ -708,7 +715,7 @@ public class StickerManager: NSObject {
     //
     // Only returns installed stickers.
     private class func recentStickers(transaction: SDSAnyReadTransaction) -> [StickerInfo] {
-        let keys = recentStickersStore.stringSet(forKey: kRecentStickersKey, transaction: transaction)
+        let keys = store.stringSet(forKey: kRecentStickersKey, transaction: transaction)
         var result = [StickerInfo]()
         for key in keys {
             guard let sticker = InstalledSticker.anyFetch(uniqueId: key, transaction: transaction) else {
@@ -723,6 +730,47 @@ public class StickerManager: NSObject {
             result.append(sticker.info)
         }
         return result
+    }
+
+    // MARK: - Auto-Enable
+
+    private let kHasReceivedStickersKey = "hasReceivedStickersKey"
+    private var isStickerSendEnabledCached = false
+    private static let serialQueue = DispatchQueue(label: "org.signal.stickers")
+
+    @objc
+    public func setHasUsedStickers(transaction: SDSAnyWriteTransaction) {
+        var shouldSet = false
+        StickerManager.serialQueue.sync {
+            guard !self.isStickerSendEnabledCached else {
+                return
+            }
+            self.isStickerSendEnabledCached = true
+            shouldSet = true
+        }
+        guard shouldSet else {
+            return
+        }
+
+        StickerManager.store.setBool(true, key: kHasReceivedStickersKey, transaction: transaction)
+    }
+
+    @objc
+    public var isStickerSendEnabled: Bool {
+        if FeatureFlags.stickerSend {
+            return true
+        }
+
+        return StickerManager.serialQueue.sync {
+            return isStickerSendEnabledCached
+        }
+    }
+
+    private func updateIsStickerSendEnabled() {
+        let value = StickerManager.store.getBool(kHasReceivedStickersKey, defaultValue: false)
+        StickerManager.serialQueue.sync {
+            isStickerSendEnabledCached = value
+        }
     }
 
     // MARK: - Misc.
@@ -872,7 +920,7 @@ extension SDSKeyValueStore {
             return []
         }
         guard let stringSet = object as? [String] else {
-            owsFailDebug("Value has unexpected type.")
+            owsFailDebug("Value has unexpected type \(type(of: object)).")
             return []
         }
         return stringSet

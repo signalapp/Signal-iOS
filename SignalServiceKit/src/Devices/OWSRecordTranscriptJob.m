@@ -180,6 +180,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              outgoingMessage);
                                      }];
     }
+
+    if (outgoingMessage.messageSticker != nil) {
+        [StickerManager.shared setHasUsedStickersWithTransaction:transaction.asAnyWrite];
+    }
 }
 
 #pragma mark -
