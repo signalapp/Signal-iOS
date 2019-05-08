@@ -9,18 +9,12 @@ class DefaultStickerPack {
     public let shouldAutoInstall: Bool
 
     private init?(packIdHex: String, packKeyHex: String, shouldAutoInstall: Bool) {
-        guard let packId = Data.data(fromHex: packIdHex) else {
-            owsFailDebug("Invalid packId")
+        guard let info = StickerPackInfo.parsePackIdHex(packIdHex, packKeyHex: packKeyHex) else {
+            owsFailDebug("Invalid info")
             return nil
         }
-        assert(packId.count > 0)
-        guard let packKey = Data.data(fromHex: packKeyHex) else {
-            owsFailDebug("Invalid packKey")
-            return nil
-        }
-        assert(packKey.count == StickerManager.packKeyLength)
 
-        self.info = StickerPackInfo(packId: packId, packKey: packKey)
+        self.info = info
         self.shouldAutoInstall = shouldAutoInstall
     }
 

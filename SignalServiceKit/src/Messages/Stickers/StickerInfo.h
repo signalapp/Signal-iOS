@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey;
 
++ (nullable StickerPackInfo *)parsePackIdHex:(NSString *)packIdHex packKeyHex:(NSString *)packKeyHex;
+
 - (NSString *)asKey;
 
 - (BOOL)isValid;

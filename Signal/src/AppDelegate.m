@@ -54,6 +54,7 @@ NSString *const AppDelegateStoryboardMain = @"Main";
 static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewController";
 static NSString *const kURLSchemeSGNLKey                = @"sgnl";
 static NSString *const kURLHostVerifyPrefix             = @"verify";
+static NSString *const kURLHostAddStickersPrefix = @"addstickers";
 
 static NSTimeInterval launchStartedAt;
 
@@ -600,6 +601,29 @@ static NSTimeInterval launchStartedAt;
                         NSStringFromClass(controller.class));
                 }
             }
+        } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
+            StickerPackInfo *_Nullable stickerPackInfo = [self parseAddStickersUrl:url];
+            if (stickerPackInfo == nil) {
+                OWSFailDebug(@"Invalid URL: %@", url);
+                return NO;
+            }
+            StickerPackViewController *packView =
+                [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo hasDismissButton:YES];
+            OWSNavigationController *navigationController =
+                [[OWSNavigationController alloc] initWithRootViewController:packView];
+            UIViewController *rootViewController = self.window.rootViewController;
+            OWSAssertDebug([rootViewController isKindOfClass:[OWSNavigationController class]]);
+            if (rootViewController.presentedViewController) {
+                [rootViewController dismissViewControllerAnimated:NO
+                                                       completion:^{
+                                                           [rootViewController
+                                                               presentViewController:navigationController
+                                                                            animated:NO
+                                                                          completion:nil];
+                                                       }];
+            } else {
+                [rootViewController presentViewController:navigationController animated:NO completion:nil];
+            }
         } else {
             OWSFailDebug(@"Application opened with an unknown URL action: %@", url.host);
         }
@@ -607,6 +631,26 @@ static NSTimeInterval launchStartedAt;
         OWSFailDebug(@"Application opened with an unknown URL scheme: %@", url.scheme);
     }
     return NO;
+}
+
+- (nullable StickerPackInfo *)parseAddStickersUrl:(NSURL *)url
+{
+    NSString *_Nullable packIdHex;
+    NSString *_Nullable packKeyHex;
+    NSURLComponents *components = [NSURLComponents componentsWithString:url.absoluteString];
+    for (NSURLQueryItem *queryItem in [components queryItems]) {
+        if ([queryItem.name isEqualToString:@"pack_id"]) {
+            OWSAssertDebug(packIdHex == nil);
+            packIdHex = queryItem.value;
+        } else if ([queryItem.name isEqualToString:@"pack_key"]) {
+            OWSAssertDebug(packKeyHex == nil);
+            packKeyHex = queryItem.value;
+        } else {
+            OWSLogWarn(@"Unknown query item: %@", queryItem.name);
+        }
+    }
+
+    return [StickerPackInfo parsePackIdHex:packIdHex packKeyHex:packKeyHex];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
