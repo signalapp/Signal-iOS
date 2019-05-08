@@ -196,6 +196,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 }
 
 - (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
+                          message:(nullable TSMessage *)message
                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                           failure:(void (^)(NSError *error))failure
 {
@@ -205,7 +206,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                        attachmentPointers:@[
                            attachmentPointer,
                        ]
-                                  message:nil
+                                  message:message
                                   success:success
                                   failure:failure];
 }

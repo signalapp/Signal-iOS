@@ -2495,6 +2495,7 @@ typedef enum : NSUInteger {
 
     [self.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
+            message:message
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSAssertDebug(attachmentStreams.count == 1);
                 TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;

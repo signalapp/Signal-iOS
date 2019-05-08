@@ -123,6 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogDebug(@"downloading attachments for transcript: %lu", (unsigned long)transcript.timestamp);
 
             [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
+                message:outgoingMessage
                 success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                     OWSAssertDebug(attachmentStreams.count == 1);
                     TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
