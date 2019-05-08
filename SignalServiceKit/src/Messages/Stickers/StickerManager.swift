@@ -59,10 +59,11 @@ public class StickerManager: NSObject {
         super.init()
 
         // Resume sticker and sticker pack downloads when app is ready.
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            StickerManager.shared.updateIsStickerSendEnabled()
+        }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             StickerManager.refreshContents()
-
-            StickerManager.shared.updateIsStickerSendEnabled()
         }
     }
 
