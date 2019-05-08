@@ -193,6 +193,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (self.quotedMessage) {
         [result addObjectsFromArray:self.quotedMessage.thumbnailAttachmentStreamIds];
+
+        if (self.quotedMessage.thumbnailAttachmentPointerId != nil) {
+            [result addObject:self.quotedMessage.thumbnailAttachmentPointerId];
+        }
     }
 
     if (self.contactShare.avatarAttachmentId) {
@@ -203,7 +207,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         [result addObject:self.linkPreview.imageAttachmentId];
     }
 
-    return [result copy];
+    // Use a set to de-duplicate the result.
+    return [NSSet setWithArray:result].allObjects;
 }
 
 - (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
