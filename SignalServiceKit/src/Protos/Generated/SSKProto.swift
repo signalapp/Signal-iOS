@@ -23,6 +23,7 @@ public enum SSKProtoError: Error {
         case prekeyBundle = 3
         case receipt = 5
         case unidentifiedSender = 6
+        case friendRequest = 101
     }
 
     private class func SSKProtoEnvelopeTypeWrap(_ value: SignalServiceProtos_Envelope.TypeEnum) -> SSKProtoEnvelopeType {
@@ -33,6 +34,7 @@ public enum SSKProtoError: Error {
         case .prekeyBundle: return .prekeyBundle
         case .receipt: return .receipt
         case .unidentifiedSender: return .unidentifiedSender
+        case .friendRequest: return .friendRequest
         }
     }
 
@@ -44,6 +46,7 @@ public enum SSKProtoError: Error {
         case .prekeyBundle: return .prekeyBundle
         case .receipt: return .receipt
         case .unidentifiedSender: return .unidentifiedSender
+        case .friendRequest: return .friendRequest
         }
     }
 
@@ -449,6 +452,12 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
         if let _value = typingMessage {
             builder.setTypingMessage(_value)
         }
+        if let _value = prekeyBundleMessage {
+            builder.setPrekeyBundleMessage(_value)
+        }
+        if let _value = lokiAddressMessage {
+            builder.setLokiAddressMessage(_value)
+        }
         return builder
     }
 
@@ -482,6 +491,14 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
             proto.typingMessage = valueParam.proto
         }
 
+        @objc public func setPrekeyBundleMessage(_ valueParam: SSKProtoPrekeyBundleMessage) {
+            proto.prekeyBundleMessage = valueParam.proto
+        }
+
+        @objc public func setLokiAddressMessage(_ valueParam: SSKProtoLokiAddressMessage) {
+            proto.lokiAddressMessage = valueParam.proto
+        }
+
         @objc public func build() throws -> SSKProtoContent {
             return try SSKProtoContent.parseProto(proto)
         }
@@ -505,13 +522,19 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
 
     @objc public let typingMessage: SSKProtoTypingMessage?
 
+    @objc public let prekeyBundleMessage: SSKProtoPrekeyBundleMessage?
+
+    @objc public let lokiAddressMessage: SSKProtoLokiAddressMessage?
+
     private init(proto: SignalServiceProtos_Content,
                  dataMessage: SSKProtoDataMessage?,
                  syncMessage: SSKProtoSyncMessage?,
                  callMessage: SSKProtoCallMessage?,
                  nullMessage: SSKProtoNullMessage?,
                  receiptMessage: SSKProtoReceiptMessage?,
-                 typingMessage: SSKProtoTypingMessage?) {
+                 typingMessage: SSKProtoTypingMessage?,
+                 prekeyBundleMessage: SSKProtoPrekeyBundleMessage?,
+                 lokiAddressMessage: SSKProtoLokiAddressMessage?) {
         self.proto = proto
         self.dataMessage = dataMessage
         self.syncMessage = syncMessage
@@ -519,6 +542,8 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
         self.nullMessage = nullMessage
         self.receiptMessage = receiptMessage
         self.typingMessage = typingMessage
+        self.prekeyBundleMessage = prekeyBundleMessage
+        self.lokiAddressMessage = lokiAddressMessage
     }
 
     @objc
@@ -562,6 +587,16 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
             typingMessage = try SSKProtoTypingMessage.parseProto(proto.typingMessage)
         }
 
+        var prekeyBundleMessage: SSKProtoPrekeyBundleMessage? = nil
+        if proto.hasPrekeyBundleMessage {
+            prekeyBundleMessage = try SSKProtoPrekeyBundleMessage.parseProto(proto.prekeyBundleMessage)
+        }
+
+        var lokiAddressMessage: SSKProtoLokiAddressMessage? = nil
+        if proto.hasLokiAddressMessage {
+            lokiAddressMessage = try SSKProtoLokiAddressMessage.parseProto(proto.lokiAddressMessage)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoContent -
 
         // MARK: - End Validation Logic for SSKProtoContent -
@@ -572,7 +607,9 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
                                      callMessage: callMessage,
                                      nullMessage: nullMessage,
                                      receiptMessage: receiptMessage,
-                                     typingMessage: typingMessage)
+                                     typingMessage: typingMessage,
+                                     prekeyBundleMessage: prekeyBundleMessage,
+                                     lokiAddressMessage: lokiAddressMessage)
         return result
     }
 
@@ -591,6 +628,301 @@ extension SSKProtoContent {
 
 extension SSKProtoContent.SSKProtoContentBuilder {
     @objc public func buildIgnoringErrors() -> SSKProtoContent? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoPrekeyBundleMessage
+
+@objc public class SSKProtoPrekeyBundleMessage: NSObject {
+
+    // MARK: - SSKProtoPrekeyBundleMessageBuilder
+
+    @objc public class func builder() -> SSKProtoPrekeyBundleMessageBuilder {
+        return SSKProtoPrekeyBundleMessageBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoPrekeyBundleMessageBuilder {
+        let builder = SSKProtoPrekeyBundleMessageBuilder()
+        if let _value = identityKey {
+            builder.setIdentityKey(_value)
+        }
+        if hasDeviceID {
+            builder.setDeviceID(deviceID)
+        }
+        if hasPrekeyID {
+            builder.setPrekeyID(prekeyID)
+        }
+        if hasSignedKeyID {
+            builder.setSignedKeyID(signedKeyID)
+        }
+        if let _value = prekey {
+            builder.setPrekey(_value)
+        }
+        if let _value = signedKey {
+            builder.setSignedKey(_value)
+        }
+        if let _value = signature {
+            builder.setSignature(_value)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoPrekeyBundleMessageBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_PrekeyBundleMessage()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setIdentityKey(_ valueParam: Data) {
+            proto.identityKey = valueParam
+        }
+
+        @objc public func setDeviceID(_ valueParam: UInt32) {
+            proto.deviceID = valueParam
+        }
+
+        @objc public func setPrekeyID(_ valueParam: UInt32) {
+            proto.prekeyID = valueParam
+        }
+
+        @objc public func setSignedKeyID(_ valueParam: UInt32) {
+            proto.signedKeyID = valueParam
+        }
+
+        @objc public func setPrekey(_ valueParam: Data) {
+            proto.prekey = valueParam
+        }
+
+        @objc public func setSignedKey(_ valueParam: Data) {
+            proto.signedKey = valueParam
+        }
+
+        @objc public func setSignature(_ valueParam: Data) {
+            proto.signature = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoPrekeyBundleMessage {
+            return try SSKProtoPrekeyBundleMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoPrekeyBundleMessage.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_PrekeyBundleMessage
+
+    @objc public var identityKey: Data? {
+        guard proto.hasIdentityKey else {
+            return nil
+        }
+        return proto.identityKey
+    }
+    @objc public var hasIdentityKey: Bool {
+        return proto.hasIdentityKey
+    }
+
+    @objc public var deviceID: UInt32 {
+        return proto.deviceID
+    }
+    @objc public var hasDeviceID: Bool {
+        return proto.hasDeviceID
+    }
+
+    @objc public var prekeyID: UInt32 {
+        return proto.prekeyID
+    }
+    @objc public var hasPrekeyID: Bool {
+        return proto.hasPrekeyID
+    }
+
+    @objc public var signedKeyID: UInt32 {
+        return proto.signedKeyID
+    }
+    @objc public var hasSignedKeyID: Bool {
+        return proto.hasSignedKeyID
+    }
+
+    @objc public var prekey: Data? {
+        guard proto.hasPrekey else {
+            return nil
+        }
+        return proto.prekey
+    }
+    @objc public var hasPrekey: Bool {
+        return proto.hasPrekey
+    }
+
+    @objc public var signedKey: Data? {
+        guard proto.hasSignedKey else {
+            return nil
+        }
+        return proto.signedKey
+    }
+    @objc public var hasSignedKey: Bool {
+        return proto.hasSignedKey
+    }
+
+    @objc public var signature: Data? {
+        guard proto.hasSignature else {
+            return nil
+        }
+        return proto.signature
+    }
+    @objc public var hasSignature: Bool {
+        return proto.hasSignature
+    }
+
+    private init(proto: SignalServiceProtos_PrekeyBundleMessage) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoPrekeyBundleMessage {
+        let proto = try SignalServiceProtos_PrekeyBundleMessage(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_PrekeyBundleMessage) throws -> SSKProtoPrekeyBundleMessage {
+        // MARK: - Begin Validation Logic for SSKProtoPrekeyBundleMessage -
+
+        // MARK: - End Validation Logic for SSKProtoPrekeyBundleMessage -
+
+        let result = SSKProtoPrekeyBundleMessage(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoPrekeyBundleMessage {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoPrekeyBundleMessage.SSKProtoPrekeyBundleMessageBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoPrekeyBundleMessage? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoLokiAddressMessage
+
+@objc public class SSKProtoLokiAddressMessage: NSObject {
+
+    // MARK: - SSKProtoLokiAddressMessageBuilder
+
+    @objc public class func builder() -> SSKProtoLokiAddressMessageBuilder {
+        return SSKProtoLokiAddressMessageBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoLokiAddressMessageBuilder {
+        let builder = SSKProtoLokiAddressMessageBuilder()
+        if let _value = ptpAddress {
+            builder.setPtpAddress(_value)
+        }
+        if hasPtpPort {
+            builder.setPtpPort(ptpPort)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoLokiAddressMessageBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_LokiAddressMessage()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setPtpAddress(_ valueParam: String) {
+            proto.ptpAddress = valueParam
+        }
+
+        @objc public func setPtpPort(_ valueParam: UInt32) {
+            proto.ptpPort = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoLokiAddressMessage {
+            return try SSKProtoLokiAddressMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoLokiAddressMessage.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_LokiAddressMessage
+
+    @objc public var ptpAddress: String? {
+        guard proto.hasPtpAddress else {
+            return nil
+        }
+        return proto.ptpAddress
+    }
+    @objc public var hasPtpAddress: Bool {
+        return proto.hasPtpAddress
+    }
+
+    @objc public var ptpPort: UInt32 {
+        return proto.ptpPort
+    }
+    @objc public var hasPtpPort: Bool {
+        return proto.hasPtpPort
+    }
+
+    private init(proto: SignalServiceProtos_LokiAddressMessage) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoLokiAddressMessage {
+        let proto = try SignalServiceProtos_LokiAddressMessage(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_LokiAddressMessage) throws -> SSKProtoLokiAddressMessage {
+        // MARK: - Begin Validation Logic for SSKProtoLokiAddressMessage -
+
+        // MARK: - End Validation Logic for SSKProtoLokiAddressMessage -
+
+        let result = SSKProtoLokiAddressMessage(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoLokiAddressMessage {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoLokiAddressMessage? {
         return try! self.build()
     }
 }
@@ -2865,6 +3197,9 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
         }
         builder.setContact(contact)
         builder.setPreview(preview)
+        if let _value = profile {
+            builder.setProfile(_value)
+        }
         return builder
     }
 
@@ -2932,6 +3267,10 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
             proto.preview = wrappedItems.map { $0.proto }
         }
 
+        @objc public func setProfile(_ valueParam: SSKProtoDataMessageContact) {
+            proto.profile = valueParam.proto
+        }
+
         @objc public func build() throws -> SSKProtoDataMessage {
             return try SSKProtoDataMessage.parseProto(proto)
         }
@@ -2952,6 +3291,8 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
     @objc public let contact: [SSKProtoDataMessageContact]
 
     @objc public let preview: [SSKProtoDataMessagePreview]
+
+    @objc public let profile: SSKProtoDataMessageContact?
 
     @objc public var body: String? {
         guard proto.hasBody else {
@@ -2999,13 +3340,15 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
                  group: SSKProtoGroupContext?,
                  quote: SSKProtoDataMessageQuote?,
                  contact: [SSKProtoDataMessageContact],
-                 preview: [SSKProtoDataMessagePreview]) {
+                 preview: [SSKProtoDataMessagePreview],
+                 profile: SSKProtoDataMessageContact?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
         self.quote = quote
         self.contact = contact
         self.preview = preview
+        self.profile = profile
     }
 
     @objc
@@ -3038,6 +3381,11 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
         var preview: [SSKProtoDataMessagePreview] = []
         preview = try proto.preview.map { try SSKProtoDataMessagePreview.parseProto($0) }
 
+        var profile: SSKProtoDataMessageContact? = nil
+        if proto.hasProfile {
+            profile = try SSKProtoDataMessageContact.parseProto(proto.profile)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -3047,7 +3395,8 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
                                          group: group,
                                          quote: quote,
                                          contact: contact,
-                                         preview: preview)
+                                         preview: preview,
+                                         profile: profile)
         return result
     }
 

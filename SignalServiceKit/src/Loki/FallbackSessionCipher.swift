@@ -49,6 +49,15 @@ private extension String {
         return identityKeyStore.identityKeyPair()
     }()
     
+    // A symmetric key used for encryption and decryption
+    private lazy var symmetricKey: Data? = {
+        guard let myIdentityKeyPair = myIdentityKeyPair else {
+            return nil
+        }
+        
+        return try? Curve25519.generateSharedSecret(fromPublicKey: recipientPubKey, privateKey: myIdentityKeyPair.privateKey)
+    }()
+    
     /// Creare a FallBackSessionCipher.
     /// This is a very basic cipher and should only be used in special cases such as Friend Requests.
     ///
@@ -67,27 +76,53 @@ private extension String {
     /// - Returns: The encypted message or nil if it failed
     @objc public func encrypt(message: Data) -> Data? {
         do {
-            let myIdentityKeyPair = self.myIdentityKeyPair!
-            let symmetricKey = try Curve25519.generateSharedSecret(fromPublicKey: recipientPubKey, privateKey: myIdentityKeyPair.privateKey)
-            return try diffieHellmanEncrypt(message: message, symmetricKey: symmetricKey)
+            let symmetricKey = self.symmetricKey!
+            return try diffieHellmanEncrypt(plainText: message, symmetricKey: symmetricKey)
         } catch {
             Logger.warn("FallBackSessionCipher: Failed to encrypt message")
             return nil
         }
     }
     
+    /// Decrypt a message
+    ///
+    /// - Parameter message: The message to decrypt
+    /// - Returns: The decrypted message or nil if it failed
+    @objc public func decrypt(message: Data) -> Data? {
+        do {
+            let symmetricKey = self.symmetricKey!
+            return try diffieHellmanDecrypt(cipherText: message, symmetricKey: symmetricKey)
+        } catch {
+            Logger.warn("FallBackSessionCipher: Failed to decrypt message")
+            return nil
+        }
+    }
+    
     // Encypt the message with the symmetric key and a 16 bit iv
-    private func diffieHellmanEncrypt(message: Data, symmetricKey: Data) throws -> Data {
+    private func diffieHellmanEncrypt(plainText: Data, symmetricKey: Data) throws -> Data {
         let iv = Randomness.generateRandomBytes(ivLength)!
         let ivBytes = [UInt8](iv)
         
         let symmetricKeyBytes = [UInt8](symmetricKey)
-        let messageBytes = [UInt8](message)
+        let messageBytes = [UInt8](plainText)
         
         let blockMode = CBC(iv: ivBytes)
         let aes = try AES(key: symmetricKeyBytes, blockMode: blockMode)
         let cipherText = try aes.encrypt(messageBytes)
         let ivAndCipher = ivBytes + cipherText
         return Data(bytes: ivAndCipher, count: ivAndCipher.count)
+    }
+    
+    // Decrypt the message with the symmetric key
+    private func diffieHellmanDecrypt(cipherText: Data, symmetricKey: Data) throws -> Data {
+        let symmetricKeyBytes = [UInt8](symmetricKey)
+        let ivBytes = [UInt8](cipherText[..<ivLength])
+        let cipherBytes = [UInt8](cipherText[ivLength...])
+        
+        let blockMode = CBC(iv: ivBytes)
+        let aes = try AES(key: symmetricKeyBytes, blockMode: blockMode)
+        let decrypted = try aes.decrypt(cipherBytes)
+        
+        return Data(bytes: decrypted, count: decrypted.count)
     }
 }
