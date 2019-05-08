@@ -74,7 +74,9 @@ public class StickerManager: NSObject {
             StickerManager.shared.updateIsStickerSendEnabled()
         }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            StickerManager.refreshContents()
+            if TSAccountManager.sharedInstance().isRegisteredAndReady() {
+                StickerManager.refreshContents()
+            }
 
             StickerManager.cleanupOrphans()
         }
