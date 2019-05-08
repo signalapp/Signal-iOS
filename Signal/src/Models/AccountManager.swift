@@ -59,25 +59,20 @@ public class AccountManager: NSObject {
         Logger.debug("registering with signal server")
         let registrationPromise: Promise<Void> = firstly {
             return self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
-        }
-        // Loki: Original code
-        // ========
-//        .then { _ -> Promise<Void> in
-//            return self.syncPushTokens().recover { (error) -> Promise<Void> in
-//                switch error {
-//                case PushRegistrationError.pushNotSupported(let description):
-//                    // This can happen with:
-//                    // - simulators, none of which support receiving push notifications
-//                    // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
-//                    Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
-//                    return self.enableManualMessageFetching()
-//                default:
-//                    throw error
-//                }
-//            }
-//        }
-        // ========
-        .done { (_) -> Void in
+        }.then { _ -> Promise<Void> in
+            return self.syncPushTokens().recover { (error) -> Promise<Void> in
+                switch error {
+                case PushRegistrationError.pushNotSupported(let description):
+                    // This can happen with:
+                    // - simulators, none of which support receiving push notifications
+                    // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
+                    Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
+                    return self.enableManualMessageFetching()
+                default:
+                    throw error
+                }
+            }
+        }.done { (_) -> Void in
             self.completeRegistration()
         }
 
