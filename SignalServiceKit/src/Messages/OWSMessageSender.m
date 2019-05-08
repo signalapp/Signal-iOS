@@ -1059,8 +1059,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (messageSend.isUDSend) {
             hasValidMessageType = [messageType isEqualToNumber:@(TSUnidentifiedSenderMessageType)];
         } else {
+            NSArray *validMessageTypes = @[
+                                           @(TSEncryptedWhisperMessageType),
+                                           @(TSPreKeyWhisperMessageType),
+                                           @(TSFriendRequestMessageType) // Loki friend request
+                                           ];
+            hasValidMessageType = [validMessageTypes containsObject:messageType];
+
+            /* Loki: Original code:
+             * ================
             hasValidMessageType = ([messageType isEqualToNumber:@(TSEncryptedWhisperMessageType)] ||
-                [messageType isEqualToNumber:@(TSPreKeyWhisperMessageType)]);
+                                   [messageType isEqualToNumber:@(TSPreKeyWhisperMessageType)]);
+             */
+
         }
 
         if (!hasValidMessageType) {
@@ -1509,7 +1520,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         @try {
             // This may involve blocking network requests, so we do it _before_
             // we open a transaction.
-            [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
+            // TODO: Replace this when we add in friend request stuff
+            Boolean isFriendRequest = true;
+            if (!isFriendRequest) {
+                [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
+            }
 
             __block NSDictionary *_Nullable messageDict;
             __block NSException *encryptionException;
@@ -1684,6 +1699,47 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }) retainUntilComplete];
 }
 
+- (nullable NSDictionary *)throws_encryptedFriendMessageForMessageSend:(OWSMessageSend *)messageSend
+                                                        deviceId:(NSNumber *)deviceId
+                                                       plainText:(NSData *)plainText
+{
+    OWSAssertDebug(messageSend);
+    OWSAssertDebug(deviceId);
+    OWSAssertDebug(plainText);
+    
+    SignalRecipient *recipient = messageSend.recipient;
+    NSString *recipientId = recipient.recipientId;
+    
+    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId
+                                                                    identityKeyStore:self.identityManager];
+    
+    // This will return nil if encryption failed
+    NSData *_Nullable serializedMessage = [cipher encryptWithMessage:[plainText paddedMessageBody]];
+    if (!serializedMessage) {
+        OWSFailDebug(@"Failed to encrypt friend message to: %@", recipientId);
+        return nil;
+    }
+    
+    OWSMessageServiceParams *messageParams =
+    [[OWSMessageServiceParams alloc] initWithType:TSFriendRequestMessageType
+                                      recipientId:recipientId
+                                           device:[deviceId intValue]
+                                          content:serializedMessage
+                                         isSilent:false
+                                         isOnline:false
+                                   registrationId:0];
+    
+    NSError *error;
+    NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
+    
+    if (error) {
+        OWSProdError([OWSAnalyticsEvents messageSendErrorCouldNotSerializeMessageJson]);
+        return nil;
+    }
+    
+    return jsonDict;
+}
+
 - (nullable NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
                                                         deviceId:(NSNumber *)deviceId
                                                        plainText:(NSData *)plainText
@@ -1699,6 +1755,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     SignalRecipient *recipient = messageSend.recipient;
     NSString *recipientId = recipient.recipientId;
     OWSAssertDebug(recipientId.length > 0);
+    
+    // TODO: Change this when we have friend request support
+    Boolean isFriendRequest = true;
+    if (isFriendRequest) {
+        return [self throws_encryptedFriendMessageForMessageSend:messageSend deviceId:deviceId plainText:plainText];
+    }
 
     // This may throw an exception.
     if (![storage containsSession:recipientId deviceId:[deviceId intValue] protocolContext:transaction]) {
