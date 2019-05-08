@@ -92,7 +92,7 @@ public class StickerManager: NSObject {
     }
 
     // MARK: - Paths
-s
+
     // TODO: Clean up sticker data if user deletes all user data.
     @objc
     public class func cacheDirUrl() -> URL {
