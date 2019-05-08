@@ -43,10 +43,6 @@ public class StickerPackViewController: OWSViewController {
         dataSource.add(delegate: self)
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     // MARK: - View Lifecycle
 
     override public func loadView() {
@@ -74,7 +70,10 @@ public class StickerPackViewController: OWSViewController {
                 navigationItem.title = defaultTitle
             }
 
-            if stickerPack.isInstalled {
+            // We need to consult StickerManager for the latest "isInstalled"
+            // state, since the data source may be caching stale state.
+            let isInstalled = StickerManager.isStickerPackInstalled(stickerPackInfo: stickerPack.info)
+            if isInstalled {
                 self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
                                                                          style: .plain,
                                                                          target: self,
@@ -114,7 +113,7 @@ public class StickerPackViewController: OWSViewController {
             return
         }
 
-        StickerManager.saveStickerPack(stickerPack: stickerPack, shouldInstall: true)
+        StickerManager.saveStickerPack(stickerPack: stickerPack, installMode: .install)
 
         updateNavigationBar()
     }

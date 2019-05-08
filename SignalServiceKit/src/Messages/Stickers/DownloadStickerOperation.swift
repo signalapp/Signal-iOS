@@ -32,11 +32,10 @@ class DownloadStickerOperation: OWSOperation {
     }
 
     override public func run() {
-
         if let filePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo) {
             do {
                 let stickerData = try Data(contentsOf: URL(fileURLWithPath: filePath))
-                Logger.verbose("Skipping redundant operation.")
+                Logger.verbose("Skipping redundant operation: \(stickerInfo).")
                 success(stickerData)
                 self.reportSuccess()
                 return
@@ -45,6 +44,8 @@ class DownloadStickerOperation: OWSOperation {
                 // Fall through and proceed with download.
             }
         }
+
+        Logger.verbose("Downloading sticker: \(stickerInfo).")
 
         // https://cdn.signal.org/stickers/<pack_id>/full/<sticker_id>
         let urlPath = "stickers/\(stickerInfo.packId.hexadecimalString)/full/\(stickerInfo.stickerId)"
@@ -61,11 +62,9 @@ class DownloadStickerOperation: OWSOperation {
                                     owsFailDebug("Unexpected response: \(type(of: response))")
                                     return
                                 }
-                                Logger.verbose("Download succeeded.")
 
                                 do {
                                     let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerInfo.packKey)
-                                    Logger.verbose("Decryption succeeded.")
 
                                     self.success(plaintext)
                                     self.reportSuccess()
