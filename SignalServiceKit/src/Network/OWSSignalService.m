@@ -193,7 +193,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
     sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
-    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    sessionManager.responseSerializer = [AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments];
     // Disable default cookie handling for all requests.
     sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
     
