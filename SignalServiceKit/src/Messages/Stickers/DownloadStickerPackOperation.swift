@@ -22,7 +22,7 @@ class DownloadStickerPackOperation: OWSOperation {
 
         super.init()
 
-        self.remainingRetries = 10
+        self.remainingRetries = 4
     }
 
     // MARK: Dependencies
@@ -80,10 +80,10 @@ class DownloadStickerPackOperation: OWSOperation {
                                 }
                                 Logger.error("Download failed: \(error)")
 
-                                // TODO: We need to discriminate retry-able errors from
-                                //       404s, etc.  We might want to abort on all 4xx and 5xx.
                                 let errorCopy = error as NSError
-                                errorCopy.isRetryable = true
+
+                                errorCopy.isRetryable = !errorCopy.hasFatalResponseCode()
+
                                 self.reportError(errorCopy)
         })
     }
