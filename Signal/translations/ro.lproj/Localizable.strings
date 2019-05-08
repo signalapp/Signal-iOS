@@ -2166,7 +2166,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Trimite previzualizarea link-urilor";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previzualizarea este suportată pentru link-uri Imgur, Instagram, Pinterest, Reddit și YouTube";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Previzualizare link-uri";
