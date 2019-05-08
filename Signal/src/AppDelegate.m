@@ -718,10 +718,15 @@ static NSTimeInterval launchStartedAt;
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
             
-            [LokiAPI getMessages:^(id response, NSError *error) {
-                // TODO: Use the response
-            }];
-            
+            [[LokiAPI getMessagesObjc]
+             .then(^(id result) {
+                // TODO: handle result
+                
+             })
+             .catch(^(NSError *error) {
+                
+             }) retainUntilComplete];
+           
             // TODO: Ping friends to let them know we're online
             
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
@@ -1156,14 +1161,14 @@ static NSTimeInterval launchStartedAt;
 {
     OWSLogInfo(@"performing background fetch");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [LokiAPI getMessages:^(id response, NSError *error) {
-            if (response != nil) {
-                // TODO: Use the response
-                completionHandler(UIBackgroundFetchResultNewData);
-            } else {
-                completionHandler(UIBackgroundFetchResultFailed);
-            }
-        }];
+        [[LokiAPI getMessagesObjc]
+         .then(^(id result) {
+            completionHandler(UIBackgroundFetchResultNewData);
+         })
+         .catch(^(NSError *error) {
+            completionHandler(UIBackgroundFetchResultFailed);
+         }) retainUntilComplete];
+
         // Loki: Original code
         // ========
 //        __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{

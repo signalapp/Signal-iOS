@@ -66,11 +66,26 @@ import PromiseKit
     }
     
     // MARK: Obj-C API
-    @objc public static func getMessages(_ completionHandler: @escaping (RawResponse?, NSError?) -> Void) {
-        getMessages().done { completionHandler($0, nil) }.catch { completionHandler(nil, $0 as NSError) }
+    @objc public static func getMessagesObjc() -> AnyPromise {
+        let promise = getMessages()
+        let anyPromise = AnyPromise(promise)
+        anyPromise.retainUntilComplete()
+        return anyPromise
     }
     
-    @objc public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, requiringPoW isPoWRequired: Bool, completionHandler: @escaping (RawResponse?, NSError?) -> Void) {
-        LokiMessage.fromSignalMessage(signalMessage, requiringPoW: isPoWRequired).then(sendMessage).done { completionHandler($0, nil) }.catch { completionHandler(nil, $0 as NSError) }
+    @objc public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, requiringPoW isPoWRequired: Bool) -> AnyPromise {
+        let promise = LokiMessage.fromSignalMessage(signalMessage, requiringPoW: isPoWRequired)
+            .then(sendMessage)
+            .recover(on: DispatchQueue.global()) { error -> Promise<RawResponse> in
+                switch error {
+                case NetworkManagerError.taskError(_, let underlyingError):
+                    throw underlyingError
+                default:
+                    throw error
+                }
+        }
+        let anyPromise = AnyPromise(promise)
+        anyPromise.retainUntilComplete()
+        return anyPromise
     }
 }
