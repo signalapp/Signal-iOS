@@ -272,7 +272,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         [result addObject:self.messageSticker.attachmentId];
     }
 
-    return [result copy];
+    // Use a set to de-duplicate the result.
+    return [NSSet setWithArray:result].allObjects;
 }
 
 - (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction

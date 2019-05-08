@@ -51,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSPrimaryStorage *primaryStorage = [MockSSKEnvironment createPrimaryStorageForTests];
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
+    OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
     TSNetworkManager *networkManager = [OWSFakeNetworkManager new];
     OWSMessageSender *messageSender = [OWSFakeMessageSender new];
     MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
@@ -79,6 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
     StickerManager *stickerManager = [[StickerManager alloc] init];
 
     self = [super initWithContactsManager:contactsManager
+                       linkPreviewManager:linkPreviewManager
                             messageSender:messageSender
                     messageSenderJobQueue:messageSenderJobQueue
                            profileManager:[OWSFakeProfileManager new]

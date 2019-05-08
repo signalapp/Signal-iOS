@@ -409,15 +409,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         updateVisibleCells()
     }
 
-    func clearCollectionViewSelection() {
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
-    }
-
     // MARK: - PhotoLibraryDelegate
 
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
@@ -478,20 +469,21 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - PhotoCollectionPickerDelegate
 
     func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoCollection) {
+        BenchEventStart(title: "Picked Collection", eventId: "Picked Collection")
+        defer { BenchEventComplete(eventId: "Picked Collection") }
         guard photoCollection != collection else {
             hideCollectionPicker()
             return
         }
 
-        // Any selections are invalid as they refer to indices in a different collection
-        clearCollectionViewSelection()
-
         photoCollection = collection
         photoCollectionContents = photoCollection.contents()
 
+        // Any selections are invalid as they refer to indices in a different collection
+        reloadDataAndRestoreSelection()
+
         titleView.text = photoCollection.localizedTitle()
 
-        collectionView?.reloadData()
         scrollToBottom(animated: false)
         hideCollectionPicker()
     }

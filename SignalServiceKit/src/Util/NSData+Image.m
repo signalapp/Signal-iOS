@@ -379,9 +379,9 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
         if (width && height) {
             imageSize = CGSizeMake(width.floatValue, height.floatValue);
-
             if (orientation) {
-                imageSize = [self applyImageOrientation:(UIImageOrientation)orientation.intValue toImageSize:imageSize];
+                imageSize =
+                    [self applyImageOrientation:(CGImagePropertyOrientation)orientation.intValue toImageSize:imageSize];
             }
         } else {
             OWSFailDebug(@"Could not determine size of image: %@", url);
@@ -391,18 +391,20 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     return imageSize;
 }
 
-+ (CGSize)applyImageOrientation:(UIImageOrientation)orientation toImageSize:(CGSize)imageSize
++ (CGSize)applyImageOrientation:(CGImagePropertyOrientation)orientation toImageSize:(CGSize)imageSize
 {
+    // NOTE: UIImageOrientation and CGImagePropertyOrientation values
+    //       DO NOT match.
     switch (orientation) {
-        case UIImageOrientationUp: // EXIF = 1
-        case UIImageOrientationUpMirrored: // EXIF = 2
-        case UIImageOrientationDown: // EXIF = 3
-        case UIImageOrientationDownMirrored: // EXIF = 4
+        case kCGImagePropertyOrientationUp:
+        case kCGImagePropertyOrientationUpMirrored:
+        case kCGImagePropertyOrientationDown:
+        case kCGImagePropertyOrientationDownMirrored:
             return imageSize;
-        case UIImageOrientationLeftMirrored: // EXIF = 5
-        case UIImageOrientationLeft: // EXIF = 6
-        case UIImageOrientationRightMirrored: // EXIF = 7
-        case UIImageOrientationRight: // EXIF = 8
+        case kCGImagePropertyOrientationLeft:
+        case kCGImagePropertyOrientationLeftMirrored:
+        case kCGImagePropertyOrientationRightMirrored:
+        case kCGImagePropertyOrientationRight:
             return CGSizeMake(imageSize.height, imageSize.width);
         default:
             return imageSize;

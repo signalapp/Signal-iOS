@@ -132,6 +132,15 @@ const CGFloat kMaxTextViewHeight = 98;
     return self;
 }
 
+#pragma mark - Dependencies
+
+- (OWSLinkPreviewManager *)linkPreviewManager
+{
+    return SSKEnvironment.shared.linkPreviewManager;
+}
+
+#pragma mark -
+
 - (CGSize)intrinsicContentSize
 {
     // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
@@ -1114,8 +1123,9 @@ const CGFloat kMaxTextViewHeight = 98;
 
     // It's key that we use the *raw/unstripped* text, so we can reconcile cursor position with the
     // selectedRange.
-    NSString *_Nullable previewUrl = [OWSLinkPreview previewUrlForRawBodyText:self.inputTextView.text
-                                                                selectedRange:self.inputTextView.selectedRange];
+    NSString *_Nullable previewUrl =
+        [self.linkPreviewManager previewUrlForRawBodyText:self.inputTextView.text
+                                            selectedRange:self.inputTextView.selectedRange];
     if (previewUrl.length < 1) {
         [self clearLinkPreviewStateAndView];
         return;
@@ -1133,7 +1143,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self ensureLinkPreviewViewWithState:[LinkPreviewLoading new]];
 
     __weak ConversationInputToolbar *weakSelf = self;
-    [[OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:previewUrl]
+    [[self.linkPreviewManager tryToBuildPreviewInfoObjcWithPreviewUrl:previewUrl]
             .then(^(OWSLinkPreviewDraft *linkPreviewDraft) {
                 ConversationInputToolbar *_Nullable strongSelf = weakSelf;
                 if (!strongSelf) {

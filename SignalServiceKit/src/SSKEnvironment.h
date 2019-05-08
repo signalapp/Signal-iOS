@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSBlockingManager;
 @class OWSDisappearingMessagesJob;
 @class OWSIdentityManager;
+@class OWSLinkPreviewManager;
 @class OWSMessageDecrypter;
 @class OWSMessageManager;
 @class OWSMessageReceiver;
@@ -40,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SSKEnvironment : NSObject
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
+                     linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(OWSMessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                          profileManager:(id<ProfileManagerProtocol>)profileManager
@@ -78,6 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
+@property (nonatomic, readonly) OWSLinkPreviewManager *linkPreviewManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) MessageSenderJobQueue *messageSenderJobQueue;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManager;

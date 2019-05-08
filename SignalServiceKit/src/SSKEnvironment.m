@@ -52,6 +52,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @synthesize analyticsDBConnection = _analyticsDBConnection;
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
+                     linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(OWSMessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                          profileManager:(id<ProfileManagerProtocol>)profileManager
@@ -84,6 +85,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     }
 
     OWSAssertDebug(contactsManager);
+    OWSAssertDebug(linkPreviewManager);
     OWSAssertDebug(messageSender);
     OWSAssertDebug(messageSenderJobQueue);
     OWSAssertDebug(profileManager);
@@ -111,6 +113,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(stickerManager);
 
     _contactsManager = contactsManager;
+    _linkPreviewManager = linkPreviewManager;
     _messageSender = messageSender;
     _messageSenderJobQueue = messageSenderJobQueue;
     _profileManager = profileManager;

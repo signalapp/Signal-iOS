@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         TSNetworkManager *networkManager = [[TSNetworkManager alloc] initDefault];
         OWSContactsManager *contactsManager = [[OWSContactsManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
         ContactsUpdater *contactsUpdater = [ContactsUpdater new];
         OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithPrimaryStorage:primaryStorage];
         MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
@@ -102,6 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                            windowManager:windowManager]];
 
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithContactsManager:contactsManager
+                                                               linkPreviewManager:linkPreviewManager
                                                                     messageSender:messageSender
                                                             messageSenderJobQueue:messageSenderJobQueue
                                                                    profileManager:profileManager

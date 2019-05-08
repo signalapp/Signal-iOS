@@ -2448,7 +2448,7 @@
 "UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Typindicatoren inschakelen";
 
 /* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Optionele voorbeeldweergaven worden nu ondersteund voor enkele van de populairste websites op het internet.";
+"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Optionele voorbeeldweergaven worden nu ondersteund voor enkele van de populairste weblocaties op het internet.";
 
 /* Subtitle for upgrading users */
 "UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Je kunt deze functionaliteit op elk gewenst moment in- of uitschakelen in je Signal-instellingen (Privacy > Voorbeeldweergaven verzenden).";

@@ -10,6 +10,12 @@ public enum ProxiedContentRequestPriority {
     case low, high
 }
 
+protocol ProxiedContentDownloaderDelegate: AnyObject {
+    /// uses the same semantics as:
+    /// URLSessionDelegate#URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest * _Nullable))completionHandler;
+    func proxiedContentDownloader(willPerformHTTPRedirection response: HTTPURLResponse, newRequest: URLRequest) -> URLRequest?
+}
+
 // MARK: -
 
 @objc
@@ -445,9 +451,6 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
 
     // MARK: - Properties
 
-    @objc
-    public static let defaultDownloader = ProxiedContentDownloader(downloadFolderName: "proxiedContent")
-
     private let downloadFolderName: String
 
     private var downloadFolderPath: String?
@@ -734,6 +737,12 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
+        guard httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 else {
+            Logger.warn("invalid httpResponse.statusCode: \(httpResponse.statusCode)")
+            assetRequest.state = .failed
+            self.assetRequestDidFail(assetRequest: assetRequest)
+            return
+        }
         var firstContentRangeString: String?
         for header in httpResponse.allHeaderFields.keys {
             guard let headerString = header as? String else {
@@ -896,6 +905,17 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         }
 
         segmentRequestDidSucceed(assetRequest: assetRequest, assetSegment: assetSegment)
+    }
+
+    weak var delegate: ProxiedContentDownloaderDelegate?
+    public func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
+        guard let delegate = delegate else {
+            completionHandler(request)
+            return
+        }
+
+        let delegateRequest = delegate.proxiedContentDownloader(willPerformHTTPRedirection: response, newRequest: request)
+        completionHandler(delegateRequest)
     }
 
     // MARK: Temp Directory
