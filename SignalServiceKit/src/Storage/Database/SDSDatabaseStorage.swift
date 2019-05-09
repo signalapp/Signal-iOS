@@ -195,24 +195,24 @@ public class SDSDatabaseStorage: NSObject {
 
     // MARK: - Value Methods
 
-    public func uiReadReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T?) -> T? {
-        var value: T?
+    public func uiReadReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
+        var value: T!
         uiRead { (transaction) in
             value = block(transaction)
         }
         return value
     }
 
-    public func readReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T?) -> T? {
-        var value: T?
+    public func readReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
+        var value: T!
         read { (transaction) in
             value = block(transaction)
         }
         return value
     }
 
-    public func writeReturningResult<T>(block: @escaping (SDSAnyWriteTransaction) -> T?) -> T? {
-        var value: T?
+    public func writeReturningResult<T>(block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
+        var value: T!
         write { (transaction) in
             value = block(transaction)
         }
@@ -416,7 +416,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
     @objc
-    func uiRead(block: @escaping (GRDBReadTransaction) -> Void) throws {
+    public func uiRead(block: @escaping (GRDBReadTransaction) -> Void) throws {
         AssertIsOnMainThread()
         latestSnapshot.read { database in
             block(GRDBReadTransaction(database: database))
@@ -424,14 +424,14 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     }
 
     @objc
-    func read(block: @escaping (GRDBReadTransaction) -> Void) throws {
+    public func read(block: @escaping (GRDBReadTransaction) -> Void) throws {
         try pool.read { database in
             block(GRDBReadTransaction(database: database))
         }
     }
 
     @objc
-    func write(block: @escaping (GRDBWriteTransaction) -> Void) throws {
+    public func write(block: @escaping (GRDBWriteTransaction) -> Void) throws {
         var transaction: GRDBWriteTransaction!
         try pool.write { database in
             transaction = GRDBWriteTransaction(database: database)
@@ -440,6 +440,30 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         for (queue, block) in transaction.completions {
             queue.async(execute: block)
         }
+    }
+
+    public func uiReadReturningResult<T>(block: @escaping (GRDBReadTransaction) -> T) -> T {
+        var value: T!
+        try! uiRead { (transaction) in
+            value = block(transaction)
+        }
+        return value
+    }
+
+    public func readReturningResult<T>(block: @escaping (GRDBReadTransaction) -> T) -> T {
+        var value: T!
+        try! read { (transaction) in
+            value = block(transaction)
+        }
+        return value
+    }
+
+    public func writeReturningResult<T>(block: @escaping (GRDBWriteTransaction) -> T) -> T {
+        var value: T!
+        try! write { (transaction) in
+            value = block(transaction)
+        }
+        return value
     }
 }
 
