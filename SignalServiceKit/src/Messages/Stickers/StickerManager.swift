@@ -7,6 +7,28 @@ import PromiseKit
 import HKDFKit
 
 // TODO: Determine how views can be notified of sticker downloads.
+//
+// Stickers
+//
+// * Stickers are either "installed" or not.
+// * We can only send installed stickers.
+// * When we receive a sticker, we download it like any other attachment...
+//   ...unless we have it installed in which case we skip the download as
+//   an optimization.
+//
+// Sticker Packs
+//
+// * Some "default" sticker packs ship in the app. See DefaultStickerPack.
+//   Some "default" packs auto-install, others don't.
+// * Other packs can be installed from "sticker pack shares" and "sticker pack URLs".
+// * There are also "known" packs, e.g. packs the client knows about because
+//   we received a sticker from that pack.
+// * All of the above (default packs, packs installed from shares, known packs)
+//   show up in the sticker management view.  Those that are installed are
+//   shown as such; the others are shown as "available".
+// * We download pack manifests & covers for "default" and "known" packs.
+//   Once we've download the manifest the pack is "saved" but not "installed".
+// * We discard sticker and pack info once it is no longer in use.
 @objc
 public class StickerManager: NSObject {
 
@@ -166,8 +188,15 @@ public class StickerManager: NSObject {
 
     @objc
     public class func uninstallStickerPack(stickerPackInfo: StickerPackInfo,
-                                           uninstallCover: Bool,
                                            transaction: SDSAnyWriteTransaction) {
+        uninstallStickerPack(stickerPackInfo: stickerPackInfo,
+                             uninstallEverything: false,
+                             transaction: transaction)
+    }
+
+    private class func uninstallStickerPack(stickerPackInfo: StickerPackInfo,
+                                            uninstallEverything: Bool,
+                                            transaction: SDSAnyWriteTransaction) {
 
         guard let stickerPack = fetchStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction) else {
             Logger.info("Skipping uninstall; not saved or installed.")
@@ -178,7 +207,9 @@ public class StickerManager: NSObject {
 
         stickerPack.update(withIsInstalled: false, transaction: transaction)
 
-        if uninstallCover {
+        let shouldRemove = !DefaultStickerPack.isDefaultStickerPack(stickerPackInfo: stickerPackInfo)
+
+        if shouldRemove || uninstallEverything {
             uninstallSticker(stickerInfo: stickerPack.coverInfo,
                              transaction: transaction)
         }
@@ -190,6 +221,10 @@ public class StickerManager: NSObject {
             }
             uninstallSticker(stickerInfo: stickerInfo,
                              transaction: transaction)
+        }
+
+        if (shouldRemove) {
+            stickerPack.anyRemove(transaction: transaction)
         }
 
         enqueueStickerSyncMessage(operationType: .remove,
@@ -694,10 +729,8 @@ public class StickerManager: NSObject {
             guard !latestCopy.isInstalled else {
                 return
             }
-            self.uninstallStickerPack(stickerPackInfo: packInfo,
-                                      uninstallCover: true,
-                                      transaction: transaction)
-            latestCopy.anyRemove(transaction: transaction)
+            uninstallStickerPack(stickerPackInfo: packInfo,
+                                 transaction: transaction)
         } else {
             pack.anySave(transaction: transaction)
         }
@@ -943,7 +976,6 @@ public class StickerManager: NSObject {
             let stickerPacks = installedStickerPacks(transaction: transaction)
             for stickerPack in stickerPacks {
                 uninstallStickerPack(stickerPackInfo: stickerPack.info,
-                                     uninstallCover: false,
                                      transaction: transaction)
             }
         }
@@ -955,7 +987,7 @@ public class StickerManager: NSObject {
             let stickerPacks = allStickerPacks(transaction: transaction)
             for stickerPack in stickerPacks {
                 uninstallStickerPack(stickerPackInfo: stickerPack.info,
-                                     uninstallCover: true,
+                                     uninstallEverything: true,
                                      transaction: transaction)
                 stickerPack.anyRemove(transaction: transaction)
             }

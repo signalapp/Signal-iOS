@@ -142,7 +142,6 @@ public class StickerPackViewController: OWSViewController {
 
         StickerPackViewController.databaseStorage.write { (transaction) in
             StickerManager.uninstallStickerPack(stickerPackInfo: self.stickerPackInfo,
-                                                uninstallCover: false,
                                                 transaction: transaction)
         }
 
