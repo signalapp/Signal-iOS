@@ -193,7 +193,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
-@property (nonatomic) BOOL hasUnreadMessages;
+@property (nonatomic, readonly) BOOL hasUnreadMessages;
 @property (nonatomic) BOOL isPickingMediaAsDocument;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
@@ -2662,8 +2662,10 @@ typedef enum : NSUInteger {
     [self.scrollDownButton.superview setNeedsLayout];
 }
 
-- (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
+- (void)setHasUnreadMessages:(BOOL)hasUnreadMessages transaction:(SDSAnyReadTransaction *)transaction
 {
+    OWSAssertDebug(transaction);
+
     if (_hasUnreadMessages == hasUnreadMessages) {
         return;
     }
@@ -2671,7 +2673,7 @@ typedef enum : NSUInteger {
     _hasUnreadMessages = hasUnreadMessages;
 
     self.scrollDownButton.hasUnreadMessages = hasUnreadMessages;
-    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES transaction:transaction];
 }
 
 - (void)scrollDownButtonTapped
@@ -3567,7 +3569,9 @@ typedef enum : NSUInteger {
 
     self.scrollDownButton.hidden = YES;
 
-    self.hasUnreadMessages = NO;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self setHasUnreadMessages:NO transaction:transaction];
+    }];
 }
 
 - (void)updateLastVisibleSortIdWithSneakyTransaction
@@ -3594,7 +3598,7 @@ typedef enum : NSUInteger {
     __block NSUInteger numberOfUnreadMessages;
     numberOfUnreadMessages = [[transaction.transitional_yapReadTransaction ext:TSUnreadDatabaseViewExtensionName]
         numberOfItemsInGroup:self.thread.uniqueId];
-    self.hasUnreadMessages = numberOfUnreadMessages > 0;
+    [self setHasUnreadMessages:numberOfUnreadMessages > 0 transaction:transaction];
 }
 
 - (void)markVisibleMessagesAsRead

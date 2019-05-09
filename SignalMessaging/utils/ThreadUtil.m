@@ -479,76 +479,72 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
                                                   contactsManager:(OWSContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
-                                                     dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                               lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
                                                    focusMessageId:(nullable NSString *)focusMessageId
                                                      maxRangeSize:(int)maxRangeSize
+                                                      transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
-    OWSAssertDebug(dbConnection);
     OWSAssertDebug(contactsManager);
     OWSAssertDebug(blockingManager);
     OWSAssertDebug(maxRangeSize > 0);
+    OWSAssertDebug(transaction);
 
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
 
-    [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        // Find any "dynamic" interactions and safety number changes.
-        //
-        // We use different views for performance reasons.
-        NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
-        NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
-        [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction]
-            enumerateKeysAndObjectsInGroup:thread.uniqueId
-                                usingBlock:^(
-                                    NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                    if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-                                        [blockingSafetyNumberChanges addObject:object];
-                                    } else if ([object isKindOfClass:[TSErrorMessage class]]) {
-                                        TSErrorMessage *errorMessage = (TSErrorMessage *)object;
-                                        OWSAssertDebug(
-                                            errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
-                                        [nonBlockingSafetyNumberChanges addObject:errorMessage];
-                                    } else {
-                                        OWSFailDebug(@"Unexpected dynamic interaction type: %@", [object class]);
-                                    }
-                                }];
+    // Find any "dynamic" interactions and safety number changes.
+    //
+    // We use different views for performance reasons.
+    NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
+    NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
+    [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction]
+        enumerateKeysAndObjectsInGroup:thread.uniqueId
+                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+                                if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
+                                    [blockingSafetyNumberChanges addObject:object];
+                                } else if ([object isKindOfClass:[TSErrorMessage class]]) {
+                                    TSErrorMessage *errorMessage = (TSErrorMessage *)object;
+                                    OWSAssertDebug(errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
+                                    [nonBlockingSafetyNumberChanges addObject:errorMessage];
+                                } else {
+                                    OWSFailDebug(@"Unexpected dynamic interaction type: %@", [object class]);
+                                }
+                            }];
 
-        // Determine if there are "unread" messages in this conversation.
-        // If we've been passed a firstUnseenInteractionTimestampParameter,
-        // just use that value in order to preserve continuity of the
-        // unread messages indicator after all messages in the conversation
-        // have been marked as read.
-        //
-        // IFF this variable is non-null, there are unseen messages in the thread.
-        NSNumber *_Nullable firstUnseenSortId = nil;
-        if (lastUnreadIndicator) {
-            firstUnseenSortId = @(lastUnreadIndicator.firstUnseenSortId);
-        } else {
-            TSInteraction *_Nullable firstUnseenInteraction =
-                [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:thread.uniqueId];
-            if (firstUnseenInteraction) {
-                firstUnseenSortId = @(firstUnseenInteraction.sortId);
-            }
+    // Determine if there are "unread" messages in this conversation.
+    // If we've been passed a firstUnseenInteractionTimestampParameter,
+    // just use that value in order to preserve continuity of the
+    // unread messages indicator after all messages in the conversation
+    // have been marked as read.
+    //
+    // IFF this variable is non-null, there are unseen messages in the thread.
+    NSNumber *_Nullable firstUnseenSortId = nil;
+    if (lastUnreadIndicator) {
+        firstUnseenSortId = @(lastUnreadIndicator.firstUnseenSortId);
+    } else {
+        TSInteraction *_Nullable firstUnseenInteraction =
+            [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:thread.uniqueId];
+        if (firstUnseenInteraction) {
+            firstUnseenSortId = @(firstUnseenInteraction.sortId);
         }
+    }
 
-        [self ensureUnreadIndicator:result
-                                    thread:thread
-                               transaction:transaction
-                              maxRangeSize:maxRangeSize
-               blockingSafetyNumberChanges:blockingSafetyNumberChanges
-            nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
-               hideUnreadMessagesIndicator:hideUnreadMessagesIndicator
-                         firstUnseenSortId:firstUnseenSortId];
+    [self ensureUnreadIndicator:result
+                                thread:thread
+                           transaction:transaction
+                          maxRangeSize:maxRangeSize
+           blockingSafetyNumberChanges:blockingSafetyNumberChanges
+        nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
+           hideUnreadMessagesIndicator:hideUnreadMessagesIndicator
+                     firstUnseenSortId:firstUnseenSortId];
 
-        // Determine the position of the focus message _after_ performing any mutations
-        // around dynamic interactions.
-        if (focusMessageId != nil) {
-            result.focusMessagePosition =
-                [self focusMessagePositionForThread:thread transaction:transaction focusMessageId:focusMessageId];
-        }
-    }];
+    // Determine the position of the focus message _after_ performing any mutations
+    // around dynamic interactions.
+    if (focusMessageId != nil) {
+        result.focusMessagePosition =
+            [self focusMessagePositionForThread:thread transaction:transaction focusMessageId:focusMessageId];
+    }
 
     return result;
 }

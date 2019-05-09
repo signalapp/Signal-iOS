@@ -167,7 +167,7 @@ public class SDSKeyValueStore: NSObject {
                 return nil
             }
             guard let object = rawObject as? T else {
-                owsFailDebug("Value has unexpected type.")
+                owsFailDebug("Value has unexpected type: \(type(of: rawObject)).")
                 return nil
             }
             return object
@@ -206,7 +206,7 @@ public class SDSKeyValueStore: NSObject {
                 return nil
             }
             guard let object = rawObject as? Data else {
-                owsFailDebug("Value has unexpected type.")
+                owsFailDebug("Value has unexpected type: \(type(of: rawObject)).")
                 return nil
             }
             return object
