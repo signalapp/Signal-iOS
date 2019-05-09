@@ -333,37 +333,6 @@ class TypeInfo:
 
     def deserialize_record_invocation(self, property, value_name, is_optional, did_force_optional):
         
-        # # Special case this oddball type.
-        # if value_name == 'conversationColorName':
-        #     accessor_name = 'optionalString' if is_optional else 'string'
-        # elif self.should_use_blob:
-        #     accessor_name = 'optionalBlob' if is_optional else 'blob'
-        # elif self.is_enum:
-        #     accessor_name = 'optionalInt' if is_optional else 'int'
-        # elif self._swift_type == 'String':
-        #     accessor_name = 'optionalString' if is_optional else 'string'
-        # elif self._swift_type == 'Date':
-        #     accessor_name = 'optionalDate' if is_optional else 'date'
-        # elif self._swift_type == 'Data':
-        #     accessor_name = 'optionalBlob' if is_optional else 'blob'
-        # elif self._swift_type == 'Bool':
-        #     # TODO: We'll want to use Bool? for Swift models.
-        #     accessor_name = 'optionalBoolAsNSNumber' if is_optional else 'bool'
-        # elif self._swift_type == 'Int64':
-        #     accessor_name = 'optionalInt64AsNSNumber' if is_optional else 'int64'
-        # elif self._swift_type == 'UInt64':
-        #     accessor_name = 'optionalUInt64AsNSNumber' if is_optional else 'uint64'
-        # elif self._swift_type in ('Double', 'Float'):
-        #     accessor_name = 'optionalDoubleAsNSNumber' if is_optional else 'double'
-        # elif self.is_numeric():
-        #     accessor_name = 'optionalInt64' if is_optional else 'int64'
-        # else:
-        #     fail('Unknown type(2):', self._swift_type)
-        #
-        # value_expr = 'try deserializer.%s(at: %s)' % ( accessor_name, str(column_index_name), )
-        # if self.should_cast_to_swift() and not is_optional:
-        #     value_expr = str(self._swift_type) + '(' + value_expr + ')'
-            
         custom_column_name = custom_column_name_for_property(property)
         if custom_column_name is not None:
             value_expr = 'record.%s' % ( custom_column_name, )
@@ -373,13 +342,6 @@ class TypeInfo:
         deserialization_optional = None
         deserialization_not_optional = None
         deserialization_conversion = ''
-        # # Special case this oddball type.
-        # if value_name == 'conversationColorName':
-        #     accessor_name = 'optionalString' if is_optional else 'string'
-        # elif self.should_use_blob:
-        #     accessor_name = 'optionalBlob' if is_optional else 'blob'
-        # elif self.is_enum:
-        #     accessor_name = 'optionalInt' if is_optional else 'int'
         if self._swift_type == 'String':
             deserialization_optional = 'optionalString' 
             deserialization_not_optional = 'string'
@@ -389,30 +351,10 @@ class TypeInfo:
         elif self._swift_type == 'Data':
             deserialization_optional = 'optionalData' 
             deserialization_not_optional = 'data'
-        #     accessor_name = 'optionalBlob' if is_optional else 'blob'
-        # elif self._swift_type == 'Bool':
-        #     # TODO: We'll want to use Bool? for Swift models.
-        #     deserialization_optional = 'optionalBoolAsNSNumber'
-        #     deserialization_not_optional = 'bool'
-        # elif self._swift_type == 'Int64':
-        #     deserialization_optional = 'optionalInt64AsNSNumber'
-        #     deserialization_not_optional = 'int64'
-        # elif self._swift_type == 'UInt64':
-        #     deserialization_optional = 'optionalUInt64AsNSNumber'
-        #     deserialization_not_optional = 'uint64'
-        # elif self._swift_type in ('Double', 'Float'):
-        #     deserialization_optional = 'optionalDoubleAsNSNumber'
-        #     deserialization_not_optional = 'double'
         elif self.is_numeric():
             deserialization_optional = 'optionalNumericAsNSNumber'
             deserialization_not_optional = 'numeric'
             deserialization_conversion = ', conversion: { NSNumber(value: $0) }'
-        # else:
-        #     fail('Unknown type(2):', self._swift_type)
-        #
-        # value_expr = 'try deserializer.%s(at: %s)' % ( accessor_name, str(column_index_name), )
-        # if self.should_cast_to_swift() and not is_optional:
-        #     value_expr = str(self._swift_type) + '(' + value_expr + ')'
             
         if (deserialization_optional is not None) and (deserialization_not_optional is not None):
             if is_optional:
@@ -445,39 +387,8 @@ class TypeInfo:
             return [ 
                     'guard let %s: %s = %s else {' % ( value_name, initializer_param_type, value_expr, ),
                     '   throw SDSError.missingRequiredField',
-                    # 'let %sRaw = %s' % ( value_name, value_expr, ),
-                    # 'var %s : NSNumber?' % ( value_name, ),
-                    # 'if let value = %sRaw {' % ( value_name, ),
-                    # '   %s = NSNumber(value: value)' % ( value_name, ),
                     '}',
                 ]
-        # elif self.is_enum:
-        #     # print 'self._swift_type', self._swift_type
-        #     enum_type = swift_type_for_enum(self._swift_type)
-        #     raw_name = '%sRaw' % ( str(value_name), )
-        #     return [
-        #             'let %s = %s(%s)' % ( raw_name, str(enum_type), value_expr, ),
-        #             'guard let %s = %s(rawValue: %s) else {' % ( value_name, self._swift_type, raw_name, ),
-        #             '   throw SDSError.invalidValue',
-        #             '}',
-        #         ]
-        # elif self.is_numeric():
-        #     if is_optional:
-        #         return [
-        #                 'guard let value = value else {',
-        #                 '    return nil',
-        #                 '}',
-        #                 'return NSNumber(value: value)',
-        #                 'let %s: %s = %s' % ( value_name, 'NSNumber?', value_expr, ),
-        #                 # 'let %sRaw = %s' % ( value_name, value_expr, ),
-        #                 # 'var %s : NSNumber?' % ( value_name, ),
-        #                 # 'if let value = %sRaw {' % ( value_name, ),
-        #                 # '   %s = NSNumber(value: value)' % ( value_name, ),
-        #                 # '}',
-        #             ]
-        #         value_expr = 'SDSDeserialization.%s(%s, name: "%s")' % ( deserialization_optional, value_expr, value_name)
-        #     elif did_force_optional:
-        #         value_expr = 'try SDSDeserialization.%s(%s, name: "%s")' % ( deserialization_not_optional, value_expr, value_name)
         elif is_optional and self._objc_type == 'NSNumber *':
             return [
                     'let %s: %s = %s' % ( value_name, 'NSNumber?', value_expr, ),
@@ -498,24 +409,7 @@ class TypeInfo:
             return 'String'
         elif self.should_use_blob:
             return 'Data'
-        # elif self.is_enum:
-        #     return '.int'
-        # elif self._swift_type == 'String':
-        #     return '.unicodeString'
-        # elif self._swift_type == 'Date':
-        #     return '.int64'
-        # elif self._swift_type == 'Data':
-        #     return '.blob'
-        # elif self._swift_type in ('Boolouble', 'Bool'):
-        #     return '.int'
-        # elif self._swift_type in ('Double', 'Float'):
-        #     return '.double'
-        # elif self.is_numeric():
-        #     return '.int64'
-        # else:
-        #     fail('Unknown type(1):', self._swift_type)
         return self.swift_type()
-        # return self.type_info().record_field_type(self.name)
         
         
 class ParsedProperty:
@@ -1002,7 +896,7 @@ extension %s {
         swift_body += '''}
 ''' 
 
-
+    # TODO: Remove the serialization glue below.
 
 
 
