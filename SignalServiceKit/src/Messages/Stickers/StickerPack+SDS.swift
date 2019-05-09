@@ -56,14 +56,46 @@ public extension String.StringInterpolation {
         appendLiteral(StickerPackRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension StickerPack {
-    class func fromRecord(_ record: StickerPackRecord) -> StickerPack? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension StickerPackSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: StickerPackRecord) throws -> StickerPack {
+
         switch record.recordType {
-        @unknown default:
+        case .stickerPack:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let author: String? = SDSDeserialization.optionalString(record.author, name: "author")
+            let coverSerialized: Data = record.cover
+            let cover: StickerPackItem = try SDSDeserializer.unarchive(coverSerialized)
+            let dateCreated: Date = record.dateCreated
+            let infoSerialized: Data = record.info
+            let info: StickerPackInfo = try SDSDeserializer.unarchive(infoSerialized)
+            let isInstalled: Bool = record.isInstalled
+            let itemsSerialized: Data = record.items
+            let items: [StickerPackItem] = try SDSDeserializer.unarchive(itemsSerialized)
+            let title: String? = SDSDeserialization.optionalString(record.title, name: "title")
+
+            return StickerPack(uniqueId: uniqueId,
+                               author: author,
+                               cover: cover,
+                               dateCreated: dateCreated,
+                               info: info,
+                               isInstalled: isInstalled,
+                               items: items,
+                               title: title)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }

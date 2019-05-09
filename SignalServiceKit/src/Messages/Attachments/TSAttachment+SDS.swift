@@ -92,14 +92,138 @@ public extension String.StringInterpolation {
         appendLiteral(TSAttachmentRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension TSAttachment {
-    class func fromRecord(_ record: TSAttachmentRecord) -> TSAttachment? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension TSAttachmentSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: TSAttachmentRecord) throws -> TSAttachment {
+
         switch record.recordType {
-        @unknown default:
+        case .attachment:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let albumMessageId: String? = SDSDeserialization.optionalString(record.albumMessageId, name: "albumMessageId")
+            let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
+            let attachmentType: TSAttachmentType = record.attachmentType
+            let byteCount: UInt32 = record.byteCount
+            let caption: String? = SDSDeserialization.optionalString(record.caption, name: "caption")
+            let contentType: String = record.contentType
+            let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
+            let isDownloaded: Bool = record.isDownloaded
+            let serverId: UInt64 = record.serverId
+            let sourceFilename: String? = SDSDeserialization.optionalString(record.sourceFilename, name: "sourceFilename")
+
+            return TSAttachment(uniqueId: uniqueId,
+                                albumMessageId: albumMessageId,
+                                attachmentSchemaVersion: attachmentSchemaVersion,
+                                attachmentType: attachmentType,
+                                byteCount: byteCount,
+                                caption: caption,
+                                contentType: contentType,
+                                encryptionKey: encryptionKey,
+                                isDownloaded: isDownloaded,
+                                serverId: serverId,
+                                sourceFilename: sourceFilename)
+
+        case .attachmentPointer:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let albumMessageId: String? = SDSDeserialization.optionalString(record.albumMessageId, name: "albumMessageId")
+            let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
+            let attachmentType: TSAttachmentType = record.attachmentType
+            let byteCount: UInt32 = record.byteCount
+            let caption: String? = SDSDeserialization.optionalString(record.caption, name: "caption")
+            let contentType: String = record.contentType
+            let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
+            let isDownloaded: Bool = record.isDownloaded
+            let serverId: UInt64 = record.serverId
+            let sourceFilename: String? = SDSDeserialization.optionalString(record.sourceFilename, name: "sourceFilename")
+            let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
+            let lazyRestoreFragmentId: String? = SDSDeserialization.optionalString(record.lazyRestoreFragmentId, name: "lazyRestoreFragmentId")
+            let mediaSizeSerialized: Data = record.mediaSize
+            let mediaSize: CGSize = try SDSDeserializer.unarchive(mediaSizeSerialized)
+            let mostRecentFailureLocalizedText: String? = SDSDeserialization.optionalString(record.mostRecentFailureLocalizedText, name: "mostRecentFailureLocalizedText")
+            guard let pointerType: TSAttachmentPointerType = record.pointerType else {
+               throw SDSError.missingRequiredField
+            }
+            guard let state: TSAttachmentPointerState = record.state else {
+               throw SDSError.missingRequiredField
+            }
+
+            return TSAttachmentPointer(uniqueId: uniqueId,
+                                       albumMessageId: albumMessageId,
+                                       attachmentSchemaVersion: attachmentSchemaVersion,
+                                       attachmentType: attachmentType,
+                                       byteCount: byteCount,
+                                       caption: caption,
+                                       contentType: contentType,
+                                       encryptionKey: encryptionKey,
+                                       isDownloaded: isDownloaded,
+                                       serverId: serverId,
+                                       sourceFilename: sourceFilename,
+                                       digest: digest,
+                                       lazyRestoreFragmentId: lazyRestoreFragmentId,
+                                       mediaSize: mediaSize,
+                                       mostRecentFailureLocalizedText: mostRecentFailureLocalizedText,
+                                       pointerType: pointerType,
+                                       state: state)
+
+        case .attachmentStream:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let albumMessageId: String? = SDSDeserialization.optionalString(record.albumMessageId, name: "albumMessageId")
+            let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
+            let attachmentType: TSAttachmentType = record.attachmentType
+            let byteCount: UInt32 = record.byteCount
+            let caption: String? = SDSDeserialization.optionalString(record.caption, name: "caption")
+            let contentType: String = record.contentType
+            let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
+            let isDownloaded: Bool = record.isDownloaded
+            let serverId: UInt64 = record.serverId
+            let sourceFilename: String? = SDSDeserialization.optionalString(record.sourceFilename, name: "sourceFilename")
+            let cachedAudioDurationSeconds: NSNumber? = SDSDeserialization.optionalDoubleAsNSNumber(record.cachedAudioDurationSeconds, name: "cachedAudioDurationSeconds")
+            let cachedImageHeight: NSNumber? = SDSDeserialization.optionalDoubleAsNSNumber(record.cachedImageHeight, name: "cachedImageHeight")
+            let cachedImageWidth: NSNumber? = SDSDeserialization.optionalDoubleAsNSNumber(record.cachedImageWidth, name: "cachedImageWidth")
+            let creationTimestamp: Date = try SDSDeserialization.date(record.creationTimestamp, name: "creationTimestamp")
+            let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
+            let isUploaded: Bool = try SDSDeserialization.bool(record.isUploaded, name: "isUploaded")
+            let isValidImageCached: NSNumber? = SDSDeserialization.optionalBoolAsNSNumber(record.isValidImageCached, name: "isValidImageCached")
+            let isValidVideoCached: NSNumber? = SDSDeserialization.optionalBoolAsNSNumber(record.isValidVideoCached, name: "isValidVideoCached")
+            let localRelativeFilePath: String? = SDSDeserialization.optionalString(record.localRelativeFilePath, name: "localRelativeFilePath")
+
+            return TSAttachmentStream(uniqueId: uniqueId,
+                                      albumMessageId: albumMessageId,
+                                      attachmentSchemaVersion: attachmentSchemaVersion,
+                                      attachmentType: attachmentType,
+                                      byteCount: byteCount,
+                                      caption: caption,
+                                      contentType: contentType,
+                                      encryptionKey: encryptionKey,
+                                      isDownloaded: isDownloaded,
+                                      serverId: serverId,
+                                      sourceFilename: sourceFilename,
+                                      cachedAudioDurationSeconds: cachedAudioDurationSeconds,
+                                      cachedImageHeight: cachedImageHeight,
+                                      cachedImageWidth: cachedImageWidth,
+                                      creationTimestamp: creationTimestamp,
+                                      digest: digest,
+                                      isUploaded: isUploaded,
+                                      isValidImageCached: isValidImageCached,
+                                      isValidVideoCached: isValidVideoCached,
+                                      localRelativeFilePath: localRelativeFilePath)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }

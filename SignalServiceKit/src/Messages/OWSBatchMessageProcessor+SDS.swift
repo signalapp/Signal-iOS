@@ -50,14 +50,37 @@ public extension String.StringInterpolation {
         appendLiteral(OWSMessageContentJobRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension OWSMessageContentJob {
-    class func fromRecord(_ record: OWSMessageContentJobRecord) -> OWSMessageContentJob? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension OWSMessageContentJobSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: OWSMessageContentJobRecord) throws -> OWSMessageContentJob {
+
         switch record.recordType {
-        @unknown default:
+        case .messageContentJob:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let createdAt: Date = record.createdAt
+            let envelopeData: Data = record.envelopeData
+            let plaintextData: Data? = SDSDeserialization.optionalData(record.plaintextData, name: "plaintextData")
+            let wasReceivedByUD: Bool = record.wasReceivedByUD
+
+            return OWSMessageContentJob(uniqueId: uniqueId,
+                                        createdAt: createdAt,
+                                        envelopeData: envelopeData,
+                                        plaintextData: plaintextData,
+                                        wasReceivedByUD: wasReceivedByUD)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }

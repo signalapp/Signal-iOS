@@ -1,5 +1,5 @@
 //
-//  Copyright © 2019 Signal. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,8 +40,8 @@ public enum SDSRecordType: UInt {
     case unknownDBObject = 37
     case userProfile = 41
     case verificationStateChangeMessage = 13
-    case sSKJobRecord = 34
-    case sSKMessageSenderJobRecord = 35
+    case jobRecord = 34
+    case messageSenderJobRecord = 35
     case signalAccount = 30
     case signalRecipient = 31
     case stickerPack = 14

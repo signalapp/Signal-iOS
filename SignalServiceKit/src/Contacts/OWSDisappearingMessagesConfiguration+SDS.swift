@@ -46,14 +46,33 @@ public extension String.StringInterpolation {
         appendLiteral(OWSDisappearingMessagesConfigurationRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension OWSDisappearingMessagesConfiguration {
-    class func fromRecord(_ record: OWSDisappearingMessagesConfigurationRecord) -> OWSDisappearingMessagesConfiguration? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension OWSDisappearingMessagesConfigurationSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: OWSDisappearingMessagesConfigurationRecord) throws -> OWSDisappearingMessagesConfiguration {
+
         switch record.recordType {
-        @unknown default:
+        case .disappearingMessagesConfiguration:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let durationSeconds: UInt32 = record.durationSeconds
+            let enabled: Bool = record.enabled
+
+            return OWSDisappearingMessagesConfiguration(uniqueId: uniqueId,
+                                                        durationSeconds: durationSeconds,
+                                                        enabled: enabled)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }

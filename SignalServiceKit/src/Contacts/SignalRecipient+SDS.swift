@@ -44,14 +44,32 @@ public extension String.StringInterpolation {
         appendLiteral(SignalRecipientRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension SignalRecipient {
-    class func fromRecord(_ record: SignalRecipientRecord) -> SignalRecipient? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension SignalRecipientSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: SignalRecipientRecord) throws -> SignalRecipient {
+
         switch record.recordType {
-        @unknown default:
+        case .signalRecipient:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let devicesSerialized: Data = record.devices
+            let devices: NSOrderedSet = try SDSDeserializer.unarchive(devicesSerialized)
+
+            return SignalRecipient(uniqueId: uniqueId,
+                                   devices: devices)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }

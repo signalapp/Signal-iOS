@@ -260,6 +260,8 @@ class TypeInfo:
         return self.is_numeric()
                   
     # This defines how to deserialize database column values to Swift values, using SDSDeserializer.
+    #
+    # TODO: Remove this method.
     def deserializer_invocation(self, column_index_name, value_name, is_optional):
         
         # Special case this oddball type.
@@ -327,7 +329,142 @@ class TypeInfo:
         else:
             value_statement = 'let %s = %s' % ( value_name, value_expr, )
         return [value_statement,]
+
+    def deserialize_record_invocation(self, value_name, is_optional, did_force_optional):
         
+        # # Special case this oddball type.
+        # if value_name == 'conversationColorName':
+        #     accessor_name = 'optionalString' if is_optional else 'string'
+        # elif self.should_use_blob:
+        #     accessor_name = 'optionalBlob' if is_optional else 'blob'
+        # elif self.is_enum:
+        #     accessor_name = 'optionalInt' if is_optional else 'int'
+        # elif self._swift_type == 'String':
+        #     accessor_name = 'optionalString' if is_optional else 'string'
+        # elif self._swift_type == 'Date':
+        #     accessor_name = 'optionalDate' if is_optional else 'date'
+        # elif self._swift_type == 'Data':
+        #     accessor_name = 'optionalBlob' if is_optional else 'blob'
+        # elif self._swift_type == 'Bool':
+        #     # TODO: We'll want to use Bool? for Swift models.
+        #     accessor_name = 'optionalBoolAsNSNumber' if is_optional else 'bool'
+        # elif self._swift_type == 'Int64':
+        #     accessor_name = 'optionalInt64AsNSNumber' if is_optional else 'int64'
+        # elif self._swift_type == 'UInt64':
+        #     accessor_name = 'optionalUInt64AsNSNumber' if is_optional else 'uint64'
+        # elif self._swift_type in ('Double', 'Float'):
+        #     accessor_name = 'optionalDoubleAsNSNumber' if is_optional else 'double'
+        # elif self.is_numeric():
+        #     accessor_name = 'optionalInt64' if is_optional else 'int64'
+        # else:
+        #     fail('Unknown type(2):', self._swift_type)
+        #
+        # value_expr = 'try deserializer.%s(at: %s)' % ( accessor_name, str(column_index_name), )
+        # if self.should_cast_to_swift() and not is_optional:
+        #     value_expr = str(self._swift_type) + '(' + value_expr + ')'
+            
+        value_expr = 'record.%s' % ( value_name, )
+        
+        deserialization_optional = None
+        deserialization_not_optional = None
+        # # Special case this oddball type.
+        # if value_name == 'conversationColorName':
+        #     accessor_name = 'optionalString' if is_optional else 'string'
+        # elif self.should_use_blob:
+        #     accessor_name = 'optionalBlob' if is_optional else 'blob'
+        # elif self.is_enum:
+        #     accessor_name = 'optionalInt' if is_optional else 'int'
+        if self._swift_type == 'String':
+            deserialization_optional = 'optionalString' 
+            deserialization_not_optional = 'string'
+        elif self._swift_type == 'Date':
+            deserialization_optional = 'optionalDate' 
+            deserialization_not_optional = 'date'
+        elif self._swift_type == 'Data':
+            deserialization_optional = 'optionalData' 
+            deserialization_not_optional = 'data'
+        #     accessor_name = 'optionalBlob' if is_optional else 'blob'
+        elif self._swift_type == 'Bool':
+            # TODO: We'll want to use Bool? for Swift models.
+            deserialization_optional = 'optionalBoolAsNSNumber' 
+            deserialization_not_optional = 'bool'
+        elif self._swift_type == 'Int64':
+            deserialization_optional = 'optionalInt64AsNSNumber' 
+            deserialization_not_optional = 'int64'
+        elif self._swift_type == 'UInt64':
+            deserialization_optional = 'optionalUInt64AsNSNumber' 
+            deserialization_not_optional = 'uint64'
+        elif self._swift_type in ('Double', 'Float'):
+            deserialization_optional = 'optionalDoubleAsNSNumber' 
+            deserialization_not_optional = 'double'
+        elif self.is_numeric():
+            deserialization_optional = 'optionalInt64' 
+            deserialization_not_optional = 'int64'
+        # else:
+        #     fail('Unknown type(2):', self._swift_type)
+        #
+        # value_expr = 'try deserializer.%s(at: %s)' % ( accessor_name, str(column_index_name), )
+        # if self.should_cast_to_swift() and not is_optional:
+        #     value_expr = str(self._swift_type) + '(' + value_expr + ')'
+            
+        if (deserialization_optional is not None) and (deserialization_not_optional is not None):
+            if is_optional:
+                value_expr = 'SDSDeserialization.%s(%s, name: "%s")' % ( deserialization_optional, value_expr, value_name)
+            elif did_force_optional:
+                value_expr = 'try SDSDeserialization.%s(%s, name: "%s")' % ( deserialization_not_optional, value_expr, value_name)
+            else:
+                # Do nothing; we don't need to unpack this non-optional.
+                pass
+        
+        initializer_param_type = self.swift_type()
+        if is_optional:
+            initializer_param_type = initializer_param_type + '?'
+            
+        # Special case this oddball type.
+        if value_name == 'conversationColorName':
+            value_statement = 'let %s: %s = ConversationColorName(rawValue: %s)' % ( value_name, initializer_param_type, value_expr, )
+        elif self.should_use_blob:
+            blob_name = '%sSerialized' % ( str(value_name), )
+            if is_optional:
+                serialized_statement = 'let %s: Data? = %s' % ( blob_name, value_expr, )
+                value_statement = 'let %s: %s? = try SDSDeserializer.optionalUnarchive(%s)' % ( value_name, self._swift_type, blob_name, )
+            else:
+                serialized_statement = 'let %s: Data = %s' % ( blob_name, value_expr, )
+                value_statement = 'let %s: %s = try SDSDeserializer.unarchive(%s)' % ( value_name, self._swift_type, blob_name, )
+            return [ serialized_statement, value_statement,]
+        elif self.is_enum and did_force_optional and not is_optional:
+            return [ 
+                    'guard let %s: %s = %s else {' % ( value_name, initializer_param_type, value_expr, ),
+                    '   throw SDSError.missingRequiredField',
+                    # 'let %sRaw = %s' % ( value_name, value_expr, ),
+                    # 'var %s : NSNumber?' % ( value_name, ),
+                    # 'if let value = %sRaw {' % ( value_name, ),
+                    # '   %s = NSNumber(value: value)' % ( value_name, ),
+                    '}',
+                ]
+        # elif self.is_enum:
+        #     # print 'self._swift_type', self._swift_type
+        #     enum_type = swift_type_for_enum(self._swift_type)
+        #     raw_name = '%sRaw' % ( str(value_name), )
+        #     return [
+        #             'let %s = %s(%s)' % ( raw_name, str(enum_type), value_expr, ),
+        #             'guard let %s = %s(rawValue: %s) else {' % ( value_name, self._swift_type, raw_name, ),
+        #             '   throw SDSError.invalidValue',
+        #             '}',
+        #         ]
+        elif is_optional and self._objc_type == 'NSNumber *':
+            return [ 
+                    'let %s: %s = %s' % ( value_name, 'NSNumber?', value_expr, ),
+                    # 'let %sRaw = %s' % ( value_name, value_expr, ),
+                    # 'var %s : NSNumber?' % ( value_name, ),
+                    # 'if let value = %sRaw {' % ( value_name, ),
+                    # '   %s = NSNumber(value: value)' % ( value_name, ),
+                    # '}',
+                ]
+        else:
+            value_statement = 'let %s: %s = %s' % ( value_name, initializer_param_type, value_expr, )
+        return [value_statement,]
+
     def record_field_type(self, value_name):
         # Special case this oddball type.
         if value_name == 'conversationColorName':
@@ -504,8 +641,12 @@ class ParsedProperty:
     def has_custom_column_source(self):
         return custom_property_column_source(self) is not None
 
+    # TODO: Remove this method.
     def deserializer_invocation(self, column_index_name, value_name):
         return self.type_info().deserializer_invocation(column_index_name, value_name, self.is_optional)
+
+    def deserialize_record_invocation(self, value_name, did_force_optional):
+        return self.type_info().deserialize_record_invocation(value_name, self.is_optional, did_force_optional)
 
     def record_field_type(self):
         return self.type_info().record_field_type(self.name)
@@ -660,6 +801,7 @@ public struct %sRecord: Codable, FetchableRecord, PersistableRecord, TableRecord
 
 ''' % ( ( str(clazz.name), ) )
 
+
         swift_body += '''}
 
 // MARK: - StringInterpolation
@@ -671,18 +813,187 @@ public extension String.StringInterpolation {
 }
 ''' % ( ( str(clazz.name), ) * 2 )
 
-        swift_body += '''// MARK: - Record Deserialization
 
-public extension %s {
-    class func fromRecord(_ record: %sRecord) -> %s? {
-        switch record.recordType {
-        @unknown default:
-            owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
-        }
-    }
-}
+        swift_body += '''
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension %sSerializer {
+    // This method defines how to deserialize a model, given a 
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: %sRecord) throws -> %s {
 ''' % ( ( str(clazz.name), ) * 3 )
+        swift_body += '''
+        
+        switch record.recordType {
+'''
+
+        deserialize_classes = all_descendents_of_class(clazz) + [clazz]
+        deserialize_classes.sort(key=lambda value: value.name)
+        
+        for deserialize_class in deserialize_classes:
+            if should_ignore_class(deserialize_class):
+                continue
+            
+            initializer_params = []
+            objc_initializer_params = []
+            objc_super_initializer_args = []
+            objc_initializer_assigns = []
+            deserialize_record_type = get_record_type_enum_name(deserialize_class.name)
+            swift_body += '''        case .%s:
+''' % ( str(deserialize_record_type), )
+
+            swift_body += '''
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+'''
+
+            base_property_names = set()
+            for property in base_properties:
+                base_property_names.add(property.name)
+
+            deserialize_properties = properties_and_inherited_properties(deserialize_class)
+            has_local_properties = False
+            for property in deserialize_properties:
+                value_name = '%s' % property.name
+                
+                if property.name not in ( 'uniqueId', 'sortId', ):
+                    did_force_optional = (property.name not in base_property_names) and (not property.is_optional)
+                    for statement in property.deserialize_record_invocation(value_name, did_force_optional):
+                        # print 'statement', statement, type(statement)
+                        swift_body += '            %s\n' % ( str(statement), )
+                
+                initializer_params.append('%s: %s' % ( str(property.name), value_name, ) )
+                objc_initializer_type = str(property.objc_type_safe())
+                if objc_initializer_type.startswith('NSMutable'):
+                    objc_initializer_type = 'NS' + objc_initializer_type[len('NSMutable'):]
+                if property.is_optional:
+                    objc_initializer_type = 'nullable ' + objc_initializer_type
+                objc_initializer_params.append('%s:(%s)%s' % ( str(property.name), objc_initializer_type, str(property.name), ) )
+                
+                is_superclass_property = property.class_name != deserialize_class.name
+                if is_superclass_property:
+                    objc_super_initializer_args.append('%s:%s' % ( str(property.name), str(property.name), ) )
+                else:
+                    has_local_properties = True
+                    if str(property.objc_type_safe()).startswith('NSMutableArray'):
+                        objc_initializer_assigns.append('_%s = %s ? [%s mutableCopy] : [NSMutableArray new];' % ( str(property.name), str(property.name), str(property.name), ) )
+                    elif str(property.objc_type_safe()).startswith('NSMutableDictionary'):
+                        objc_initializer_assigns.append('_%s = %s ? [%s mutableCopy] : [NSMutableDictionary new];' % ( str(property.name), str(property.name), str(property.name), ) )
+                    else:
+                        objc_initializer_assigns.append('_%s = %s;' % ( str(property.name), str(property.name), ) )
+                
+            # --- Initializer Snippets
+
+            h_snippet = ''
+            h_snippet += '''
+// clang-format off
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+'''
+            for objc_initializer_param in objc_initializer_params[1:]:
+                alignment = max(0, len('- (instancetype)initWithUniqueId') - objc_initializer_param.index(':'))
+                h_snippet += (' ' * alignment) + objc_initializer_param + '\n'
+
+            h_snippet += 'NS_SWIFT_NAME(init(%s:));\n' % ':'.join([str(property.name) for property in deserialize_properties])
+            h_snippet += '''
+// clang-format on
+'''
+            
+            m_snippet = ''
+            m_snippet += '''
+// clang-format off
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+'''
+            for objc_initializer_param in objc_initializer_params[1:]:
+                alignment = max(0, len('- (instancetype)initWithUniqueId') - objc_initializer_param.index(':'))
+                m_snippet += (' ' * alignment) + objc_initializer_param + '\n'
+
+            if len(objc_super_initializer_args) == 1:
+                suffix = '];'
+            else:
+                suffix = ''
+            m_snippet += '''{
+    self = [super initWithUniqueId:uniqueId%s
+''' % (suffix)
+            for index, objc_super_initializer_arg in enumerate(objc_super_initializer_args[1:]):
+                alignment = max(0, len('    self = [super initWithUniqueId') - objc_super_initializer_arg.index(':'))
+                if index == len(objc_super_initializer_args) - 2:
+                    suffix = '];'
+                else:
+                    suffix = ''
+                m_snippet += (' ' * alignment) + objc_super_initializer_arg + suffix + '\n'
+            m_snippet += '''    
+    if (!self) {
+        return self;
+    }
+    
+'''
+            for objc_initializer_assign in objc_initializer_assigns:
+                m_snippet += (' ' * 4) + objc_initializer_assign + '\n'
+
+            if deserialize_class.finalize_method_name is not None:
+                m_snippet += '''    
+    [self %s];
+''' % ( str(deserialize_class.finalize_method_name), )
+
+            m_snippet += '''    
+    return self;
+}
+
+// clang-format on
+'''
+
+            # Skip initializer generation for classes without any properties.
+            if not has_local_properties:
+                h_snippet = ''
+                m_snippet = ''
+            
+            if deserialize_class.filepath.endswith('.m'):
+                m_filepath = deserialize_class.filepath
+                h_filepath = m_filepath[:-2] + '.h'
+                update_objc_snippet(h_filepath, h_snippet)            
+                update_objc_snippet(m_filepath, m_snippet)            
+            
+            swift_body += '''
+'''
+
+            # --- Invoke Initializer
+            
+            initializer_invocation = '            return %s(' % str(deserialize_class.name)
+            swift_body += initializer_invocation
+            swift_body += (',\n' + ' ' * len(initializer_invocation)).join(initializer_params)
+            swift_body += ')\n\n'
+
+            # TODO: We could generate a comment with the Obj-C (or Swift) model initializer 
+            #       that this deserialization code expects.
+
+        swift_body += '''        default:
+            owsFailDebug("Unexpected record type: \(record.recordType)")
+            throw SDSError.invalidValue
+'''
+        swift_body += '''        }
+''' 
+        swift_body += '''    }
+''' 
+        swift_body += '''}
+''' 
+
+
+
+
+
+
+
+
+
+
+
+
 
     if not has_sds_superclass:
         swift_body += '''
@@ -1396,6 +1707,8 @@ def get_record_type_enum_name(class_name):
         name = name[len('TS'):]
     elif name.startswith('OWS'):
         name = name[len('OWS'):]
+    elif name.startswith('SSK'):
+        name = name[len('SSK'):]
     if name[0].isnumeric():
         name = '_' + name
     return to_swift_identifer_name(name)

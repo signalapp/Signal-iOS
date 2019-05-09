@@ -50,14 +50,38 @@ public extension String.StringInterpolation {
         appendLiteral(SignalAccountRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension SignalAccount {
-    class func fromRecord(_ record: SignalAccountRecord) -> SignalAccount? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension SignalAccountSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: SignalAccountRecord) throws -> SignalAccount {
+
         switch record.recordType {
-        @unknown default:
+        case .signalAccount:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let contactSerialized: Data? = record.contact
+            let contact: Contact? = try SDSDeserializer.optionalUnarchive(contactSerialized)
+            let hasMultipleAccountContact: Bool = record.hasMultipleAccountContact
+            let multipleAccountLabelText: String = record.multipleAccountLabelText
+            let recipientId: String = record.recipientId
+
+            return SignalAccount(uniqueId: uniqueId,
+                                 contact: contact,
+                                 hasMultipleAccountContact: hasMultipleAccountContact,
+                                 multipleAccountLabelText: multipleAccountLabelText,
+                                 recipientId: recipientId)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }

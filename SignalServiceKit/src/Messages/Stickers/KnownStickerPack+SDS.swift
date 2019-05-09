@@ -46,14 +46,34 @@ public extension String.StringInterpolation {
         appendLiteral(KnownStickerPackRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension KnownStickerPack {
-    class func fromRecord(_ record: KnownStickerPackRecord) -> KnownStickerPack? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension KnownStickerPackSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: KnownStickerPackRecord) throws -> KnownStickerPack {
+
         switch record.recordType {
-        @unknown default:
+        case .knownStickerPack:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let infoSerialized: Data = record.info
+            let info: StickerPackInfo = try SDSDeserializer.unarchive(infoSerialized)
+            let referenceCount: Int = record.referenceCount
+
+            return KnownStickerPack(uniqueId: uniqueId,
+                                    info: info,
+                                    referenceCount: referenceCount)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }

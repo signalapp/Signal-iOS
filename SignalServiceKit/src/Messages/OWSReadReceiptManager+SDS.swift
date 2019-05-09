@@ -46,14 +46,34 @@ public extension String.StringInterpolation {
         appendLiteral(TSRecipientReadReceiptRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension TSRecipientReadReceipt {
-    class func fromRecord(_ record: TSRecipientReadReceiptRecord) -> TSRecipientReadReceipt? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension TSRecipientReadReceiptSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: TSRecipientReadReceiptRecord) throws -> TSRecipientReadReceipt {
+
         switch record.recordType {
-        @unknown default:
+        case .recipientReadReceipt:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let recipientMapSerialized: Data = record.recipientMap
+            let recipientMap: [String: NSNumber] = try SDSDeserializer.unarchive(recipientMapSerialized)
+            let sentTimestamp: UInt64 = record.sentTimestamp
+
+            return TSRecipientReadReceipt(uniqueId: uniqueId,
+                                          recipientMap: recipientMap,
+                                          sentTimestamp: sentTimestamp)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }

@@ -54,14 +54,41 @@ public extension String.StringInterpolation {
         appendLiteral(OWSBackupFragmentRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension OWSBackupFragment {
-    class func fromRecord(_ record: OWSBackupFragmentRecord) -> OWSBackupFragment? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension OWSBackupFragmentSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: OWSBackupFragmentRecord) throws -> OWSBackupFragment {
+
         switch record.recordType {
-        @unknown default:
+        case .backupFragment:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let attachmentId: String? = SDSDeserialization.optionalString(record.attachmentId, name: "attachmentId")
+            let downloadFilePath: String? = SDSDeserialization.optionalString(record.downloadFilePath, name: "downloadFilePath")
+            let encryptionKey: Data = record.encryptionKey
+            let recordName: String = record.recordName
+            let relativeFilePath: String? = SDSDeserialization.optionalString(record.relativeFilePath, name: "relativeFilePath")
+            let uncompressedDataLength: NSNumber? = SDSDeserialization.optionalUInt64AsNSNumber(record.uncompressedDataLength, name: "uncompressedDataLength")
+
+            return OWSBackupFragment(uniqueId: uniqueId,
+                                     attachmentId: attachmentId,
+                                     downloadFilePath: downloadFilePath,
+                                     encryptionKey: encryptionKey,
+                                     recordName: recordName,
+                                     relativeFilePath: relativeFilePath,
+                                     uncompressedDataLength: uncompressedDataLength)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }

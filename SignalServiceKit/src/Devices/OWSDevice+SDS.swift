@@ -50,14 +50,37 @@ public extension String.StringInterpolation {
         appendLiteral(OWSDeviceRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension OWSDevice {
-    class func fromRecord(_ record: OWSDeviceRecord) -> OWSDevice? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension OWSDeviceSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: OWSDeviceRecord) throws -> OWSDevice {
+
         switch record.recordType {
-        @unknown default:
+        case .device:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let createdAt: Date = record.createdAt
+            let deviceId: Int = record.deviceId
+            let lastSeenAt: Date = record.lastSeenAt
+            let name: String? = SDSDeserialization.optionalString(record.name, name: "name")
+
+            return OWSDevice(uniqueId: uniqueId,
+                             createdAt: createdAt,
+                             deviceId: deviceId,
+                             lastSeenAt: lastSeenAt,
+                             name: name)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }

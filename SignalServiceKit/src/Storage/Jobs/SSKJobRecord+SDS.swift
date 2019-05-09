@@ -62,14 +62,75 @@ public extension String.StringInterpolation {
         appendLiteral(SSKJobRecordRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension SSKJobRecord {
-    class func fromRecord(_ record: SSKJobRecordRecord) -> SSKJobRecord? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension SSKJobRecordSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: SSKJobRecordRecord) throws -> SSKJobRecord {
+
         switch record.recordType {
-        @unknown default:
+        case .sessionResetJobRecord:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let failureCount: UInt = record.failureCount
+            let label: String = record.label
+            let status: SSKJobRecordStatus = record.status
+            let contactThreadId: String = try SDSDeserialization.string(record.contactThreadId, name: "contactThreadId")
+
+            return OWSSessionResetJobRecord(uniqueId: uniqueId,
+                                            failureCount: failureCount,
+                                            label: label,
+                                            sortId: sortId,
+                                            status: status,
+                                            contactThreadId: contactThreadId)
+
+        case .jobRecord:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let failureCount: UInt = record.failureCount
+            let label: String = record.label
+            let status: SSKJobRecordStatus = record.status
+
+            return SSKJobRecord(uniqueId: uniqueId,
+                                failureCount: failureCount,
+                                label: label,
+                                sortId: sortId,
+                                status: status)
+
+        case .messageSenderJobRecord:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let failureCount: UInt = record.failureCount
+            let label: String = record.label
+            let status: SSKJobRecordStatus = record.status
+            let invisibleMessageSerialized: Data? = record.invisibleMessage
+            let invisibleMessage: TSOutgoingMessage? = try SDSDeserializer.optionalUnarchive(invisibleMessageSerialized)
+            let messageId: String? = SDSDeserialization.optionalString(record.messageId, name: "messageId")
+            let removeMessageAfterSending: Bool = try SDSDeserialization.bool(record.removeMessageAfterSending, name: "removeMessageAfterSending")
+            let threadId: String? = SDSDeserialization.optionalString(record.threadId, name: "threadId")
+
+            return SSKMessageSenderJobRecord(uniqueId: uniqueId,
+                                             failureCount: failureCount,
+                                             label: label,
+                                             sortId: sortId,
+                                             status: status,
+                                             invisibleMessage: invisibleMessage,
+                                             messageId: messageId,
+                                             removeMessageAfterSending: removeMessageAfterSending,
+                                             threadId: threadId)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }
@@ -176,7 +237,7 @@ extension SSKJobRecordSerializer {
                                             status: status,
                                             contactThreadId: contactThreadId)
 
-        case .sSKJobRecord:
+        case .jobRecord:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let failureCount = UInt(try deserializer.int64(at: failureCountColumn.columnIndex))
@@ -193,7 +254,7 @@ extension SSKJobRecordSerializer {
                                 sortId: sortId,
                                 status: status)
 
-        case .sSKMessageSenderJobRecord:
+        case .messageSenderJobRecord:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let failureCount = UInt(try deserializer.int64(at: failureCountColumn.columnIndex))
@@ -446,7 +507,7 @@ class SSKJobRecordSerializer: SDSSerializer {
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.sSKJobRecord.rawValue
+            SDSRecordType.jobRecord.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {

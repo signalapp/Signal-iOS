@@ -48,14 +48,35 @@ public extension String.StringInterpolation {
         appendLiteral(OWSLinkedDeviceReadReceiptRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension OWSLinkedDeviceReadReceipt {
-    class func fromRecord(_ record: OWSLinkedDeviceReadReceiptRecord) -> OWSLinkedDeviceReadReceipt? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension OWSLinkedDeviceReadReceiptSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: OWSLinkedDeviceReadReceiptRecord) throws -> OWSLinkedDeviceReadReceipt {
+
         switch record.recordType {
-        @unknown default:
+        case .linkedDeviceReadReceipt:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let messageIdTimestamp: UInt64 = record.messageIdTimestamp
+            let readTimestamp: UInt64 = record.readTimestamp
+            let senderId: String = record.senderId
+
+            return OWSLinkedDeviceReadReceipt(uniqueId: uniqueId,
+                                              messageIdTimestamp: messageIdTimestamp,
+                                              readTimestamp: readTimestamp,
+                                              senderId: senderId)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }

@@ -66,14 +66,102 @@ public extension String.StringInterpolation {
         appendLiteral(TSThreadRecord.columnName(column))
     }
 }
-// MARK: - Record Deserialization
 
-public extension TSThread {
-    class func fromRecord(_ record: TSThreadRecord) -> TSThread? {
+// MARK: - Deserialization
+
+// TODO: Remove the other Deserialization extension.
+// TODO: SDSDeserializer.
+// TODO: Rework metadata to not include, for example, columns, column indices.
+extension TSThreadSerializer {
+    // This method defines how to deserialize a model, given a
+    // database row.  The recordType column is used to determine
+    // the corresponding model class.
+    class func deserializeRecord(record: TSThreadRecord) throws -> TSThread {
+
         switch record.recordType {
-        @unknown default:
+        case .contactThread:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let archivalDate: Date? = SDSDeserialization.optionalDate(record.archivalDate, name: "archivalDate")
+            let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalBoolAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId")
+            let conversationColorName: NSString * = ConversationColorName(rawValue: record.conversationColorName)
+            let creationDate: Date = record.creationDate
+            let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
+            let lastMessageDate: Date? = SDSDeserialization.optionalDate(record.lastMessageDate, name: "lastMessageDate")
+            let messageDraft: String? = SDSDeserialization.optionalString(record.messageDraft, name: "messageDraft")
+            let mutedUntilDate: Date? = SDSDeserialization.optionalDate(record.mutedUntilDate, name: "mutedUntilDate")
+            let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
+            let hasDismissedOffers: Bool = try SDSDeserialization.bool(record.hasDismissedOffers, name: "hasDismissedOffers")
+
+            return TSContactThread(uniqueId: uniqueId,
+                                   archivalDate: archivalDate,
+                                   archivedAsOfMessageSortId: archivedAsOfMessageSortId,
+                                   conversationColorName: conversationColorName,
+                                   creationDate: creationDate,
+                                   isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
+                                   lastMessageDate: lastMessageDate,
+                                   messageDraft: messageDraft,
+                                   mutedUntilDate: mutedUntilDate,
+                                   shouldThreadBeVisible: shouldThreadBeVisible,
+                                   hasDismissedOffers: hasDismissedOffers)
+
+        case .groupThread:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let archivalDate: Date? = SDSDeserialization.optionalDate(record.archivalDate, name: "archivalDate")
+            let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalBoolAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId")
+            let conversationColorName: NSString * = ConversationColorName(rawValue: record.conversationColorName)
+            let creationDate: Date = record.creationDate
+            let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
+            let lastMessageDate: Date? = SDSDeserialization.optionalDate(record.lastMessageDate, name: "lastMessageDate")
+            let messageDraft: String? = SDSDeserialization.optionalString(record.messageDraft, name: "messageDraft")
+            let mutedUntilDate: Date? = SDSDeserialization.optionalDate(record.mutedUntilDate, name: "mutedUntilDate")
+            let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
+            let groupModelSerialized: Data = record.groupModel
+            let groupModel: TSGroupModel = try SDSDeserializer.unarchive(groupModelSerialized)
+
+            return TSGroupThread(uniqueId: uniqueId,
+                                 archivalDate: archivalDate,
+                                 archivedAsOfMessageSortId: archivedAsOfMessageSortId,
+                                 conversationColorName: conversationColorName,
+                                 creationDate: creationDate,
+                                 isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
+                                 lastMessageDate: lastMessageDate,
+                                 messageDraft: messageDraft,
+                                 mutedUntilDate: mutedUntilDate,
+                                 shouldThreadBeVisible: shouldThreadBeVisible,
+                                 groupModel: groupModel)
+
+        case .thread:
+
+            let uniqueId: String = record.uniqueId
+            let sortId: UInt64 = record.id
+            let archivalDate: Date? = SDSDeserialization.optionalDate(record.archivalDate, name: "archivalDate")
+            let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalBoolAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId")
+            let conversationColorName: NSString * = ConversationColorName(rawValue: record.conversationColorName)
+            let creationDate: Date = record.creationDate
+            let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
+            let lastMessageDate: Date? = SDSDeserialization.optionalDate(record.lastMessageDate, name: "lastMessageDate")
+            let messageDraft: String? = SDSDeserialization.optionalString(record.messageDraft, name: "messageDraft")
+            let mutedUntilDate: Date? = SDSDeserialization.optionalDate(record.mutedUntilDate, name: "mutedUntilDate")
+            let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
+
+            return TSThread(uniqueId: uniqueId,
+                            archivalDate: archivalDate,
+                            archivedAsOfMessageSortId: archivedAsOfMessageSortId,
+                            conversationColorName: conversationColorName,
+                            creationDate: creationDate,
+                            isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
+                            lastMessageDate: lastMessageDate,
+                            messageDraft: messageDraft,
+                            mutedUntilDate: mutedUntilDate,
+                            shouldThreadBeVisible: shouldThreadBeVisible)
+
+        default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            return nil
+            throw SDSError.invalidValue
         }
     }
 }
