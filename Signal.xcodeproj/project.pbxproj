@@ -1245,7 +1245,7 @@
 		45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableTextFilterTest.swift; sourceTree = "<group>"; };
 		45F170AB1E2F0351003FC1F2 /* OWSAudioSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAudioSession.swift; sourceTree = "<group>"; };
 		45F170BA1E2FC5D3003FC1F2 /* CallAudioService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallAudioService.swift; sourceTree = "<group>"; };
-		45F32C1D205718B000A300D5 /* MediaPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MediaPageViewController.swift; path = Signal/src/ViewControllers/MediaPageViewController.swift; sourceTree = SOURCE_ROOT; };
+		45F32C1D205718B000A300D5 /* MediaPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MediaPageViewController.swift; path = Signal/src/ViewControllers/MediaGallery/MediaPageViewController.swift; sourceTree = SOURCE_ROOT; };
 		45F59A092029140500E8D2B0 /* OWSVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSVideoPlayer.swift; sourceTree = "<group>"; };
 		45F659721E1BD99C00444429 /* CallKitCallUIAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallKitCallUIAdaptee.swift; sourceTree = "<group>"; };
 		45F659811E1BE77000444429 /* NonCallKitCallUIAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonCallKitCallUIAdaptee.swift; sourceTree = "<group>"; };
@@ -1979,11 +1979,7 @@
 				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
 				4542DF53208D40AC007B4E76 /* LoadingViewController.swift */,
 				3496744E2076ACCE00080B5F /* LongTextViewController.swift */,
-				45B9EE9A200E91FB005D2F2D /* MediaDetailViewController.h */,
-				45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */,
-				452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */,
-				45F32C1D205718B000A300D5 /* MediaPageViewController.swift */,
-				454A84032059C787008B8C75 /* MediaTileViewController.swift */,
+				4C4F360E2284516F00A8DF48 /* MediaGallery */,
 				4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */,
 				34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */,
 				34B3F84F1E8DF1700035BE1A /* NewContactThreadViewController.h */,
@@ -2404,6 +2400,18 @@
 				4C3EF801210918740007EBF7 /* SSKProtoEnvelopeTest.swift */,
 			);
 			path = SSKTests;
+			sourceTree = "<group>";
+		};
+		4C4F360E2284516F00A8DF48 /* MediaGallery */ = {
+			isa = PBXGroup;
+			children = (
+				45B9EE9A200E91FB005D2F2D /* MediaDetailViewController.h */,
+				45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */,
+				452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */,
+				45F32C1D205718B000A300D5 /* MediaPageViewController.swift */,
+				454A84032059C787008B8C75 /* MediaTileViewController.swift */,
+			);
+			path = MediaGallery;
 			sourceTree = "<group>";
 		};
 		4CFD151B22415A6C00F2450F /* Call */ = {

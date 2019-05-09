@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMediaGalleryFinder.h"
+#import "YAPDBMediaGalleryFinder.h"
 #import "OWSStorage.h"
 #import "TSAttachmentStream.h"
 #import "TSMessage.h"
@@ -14,15 +14,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFinderExtensionName";
+static NSString *const YAPDBMediaGalleryFinderExtensionName = @"YAPDBMediaGalleryFinderExtensionName";
 
-@interface OWSMediaGalleryFinder ()
+@interface YAPDBMediaGalleryFinder ()
 
 @property (nonatomic, readonly) TSThread *thread;
 
 @end
 
-@implementation OWSMediaGalleryFinder
+@implementation YAPDBMediaGalleryFinder
 
 - (instancetype)initWithThread:(TSThread *)thread
 {
@@ -95,7 +95,7 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
 - (BOOL)hasMediaChangesInNotifications:(NSArray<NSNotification *> *)notifications
                           dbConnection:(YapDatabaseConnection *)dbConnection
 {
-    YapDatabaseAutoViewConnection *extConnection = [dbConnection ext:OWSMediaGalleryFinderExtensionName];
+    YapDatabaseAutoViewConnection *extConnection = [dbConnection ext:YAPDBMediaGalleryFinderExtensionName];
     OWSAssert(extConnection);
 
     return [extConnection hasChangesForGroup:self.mediaGroup inNotifications:notifications];
@@ -105,9 +105,9 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
 
 - (YapDatabaseAutoViewTransaction *)galleryExtensionWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    YapDatabaseAutoViewTransaction *extension = [transaction extension:OWSMediaGalleryFinderExtensionName];
+    YapDatabaseAutoViewTransaction *extension = [transaction extension:YAPDBMediaGalleryFinderExtensionName];
     OWSAssertDebug(extension);
-    
+
     return extension;
 }
 
@@ -125,13 +125,12 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
 
 + (NSString *)databaseExtensionName
 {
-    return OWSMediaGalleryFinderExtensionName;
+    return YAPDBMediaGalleryFinderExtensionName;
 }
 
 + (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage
 {
-    [storage asyncRegisterExtension:[self mediaGalleryDatabaseExtension]
-                           withName:OWSMediaGalleryFinderExtensionName];
+    [storage asyncRegisterExtension:[self mediaGalleryDatabaseExtension] withName:YAPDBMediaGalleryFinderExtensionName];
 }
 
 + (YapDatabaseAutoView *)mediaGalleryDatabaseExtension

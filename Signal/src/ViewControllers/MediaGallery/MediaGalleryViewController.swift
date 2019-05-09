@@ -323,7 +323,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     }
 
     private let editingDatabaseConnection: YapDatabaseConnection
-    private let mediaGalleryFinder: OWSMediaGalleryFinder
+    private let mediaGalleryFinder: YAPDBMediaGalleryFinder
 
     private var initialDetailItem: MediaGalleryItem?
     private let thread: TSThread
@@ -343,7 +343,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         self.editingDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
 
         self.options = options
-        self.mediaGalleryFinder = OWSMediaGalleryFinder(thread: thread)
+        self.mediaGalleryFinder = YAPDBMediaGalleryFinder(thread: thread)
         super.init()
 
         NotificationCenter.default.addObserver(self,
@@ -747,7 +747,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                 return []
             }
 
-            guard let galleryData = extensionChanges[OWSMediaGalleryFinder.databaseExtensionName()] as? [AnyHashable: Any] else {
+            guard let galleryData = extensionChanges[YAPDBMediaGalleryFinder.databaseExtensionName()] as? [AnyHashable: Any] else {
                 owsFailDebug("galleryData was unexpectedly nil")
                 return []
             }

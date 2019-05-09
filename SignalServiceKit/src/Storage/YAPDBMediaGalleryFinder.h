@@ -12,14 +12,15 @@ NS_ASSUME_NONNULL_BEGIN
 @class YapDatabaseReadTransaction;
 @class YapDatabaseViewRowChange;
 
-@interface OWSMediaGalleryFinder : NSObject
+@interface YAPDBMediaGalleryFinder : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 
 // How many media items a thread has
-- (NSUInteger)mediaCountWithTransaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(mediaCount(transaction:));
+- (NSUInteger)mediaCountWithTransaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(mediaCount(transaction:));
 
 // The ordinal position of an attachment within a thread's media gallery
 - (nullable NSNumber *)mediaIndexForAttachment:(TSAttachment *)attachment
@@ -34,7 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enumerateMediaAttachmentsWithRange:(NSRange)range
                                transaction:(YapDatabaseReadTransaction *)transaction
                                      block:(void (^)(TSAttachment *))attachmentBlock
-    NS_SWIFT_NAME(enumerateMediaAttachments(range:transaction:block:));
+    NS_SWIFT_NAME(enumerateMediaAttachments(range:transaction:block
+:));
 
 - (BOOL)hasMediaChangesInNotifications:(NSArray<NSNotification *> *)notifications
                           dbConnection:(YapDatabaseConnection *)dbConnection;
