@@ -2098,7 +2098,7 @@ extension TSInteraction {
 
         do {
             guard let record = try InteractionRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try TSInteraction.fromRecord(record)

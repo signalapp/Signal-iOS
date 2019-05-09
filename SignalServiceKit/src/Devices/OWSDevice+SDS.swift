@@ -354,7 +354,7 @@ extension OWSDevice {
 
         do {
             guard let record = try DeviceRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try OWSDevice.fromRecord(record)

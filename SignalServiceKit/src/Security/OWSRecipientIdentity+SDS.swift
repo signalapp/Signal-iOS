@@ -365,7 +365,7 @@ extension OWSRecipientIdentity {
 
         do {
             guard let record = try RecipientIdentityRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try OWSRecipientIdentity.fromRecord(record)

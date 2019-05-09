@@ -364,7 +364,7 @@ extension OWSUserProfile {
 
         do {
             guard let record = try UserProfileRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try OWSUserProfile.fromRecord(record)

@@ -338,7 +338,7 @@ extension OWSDisappearingMessagesConfiguration {
 
         do {
             guard let record = try DisappearingMessagesConfigurationRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try OWSDisappearingMessagesConfiguration.fromRecord(record)

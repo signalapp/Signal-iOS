@@ -338,7 +338,7 @@ extension OWSMessageDecryptJob {
 
         do {
             guard let record = try MessageDecryptJobRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try OWSMessageDecryptJob.fromRecord(record)

@@ -346,7 +346,7 @@ extension OWSLinkedDeviceReadReceipt {
 
         do {
             guard let record = try LinkedDeviceReadReceiptRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try OWSLinkedDeviceReadReceipt.fromRecord(record)

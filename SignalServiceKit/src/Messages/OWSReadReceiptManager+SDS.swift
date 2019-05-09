@@ -340,7 +340,7 @@ extension TSRecipientReadReceipt {
 
         do {
             guard let record = try RecipientReadReceiptRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try TSRecipientReadReceipt.fromRecord(record)

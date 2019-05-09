@@ -469,7 +469,7 @@ extension SSKJobRecord {
 
         do {
             guard let record = try JobRecordRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try SSKJobRecord.fromRecord(record)

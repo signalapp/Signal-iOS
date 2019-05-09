@@ -354,7 +354,7 @@ extension OWSMessageContentJob {
 
         do {
             guard let record = try MessageContentJobRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try OWSMessageContentJob.fromRecord(record)

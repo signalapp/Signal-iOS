@@ -340,7 +340,7 @@ extension KnownStickerPack {
 
         do {
             guard let record = try KnownStickerPackRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try KnownStickerPack.fromRecord(record)

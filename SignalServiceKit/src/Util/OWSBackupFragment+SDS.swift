@@ -370,7 +370,7 @@ extension OWSBackupFragment {
 
         do {
             guard let record = try BackupFragmentRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try OWSBackupFragment.fromRecord(record)

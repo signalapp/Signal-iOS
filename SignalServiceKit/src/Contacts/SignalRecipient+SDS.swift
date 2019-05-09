@@ -332,7 +332,7 @@ extension SignalRecipient {
 
         do {
             guard let record = try SignalRecipientRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try SignalRecipient.fromRecord(record)

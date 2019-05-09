@@ -356,7 +356,7 @@ extension SignalAccount {
 
         do {
             guard let record = try SignalAccountRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try SignalAccount.fromRecord(record)

@@ -384,7 +384,7 @@ extension StickerPack {
 
         do {
             guard let record = try StickerPackRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try StickerPack.fromRecord(record)

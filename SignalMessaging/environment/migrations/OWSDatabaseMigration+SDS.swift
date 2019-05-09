@@ -479,7 +479,7 @@ extension OWSDatabaseMigration {
 
         do {
             guard let record = try DatabaseMigrationRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try OWSDatabaseMigration.fromRecord(record)

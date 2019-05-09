@@ -519,7 +519,7 @@ extension TSThread {
 
         do {
             guard let record = try ThreadRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
 
             return try TSThread.fromRecord(record)

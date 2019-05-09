@@ -1387,7 +1387,7 @@ extension %s {
         
         do {
             guard let record = try %s.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
-                    return nil
+                return nil
             }
             
             return try %s.fromRecord(record)
