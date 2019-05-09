@@ -96,6 +96,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) OWSQuotedReplyModel *quotedReply;
 @property (nonatomic, nullable) StickerInfo *stickerInfo;
 @property (nonatomic, nullable) TSAttachmentStream *stickerAttachment;
+@property (nonatomic) BOOL isFailedSticker;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
@@ -169,6 +170,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.quotedReply = nil;
     self.stickerInfo = nil;
     self.stickerAttachment = nil;
+    self.isFailedSticker = NO;
     self.contactShare = nil;
     self.systemMessageText = nil;
     self.authorConversationColorName = nil;
@@ -329,6 +331,39 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     _unreadIndicator = unreadIndicator;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setStickerInfo:(nullable StickerInfo *)stickerInfo
+{
+    if ([NSObject isNullableObject:_stickerInfo equalTo:stickerInfo]) {
+        return;
+    }
+
+    _stickerInfo = stickerInfo;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setStickerAttachment:(nullable TSAttachmentStream *)stickerAttachment
+{
+    BOOL didChange = ((_stickerAttachment != nil) != (stickerAttachment != nil));
+
+    _stickerAttachment = stickerAttachment;
+
+    if (didChange) {
+        [self clearCachedLayoutState];
+    }
+}
+
+- (void)setIsFailedSticker:(BOOL)isFailedSticker
+{
+    if (_isFailedSticker == isFailedSticker) {
+        return;
+    }
+
+    _isFailedSticker = isFailedSticker;
 
     [self clearCachedLayoutState];
 }
@@ -634,6 +669,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             if (stickerAttachmentStream.isValidImage && mediaSize.width > 0 && mediaSize.height > 0) {
                 self.stickerAttachment = stickerAttachmentStream;
             }
+        } else if ([stickerAttachment isKindOfClass:[TSAttachmentPointer class]]) {
+            TSAttachmentPointer *stickerAttachmentPointer = (TSAttachmentPointer *)stickerAttachment;
+            self.isFailedSticker = stickerAttachmentPointer.state == TSAttachmentPointerStateFailed;
         }
         // Exit early; stickers shouldn't have body text or other attachments.
         self.messageCellType = OWSMessageCellType_StickerMessage;

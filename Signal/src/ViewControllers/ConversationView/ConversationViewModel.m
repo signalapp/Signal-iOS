@@ -1327,8 +1327,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
               OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
               viewItemCache[interaction.uniqueId] = viewItem;
 
-              if (viewItem.messageCellType == OWSMessageCellType_StickerMessage && viewItem.stickerAttachment == nil) {
-                  OWSLogVerbose(@"Filtering out sticker which is not yet downloaded.");
+              if (viewItem.messageCellType == OWSMessageCellType_StickerMessage && viewItem.stickerAttachment == nil
+                  && !viewItem.isFailedSticker) {
                   return (id<ConversationViewItem>)nil;
               }
 

@@ -50,6 +50,7 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 //
 // success/failure are always called on a worker queue.
 - (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
+                          message:(nullable TSMessage *)message
                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                           failure:(void (^)(NSError *error))failure;
 

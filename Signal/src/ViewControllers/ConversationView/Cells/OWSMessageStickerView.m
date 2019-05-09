@@ -46,6 +46,13 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.attachmentDownloads;
 }
 
+- (OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
+
+    return SSKEnvironment.shared.primaryStorage;
+}
+
 #pragma mark -
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -115,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.viewItem);
     OWSAssertDebug(self.viewItem.interaction);
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-    OWSAssertDebug(self.viewItem.stickerAttachment != nil);
+    OWSAssertDebug(self.viewItem.stickerAttachment != nil || self.viewItem.isFailedSticker);
 
     CGSize bodyMediaSize = [self bodyMediaSize];
 
@@ -231,7 +238,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIView *)loadStickerView
 {
-    OWSAssertDebug(self.viewItem.stickerAttachment);
+    if (self.viewItem.isFailedSticker) {
+        return [self loadFailedStickerView];
+    }
+
+    OWSAssertDebug(self.viewItem.stickerAttachment != nil);
 
     TSAttachmentStream *stickerAttachment = self.viewItem.stickerAttachment;
     YYAnimatedImageView *stickerView = [YYAnimatedImageView new];
@@ -250,14 +261,74 @@ NS_ASSUME_NONNULL_BEGIN
     return stickerView;
 }
 
+- (UIView *)loadFailedStickerView
+{
+    OWSAssertDebug(self.viewItem.isFailedSticker);
+
+    UIView *roundedRectView = [UIView new];
+    roundedRectView.backgroundColor = UIColor.ows_gray45Color;
+    roundedRectView.layer.cornerRadius = 8;
+
+    UIView *pillboxView = [[OWSLayerView alloc] initWithFrame:CGRectZero
+                                               layoutCallback:^(UIView *view) {
+                                                   view.layer.cornerRadius = MIN(view.width, view.height) * 0.5f;
+                                               }];
+    pillboxView.backgroundColor = Theme.offBackgroundColor;
+    [roundedRectView addSubview:pillboxView];
+    [pillboxView autoCenterInSuperview];
+
+    UIImageView *iconView =
+        [UIImageView withTemplateImageName:@"download-filled-2-24" tintColor:Theme.offBackgroundColor];
+    UIView *circleView = [UIView new];
+    circleView.backgroundColor = UIColor.ows_gray45Color;
+    circleView.layer.cornerRadius = 12.f;
+    [circleView addSubview:iconView];
+    [iconView autoPinEdgesToSuperviewEdges];
+
+    UILabel *label = [UILabel new];
+    label.text = NSLocalizedString(@"STICKERS_FAILED_DOWNLOAD", @"Label for a sticker that failed to download.");
+    label.font = UIFont.ows_dynamicTypeCaption1Font.ows_mediumWeight;
+    label.textColor = UIColor.ows_gray45Color;
+
+    UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        circleView,
+        label,
+    ]];
+    stackView.axis = UILayoutConstraintAxisHorizontal;
+    stackView.spacing = 4;
+    stackView.alignment = UIStackViewAlignmentCenter;
+    stackView.layoutMargins = UIEdgeInsetsMake(4, 4, 4, 4);
+    stackView.layoutMarginsRelativeArrangement = YES;
+    [pillboxView addSubview:stackView];
+    [stackView autoPinEdgesToSuperviewEdges];
+
+    CGFloat minMargin = 10;
+    CGFloat maxWidth = self.stickerSize
+        - (minMargin * 2 + stackView.spacing + stackView.layoutMargins.left + stackView.layoutMargins.right);
+    [stackView autoSetDimension:ALDimensionWidth toSize:maxWidth relation:NSLayoutRelationLessThanOrEqual];
+
+    self.loadCellContentBlock = ^{
+        // Do nothing.
+    };
+    self.unloadCellContentBlock = ^{
+        // Do nothing.
+    };
+
+    return roundedRectView;
+}
+
 #pragma mark - Measurement
+
+- (CGFloat)stickerSize
+{
+    return 128;
+}
 
 - (CGSize)bodyMediaSize
 {
-    OWSAssertDebug(self.viewItem.stickerAttachment);
+    OWSAssertDebug(self.viewItem.stickerAttachment != nil || self.viewItem.isFailedSticker);
 
-    const CGFloat kStickerSize = 128;
-    return CGSizeMake(kStickerSize, kStickerSize);
+    return CGSizeMake(self.stickerSize, self.stickerSize);
 }
 
 - (nullable NSValue *)senderNameSize
@@ -284,7 +355,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.conversationStyle.viewWidth > 0);
     OWSAssertDebug(self.viewItem);
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-    OWSAssertDebug(self.viewItem.stickerAttachment);
+    OWSAssertDebug(self.viewItem.stickerAttachment != nil || self.viewItem.isFailedSticker);
 
     CGSize cellSize = CGSizeZero;
 
@@ -414,6 +485,22 @@ NS_ASSUME_NONNULL_BEGIN
             // Ignore taps on outgoing messages being sent.
             return;
         }
+    }
+
+    if (self.viewItem.isFailedSticker) {
+        TSMessage *message = (TSMessage *)self.viewItem.interaction;
+        [self.primaryStorage.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [self.attachmentDownloads
+                downloadAllAttachmentsForMessage:message
+                                     transaction:transaction
+                                         success:^(NSArray<TSAttachmentStream *> *_Nonnull attachmentStreams) {
+                                             // Do nothing.
+                                         }
+                                         failure:^(NSError *_Nonnull error){
+                                             // Do nothing.
+                                         }];
+        }];
+        return;
     }
 
     StickerPackInfo *_Nullable stickerPackInfo = self.viewItem.stickerInfo.packInfo;

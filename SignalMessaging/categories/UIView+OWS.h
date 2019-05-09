@@ -153,6 +153,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 - (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor;
 
+- (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor cornerRadius:(CGFloat)cornerRadius;
+
 - (UIView *)addBorderViewWithColor:(UIColor *)color strokeWidth:(CGFloat)strokeWidth cornerRadius:(CGFloat)cornerRadius;
 
 @end

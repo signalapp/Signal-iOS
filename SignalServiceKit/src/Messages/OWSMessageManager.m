@@ -773,6 +773,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
+        message:nil
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -1479,6 +1480,7 @@ NS_ASSUME_NONNULL_BEGIN
         // * We update the message as each comes in.
         // * Failures don't interfere with successes.
         [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
+            message:incomingMessage
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     TSAttachmentStream *_Nullable attachmentStream = attachmentStreams.firstObject;

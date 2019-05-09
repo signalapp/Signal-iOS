@@ -571,8 +571,14 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor
 {
+    return [self addBackgroundViewWithBackgroundColor:backgroundColor cornerRadius:0.f];
+}
+
+- (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor cornerRadius:(CGFloat)cornerRadius
+{
     UIView *subview = [UIView new];
     subview.backgroundColor = backgroundColor;
+    subview.layer.cornerRadius = cornerRadius;
     [self addSubview:subview];
     [subview autoPinEdgesToSuperviewEdges];
     [subview setCompressionResistanceLow];
