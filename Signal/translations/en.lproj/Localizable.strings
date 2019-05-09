@@ -2570,3 +2570,5 @@
 "No search results" = "No search results";
 "Calculating proof of work" = "Calculating proof of work";
 "Failed to calculate proof of work." = "Failed to calculate proof of work.";
+"Failed to wrap data in an Envelope" = "Failed to wrap data in an Envelope.";
+"Failed to wrap data in an WebSocket" = "Failed to wrap data in an WebSocket.";

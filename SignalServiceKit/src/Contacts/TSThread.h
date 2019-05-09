@@ -29,6 +29,22 @@ extern ConversationColorName const ConversationColorNameSteel;
 
 extern ConversationColorName const kConversationColorName_Default;
 
+// Loki: Friend request state
+typedef NS_ENUM(NSInteger, TSThreadFriendRequestState) {
+    // New conversation, no messages sent or received
+    TSThreadFriendRequestStateNone,
+    // This state is used to lock the input early while sending
+    TSThreadFriendRequestStatePendingSend,
+    // Friend request send, awaiting response
+    TSThreadFriendRequestStateRequestSent,
+    // Friend request received, awaiting user input
+    TSThreadFriendRequestStateRequestReceived,
+    // We are friends with the user of this thread
+    TSThreadFriendRequestStateFriends,
+    // Friend request sent but it timed out (user didn't accept within x time)
+    TSThreadFriendRequestStateRequestExpired,
+};
+
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread
  */
@@ -37,6 +53,9 @@ extern ConversationColorName const kConversationColorName_Default;
 @property (nonatomic) BOOL shouldThreadBeVisible;
 @property (nonatomic, readonly) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
+
+// Loki: The current friend request state with this thread
+@property (atomic, readonly) TSThreadFriendRequestState friendRequestState;
 
 /**
  *  Whether the object is a group thread or not.
@@ -170,6 +189,21 @@ extern ConversationColorName const kConversationColorName_Default;
 
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+#pragma mark - Loki Friend Request
+
+/// Check if this thread is a friend
+- (BOOL)isFriend;
+
+/// Check if a friend request is pending
+- (BOOL)isPendingFriendRequest;
+
+/// Check if a friend request has been sent to this thread
+- (BOOL)hasSentFriendRequest;
+
+/// Check if a friend request has been received from this thread
+- (BOOL)hasReceivedFriendRequest;
+
 @end
+
 
 NS_ASSUME_NONNULL_END

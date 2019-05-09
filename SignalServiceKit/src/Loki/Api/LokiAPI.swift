@@ -21,10 +21,14 @@ import PromiseKit
     
     public enum Error : LocalizedError {
         case proofOfWorkCalculationFailed
+        case failedToWrapInEnvelope
+        case failedToWrapInWebSocket
         
         public var errorDescription: String? {
             switch self {
             case .proofOfWorkCalculationFailed: return NSLocalizedString("Failed to calculate proof of work.", comment: "")
+            case .failedToWrapInEnvelope: return NSLocalizedString("Failed to wrap data in an Envelope", comment: "")
+            case .failedToWrapInWebSocket: return NSLocalizedString("Failed to wrap data in an WebSocket", comment: "")
             }
         }
     }
@@ -73,8 +77,8 @@ import PromiseKit
         return anyPromise
     }
     
-    @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, requiringPoW isPoWRequired: Bool) -> AnyPromise {
-        let promise = LokiMessage.fromSignalMessage(signalMessage, requiringPoW: isPoWRequired)
+    @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64, requiringPoW isPoWRequired: Bool) -> AnyPromise {
+        let promise = LokiMessage.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: isPoWRequired)
             .then(sendMessage)
             .recoverNetworkError(on: DispatchQueue.global())
         let anyPromise = AnyPromise(promise)
