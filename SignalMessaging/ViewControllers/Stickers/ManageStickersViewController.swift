@@ -88,7 +88,9 @@ public class ManageStickersViewController: OWSTableViewController {
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didPressDismiss))
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(didPressEditButton))
+        if FeatureFlags.stickerPackOrdering {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(didPressEditButton))
+        }
     }
 
     override public func viewDidLoad() {
@@ -274,9 +276,8 @@ public class ManageStickersViewController: OWSTableViewController {
 
         Logger.verbose("")
 
-        let packView = StickerPackViewController(stickerPackInfo: stickerPack.info,
-                                                 hasDismissButton: false)
-        navigationController?.pushViewController(packView, animated: true)
+        let packView = StickerPackViewController(stickerPackInfo: stickerPack.info)
+        present(packView, animated: true)
     }
 
     private func share(stickerPack: StickerPack) {
