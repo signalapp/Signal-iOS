@@ -50,7 +50,7 @@ public struct OWSBackupFragmentRecord: Codable, FetchableRecord, PersistableReco
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: OWSBackupFragmentRecord.CodingKeys) {
+    mutating func appendInterpolation(columnForBackupFragment column: OWSBackupFragmentRecord.CodingKeys) {
         appendLiteral(OWSBackupFragmentRecord.columnName(column))
     }
 }
@@ -60,11 +60,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension OWSBackupFragmentSerializer {
+extension OWSBackupFragment {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: OWSBackupFragmentRecord) throws -> OWSBackupFragment {
+    class func fromRecord(_ record: OWSBackupFragmentRecord) throws -> OWSBackupFragment {
 
         switch record.recordType {
         case .backupFragment:

@@ -40,7 +40,7 @@ public struct SignalRecipientRecord: Codable, FetchableRecord, PersistableRecord
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: SignalRecipientRecord.CodingKeys) {
+    mutating func appendInterpolation(columnForSignalRecipient column: SignalRecipientRecord.CodingKeys) {
         appendLiteral(SignalRecipientRecord.columnName(column))
     }
 }
@@ -50,11 +50,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension SignalRecipientSerializer {
+extension SignalRecipient {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: SignalRecipientRecord) throws -> SignalRecipient {
+    class func fromRecord(_ record: SignalRecipientRecord) throws -> SignalRecipient {
 
         switch record.recordType {
         case .signalRecipient:

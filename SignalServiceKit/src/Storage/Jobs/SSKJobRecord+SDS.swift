@@ -58,7 +58,7 @@ public struct SSKJobRecordRecord: Codable, FetchableRecord, PersistableRecord, T
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: SSKJobRecordRecord.CodingKeys) {
+    mutating func appendInterpolation(columnForJobRecord column: SSKJobRecordRecord.CodingKeys) {
         appendLiteral(SSKJobRecordRecord.columnName(column))
     }
 }
@@ -68,11 +68,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension SSKJobRecordSerializer {
+extension SSKJobRecord {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: SSKJobRecordRecord) throws -> SSKJobRecord {
+    class func fromRecord(_ record: SSKJobRecordRecord) throws -> SSKJobRecord {
 
         switch record.recordType {
         case .sessionResetJobRecord:

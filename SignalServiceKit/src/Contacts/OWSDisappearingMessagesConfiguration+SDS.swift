@@ -42,7 +42,7 @@ public struct OWSDisappearingMessagesConfigurationRecord: Codable, FetchableReco
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: OWSDisappearingMessagesConfigurationRecord.CodingKeys) {
+    mutating func appendInterpolation(columnForDisappearingMessagesConfiguration column: OWSDisappearingMessagesConfigurationRecord.CodingKeys) {
         appendLiteral(OWSDisappearingMessagesConfigurationRecord.columnName(column))
     }
 }
@@ -52,11 +52,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension OWSDisappearingMessagesConfigurationSerializer {
+extension OWSDisappearingMessagesConfiguration {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: OWSDisappearingMessagesConfigurationRecord) throws -> OWSDisappearingMessagesConfiguration {
+    class func fromRecord(_ record: OWSDisappearingMessagesConfigurationRecord) throws -> OWSDisappearingMessagesConfiguration {
 
         switch record.recordType {
         case .disappearingMessagesConfiguration:

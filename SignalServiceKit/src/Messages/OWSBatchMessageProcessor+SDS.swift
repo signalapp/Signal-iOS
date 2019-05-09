@@ -46,7 +46,7 @@ public struct OWSMessageContentJobRecord: Codable, FetchableRecord, PersistableR
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: OWSMessageContentJobRecord.CodingKeys) {
+    mutating func appendInterpolation(columnForMessageContentJob column: OWSMessageContentJobRecord.CodingKeys) {
         appendLiteral(OWSMessageContentJobRecord.columnName(column))
     }
 }
@@ -56,11 +56,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension OWSMessageContentJobSerializer {
+extension OWSMessageContentJob {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: OWSMessageContentJobRecord) throws -> OWSMessageContentJob {
+    class func fromRecord(_ record: OWSMessageContentJobRecord) throws -> OWSMessageContentJob {
 
         switch record.recordType {
         case .messageContentJob:

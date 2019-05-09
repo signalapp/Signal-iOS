@@ -35,9 +35,6 @@ extension TSAttachmentPointerType: DatabaseValueConvertible { }
 extension TSAttachmentPointerState: Codable { }
 extension TSAttachmentPointerState: DatabaseValueConvertible { }
 
-extension InteractionRecordType: Codable { }
-extension InteractionRecordType: DatabaseValueConvertible { }
-
 extension ThreadRecordType: Codable { }
 extension ThreadRecordType: DatabaseValueConvertible { }
 

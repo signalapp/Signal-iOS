@@ -42,7 +42,7 @@ public struct KnownStickerPackRecord: Codable, FetchableRecord, PersistableRecor
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: KnownStickerPackRecord.CodingKeys) {
+    mutating func appendInterpolation(columnForKnownStickerPack column: KnownStickerPackRecord.CodingKeys) {
         appendLiteral(KnownStickerPackRecord.columnName(column))
     }
 }
@@ -52,11 +52,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension KnownStickerPackSerializer {
+extension KnownStickerPack {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: KnownStickerPackRecord) throws -> KnownStickerPack {
+    class func fromRecord(_ record: KnownStickerPackRecord) throws -> KnownStickerPack {
 
         switch record.recordType {
         case .knownStickerPack:

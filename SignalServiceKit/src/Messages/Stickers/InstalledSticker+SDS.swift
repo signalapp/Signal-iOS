@@ -42,7 +42,7 @@ public struct InstalledStickerRecord: Codable, FetchableRecord, PersistableRecor
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: InstalledStickerRecord.CodingKeys) {
+    mutating func appendInterpolation(columnForInstalledSticker column: InstalledStickerRecord.CodingKeys) {
         appendLiteral(InstalledStickerRecord.columnName(column))
     }
 }
@@ -52,11 +52,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension InstalledStickerSerializer {
+extension InstalledSticker {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: InstalledStickerRecord) throws -> InstalledSticker {
+    class func fromRecord(_ record: InstalledStickerRecord) throws -> InstalledSticker {
 
         switch record.recordType {
         case .installedSticker:

@@ -46,7 +46,7 @@ public struct OWSDeviceRecord: Codable, FetchableRecord, PersistableRecord, Tabl
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: OWSDeviceRecord.CodingKeys) {
+    mutating func appendInterpolation(columnForDevice column: OWSDeviceRecord.CodingKeys) {
         appendLiteral(OWSDeviceRecord.columnName(column))
     }
 }
@@ -56,11 +56,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension OWSDeviceSerializer {
+extension OWSDevice {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: OWSDeviceRecord) throws -> OWSDevice {
+    class func fromRecord(_ record: OWSDeviceRecord) throws -> OWSDevice {
 
         switch record.recordType {
         case .device:

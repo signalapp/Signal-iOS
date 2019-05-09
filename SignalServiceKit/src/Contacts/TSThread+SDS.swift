@@ -62,7 +62,7 @@ public struct TSThreadRecord: Codable, FetchableRecord, PersistableRecord, Table
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: TSThreadRecord.CodingKeys) {
+    mutating func appendInterpolation(columnForThread column: TSThreadRecord.CodingKeys) {
         appendLiteral(TSThreadRecord.columnName(column))
     }
 }
@@ -72,11 +72,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension TSThreadSerializer {
+extension TSThread {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: TSThreadRecord) throws -> TSThread {
+    class func fromRecord(_ record: TSThreadRecord) throws -> TSThread {
 
         switch record.recordType {
         case .contactThread:

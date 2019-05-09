@@ -331,7 +331,7 @@ class TypeInfo:
         return [value_statement,]
         
 
-    def deserialize_record_invocation(self, value_name, is_optional, did_force_optional):
+    def deserialize_record_invocation(self, property, value_name, is_optional, did_force_optional):
         
         # # Special case this oddball type.
         # if value_name == 'conversationColorName':
@@ -364,7 +364,11 @@ class TypeInfo:
         # if self.should_cast_to_swift() and not is_optional:
         #     value_expr = str(self._swift_type) + '(' + value_expr + ')'
             
-        value_expr = 'record.%s' % ( value_name, )
+        custom_column_name = custom_column_name_for_property(property)
+        if custom_column_name is not None:
+            value_expr = 'record.%s' % ( custom_column_name, )
+        else:
+            value_expr = 'record.%s' % ( value_name, )
         
         deserialization_optional = None
         deserialization_not_optional = None
@@ -669,7 +673,7 @@ class ParsedProperty:
         return self.type_info().deserializer_invocation(column_index_name, value_name, self.is_optional)
 
     def deserialize_record_invocation(self, value_name, did_force_optional):
-        return self.type_info().deserialize_record_invocation(value_name, self.is_optional, did_force_optional)
+        return self.type_info().deserialize_record_invocation(self, value_name, self.is_optional, did_force_optional)
 
     def record_field_type(self):
         return self.type_info().record_field_type(self.name)
@@ -748,26 +752,6 @@ import SignalCoreKit
 // MARK: - Record
 '''
 
-#         enum_name_set = set()
-#         for property in (base_properties + subclass_properties):
-#             if not property.is_enum():
-#                 continue
-#             # Special case this oddball type.
-#             if property.name == 'conversationColorName':
-#                 continue
-#
-#             enum_name = property.objc_type
-#             if not enum_name.startswith('enum '):
-#                 fail('Unexpected enum type:', property.name, enum_name)
-#             enum_name = enum_name[len('enum '):]
-#             enum_name_set.add(enum_name)
-#
-#         for enum_name in enum_name_set:
-#             swift_body += '''
-# extension %s: Codable { }
-# extension %s: DatabaseValueConvertible { }
-# ''' % ( enum_name, enum_name, )
-
 
         swift_body += '''
 public struct %sRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
@@ -790,6 +774,10 @@ public struct %sRecord: Codable, FetchableRecord, PersistableRecord, TableRecord
 
             is_optional = property.is_optional or force_optional
             optional_split = '?' if is_optional else ''
+
+            custom_column_name = custom_column_name_for_property(property)
+            if custom_column_name is not None:
+                column_name = custom_column_name
             
             return '''    public let %s: %s%s
 ''' % ( str(column_name), record_field_type, optional_split, )
@@ -810,8 +798,14 @@ public struct %sRecord: Codable, FetchableRecord, PersistableRecord, TableRecord
         case recordType
         case uniqueId
 '''
+
         for property in (base_properties + subclass_properties):
-            swift_body += '''        case %s
+            custom_column_name = custom_column_name_for_property(property)
+            if custom_column_name is not None:
+                swift_body += '''        case %s = "%s"
+''' % ( custom_column_name, to_swift_identifer_name(property.name), )
+            else:
+                swift_body += '''        case %s
 ''' % ( to_swift_identifer_name(property.name), )
 
 
@@ -825,16 +819,17 @@ public struct %sRecord: Codable, FetchableRecord, PersistableRecord, TableRecord
 ''' % ( ( str(clazz.name), ) )
 
 
+        string_interpolation_name = remove_prefix_from_class_name(clazz.name)
         swift_body += '''}
 
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: %sRecord.CodingKeys) {
+    mutating func appendInterpolation(columnFor%s column: %sRecord.CodingKeys) {
         appendLiteral(%sRecord.columnName(column))
     }
 }
-''' % ( ( str(clazz.name), ) * 2 )
+''' % ( (string_interpolation_name, ) + ( str(clazz.name), ) * 2 )
 
 
         swift_body += '''
@@ -843,11 +838,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension %sSerializer {
+extension %s {
     // This method defines how to deserialize a model, given a 
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: %sRecord) throws -> %s {
+    class func fromRecord(_ record: %sRecord) throws -> %s {
 ''' % ( ( str(clazz.name), ) * 3 )
         swift_body += '''
         
@@ -1724,7 +1719,7 @@ def get_record_type(clazz):
     return record_type_map[clazz.name]
 
 
-def get_record_type_enum_name(class_name):
+def remove_prefix_from_class_name(class_name):
     name = class_name
     if name.startswith('TS'):
         name = name[len('TS'):]
@@ -1732,6 +1727,11 @@ def get_record_type_enum_name(class_name):
         name = name[len('OWS'):]
     elif name.startswith('SSK'):
         name = name[len('SSK'):]
+    return name
+
+
+def get_record_type_enum_name(class_name):
+    name = remove_prefix_from_class_name(class_name)
     if name[0].isnumeric():
         name = '_' + name
     return to_swift_identifer_name(name)
@@ -1930,6 +1930,15 @@ def accessor_name_for_property(property):
     key = property.class_name + '.' + property.name
     # print '--?--', key, custom_accessors.get(key, property.name)
     return custom_accessors.get(key, property.name)
+
+
+def custom_column_name_for_property(property):
+    custom_column_names = configuration_json.get('custom_column_names')
+    if custom_column_names is None:
+        fail('Configuration JSON is missing list of custom column names.')
+    key = property.class_name + '.' + property.name
+    # print '--?--', key, custom_accessors.get(key, property.name)
+    return custom_column_names.get(key)
 
 
 if __name__ == "__main__":

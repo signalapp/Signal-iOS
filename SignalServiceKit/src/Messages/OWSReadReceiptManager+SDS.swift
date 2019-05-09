@@ -42,7 +42,7 @@ public struct TSRecipientReadReceiptRecord: Codable, FetchableRecord, Persistabl
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: TSRecipientReadReceiptRecord.CodingKeys) {
+    mutating func appendInterpolation(columnForRecipientReadReceipt column: TSRecipientReadReceiptRecord.CodingKeys) {
         appendLiteral(TSRecipientReadReceiptRecord.columnName(column))
     }
 }
@@ -52,11 +52,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension TSRecipientReadReceiptSerializer {
+extension TSRecipientReadReceipt {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: TSRecipientReadReceiptRecord) throws -> TSRecipientReadReceipt {
+    class func fromRecord(_ record: TSRecipientReadReceiptRecord) throws -> TSRecipientReadReceipt {
 
         switch record.recordType {
         case .recipientReadReceipt:

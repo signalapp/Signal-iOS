@@ -46,7 +46,7 @@ public struct SignalAccountRecord: Codable, FetchableRecord, PersistableRecord, 
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: SignalAccountRecord.CodingKeys) {
+    mutating func appendInterpolation(columnForSignalAccount column: SignalAccountRecord.CodingKeys) {
         appendLiteral(SignalAccountRecord.columnName(column))
     }
 }
@@ -56,11 +56,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension SignalAccountSerializer {
+extension SignalAccount {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: SignalAccountRecord) throws -> SignalAccount {
+    class func fromRecord(_ record: SignalAccountRecord) throws -> SignalAccount {
 
         switch record.recordType {
         case .signalAccount:

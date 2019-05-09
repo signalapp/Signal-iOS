@@ -44,7 +44,7 @@ public struct OWSLinkedDeviceReadReceiptRecord: Codable, FetchableRecord, Persis
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(column: OWSLinkedDeviceReadReceiptRecord.CodingKeys) {
+    mutating func appendInterpolation(columnForLinkedDeviceReadReceipt column: OWSLinkedDeviceReadReceiptRecord.CodingKeys) {
         appendLiteral(OWSLinkedDeviceReadReceiptRecord.columnName(column))
     }
 }
@@ -54,11 +54,11 @@ public extension String.StringInterpolation {
 // TODO: Remove the other Deserialization extension.
 // TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
-extension OWSLinkedDeviceReadReceiptSerializer {
+extension OWSLinkedDeviceReadReceipt {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func deserializeRecord(record: OWSLinkedDeviceReadReceiptRecord) throws -> OWSLinkedDeviceReadReceipt {
+    class func fromRecord(_ record: OWSLinkedDeviceReadReceiptRecord) throws -> OWSLinkedDeviceReadReceipt {
 
         switch record.recordType {
         case .linkedDeviceReadReceipt:
