@@ -264,8 +264,8 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
     // MARK: - static methods
 
     static func fetch(uniqueId: String, transaction: GRDBReadTransaction) throws -> TSInteraction? {
-        guard let interactionRecord = try TSInteractionRecord.fetchOne(transaction.database,
-                                                                     sql: "SELECT * FROM \(TSInteractionRecord.databaseTableName) WHERE \(columnForInteraction: .uniqueId) = ?",
+        guard let interactionRecord = try InteractionRecord.fetchOne(transaction.database,
+                                                                     sql: "SELECT * FROM \(InteractionRecord.databaseTableName) WHERE \(columnForInteraction: .uniqueId) = ?",
             arguments: [uniqueId]) else {
                 return nil
         }
@@ -280,7 +280,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 FROM sqlite_sequence
                 WHERE name = ?
             """
-            guard let value = try UInt64.fetchOne(transaction.database, sql: sql, arguments: [TSInteractionRecord.databaseTableName]) else {
+            guard let value = try UInt64.fetchOne(transaction.database, sql: sql, arguments: [InteractionRecord.databaseTableName]) else {
                 return 0
             }
             return value
@@ -294,10 +294,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     func mostRecentInteraction(transaction: GRDBReadTransaction) -> TSInteraction? {
         do {
-            guard let interactionRecord = try TSInteractionRecord.fetchOne(transaction.database,
+            guard let interactionRecord = try InteractionRecord.fetchOne(transaction.database,
                                                                            sql: """
                 SELECT *
-                FROM \(TSInteractionRecord.databaseTableName)
+                FROM \(InteractionRecord.databaseTableName)
                 WHERE \(columnForInteraction: .threadUniqueId) = ?
                 ORDER BY \(columnForInteraction: .id) DESC
                 """,
@@ -314,10 +314,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     func mostRecentInteractionForInbox(transaction: GRDBReadTransaction) -> TSInteraction? {
         do {
-            guard let interactionRecord = try TSInteractionRecord.fetchOne(transaction.database,
+            guard let interactionRecord = try InteractionRecord.fetchOne(transaction.database,
                                                                             sql: """
                 SELECT *
-                FROM \(TSInteractionRecord.databaseTableName)
+                FROM \(InteractionRecord.databaseTableName)
                 WHERE \(columnForInteraction: .threadUniqueId) = ?
                 AND \(columnForInteraction: .errorType) IS NOT ?
                 AND \(columnForInteraction: .messageType) IS NOT ?
@@ -343,7 +343,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                     ROW_NUMBER() OVER (ORDER BY \(columnForInteraction: .id)) as rowNumber,
                     \(columnForInteraction: .id),
                     \(columnForInteraction: .uniqueId)
-                FROM \(TSInteractionRecord.databaseTableName)
+                FROM \(InteractionRecord.databaseTableName)
                 WHERE \(columnForInteraction: .threadUniqueId) = ?
             )
             WHERE \(columnForInteraction: .uniqueId) = ?
@@ -355,7 +355,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         guard let count = try UInt.fetchOne(transaction.database,
                                             sql: """
             SELECT COUNT(*)
-            FROM \(TSInteractionRecord.databaseTableName)
+            FROM \(InteractionRecord.databaseTableName)
             WHERE \(columnForInteraction: .threadUniqueId) = ?
             """,
             arguments: [threadUniqueId]) else {
@@ -368,7 +368,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         guard let count = try UInt.fetchOne(transaction.database,
                                             sql: """
             SELECT COUNT(*)
-            FROM \(TSInteractionRecord.databaseTableName)
+            FROM \(InteractionRecord.databaseTableName)
             WHERE \(columnForInteraction: .threadUniqueId) = ?
             AND \(columnForInteraction: .read) is 0
             """,
@@ -384,7 +384,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         try String.fetchCursor(transaction.database,
                            sql: """
             SELECT \(columnForInteraction: .uniqueId)
-            FROM \(TSInteractionRecord.databaseTableName)
+            FROM \(InteractionRecord.databaseTableName)
             WHERE \(columnForInteraction: .threadUniqueId) = ?
             ORDER BY \(columnForInteraction: .id) DESC
 """,
@@ -402,14 +402,14 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         do {
             let sql = """
             SELECT *
-            FROM \(TSInteractionRecord.databaseTableName)
+            FROM \(InteractionRecord.databaseTableName)
             WHERE \(columnForInteraction: .threadUniqueId) = ?
             ORDER BY \(columnForInteraction: .id) DESC
             LIMIT 1
             OFFSET ?
             """
             let arguments: StatementArguments = [threadUniqueId, index]
-            guard let interactionRecord = try TSInteractionRecord.fetchOne(transaction.database,
+            guard let interactionRecord = try InteractionRecord.fetchOne(transaction.database,
                                                                             sql: sql,
                                                                             arguments: arguments) else {
                                                                                 return nil

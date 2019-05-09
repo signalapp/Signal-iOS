@@ -753,8 +753,9 @@ import SignalCoreKit
 '''
 
 
+        record_name = remove_prefix_from_class_name(clazz.name) + 'Record'
         swift_body += '''
-public struct %sRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct %s: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = %sSerializer.table.tableName
 
     public let id: UInt64
@@ -764,7 +765,7 @@ public struct %sRecord: Codable, FetchableRecord, PersistableRecord, TableRecord
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-''' % ( ( str(clazz.name), ) * 2 )
+''' % ( record_name, str(clazz.name), )
 
         def write_record_property(property, force_optional=False):
             column_name = to_swift_identifer_name(property.name)
@@ -812,11 +813,11 @@ public struct %sRecord: Codable, FetchableRecord, PersistableRecord, TableRecord
         swift_body += '''    }
 '''
         swift_body += '''
-    public static func columnName(_ column: %sRecord.CodingKeys) -> String {
+    public static func columnName(_ column: %s.CodingKeys) -> String {
         return column.rawValue
     }
 
-''' % ( ( str(clazz.name), ) )
+''' % ( record_name, )
 
 
         string_interpolation_name = remove_prefix_from_class_name(clazz.name)
@@ -825,11 +826,11 @@ public struct %sRecord: Codable, FetchableRecord, PersistableRecord, TableRecord
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnFor%s column: %sRecord.CodingKeys) {
-        appendLiteral(%sRecord.columnName(column))
+    mutating func appendInterpolation(columnFor%s column: %s.CodingKeys) {
+        appendLiteral(%s.columnName(column))
     }
 }
-''' % ( (string_interpolation_name, ) + ( str(clazz.name), ) * 2 )
+''' % ( (string_interpolation_name, ) + ( record_name, ) * 2 )
 
 
         swift_body += '''
@@ -842,8 +843,8 @@ extension %s {
     // This method defines how to deserialize a model, given a 
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func fromRecord(_ record: %sRecord) throws -> %s {
-''' % ( ( str(clazz.name), ) * 3 )
+    class func fromRecord(_ record: %s) throws -> %s {
+''' % ( str(clazz.name), record_name, str(clazz.name), )
         swift_body += '''
         
         switch record.recordType {

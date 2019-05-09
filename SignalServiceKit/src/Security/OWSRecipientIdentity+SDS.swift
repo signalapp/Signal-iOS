@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct OWSRecipientIdentityRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct RecipientIdentityRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = OWSRecipientIdentitySerializer.table.tableName
 
     public let id: UInt64
@@ -39,7 +39,7 @@ public struct OWSRecipientIdentityRecord: Codable, FetchableRecord, PersistableR
         case verificationState
     }
 
-    public static func columnName(_ column: OWSRecipientIdentityRecord.CodingKeys) -> String {
+    public static func columnName(_ column: RecipientIdentityRecord.CodingKeys) -> String {
         return column.rawValue
     }
 
@@ -48,8 +48,8 @@ public struct OWSRecipientIdentityRecord: Codable, FetchableRecord, PersistableR
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForRecipientIdentity column: OWSRecipientIdentityRecord.CodingKeys) {
-        appendLiteral(OWSRecipientIdentityRecord.columnName(column))
+    mutating func appendInterpolation(columnForRecipientIdentity column: RecipientIdentityRecord.CodingKeys) {
+        appendLiteral(RecipientIdentityRecord.columnName(column))
     }
 }
 
@@ -62,7 +62,7 @@ extension OWSRecipientIdentity {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func fromRecord(_ record: OWSRecipientIdentityRecord) throws -> OWSRecipientIdentity {
+    class func fromRecord(_ record: RecipientIdentityRecord) throws -> OWSRecipientIdentity {
 
         switch record.recordType {
         case .recipientIdentity:

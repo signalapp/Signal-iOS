@@ -73,7 +73,7 @@ struct YAPDBThreadFinder: ThreadFinder {
 struct GRDBThreadFinder: ThreadFinder {
     typealias ReadTransaction = Database
 
-    static let cn = TSThreadRecord.columnName
+    static let cn = ThreadRecord.columnName
 
     func threadCount(isArchived: Bool, transaction: Database) throws -> UInt {
         guard let count = try UInt.fetchOne(transaction, sql: """
@@ -84,12 +84,12 @@ struct GRDBThreadFinder: ThreadFinder {
                         WHEN 1 THEN 1
                         ELSE 0
                     END isArchived
-                FROM \(TSThreadRecord.databaseTableName)
+                FROM \(ThreadRecord.databaseTableName)
                 LEFT JOIN (
                     SELECT
                         MAX(\(columnForInteraction: .id)) as maxInteractionId,
                         \(columnForInteraction: .threadUniqueId)
-                    FROM \(TSInteractionRecord.databaseTableName)
+                    FROM \(InteractionRecord.databaseTableName)
                     GROUP BY \(columnForInteraction: .threadUniqueId)
                 ) latestInteractions
                 ON latestInteractions.\(columnForInteraction: .threadUniqueId) = \(columnForThread: .uniqueId)
@@ -105,21 +105,21 @@ struct GRDBThreadFinder: ThreadFinder {
     }
 
     func enumerateThreads(isArchived: Bool, transaction: Database, block: @escaping (TSThread) -> Void) throws {
-        try TSThreadRecord.fetchCursor(transaction, sql: """
+        try ThreadRecord.fetchCursor(transaction, sql: """
             SELECT *
             FROM (
                 SELECT
-                    \(TSThreadRecord.databaseTableName).*,
+                    \(ThreadRecord.databaseTableName).*,
                     CASE maxInteractionId <= \(columnForThread: .archivedAsOfMessageSortId)
                         WHEN 1 THEN 1
                         ELSE 0
                     END isArchived
-                FROM \(TSThreadRecord.databaseTableName)
+                FROM \(ThreadRecord.databaseTableName)
                 LEFT JOIN (
                     SELECT
                         MAX(\(columnForInteraction: .id)) as maxInteractionId,
                         \(columnForInteraction: .threadUniqueId)
-                    FROM \(TSInteractionRecord.databaseTableName)
+                    FROM \(InteractionRecord.databaseTableName)
                     GROUP BY \(columnForInteraction: .threadUniqueId)
                 ) latestInteractions
                 ON latestInteractions.\(columnForInteraction: .threadUniqueId) = \(columnForThread: .uniqueId)

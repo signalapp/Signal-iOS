@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct TSInteractionRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = TSInteractionSerializer.table.tableName
 
     public let id: UInt64
@@ -133,7 +133,7 @@ public struct TSInteractionRecord: Codable, FetchableRecord, PersistableRecord, 
         case wasReceivedByUD
     }
 
-    public static func columnName(_ column: TSInteractionRecord.CodingKeys) -> String {
+    public static func columnName(_ column: InteractionRecord.CodingKeys) -> String {
         return column.rawValue
     }
 
@@ -142,8 +142,8 @@ public struct TSInteractionRecord: Codable, FetchableRecord, PersistableRecord, 
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForInteraction column: TSInteractionRecord.CodingKeys) {
-        appendLiteral(TSInteractionRecord.columnName(column))
+    mutating func appendInterpolation(columnForInteraction column: InteractionRecord.CodingKeys) {
+        appendLiteral(InteractionRecord.columnName(column))
     }
 }
 
@@ -156,7 +156,7 @@ extension TSInteraction {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func fromRecord(_ record: TSInteractionRecord) throws -> TSInteraction {
+    class func fromRecord(_ record: InteractionRecord) throws -> TSInteraction {
 
         switch record.recordType {
         case .addToContactsOfferMessage:

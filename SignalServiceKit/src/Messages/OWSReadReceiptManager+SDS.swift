@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct TSRecipientReadReceiptRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct RecipientReadReceiptRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = TSRecipientReadReceiptSerializer.table.tableName
 
     public let id: UInt64
@@ -33,7 +33,7 @@ public struct TSRecipientReadReceiptRecord: Codable, FetchableRecord, Persistabl
         case sentTimestamp
     }
 
-    public static func columnName(_ column: TSRecipientReadReceiptRecord.CodingKeys) -> String {
+    public static func columnName(_ column: RecipientReadReceiptRecord.CodingKeys) -> String {
         return column.rawValue
     }
 
@@ -42,8 +42,8 @@ public struct TSRecipientReadReceiptRecord: Codable, FetchableRecord, Persistabl
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForRecipientReadReceipt column: TSRecipientReadReceiptRecord.CodingKeys) {
-        appendLiteral(TSRecipientReadReceiptRecord.columnName(column))
+    mutating func appendInterpolation(columnForRecipientReadReceipt column: RecipientReadReceiptRecord.CodingKeys) {
+        appendLiteral(RecipientReadReceiptRecord.columnName(column))
     }
 }
 
@@ -56,7 +56,7 @@ extension TSRecipientReadReceipt {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func fromRecord(_ record: TSRecipientReadReceiptRecord) throws -> TSRecipientReadReceipt {
+    class func fromRecord(_ record: RecipientReadReceiptRecord) throws -> TSRecipientReadReceipt {
 
         switch record.recordType {
         case .recipientReadReceipt:

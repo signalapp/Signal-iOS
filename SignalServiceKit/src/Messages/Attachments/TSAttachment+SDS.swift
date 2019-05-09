@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct TSAttachmentRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct AttachmentRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = TSAttachmentSerializer.table.tableName
 
     public let id: UInt64
@@ -79,7 +79,7 @@ public struct TSAttachmentRecord: Codable, FetchableRecord, PersistableRecord, T
         case state
     }
 
-    public static func columnName(_ column: TSAttachmentRecord.CodingKeys) -> String {
+    public static func columnName(_ column: AttachmentRecord.CodingKeys) -> String {
         return column.rawValue
     }
 
@@ -88,8 +88,8 @@ public struct TSAttachmentRecord: Codable, FetchableRecord, PersistableRecord, T
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForAttachment column: TSAttachmentRecord.CodingKeys) {
-        appendLiteral(TSAttachmentRecord.columnName(column))
+    mutating func appendInterpolation(columnForAttachment column: AttachmentRecord.CodingKeys) {
+        appendLiteral(AttachmentRecord.columnName(column))
     }
 }
 
@@ -102,7 +102,7 @@ extension TSAttachment {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func fromRecord(_ record: TSAttachmentRecord) throws -> TSAttachment {
+    class func fromRecord(_ record: AttachmentRecord) throws -> TSAttachment {
 
         switch record.recordType {
         case .attachment:

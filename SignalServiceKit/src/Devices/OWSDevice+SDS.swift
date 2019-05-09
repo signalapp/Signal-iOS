@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct OWSDeviceRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct DeviceRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = OWSDeviceSerializer.table.tableName
 
     public let id: UInt64
@@ -37,7 +37,7 @@ public struct OWSDeviceRecord: Codable, FetchableRecord, PersistableRecord, Tabl
         case name
     }
 
-    public static func columnName(_ column: OWSDeviceRecord.CodingKeys) -> String {
+    public static func columnName(_ column: DeviceRecord.CodingKeys) -> String {
         return column.rawValue
     }
 
@@ -46,8 +46,8 @@ public struct OWSDeviceRecord: Codable, FetchableRecord, PersistableRecord, Tabl
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForDevice column: OWSDeviceRecord.CodingKeys) {
-        appendLiteral(OWSDeviceRecord.columnName(column))
+    mutating func appendInterpolation(columnForDevice column: DeviceRecord.CodingKeys) {
+        appendLiteral(DeviceRecord.columnName(column))
     }
 }
 
@@ -60,7 +60,7 @@ extension OWSDevice {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func fromRecord(_ record: OWSDeviceRecord) throws -> OWSDevice {
+    class func fromRecord(_ record: DeviceRecord) throws -> OWSDevice {
 
         switch record.recordType {
         case .device:

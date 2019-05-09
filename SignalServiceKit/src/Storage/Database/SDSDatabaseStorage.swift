@@ -299,10 +299,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             try TSAttachmentSerializer.table.createTable(database: db)
 
             try db.create(index: "index_interactions_on_id_and_threadUniqueId",
-                          on: TSInteractionRecord.databaseTableName,
+                          on: InteractionRecord.databaseTableName,
                           columns: [
-                            TSInteractionRecord.columnName(.id),
-                            TSInteractionRecord.columnName(.threadUniqueId)
+                            InteractionRecord.columnName(.id),
+                            InteractionRecord.columnName(.threadUniqueId)
                 ])
         }
         return migrator

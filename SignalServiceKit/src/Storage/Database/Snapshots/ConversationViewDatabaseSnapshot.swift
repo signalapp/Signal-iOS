@@ -56,12 +56,12 @@ public class ConversationViewDatabaseObserver: NSObject {
 extension ConversationViewDatabaseObserver: TransactionObserver {
 
     public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
-        return eventKind.tableName == TSInteractionRecord.databaseTableName
+        return eventKind.tableName == InteractionRecord.databaseTableName
     }
 
     public func databaseDidChange(with event: DatabaseEvent) {
         Logger.verbose("")
-        assert(event.tableName == TSInteractionRecord.databaseTableName)
+        assert(event.tableName == InteractionRecord.databaseTableName)
         UIDatabaseObserver.serialQueue.sync {
             _ = pendingInteractionChanges.insert(event.rowID)
         }
@@ -114,7 +114,7 @@ public class ConversationViewDatabaseTransactionChanges: NSObject {
         let rowIdsSQL = "(\(commaSeparatedRowIds))"
         let sql = """
         SELECT \(columnForInteraction: .uniqueId)
-        FROM \(TSInteractionRecord.databaseTableName)
+        FROM \(InteractionRecord.databaseTableName)
         WHERE rowid IN \(rowIdsSQL)
         AND \(columnForInteraction: .threadUniqueId) = ?
         """

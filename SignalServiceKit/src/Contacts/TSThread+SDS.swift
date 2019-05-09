@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct TSThreadRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct ThreadRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = TSThreadSerializer.table.tableName
 
     public let id: UInt64
@@ -53,7 +53,7 @@ public struct TSThreadRecord: Codable, FetchableRecord, PersistableRecord, Table
         case hasDismissedOffers
     }
 
-    public static func columnName(_ column: TSThreadRecord.CodingKeys) -> String {
+    public static func columnName(_ column: ThreadRecord.CodingKeys) -> String {
         return column.rawValue
     }
 
@@ -62,8 +62,8 @@ public struct TSThreadRecord: Codable, FetchableRecord, PersistableRecord, Table
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForThread column: TSThreadRecord.CodingKeys) {
-        appendLiteral(TSThreadRecord.columnName(column))
+    mutating func appendInterpolation(columnForThread column: ThreadRecord.CodingKeys) {
+        appendLiteral(ThreadRecord.columnName(column))
     }
 }
 
@@ -76,7 +76,7 @@ extension TSThread {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func fromRecord(_ record: TSThreadRecord) throws -> TSThread {
+    class func fromRecord(_ record: ThreadRecord) throws -> TSThread {
 
         switch record.recordType {
         case .contactThread:

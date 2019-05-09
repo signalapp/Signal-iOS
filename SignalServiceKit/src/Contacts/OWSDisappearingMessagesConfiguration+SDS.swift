@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct OWSDisappearingMessagesConfigurationRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct DisappearingMessagesConfigurationRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = OWSDisappearingMessagesConfigurationSerializer.table.tableName
 
     public let id: UInt64
@@ -33,7 +33,7 @@ public struct OWSDisappearingMessagesConfigurationRecord: Codable, FetchableReco
         case enabled
     }
 
-    public static func columnName(_ column: OWSDisappearingMessagesConfigurationRecord.CodingKeys) -> String {
+    public static func columnName(_ column: DisappearingMessagesConfigurationRecord.CodingKeys) -> String {
         return column.rawValue
     }
 
@@ -42,8 +42,8 @@ public struct OWSDisappearingMessagesConfigurationRecord: Codable, FetchableReco
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForDisappearingMessagesConfiguration column: OWSDisappearingMessagesConfigurationRecord.CodingKeys) {
-        appendLiteral(OWSDisappearingMessagesConfigurationRecord.columnName(column))
+    mutating func appendInterpolation(columnForDisappearingMessagesConfiguration column: DisappearingMessagesConfigurationRecord.CodingKeys) {
+        appendLiteral(DisappearingMessagesConfigurationRecord.columnName(column))
     }
 }
 
@@ -56,7 +56,7 @@ extension OWSDisappearingMessagesConfiguration {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func fromRecord(_ record: OWSDisappearingMessagesConfigurationRecord) throws -> OWSDisappearingMessagesConfiguration {
+    class func fromRecord(_ record: DisappearingMessagesConfigurationRecord) throws -> OWSDisappearingMessagesConfiguration {
 
         switch record.recordType {
         case .disappearingMessagesConfiguration:

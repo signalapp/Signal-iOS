@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct OWSBackupFragmentRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct BackupFragmentRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = OWSBackupFragmentSerializer.table.tableName
 
     public let id: UInt64
@@ -41,7 +41,7 @@ public struct OWSBackupFragmentRecord: Codable, FetchableRecord, PersistableReco
         case uncompressedDataLength
     }
 
-    public static func columnName(_ column: OWSBackupFragmentRecord.CodingKeys) -> String {
+    public static func columnName(_ column: BackupFragmentRecord.CodingKeys) -> String {
         return column.rawValue
     }
 
@@ -50,8 +50,8 @@ public struct OWSBackupFragmentRecord: Codable, FetchableRecord, PersistableReco
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForBackupFragment column: OWSBackupFragmentRecord.CodingKeys) {
-        appendLiteral(OWSBackupFragmentRecord.columnName(column))
+    mutating func appendInterpolation(columnForBackupFragment column: BackupFragmentRecord.CodingKeys) {
+        appendLiteral(BackupFragmentRecord.columnName(column))
     }
 }
 
@@ -64,7 +64,7 @@ extension OWSBackupFragment {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func fromRecord(_ record: OWSBackupFragmentRecord) throws -> OWSBackupFragment {
+    class func fromRecord(_ record: BackupFragmentRecord) throws -> OWSBackupFragment {
 
         switch record.recordType {
         case .backupFragment:

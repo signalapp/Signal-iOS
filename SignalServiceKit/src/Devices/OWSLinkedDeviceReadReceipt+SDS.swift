@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct OWSLinkedDeviceReadReceiptRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct LinkedDeviceReadReceiptRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = OWSLinkedDeviceReadReceiptSerializer.table.tableName
 
     public let id: UInt64
@@ -35,7 +35,7 @@ public struct OWSLinkedDeviceReadReceiptRecord: Codable, FetchableRecord, Persis
         case senderId
     }
 
-    public static func columnName(_ column: OWSLinkedDeviceReadReceiptRecord.CodingKeys) -> String {
+    public static func columnName(_ column: LinkedDeviceReadReceiptRecord.CodingKeys) -> String {
         return column.rawValue
     }
 
@@ -44,8 +44,8 @@ public struct OWSLinkedDeviceReadReceiptRecord: Codable, FetchableRecord, Persis
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForLinkedDeviceReadReceipt column: OWSLinkedDeviceReadReceiptRecord.CodingKeys) {
-        appendLiteral(OWSLinkedDeviceReadReceiptRecord.columnName(column))
+    mutating func appendInterpolation(columnForLinkedDeviceReadReceipt column: LinkedDeviceReadReceiptRecord.CodingKeys) {
+        appendLiteral(LinkedDeviceReadReceiptRecord.columnName(column))
     }
 }
 
@@ -58,7 +58,7 @@ extension OWSLinkedDeviceReadReceipt {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func fromRecord(_ record: OWSLinkedDeviceReadReceiptRecord) throws -> OWSLinkedDeviceReadReceipt {
+    class func fromRecord(_ record: LinkedDeviceReadReceiptRecord) throws -> OWSLinkedDeviceReadReceipt {
 
         switch record.recordType {
         case .linkedDeviceReadReceipt:

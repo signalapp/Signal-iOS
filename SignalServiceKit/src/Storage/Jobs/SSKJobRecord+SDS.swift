@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct SSKJobRecordRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct JobRecordRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = SSKJobRecordSerializer.table.tableName
 
     public let id: UInt64
@@ -49,7 +49,7 @@ public struct SSKJobRecordRecord: Codable, FetchableRecord, PersistableRecord, T
         case threadId
     }
 
-    public static func columnName(_ column: SSKJobRecordRecord.CodingKeys) -> String {
+    public static func columnName(_ column: JobRecordRecord.CodingKeys) -> String {
         return column.rawValue
     }
 
@@ -58,8 +58,8 @@ public struct SSKJobRecordRecord: Codable, FetchableRecord, PersistableRecord, T
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForJobRecord column: SSKJobRecordRecord.CodingKeys) {
-        appendLiteral(SSKJobRecordRecord.columnName(column))
+    mutating func appendInterpolation(columnForJobRecord column: JobRecordRecord.CodingKeys) {
+        appendLiteral(JobRecordRecord.columnName(column))
     }
 }
 
@@ -72,7 +72,7 @@ extension SSKJobRecord {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func fromRecord(_ record: SSKJobRecordRecord) throws -> SSKJobRecord {
+    class func fromRecord(_ record: JobRecordRecord) throws -> SSKJobRecord {
 
         switch record.recordType {
         case .sessionResetJobRecord:

@@ -11,7 +11,7 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct OWSMessageDecryptJobRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct MessageDecryptJobRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static let databaseTableName: String = OWSMessageDecryptJobSerializer.table.tableName
 
     public let id: UInt64
@@ -33,7 +33,7 @@ public struct OWSMessageDecryptJobRecord: Codable, FetchableRecord, PersistableR
         case envelopeData
     }
 
-    public static func columnName(_ column: OWSMessageDecryptJobRecord.CodingKeys) -> String {
+    public static func columnName(_ column: MessageDecryptJobRecord.CodingKeys) -> String {
         return column.rawValue
     }
 
@@ -42,8 +42,8 @@ public struct OWSMessageDecryptJobRecord: Codable, FetchableRecord, PersistableR
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForMessageDecryptJob column: OWSMessageDecryptJobRecord.CodingKeys) {
-        appendLiteral(OWSMessageDecryptJobRecord.columnName(column))
+    mutating func appendInterpolation(columnForMessageDecryptJob column: MessageDecryptJobRecord.CodingKeys) {
+        appendLiteral(MessageDecryptJobRecord.columnName(column))
     }
 }
 
@@ -56,7 +56,7 @@ extension OWSMessageDecryptJob {
     // This method defines how to deserialize a model, given a
     // database row.  The recordType column is used to determine
     // the corresponding model class.
-    class func fromRecord(_ record: OWSMessageDecryptJobRecord) throws -> OWSMessageDecryptJob {
+    class func fromRecord(_ record: MessageDecryptJobRecord) throws -> OWSMessageDecryptJob {
 
         switch record.recordType {
         case .messageDecryptJob:
