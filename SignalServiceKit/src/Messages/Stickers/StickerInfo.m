@@ -77,6 +77,23 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
++ (nullable StickerPackInfo *)parsePackIdHex:(NSString *)packIdHex packKeyHex:(NSString *)packKeyHex
+{
+    NSData *_Nullable packId = [NSData dataFromHexString:packIdHex];
+    if (packId == nil || packId.length < 1) {
+        OWSLogDebug(@"Invalid packId: %@", packIdHex);
+        OWSFailDebug(@"Invalid packId.");
+        return nil;
+    }
+    NSData *_Nullable packKey = [NSData dataFromHexString:packKeyHex];
+    if (packKey == nil || packKey.length != StickerManager.packKeyLength) {
+        OWSLogDebug(@"Invalid packKey: %@", packKeyHex);
+        OWSFailDebug(@"Invalid packKey.");
+        return nil;
+    }
+    return [[StickerPackInfo alloc] initWithPackId:packId packKey:packKey];
+}
+
 - (NSString *)asKey
 {
     return self.packId.hexadecimalString;
