@@ -82,7 +82,7 @@ extension SSKJobRecord {
             let failureCount: UInt = record.failureCount
             let label: String = record.label
             let status: SSKJobRecordStatus = record.status
-            let contactThreadId: String = try SDSDeserialization.string(record.contactThreadId, name: "contactThreadId")
+            let contactThreadId: String = try SDSDeserialization.required(record.contactThreadId, name: "contactThreadId")
 
             return OWSSessionResetJobRecord(uniqueId: uniqueId,
                                             failureCount: failureCount,
@@ -114,9 +114,9 @@ extension SSKJobRecord {
             let status: SSKJobRecordStatus = record.status
             let invisibleMessageSerialized: Data? = record.invisibleMessage
             let invisibleMessage: TSOutgoingMessage? = try SDSDeserialization.optionalUnarchive(invisibleMessageSerialized, name: "invisibleMessage")
-            let messageId: String? = SDSDeserialization.optionalString(record.messageId, name: "messageId")
-            let removeMessageAfterSending: Bool = try SDSDeserialization.numeric(record.removeMessageAfterSending, name: "removeMessageAfterSending")
-            let threadId: String? = SDSDeserialization.optionalString(record.threadId, name: "threadId")
+            let messageId: String? = record.messageId
+            let removeMessageAfterSending: Bool = try SDSDeserialization.required(record.removeMessageAfterSending, name: "removeMessageAfterSending")
+            let threadId: String? = record.threadId
 
             return SSKMessageSenderJobRecord(uniqueId: uniqueId,
                                              failureCount: failureCount,

@@ -343,27 +343,26 @@ class TypeInfo:
         deserialization_not_optional = None
         deserialization_conversion = ''
         if self._swift_type == 'String':
-            deserialization_optional = 'optionalString' 
-            deserialization_not_optional = 'string'
+            deserialization_not_optional = 'required'
         elif self._swift_type == 'Date':
-            deserialization_optional = 'optionalDate' 
-            deserialization_not_optional = 'date'
+            deserialization_not_optional = 'required'
         elif self._swift_type == 'Data':
             deserialization_optional = 'optionalData' 
-            deserialization_not_optional = 'data'
+            deserialization_not_optional = 'required'
         elif self.is_numeric():
             deserialization_optional = 'optionalNumericAsNSNumber'
-            deserialization_not_optional = 'numeric'
+            deserialization_not_optional = 'required'
             deserialization_conversion = ', conversion: { NSNumber(value: $0) }'
             
-        if (deserialization_optional is not None) and (deserialization_not_optional is not None):
-            if is_optional:
+        if is_optional:
+            if deserialization_optional is not None:
                 value_expr = 'SDSDeserialization.%s(%s, name: "%s"%s)' % ( deserialization_optional, value_expr, value_name, deserialization_conversion)
-            elif did_force_optional:
+        elif did_force_optional:
+            if deserialization_not_optional is not None:
                 value_expr = 'try SDSDeserialization.%s(%s, name: "%s")' % ( deserialization_not_optional, value_expr, value_name)
-            else:
-                # Do nothing; we don't need to unpack this non-optional.
-                pass
+        else:
+            # Do nothing; we don't need to unpack this non-optional.
+            pass
         
         initializer_param_type = self.swift_type()
         if is_optional:

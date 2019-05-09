@@ -109,16 +109,16 @@ extension TSAttachment {
 
             let uniqueId: String = record.uniqueId
             let sortId: UInt64 = record.id
-            let albumMessageId: String? = SDSDeserialization.optionalString(record.albumMessageId, name: "albumMessageId")
+            let albumMessageId: String? = record.albumMessageId
             let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = record.attachmentType
             let byteCount: UInt32 = record.byteCount
-            let caption: String? = SDSDeserialization.optionalString(record.caption, name: "caption")
+            let caption: String? = record.caption
             let contentType: String = record.contentType
             let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
             let isDownloaded: Bool = record.isDownloaded
             let serverId: UInt64 = record.serverId
-            let sourceFilename: String? = SDSDeserialization.optionalString(record.sourceFilename, name: "sourceFilename")
+            let sourceFilename: String? = record.sourceFilename
 
             return TSAttachment(uniqueId: uniqueId,
                                 albumMessageId: albumMessageId,
@@ -136,21 +136,21 @@ extension TSAttachment {
 
             let uniqueId: String = record.uniqueId
             let sortId: UInt64 = record.id
-            let albumMessageId: String? = SDSDeserialization.optionalString(record.albumMessageId, name: "albumMessageId")
+            let albumMessageId: String? = record.albumMessageId
             let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = record.attachmentType
             let byteCount: UInt32 = record.byteCount
-            let caption: String? = SDSDeserialization.optionalString(record.caption, name: "caption")
+            let caption: String? = record.caption
             let contentType: String = record.contentType
             let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
             let isDownloaded: Bool = record.isDownloaded
             let serverId: UInt64 = record.serverId
-            let sourceFilename: String? = SDSDeserialization.optionalString(record.sourceFilename, name: "sourceFilename")
+            let sourceFilename: String? = record.sourceFilename
             let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
-            let lazyRestoreFragmentId: String? = SDSDeserialization.optionalString(record.lazyRestoreFragmentId, name: "lazyRestoreFragmentId")
+            let lazyRestoreFragmentId: String? = record.lazyRestoreFragmentId
             let mediaSizeSerialized: Data? = record.mediaSize
             let mediaSize: CGSize = try SDSDeserialization.unarchive(mediaSizeSerialized, name: "mediaSize")
-            let mostRecentFailureLocalizedText: String? = SDSDeserialization.optionalString(record.mostRecentFailureLocalizedText, name: "mostRecentFailureLocalizedText")
+            let mostRecentFailureLocalizedText: String? = record.mostRecentFailureLocalizedText
             guard let pointerType: TSAttachmentPointerType = record.pointerType else {
                throw SDSError.missingRequiredField
             }
@@ -180,25 +180,25 @@ extension TSAttachment {
 
             let uniqueId: String = record.uniqueId
             let sortId: UInt64 = record.id
-            let albumMessageId: String? = SDSDeserialization.optionalString(record.albumMessageId, name: "albumMessageId")
+            let albumMessageId: String? = record.albumMessageId
             let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = record.attachmentType
             let byteCount: UInt32 = record.byteCount
-            let caption: String? = SDSDeserialization.optionalString(record.caption, name: "caption")
+            let caption: String? = record.caption
             let contentType: String = record.contentType
             let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
             let isDownloaded: Bool = record.isDownloaded
             let serverId: UInt64 = record.serverId
-            let sourceFilename: String? = SDSDeserialization.optionalString(record.sourceFilename, name: "sourceFilename")
+            let sourceFilename: String? = record.sourceFilename
             let cachedAudioDurationSeconds: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedAudioDurationSeconds, name: "cachedAudioDurationSeconds", conversion: { NSNumber(value: $0) })
             let cachedImageHeight: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageHeight, name: "cachedImageHeight", conversion: { NSNumber(value: $0) })
             let cachedImageWidth: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageWidth, name: "cachedImageWidth", conversion: { NSNumber(value: $0) })
-            let creationTimestamp: Date = try SDSDeserialization.date(record.creationTimestamp, name: "creationTimestamp")
+            let creationTimestamp: Date = try SDSDeserialization.required(record.creationTimestamp, name: "creationTimestamp")
             let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
-            let isUploaded: Bool = try SDSDeserialization.numeric(record.isUploaded, name: "isUploaded")
+            let isUploaded: Bool = try SDSDeserialization.required(record.isUploaded, name: "isUploaded")
             let isValidImageCached: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.isValidImageCached, name: "isValidImageCached", conversion: { NSNumber(value: $0) })
             let isValidVideoCached: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.isValidVideoCached, name: "isValidVideoCached", conversion: { NSNumber(value: $0) })
-            let localRelativeFilePath: String? = SDSDeserialization.optionalString(record.localRelativeFilePath, name: "localRelativeFilePath")
+            let localRelativeFilePath: String? = record.localRelativeFilePath
 
             return TSAttachmentStream(uniqueId: uniqueId,
                                       albumMessageId: albumMessageId,

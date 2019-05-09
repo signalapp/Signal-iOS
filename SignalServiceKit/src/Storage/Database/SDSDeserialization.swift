@@ -16,61 +16,27 @@ public class SDSDeserialization {
 
     // MARK: - Data
 
-    public class func data(_ value: Data?, name: String) throws -> Data {
+    public class func required<T>(_ value: T?, name: String) throws -> T {
         guard let value = value else {
             owsFailDebug("Missing required field: \(name).")
             throw SDSError.missingRequiredField
         }
         return value
     }
+
+    // MARK: - Data
 
     public class func optionalData(_ value: Data?, name: String) -> Data? {
         return value
     }
 
-    // MARK: - String
-
-    public class func string(_ value: String?, name: String) throws -> String {
-        guard let value = value else {
-            owsFailDebug("Missing required field: \(name).")
-            throw SDSError.missingRequiredField
-        }
-        return value
-    }
-
-    public class func optionalString(_ value: String?, name: String) -> String? {
-        return value
-    }
-
     // MARK: - Numeric Primitive
-
-    public class func numeric<T>(_ value: T?, name: String) throws -> T {
-        guard let value = value else {
-            owsFailDebug("Missing required field: \(name).")
-            throw SDSError.missingRequiredField
-        }
-        return value
-    }
 
     public class func optionalNumericAsNSNumber<T>(_ value: T?, name: String, conversion: (T) -> NSNumber) -> NSNumber? {
         guard let value = value else {
             return nil
         }
         return conversion(value)
-    }
-
-    // MARK: - Date
-
-    public class func date(_ value: Date?, name: String) throws -> Date {
-        guard let value = value else {
-            owsFailDebug("Missing required field: \(name).")
-            throw SDSError.missingRequiredField
-        }
-        return value
-    }
-
-    public class func optionalDate(_ value: Date?, name: String) -> Date? {
-        return value
     }
 
     // MARK: - Blob

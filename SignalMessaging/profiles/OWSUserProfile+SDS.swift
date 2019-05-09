@@ -69,11 +69,11 @@ extension OWSUserProfile {
 
             let uniqueId: String = record.uniqueId
             let sortId: UInt64 = record.id
-            let avatarFileName: String? = SDSDeserialization.optionalString(record.avatarFileName, name: "avatarFileName")
-            let avatarUrlPath: String? = SDSDeserialization.optionalString(record.avatarUrlPath, name: "avatarUrlPath")
+            let avatarFileName: String? = record.avatarFileName
+            let avatarUrlPath: String? = record.avatarUrlPath
             let profileKeySerialized: Data? = record.profileKey
             let profileKey: OWSAES256Key? = try SDSDeserialization.optionalUnarchive(profileKeySerialized, name: "profileKey")
-            let profileName: String? = SDSDeserialization.optionalString(record.profileName, name: "profileName")
+            let profileName: String? = record.profileName
             let recipientId: String = record.recipientId
 
             return OWSUserProfile(uniqueId: uniqueId,

@@ -71,11 +71,11 @@ extension OWSBackupFragment {
 
             let uniqueId: String = record.uniqueId
             let sortId: UInt64 = record.id
-            let attachmentId: String? = SDSDeserialization.optionalString(record.attachmentId, name: "attachmentId")
-            let downloadFilePath: String? = SDSDeserialization.optionalString(record.downloadFilePath, name: "downloadFilePath")
+            let attachmentId: String? = record.attachmentId
+            let downloadFilePath: String? = record.downloadFilePath
             let encryptionKey: Data = record.encryptionKey
             let recordName: String = record.recordName
-            let relativeFilePath: String? = SDSDeserialization.optionalString(record.relativeFilePath, name: "relativeFilePath")
+            let relativeFilePath: String? = record.relativeFilePath
             let uncompressedDataLength: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.uncompressedDataLength, name: "uncompressedDataLength", conversion: { NSNumber(value: $0) })
 
             return OWSBackupFragment(uniqueId: uniqueId,

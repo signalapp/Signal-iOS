@@ -70,7 +70,7 @@ extension OWSDevice {
             let createdAt: Date = record.createdAt
             let deviceId: Int = record.deviceId
             let lastSeenAt: Date = record.lastSeenAt
-            let name: String? = SDSDeserialization.optionalString(record.name, name: "name")
+            let name: String? = record.name
 
             return OWSDevice(uniqueId: uniqueId,
                              createdAt: createdAt,
