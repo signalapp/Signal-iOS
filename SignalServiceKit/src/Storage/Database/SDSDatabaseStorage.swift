@@ -131,6 +131,68 @@ public class SDSDatabaseStorage: NSObject {
         self.notifyCrossProcessWrite()
     }
 
+    @objc
+    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
+        asyncRead(block: block, completion: { })
+    }
+
+    @objc
+    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completion: @escaping () -> Void) {
+        asyncRead(block: block, completionQueue: .main, completion: completion)
+    }
+
+    @objc
+    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
+        DispatchQueue.global().async {
+            if self.useGRDB {
+                do {
+                    try self.grdbStorage.read { transaction in
+                        block(transaction.asAnyRead)
+                    }
+                } catch {
+                    owsFail("error: \(error)")
+                }
+            } else {
+                self.yapStorage.read { transaction in
+                    block(transaction.asAnyRead)
+                }
+            }
+
+            completionQueue.async(execute: completion)
+        }
+    }
+
+    @objc
+    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+        asyncWrite(block: block, completion: { })
+    }
+
+    @objc
+    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completion: @escaping () -> Void) {
+        asyncWrite(block: block, completionQueue: .main, completion: completion)
+    }
+
+    @objc
+    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
+        DispatchQueue.global().async {
+            if self.useGRDB {
+                do {
+                    try self.grdbStorage.write { transaction in
+                        block(transaction.asAnyWrite)
+                    }
+                } catch {
+                    owsFail("error: \(error)")
+                }
+            } else {
+                self.yapStorage.write { transaction in
+                    block(transaction.asAnyWrite)
+                }
+            }
+
+            completionQueue.async(execute: completion)
+        }
+    }
+
     // MARK: - Value Methods
 
     public func uiReadReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T?) -> T? {
