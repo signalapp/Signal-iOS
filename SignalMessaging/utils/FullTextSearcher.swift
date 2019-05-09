@@ -297,7 +297,7 @@ public class FullTextSearcher: NSObject {
 
                 conversations.append(searchResult)
             } else if let message = match as? TSMessage {
-                let thread = message.thread(with: transaction)
+                let thread = message.thread(transaction: transaction.asAnyRead)
 
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction.asAnyRead)
                 let sortKey = message.sortId

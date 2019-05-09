@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyReadTransaction;
 @class TSAttachmentPointer;
 @class TSMessage;
 
@@ -44,7 +45,9 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 
 @property (nonatomic, readonly, nullable) NSString *caption;
 @property (nonatomic, readonly, nullable) NSString *albumMessageId;
-- (nullable TSMessage *)fetchAlbumMessageWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
+- (nullable TSMessage *)fetchAlbumMessageWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(fetchAlbumMessage(transaction:));
 
 // `migrateAlbumMessageId` is only used in the migration to the new multi-attachment message scheme,
 // and shouldn't be used as a general purpose setter. Instead, `albumMessageId` should be passed as

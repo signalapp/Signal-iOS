@@ -29,8 +29,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
     }
     public var focusedItem: MediaGalleryItem?
 
-    private let uiDatabaseConnection: YapDatabaseConnection
-
     public weak var delegate: MediaTileViewControllerDelegate?
 
     deinit {
@@ -39,11 +37,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
     fileprivate let mediaTileViewLayout: MediaTileViewLayout
 
-    init(mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection) {
-
+    init(mediaGalleryDataSource: MediaGalleryDataSource) {
         self.mediaGalleryDataSource = mediaGalleryDataSource
-        assert(uiDatabaseConnection.isInLongLivedReadTransaction())
-        self.uiDatabaseConnection = uiDatabaseConnection
 
         let layout: MediaTileViewLayout = type(of: self).buildLayout()
         self.mediaTileViewLayout = layout

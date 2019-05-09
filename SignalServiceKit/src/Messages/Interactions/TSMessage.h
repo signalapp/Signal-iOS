@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSContact;
 @class OWSLinkPreview;
 @class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
@@ -82,7 +83,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (void)removeAttachment:(TSAttachment *)attachment
-             transaction:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(removeAttachment(_:transaction:));
+             transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(removeAttachment(_:transaction:));
 
 // Returns ids for all attachments, including message ("body") attachments,
 // quoted reply thumbnails, contact share avatars, link preview images, etc.

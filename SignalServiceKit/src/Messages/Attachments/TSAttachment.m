@@ -8,6 +8,7 @@
 #import "TSAttachmentPointer.h"
 #import "TSMessage.h"
 #import <SignalCoreKit/iOSVersions.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -345,12 +346,12 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 #pragma mark - Relationships
 
-- (nullable TSMessage *)fetchAlbumMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable TSMessage *)fetchAlbumMessageWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (self.albumMessageId == nil) {
         return nil;
     }
-    return [TSMessage fetchObjectWithUniqueID:self.albumMessageId transaction:transaction];
+    return (TSMessage *)[TSMessage anyFetchWithUniqueId:self.albumMessageId transaction:transaction];
 }
 
 - (void)migrateAlbumMessageId:(NSString *)albumMesssageId

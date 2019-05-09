@@ -183,9 +183,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return [TSThread fetchObjectWithUniqueID:self.uniqueThreadId];
 }
 
-- (TSThread *)threadWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (TSThread *)threadWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return [TSThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
+    return [TSThread anyFetchWithUniqueId:self.uniqueThreadId transaction:transaction];
 }
 
 - (void)touchThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -257,7 +257,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
     [super saveWithTransaction:transaction];
 
-    TSThread *fetchedThread = [self threadWithTransaction:transaction];
+    TSThread *fetchedThread = [self threadWithTransaction:transaction.asAnyRead];
 
     [fetchedThread updateWithLastMessage:self transaction:transaction];
 }

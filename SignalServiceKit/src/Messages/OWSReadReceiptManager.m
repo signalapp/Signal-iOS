@@ -470,7 +470,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
     // Also mark any unread messages appearing earlier in the thread as read as well.
     [self markAsReadBeforeSortId:message.sortId
-                          thread:[message threadWithTransaction:transaction]
+                          thread:[message threadWithTransaction:transaction.asAnyRead]
                    readTimestamp:readTimestamp
                         wasLocal:NO
                      transaction:transaction];

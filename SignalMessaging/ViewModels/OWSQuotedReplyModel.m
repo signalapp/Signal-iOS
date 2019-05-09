@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    TSThread *thread = [message threadWithTransaction:transaction];
+    TSThread *thread = [message threadWithTransaction:transaction.asAnyRead];
     OWSAssertDebug(thread);
 
     uint64_t timestamp = message.timestamp;

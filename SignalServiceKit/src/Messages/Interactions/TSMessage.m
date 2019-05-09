@@ -320,14 +320,14 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }]];
 }
 
-- (void)removeAttachment:(TSAttachment *)attachment transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeAttachment:(TSAttachment *)attachment transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug([self.attachmentIds containsObject:attachment.uniqueId]);
-    [attachment removeWithTransaction:transaction];
+    [attachment anyRemoveWithTransaction:transaction];
 
     [self.attachmentIds removeObject:attachment.uniqueId];
 
-    [self saveWithTransaction:transaction];
+    [self anySaveWithTransaction:transaction];
 }
 
 - (NSString *)debugDescription

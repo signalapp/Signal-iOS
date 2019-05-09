@@ -241,7 +241,7 @@ NS_ASSUME_NONNULL_BEGIN
             // b) It's safe to discard suspicious "sent updates."
             continue;
         }
-        TSThread *thread = [message threadWithTransaction:transaction];
+        TSThread *thread = [message threadWithTransaction:transaction.asAnyRead];
         if (!thread.isGroupThread) {
             continue;
         }

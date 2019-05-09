@@ -61,14 +61,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         updateMediaRail()
     }
 
-    private let uiDatabaseConnection: YapDatabaseConnection
-
     private let showAllMediaButton: Bool
     private let sliderEnabled: Bool
 
-    init(initialItem: MediaGalleryItem, mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection, options: MediaGalleryOption) {
-        assert(uiDatabaseConnection.isInLongLivedReadTransaction())
-        self.uiDatabaseConnection = uiDatabaseConnection
+    init(initialItem: MediaGalleryItem, mediaGalleryDataSource: MediaGalleryDataSource, options: MediaGalleryOption) {
         self.showAllMediaButton = options.contains(.showAllMediaButton)
         self.sliderEnabled = options.contains(.sliderEnabled)
         self.mediaGalleryDataSource = mediaGalleryDataSource
@@ -98,6 +94,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     deinit {
         Logger.debug("deinit")
+    }
+
+    // MARK: - Dependencies
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     // MARK: - Subview
@@ -573,13 +575,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         Logger.debug("cache miss.")
         var fetchedItem: ConversationViewItem?
-        self.uiDatabaseConnection.read { transaction in
+        databaseStorage.uiRead { transaction in
             let message = galleryItem.message
-            let thread = message.thread(with: transaction)
+            let thread = message.thread(transaction: transaction)
             let conversationStyle = ConversationStyle(thread: thread)
             fetchedItem = ConversationInteractionViewItem(interaction: message,
                                                           isGroupThread: thread.isGroupThread(),
-                                                          transaction: transaction.asAnyRead,
+                                                          transaction: transaction,
                                                           conversationStyle: conversationStyle)
         }
 

@@ -7,6 +7,7 @@
 #import "TSAttachmentStream.h"
 #import "TSMessage.h"
 #import "TSThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
@@ -156,8 +157,8 @@ static NSString *const YAPDBMediaGalleryFinderExtensionName = @"YAPDBMediaGaller
             }
             TSAttachment *attachment2 = (TSAttachment *)object2;
 
-            TSMessage *_Nullable message1 = [attachment1 fetchAlbumMessageWithTransaction:transaction];
-            TSMessage *_Nullable message2 = [attachment2 fetchAlbumMessageWithTransaction:transaction];
+            TSMessage *_Nullable message1 = [attachment1 fetchAlbumMessageWithTransaction:transaction.asAnyRead];
+            TSMessage *_Nullable message2 = [attachment2 fetchAlbumMessageWithTransaction:transaction.asAnyRead];
             if (message1 == nil || message2 == nil) {
                 OWSFailDebug(@"couldn't find albumMessage");
                 return NSOrderedSame;
@@ -196,7 +197,7 @@ static NSString *const YAPDBMediaGalleryFinderExtensionName = @"YAPDBMediaGaller
                 return nil;
             }
 
-            TSMessage *message = [attachment fetchAlbumMessageWithTransaction:transaction];
+            TSMessage *message = [attachment fetchAlbumMessageWithTransaction:transaction.asAnyRead];
             if (message == nil) {
                 OWSFailDebug(@"message was unexpectedly nil");
                 return nil;
