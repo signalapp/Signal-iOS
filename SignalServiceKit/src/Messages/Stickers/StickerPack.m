@@ -61,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _info = info;
+    _title = title;
     _author = author;
     _cover = cover;
     _items = items;

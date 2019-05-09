@@ -184,7 +184,10 @@ public class ManageStickersViewController: OWSTableViewController {
     }
 
     private func buildTableCell(installedStickerPack stickerPack: StickerPack) -> UITableViewCell {
-        let actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
+        var actionIconName: String?
+        if FeatureFlags.stickerPackSharing {
+            actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
+        }
         return buildTableCell(stickerInfo: stickerPack.coverInfo,
                               title: stickerPack.title,
                               authorName: stickerPack.author,
@@ -206,7 +209,7 @@ public class ManageStickersViewController: OWSTableViewController {
     private func buildTableCell(stickerInfo: StickerInfo,
                                 title titleValue: String?,
                                 authorName authorNameValue: String?,
-                                actionIconName: String,
+                                actionIconName: String?,
                                 block: @escaping () -> Void) -> UITableViewCell {
         let cell = OWSTableItem.newCell()
 
@@ -244,13 +247,16 @@ public class ManageStickersViewController: OWSTableViewController {
             textStack.addArrangedSubview(authorLabel)
         }
 
-        let actionButton = StickerPackActionButton(actionIconName: actionIconName, block: block)
+        var subviews: [UIView] = [
+        iconView,
+        textStack
+        ]
+        if let actionIconName = actionIconName {
+            let actionButton = StickerPackActionButton(actionIconName: actionIconName, block: block)
+            subviews.append(actionButton)
+        }
 
-        let stack = UIStackView(arrangedSubviews: [
-            iconView,
-            textStack,
-            actionButton
-            ])
+        let stack = UIStackView(arrangedSubviews: subviews)
         stack.axis = .horizontal
         stack.alignment = .center
         stack.spacing = 12

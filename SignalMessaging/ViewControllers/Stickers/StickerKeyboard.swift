@@ -57,11 +57,6 @@ public class StickerKeyboard: UIStackView {
 
         stickerCollectionView.showRecents()
 
-        // If there are no recents, default to showing the first sticker pack.
-        if stickerCollectionView.stickerCount < 1 {
-            stickerPack = stickerPacks.first
-        }
-
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
                                                name: StickerManager.StickersOrPacksDidChange,
@@ -93,11 +88,20 @@ public class StickerKeyboard: UIStackView {
         headerView.setCompressionResistanceVerticalHigh()
 
         stickerCollectionView.stickerDelegate = self
+        stickerCollectionView.backgroundColor = Theme.offBackgroundColor
         addArrangedSubview(stickerCollectionView)
         stickerCollectionView.setContentHuggingVerticalLow()
         stickerCollectionView.setCompressionResistanceVerticalLow()
 
         populateHeaderView()
+    }
+
+    @objc
+    public func wasPresented() {
+        // If there are no recents, default to showing the first sticker pack.
+        if stickerCollectionView.stickerCount < 1 {
+            stickerPack = stickerPacks.first
+        }
     }
 
     private func reloadStickers() {

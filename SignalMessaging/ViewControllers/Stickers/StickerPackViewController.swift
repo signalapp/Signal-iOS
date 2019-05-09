@@ -48,13 +48,81 @@ public class StickerPackViewController: OWSViewController {
     override public func loadView() {
         super.loadView()
 
+        if UIAccessibility.isReduceTransparencyEnabled {
+            view.backgroundColor = Theme.darkThemeBackgroundColor
+        } else {
+            view.backgroundColor = .clear
+
+            let blurEffect = Theme.darkThemeBarBlurEffect
+            let blurEffectView = UIVisualEffectView(effect: blurEffect)
+            view.addSubview(blurEffectView)
+            blurEffectView.autoPinEdgesToSuperviewEdges()
+        }
+
+        titleLabel.textColor = Theme.darkThemePrimaryColor
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_mediumWeight()
+
+        authorLabel.textColor = Theme.darkThemePrimaryColor
+        authorLabel.font = UIFont.ows_dynamicTypeBody
+
+        defaultPackIconView.setTemplateImageName("badge-filled-16", tintColor: UIColor.ows_signalBrandBlue)
+        defaultPackIconView.isHidden = true
+
+        shareButton.setTemplateImageName("badge-filled-16", tintColor: Theme.darkThemePrimaryColor)
+        shareButton.addTarget(self, action: #selector(shareButtonPressed(sender:)), for: .touchUpInside)
+
+        let bottomRowView = UIStackView(arrangedSubviews: [ defaultPackIconView, authorLabel ])
+        bottomRowView.axis = .horizontal
+        bottomRowView.alignment = .center
+        bottomRowView.spacing = 5
+        defaultPackIconView.setCompressionResistanceHigh()
+        defaultPackIconView.setContentHuggingHigh()
+
+        let textRowsView = UIStackView(arrangedSubviews: [ titleLabel, bottomRowView ])
+        textRowsView.axis = .vertical
+        textRowsView.alignment = .leading
+
+        let headerStack = UIStackView(arrangedSubviews: [ textRowsView, shareButton ])
+        headerStack.axis = .horizontal
+        headerStack.alignment = .center
+        headerStack.spacing = 10
+        headerStack.layoutMargins = UIEdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20)
+        headerStack.isLayoutMarginsRelativeArrangement = true
+        textRowsView.setCompressionResistanceHorizontalLow()
+        textRowsView.setContentHuggingHorizontalLow()
+
+        self.view.addSubview(headerStack)
+        headerStack.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        headerStack.autoPinWidthToSuperview()
+
+        stickerCollectionView.backgroundColor = .clear
         self.view.addSubview(stickerCollectionView)
-        stickerCollectionView.autoPinEdgesToSuperviewEdges()
+        stickerCollectionView.autoPinWidthToSuperview()
+        stickerCollectionView.autoPinEdge(.top, to: .bottom, of: headerStack)
+        stickerCollectionView.autoPinEdge(toSuperviewMargin: .bottom)
 
         // TODO: We probably want to surface the author and perhaps the cover.
         //       design is pending.
 
+        updateHeader()
         updateNavigationBar()
+    }
+
+    private let titleLabel = UILabel()
+    private let authorLabel = UILabel()
+    private let defaultPackIconView = UIImageView()
+    private let shareButton = UIButton()
+
+    private func updateHeader() {
+        guard let stickerPack = dataSource.getStickerPack() else {
+            return
+        }
+
+        titleLabel.text = stickerPack.title
+        authorLabel.text = stickerPack.author
+
+        defaultPackIconView.isHidden = !StickerManager.isDefaultStickerPack(stickerPack)
+        shareButton.isHidden = !FeatureFlags.stickerPackSharing
     }
 
     private func updateNavigationBar() {
@@ -156,6 +224,10 @@ public class StickerPackViewController: OWSViewController {
 
         dismiss(animated: true)
     }
+
+    @objc
+    func shareButtonPressed(sender: UIButton) {
+    }
 }
 
 // MARK: -
@@ -164,6 +236,7 @@ extension StickerPackViewController: StickerPackDataSourceDelegate {
     public func stickerPackDataDidChange() {
         AssertIsOnMainThread()
 
+        updateHeader()
         updateNavigationBar()
     }
 }

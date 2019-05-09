@@ -83,6 +83,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, readonly) UIButton *stickerButton;
 @property (nonatomic, readonly) UIView *quotedReplyWrapper;
 @property (nonatomic, readonly) UIView *linkPreviewWrapper;
+@property (nonatomic, readonly) StickerKeyboard *stickerKeyboard;
 @property (nonatomic, readonly) FirstResponderHostView *stickerKeyboardResponder;
 @property (nonatomic, readonly) StickerHorizontalListView *suggestedStickerView;
 @property (nonatomic) NSArray<StickerInfo *> *suggestedStickerInfos;
@@ -343,6 +344,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     _stickerKeyboardResponder = [FirstResponderHostView new];
     StickerKeyboard *stickerKeyboard = [StickerKeyboard new];
+    _stickerKeyboard = stickerKeyboard;
     stickerKeyboard.delegate = self;
     self.stickerKeyboardResponder.inputView = stickerKeyboard;
     [self addSubview:self.stickerKeyboardResponder];
@@ -484,6 +486,10 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     if (!self.desiredFirstResponder.isFirstResponder) {
         [self.desiredFirstResponder becomeFirstResponder];
+
+        if (self.desiredFirstResponder == self.stickerKeyboardResponder) {
+            [self.stickerKeyboard wasPresented];
+        }
     }
 }
 
