@@ -1112,7 +1112,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // Convert the message to a Loki message and send it using the Loki messaging API
     NSDictionary *signalMessage = deviceMessages.firstObject;
     BOOL isPoWRequired = YES; // TODO: Base on message type
-    [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId requiringPoW:isPoWRequired]
+    [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId timestamp:message.timestamp requiringPoW:isPoWRequired]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             [self messageSendDidSucceed:messageSend
                          deviceMessages:deviceMessages
