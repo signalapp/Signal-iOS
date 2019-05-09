@@ -84,15 +84,15 @@ extension TSThreadSerializer {
             let uniqueId: String = record.uniqueId
             let sortId: UInt64 = record.id
             let archivalDate: Date? = SDSDeserialization.optionalDate(record.archivalDate, name: "archivalDate")
-            let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalBoolAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId")
-            let conversationColorName: NSString * = ConversationColorName(rawValue: record.conversationColorName)
+            let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId", conversion: { NSNumber(value: $0) })
+            let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
             let creationDate: Date = record.creationDate
             let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
             let lastMessageDate: Date? = SDSDeserialization.optionalDate(record.lastMessageDate, name: "lastMessageDate")
             let messageDraft: String? = SDSDeserialization.optionalString(record.messageDraft, name: "messageDraft")
             let mutedUntilDate: Date? = SDSDeserialization.optionalDate(record.mutedUntilDate, name: "mutedUntilDate")
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
-            let hasDismissedOffers: Bool = try SDSDeserialization.bool(record.hasDismissedOffers, name: "hasDismissedOffers")
+            let hasDismissedOffers: Bool = try SDSDeserialization.numeric(record.hasDismissedOffers, name: "hasDismissedOffers")
 
             return TSContactThread(uniqueId: uniqueId,
                                    archivalDate: archivalDate,
@@ -111,16 +111,16 @@ extension TSThreadSerializer {
             let uniqueId: String = record.uniqueId
             let sortId: UInt64 = record.id
             let archivalDate: Date? = SDSDeserialization.optionalDate(record.archivalDate, name: "archivalDate")
-            let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalBoolAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId")
-            let conversationColorName: NSString * = ConversationColorName(rawValue: record.conversationColorName)
+            let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId", conversion: { NSNumber(value: $0) })
+            let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
             let creationDate: Date = record.creationDate
             let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
             let lastMessageDate: Date? = SDSDeserialization.optionalDate(record.lastMessageDate, name: "lastMessageDate")
             let messageDraft: String? = SDSDeserialization.optionalString(record.messageDraft, name: "messageDraft")
             let mutedUntilDate: Date? = SDSDeserialization.optionalDate(record.mutedUntilDate, name: "mutedUntilDate")
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
-            let groupModelSerialized: Data = record.groupModel
-            let groupModel: TSGroupModel = try SDSDeserializer.unarchive(groupModelSerialized)
+            let groupModelSerialized: Data? = record.groupModel
+            let groupModel: TSGroupModel = try SDSDeserialization.unarchive(groupModelSerialized, name: "groupModel")
 
             return TSGroupThread(uniqueId: uniqueId,
                                  archivalDate: archivalDate,
@@ -139,8 +139,8 @@ extension TSThreadSerializer {
             let uniqueId: String = record.uniqueId
             let sortId: UInt64 = record.id
             let archivalDate: Date? = SDSDeserialization.optionalDate(record.archivalDate, name: "archivalDate")
-            let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalBoolAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId")
-            let conversationColorName: NSString * = ConversationColorName(rawValue: record.conversationColorName)
+            let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId", conversion: { NSNumber(value: $0) })
+            let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
             let creationDate: Date = record.creationDate
             let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
             let lastMessageDate: Date? = SDSDeserialization.optionalDate(record.lastMessageDate, name: "lastMessageDate")

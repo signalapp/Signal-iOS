@@ -56,9 +56,9 @@ public class SDSDeserialization {
         return value
     }
 
-    // MARK: - Int64
+    // MARK: - Numeric Primitive
 
-    public class func int64(_ value: Int64?, name: String) throws -> Int64 {
+    public class func numeric<T>(_ value: T?, name: String) throws -> T {
         guard let value = value else {
             owsFailDebug("Missing required field: \(name).")
             throw SDSError.missingRequiredField
@@ -66,12 +66,29 @@ public class SDSDeserialization {
         return value
     }
 
-    public class func optionalInt64AsNSNumber(_ value: Int64?, name: String) -> NSNumber? {
+    public class func optionalNumericAsNSNumber<T>(_ value: T?, name: String, conversion: (T) -> NSNumber) -> NSNumber? {
         guard let value = value else {
             return nil
         }
-        return NSNumber(value: value)
+        return conversion(value)
     }
+
+//    // MARK: - Int64
+//
+//    public class func int64(_ value: Int64?, name: String) throws -> Int64 {
+//        guard let value = value else {
+//            owsFailDebug("Missing required field: \(name).")
+//            throw SDSError.missingRequiredField
+//        }
+//        return value
+//    }
+//
+//    public class func optionalInt64AsNSNumber(_ value: Int64?, name: String) -> NSNumber? {
+//        guard let value = value else {
+//            return nil
+//        }
+//        return NSNumber(value: value)
+//    }
 
 //    public class func optionalInt64(data: Data?, name: String) throws -> Int64? {
 //        let columnType = sqlite3_column_type(sqliteStatement, index)
@@ -86,22 +103,22 @@ public class SDSDeserialization {
 //        }
 //    }
 
-    // MARK: - Int
-
-    public class func int(_ value: Int?, name: String) throws -> Int {
-        guard let value = value else {
-            owsFailDebug("Missing required field: \(name).")
-            throw SDSError.missingRequiredField
-        }
-        return value
-    }
-
-    public class func optionalInt64AsNSNumber(_ value: Int?, name: String) -> NSNumber? {
-        guard let value = value else {
-            return nil
-        }
-        return NSNumber(value: value)
-    }
+//    // MARK: - Int
+//
+//    public class func int(_ value: Int?, name: String) throws -> Int {
+//        guard let value = value else {
+//            owsFailDebug("Missing required field: \(name).")
+//            throw SDSError.missingRequiredField
+//        }
+//        return value
+//    }
+//
+//    public class func optionalInt64AsNSNumber(_ value: Int?, name: String) -> NSNumber? {
+//        guard let value = value else {
+//            return nil
+//        }
+//        return NSNumber(value: value)
+//    }
 
 //    public class func optionalInt(data: Data?, name: String) throws -> Int? {
 //        let columnType = sqlite3_column_type(sqliteStatement, index)
@@ -116,22 +133,22 @@ public class SDSDeserialization {
 //        }
 //    }
 
-    // MARK: - UInt64
-
-    public class func uint64(_ value: UInt64?, name: String) throws -> UInt64 {
-        guard let value = value else {
-            owsFailDebug("Missing required field: \(name).")
-            throw SDSError.missingRequiredField
-        }
-        return value
-    }
-
-    public class func optionalUInt64AsNSNumber(_ value: UInt64?, name: String) -> NSNumber? {
-        guard let value = value else {
-            return nil
-        }
-        return NSNumber(value: value)
-    }
+//    // MARK: - UInt64
+//
+//    public class func uint64(_ value: UInt64?, name: String) throws -> UInt64 {
+//        guard let value = value else {
+//            owsFailDebug("Missing required field: \(name).")
+//            throw SDSError.missingRequiredField
+//        }
+//        return value
+//    }
+//
+//    public class func optionalUInt64AsNSNumber(_ value: UInt64?, name: String) -> NSNumber? {
+//        guard let value = value else {
+//            return nil
+//        }
+//        return NSNumber(value: value)
+//    }
 
 //    public class func optionalUInt64(data: Data?, name: String) throws -> UInt64? {
 //        let columnType = sqlite3_column_type(sqliteStatement, index)
@@ -146,22 +163,22 @@ public class SDSDeserialization {
 //        }
 //    }
 
-    // MARK: - Bool
-
-    public class func bool(_ value: Bool?, name: String) throws -> Bool {
-        guard let value = value else {
-            owsFailDebug("Missing required field: \(name).")
-            throw SDSError.missingRequiredField
-        }
-        return value
-    }
-
-    public class func optionalBoolAsNSNumber(_ value: Bool?, name: String) -> NSNumber? {
-        guard let value = value else {
-            return nil
-        }
-        return NSNumber(value: value)
-    }
+//    // MARK: - Bool
+//
+//    public class func bool(_ value: Bool?, name: String) throws -> Bool {
+//        guard let value = value else {
+//            owsFailDebug("Missing required field: \(name).")
+//            throw SDSError.missingRequiredField
+//        }
+//        return value
+//    }
+//
+//    public class func optionalBoolAsNSNumber(_ value: Bool?, name: String) -> NSNumber? {
+//        guard let value = value else {
+//            return nil
+//        }
+//        return NSNumber(value: value)
+//    }
 
 //    public class func optionalBool(data: Data?, name: String) throws -> Bool? {
 //        let columnType = sqlite3_column_type(sqliteStatement, index)
@@ -176,22 +193,22 @@ public class SDSDeserialization {
 //        }
 //    }
 
-    // MARK: - Bool
-
-    public class func double(_ value: Double?, name: String) throws -> Double {
-        guard let value = value else {
-            owsFailDebug("Missing required field: \(name).")
-            throw SDSError.missingRequiredField
-        }
-        return value
-    }
-
-    public class func optionalDoubleAsNSNumber(_ value: Double?, name: String) -> NSNumber? {
-        guard let value = value else {
-            return nil
-        }
-        return NSNumber(value: value)
-    }
+//    // MARK: - Bool
+//
+//    public class func double(_ value: Double?, name: String) throws -> Double {
+//        guard let value = value else {
+//            owsFailDebug("Missing required field: \(name).")
+//            throw SDSError.missingRequiredField
+//        }
+//        return value
+//    }
+//
+//    public class func optionalDoubleAsNSNumber(_ value: Double?, name: String) -> NSNumber? {
+//        guard let value = value else {
+//            return nil
+//        }
+//        return NSNumber(value: value)
+//    }
 
 //    public class func optionalDouble(data: Data?, name: String) throws -> Double? {
 //        let columnType = sqlite3_column_type(sqliteStatement, index)
@@ -218,5 +235,32 @@ public class SDSDeserialization {
 
     public class func optionalDate(_ value: Date?, name: String) -> Date? {
         return value
+    }
+
+    // MARK: - Blob
+
+    public class func optionalUnarchive<T>(_ encoded: Data?, name: String) throws -> T? {
+        guard let encoded = encoded else {
+            return nil
+        }
+        return try unarchive(encoded, name: name)
+    }
+
+    public class func unarchive<T>(_ encoded: Data?, name: String) throws -> T {
+        guard let encoded = encoded else {
+            owsFailDebug("Missing required field: \(name).")
+            throw SDSError.missingRequiredField
+        }
+
+        do {
+            guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
+                owsFailDebug("Invalid value.")
+                throw SDSError.invalidValue
+            }
+            return decoded
+        } catch {
+            owsFailDebug("Read failed: \(error).")
+            throw SDSError.invalidValue
+        }
     }
 }

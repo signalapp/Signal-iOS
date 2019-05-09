@@ -76,7 +76,7 @@ extension OWSBackupFragmentSerializer {
             let encryptionKey: Data = record.encryptionKey
             let recordName: String = record.recordName
             let relativeFilePath: String? = SDSDeserialization.optionalString(record.relativeFilePath, name: "relativeFilePath")
-            let uncompressedDataLength: NSNumber? = SDSDeserialization.optionalUInt64AsNSNumber(record.uncompressedDataLength, name: "uncompressedDataLength")
+            let uncompressedDataLength: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.uncompressedDataLength, name: "uncompressedDataLength", conversion: { NSNumber(value: $0) })
 
             return OWSBackupFragment(uniqueId: uniqueId,
                                      attachmentId: attachmentId,

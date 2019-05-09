@@ -166,27 +166,27 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
             let customMessage: String? = SDSDeserialization.optionalString(record.customMessage, name: "customMessage")
-            let infoMessageSchemaVersion: UInt = try SDSDeserialization.int64(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
+            let infoMessageSchemaVersion: UInt = try SDSDeserialization.numeric(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
             guard let messageType: TSInfoMessageType = record.messageType else {
                throw SDSError.missingRequiredField
             }
-            let read: Bool = try SDSDeserialization.bool(record.read, name: "read")
+            let read: Bool = try SDSDeserialization.numeric(record.read, name: "read")
             let unregisteredRecipientId: String? = SDSDeserialization.optionalString(record.unregisteredRecipientId, name: "unregisteredRecipientId")
             let contactId: String = try SDSDeserialization.string(record.contactId, name: "contactId")
 
@@ -219,27 +219,27 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
             let customMessage: String? = SDSDeserialization.optionalString(record.customMessage, name: "customMessage")
-            let infoMessageSchemaVersion: UInt = try SDSDeserialization.int64(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
+            let infoMessageSchemaVersion: UInt = try SDSDeserialization.numeric(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
             guard let messageType: TSInfoMessageType = record.messageType else {
                throw SDSError.missingRequiredField
             }
-            let read: Bool = try SDSDeserialization.bool(record.read, name: "read")
+            let read: Bool = try SDSDeserialization.numeric(record.read, name: "read")
             let unregisteredRecipientId: String? = SDSDeserialization.optionalString(record.unregisteredRecipientId, name: "unregisteredRecipientId")
             let contactId: String = try SDSDeserialization.string(record.contactId, name: "contactId")
 
@@ -273,9 +273,9 @@ extension TSInteractionSerializer {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
             let beforeInteractionId: String = try SDSDeserialization.string(record.beforeInteractionId, name: "beforeInteractionId")
-            let hasAddToContactsOffer: Bool = try SDSDeserialization.bool(record.hasAddToContactsOffer, name: "hasAddToContactsOffer")
-            let hasAddToProfileWhitelistOffer: Bool = try SDSDeserialization.bool(record.hasAddToProfileWhitelistOffer, name: "hasAddToProfileWhitelistOffer")
-            let hasBlockOffer: Bool = try SDSDeserialization.bool(record.hasBlockOffer, name: "hasBlockOffer")
+            let hasAddToContactsOffer: Bool = try SDSDeserialization.numeric(record.hasAddToContactsOffer, name: "hasAddToContactsOffer")
+            let hasAddToProfileWhitelistOffer: Bool = try SDSDeserialization.numeric(record.hasAddToProfileWhitelistOffer, name: "hasAddToProfileWhitelistOffer")
+            let hasBlockOffer: Bool = try SDSDeserialization.numeric(record.hasBlockOffer, name: "hasBlockOffer")
             let recipientId: String = try SDSDeserialization.string(record.recipientId, name: "recipientId")
 
             return OWSContactOffersInteraction(uniqueId: uniqueId,
@@ -296,32 +296,32 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
             let customMessage: String? = SDSDeserialization.optionalString(record.customMessage, name: "customMessage")
-            let infoMessageSchemaVersion: UInt = try SDSDeserialization.int64(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
+            let infoMessageSchemaVersion: UInt = try SDSDeserialization.numeric(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
             guard let messageType: TSInfoMessageType = record.messageType else {
                throw SDSError.missingRequiredField
             }
-            let read: Bool = try SDSDeserialization.bool(record.read, name: "read")
+            let read: Bool = try SDSDeserialization.numeric(record.read, name: "read")
             let unregisteredRecipientId: String? = SDSDeserialization.optionalString(record.unregisteredRecipientId, name: "unregisteredRecipientId")
-            let configurationDurationSeconds: UInt32 = try SDSDeserialization.int64(record.configurationDurationSeconds, name: "configurationDurationSeconds")
-            let configurationIsEnabled: Bool = try SDSDeserialization.bool(record.configurationIsEnabled, name: "configurationIsEnabled")
+            let configurationDurationSeconds: UInt32 = try SDSDeserialization.numeric(record.configurationDurationSeconds, name: "configurationDurationSeconds")
+            let configurationIsEnabled: Bool = try SDSDeserialization.numeric(record.configurationIsEnabled, name: "configurationIsEnabled")
             let createdByRemoteName: String? = SDSDeserialization.optionalString(record.createdByRemoteName, name: "createdByRemoteName")
-            let createdInExistingGroup: Bool = try SDSDeserialization.bool(record.createdInExistingGroup, name: "createdInExistingGroup")
+            let createdInExistingGroup: Bool = try SDSDeserialization.numeric(record.createdInExistingGroup, name: "createdInExistingGroup")
 
             return OWSDisappearingConfigurationUpdateInfoMessage(uniqueId: uniqueId,
                                                                  receivedAtTimestamp: receivedAtTimestamp,
@@ -355,26 +355,26 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
-            let errorMessageSchemaVersion: UInt = try SDSDeserialization.int64(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
+            let errorMessageSchemaVersion: UInt = try SDSDeserialization.numeric(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
-            let read: Bool = try SDSDeserialization.bool(record.read, name: "read")
+            let read: Bool = try SDSDeserialization.numeric(record.read, name: "read")
             let recipientId: String? = SDSDeserialization.optionalString(record.recipientId, name: "recipientId")
             let contactId: String = try SDSDeserialization.string(record.contactId, name: "contactId")
 
@@ -406,29 +406,29 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
             let customMessage: String? = SDSDeserialization.optionalString(record.customMessage, name: "customMessage")
-            let infoMessageSchemaVersion: UInt = try SDSDeserialization.int64(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
+            let infoMessageSchemaVersion: UInt = try SDSDeserialization.numeric(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
             guard let messageType: TSInfoMessageType = record.messageType else {
                throw SDSError.missingRequiredField
             }
-            let read: Bool = try SDSDeserialization.bool(record.read, name: "read")
+            let read: Bool = try SDSDeserialization.numeric(record.read, name: "read")
             let unregisteredRecipientId: String? = SDSDeserialization.optionalString(record.unregisteredRecipientId, name: "unregisteredRecipientId")
-            let isLocalChange: Bool = try SDSDeserialization.bool(record.isLocalChange, name: "isLocalChange")
+            let isLocalChange: Bool = try SDSDeserialization.numeric(record.isLocalChange, name: "isLocalChange")
             let recipientId: String = try SDSDeserialization.string(record.recipientId, name: "recipientId")
             guard let verificationState: OWSVerificationState = record.verificationState else {
                throw SDSError.missingRequiredField
@@ -465,11 +465,11 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let callSchemaVersion: UInt = try SDSDeserialization.int64(record.callSchemaVersion, name: "callSchemaVersion")
+            let callSchemaVersion: UInt = try SDSDeserialization.numeric(record.callSchemaVersion, name: "callSchemaVersion")
             guard let callType: RPRecentCallType = record.callType else {
                throw SDSError.missingRequiredField
             }
-            let read: Bool = try SDSDeserialization.bool(record.read, name: "read")
+            let read: Bool = try SDSDeserialization.numeric(record.read, name: "read")
 
             return TSCall(uniqueId: uniqueId,
                           receivedAtTimestamp: receivedAtTimestamp,
@@ -487,26 +487,26 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
-            let errorMessageSchemaVersion: UInt = try SDSDeserialization.int64(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
+            let errorMessageSchemaVersion: UInt = try SDSDeserialization.numeric(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
-            let read: Bool = try SDSDeserialization.bool(record.read, name: "read")
+            let read: Bool = try SDSDeserialization.numeric(record.read, name: "read")
             let recipientId: String? = SDSDeserialization.optionalString(record.recipientId, name: "recipientId")
 
             return TSErrorMessage(uniqueId: uniqueId,
@@ -536,26 +536,26 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
             let authorId: String = try SDSDeserialization.string(record.authorId, name: "authorId")
-            let read: Bool = try SDSDeserialization.bool(record.read, name: "read")
-            let serverTimestamp: NSNumber? = SDSDeserialization.optionalUInt64AsNSNumber(record.serverTimestamp, name: "serverTimestamp")
-            let sourceDeviceId: UInt32 = try SDSDeserialization.int64(record.sourceDeviceId, name: "sourceDeviceId")
-            let wasReceivedByUD: Bool = try SDSDeserialization.bool(record.wasReceivedByUD, name: "wasReceivedByUD")
+            let read: Bool = try SDSDeserialization.numeric(record.read, name: "read")
+            let serverTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.serverTimestamp, name: "serverTimestamp", conversion: { NSNumber(value: $0) })
+            let sourceDeviceId: UInt32 = try SDSDeserialization.numeric(record.sourceDeviceId, name: "sourceDeviceId")
+            let wasReceivedByUD: Bool = try SDSDeserialization.numeric(record.wasReceivedByUD, name: "wasReceivedByUD")
 
             return TSIncomingMessage(uniqueId: uniqueId,
                                      receivedAtTimestamp: receivedAtTimestamp,
@@ -585,27 +585,27 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
             let customMessage: String? = SDSDeserialization.optionalString(record.customMessage, name: "customMessage")
-            let infoMessageSchemaVersion: UInt = try SDSDeserialization.int64(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
+            let infoMessageSchemaVersion: UInt = try SDSDeserialization.numeric(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
             guard let messageType: TSInfoMessageType = record.messageType else {
                throw SDSError.missingRequiredField
             }
-            let read: Bool = try SDSDeserialization.bool(record.read, name: "read")
+            let read: Bool = try SDSDeserialization.numeric(record.read, name: "read")
             let unregisteredRecipientId: String? = SDSDeserialization.optionalString(record.unregisteredRecipientId, name: "unregisteredRecipientId")
 
             return TSInfoMessage(uniqueId: uniqueId,
@@ -650,26 +650,26 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
-            let errorMessageSchemaVersion: UInt = try SDSDeserialization.int64(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
+            let errorMessageSchemaVersion: UInt = try SDSDeserialization.numeric(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
-            let read: Bool = try SDSDeserialization.bool(record.read, name: "read")
+            let read: Bool = try SDSDeserialization.numeric(record.read, name: "read")
             let recipientId: String? = SDSDeserialization.optionalString(record.recipientId, name: "recipientId")
 
             return TSInvalidIdentityKeyErrorMessage(uniqueId: uniqueId,
@@ -699,26 +699,26 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
-            let errorMessageSchemaVersion: UInt = try SDSDeserialization.int64(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
+            let errorMessageSchemaVersion: UInt = try SDSDeserialization.numeric(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
-            let read: Bool = try SDSDeserialization.bool(record.read, name: "read")
+            let read: Bool = try SDSDeserialization.numeric(record.read, name: "read")
             let recipientId: String? = SDSDeserialization.optionalString(record.recipientId, name: "recipientId")
             let authorId: String = try SDSDeserialization.string(record.authorId, name: "authorId")
             let envelopeData: Data? = SDSDeserialization.optionalData(record.envelopeData, name: "envelopeData")
@@ -752,30 +752,30 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
-            let errorMessageSchemaVersion: UInt = try SDSDeserialization.int64(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
+            let errorMessageSchemaVersion: UInt = try SDSDeserialization.numeric(record.errorMessageSchemaVersion, name: "errorMessageSchemaVersion")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
-            let read: Bool = try SDSDeserialization.bool(record.read, name: "read")
+            let read: Bool = try SDSDeserialization.numeric(record.read, name: "read")
             let recipientId: String? = SDSDeserialization.optionalString(record.recipientId, name: "recipientId")
             let messageId: String = try SDSDeserialization.string(record.messageId, name: "messageId")
-            let preKeyBundleSerialized: Data = record.preKeyBundle
-            let preKeyBundle: PreKeyBundle = try SDSDeserializer.unarchive(preKeyBundleSerialized)
+            let preKeyBundleSerialized: Data? = record.preKeyBundle
+            let preKeyBundle: PreKeyBundle = try SDSDeserialization.unarchive(preKeyBundleSerialized, name: "preKeyBundle")
 
             return TSInvalidIdentityKeySendingErrorMessage(uniqueId: uniqueId,
                                                            receivedAtTimestamp: receivedAtTimestamp,
@@ -806,21 +806,21 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
 
             return TSMessage(uniqueId: uniqueId,
                              receivedAtTimestamp: receivedAtTimestamp,
@@ -845,38 +845,38 @@ extension TSInteractionSerializer {
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.uniqueThreadId
-            let attachmentIdsSerialized: Data = record.attachmentIds
-            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = SDSDeserialization.optionalString(record.body, name: "body")
             let contactShareSerialized: Data? = record.contactShare
-            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
-            let expireStartedAt: UInt64 = try SDSDeserialization.uint64(record.expireStartedAt, name: "expireStartedAt")
-            let expiresAt: UInt64 = try SDSDeserialization.uint64(record.expiresAt, name: "expiresAt")
-            let expiresInSeconds: UInt32 = try SDSDeserialization.int64(record.expiresInSeconds, name: "expiresInSeconds")
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.numeric(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.numeric(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.numeric(record.expiresInSeconds, name: "expiresInSeconds")
             let linkPreviewSerialized: Data? = record.linkPreview
-            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
-            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
             let quotedMessageSerialized: Data? = record.quotedMessage
-            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
-            let schemaVersion: UInt = try SDSDeserialization.int64(record.schemaVersion, name: "schemaVersion")
-            let attachmentFilenameMapSerialized: Data = record.attachmentFilenameMap
-            let attachmentFilenameMap: [String: String] = try SDSDeserializer.unarchive(attachmentFilenameMapSerialized)
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.numeric(record.schemaVersion, name: "schemaVersion")
+            let attachmentFilenameMapSerialized: Data? = record.attachmentFilenameMap
+            let attachmentFilenameMap: [String: String] = try SDSDeserialization.unarchive(attachmentFilenameMapSerialized, name: "attachmentFilenameMap")
             let customMessage: String? = SDSDeserialization.optionalString(record.customMessage, name: "customMessage")
             guard let groupMetaMessage: TSGroupMetaMessage = record.groupMetaMessage else {
                throw SDSError.missingRequiredField
             }
-            let hasLegacyMessageState: Bool = try SDSDeserialization.bool(record.hasLegacyMessageState, name: "hasLegacyMessageState")
-            let hasSyncedTranscript: Bool = try SDSDeserialization.bool(record.hasSyncedTranscript, name: "hasSyncedTranscript")
-            let isFromLinkedDevice: Bool = try SDSDeserialization.bool(record.isFromLinkedDevice, name: "isFromLinkedDevice")
-            let isVoiceMessage: Bool = try SDSDeserialization.bool(record.isVoiceMessage, name: "isVoiceMessage")
+            let hasLegacyMessageState: Bool = try SDSDeserialization.numeric(record.hasLegacyMessageState, name: "hasLegacyMessageState")
+            let hasSyncedTranscript: Bool = try SDSDeserialization.numeric(record.hasSyncedTranscript, name: "hasSyncedTranscript")
+            let isFromLinkedDevice: Bool = try SDSDeserialization.numeric(record.isFromLinkedDevice, name: "isFromLinkedDevice")
+            let isVoiceMessage: Bool = try SDSDeserialization.numeric(record.isVoiceMessage, name: "isVoiceMessage")
             guard let legacyMessageState: TSOutgoingMessageState = record.legacyMessageState else {
                throw SDSError.missingRequiredField
             }
-            let legacyWasDelivered: Bool = try SDSDeserialization.bool(record.legacyWasDelivered, name: "legacyWasDelivered")
+            let legacyWasDelivered: Bool = try SDSDeserialization.numeric(record.legacyWasDelivered, name: "legacyWasDelivered")
             let mostRecentFailureText: String? = SDSDeserialization.optionalString(record.mostRecentFailureText, name: "mostRecentFailureText")
             let recipientStateMapSerialized: Data? = record.recipientStateMap
-            let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserializer.optionalUnarchive(recipientStateMapSerialized)
+            let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserialization.optionalUnarchive(recipientStateMapSerialized, name: "recipientStateMap")
 
             return TSOutgoingMessage(uniqueId: uniqueId,
                                      receivedAtTimestamp: receivedAtTimestamp,

@@ -148,8 +148,8 @@ extension TSAttachmentSerializer {
             let sourceFilename: String? = SDSDeserialization.optionalString(record.sourceFilename, name: "sourceFilename")
             let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
             let lazyRestoreFragmentId: String? = SDSDeserialization.optionalString(record.lazyRestoreFragmentId, name: "lazyRestoreFragmentId")
-            let mediaSizeSerialized: Data = record.mediaSize
-            let mediaSize: CGSize = try SDSDeserializer.unarchive(mediaSizeSerialized)
+            let mediaSizeSerialized: Data? = record.mediaSize
+            let mediaSize: CGSize = try SDSDeserialization.unarchive(mediaSizeSerialized, name: "mediaSize")
             let mostRecentFailureLocalizedText: String? = SDSDeserialization.optionalString(record.mostRecentFailureLocalizedText, name: "mostRecentFailureLocalizedText")
             guard let pointerType: TSAttachmentPointerType = record.pointerType else {
                throw SDSError.missingRequiredField
@@ -190,14 +190,14 @@ extension TSAttachmentSerializer {
             let isDownloaded: Bool = record.isDownloaded
             let serverId: UInt64 = record.serverId
             let sourceFilename: String? = SDSDeserialization.optionalString(record.sourceFilename, name: "sourceFilename")
-            let cachedAudioDurationSeconds: NSNumber? = SDSDeserialization.optionalDoubleAsNSNumber(record.cachedAudioDurationSeconds, name: "cachedAudioDurationSeconds")
-            let cachedImageHeight: NSNumber? = SDSDeserialization.optionalDoubleAsNSNumber(record.cachedImageHeight, name: "cachedImageHeight")
-            let cachedImageWidth: NSNumber? = SDSDeserialization.optionalDoubleAsNSNumber(record.cachedImageWidth, name: "cachedImageWidth")
+            let cachedAudioDurationSeconds: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedAudioDurationSeconds, name: "cachedAudioDurationSeconds", conversion: { NSNumber(value: $0) })
+            let cachedImageHeight: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageHeight, name: "cachedImageHeight", conversion: { NSNumber(value: $0) })
+            let cachedImageWidth: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageWidth, name: "cachedImageWidth", conversion: { NSNumber(value: $0) })
             let creationTimestamp: Date = try SDSDeserialization.date(record.creationTimestamp, name: "creationTimestamp")
             let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
-            let isUploaded: Bool = try SDSDeserialization.bool(record.isUploaded, name: "isUploaded")
-            let isValidImageCached: NSNumber? = SDSDeserialization.optionalBoolAsNSNumber(record.isValidImageCached, name: "isValidImageCached")
-            let isValidVideoCached: NSNumber? = SDSDeserialization.optionalBoolAsNSNumber(record.isValidVideoCached, name: "isValidVideoCached")
+            let isUploaded: Bool = try SDSDeserialization.numeric(record.isUploaded, name: "isUploaded")
+            let isValidImageCached: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.isValidImageCached, name: "isValidImageCached", conversion: { NSNumber(value: $0) })
+            let isValidVideoCached: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.isValidVideoCached, name: "isValidVideoCached", conversion: { NSNumber(value: $0) })
             let localRelativeFilePath: String? = SDSDeserialization.optionalString(record.localRelativeFilePath, name: "localRelativeFilePath")
 
             return TSAttachmentStream(uniqueId: uniqueId,

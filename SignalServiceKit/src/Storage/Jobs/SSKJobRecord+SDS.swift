@@ -113,9 +113,9 @@ extension SSKJobRecordSerializer {
             let label: String = record.label
             let status: SSKJobRecordStatus = record.status
             let invisibleMessageSerialized: Data? = record.invisibleMessage
-            let invisibleMessage: TSOutgoingMessage? = try SDSDeserializer.optionalUnarchive(invisibleMessageSerialized)
+            let invisibleMessage: TSOutgoingMessage? = try SDSDeserialization.optionalUnarchive(invisibleMessageSerialized, name: "invisibleMessage")
             let messageId: String? = SDSDeserialization.optionalString(record.messageId, name: "messageId")
-            let removeMessageAfterSending: Bool = try SDSDeserialization.bool(record.removeMessageAfterSending, name: "removeMessageAfterSending")
+            let removeMessageAfterSending: Bool = try SDSDeserialization.numeric(record.removeMessageAfterSending, name: "removeMessageAfterSending")
             let threadId: String? = SDSDeserialization.optionalString(record.threadId, name: "threadId")
 
             return SSKMessageSenderJobRecord(uniqueId: uniqueId,

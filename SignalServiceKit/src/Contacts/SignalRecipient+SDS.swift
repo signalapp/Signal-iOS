@@ -62,7 +62,7 @@ extension SignalRecipientSerializer {
             let uniqueId: String = record.uniqueId
             let sortId: UInt64 = record.id
             let devicesSerialized: Data = record.devices
-            let devices: NSOrderedSet = try SDSDeserializer.unarchive(devicesSerialized)
+            let devices: NSOrderedSet = try SDSDeserialization.unarchive(devicesSerialized, name: "devices")
 
             return SignalRecipient(uniqueId: uniqueId,
                                    devices: devices)

@@ -65,7 +65,7 @@ extension InstalledStickerSerializer {
             let sortId: UInt64 = record.id
             let emojiString: String? = SDSDeserialization.optionalString(record.emojiString, name: "emojiString")
             let infoSerialized: Data = record.info
-            let info: StickerInfo = try SDSDeserializer.unarchive(infoSerialized)
+            let info: StickerInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")
 
             return InstalledSticker(uniqueId: uniqueId,
                                     emojiString: emojiString,

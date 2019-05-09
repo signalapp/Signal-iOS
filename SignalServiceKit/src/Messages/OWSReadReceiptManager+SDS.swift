@@ -64,7 +64,7 @@ extension TSRecipientReadReceiptSerializer {
             let uniqueId: String = record.uniqueId
             let sortId: UInt64 = record.id
             let recipientMapSerialized: Data = record.recipientMap
-            let recipientMap: [String: NSNumber] = try SDSDeserializer.unarchive(recipientMapSerialized)
+            let recipientMap: [String: NSNumber] = try SDSDeserialization.unarchive(recipientMapSerialized, name: "recipientMap")
             let sentTimestamp: UInt64 = record.sentTimestamp
 
             return TSRecipientReadReceipt(uniqueId: uniqueId,

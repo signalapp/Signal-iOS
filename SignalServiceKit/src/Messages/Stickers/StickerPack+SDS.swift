@@ -75,13 +75,13 @@ extension StickerPackSerializer {
             let sortId: UInt64 = record.id
             let author: String? = SDSDeserialization.optionalString(record.author, name: "author")
             let coverSerialized: Data = record.cover
-            let cover: StickerPackItem = try SDSDeserializer.unarchive(coverSerialized)
+            let cover: StickerPackItem = try SDSDeserialization.unarchive(coverSerialized, name: "cover")
             let dateCreated: Date = record.dateCreated
             let infoSerialized: Data = record.info
-            let info: StickerPackInfo = try SDSDeserializer.unarchive(infoSerialized)
+            let info: StickerPackInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")
             let isInstalled: Bool = record.isInstalled
             let itemsSerialized: Data = record.items
-            let items: [StickerPackItem] = try SDSDeserializer.unarchive(itemsSerialized)
+            let items: [StickerPackItem] = try SDSDeserialization.unarchive(itemsSerialized, name: "items")
             let title: String? = SDSDeserialization.optionalString(record.title, name: "title")
 
             return StickerPack(uniqueId: uniqueId,
