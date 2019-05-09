@@ -23,7 +23,7 @@ public class SDSDatabaseStorage: NSObject {
     lazy var yapStorage = type(of: self).createYapStorage()
 
     @objc
-    public lazy var grdbStorage = type(of: self).createGrdbStorage()
+    public lazy var grdbStorage = createGrdbStorage()
 
     @objc
     override init() {
@@ -34,7 +34,7 @@ public class SDSDatabaseStorage: NSObject {
 
     private func addObservers() {
         // Cross process writes
-        if FeatureFlags.useGRDB {
+        if useGRDB {
             crossProcess.callback = { [weak self] in
                 DispatchQueue.main.async {
                     self?.handleCrossProcessWrite()
@@ -54,8 +54,8 @@ public class SDSDatabaseStorage: NSObject {
         NotificationCenter.default.removeObserver(self)
     }
 
-    class func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
-        assert(FeatureFlags.useGRDB)
+    func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
+        assert(self.useGRDB)
 
         let baseDir: URL
 
