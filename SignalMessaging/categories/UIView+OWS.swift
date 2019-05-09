@@ -400,7 +400,11 @@ public extension UIBarButtonItem {
 public extension UIButton {
     @objc
     func setTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) {
-        setImage(templateImage?.withRenderingMode(.alwaysTemplate), for: .normal)
+        guard let templateImage = templateImage else {
+            owsFailDebug("Missing image")
+            return
+        }
+        setImage(templateImage.withRenderingMode(.alwaysTemplate), for: .normal)
         self.tintColor = tintColor
     }
 
@@ -411,5 +415,57 @@ public extension UIButton {
             return
         }
         setTemplateImage(image, tintColor: tintColor)
+    }
+
+    @objc
+    class func withTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) -> UIButton {
+        let imageView = UIButton()
+        imageView.setTemplateImage(templateImage, tintColor: tintColor)
+        return imageView
+    }
+
+    @objc
+    class func withTemplateImageName(_ imageName: String, tintColor: UIColor) -> UIButton {
+        let imageView = UIButton()
+        imageView.setTemplateImageName(imageName, tintColor: tintColor)
+        return imageView
+    }
+}
+
+// MARK: -
+
+@objc
+public extension UIImageView {
+    @objc
+    func setTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) {
+        guard let templateImage = templateImage else {
+            owsFailDebug("Missing image")
+            return
+        }
+        self.image = templateImage.withRenderingMode(.alwaysTemplate)
+        self.tintColor = tintColor
+    }
+
+    @objc
+    func setTemplateImageName(_ imageName: String, tintColor: UIColor) {
+        guard let image = UIImage(named: imageName) else {
+            owsFailDebug("Couldn't load image: \(imageName)")
+            return
+        }
+        setTemplateImage(image, tintColor: tintColor)
+    }
+
+    @objc
+    class func withTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.setTemplateImage(templateImage, tintColor: tintColor)
+        return imageView
+    }
+
+    @objc
+    class func withTemplateImageName(_ imageName: String, tintColor: UIColor) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.setTemplateImageName(imageName, tintColor: tintColor)
+        return imageView
     }
 }

@@ -277,8 +277,8 @@ NS_ASSUME_NONNULL_BEGIN
     [roundedRectView addSubview:pillboxView];
     [pillboxView autoCenterInSuperview];
 
-    UIImage *icon = [[UIImage imageNamed:@"download-filled-24"] asTintedImageWithColor:Theme.offBackgroundColor];
-    UIImageView *iconView = [[UIImageView alloc] initWithImage:icon];
+    UIImageView *iconView =
+        [UIImageView withTemplateImageName:@"download-filled-2-24" tintColor:Theme.offBackgroundColor];
     UIView *circleView = [UIView new];
     circleView.backgroundColor = UIColor.ows_gray45Color;
     circleView.layer.cornerRadius = 12.f;
@@ -489,7 +489,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.viewItem.isFailedSticker) {
         TSMessage *message = (TSMessage *)self.viewItem.interaction;
-        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.primaryStorage.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.attachmentDownloads
                 downloadAllAttachmentsForMessage:message
                                      transaction:transaction
