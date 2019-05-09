@@ -85,6 +85,27 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
 #pragma mark - Durable Message Enqueue
 
+// Loki: TODO We may change this?
++ (TSOutgoingMessage *)enqueueFriendRequestAcceptMessageInThread:(TSThread *)thread
+{
+    TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                  inThread:thread
+                                               messageBody:@""
+                                             attachmentIds:[NSMutableArray new]
+                                          expiresInSeconds:0
+                                           expireStartedAt:0
+                                            isVoiceMessage:NO
+                                          groupMetaMessage:TSGroupMetaMessageUnspecified
+                                             quotedMessage:nil
+                                              contactShare:nil
+                                               linkPreview:nil];
+    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+    }];
+    return message;
+}
+
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
@@ -129,6 +150,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                           }];
 }
 
+// Loki: TODO Disable attachment and link preview for now
 + (TSOutgoingMessage *)buildOutgoingMessageWithText:(nullable NSString *)fullMessageText
                                    mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
                                              thread:(TSThread *)thread
@@ -172,19 +194,24 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     }
 
     BOOL isVoiceMessage = (attachments.count == 1 && attachments.lastObject.isVoiceMessage);
-
+    
+    // Loki: If we're not friends then always set the message to a friend request message
+    // If we're friends then the assumption is that we have the other users pre-key bundle
+    NSString *messageClassString = [thread isFriend] ? @"TSOutgoingMessage" : @"OWSFriendRequestMessage";
+    Class messageClass = NSClassFromString(messageClassString);
+    
     TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                        messageBody:truncatedText
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:expiresInSeconds
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:isVoiceMessage
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
-                                                       contactShare:nil
-                                                        linkPreview:nil];
+        [[messageClass alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                      inThread:thread
+                                                   messageBody:truncatedText
+                                                 attachmentIds:[NSMutableArray new]
+                                              expiresInSeconds:expiresInSeconds
+                                               expireStartedAt:0
+                                                isVoiceMessage:isVoiceMessage
+                                              groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                 quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
+                                                  contactShare:nil
+                                                   linkPreview:nil];
 
     [BenchManager
         benchAsyncWithTitle:@"Saving outgoing message"

@@ -50,6 +50,8 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 
+@property (atomic) TSThreadFriendRequestState friendRequestState;
+
 // DEPRECATED - not used since migrating to sortId
 // but keeping these properties around to ease any pain in the back-forth
 // migration while testing. Eventually we can safely delete these as they aren't used anywhere.
@@ -84,6 +86,9 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     if (self) {
         _creationDate    = [NSDate date];
         _messageDraft    = nil;
+        
+        // We are initially not friends
+        _friendRequestState = TSThreadFriendRequestStateNone;
 
         NSString *_Nullable contactId = self.contactIdentifier;
         if (contactId.length > 0) {
@@ -692,6 +697,35 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
                              changeBlock:^(TSThread *thread) {
                                  thread.conversationColorName = colorName;
                              }];
+}
+
+# pragma mark - Loki Friend Request
+
+- (BOOL)isFriend
+{
+    return _friendRequestState == TSThreadFriendRequestStateFriends;
+}
+
+- (BOOL)isPendingFriendRequest
+{
+    return (
+            _friendRequestState == TSThreadFriendRequestStatePendingSend ||
+            _friendRequestState == TSThreadFriendRequestStateRequestSent ||
+            _friendRequestState == TSThreadFriendRequestStateRequestReceived
+            );
+}
+
+- (BOOL)hasSentFriendRequest
+{
+    return (
+            _friendRequestState == TSThreadFriendRequestStateRequestSent ||
+            _friendRequestState == TSThreadFriendRequestStateRequestExpired
+            );
+}
+
+- (BOOL)hasReceivedFriendRequest
+{
+    return _friendRequestState == TSThreadFriendRequestStateRequestReceived;
 }
 
 @end

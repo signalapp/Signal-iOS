@@ -1547,9 +1547,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         @try {
             // This may involve blocking network requests, so we do it _before_
             // we open a transaction.
-            // TODO: Replace this when we add in friend request stuff
-            // Boolean isFriendRequest = [messageSend.message isKindOfClass:[OWSFriendRequestMessage class]];
-            Boolean isFriendRequest = true;
+            
+            // Friend requests means we don't have a session with the person
+            // There's no point to check for it
+            Boolean isFriendRequest = [messageSend.message isKindOfClass:[OWSFriendRequestMessage class]];
             if (!isFriendRequest) {
                 [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
             }
@@ -1784,9 +1785,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSString *recipientId = recipient.recipientId;
     OWSAssertDebug(recipientId.length > 0);
     
-    // TODO: Change this when we have friend request support
-    // Boolean isFriendRequest = [messageSend.message isKindOfClass:[OWSFriendRequestMessage class]];
-    Boolean isFriendRequest = true;
+    // Loki: Handle friend requests differently
+    Boolean isFriendRequest = [messageSend.message isKindOfClass:[OWSFriendRequestMessage class]];
     if (isFriendRequest) {
         return [self throws_encryptedFriendMessageForMessageSend:messageSend deviceId:deviceId plainText:plainText];
     }
