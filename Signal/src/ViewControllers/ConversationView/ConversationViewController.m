@@ -193,7 +193,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
-@property (nonatomic) BOOL hasUnreadMessages;
+@property (nonatomic, readonly) BOOL hasUnreadMessages;
 @property (nonatomic) BOOL isPickingMediaAsDocument;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
@@ -2660,11 +2660,6 @@ typedef enum : NSUInteger {
     CGFloat inset = -(self.collectionView.contentInset.bottom + self.bottomLayoutGuide.length);
     self.scrollDownButtonButtomConstraint.constant = inset;
     [self.scrollDownButton.superview setNeedsLayout];
-}
-
-- (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
-{
-    OWSFailDebug(@"Use the setter that takes a transaction.");
 }
 
 - (void)setHasUnreadMessages:(BOOL)hasUnreadMessages transaction:(SDSAnyReadTransaction *)transaction
