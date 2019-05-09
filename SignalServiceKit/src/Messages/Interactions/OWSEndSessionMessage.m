@@ -46,6 +46,14 @@ NS_ASSUME_NONNULL_BEGIN
     return builder;
 }
 
+- (SSKProtoContentBuilder *)contentBuilder {
+    SSKProtoContentBuilder *builder = [super contentBuilder];
+    
+    // TODO Loki: Attach pre key bundle here
+    
+    return builder;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

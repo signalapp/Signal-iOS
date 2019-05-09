@@ -42,6 +42,7 @@
 #import "TSRequest.h"
 #import "TSSocketManager.h"
 #import "TSThread.h"
+#import "OWSFriendRequestMessage.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/CipherMessage.h>
 #import <AxolotlKit/PreKeyBundle.h>
@@ -1547,6 +1548,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // This may involve blocking network requests, so we do it _before_
             // we open a transaction.
             // TODO: Replace this when we add in friend request stuff
+            // Boolean isFriendRequest = [messageSend.message isKindOfClass:[OWSFriendRequestMessage class]];
             Boolean isFriendRequest = true;
             if (!isFriendRequest) {
                 [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
@@ -1783,6 +1785,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(recipientId.length > 0);
     
     // TODO: Change this when we have friend request support
+    // Boolean isFriendRequest = [messageSend.message isKindOfClass:[OWSFriendRequestMessage class]];
     Boolean isFriendRequest = true;
     if (isFriendRequest) {
         return [self throws_encryptedFriendMessageForMessageSend:messageSend deviceId:deviceId plainText:plainText];
