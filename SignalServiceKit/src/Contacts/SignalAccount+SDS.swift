@@ -284,22 +284,8 @@ extension SignalAccount {
         case .yapRead(let ydbTransaction):
             return SignalAccount.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let tableMetadata = SignalAccountSerializer.table
-            let columnNames: [String] = tableMetadata.selectColumnNames
-            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
-            let tableName: String = tableMetadata.tableName
-            let uniqueIdColumnName: String = SignalAccountSerializer.uniqueIdColumn.columnName
-            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
-
-            let cursor = SignalAccount.grdbFetchCursor(sql: sql,
-                                                  arguments: [uniqueId],
-                                                  transaction: grdbTransaction)
-            do {
-                return try cursor.next()
-            } catch {
-                owsFailDebug("error: \(error)")
-                return nil
-            }
+            let sql = "SELECT * FROM \(SignalAccountRecord.databaseTableName) WHERE \(columnForSignalAccount: .uniqueId) = ?"
+            return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }
 
@@ -361,6 +347,23 @@ extension SignalAccount {
                                                              arguments: statementArguments,
                                                              transaction: transaction,
                                                                    deserialize: SignalAccountSerializer.sdsDeserialize))
+    }
+
+    public class func grdbFetchOne(sql: String,
+                                   arguments: StatementArguments,
+                                   transaction: GRDBReadTransaction) -> SignalAccount? {
+        assert(sql.count > 0)
+
+        do {
+            guard let record = try SignalAccountRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+                    return nil
+            }
+
+            return try SignalAccount.fromRecord(record)
+        } catch {
+            owsFailDebug("error: \(error)")
+            return nil
+        }
     }
 }
 

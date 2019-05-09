@@ -266,22 +266,8 @@ extension OWSDisappearingMessagesConfiguration {
         case .yapRead(let ydbTransaction):
             return OWSDisappearingMessagesConfiguration.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let tableMetadata = OWSDisappearingMessagesConfigurationSerializer.table
-            let columnNames: [String] = tableMetadata.selectColumnNames
-            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
-            let tableName: String = tableMetadata.tableName
-            let uniqueIdColumnName: String = OWSDisappearingMessagesConfigurationSerializer.uniqueIdColumn.columnName
-            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
-
-            let cursor = OWSDisappearingMessagesConfiguration.grdbFetchCursor(sql: sql,
-                                                  arguments: [uniqueId],
-                                                  transaction: grdbTransaction)
-            do {
-                return try cursor.next()
-            } catch {
-                owsFailDebug("error: \(error)")
-                return nil
-            }
+            let sql = "SELECT * FROM \(DisappearingMessagesConfigurationRecord.databaseTableName) WHERE \(columnForDisappearingMessagesConfiguration: .uniqueId) = ?"
+            return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }
 
@@ -343,6 +329,23 @@ extension OWSDisappearingMessagesConfiguration {
                                                              arguments: statementArguments,
                                                              transaction: transaction,
                                                                    deserialize: OWSDisappearingMessagesConfigurationSerializer.sdsDeserialize))
+    }
+
+    public class func grdbFetchOne(sql: String,
+                                   arguments: StatementArguments,
+                                   transaction: GRDBReadTransaction) -> OWSDisappearingMessagesConfiguration? {
+        assert(sql.count > 0)
+
+        do {
+            guard let record = try DisappearingMessagesConfigurationRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+                    return nil
+            }
+
+            return try OWSDisappearingMessagesConfiguration.fromRecord(record)
+        } catch {
+            owsFailDebug("error: \(error)")
+            return nil
+        }
     }
 }
 

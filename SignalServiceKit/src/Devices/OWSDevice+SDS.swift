@@ -282,22 +282,8 @@ extension OWSDevice {
         case .yapRead(let ydbTransaction):
             return OWSDevice.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let tableMetadata = OWSDeviceSerializer.table
-            let columnNames: [String] = tableMetadata.selectColumnNames
-            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
-            let tableName: String = tableMetadata.tableName
-            let uniqueIdColumnName: String = OWSDeviceSerializer.uniqueIdColumn.columnName
-            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
-
-            let cursor = OWSDevice.grdbFetchCursor(sql: sql,
-                                                  arguments: [uniqueId],
-                                                  transaction: grdbTransaction)
-            do {
-                return try cursor.next()
-            } catch {
-                owsFailDebug("error: \(error)")
-                return nil
-            }
+            let sql = "SELECT * FROM \(DeviceRecord.databaseTableName) WHERE \(columnForDevice: .uniqueId) = ?"
+            return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }
 
@@ -359,6 +345,23 @@ extension OWSDevice {
                                                              arguments: statementArguments,
                                                              transaction: transaction,
                                                                    deserialize: OWSDeviceSerializer.sdsDeserialize))
+    }
+
+    public class func grdbFetchOne(sql: String,
+                                   arguments: StatementArguments,
+                                   transaction: GRDBReadTransaction) -> OWSDevice? {
+        assert(sql.count > 0)
+
+        do {
+            guard let record = try DeviceRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+                    return nil
+            }
+
+            return try OWSDevice.fromRecord(record)
+        } catch {
+            owsFailDebug("error: \(error)")
+            return nil
+        }
     }
 }
 

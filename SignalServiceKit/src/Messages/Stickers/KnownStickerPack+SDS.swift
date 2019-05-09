@@ -268,22 +268,8 @@ extension KnownStickerPack {
         case .yapRead(let ydbTransaction):
             return KnownStickerPack.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let tableMetadata = KnownStickerPackSerializer.table
-            let columnNames: [String] = tableMetadata.selectColumnNames
-            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
-            let tableName: String = tableMetadata.tableName
-            let uniqueIdColumnName: String = KnownStickerPackSerializer.uniqueIdColumn.columnName
-            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
-
-            let cursor = KnownStickerPack.grdbFetchCursor(sql: sql,
-                                                  arguments: [uniqueId],
-                                                  transaction: grdbTransaction)
-            do {
-                return try cursor.next()
-            } catch {
-                owsFailDebug("error: \(error)")
-                return nil
-            }
+            let sql = "SELECT * FROM \(KnownStickerPackRecord.databaseTableName) WHERE \(columnForKnownStickerPack: .uniqueId) = ?"
+            return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }
 
@@ -345,6 +331,23 @@ extension KnownStickerPack {
                                                              arguments: statementArguments,
                                                              transaction: transaction,
                                                                    deserialize: KnownStickerPackSerializer.sdsDeserialize))
+    }
+
+    public class func grdbFetchOne(sql: String,
+                                   arguments: StatementArguments,
+                                   transaction: GRDBReadTransaction) -> KnownStickerPack? {
+        assert(sql.count > 0)
+
+        do {
+            guard let record = try KnownStickerPackRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+                    return nil
+            }
+
+            return try KnownStickerPack.fromRecord(record)
+        } catch {
+            owsFailDebug("error: \(error)")
+            return nil
+        }
     }
 }
 

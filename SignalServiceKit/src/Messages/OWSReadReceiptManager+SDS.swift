@@ -268,22 +268,8 @@ extension TSRecipientReadReceipt {
         case .yapRead(let ydbTransaction):
             return TSRecipientReadReceipt.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let tableMetadata = TSRecipientReadReceiptSerializer.table
-            let columnNames: [String] = tableMetadata.selectColumnNames
-            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
-            let tableName: String = tableMetadata.tableName
-            let uniqueIdColumnName: String = TSRecipientReadReceiptSerializer.uniqueIdColumn.columnName
-            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
-
-            let cursor = TSRecipientReadReceipt.grdbFetchCursor(sql: sql,
-                                                  arguments: [uniqueId],
-                                                  transaction: grdbTransaction)
-            do {
-                return try cursor.next()
-            } catch {
-                owsFailDebug("error: \(error)")
-                return nil
-            }
+            let sql = "SELECT * FROM \(RecipientReadReceiptRecord.databaseTableName) WHERE \(columnForRecipientReadReceipt: .uniqueId) = ?"
+            return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }
 
@@ -345,6 +331,23 @@ extension TSRecipientReadReceipt {
                                                              arguments: statementArguments,
                                                              transaction: transaction,
                                                                    deserialize: TSRecipientReadReceiptSerializer.sdsDeserialize))
+    }
+
+    public class func grdbFetchOne(sql: String,
+                                   arguments: StatementArguments,
+                                   transaction: GRDBReadTransaction) -> TSRecipientReadReceipt? {
+        assert(sql.count > 0)
+
+        do {
+            guard let record = try RecipientReadReceiptRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+                    return nil
+            }
+
+            return try TSRecipientReadReceipt.fromRecord(record)
+        } catch {
+            owsFailDebug("error: \(error)")
+            return nil
+        }
     }
 }
 

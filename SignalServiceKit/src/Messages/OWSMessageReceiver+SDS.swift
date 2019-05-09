@@ -266,22 +266,8 @@ extension OWSMessageDecryptJob {
         case .yapRead(let ydbTransaction):
             return OWSMessageDecryptJob.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let tableMetadata = OWSMessageDecryptJobSerializer.table
-            let columnNames: [String] = tableMetadata.selectColumnNames
-            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
-            let tableName: String = tableMetadata.tableName
-            let uniqueIdColumnName: String = OWSMessageDecryptJobSerializer.uniqueIdColumn.columnName
-            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
-
-            let cursor = OWSMessageDecryptJob.grdbFetchCursor(sql: sql,
-                                                  arguments: [uniqueId],
-                                                  transaction: grdbTransaction)
-            do {
-                return try cursor.next()
-            } catch {
-                owsFailDebug("error: \(error)")
-                return nil
-            }
+            let sql = "SELECT * FROM \(MessageDecryptJobRecord.databaseTableName) WHERE \(columnForMessageDecryptJob: .uniqueId) = ?"
+            return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }
 
@@ -343,6 +329,23 @@ extension OWSMessageDecryptJob {
                                                              arguments: statementArguments,
                                                              transaction: transaction,
                                                                    deserialize: OWSMessageDecryptJobSerializer.sdsDeserialize))
+    }
+
+    public class func grdbFetchOne(sql: String,
+                                   arguments: StatementArguments,
+                                   transaction: GRDBReadTransaction) -> OWSMessageDecryptJob? {
+        assert(sql.count > 0)
+
+        do {
+            guard let record = try MessageDecryptJobRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+                    return nil
+            }
+
+            return try OWSMessageDecryptJob.fromRecord(record)
+        } catch {
+            owsFailDebug("error: \(error)")
+            return nil
+        }
     }
 }
 

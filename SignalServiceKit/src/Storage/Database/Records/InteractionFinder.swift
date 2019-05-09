@@ -264,13 +264,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
     // MARK: - static methods
 
     static func fetch(uniqueId: String, transaction: GRDBReadTransaction) throws -> TSInteraction? {
-        guard let interactionRecord = try InteractionRecord.fetchOne(transaction.database,
-                                                                     sql: "SELECT * FROM \(InteractionRecord.databaseTableName) WHERE \(columnForInteraction: .uniqueId) = ?",
-            arguments: [uniqueId]) else {
-                return nil
-        }
-
-        return try TSInteraction.fromRecord(interactionRecord)
+        return TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead)
     }
 
     static func mostRecentSortId(transaction: GRDBReadTransaction) -> UInt64 {
@@ -293,45 +287,27 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
     // MARK: - instance methods
 
     func mostRecentInteraction(transaction: GRDBReadTransaction) -> TSInteraction? {
-        do {
-            guard let interactionRecord = try InteractionRecord.fetchOne(transaction.database,
-                                                                           sql: """
-                SELECT *
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(columnForInteraction: .threadUniqueId) = ?
-                ORDER BY \(columnForInteraction: .id) DESC
-                """,
-                arguments: [threadUniqueId]) else {
-                    return nil
-            }
-
-            return try TSInteraction.fromRecord(interactionRecord)
-        } catch {
-            owsFailDebug("Read failed: \(error).")
-            return nil
-        }
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(columnForInteraction: .threadUniqueId) = ?
+        ORDER BY \(columnForInteraction: .id) DESC
+        """
+        let arguments: StatementArguments = [threadUniqueId]
+        return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
 
     func mostRecentInteractionForInbox(transaction: GRDBReadTransaction) -> TSInteraction? {
-        do {
-            guard let interactionRecord = try InteractionRecord.fetchOne(transaction.database,
-                                                                            sql: """
+        let sql = """
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(columnForInteraction: .threadUniqueId) = ?
                 AND \(columnForInteraction: .errorType) IS NOT ?
                 AND \(columnForInteraction: .messageType) IS NOT ?
                 ORDER BY \(columnForInteraction: .id) DESC
-                """,
-                arguments: [threadUniqueId, TSErrorMessageType.nonBlockingIdentityChange, TSInfoMessageType.verificationStateChange]) else {
-                    return nil
-            }
-
-            return try TSInteraction.fromRecord(interactionRecord)
-        } catch {
-            owsFailDebug("Read failed: \(error).")
-            return nil
-        }
+                """
+        let arguments: StatementArguments = [threadUniqueId, TSErrorMessageType.nonBlockingIdentityChange, TSInfoMessageType.verificationStateChange]
+        return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
 
     func sortIndex(interactionUniqueId: String, transaction: GRDBReadTransaction) throws -> UInt? {
@@ -399,27 +375,16 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
     }
 
     func interaction(at index: UInt, transaction: GRDBReadTransaction) throws -> TSInteraction? {
-        do {
-            let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            WHERE \(columnForInteraction: .threadUniqueId) = ?
-            ORDER BY \(columnForInteraction: .id) DESC
-            LIMIT 1
-            OFFSET ?
-            """
-            let arguments: StatementArguments = [threadUniqueId, index]
-            guard let interactionRecord = try InteractionRecord.fetchOne(transaction.database,
-                                                                            sql: sql,
-                                                                            arguments: arguments) else {
-                                                                                return nil
-            }
-
-            return try TSInteraction.fromRecord(interactionRecord)
-        } catch {
-            owsFailDebug("Read failed: \(error).")
-            return nil
-        }
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(columnForInteraction: .threadUniqueId) = ?
+        ORDER BY \(columnForInteraction: .id) DESC
+        LIMIT 1
+        OFFSET ?
+        """
+        let arguments: StatementArguments = [threadUniqueId, index]
+        return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
 }
 

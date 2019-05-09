@@ -1397,7 +1397,10 @@ extension %s {
                                                                    transaction: transaction,
                                                                    deserialize: %sSerializer.sdsDeserialize))
     }
+''' % ( ( str(clazz.name), ) * 5 )
 
+        string_interpolation_name = remove_prefix_from_class_name(clazz.name)
+        swift_body += '''
     // Fetches a single model by "unique id".
     public class func anyFetch(uniqueId: String,
                                transaction: SDSAnyReadTransaction) -> %s? {
@@ -1407,25 +1410,13 @@ extension %s {
         case .yapRead(let ydbTransaction):
             return %s.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let tableMetadata = %sSerializer.table
-            let columnNames: [String] = tableMetadata.selectColumnNames
-            let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
-            let tableName: String = tableMetadata.tableName
-            let uniqueIdColumnName: String = %sSerializer.uniqueIdColumn.columnName
-            let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier) == ?"
-            
-            let cursor = %s.grdbFetchCursor(sql: sql,
-                                                  arguments: [uniqueId],
-                                                  transaction: grdbTransaction)
-            do {
-                return try cursor.next()
-            } catch {
-                owsFailDebug("error: \(error)")
-                return nil
-            }
+            let sql = "SELECT * FROM \(%s.databaseTableName) WHERE \(columnFor%s: .uniqueId) = ?"
+            return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }
-    
+''' % ( str(clazz.name), str(clazz.name), record_name, string_interpolation_name, )
+
+        swift_body += '''
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
@@ -1466,7 +1457,7 @@ extension %s {
         return result
     }
 }
-''' % ( ( str(clazz.name), ) * 16 )
+''' % ( ( str(clazz.name), ) * 6 )
 
         # ---- Fetch ----
 
@@ -1489,11 +1480,32 @@ extension %s {
                                                              transaction: transaction,
                                                                    deserialize: %sSerializer.sdsDeserialize))
     }
-}
 
 ''' % ( ( str(clazz.name), ) * 4 )
 
 
+        string_interpolation_name = remove_prefix_from_class_name(clazz.name)
+        swift_body += '''
+    public class func grdbFetchOne(sql: String,
+                                   arguments: StatementArguments,
+                                   transaction: GRDBReadTransaction) -> %s? {
+        assert(sql.count > 0)
+        
+        do {
+            guard let record = try %s.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+                    return nil
+            }
+            
+            return try %s.fromRecord(record)
+        } catch {
+            owsFailDebug("error: \(error)")
+            return nil
+        }
+    }
+}
+''' % ( str(clazz.name), record_name, str(clazz.name), )
+    
+    
     # ---- SDSSerializable ----
 
     table_superclass = clazz.table_superclass()
