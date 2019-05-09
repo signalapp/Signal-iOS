@@ -73,18 +73,18 @@ struct YAPDBThreadFinder: ThreadFinder {
 struct GRDBThreadFinder: ThreadFinder {
     typealias ReadTransaction = Database
 
-    static let cn = ThreadRecord.columnName
+    static let cn = TSThreadRecord.columnName
 
     func threadCount(isArchived: Bool, transaction: Database) throws -> UInt {
         guard let count = try UInt.fetchOne(transaction, sql: """
             SELECT COUNT(*)
             FROM (
                 SELECT
-                    CASE maxInteractionId <= \(threadColumn: .archivedAsOfMessageSortId)
+                    CASE maxInteractionId <= \(columnForThread: .archivedAsOfMessageSortId)
                         WHEN 1 THEN 1
                         ELSE 0
                     END isArchived
-                FROM \(ThreadRecord.databaseTableName)
+                FROM \(TSThreadRecord.databaseTableName)
                 LEFT JOIN (
                     SELECT
                         MAX(\(columnForInteraction: .id)) as maxInteractionId,
@@ -92,7 +92,7 @@ struct GRDBThreadFinder: ThreadFinder {
                     FROM \(TSInteractionRecord.databaseTableName)
                     GROUP BY \(columnForInteraction: .threadUniqueId)
                 ) latestInteractions
-                ON latestInteractions.\(columnForInteraction: .threadUniqueId) = \(threadColumn: .uniqueId)
+                ON latestInteractions.\(columnForInteraction: .threadUniqueId) = \(columnForThread: .uniqueId)
             )
             WHERE isArchived = ?
         """,
@@ -105,16 +105,16 @@ struct GRDBThreadFinder: ThreadFinder {
     }
 
     func enumerateThreads(isArchived: Bool, transaction: Database, block: @escaping (TSThread) -> Void) throws {
-        try ThreadRecord.fetchCursor(transaction, sql: """
+        try TSThreadRecord.fetchCursor(transaction, sql: """
             SELECT *
             FROM (
                 SELECT
-                    \(ThreadRecord.databaseTableName).*,
-                    CASE maxInteractionId <= \(threadColumn: .archivedAsOfMessageSortId)
+                    \(TSThreadRecord.databaseTableName).*,
+                    CASE maxInteractionId <= \(columnForThread: .archivedAsOfMessageSortId)
                         WHEN 1 THEN 1
                         ELSE 0
                     END isArchived
-                FROM \(ThreadRecord.databaseTableName)
+                FROM \(TSThreadRecord.databaseTableName)
                 LEFT JOIN (
                     SELECT
                         MAX(\(columnForInteraction: .id)) as maxInteractionId,
@@ -122,13 +122,13 @@ struct GRDBThreadFinder: ThreadFinder {
                     FROM \(TSInteractionRecord.databaseTableName)
                     GROUP BY \(columnForInteraction: .threadUniqueId)
                 ) latestInteractions
-                ON latestInteractions.\(columnForInteraction: .threadUniqueId) = \(threadColumn: .uniqueId)
+                ON latestInteractions.\(columnForInteraction: .threadUniqueId) = \(columnForThread: .uniqueId)
                 ORDER BY maxInteractionId DESC
             )
             WHERE isArchived = ?
         """,
                                      arguments: [isArchived]).forEach { threadRecord in
-                                        block(TSThread.fromRecord(threadRecord))
+                                        block(try TSThread.fromRecord(threadRecord))
         }
     }
 }

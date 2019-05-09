@@ -68,8 +68,8 @@ public class HomeViewDatabaseObserver: NSObject {
         let rowIdsSQL = "(\(commaSeparatedRowIds))"
 
         let sql = """
-        SELECT \(threadColumn: .uniqueId)
-        FROM \(ThreadRecord.databaseTableName)
+        SELECT \(columnForThread: .uniqueId)
+        FROM \(TSThreadRecord.databaseTableName)
         WHERE rowid IN \(rowIdsSQL)
         """
 
@@ -81,7 +81,7 @@ public class HomeViewDatabaseObserver: NSObject {
 extension HomeViewDatabaseObserver: TransactionObserver {
 
     public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
-        return eventKind.tableName == ThreadRecord.databaseTableName
+        return eventKind.tableName == TSThreadRecord.databaseTableName
     }
 
     public func databaseDidChange(with event: DatabaseEvent) {
