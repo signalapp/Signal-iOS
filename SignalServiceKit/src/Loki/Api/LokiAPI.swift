@@ -49,12 +49,22 @@ import PromiseKit
         }
     }
     
-    public static func getMessages() -> Promise<RawResponse> {
+    public static func getMessages() -> Promise<[SSKProtoEnvelope]> {
         let parameters = [
             "pubKey" : OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey,
             "lastHash" : "" // TODO: Implement
         ]
-        return getRandomSnode().then { invoke(.getMessages, on: $0, with: parameters) } // TODO: Use getSwarm()
+        return getRandomSnode().then { invoke(.getMessages, on: $0, with: parameters) }.map { rawResponse in
+            guard let json = rawResponse as? [String:Any] else { fatalError() } // TODO: Use JSON type; handle error
+            guard let messages = json["messages"] as? [[String:Any]] else { fatalError() } // TODO: Use JSON type; handle error
+            return messages.map { message in
+                guard let base64EncodedData = message["data"] as? String else { fatalError() } // TODO: Handle error
+                let data = Data(base64Encoded: base64EncodedData)! // TODO: Handle error
+                let webSocketMessage = try! WebSocketProtoWebSocketMessage.parseData(data)
+                let envelope = webSocketMessage.request!.body! // TODO: Handle error
+                return try! SSKProtoEnvelope.parseData(envelope) // TODO: Handle error
+            }
+        }
     }
     
     public static func sendMessage(_ lokiMessage: LokiMessage) -> Promise<RawResponse> {
@@ -89,7 +99,7 @@ import PromiseKit
 
 // MARK: - Convenience
 
-private extension Promise where T == Any {
+private extension Promise {
 
     func recoverNetworkError(on queue: DispatchQueue) -> Promise<T> {
         return self.recover(on: queue) { error -> Promise<T> in

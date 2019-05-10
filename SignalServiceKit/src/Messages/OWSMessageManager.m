@@ -248,7 +248,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"handling decrypted envelope: %@", [self descriptionForEnvelope:envelope]);
 
-    if (!envelope.hasSource || envelope.source.length < 1 || !envelope.source.isValidE164) {
+    if (!envelope.hasSource || envelope.source.length < 1 /*|| !envelope.source.isValidE164*/) {
         OWSFailDebug(@"incoming envelope has invalid source");
         return;
     }

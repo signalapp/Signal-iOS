@@ -197,7 +197,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSLogInfo(@"decrypting envelope: %@", [self descriptionForEnvelope:envelope]);
 
         if (envelope.type != SSKProtoEnvelopeTypeUnidentifiedSender) {
-            if (!envelope.hasSource || envelope.source.length < 1 || !envelope.source.isValidE164) {
+            if (!envelope.hasSource || envelope.source.length < 1 /*|| !envelope.source.isValidE164*/) {
                 OWSFailDebug(@"incoming envelope has invalid source");
                 return failureBlock();
             }
@@ -340,7 +340,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId identityKeyStore:self.identityManager];
     
     // Decrypt it!!
-    NSData *_Nullable plaintextData = [cipher decryptWithMessage:encryptedData];
+    NSData *_Nullable plaintextData = [[cipher decryptWithMessage:encryptedData] removePadding];
     if (!plaintextData) {
         NSString *errorString = [NSString stringWithFormat:@"Failed to decrypt friend request message for %@", recipientId];
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorString);

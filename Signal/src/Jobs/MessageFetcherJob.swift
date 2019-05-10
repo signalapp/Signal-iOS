@@ -38,11 +38,14 @@ public class MessageFetcherJob: NSObject {
     public func run() -> Promise<Void> {
         Logger.debug("")
 
-        guard signalService.isCensorshipCircumventionActive else {
-            Logger.debug("delegating message fetching to SocketManager since we're using normal transport.")
-            TSSocketManager.shared.requestSocketOpen()
-            return Promise.value(())
-        }
+        // Loki: Original code
+        // ========
+//        guard signalService.isCensorshipCircumventionActive else {
+//            Logger.debug("delegating message fetching to SocketManager since we're using normal transport.")
+//            TSSocketManager.shared.requestSocketOpen()
+//            return Promise.value(())
+//        }
+        // ========
 
         Logger.info("fetching messages via REST.")
 
@@ -173,25 +176,33 @@ public class MessageFetcherJob: NSObject {
 
     private func fetchUndeliveredMessages() -> Promise<(envelopes: [SSKProtoEnvelope], more: Bool)> {
         return Promise { resolver in
-            let request = OWSRequestFactory.getMessagesRequest()
-            self.networkManager.makeRequest(
-                request,
-                success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
-                    guard let (envelopes, more) = self.parseMessagesResponse(responseObject: responseObject) else {
-                        Logger.error("response object had unexpected content")
-                        return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-                    }
-
-                    resolver.fulfill((envelopes: envelopes, more: more))
-                },
-                failure: { (_: URLSessionDataTask?, error: Error?) in
-                    guard let error = error else {
-                        Logger.error("error was surpringly nil. sheesh rough day.")
-                        return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-                    }
-
-                    resolver.reject(error)
-            })
+            LokiAPI.getMessages().done { envelopes in
+                resolver.fulfill((envelopes: envelopes, more: false))
+            }.catch { error in
+                resolver.reject(error)
+            }
+            // Loki: Original code
+            // ========
+//            let request = OWSRequestFactory.getMessagesRequest()
+//            self.networkManager.makeRequest(
+//                request,
+//                success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
+//                    guard let (envelopes, more) = self.parseMessagesResponse(responseObject: responseObject) else {
+//                        Logger.error("response object had unexpected content")
+//                        return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
+//                    }
+//
+//                    resolver.fulfill((envelopes: envelopes, more: more))
+//                },
+//                failure: { (_: URLSessionDataTask?, error: Error?) in
+//                    guard let error = error else {
+//                        Logger.error("error was surpringly nil. sheesh rough day.")
+//                        return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
+//                    }
+//
+//                    resolver.reject(error)
+//            })
+            // ========
         }
     }
 
