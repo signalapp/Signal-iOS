@@ -3,11 +3,11 @@
 @implementation OWSFriendRequestMessage
 
 - (SSKProtoContentBuilder *)contentBuilder {
-    SSKProtoContentBuilder *builder = [super contentBuilder];
+    SSKProtoContentBuilder *contentBuilder = super.contentBuilder;
     
     // TODO: Attach pre-key bundle here
     
-    return builder;
+    return contentBuilder;
 }
 
 @end

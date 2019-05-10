@@ -712,7 +712,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
             _friendRequestState == TSThreadFriendRequestStatePendingSend ||
             _friendRequestState == TSThreadFriendRequestStateRequestSent ||
             _friendRequestState == TSThreadFriendRequestStateRequestReceived
-            );
+    );
 }
 
 - (BOOL)hasSentFriendRequest
@@ -720,7 +720,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     return (
             _friendRequestState == TSThreadFriendRequestStateRequestSent ||
             _friendRequestState == TSThreadFriendRequestStateRequestExpired
-            );
+    );
 }
 
 - (BOOL)hasReceivedFriendRequest

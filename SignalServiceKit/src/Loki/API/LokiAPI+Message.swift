@@ -16,14 +16,6 @@ public extension LokiAPI {
         /// The base 64 encoded proof of work, if applicable.
         let nonce: String?
         
-        /// Create a Message
-        ///
-        /// - Parameters:
-        ///   - destination: A hex encoded public key
-        ///   - data: The content of the message
-        ///   - ttl: Time to live in seconds
-        ///   - timestamp: Timestamp used when calculating proof of work. Expressed in milliseconds.
-        ///   - nonce: The base 64 encoded proof of work
         public init(destination: String, data: LosslessStringConvertible, ttl: UInt64, timestamp: UInt64?, nonce: String?) {
             self.destination = destination
             self.data = data
@@ -32,27 +24,20 @@ public extension LokiAPI {
             self.nonce = nonce
         }
         
-        /// Build a LokiMessage from a SignalMessage
+        /// Construct a `LokiMessage` from a `SignalMessage`.
         ///
-        /// - Parameters:
-        ///   - signalMessage: the signal message
-        ///   - timestamp: the original message timestamp (TSOutgoingMessage.timestamp)
-        ///   - isPoWRequired: Should we calculate proof of work
-        /// - Returns: The loki message
+        /// - Note: `timestamp` is the original message timestamp (i.e. `TSOutgoingMessage.timestamp`).
         public static func from(signalMessage: SignalMessage, timestamp: UInt64, requiringPoW isPoWRequired: Bool) -> Promise<Message> {
-            // To match the desktop application we have to take the data
-            // wrap it in an envelope, then
-            // wrap it in a websocket
+            // To match the desktop application, we have to wrap the data in an envelope and then wrap that in a websocket object
             return Promise<Message> { seal in
                 DispatchQueue.global(qos: .default).async {
                     do {
-                        let serialized = try wrap(message: signalMessage, timestamp: timestamp)
-                        let data = serialized.base64EncodedString()
+                        let wrappedMessage = try wrap(message: signalMessage, timestamp: timestamp)
+                        let data = wrappedMessage.base64EncodedString()
                         let destination = signalMessage["destination"] as! String
                         let ttl = LokiAPI.defaultMessageTTL
-                        
                         if isPoWRequired {
-                            // timeIntervalSince1970 returns timestamp in seconds but the storage server only accepts timestamp in milliseconds
+                            // timeIntervalSince1970 returns a time interval in seconds but the storage server takes a time interval in milliseconds
                             let now = UInt64(Date().timeIntervalSince1970 * 1000)
                             if let nonce = ProofOfWork.calculate(data: data, pubKey: destination, timestamp: now, ttl: ttl) {
                                 let result = Message(destination: destination, data: data, ttl: ttl, timestamp: now, nonce: nonce)
@@ -80,12 +65,4 @@ public extension LokiAPI {
             return result
         }
     }
-
-    
 }
-
-
-private extension LokiAPI.Message {
-    
-}
-

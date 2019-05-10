@@ -35,7 +35,7 @@ typedef NS_ENUM(NSInteger, TSThreadFriendRequestState) {
     TSThreadFriendRequestStateNone,
     // This state is used to lock the input early while sending
     TSThreadFriendRequestStatePendingSend,
-    // Friend request send, awaiting response
+    // Friend request sent, awaiting response
     TSThreadFriendRequestStateRequestSent,
     // Friend request received, awaiting user input
     TSThreadFriendRequestStateRequestReceived,

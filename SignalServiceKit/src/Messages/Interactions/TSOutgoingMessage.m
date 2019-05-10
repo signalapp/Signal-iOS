@@ -1115,8 +1115,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (SSKProtoContentBuilder *)contentBuilder
 {
-    SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
-    return contentBuilder;
+    return SSKProtoContent.builder;
 }
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient

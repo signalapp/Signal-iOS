@@ -1060,11 +1060,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (messageSend.isUDSend) {
             hasValidMessageType = [messageType isEqualToNumber:@(TSUnidentifiedSenderMessageType)];
         } else {
-            NSArray *validMessageTypes = @[
-                                           @(TSEncryptedWhisperMessageType),
-                                           @(TSPreKeyWhisperMessageType),
-                                           @(TSFriendRequestMessageType) // Loki friend request
-                                           ];
+            // Loki: TSFriendRequestMessageType represents a Loki friend request
+            NSArray *validMessageTypes = @[ @(TSEncryptedWhisperMessageType), @(TSPreKeyWhisperMessageType), @(TSFriendRequestMessageType) ];
             hasValidMessageType = [validMessageTypes containsObject:messageType];
 
             /* Loki: Original code:
@@ -1206,7 +1203,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (void)setIsCalculatingProofOfWorkForMessage:(OWSMessageSend *)messageSend
 {
     OWSAssertDebug(messageSend);
-    dispatch_async([OWSDispatch sendingQueue], ^{
+    dispatch_async(OWSDispatch.sendingQueue, ^{
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [messageSend.message updateIsCalculatingProofOfWorkWithTransaction:transaction];
         }];
@@ -1548,9 +1545,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // This may involve blocking network requests, so we do it _before_
             // we open a transaction.
             
-            // Friend requests means we don't have a session with the person
+            // A friend request means we don't have a session with the person
             // There's no point to check for it
-            Boolean isFriendRequest = [messageSend.message isKindOfClass:[OWSFriendRequestMessage class]];
+            Boolean isFriendRequest = [messageSend.message isKindOfClass:OWSFriendRequestMessage.class];
             if (!isFriendRequest) {
                 [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
             }
@@ -1739,8 +1736,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     SignalRecipient *recipient = messageSend.recipient;
     NSString *recipientId = recipient.recipientId;
     
-    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId
-                                                                    identityKeyStore:self.identityManager];
+    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId identityKeyStore:self.identityManager];
     
     // This will return nil if encryption failed
     NSData *_Nullable serializedMessage = [cipher encryptWithMessage:[plainText paddedMessageBody]];
@@ -1786,7 +1782,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(recipientId.length > 0);
     
     // Loki: Handle friend requests differently
-    Boolean isFriendRequest = [messageSend.message isKindOfClass:[OWSFriendRequestMessage class]];
+    Boolean isFriendRequest = [messageSend.message isKindOfClass:OWSFriendRequestMessage.class];
     if (isFriendRequest) {
         return [self throws_encryptedFriendMessageForMessageSend:messageSend deviceId:deviceId plainText:plainText];
     }

@@ -339,7 +339,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     NSString *recipientId = envelope.source;
     FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId identityKeyStore:self.identityManager];
     
-    // Decrypt it!!
     NSData *_Nullable plaintextData = [[cipher decryptWithMessage:encryptedData] removePadding];
     if (!plaintextData) {
         NSString *errorString = [NSString stringWithFormat:@"Failed to decrypt friend request message for %@", recipientId];

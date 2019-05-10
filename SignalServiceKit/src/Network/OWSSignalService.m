@@ -193,12 +193,12 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
     sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
-    sessionManager.responseSerializer = [AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments];
+    sessionManager.responseSerializer = [AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments]; // LOKITODO: Disable this again?
     // Disable default cookie handling for all requests.
     sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
     
     // Loki: We need to accept text/plain for now as the storage server returns this to us
-    sessionManager.responseSerializer.acceptableContentTypes = [sessionManager.responseSerializer.acceptableContentTypes setByAddingObject:@"text/plain"];
+    sessionManager.responseSerializer.acceptableContentTypes = [sessionManager.responseSerializer.acceptableContentTypes setByAddingObject:@"text/plain"]; // LOKITODO: Remove this again?
 
     return sessionManager;
 }

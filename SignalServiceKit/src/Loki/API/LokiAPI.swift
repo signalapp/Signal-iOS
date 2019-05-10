@@ -21,14 +21,10 @@ import PromiseKit
     
     public enum Error : LocalizedError {
         case proofOfWorkCalculationFailed
-        case failedToWrapInEnvelope
-        case failedToWrapInWebSocket
         
         public var errorDescription: String? {
             switch self {
             case .proofOfWorkCalculationFailed: return NSLocalizedString("Failed to calculate proof of work.", comment: "")
-            case .failedToWrapInEnvelope: return NSLocalizedString("Failed to wrap data in an Envelope", comment: "")
-            case .failedToWrapInWebSocket: return NSLocalizedString("Failed to wrap data in an WebSocket", comment: "")
             }
         }
     }
@@ -37,7 +33,7 @@ import PromiseKit
     override private init() { }
     
     // MARK: API
-    private static func invoke(_ method: Method, on target: Target, with parameters: [String:String] = [:]) -> Promise<RawResponse> {
+    private static func invoke(_ method: Method, on target: Target, with parameters: [String:Any] = [:]) -> Promise<RawResponse> {
         let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
@@ -54,19 +50,17 @@ import PromiseKit
             "pubKey" : OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey,
             "lastHash" : "" // TODO: Implement
         ]
-        return getRandomSnode().then { invoke(.getMessages, on: $0, with: parameters) }.compactMap { rawResponse in
-            guard let json = rawResponse as? [String:Any], let messages = json["messages"] as? [[String:Any]] else { return nil }
+        return getRandomSnode().then { invoke(.getMessages, on: $0, with: parameters) }.map { rawResponse in // TODO: Use getSwarm()
+            guard let json = rawResponse as? JSON, let messages = json["messages"] as? [JSON] else { return [] }
             return messages.compactMap { message in
                 guard let base64EncodedData = message["data"] as? String, let data = Data(base64Encoded: base64EncodedData) else {
-                    Logger.warn("LokiAPI - Failed to get data for message: \(message)")
+                    Logger.warn("[Loki API] Failed to decode data for message: \(message).")
                     return nil
                 }
-                
                 guard let envelope = try? unwrap(data: data) else {
-                    Logger.warn("LokiAPI - Failed to unwrap data for message: \(message)")
+                    Logger.warn("[Loki API] Failed to unwrap data for message: \(message).")
                     return nil
                 }
-                
                 return envelope
             }
         }
@@ -85,13 +79,6 @@ import PromiseKit
     }
     
     // MARK: Obj-C API
-    @objc public static func objc_getMessages() -> AnyPromise {
-        let promise = getMessages().recoverNetworkError(on: DispatchQueue.global())
-        let anyPromise = AnyPromise(promise)
-        anyPromise.retainUntilComplete()
-        return anyPromise
-    }
-    
     @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64, requiringPoW isPoWRequired: Bool) -> AnyPromise {
         let promise = Message.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: isPoWRequired)
             .then(sendMessage)
