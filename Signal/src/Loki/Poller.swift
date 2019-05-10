@@ -5,7 +5,7 @@ import PromiseKit
     private var currentJob: Promise<Void>?
 
     // MARK: Configuration
-    private static let interval: TimeInterval = 60
+    private static let interval: TimeInterval = 30
     
     // MARK: Initialization
     @objc public static let shared = Poller()
