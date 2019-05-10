@@ -123,7 +123,7 @@ struct GRDBThreadFinder: ThreadFinder {
                     GROUP BY \(interactionColumn: .threadUniqueId)
                 ) latestInteractions
                 ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
-                ORDER BY maxInteractionId DESC
+                ORDER BY maxInteractionId
             )
             WHERE isArchived = ?
         """,
