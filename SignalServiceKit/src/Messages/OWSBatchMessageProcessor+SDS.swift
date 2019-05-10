@@ -37,8 +37,8 @@ public struct MessageContentJobRecord: Codable, FetchableRecord, PersistableReco
         case wasReceivedByUD
     }
 
-    public static func columnName(_ column: MessageContentJobRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: MessageContentJobRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -46,8 +46,11 @@ public struct MessageContentJobRecord: Codable, FetchableRecord, PersistableReco
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForMessageContentJob column: MessageContentJobRecord.CodingKeys) {
+    mutating func appendInterpolation(messageContentJobColumn column: MessageContentJobRecord.CodingKeys) {
         appendLiteral(MessageContentJobRecord.columnName(column))
+    }
+    mutating func appendInterpolation(messageContentJobColumnFullyQualified column: MessageContentJobRecord.CodingKeys) {
+        appendLiteral(MessageContentJobRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -281,7 +284,7 @@ extension OWSMessageContentJob {
         case .yapRead(let ydbTransaction):
             return OWSMessageContentJob.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(MessageContentJobRecord.databaseTableName) WHERE \(columnForMessageContentJob: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(MessageContentJobRecord.databaseTableName) WHERE \(messageContentJobColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

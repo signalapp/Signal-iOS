@@ -290,8 +290,8 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
-        WHERE \(columnForInteraction: .threadUniqueId) = ?
-        ORDER BY \(columnForInteraction: .id) DESC
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        ORDER BY \(interactionColumn: .id) DESC
         """
         let arguments: StatementArguments = [threadUniqueId]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
@@ -301,10 +301,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         let sql = """
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
-                WHERE \(columnForInteraction: .threadUniqueId) = ?
-                AND \(columnForInteraction: .errorType) IS NOT ?
-                AND \(columnForInteraction: .messageType) IS NOT ?
-                ORDER BY \(columnForInteraction: .id) DESC
+                WHERE \(interactionColumn: .threadUniqueId) = ?
+                AND \(interactionColumn: .errorType) IS NOT ?
+                AND \(interactionColumn: .messageType) IS NOT ?
+                ORDER BY \(interactionColumn: .id) DESC
                 """
         let arguments: StatementArguments = [threadUniqueId, TSErrorMessageType.nonBlockingIdentityChange, TSInfoMessageType.verificationStateChange]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
@@ -316,13 +316,13 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             SELECT rowNumber
             FROM (
                 SELECT
-                    ROW_NUMBER() OVER (ORDER BY \(columnForInteraction: .id)) as rowNumber,
-                    \(columnForInteraction: .id),
-                    \(columnForInteraction: .uniqueId)
+                    ROW_NUMBER() OVER (ORDER BY \(interactionColumn: .id)) as rowNumber,
+                    \(interactionColumn: .id),
+                    \(interactionColumn: .uniqueId)
                 FROM \(InteractionRecord.databaseTableName)
-                WHERE \(columnForInteraction: .threadUniqueId) = ?
+                WHERE \(interactionColumn: .threadUniqueId) = ?
             )
-            WHERE \(columnForInteraction: .uniqueId) = ?
+            WHERE \(interactionColumn: .uniqueId) = ?
             """,
             arguments: [threadUniqueId, interactionUniqueId])
     }
@@ -332,7 +332,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                                             sql: """
             SELECT COUNT(*)
             FROM \(InteractionRecord.databaseTableName)
-            WHERE \(columnForInteraction: .threadUniqueId) = ?
+            WHERE \(interactionColumn: .threadUniqueId) = ?
             """,
             arguments: [threadUniqueId]) else {
                 throw assertionError("count was unexpectedly nil")
@@ -345,8 +345,8 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                                             sql: """
             SELECT COUNT(*)
             FROM \(InteractionRecord.databaseTableName)
-            WHERE \(columnForInteraction: .threadUniqueId) = ?
-            AND \(columnForInteraction: .read) is 0
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .read) is 0
             """,
             arguments: [threadUniqueId]) else {
                 throw assertionError("count was unexpectedly nil")
@@ -359,10 +359,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
         try String.fetchCursor(transaction.database,
                            sql: """
-            SELECT \(columnForInteraction: .uniqueId)
+            SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
-            WHERE \(columnForInteraction: .threadUniqueId) = ?
-            ORDER BY \(columnForInteraction: .id) DESC
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            ORDER BY \(interactionColumn: .id) DESC
 """,
             arguments: [threadUniqueId]).forEach { (uniqueId: String) -> Void in
 
@@ -378,8 +378,8 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
-        WHERE \(columnForInteraction: .threadUniqueId) = ?
-        ORDER BY \(columnForInteraction: .id) DESC
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        ORDER BY \(interactionColumn: .id) DESC
         LIMIT 1
         OFFSET ?
         """

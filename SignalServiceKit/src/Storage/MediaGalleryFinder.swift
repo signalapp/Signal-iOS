@@ -109,14 +109,14 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
             SELECT \(AttachmentRecord.databaseTableName).*
             FROM \(AttachmentRecord.databaseTableName)
             LEFT JOIN \(InteractionRecord.databaseTableName)
-                ON \(columnForAttachment: .albumMessageId) = \(columnForInteraction: .uniqueId, fullyQualified: true)
-                AND \(columnForInteraction: .threadUniqueId) = ?
-            WHERE \(AttachmentRecord.databaseTableName).\(TSAttachmentSerializer.recordTypeColumn.columnName) = \(SDSRecordType.attachmentStream.rawValue)
-                AND \(TSAttachmentSerializer.albumMessageIdColumn.columnName) IS NOT NULL
-                AND IsVisualMediaContentType(\(TSAttachmentSerializer.contentTypeColumn.columnName)) IS TRUE
+                ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
+                AND \(interactionColumn: .threadUniqueId) = ?
+            WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
+                AND \(attachmentColumn: .albumMessageId) IS NOT NULL
+                AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
             ORDER BY
-                \(interactionColumn: .uniqueId, fullyQualified: true) DESC,
-                \(TSAttachmentSerializer.idColumn.columnName) DESC
+                \(interactionColumnFullyQualified: .id) DESC,
+                \(attachmentColumnFullyQualified: .id) DESC
             LIMIT 1
         """
 
@@ -129,13 +129,13 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
         let sql = """
         SELECT
             COUNT(*)
-        FROM \(TSAttachmentSerializer.table.tableName)
+        FROM \(AttachmentRecord.databaseTableName)
         LEFT JOIN \(InteractionRecord.databaseTableName)
-        ON \(TSAttachmentSerializer.albumMessageIdColumn.columnName) = \(interactionColumn: .uniqueId, fullyQualified: true)
-        AND \(interactionColumn: .threadUniqueId) = ?
-        WHERE \(TSAttachmentSerializer.table.tableName).\(TSAttachmentSerializer.recordTypeColumn.columnName) = \(SDSRecordType.attachmentStream.rawValue)
-        AND \(TSAttachmentSerializer.albumMessageIdColumn.columnName) IS NOT NULL
-        AND IsVisualMediaContentType(\(TSAttachmentSerializer.contentTypeColumn.columnName)) IS TRUE
+            ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
+            AND \(interactionColumn: .threadUniqueId) = ?
+        WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
+            AND \(attachmentColumn: .albumMessageId) IS NOT NULL
+            AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
         """
 
         return try! UInt.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId]) ?? 0
@@ -144,17 +144,17 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
 
     func enumerateMediaAttachments(range: NSRange, transaction: GRDBReadTransaction, block: @escaping (TSAttachment) -> Void) {
         let sql = """
-        SELECT \(TSAttachmentSerializer.table.tableName).*
-        FROM \(TSAttachmentSerializer.table.tableName)
+        SELECT \(AttachmentRecord.databaseTableName).*
+        FROM \(AttachmentRecord.databaseTableName)
         LEFT JOIN \(InteractionRecord.databaseTableName)
-        ON \(TSAttachmentSerializer.albumMessageIdColumn.columnName) = \(interactionColumn: .uniqueId, fullyQualified: true)
-        AND \(interactionColumn: .threadUniqueId) = ?
-        WHERE \(TSAttachmentSerializer.table.tableName).\(TSAttachmentSerializer.recordTypeColumn.columnName) = \(SDSRecordType.attachmentStream.rawValue)
-        AND \(TSAttachmentSerializer.albumMessageIdColumn.columnName) IS NOT NULL
-        AND IsVisualMediaContentType(\(TSAttachmentSerializer.contentTypeColumn.columnName)) IS TRUE
+            ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
+            AND \(interactionColumn: .threadUniqueId) = ?
+        WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
+            AND \(attachmentColumn: .albumMessageId) IS NOT NULL
+            AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
         ORDER BY
-        \(interactionColumn: .uniqueId, fullyQualified: true) DESC,
-        \(TSAttachmentSerializer.idColumn.columnName) DESC
+            \(interactionColumnFullyQualified: .id) DESC,
+            \(attachmentColumnFullyQualified: .id) DESC
         """
 
         // GRDB TODO: migrate such that attachment.id reflects ordering in TSInteraction.attachmentIds
@@ -171,19 +171,19 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
             SELECT
                 ROW_NUMBER() OVER (
                     ORDER BY
-                        \(interactionColumn: .uniqueId, fullyQualified: true) DESC,
-                        \(TSAttachmentSerializer.table.tableName).\(TSAttachmentSerializer.idColumn.columnName) DESC
+                        \(interactionColumnFullyQualified: .id) DESC,
+                        \(attachmentColumnFullyQualified: .id) DESC
                 ) as rowNumber,
-                \(TSAttachmentSerializer.table.tableName).\(TSAttachmentSerializer.uniqueIdColumn.columnName)
-            FROM \(TSAttachmentSerializer.table.tableName)
+                \(attachmentColumnFullyQualified: .uniqueId)
+            FROM \(AttachmentRecord.databaseTableName)
             LEFT JOIN \(InteractionRecord.databaseTableName)
-                ON \(TSAttachmentSerializer.albumMessageIdColumn.columnName) = \(interactionColumn: .uniqueId, fullyQualified: true)
+                ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
                 AND \(interactionColumn: .threadUniqueId) = ?
-            WHERE \(TSAttachmentSerializer.table.tableName).\(TSAttachmentSerializer.recordTypeColumn.columnName) = \(SDSRecordType.attachmentStream.rawValue)
-              AND \(TSAttachmentSerializer.albumMessageIdColumn.columnName) IS NOT NULL
-              AND IsVisualMediaContentType(\(TSAttachmentSerializer.contentTypeColumn.columnName)) IS TRUE
+            WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
+              AND \(attachmentColumn: .albumMessageId) IS NOT NULL
+              AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
         )
-        WHERE \(TSAttachmentSerializer.uniqueIdColumn.columnName) = ?
+        WHERE \(attachmentColumn: .uniqueId) = ?
         """
 
         return try! Int.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId, attachment.uniqueId!])

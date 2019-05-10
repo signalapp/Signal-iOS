@@ -358,9 +358,9 @@ extension GRDBJobRecordFinder: JobRecordFinder {
 
         let sql = """
             SELECT * FROM \(JobRecordRecord.databaseTableName)
-            WHERE \(columnForJobRecord: .status) = ?
-              AND \(columnForJobRecord: .label) = ?
-            ORDER BY \(columnForJobRecord: .id)
+            WHERE \(jobRecordColumn: .status) = ?
+              AND \(jobRecordColumn: .label) = ?
+            ORDER BY \(jobRecordColumn: .id)
         """
 
         let cursor = SSKJobRecord.grdbFetchCursor(sql: sql,

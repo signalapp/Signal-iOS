@@ -43,8 +43,8 @@ public struct StickerPackRecord: Codable, FetchableRecord, PersistableRecord, Ta
         case title
     }
 
-    public static func columnName(_ column: StickerPackRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: StickerPackRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -52,8 +52,11 @@ public struct StickerPackRecord: Codable, FetchableRecord, PersistableRecord, Ta
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForStickerPack column: StickerPackRecord.CodingKeys) {
+    mutating func appendInterpolation(stickerPackColumn column: StickerPackRecord.CodingKeys) {
         appendLiteral(StickerPackRecord.columnName(column))
+    }
+    mutating func appendInterpolation(stickerPackColumnFullyQualified column: StickerPackRecord.CodingKeys) {
+        appendLiteral(StickerPackRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -311,7 +314,7 @@ extension StickerPack {
         case .yapRead(let ydbTransaction):
             return StickerPack.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(StickerPackRecord.databaseTableName) WHERE \(columnForStickerPack: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(StickerPackRecord.databaseTableName) WHERE \(stickerPackColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

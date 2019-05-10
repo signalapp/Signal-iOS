@@ -78,7 +78,7 @@ extension MediaGalleryDatabaseObserver: TransactionObserver {
 
     public func databaseDidChange(with event: DatabaseEvent) {
         Logger.verbose("")
-        assert(event.tableName == TSAttachmentSerializer.table.tableName)
+        assert(event.tableName == AttachmentRecord.databaseTableName)
         UIDatabaseObserver.serialQueue.sync {
             _ = pendingChanges.insert(event.rowID)
         }

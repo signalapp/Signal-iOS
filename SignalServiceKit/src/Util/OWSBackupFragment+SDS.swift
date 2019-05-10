@@ -41,8 +41,8 @@ public struct BackupFragmentRecord: Codable, FetchableRecord, PersistableRecord,
         case uncompressedDataLength
     }
 
-    public static func columnName(_ column: BackupFragmentRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: BackupFragmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -50,8 +50,11 @@ public struct BackupFragmentRecord: Codable, FetchableRecord, PersistableRecord,
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForBackupFragment column: BackupFragmentRecord.CodingKeys) {
+    mutating func appendInterpolation(backupFragmentColumn column: BackupFragmentRecord.CodingKeys) {
         appendLiteral(BackupFragmentRecord.columnName(column))
+    }
+    mutating func appendInterpolation(backupFragmentColumnFullyQualified column: BackupFragmentRecord.CodingKeys) {
+        appendLiteral(BackupFragmentRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -297,7 +300,7 @@ extension OWSBackupFragment {
         case .yapRead(let ydbTransaction):
             return OWSBackupFragment.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(BackupFragmentRecord.databaseTableName) WHERE \(columnForBackupFragment: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(BackupFragmentRecord.databaseTableName) WHERE \(backupFragmentColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

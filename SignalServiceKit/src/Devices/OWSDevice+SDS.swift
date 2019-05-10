@@ -37,8 +37,8 @@ public struct DeviceRecord: Codable, FetchableRecord, PersistableRecord, TableRe
         case name
     }
 
-    public static func columnName(_ column: DeviceRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: DeviceRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -46,8 +46,11 @@ public struct DeviceRecord: Codable, FetchableRecord, PersistableRecord, TableRe
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForDevice column: DeviceRecord.CodingKeys) {
+    mutating func appendInterpolation(deviceColumn column: DeviceRecord.CodingKeys) {
         appendLiteral(DeviceRecord.columnName(column))
+    }
+    mutating func appendInterpolation(deviceColumnFullyQualified column: DeviceRecord.CodingKeys) {
+        appendLiteral(DeviceRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -281,7 +284,7 @@ extension OWSDevice {
         case .yapRead(let ydbTransaction):
             return OWSDevice.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(DeviceRecord.databaseTableName) WHERE \(columnForDevice: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(DeviceRecord.databaseTableName) WHERE \(deviceColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

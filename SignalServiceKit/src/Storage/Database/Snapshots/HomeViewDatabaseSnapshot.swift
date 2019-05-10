@@ -68,7 +68,7 @@ public class HomeViewDatabaseObserver: NSObject {
         let rowIdsSQL = "(\(commaSeparatedRowIds))"
 
         let sql = """
-        SELECT \(columnForThread: .uniqueId)
+        SELECT \(threadColumn: .uniqueId)
         FROM \(ThreadRecord.databaseTableName)
         WHERE rowid IN \(rowIdsSQL)
         """

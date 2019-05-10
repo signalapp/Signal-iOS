@@ -39,8 +39,8 @@ public struct RecipientIdentityRecord: Codable, FetchableRecord, PersistableReco
         case verificationState
     }
 
-    public static func columnName(_ column: RecipientIdentityRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: RecipientIdentityRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -48,8 +48,11 @@ public struct RecipientIdentityRecord: Codable, FetchableRecord, PersistableReco
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForRecipientIdentity column: RecipientIdentityRecord.CodingKeys) {
+    mutating func appendInterpolation(recipientIdentityColumn column: RecipientIdentityRecord.CodingKeys) {
         appendLiteral(RecipientIdentityRecord.columnName(column))
+    }
+    mutating func appendInterpolation(recipientIdentityColumnFullyQualified column: RecipientIdentityRecord.CodingKeys) {
+        appendLiteral(RecipientIdentityRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -292,7 +295,7 @@ extension OWSRecipientIdentity {
         case .yapRead(let ydbTransaction):
             return OWSRecipientIdentity.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(RecipientIdentityRecord.databaseTableName) WHERE \(columnForRecipientIdentity: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(RecipientIdentityRecord.databaseTableName) WHERE \(recipientIdentityColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

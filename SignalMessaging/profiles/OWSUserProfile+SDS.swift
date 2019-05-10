@@ -39,8 +39,8 @@ public struct UserProfileRecord: Codable, FetchableRecord, PersistableRecord, Ta
         case recipientId
     }
 
-    public static func columnName(_ column: UserProfileRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: UserProfileRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -48,8 +48,11 @@ public struct UserProfileRecord: Codable, FetchableRecord, PersistableRecord, Ta
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForUserProfile column: UserProfileRecord.CodingKeys) {
+    mutating func appendInterpolation(userProfileColumn column: UserProfileRecord.CodingKeys) {
         appendLiteral(UserProfileRecord.columnName(column))
+    }
+    mutating func appendInterpolation(userProfileColumnFullyQualified column: UserProfileRecord.CodingKeys) {
+        appendLiteral(UserProfileRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -291,7 +294,7 @@ extension OWSUserProfile {
         case .yapRead(let ydbTransaction):
             return OWSUserProfile.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(columnForUserProfile: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(userProfileColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }
