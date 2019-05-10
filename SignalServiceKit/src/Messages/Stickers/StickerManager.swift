@@ -956,7 +956,6 @@ public class StickerManager: NSObject {
 
     // MARK: - Sync Messages
 
-    // TODO: We could also send a sticker sync message after we link a new device.
     private class func enqueueStickerSyncMessage(operationType: StickerPackOperationType,
                                                  packs: [StickerPackInfo],
                                                  transaction: SDSAnyWriteTransaction) {
@@ -974,6 +973,22 @@ public class StickerManager: NSObject {
             //            owsFailDebug("GRDB not yet supported.")
             break
         }
+    }
+
+    @objc
+    public class func syncAllInstalledPacks(transaction: SDSAnyWriteTransaction) {
+        guard tsAccountManager.isRegisteredAndReady() else {
+            return
+        }
+
+        let stickerPackInfos = installedStickerPacks(transaction: transaction).map { $0.info }
+        guard stickerPackInfos.count > 0 else {
+            return
+        }
+
+        enqueueStickerSyncMessage(operationType: .install,
+                                  packs: stickerPackInfos,
+                                  transaction: transaction)
     }
 
     @objc
