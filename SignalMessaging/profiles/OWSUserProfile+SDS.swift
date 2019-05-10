@@ -68,7 +68,6 @@ extension OWSUserProfile {
         case .userProfile:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let avatarFileName: String? = record.avatarFileName
             let avatarUrlPath: String? = record.avatarUrlPath
             let profileKeySerialized: Data? = record.profileKey

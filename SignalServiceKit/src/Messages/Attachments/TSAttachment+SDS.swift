@@ -108,7 +108,6 @@ extension TSAttachment {
         case .attachment:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let albumMessageId: String? = record.albumMessageId
             let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = record.attachmentType
@@ -135,7 +134,6 @@ extension TSAttachment {
         case .attachmentPointer:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let albumMessageId: String? = record.albumMessageId
             let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = record.attachmentType
@@ -178,7 +176,6 @@ extension TSAttachment {
         case .attachmentStream:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let albumMessageId: String? = record.albumMessageId
             let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = record.attachmentType

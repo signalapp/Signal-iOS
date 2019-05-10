@@ -56,77 +56,66 @@ extension OWSDatabaseMigration {
         case ._100RemoveTSRecipientsMigration:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
 
             return OWS100RemoveTSRecipientsMigration(uniqueId: uniqueId)
 
         case ._101ExistingUsersBlockOnIdentityChange:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
 
             return OWS101ExistingUsersBlockOnIdentityChange(uniqueId: uniqueId)
 
         case ._102MoveLoggingPreferenceToUserDefaults:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
 
             return OWS102MoveLoggingPreferenceToUserDefaults(uniqueId: uniqueId)
 
         case ._103EnableVideoCalling:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
 
             return OWS103EnableVideoCalling(uniqueId: uniqueId)
 
         case ._104CreateRecipientIdentities:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
 
             return OWS104CreateRecipientIdentities(uniqueId: uniqueId)
 
         case ._105AttachmentFilePaths:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
 
             return OWS105AttachmentFilePaths(uniqueId: uniqueId)
 
         case ._107LegacySounds:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
 
             return OWS107LegacySounds(uniqueId: uniqueId)
 
         case ._108CallLoggingPreference:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
 
             return OWS108CallLoggingPreference(uniqueId: uniqueId)
 
         case ._109OutgoingMessageState:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
 
             return OWS109OutgoingMessageState(uniqueId: uniqueId)
 
         case .databaseMigration:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
 
             return OWSDatabaseMigration(uniqueId: uniqueId)
 
         case .resaveCollectionDBMigration:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
 
             return OWSResaveCollectionDBMigration(uniqueId: uniqueId)
 

@@ -68,7 +68,6 @@ extension OWSRecipientIdentity {
         case .recipientIdentity:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let createdAt: Date = record.createdAt
             let identityKey: Data = record.identityKey
             let isFirstKnownKey: Bool = record.isFirstKnownKey

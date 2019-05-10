@@ -72,7 +72,6 @@ extension StickerPack {
         case .stickerPack:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let author: String? = record.author
             let coverSerialized: Data = record.cover
             let cover: StickerPackItem = try SDSDeserialization.unarchive(coverSerialized, name: "cover")

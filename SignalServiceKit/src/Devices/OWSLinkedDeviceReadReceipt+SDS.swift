@@ -64,7 +64,6 @@ extension OWSLinkedDeviceReadReceipt {
         case .linkedDeviceReadReceipt:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let messageIdTimestamp: UInt64 = record.messageIdTimestamp
             let readTimestamp: UInt64 = record.readTimestamp
             let senderId: String = record.senderId

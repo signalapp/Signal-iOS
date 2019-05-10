@@ -62,7 +62,6 @@ extension OWSMessageDecryptJob {
         case .messageDecryptJob:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let createdAt: Date = record.createdAt
             let envelopeData: Data = record.envelopeData
 

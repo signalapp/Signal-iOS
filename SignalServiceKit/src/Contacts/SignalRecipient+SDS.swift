@@ -60,7 +60,6 @@ extension SignalRecipient {
         case .signalRecipient:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let devicesSerialized: Data = record.devices
             let devices: NSOrderedSet = try SDSDeserialization.unarchive(devicesSerialized, name: "devices")
 

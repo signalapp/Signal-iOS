@@ -82,7 +82,6 @@ extension TSThread {
         case .contactThread:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let archivalDate: Date? = record.archivalDate
             let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId", conversion: { NSNumber(value: $0) })
             let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
@@ -109,7 +108,6 @@ extension TSThread {
         case .groupThread:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let archivalDate: Date? = record.archivalDate
             let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId", conversion: { NSNumber(value: $0) })
             let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
@@ -137,7 +135,6 @@ extension TSThread {
         case .thread:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let archivalDate: Date? = record.archivalDate
             let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId", conversion: { NSNumber(value: $0) })
             let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)

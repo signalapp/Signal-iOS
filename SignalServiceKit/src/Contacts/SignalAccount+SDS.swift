@@ -66,7 +66,6 @@ extension SignalAccount {
         case .signalAccount:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let contactSerialized: Data? = record.contact
             let contact: Contact? = try SDSDeserialization.optionalUnarchive(contactSerialized, name: "contact")
             let hasMultipleAccountContact: Bool = record.hasMultipleAccountContact

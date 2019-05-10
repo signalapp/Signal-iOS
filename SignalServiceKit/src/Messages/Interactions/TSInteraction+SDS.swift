@@ -162,8 +162,8 @@ extension TSInteraction {
         case .addToContactsOfferMessage:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -214,8 +214,8 @@ extension TSInteraction {
         case .addToProfileWhitelistOfferMessage:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -266,8 +266,8 @@ extension TSInteraction {
         case .contactOffersInteraction:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let beforeInteractionId: String = try SDSDeserialization.required(record.beforeInteractionId, name: "beforeInteractionId")
@@ -290,8 +290,8 @@ extension TSInteraction {
         case .disappearingConfigurationUpdateInfoMessage:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -348,8 +348,8 @@ extension TSInteraction {
         case .unknownContactBlockOfferMessage:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -398,8 +398,8 @@ extension TSInteraction {
         case .verificationStateChangeMessage:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -456,8 +456,8 @@ extension TSInteraction {
         case .call:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let callSchemaVersion: UInt = try SDSDeserialization.required(record.callSchemaVersion, name: "callSchemaVersion")
@@ -478,8 +478,8 @@ extension TSInteraction {
         case .errorMessage:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -526,8 +526,8 @@ extension TSInteraction {
         case .incomingMessage:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -574,8 +574,8 @@ extension TSInteraction {
         case .infoMessage:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -624,8 +624,8 @@ extension TSInteraction {
         case .interaction:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
 
@@ -638,8 +638,8 @@ extension TSInteraction {
         case .invalidIdentityKeyErrorMessage:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -686,8 +686,8 @@ extension TSInteraction {
         case .invalidIdentityKeyReceivingErrorMessage:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -738,8 +738,8 @@ extension TSInteraction {
         case .invalidIdentityKeySendingErrorMessage:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -791,8 +791,8 @@ extension TSInteraction {
         case .message:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -829,8 +829,8 @@ extension TSInteraction {
         case .outgoingMessage:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
@@ -894,8 +894,8 @@ extension TSInteraction {
         case .unreadIndicatorInteraction:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
 

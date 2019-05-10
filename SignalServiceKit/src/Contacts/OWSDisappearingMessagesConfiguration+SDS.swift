@@ -62,7 +62,6 @@ extension OWSDisappearingMessagesConfiguration {
         case .disappearingMessagesConfiguration:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let durationSeconds: UInt32 = record.durationSeconds
             let enabled: Bool = record.enabled
 

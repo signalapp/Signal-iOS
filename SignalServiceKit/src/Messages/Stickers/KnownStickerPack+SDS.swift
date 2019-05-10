@@ -62,7 +62,6 @@ extension KnownStickerPack {
         case .knownStickerPack:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let infoSerialized: Data = record.info
             let info: StickerPackInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")
             let referenceCount: Int = record.referenceCount

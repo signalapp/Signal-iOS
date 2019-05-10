@@ -372,7 +372,10 @@ class TypeInfo:
             initializer_param_type = initializer_param_type + '?'
             
         # Special case this oddball type.
-        if value_name == 'conversationColorName':
+        if property.has_custom_column_source():
+            value_expr = property.column_source()
+            value_statement = 'let %s: %s = record.%s' % ( value_name, initializer_param_type, value_expr, )
+        elif value_name == 'conversationColorName':
             value_statement = 'let %s: %s = ConversationColorName(rawValue: %s)' % ( value_name, "ConversationColorName", value_expr, )
         elif self.is_codable:
             value_statement = 'let %s: %s = %s' % ( value_name, initializer_param_type, value_expr, )
@@ -719,11 +722,13 @@ public struct %s: Codable, FetchableRecord, PersistableRecord, TableRecord {
         if len(base_properties) > 0:
             swift_body += '\n    // Base class properties \n'
             for property in base_properties:
+                # print 'base_properties:', property.name
                 swift_body += write_record_property(property)
        
         if len(subclass_properties) > 0:
             swift_body += '\n    // Subclass properties \n'
             for property in subclass_properties:
+                # print 'subclass_properties:', property.name
                 swift_body += write_record_property(property, force_optional=True)
 
         swift_body += '''
@@ -800,7 +805,6 @@ extension %s {
 
             swift_body += '''
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
 '''
 
             base_property_names = set()
@@ -812,7 +816,7 @@ extension %s {
             for property in deserialize_properties:
                 value_name = '%s' % property.name
                 
-                if property.name not in ( 'uniqueId', 'sortId', ):
+                if property.name not in ( 'uniqueId', ):
                     did_force_optional = (property.name not in base_property_names) and (not property.is_optional)
                     for statement in property.deserialize_record_invocation(value_name, did_force_optional):
                         # print 'statement', statement, type(statement)

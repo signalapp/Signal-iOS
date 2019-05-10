@@ -62,7 +62,6 @@ extension InstalledSticker {
         case .installedSticker:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let emojiString: String? = record.emojiString
             let infoSerialized: Data = record.info
             let info: StickerInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")

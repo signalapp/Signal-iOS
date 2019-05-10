@@ -78,9 +78,9 @@ extension SSKJobRecord {
         case .sessionResetJobRecord:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let failureCount: UInt = record.failureCount
             let label: String = record.label
+            let sortId: UInt64 = record.sortId
             let status: SSKJobRecordStatus = record.status
             let contactThreadId: String = try SDSDeserialization.required(record.contactThreadId, name: "contactThreadId")
 
@@ -94,9 +94,9 @@ extension SSKJobRecord {
         case .jobRecord:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let failureCount: UInt = record.failureCount
             let label: String = record.label
+            let sortId: UInt64 = record.sortId
             let status: SSKJobRecordStatus = record.status
 
             return SSKJobRecord(uniqueId: uniqueId,
@@ -108,9 +108,9 @@ extension SSKJobRecord {
         case .messageSenderJobRecord:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let failureCount: UInt = record.failureCount
             let label: String = record.label
+            let sortId: UInt64 = record.sortId
             let status: SSKJobRecordStatus = record.status
             let invisibleMessageSerialized: Data? = record.invisibleMessage
             let invisibleMessage: TSOutgoingMessage? = try SDSDeserialization.optionalUnarchive(invisibleMessageSerialized, name: "invisibleMessage")

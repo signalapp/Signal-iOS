@@ -70,7 +70,6 @@ extension OWSBackupFragment {
         case .backupFragment:
 
             let uniqueId: String = record.uniqueId
-            let sortId: UInt64 = record.id
             let attachmentId: String? = record.attachmentId
             let downloadFilePath: String? = record.downloadFilePath
             let encryptionKey: Data = record.encryptionKey
