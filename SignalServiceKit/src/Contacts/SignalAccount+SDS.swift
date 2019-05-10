@@ -37,8 +37,8 @@ public struct SignalAccountRecord: Codable, FetchableRecord, PersistableRecord, 
         case recipientId
     }
 
-    public static func columnName(_ column: SignalAccountRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: SignalAccountRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -46,8 +46,11 @@ public struct SignalAccountRecord: Codable, FetchableRecord, PersistableRecord, 
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForSignalAccount column: SignalAccountRecord.CodingKeys) {
+    mutating func appendInterpolation(signalAccountColumn column: SignalAccountRecord.CodingKeys) {
         appendLiteral(SignalAccountRecord.columnName(column))
+    }
+    mutating func appendInterpolation(signalAccountColumnFullyQualified column: SignalAccountRecord.CodingKeys) {
+        appendLiteral(SignalAccountRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -283,7 +286,7 @@ extension SignalAccount {
         case .yapRead(let ydbTransaction):
             return SignalAccount.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(SignalAccountRecord.databaseTableName) WHERE \(columnForSignalAccount: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(SignalAccountRecord.databaseTableName) WHERE \(signalAccountColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

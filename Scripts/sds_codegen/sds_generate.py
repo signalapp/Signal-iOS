@@ -74,8 +74,8 @@ global_args = None
 # ---- 
 
 
-def to_swift_identifer_name(identifer_name):
-    return identifer_name[0].lower() + identifer_name[1:]
+def to_swift_identifier_name(identifier_name):
+    return identifier_name[0].lower() + identifier_name[1:]
     
 class ParsedClass:
      def __init__(self, json_dict):
@@ -713,7 +713,7 @@ public struct %s: Codable, FetchableRecord, PersistableRecord, TableRecord {
 ''' % ( record_name, str(clazz.name), )
 
         def write_record_property(property, force_optional=False):
-            column_name = to_swift_identifer_name(property.name)
+            column_name = to_swift_identifier_name(property.name)
             
             # print 'property', property.swift_type_safe()
             record_field_type = property.record_field_type()
@@ -751,33 +751,34 @@ public struct %s: Codable, FetchableRecord, PersistableRecord, TableRecord {
             custom_column_name = custom_column_name_for_property(property)
             if custom_column_name is not None:
                 swift_body += '''        case %s = "%s"
-''' % ( custom_column_name, to_swift_identifer_name(property.name), )
+''' % ( custom_column_name, to_swift_identifier_name(property.name), )
             else:
                 swift_body += '''        case %s
-''' % ( to_swift_identifer_name(property.name), )
+''' % ( to_swift_identifier_name(property.name), )
 
 
         swift_body += '''    }
 '''
         swift_body += '''
-    public static func columnName(_ column: %s.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: %s.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 ''' % ( record_name, )
-
-
-        string_interpolation_name = remove_prefix_from_class_name(clazz.name)
+ 
         swift_body += '''}
 
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnFor%s column: %s.CodingKeys) {
-        appendLiteral(%s.columnName(column))
+    mutating func appendInterpolation(%(record_identifier)sColumn column: %(record_name)s.CodingKeys) {
+        appendLiteral(%(record_name)s.columnName(column))
+    }
+    mutating func appendInterpolation(%(record_identifier)sColumnFullyQualified column: %(record_name)s.CodingKeys) {
+        appendLiteral(%(record_name)s.columnName(column, fullyQualified: true))
     }
 }
-''' % ( (string_interpolation_name, ) + ( record_name, ) * 2 )
+''' % { 'record_identifier': record_identifier(clazz.name), 'record_name': record_name }
 
 
         swift_body += '''
@@ -1012,7 +1013,7 @@ extension %sSerializer {
 
         def write_column_metadata(property, force_optional=False):
             column_index = len(column_property_names)
-            column_name = to_swift_identifer_name(property.name)
+            column_name = to_swift_identifier_name(property.name)
             column_property_names.append(column_name)
             
             is_optional = property.is_optional or force_optional
@@ -1345,22 +1346,21 @@ extension %s {
     }
 ''' % ( ( str(clazz.name), ) * 5 )
 
-        string_interpolation_name = remove_prefix_from_class_name(clazz.name)
         swift_body += '''
     // Fetches a single model by "unique id".
     public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> %s? {
+                               transaction: SDSAnyReadTransaction) -> %(class_name)s? {
         assert(uniqueId.count > 0)
         
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return %s.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return %(class_name)s.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(%s.databaseTableName) WHERE \(columnFor%s: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(%(record_name)s.databaseTableName) WHERE \(%(record_identifier)sColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }
-''' % ( str(clazz.name), str(clazz.name), record_name, string_interpolation_name, )
+''' % { "class_name": str(clazz.name), "record_name": record_name, "record_identifier": record_identifier(clazz.name) }
 
         swift_body += '''
     // Traverses all records.
@@ -1521,7 +1521,7 @@ class %sSerializer: SDSSerializer {
         for property in serialize_properties:
             if property.name == 'uniqueId':
                 continue
-            column_name = to_swift_identifer_name(property.name)
+            column_name = to_swift_identifier_name(property.name)
             # print 'property:', property.name, property.swift_type_safe()
             swift_body += '''            %sSerializer.%sColumn,
 ''' % ( str(table_class_name), str(column_name), )
@@ -1542,7 +1542,7 @@ class %sSerializer: SDSSerializer {
         if property.name == 'uniqueId':
             continue
         property_accessor = accessor_name_for_property(property)
-        # column_name = to_swift_identifer_name(property.name)
+        # column_name = to_swift_identifier_name(property.name)
         insert_value = 'self.model.%s' % str(property_accessor)
 
         if property.type_info().is_enum:
@@ -1693,8 +1693,11 @@ def get_record_type_enum_name(class_name):
     name = remove_prefix_from_class_name(class_name)
     if name[0].isnumeric():
         name = '_' + name
-    return to_swift_identifer_name(name)
-    
+    return to_swift_identifier_name(name)
+   
+def record_identifier(class_name): 
+    name = remove_prefix_from_class_name(class_name)
+    return to_swift_identifier_name(name)
 
 # ---- Column Ordering
 

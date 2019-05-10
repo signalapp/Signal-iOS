@@ -320,14 +320,20 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }]];
 }
 
-- (void)removeAttachment:(TSAttachment *)attachment transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeAttachment:(TSAttachment *)attachment transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug([self.attachmentIds containsObject:attachment.uniqueId]);
-    [attachment removeWithTransaction:transaction];
+    [attachment anyRemoveWithTransaction:transaction];
 
-    [self.attachmentIds removeObject:attachment.uniqueId];
-
-    [self saveWithTransaction:transaction];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *_Nonnull interaction) {
+                                 if (![interaction isKindOfClass:[TSMessage class]]) {
+                                     OWSFailDebug(@"unexpected interaction: %@", interaction.class);
+                                     return;
+                                 }
+                                 TSMessage *message = (TSMessage *)interaction;
+                                 [message.attachmentIds removeObject:attachment.uniqueId];
+                             }];
 }
 
 - (NSString *)debugDescription

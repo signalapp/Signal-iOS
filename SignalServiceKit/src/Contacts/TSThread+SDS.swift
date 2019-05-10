@@ -53,8 +53,8 @@ public struct ThreadRecord: Codable, FetchableRecord, PersistableRecord, TableRe
         case hasDismissedOffers
     }
 
-    public static func columnName(_ column: ThreadRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: ThreadRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -62,8 +62,11 @@ public struct ThreadRecord: Codable, FetchableRecord, PersistableRecord, TableRe
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForThread column: ThreadRecord.CodingKeys) {
+    mutating func appendInterpolation(threadColumn column: ThreadRecord.CodingKeys) {
         appendLiteral(ThreadRecord.columnName(column))
+    }
+    mutating func appendInterpolation(threadColumnFullyQualified column: ThreadRecord.CodingKeys) {
+        appendLiteral(ThreadRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -444,7 +447,7 @@ extension TSThread {
         case .yapRead(let ydbTransaction):
             return TSThread.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(columnForThread: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

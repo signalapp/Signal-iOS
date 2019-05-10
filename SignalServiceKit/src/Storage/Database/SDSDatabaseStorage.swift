@@ -78,6 +78,19 @@ public class SDSDatabaseStorage: NSObject {
 
     var useGRDB: Bool = FeatureFlags.useGRDB
 
+    // GRDB TODO: add read/write flavors
+    public func uiReadThrows(block: @escaping (SDSAnyReadTransaction) throws -> Void) throws {
+        if useGRDB {
+            try grdbStorage.uiReadThrows { transaction in
+                try block(transaction.asAnyRead)
+            }
+        } else {
+            try yapStorage.uiReadThrows { transaction in
+                try block(transaction.asAnyRead)
+            }
+        }
+    }
+
     @objc
     public func uiRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
         if useGRDB {
@@ -297,6 +310,20 @@ struct YAPDBStorageAdapter {
 }
 
 extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
+    func uiReadThrows(block: @escaping (YapDatabaseReadTransaction) throws -> Void) throws {
+        var errorToRaise: Error?
+        storage.uiDatabaseConnection.read { yapTransaction in
+            do {
+                try block(yapTransaction)
+            } catch {
+                errorToRaise = error
+            }
+        }
+        if let error = errorToRaise {
+            throw error
+        }
+    }
+
     func uiRead(block: @escaping (YapDatabaseReadTransaction) -> Void) {
         storage.uiDatabaseConnection.read { yapTransaction in
             block(yapTransaction)
@@ -341,12 +368,19 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         try migrator.migrate(pool)
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
+            BenchEventStart(title: "GRDB Setup", eventId: "GRDB Setup")
+            defer { BenchEventComplete(eventId: "GRDB Setup") }
             do {
+                try self.setup()
                 try self.setupUIDatabase()
             } catch {
                 owsFail("unable to setup database: \(error)")
             }
         }
+    }
+
+    public func add(function: DatabaseFunction) {
+        pool.add(function: function)
     }
 
     lazy var migrator: DatabaseMigrator = {
@@ -367,10 +401,22 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                             InteractionRecord.columnName(.id),
                             InteractionRecord.columnName(.threadUniqueId)
                 ])
-
             try db.create(index: "index_jobs_on_label",
                           on: JobRecordRecord.databaseTableName,
                           columns: [JobRecordRecord.columnName(.label)])
+
+            // Media Gallery Indices
+            try db.create(index: "index_attachments_on_albumMessageId",
+                          on: AttachmentRecord.databaseTableName,
+                          columns: [AttachmentRecord.columnName(.albumMessageId),
+                                    AttachmentRecord.columnName(.recordType)])
+
+            try db.create(index: "index_interactions_on_uniqueId_and_threadUniqueId",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.uniqueId),
+                            InteractionRecord.columnName(.threadUniqueId)
+                ])
         }
         return migrator
     }()
@@ -382,13 +428,16 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     @objc
-    var uiDatabaseObserver: UIDatabaseObserver?
+    public private(set) var uiDatabaseObserver: UIDatabaseObserver?
 
     @objc
-    var homeViewDatabaseObserver: HomeViewDatabaseObserver?
+    public private(set) var homeViewDatabaseObserver: HomeViewDatabaseObserver?
 
     @objc
-    var conversationViewDatabaseObserver: ConversationViewDatabaseObserver?
+    public private(set) var conversationViewDatabaseObserver: ConversationViewDatabaseObserver?
+
+    @objc
+    public private(set) var mediaGalleryDatabaseObserver: MediaGalleryDatabaseObserver?
 
     func setupUIDatabase() throws {
         // UIDatabaseObserver is a general purpose observer, whose delegates
@@ -411,14 +460,41 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         self.conversationViewDatabaseObserver = conversationViewDatabaseObserver
         uiDatabaseObserver.appendSnapshotDelegate(conversationViewDatabaseObserver)
 
+        // MediaGalleryDatabaseObserver is built on top of UIDatabaseObserver
+        // but includes the details necessary for rendering collection view
+        // batch updates.
+        let mediaGalleryDatabaseObserver = MediaGalleryDatabaseObserver()
+        self.mediaGalleryDatabaseObserver = mediaGalleryDatabaseObserver
+        uiDatabaseObserver.appendSnapshotDelegate(mediaGalleryDatabaseObserver)
+
         return try pool.write { db in
             db.add(transactionObserver: homeViewDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
             db.add(transactionObserver: conversationViewDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
+            db.add(transactionObserver: mediaGalleryDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
         }
+    }
+
+    func setup() throws {
+        GRDBMediaGalleryFinder.setup(storage: self)
     }
 }
 
 extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
+
+    // TODO readThrows/writeThrows flavors
+    public func uiReadThrows(block: @escaping (GRDBReadTransaction) throws -> Void) rethrows {
+        AssertIsOnMainThread()
+        try latestSnapshot.read { database in
+            try block(GRDBReadTransaction(database: database))
+        }
+    }
+
+    public func readReturningResultThrows<T>(block: @escaping (GRDBReadTransaction) throws -> T) throws -> T {
+        AssertIsOnMainThread()
+        return try pool.read { database in
+            return try block(GRDBReadTransaction(database: database))
+        }
+    }
 
     @objc
     public func uiRead(block: @escaping (GRDBReadTransaction) -> Void) throws {

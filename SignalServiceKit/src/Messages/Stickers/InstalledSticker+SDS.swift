@@ -33,8 +33,8 @@ public struct InstalledStickerRecord: Codable, FetchableRecord, PersistableRecor
         case info
     }
 
-    public static func columnName(_ column: InstalledStickerRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: InstalledStickerRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -42,8 +42,11 @@ public struct InstalledStickerRecord: Codable, FetchableRecord, PersistableRecor
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForInstalledSticker column: InstalledStickerRecord.CodingKeys) {
+    mutating func appendInterpolation(installedStickerColumn column: InstalledStickerRecord.CodingKeys) {
         appendLiteral(InstalledStickerRecord.columnName(column))
+    }
+    mutating func appendInterpolation(installedStickerColumnFullyQualified column: InstalledStickerRecord.CodingKeys) {
+        appendLiteral(InstalledStickerRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -267,7 +270,7 @@ extension InstalledSticker {
         case .yapRead(let ydbTransaction):
             return InstalledSticker.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(InstalledStickerRecord.databaseTableName) WHERE \(columnForInstalledSticker: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(InstalledStickerRecord.databaseTableName) WHERE \(installedStickerColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

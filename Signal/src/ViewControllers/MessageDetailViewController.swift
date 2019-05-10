@@ -200,7 +200,7 @@ class MessageDetailViewController: OWSViewController {
     lazy var thread: TSThread = {
         var thread: TSThread?
         self.uiDatabaseConnection.read { transaction in
-            thread = self.message.thread(with: transaction)
+            thread = self.message.thread(transaction: transaction.asAnyRead)
         }
         return thread!
     }()

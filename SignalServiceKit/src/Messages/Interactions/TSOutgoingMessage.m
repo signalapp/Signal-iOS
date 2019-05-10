@@ -234,7 +234,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     // always accurate, so not using the same connection for both reads is
     // acceptable.
     [TSOutgoingMessage.dbMigrationConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        TSThread *thread = [self threadWithTransaction:transaction];
+        TSThread *thread = [self threadWithTransaction:transaction.asAnyRead];
         recipientIds = [thread recipientIdentifiers];
         isGroupThread = [thread isGroupThread];
     }];

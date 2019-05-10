@@ -65,7 +65,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (OWSInteractionType)interactionType;
 
-- (TSThread *)threadWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (TSThread *)threadWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(thread(transaction:));
 
 /**
  * When an interaction is updated, it often affects the UI for it's containing thread. Touching it's thread will notify

@@ -79,8 +79,8 @@ public struct AttachmentRecord: Codable, FetchableRecord, PersistableRecord, Tab
         case state
     }
 
-    public static func columnName(_ column: AttachmentRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: AttachmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -88,8 +88,11 @@ public struct AttachmentRecord: Codable, FetchableRecord, PersistableRecord, Tab
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForAttachment column: AttachmentRecord.CodingKeys) {
+    mutating func appendInterpolation(attachmentColumn column: AttachmentRecord.CodingKeys) {
         appendLiteral(AttachmentRecord.columnName(column))
+    }
+    mutating func appendInterpolation(attachmentColumnFullyQualified column: AttachmentRecord.CodingKeys) {
+        appendLiteral(AttachmentRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -578,7 +581,7 @@ extension TSAttachment {
         case .yapRead(let ydbTransaction):
             return TSAttachment.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(AttachmentRecord.databaseTableName) WHERE \(columnForAttachment: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(AttachmentRecord.databaseTableName) WHERE \(attachmentColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

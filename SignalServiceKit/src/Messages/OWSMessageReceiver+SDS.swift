@@ -33,8 +33,8 @@ public struct MessageDecryptJobRecord: Codable, FetchableRecord, PersistableReco
         case envelopeData
     }
 
-    public static func columnName(_ column: MessageDecryptJobRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: MessageDecryptJobRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -42,8 +42,11 @@ public struct MessageDecryptJobRecord: Codable, FetchableRecord, PersistableReco
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForMessageDecryptJob column: MessageDecryptJobRecord.CodingKeys) {
+    mutating func appendInterpolation(messageDecryptJobColumn column: MessageDecryptJobRecord.CodingKeys) {
         appendLiteral(MessageDecryptJobRecord.columnName(column))
+    }
+    mutating func appendInterpolation(messageDecryptJobColumnFullyQualified column: MessageDecryptJobRecord.CodingKeys) {
+        appendLiteral(MessageDecryptJobRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -265,7 +268,7 @@ extension OWSMessageDecryptJob {
         case .yapRead(let ydbTransaction):
             return OWSMessageDecryptJob.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(MessageDecryptJobRecord.databaseTableName) WHERE \(columnForMessageDecryptJob: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(MessageDecryptJobRecord.databaseTableName) WHERE \(messageDecryptJobColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

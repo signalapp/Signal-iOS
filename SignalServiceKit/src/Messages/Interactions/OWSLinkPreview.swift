@@ -239,16 +239,16 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
-    public func removeAttachment(transaction: YapDatabaseReadWriteTransaction) {
+    public func removeAttachment(transaction: SDSAnyWriteTransaction) {
         guard let imageAttachmentId = imageAttachmentId else {
             owsFailDebug("No attachment id.")
             return
         }
-        guard let attachment = TSAttachment.fetch(uniqueId: imageAttachmentId, transaction: transaction) else {
+        guard let attachment = TSAttachment.anyFetch(uniqueId: imageAttachmentId, transaction: transaction) else {
             owsFailDebug("Could not load attachment.")
             return
         }
-        attachment.remove(with: transaction)
+        attachment.anyRemove(transaction: transaction)
     }
 
     @objc

@@ -27,8 +27,8 @@ public struct DatabaseMigrationRecord: Codable, FetchableRecord, PersistableReco
         case uniqueId
     }
 
-    public static func columnName(_ column: DatabaseMigrationRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: DatabaseMigrationRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -36,8 +36,11 @@ public struct DatabaseMigrationRecord: Codable, FetchableRecord, PersistableReco
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForDatabaseMigration column: DatabaseMigrationRecord.CodingKeys) {
+    mutating func appendInterpolation(databaseMigrationColumn column: DatabaseMigrationRecord.CodingKeys) {
         appendLiteral(DatabaseMigrationRecord.columnName(column))
+    }
+    mutating func appendInterpolation(databaseMigrationColumnFullyQualified column: DatabaseMigrationRecord.CodingKeys) {
+        appendLiteral(DatabaseMigrationRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -396,7 +399,7 @@ extension OWSDatabaseMigration {
         case .yapRead(let ydbTransaction):
             return OWSDatabaseMigration.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(DatabaseMigrationRecord.databaseTableName) WHERE \(columnForDatabaseMigration: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(DatabaseMigrationRecord.databaseTableName) WHERE \(databaseMigrationColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

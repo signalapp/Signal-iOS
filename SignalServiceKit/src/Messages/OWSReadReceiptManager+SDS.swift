@@ -33,8 +33,8 @@ public struct RecipientReadReceiptRecord: Codable, FetchableRecord, PersistableR
         case sentTimestamp
     }
 
-    public static func columnName(_ column: RecipientReadReceiptRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: RecipientReadReceiptRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -42,8 +42,11 @@ public struct RecipientReadReceiptRecord: Codable, FetchableRecord, PersistableR
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForRecipientReadReceipt column: RecipientReadReceiptRecord.CodingKeys) {
+    mutating func appendInterpolation(recipientReadReceiptColumn column: RecipientReadReceiptRecord.CodingKeys) {
         appendLiteral(RecipientReadReceiptRecord.columnName(column))
+    }
+    mutating func appendInterpolation(recipientReadReceiptColumnFullyQualified column: RecipientReadReceiptRecord.CodingKeys) {
+        appendLiteral(RecipientReadReceiptRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -267,7 +270,7 @@ extension TSRecipientReadReceipt {
         case .yapRead(let ydbTransaction):
             return TSRecipientReadReceipt.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(RecipientReadReceiptRecord.databaseTableName) WHERE \(columnForRecipientReadReceipt: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(RecipientReadReceiptRecord.databaseTableName) WHERE \(recipientReadReceiptColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

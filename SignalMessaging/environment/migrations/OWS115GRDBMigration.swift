@@ -63,26 +63,30 @@ extension OWS115GRDBMigration {
 
         try storage.write { grdbTransaction in
             var threadFinder: LegacyUnorderedFinder<TSThread>!
+            var attachmentFinder: LegacyUnorderedFinder<TSAttachment>!
             var interactionFinder: LegacyInteractionFinder!
             var jobRecordFinder: LegacyJobRecordFinder!
             dbReadConnection.read { transaction in
-                threadFinder = LegacyUnorderedFinder<TSThread>(transaction: transaction)
+                threadFinder = LegacyUnorderedFinder(transaction: transaction)
+                attachmentFinder = LegacyUnorderedFinder(transaction: transaction)
                 interactionFinder = LegacyInteractionFinder(transaction: transaction)
                 jobRecordFinder = LegacyJobRecordFinder(transaction: transaction)
             }
 
             try! self.migrateJobRecords(jobRecordFinder: jobRecordFinder, transaction: grdbTransaction)
-            try! self.migrateThreads(finder: threadFinder, transaction: grdbTransaction)
             try! self.migrateInteractions(interactionFinder: interactionFinder, transaction: grdbTransaction)
+
+            try! self.migrateUnorderedRecords(label: "threads", finder: threadFinder, memorySamplerRatio: 0.2, transaction: grdbTransaction)
+            try! self.migrateUnorderedRecords(label: "attachments", finder: attachmentFinder, memorySamplerRatio: 0.003, transaction: grdbTransaction)
 
             SDSDatabaseStorage.shouldLogDBQueries = true
         }
     }
 
-    private func migrateJobRecords(jobRecordFinder: LegacyJobRecordFinder, transaction: GRDBWriteTransaction) throws {
-        try Bench(title: "Migrate SSKJobRecord", memorySamplerRatio: 0.02) { memorySampler in
+    private func migrateUnorderedRecords<T>(label: String, finder: LegacyUnorderedFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws where T: TSYapDatabaseObject & SDSSerializable {
+        try Bench(title: "Migrate \(T.self)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
             var recordCount = 0
-            try jobRecordFinder.enumerateJobRecords { legacyRecord in
+            try finder.enumerateRecords { legacyRecord in
                 recordCount += 1
                 try SDSSerialization.insert(entity: legacyRecord, database: transaction.database)
                 memorySampler.sample()
@@ -91,10 +95,10 @@ extension OWS115GRDBMigration {
         }
     }
 
-    private func migrateThreads(finder: LegacyUnorderedFinder<TSThread>, transaction: GRDBWriteTransaction) throws {
-        try Bench(title: "Migrate TSThread", memorySamplerRatio: 0.02) { memorySampler in
+    private func migrateJobRecords(jobRecordFinder: LegacyJobRecordFinder, transaction: GRDBWriteTransaction) throws {
+        try Bench(title: "Migrate SSKJobRecord", memorySamplerRatio: 0.02) { memorySampler in
             var recordCount = 0
-            try finder.enumerateRecords { legacyRecord in
+            try jobRecordFinder.enumerateJobRecords { legacyRecord in
                 recordCount += 1
                 try SDSSerialization.insert(entity: legacyRecord, database: transaction.database)
                 memorySampler.sample()

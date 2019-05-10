@@ -133,8 +133,8 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
         case wasReceivedByUD
     }
 
-    public static func columnName(_ column: InteractionRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -142,8 +142,11 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForInteraction column: InteractionRecord.CodingKeys) {
+    mutating func appendInterpolation(interactionColumn column: InteractionRecord.CodingKeys) {
         appendLiteral(InteractionRecord.columnName(column))
+    }
+    mutating func appendInterpolation(interactionColumnFullyQualified column: InteractionRecord.CodingKeys) {
+        appendLiteral(InteractionRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -2026,7 +2029,7 @@ extension TSInteraction {
         case .yapRead(let ydbTransaction):
             return TSInteraction.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(InteractionRecord.databaseTableName) WHERE \(columnForInteraction: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(InteractionRecord.databaseTableName) WHERE \(interactionColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

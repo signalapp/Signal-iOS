@@ -31,8 +31,8 @@ public struct SignalRecipientRecord: Codable, FetchableRecord, PersistableRecord
         case devices
     }
 
-    public static func columnName(_ column: SignalRecipientRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: SignalRecipientRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -40,8 +40,11 @@ public struct SignalRecipientRecord: Codable, FetchableRecord, PersistableRecord
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForSignalRecipient column: SignalRecipientRecord.CodingKeys) {
+    mutating func appendInterpolation(signalRecipientColumn column: SignalRecipientRecord.CodingKeys) {
         appendLiteral(SignalRecipientRecord.columnName(column))
+    }
+    mutating func appendInterpolation(signalRecipientColumnFullyQualified column: SignalRecipientRecord.CodingKeys) {
+        appendLiteral(SignalRecipientRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -259,7 +262,7 @@ extension SignalRecipient {
         case .yapRead(let ydbTransaction):
             return SignalRecipient.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(SignalRecipientRecord.databaseTableName) WHERE \(columnForSignalRecipient: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(SignalRecipientRecord.databaseTableName) WHERE \(signalRecipientColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

@@ -35,8 +35,8 @@ public struct LinkedDeviceReadReceiptRecord: Codable, FetchableRecord, Persistab
         case senderId
     }
 
-    public static func columnName(_ column: LinkedDeviceReadReceiptRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: LinkedDeviceReadReceiptRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -44,8 +44,11 @@ public struct LinkedDeviceReadReceiptRecord: Codable, FetchableRecord, Persistab
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForLinkedDeviceReadReceipt column: LinkedDeviceReadReceiptRecord.CodingKeys) {
+    mutating func appendInterpolation(linkedDeviceReadReceiptColumn column: LinkedDeviceReadReceiptRecord.CodingKeys) {
         appendLiteral(LinkedDeviceReadReceiptRecord.columnName(column))
+    }
+    mutating func appendInterpolation(linkedDeviceReadReceiptColumnFullyQualified column: LinkedDeviceReadReceiptRecord.CodingKeys) {
+        appendLiteral(LinkedDeviceReadReceiptRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -273,7 +276,7 @@ extension OWSLinkedDeviceReadReceipt {
         case .yapRead(let ydbTransaction):
             return OWSLinkedDeviceReadReceipt.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(LinkedDeviceReadReceiptRecord.databaseTableName) WHERE \(columnForLinkedDeviceReadReceipt: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(LinkedDeviceReadReceiptRecord.databaseTableName) WHERE \(linkedDeviceReadReceiptColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

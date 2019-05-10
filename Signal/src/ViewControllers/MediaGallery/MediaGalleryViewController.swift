@@ -318,12 +318,11 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
     private var pageViewController: MediaPageViewController?
 
-    private var uiDatabaseConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().uiDatabaseConnection
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
-    private let editingDatabaseConnection: YapDatabaseConnection
-    private let mediaGalleryFinder: OWSMediaGalleryFinder
+    private let mediaGalleryFinder: AnyMediaGalleryFinder
 
     private var initialDetailItem: MediaGalleryItem?
     private let thread: TSThread
@@ -340,16 +339,26 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     init(thread: TSThread, options: MediaGalleryOption = []) {
         self.thread = thread
 
-        self.editingDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
-
         self.options = options
-        self.mediaGalleryFinder = OWSMediaGalleryFinder(thread: thread)
+        self.mediaGalleryFinder = AnyMediaGalleryFinder(thread: thread)
         super.init()
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(uiDatabaseDidUpdate),
-                                               name: .OWSUIDatabaseConnectionDidUpdate,
-                                               object: OWSPrimaryStorage.shared().dbNotificationObject)
+        setupDatabaseObservation()
+    }
+
+    func setupDatabaseObservation() {
+        if FeatureFlags.useGRDB {
+            guard let mediaGalleryDatabaseObserver = databaseStorage.grdbStorage.mediaGalleryDatabaseObserver else {
+                owsFailDebug("observer was unexpectedly nil")
+                return
+            }
+            mediaGalleryDatabaseObserver.appendSnapshotDelegate(self)
+        } else {
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(uiDatabaseDidUpdate),
+                                                   name: .OWSUIDatabaseConnectionDidUpdate,
+                                                   object: OWSPrimaryStorage.shared().dbNotificationObject)
+        }
     }
 
     // MARK: Present/Dismiss
@@ -366,9 +375,8 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
     @objc
     public func presentDetailView(fromViewController: UIViewController, mediaAttachment: TSAttachment, replacingView: UIView) {
-        var galleryItem: MediaGalleryItem?
-        uiDatabaseConnection.read { transaction in
-            galleryItem = self.buildGalleryItem(attachment: mediaAttachment, transaction: transaction)
+        let galleryItem: MediaGalleryItem? = databaseStorage.uiReadReturningResult { transaction in
+            return self.buildGalleryItem(attachment: mediaAttachment, transaction: transaction)
         }
 
         guard let initialDetailItem = galleryItem else {
@@ -390,7 +398,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
         self.initialDetailItem = initialDetailItem
 
-        let pageViewController = MediaPageViewController(initialItem: initialDetailItem, mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection, options: self.options)
+        let pageViewController = MediaPageViewController(initialItem: initialDetailItem, mediaGalleryDataSource: self, options: self.options)
         self.addDataSourceDelegate(pageViewController)
 
         self.pageViewController = pageViewController
@@ -506,11 +514,11 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
     @objc
     func pushTileView(fromNavController: OWSNavigationController) {
-        var mostRecentItem: MediaGalleryItem?
-        self.uiDatabaseConnection.read { transaction in
-            if let attachment = self.mediaGalleryFinder.mostRecentMediaAttachment(transaction: transaction) {
-                mostRecentItem = self.buildGalleryItem(attachment: attachment, transaction: transaction)
+        let mostRecentItem: MediaGalleryItem? = databaseStorage.uiReadReturningResult { transaction in
+            guard let attachment = self.mediaGalleryFinder.mostRecentMediaAttachment(transaction: transaction)  else {
+                return nil
             }
+            return self.buildGalleryItem(attachment: attachment, transaction: transaction)
         }
 
         if let mostRecentItem = mostRecentItem {
@@ -715,7 +723,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         ]
     }
 
-    // MARK: - Database Notifications
+    // MARK: - Yap Database Notifications
 
     @objc
     func uiDatabaseDidUpdate(notification: Notification) {
@@ -724,7 +732,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
             return
         }
 
-        guard mediaGalleryFinder.hasMediaChanges(in: notifications, dbConnection: uiDatabaseConnection) else {
+        guard mediaGalleryFinder.yapAdapter.hasMediaChanges(in: notifications, dbConnection: OWSPrimaryStorage.shared().uiDatabaseConnection) else {
             Logger.verbose("no changes for thread: \(thread)")
             return
         }
@@ -747,7 +755,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                 return []
             }
 
-            guard let galleryData = extensionChanges[OWSMediaGalleryFinder.databaseExtensionName()] as? [AnyHashable: Any] else {
+            guard let galleryData = extensionChanges[YAPDBMediaGalleryFinder.databaseExtensionName()] as? [AnyHashable: Any] else {
                 owsFailDebug("galleryData was unexpectedly nil")
                 return []
             }
@@ -762,11 +770,15 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     }
 
     func process(rowChanges: [YapDatabaseViewRowChange]) {
-        let deleteChanges = rowChanges.filter { $0.type == .delete }
+        let deletedIds = rowChanges.filter { $0.type == .delete }.map { $0.collectionKey.key }
 
-        let deletedItems: [MediaGalleryItem] = deleteChanges.compactMap { (deleteChange: YapDatabaseViewRowChange) -> MediaGalleryItem? in
+        process(deletedAttachmentIds: deletedIds)
+    }
+
+    func process(deletedAttachmentIds: [String]) {
+        let deletedItems: [MediaGalleryItem] = deletedAttachmentIds.compactMap { attachmentId in
             guard let deletedItem = self.galleryItems.first(where: { galleryItem in
-                galleryItem.attachmentStream.uniqueId == deleteChange.collectionKey.key
+                galleryItem.attachmentStream.uniqueId == attachmentId
             }) else {
                 Logger.debug("deletedItem was never loaded - no need to remove.")
                 return nil
@@ -775,13 +787,13 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
             return deletedItem
         }
 
-        self.delete(items: deletedItems, initiatedBy: self)
+        delete(items: deletedItems, initiatedBy: self)
     }
 
     // MARK: - MediaGalleryDataSource
 
     lazy var mediaTileViewController: MediaTileViewController = {
-        let vc = MediaTileViewController(mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection)
+        let vc = MediaTileViewController(mediaGalleryDataSource: self)
         vc.delegate = self
 
         self.addDataSourceDelegate(vc)
@@ -795,13 +807,13 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     var hasFetchedOldest = false
     var hasFetchedMostRecent = false
 
-    func buildGalleryItem(attachment: TSAttachment, transaction: YapDatabaseReadTransaction) -> MediaGalleryItem? {
+    func buildGalleryItem(attachment: TSAttachment, transaction: SDSAnyReadTransaction) -> MediaGalleryItem? {
         guard let attachmentStream = attachment as? TSAttachmentStream else {
             owsFailDebug("gallery doesn't yet support showing undownloaded attachments")
             return nil
         }
 
-        guard let message = attachmentStream.fetchAlbumMessage(with: transaction) else {
+        guard let message = attachmentStream.fetchAlbumMessage(transaction: transaction) else {
             owsFailDebug("message was unexpectedly nil")
             return nil
         }
@@ -861,11 +873,10 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
         do {
             try Bench(title: "fetching gallery items") {
-                try self.uiDatabaseConnection.read { transaction in
-                    guard let index = self.mediaGalleryFinder.mediaIndex(attachment: item.attachmentStream, transaction: transaction) else {
+                try self.databaseStorage.uiReadThrows { transaction in
+                    guard let initialIndex = self.mediaGalleryFinder.mediaIndex(attachment: item.attachmentStream, transaction: transaction) else {
                         throw MediaGalleryError.itemNoLongerExists
                     }
-                    let initialIndex: Int = index.intValue
                     let mediaCount: Int = Int(self.mediaGalleryFinder.mediaCount(transaction: transaction))
 
                     let requestRange: Range<Int> = { () -> Range<Int> in
@@ -1014,14 +1025,14 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
             self.deletedAttachments.insert(item.attachmentStream)
         }
 
-        self.editingDatabaseConnection.asyncReadWrite { transaction in
+        self.databaseStorage.asyncWrite { transaction in
             for item in items {
                 let message = item.message
                 let attachment = item.attachmentStream
                 message.removeAttachment(attachment, transaction: transaction)
                 if message.attachmentIds.count == 0 {
                     Logger.debug("removing message after removing last media attachment")
-                    message.remove(with: transaction)
+                    message.anyRemove(transaction: transaction)
                 }
             }
         }
@@ -1139,10 +1150,27 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     }
 
     var galleryItemCount: Int {
-        var count: UInt = 0
-        self.uiDatabaseConnection.read { (transaction: YapDatabaseReadTransaction) in
-            count = self.mediaGalleryFinder.mediaCount(transaction: transaction)
+        let count: UInt = databaseStorage.uiReadReturningResult { transaction in
+            return self.mediaGalleryFinder.mediaCount(transaction: transaction)
         }
         return Int(count) - deletedAttachments.count
+    }
+}
+
+extension MediaGallery: MediaGalleryDatabaseSnapshotDelegate {
+    func mediaGalleryDatabaseSnapshotWillUpdate() {
+        // no-op
+    }
+
+    func mediaGalleryDatabaseSnapshotDidUpdate(deletedAttachmentIds: Set<String>) {
+        process(deletedAttachmentIds: Array(deletedAttachmentIds))
+    }
+
+    func mediaGalleryDatabaseSnapshotDidUpdateExternally() {
+        // no-op
+    }
+
+    func mediaGalleryDatabaseSnapshotDidReset() {
+        // no-op
     }
 }

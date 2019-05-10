@@ -47,8 +47,8 @@ public struct JobRecordRecord: Codable, FetchableRecord, PersistableRecord, Tabl
         case threadId
     }
 
-    public static func columnName(_ column: JobRecordRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -56,8 +56,11 @@ public struct JobRecordRecord: Codable, FetchableRecord, PersistableRecord, Tabl
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForJobRecord column: JobRecordRecord.CodingKeys) {
+    mutating func appendInterpolation(jobRecordColumn column: JobRecordRecord.CodingKeys) {
         appendLiteral(JobRecordRecord.columnName(column))
+    }
+    mutating func appendInterpolation(jobRecordColumnFullyQualified column: JobRecordRecord.CodingKeys) {
+        appendLiteral(JobRecordRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -393,7 +396,7 @@ extension SSKJobRecord {
         case .yapRead(let ydbTransaction):
             return SSKJobRecord.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(JobRecordRecord.databaseTableName) WHERE \(columnForJobRecord: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(JobRecordRecord.databaseTableName) WHERE \(jobRecordColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }

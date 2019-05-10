@@ -33,8 +33,8 @@ public struct DisappearingMessagesConfigurationRecord: Codable, FetchableRecord,
         case enabled
     }
 
-    public static func columnName(_ column: DisappearingMessagesConfigurationRecord.CodingKeys) -> String {
-        return column.rawValue
+    public static func columnName(_ column: DisappearingMessagesConfigurationRecord.CodingKeys, fullyQualified: Bool = false) -> String {
+        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
 }
@@ -42,8 +42,11 @@ public struct DisappearingMessagesConfigurationRecord: Codable, FetchableRecord,
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
-    mutating func appendInterpolation(columnForDisappearingMessagesConfiguration column: DisappearingMessagesConfigurationRecord.CodingKeys) {
+    mutating func appendInterpolation(disappearingMessagesConfigurationColumn column: DisappearingMessagesConfigurationRecord.CodingKeys) {
         appendLiteral(DisappearingMessagesConfigurationRecord.columnName(column))
+    }
+    mutating func appendInterpolation(disappearingMessagesConfigurationColumnFullyQualified column: DisappearingMessagesConfigurationRecord.CodingKeys) {
+        appendLiteral(DisappearingMessagesConfigurationRecord.columnName(column, fullyQualified: true))
     }
 }
 
@@ -265,7 +268,7 @@ extension OWSDisappearingMessagesConfiguration {
         case .yapRead(let ydbTransaction):
             return OWSDisappearingMessagesConfiguration.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(DisappearingMessagesConfigurationRecord.databaseTableName) WHERE \(columnForDisappearingMessagesConfiguration: .uniqueId) = ?"
+            let sql = "SELECT * FROM \(DisappearingMessagesConfigurationRecord.databaseTableName) WHERE \(disappearingMessagesConfigurationColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }
