@@ -1,8 +1,13 @@
 #import "OWSPrimaryStorage+Loki.h"
 #import "OWSPrimaryStorage+PreKeyStore.h"
+#import "OWSPrimaryStorage+SignedPreKeyStore.h"
+#import "OWSDevice.h"
+#import "OWSIdentityManager.h"
+#import "TSAccountManager.h"
 #import "YapDatabaseConnection+OWS.h"
 
 #define LokiPreKeyContactCollection @"LokiPreKeyContactCollection"
+#define LokiPreKeyBundleCollection @"LokiPreKeyBundleCollection"
 
 @implementation OWSPrimaryStorage (Loki)
 
@@ -43,6 +48,39 @@
     [self.dbReadWriteConnection setInt:record.Id forKey:pubKey inCollection:LokiPreKeyContactCollection];
     
     return record;
+}
+
+# pragma mark - PreKeyBundle
+
+- (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)pubKey {
+    ECKeyPair *_Nullable myKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
+    OWSAssertDebug(myKeyPair);
+    
+    SignedPreKeyRecord *signedPreKey = [self currentSignedPreKey];
+    PreKeyRecord *preKey = [self getPreKeyForContact:pubKey];
+    
+    uint32_t registrationId = [[TSAccountManager sharedInstance] getOrGenerateRegistrationId];
+    
+    PreKeyBundle *bundle = [[PreKeyBundle alloc] initWithRegistrationId:registrationId
+                                                               deviceId:OWSDevicePrimaryDeviceId
+                                                               preKeyId:preKey.Id
+                                                           preKeyPublic:preKey.keyPair.publicKey
+                                                     signedPreKeyPublic:signedPreKey.keyPair.publicKey
+                                                         signedPreKeyId:signedPreKey.Id
+                                                  signedPreKeySignature:signedPreKey.signature
+                                                            identityKey:myKeyPair.publicKey];
+    return bundle;
+}
+
+- (PreKeyBundle *_Nullable)getPreKeyBundleForContact:(NSString *)pubKey {
+    PreKeyBundle *bundle = [self.dbReadWriteConnection preKeyBundleForKey:pubKey inCollection:LokiPreKeyBundleCollection];
+    return bundle;
+}
+
+- (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)pubKey {
+    [self.dbReadWriteConnection setObject:bundle
+                                   forKey:pubKey
+                             inCollection:LokiPreKeyBundleCollection];
 }
 
 @end
