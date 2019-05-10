@@ -27,8 +27,8 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
     public let threadUniqueId: String
 
     // Subclass properties
-    public let attachmentFilenameMap: [String: String]?
-    public let attachmentIds: [String]?
+    public let attachmentFilenameMap: Data?
+    public let attachmentIds: Data?
     public let authorId: String?
     public let beforeInteractionId: String?
     public let body: String?
@@ -166,7 +166,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -218,7 +219,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -294,7 +296,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -352,7 +355,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -402,7 +406,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -482,7 +487,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -530,7 +536,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -578,7 +585,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -642,7 +650,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -690,7 +699,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -742,7 +752,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -795,7 +806,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -833,7 +845,8 @@ extension TSInteraction {
             let sortId: UInt64 = record.id
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
-            let attachmentIds: [String] = try SDSDeserialization.required(record.attachmentIds, name: "attachmentIds")
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
@@ -847,7 +860,8 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
-            let attachmentFilenameMap: [String: String] = try SDSDeserialization.required(record.attachmentFilenameMap, name: "attachmentFilenameMap")
+            let attachmentFilenameMapSerialized: Data? = record.attachmentFilenameMap
+            let attachmentFilenameMap: [String: String] = try SDSDeserialization.unarchive(attachmentFilenameMapSerialized, name: "attachmentFilenameMap")
             let customMessage: String? = record.customMessage
             guard let groupMetaMessage: TSGroupMetaMessage = record.groupMetaMessage else {
                throw SDSError.missingRequiredField

@@ -147,6 +147,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     if (transaction.transitional_yapReadTransaction) {
         [self updateAuthorConversationColorNameWithTransaction:transaction.transitional_yapReadTransaction];
+    } else {
+        _authorConversationColorName = kConversationColorName_Default;
     }
 
     [self ensureViewState:transaction];

@@ -29,6 +29,13 @@ BASE_MODEL_CLASS_NAME = 'TSYapDatabaseObject'
 
 CODE_GEN_SNIPPET_MARKER_OBJC = '// --- CODE GENERATION MARKER'
 
+# GRDB seems to encode non-primitive using JSON.
+# GRDB chokes when decodes this JSON, due to it being a JSON "fragment".
+# Either this is a bug in GRDB or we're using GRDB incorrectly.
+# Until we resolve this issue, we need to encode/decode 
+# non-primitives ourselves.
+ONLY_USE_CODABLE_FOR_PRIMITIVES = True
+
 def update_generated_snippet(file_path, marker, snippet):
     # file_path = sds_common.sds_from_relative_path(relative_path)
     if not os.path.exists(file_path):
@@ -545,7 +552,9 @@ class ParsedProperty:
             return True
         elif objc_type.startswith('enum '):
             return True
-
+        
+        if ONLY_USE_CODABLE_FOR_PRIMITIVES:
+            return False
         
         array_match = re.search(r'^NS(Mutable)?Array<(.+)> \*$', objc_type)
         if array_match is not None:

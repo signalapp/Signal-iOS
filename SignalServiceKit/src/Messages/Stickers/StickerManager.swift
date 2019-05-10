@@ -62,6 +62,10 @@ public class StickerManager: NSObject {
         return SSKEnvironment.shared.messageSenderJobQueue
     }
 
+    private static var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
     // MARK: - Properties
 
     private static let operationQueue: OperationQueue = {
@@ -921,6 +925,10 @@ public class StickerManager: NSObject {
     private class func enqueueStickerSyncMessage(operationType: StickerPackOperationType,
                                                  packs: [StickerPackInfo],
                                                  transaction: SDSAnyWriteTransaction) {
+        guard tsAccountManager.isRegisteredAndReady() else {
+            return
+        }
+
         let message = OWSStickerPackSyncMessage(packs: packs, operationType: operationType)
 
         switch transaction.writeTransaction {
