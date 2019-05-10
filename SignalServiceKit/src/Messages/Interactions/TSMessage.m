@@ -325,9 +325,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     OWSAssertDebug([self.attachmentIds containsObject:attachment.uniqueId]);
     [attachment anyRemoveWithTransaction:transaction];
 
-    [self.attachmentIds removeObject:attachment.uniqueId];
-
-    [self anySaveWithTransaction:transaction];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *_Nonnull interaction) {
+                                 if (![interaction isKindOfClass:[TSMessage class]]) {
+                                     OWSFailDebug(@"unexpected interaction: %@", interaction.class);
+                                     return;
+                                 }
+                                 TSMessage *message = (TSMessage *)interaction;
+                                 [message.attachmentIds removeObject:attachment.uniqueId];
+                             }];
 }
 
 - (NSString *)debugDescription
