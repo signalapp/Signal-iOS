@@ -645,8 +645,7 @@ static NSTimeInterval launchStartedAt;
 - (void)enableBackgroundRefreshIfNecessary
 {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        const NSTimeInterval minimumBackgroundFetchInterval = 5 * 60; // This seems to be the lower bound on what iOS allows
-        [UIApplication.sharedApplication setMinimumBackgroundFetchInterval:minimumBackgroundFetchInterval];
+        [UIApplication.sharedApplication setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
         // Loki: Original code
         // ========
 //        if (OWS2FAManager.sharedManager.is2FAEnabled && [self.tsAccountManager isRegisteredAndReady]) {
