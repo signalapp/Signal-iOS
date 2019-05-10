@@ -1,3 +1,4 @@
+#import <SignalServiceKit/SignalServiceKit.h>
 #import "TSOutgoingMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN

@@ -26,6 +26,17 @@ public class CreatePreKeysOperation: OWSOperation {
         if self.identityKeyManager.identityKeyPair() == nil {
             self.identityKeyManager.generateNewIdentityKey()
         }
+        
+        let signedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
+        signedPreKeyRecord.markAsAcceptedByService()
+        self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+        self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+
+        Logger.debug("done")
+        self.reportSuccess()
+        
+        /* Loki: Original Code
+        * ==================
         let identityKey: Data = self.identityKeyManager.identityKeyPair()!.publicKey
         let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
         let preKeyRecords: [PreKeyRecord] = self.primaryStorage.generatePreKeyRecords()
@@ -45,5 +56,6 @@ public class CreatePreKeysOperation: OWSOperation {
         }.catch { error in
             self.reportError(error)
         }.retainUntilComplete()
+        */
     }
 }

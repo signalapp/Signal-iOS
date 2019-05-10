@@ -22,6 +22,7 @@
 #import "OWSPrimaryStorage+PreKeyStore.h"
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "OWSPrimaryStorage+sessionStore.h"
+#import "OWSPrimaryStorage+Loki.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "OWSUploadOperation.h"
@@ -1614,7 +1615,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (canSafelyBeDiscarded) {
         OWSRaiseException(NoSessionForTransientMessageException, @"No session for transient message.");
     }
+    
+    PreKeyBundle *_Nullable bundle = [[OWSPrimaryStorage sharedManager] getPreKeyBundleForContact:recipientId];
+    __block NSException *_Nullable exception;
 
+    /** Loki: Original code
+     * ==================
     __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     __block PreKeyBundle *_Nullable bundle;
     __block NSException *_Nullable exception;
@@ -1642,6 +1648,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (exception) {
         @throw exception;
     }
+    *============
+    */
 
     if (!bundle) {
         NSString *missingPrekeyBundleException = @"missingPrekeyBundleException";

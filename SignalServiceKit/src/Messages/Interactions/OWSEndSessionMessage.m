@@ -3,6 +3,8 @@
 //
 
 #import "OWSEndSessionMessage.h"
+#import "OWSPrimaryStorage+Loki.h"
+#import "SignalRecipient.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -46,10 +48,20 @@ NS_ASSUME_NONNULL_BEGIN
     return builder;
 }
 
-- (SSKProtoContentBuilder *)contentBuilder {
-    SSKProtoContentBuilder *builder = [super contentBuilder];
+- (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient {
+    SSKProtoContentBuilder *builder = [super contentBuilder:recipient];
     
-    // TODO Loki: Attach pre-key bundle here
+    PreKeyBundle *bundle = [[OWSPrimaryStorage sharedManager] generatePreKeyBundleForContact:recipient.recipientId];
+    SSKProtoPrekeyBundleMessageBuilder *preKeyBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:bundle];
+    
+    // Build the pre key bundle message
+    NSError *error;
+    SSKProtoPrekeyBundleMessage *_Nullable message = [preKeyBuilder buildAndReturnError:&error];
+    if (error || !message) {
+        OWSFailDebug(@"Failed to build preKeyBundle for %@: %@", recipient.recipientId, error);
+    } else {
+        [builder setPrekeyBundleMessage:message];
+    }
     
     return builder;
 }

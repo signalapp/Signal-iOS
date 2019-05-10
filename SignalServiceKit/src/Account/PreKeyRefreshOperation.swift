@@ -36,6 +36,25 @@ public class RefreshPreKeysOperation: OWSOperation {
             return
         }
 
+        guard self.primaryStorage.currentSignedPrekeyId() == nil else {
+            Logger.debug("Already have a signed prekey set")
+            self.reportSuccess()
+            return
+        }
+
+        let signedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
+        signedPreKeyRecord.markAsAcceptedByService()
+        self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+        self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+        
+        TSPreKeyManager.clearPreKeyUpdateFailureCount()
+        TSPreKeyManager.clearSignedPreKeyRecords()
+        
+        Logger.debug("done")
+        self.reportSuccess()
+        
+        /* Loki: Original Code
+         * =============
         firstly {
             self.accountServiceClient.getPreKeysCount()
         }.then(on: DispatchQueue.global()) { preKeysCount -> Promise<Void> in
@@ -68,6 +87,7 @@ public class RefreshPreKeysOperation: OWSOperation {
         }.catch { error in
             self.reportError(error)
         }.retainUntilComplete()
+        */
     }
 
     public override func didSucceed() {

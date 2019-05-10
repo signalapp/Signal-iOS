@@ -4,7 +4,9 @@
 #import "OWSDevice.h"
 #import "OWSIdentityManager.h"
 #import "TSAccountManager.h"
+#import "TSPreKeyManager.h"
 #import "YapDatabaseConnection+OWS.h"
+#import <AxolotlKit/NSData+keyVersionByte.h>
 
 #define LokiPreKeyContactCollection @"LokiPreKeyContactCollection"
 #define LokiPreKeyBundleCollection @"LokiPreKeyBundleCollection"
@@ -53,22 +55,28 @@
 # pragma mark - PreKeyBundle
 
 - (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)pubKey {
+    // Check prekeys to make sure we have them for this function
+    [TSPreKeyManager checkPreKeys];
+    
     ECKeyPair *_Nullable myKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
     OWSAssertDebug(myKeyPair);
     
-    SignedPreKeyRecord *signedPreKey = [self currentSignedPreKey];
-    PreKeyRecord *preKey = [self getPreKeyForContact:pubKey];
+    SignedPreKeyRecord *_Nullable signedPreKey = [self currentSignedPreKey];
+    if (!signedPreKey) {
+        OWSFailDebug(@"Signed prekey is null");
+    }
     
+    PreKeyRecord *preKey = [self getPreKeyForContact:pubKey];
     uint32_t registrationId = [[TSAccountManager sharedInstance] getOrGenerateRegistrationId];
     
     PreKeyBundle *bundle = [[PreKeyBundle alloc] initWithRegistrationId:registrationId
                                                                deviceId:OWSDevicePrimaryDeviceId
                                                                preKeyId:preKey.Id
-                                                           preKeyPublic:preKey.keyPair.publicKey
-                                                     signedPreKeyPublic:signedPreKey.keyPair.publicKey
+                                                           preKeyPublic:preKey.keyPair.publicKey.prependKeyType
+                                                     signedPreKeyPublic:signedPreKey.keyPair.publicKey.prependKeyType
                                                          signedPreKeyId:signedPreKey.Id
                                                   signedPreKeySignature:signedPreKey.signature
-                                                            identityKey:myKeyPair.publicKey];
+                                                            identityKey:myKeyPair.publicKey.prependKeyType];
     return bundle;
 }
 

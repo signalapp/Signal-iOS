@@ -26,7 +26,20 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             Logger.debug("skipping - not registered")
             return
         }
+        
+        let signedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
+        signedPreKeyRecord.markAsAcceptedByService()
+        self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+        self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+        
+        TSPreKeyManager.clearPreKeyUpdateFailureCount()
+        TSPreKeyManager.clearSignedPreKeyRecords()
+        
+        Logger.debug("done")
+        self.reportSuccess()
 
+        /* Loki: Original Code
+         * =========
         let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
 
         self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
@@ -46,6 +59,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         }.catch { error in
             self.reportError(error)
         }.retainUntilComplete()
+        */
     }
 
     override public func didFail(error: Error) {
