@@ -329,7 +329,7 @@ static NSTimeInterval launchStartedAt;
         [UIApplication.sharedApplication cancelAllLocalNotifications];
         [UIApplication.sharedApplication setApplicationIconBadgeNumber:0];
 
-        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+        [UIApplication.sharedApplication scheduleLocalNotification:notification];
         [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
 
         [DDLog flushLog];
@@ -717,6 +717,9 @@ static NSTimeInterval launchStartedAt;
             [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
+            
+            // Loki: Start poller
+            [Poller.shared startIfNeeded];
            
             // TODO: Ping friends to let them know we're online
             
@@ -1159,13 +1162,6 @@ static NSTimeInterval launchStartedAt;
             // But once our REST endpoint is fixed to properly de-enqueue fallback notifications, we can easily
             // use the rest endpoint here rather than the websocket and circumvent making changes to critical code.
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                // Show notification (TODO: use actual data for this)
-                UNMutableNotificationContent *notificationContent = [UNMutableNotificationContent new];
-                notificationContent.title = @"Spiderman";
-                notificationContent.body = @"Oh hello, can you help me fight crime for a bit?";
-                UNNotificationRequest *notificationRequest = [UNNotificationRequest requestWithIdentifier:[NSUUID UUID].UUIDString content:notificationContent trigger:nil];
-                [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:notificationRequest withCompletionHandler:nil];
-                // Invoke completion handler
                 completionHandler(UIBackgroundFetchResultNewData);
                 job = nil;
             });
