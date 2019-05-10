@@ -44,7 +44,7 @@ public struct AttachmentRecord: Codable, FetchableRecord, PersistableRecord, Tab
     public let isValidVideoCached: Bool?
     public let lazyRestoreFragmentId: String?
     public let localRelativeFilePath: String?
-    public let mediaSize: Data?
+    public let mediaSize: CGSize?
     public let mostRecentFailureLocalizedText: String?
     public let pointerType: TSAttachmentPointerType?
     public let state: TSAttachmentPointerState?
@@ -148,8 +148,7 @@ extension TSAttachment {
             let sourceFilename: String? = record.sourceFilename
             let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
             let lazyRestoreFragmentId: String? = record.lazyRestoreFragmentId
-            let mediaSizeSerialized: Data? = record.mediaSize
-            let mediaSize: CGSize = try SDSDeserialization.unarchive(mediaSizeSerialized, name: "mediaSize")
+            let mediaSize: CGSize = try SDSDeserialization.required(record.mediaSize, name: "mediaSize")
             let mostRecentFailureLocalizedText: String? = record.mostRecentFailureLocalizedText
             guard let pointerType: TSAttachmentPointerType = record.pointerType else {
                throw SDSError.missingRequiredField

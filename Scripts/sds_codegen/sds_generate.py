@@ -193,10 +193,11 @@ class ParsedClass:
         
         
 class TypeInfo:
-    def __init__(self, swift_type, objc_type, should_use_blob = False, is_enum = False):
+    def __init__(self, swift_type, objc_type, should_use_blob = False, is_codable = False, is_enum = False):
         self._swift_type = swift_type
         self._objc_type = objc_type
         self.should_use_blob = should_use_blob
+        self.is_codable = is_codable
         self.is_enum = is_enum
     # def objc_type_safe(self):
     #     return self.type_info().objc_type()
@@ -220,7 +221,7 @@ class TypeInfo:
         # Special case this oddball type.
         if value_name == 'conversationColorName':
             return '.unicodeString'
-        elif self.should_use_blob:
+        elif self.should_use_blob or self.is_codable:
             return '.blob'
         elif self.is_enum:
             return '.int'
@@ -267,7 +268,7 @@ class TypeInfo:
         # Special case this oddball type.
         if value_name == 'conversationColorName':
             accessor_name = 'optionalString' if is_optional else 'string'
-        elif self.should_use_blob:
+        elif self.should_use_blob or self.is_codable:
             accessor_name = 'optionalBlob' if is_optional else 'blob'
         elif self.is_enum:
             accessor_name = 'optionalInt' if is_optional else 'int'
@@ -298,7 +299,7 @@ class TypeInfo:
         # Special case this oddball type.
         if value_name == 'conversationColorName':
             value_statement = 'let %s = ConversationColorName(rawValue: %s)' % ( value_name, value_expr, )
-        elif self.should_use_blob:
+        elif self.should_use_blob or self.is_codable:
             blob_name = '%sSerialized' % ( str(value_name), )
             if is_optional:
                 serialized_statement = 'let %s: Data? = %s' % ( blob_name, value_expr, )
@@ -346,6 +347,8 @@ class TypeInfo:
             deserialization_not_optional = 'required'
         elif self._swift_type == 'Date':
             deserialization_not_optional = 'required'
+        elif self.is_codable:
+            deserialization_not_optional = 'required'
         elif self._swift_type == 'Data':
             deserialization_optional = 'optionalData' 
             deserialization_not_optional = 'required'
@@ -371,6 +374,8 @@ class TypeInfo:
         # Special case this oddball type.
         if value_name == 'conversationColorName':
             value_statement = 'let %s: %s = ConversationColorName(rawValue: %s)' % ( value_name, "ConversationColorName", value_expr, )
+        elif self.is_codable:
+            value_statement = 'let %s: %s = %s' % ( value_name, initializer_param_type, value_expr, )
         elif self.should_use_blob:
             blob_name = '%sSerialized' % ( str(value_name), )
             if is_optional or did_force_optional:
@@ -406,6 +411,8 @@ class TypeInfo:
         # Special case this oddball type.
         if value_name == 'conversationColorName':
             return 'String'
+        elif self.is_codable:
+            pass
         elif self.should_use_blob:
             return 'Data'
         return self.swift_type()
@@ -507,21 +514,54 @@ class ParsedProperty:
             return TypeInfo(swift_primitive, objc_type)
         
         # print 'objc_type', objc_type
-        if objc_type in ('struct CGSize',):
+        if objc_type in ('struct CGSize', 'struct CGRect', 'struct CGPoint', ):
             objc_type = objc_type[len('struct '):]
             swift_type = objc_type
-            return TypeInfo(swift_type, objc_type, should_use_blob=True)
-
+            return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=True)
+        
         swift_type = self.convert_objc_class_to_swift(self.objc_type)
         if swift_type is not None:
-            return TypeInfo(swift_type, objc_type, should_use_blob=True)
+            if self.is_objc_type_codable(objc_type):
+                # print '----- is_objc_type_codable true:', objc_type
+                return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=True)
+            # print '----- is_objc_type_codable false:', objc_type
+            return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=False)
         
         fail('Unknown type(3):', self.class_name, self.objc_type, self.name)
+    
+    
+    # NOTE: This method recurses to unpack types like: NSArray<NSArray<SomeClassName *> *> *
+    def is_objc_type_codable(self, objc_type):
+        if objc_type in ('NSString *',):
+            return True
+        elif objc_type in ('struct CGSize', 'struct CGRect', 'struct CGPoint', ):
+            return True
+        elif is_flagged_as_enum_property(self):
+            return True
+        elif objc_type in enum_type_map:
+            return True
+        elif objc_type.startswith('enum '):
+            return True
+
+        
+        array_match = re.search(r'^NS(Mutable)?Array<(.+)> \*$', objc_type)
+        if array_match is not None:
+            split = array_match.group(2)
+            return self.is_objc_type_codable(split)
+        
+        dict_match = re.search(r'^NS(Mutable)?Dictionary<(.+),(.+)> \*$', objc_type)
+        if dict_match is not None:
+            split1 = dict_match.group(2).strip()
+            split2 = dict_match.group(3).strip()
+            return self.is_objc_type_codable(split1) and self.is_objc_type_codable(split2)
+        
+        return False
+        
         
     def type_info(self):
         if self.swift_type is not None:
             should_use_blob = (self.swift_type.startswith('[') or self.swift_type.startswith('{') or is_swift_class_name(self.swift_type))
-            return TypeInfo(self.swift_type, objc_type, should_use_blob=should_use_blob)
+            return TypeInfo(self.swift_type, objc_type, should_use_blob=should_use_blob, is_codable=should_use_blob)
         
         return self.try_to_convert_objc_type_to_type_info()
 
