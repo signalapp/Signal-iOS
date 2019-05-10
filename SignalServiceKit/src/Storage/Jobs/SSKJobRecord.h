@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyWriteTransaction;
+
 extern NSErrorDomain const SSKJobRecordErrorDomain;
 
 typedef NS_ERROR_ENUM(SSKJobRecordErrorDomain, JobRecordError){
@@ -57,19 +59,18 @@ NS_SWIFT_NAME(init(uniqueId:failureCount:label:sortId:status:));
 // GRDB TODO: Replace sortId column with autoincremented id column
 @property (nonatomic, readonly) UInt64 sortId;
 
-- (BOOL)saveAsStartedWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (BOOL)saveAsStartedWithTransaction:(SDSAnyWriteTransaction *)transaction
                                error:(NSError **)outError NS_SWIFT_NAME(saveAsStarted(transaction:));
 
-- (void)saveAsPermanentlyFailedWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)saveAsPermanentlyFailedWithTransaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(saveAsPermanentlyFailed(transaction:));
 
-- (void)saveAsObsoleteWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-    NS_SWIFT_NAME(saveAsObsolete(transaction:));
+- (void)saveAsObsoleteWithTransaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(saveAsObsolete(transaction:));
 
-- (BOOL)saveRunningAsReadyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (BOOL)saveRunningAsReadyWithTransaction:(SDSAnyWriteTransaction *)transaction
                                     error:(NSError **)outError NS_SWIFT_NAME(saveRunningAsReady(transaction:));
 
-- (BOOL)addFailureWithWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (BOOL)addFailureWithWithTransaction:(SDSAnyWriteTransaction *)transaction
                                 error:(NSError **)outError NS_SWIFT_NAME(addFailure(transaction:));
 
 @end

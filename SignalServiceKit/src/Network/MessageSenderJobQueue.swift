@@ -31,6 +31,11 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             self.setup()
         }
     }
+    // MARK: Dependencies
+
+    var dbConnection: YapDatabaseConnection {
+        return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection
+    }
 
     // MARK: 
 
@@ -72,7 +77,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             owsFailDebug("failed to build job: \(error)")
             return
         }
-        self.add(jobRecord: jobRecord, transaction: transaction)
+        self.add(jobRecord: jobRecord, transaction: transaction.asAnyWrite)
     }
 
     // MARK: JobQueue
@@ -94,17 +99,22 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     public var isSetup: Bool = false
 
-    public func didMarkAsReady(oldJobRecord: SSKMessageSenderJobRecord, transaction: YapDatabaseReadWriteTransaction) {
-        if let messageId = oldJobRecord.messageId, let message = TSOutgoingMessage.fetch(uniqueId: messageId, transaction: transaction) {
-            message.updateWithMarkingAllUnsentRecipientsAsSending(with: transaction)
+    public func didMarkAsReady(oldJobRecord: SSKMessageSenderJobRecord, transaction: SDSAnyWriteTransaction) {
+        if let messageId = oldJobRecord.messageId, let message = TSOutgoingMessage.anyFetch(uniqueId: messageId, transaction: transaction) as? TSOutgoingMessage {
+
+            guard let transitional_yapWriteTransaction = transaction.transitional_yapWriteTransaction else {
+                owsFailDebug("GRDB TODO")
+                return
+            }
+            message.updateWithMarkingAllUnsentRecipientsAsSending(with: transitional_yapWriteTransaction)
         }
     }
 
-    public func buildOperation(jobRecord: SSKMessageSenderJobRecord, transaction: YapDatabaseReadTransaction) throws -> MessageSenderOperation {
+    public func buildOperation(jobRecord: SSKMessageSenderJobRecord, transaction: SDSAnyReadTransaction) throws -> MessageSenderOperation {
         let message: TSOutgoingMessage
         if let invisibleMessage = jobRecord.invisibleMessage {
             message = invisibleMessage
-        } else if let messageId = jobRecord.messageId, let fetchedMessage = TSOutgoingMessage.fetch(uniqueId: messageId, transaction: transaction) {
+        } else if let messageId = jobRecord.messageId, let fetchedMessage = TSOutgoingMessage.anyFetch(uniqueId: messageId, transaction: transaction) as? TSOutgoingMessage {
             message = fetchedMessage
         } else {
             assert(jobRecord.messageId != nil)
@@ -184,7 +194,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
 
     override public func didSucceed() {
         self.dbConnection.readWrite { transaction in
-            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
+            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction.asAnyWrite)
             if self.jobRecord.removeMessageAfterSending {
                 self.message.remove(with: transaction)
             }
@@ -195,7 +205,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         Logger.debug("remainingRetries: \(self.remainingRetries)")
 
         self.dbConnection.readWrite { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
+            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction.asAnyWrite)
         }
     }
 
@@ -217,7 +227,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
 
     override public func didFail(error: Error) {
         self.dbConnection.readWrite { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
+            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction.asAnyWrite)
 
             self.message.update(sendingError: error, transaction: transaction)
             if self.jobRecord.removeMessageAfterSending {

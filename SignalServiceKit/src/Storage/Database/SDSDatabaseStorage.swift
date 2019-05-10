@@ -359,6 +359,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             try InstalledStickerSerializer.table.createTable(database: db)
             try KnownStickerPackSerializer.table.createTable(database: db)
             try TSAttachmentSerializer.table.createTable(database: db)
+            try SSKJobRecordSerializer.table.createTable(database: db)
 
             try db.create(index: "index_interactions_on_id_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,
@@ -366,6 +367,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                             InteractionRecord.columnName(.id),
                             InteractionRecord.columnName(.threadUniqueId)
                 ])
+
+            try db.create(index: "index_jobs_on_label",
+                          on: JobRecordRecord.databaseTableName,
+                          columns: [JobRecordRecord.columnName(.label)])
         }
         return migrator
     }()

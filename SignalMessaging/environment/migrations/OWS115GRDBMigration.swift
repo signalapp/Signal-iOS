@@ -61,66 +61,84 @@ extension OWS115GRDBMigration {
         let dbReadConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
         dbReadConnection.beginLongLivedReadTransaction()
 
-        try self.storage.pool.write { (modernDb: Database) in
-            var threadFinder: LegacyThreadFinder!
+        try storage.write { grdbTransaction in
+            var threadFinder: LegacyUnorderedFinder<TSThread>!
             var interactionFinder: LegacyInteractionFinder!
+            var jobRecordFinder: LegacyJobRecordFinder!
             dbReadConnection.read { transaction in
-                threadFinder = LegacyThreadFinder(transaction: transaction)
+                threadFinder = LegacyUnorderedFinder<TSThread>(transaction: transaction)
                 interactionFinder = LegacyInteractionFinder(transaction: transaction)
+                jobRecordFinder = LegacyJobRecordFinder(transaction: transaction)
             }
 
-            try self.migrateThreads(threadFinder: threadFinder, modernDb: modernDb)
-            try self.migrateInteractions(interactionFinder: interactionFinder, modernDb: modernDb)
+            try! self.migrateJobRecords(jobRecordFinder: jobRecordFinder, transaction: grdbTransaction)
+            try! self.migrateThreads(finder: threadFinder, transaction: grdbTransaction)
+            try! self.migrateInteractions(interactionFinder: interactionFinder, transaction: grdbTransaction)
 
             SDSDatabaseStorage.shouldLogDBQueries = true
         }
     }
 
-    private func migrateInteractions(interactionFinder: LegacyInteractionFinder, modernDb: Database) throws {
+    private func migrateJobRecords(jobRecordFinder: LegacyJobRecordFinder, transaction: GRDBWriteTransaction) throws {
+        try Bench(title: "Migrate SSKJobRecord", memorySamplerRatio: 0.02) { memorySampler in
+            var recordCount = 0
+            try jobRecordFinder.enumerateJobRecords { legacyRecord in
+                recordCount += 1
+                try SDSSerialization.insert(entity: legacyRecord, database: transaction.database)
+                memorySampler.sample()
+            }
+            Logger.info("completed with recordCount: \(recordCount)")
+        }
+    }
+
+    private func migrateThreads(finder: LegacyUnorderedFinder<TSThread>, transaction: GRDBWriteTransaction) throws {
+        try Bench(title: "Migrate TSThread", memorySamplerRatio: 0.02) { memorySampler in
+            var recordCount = 0
+            try finder.enumerateRecords { legacyRecord in
+                recordCount += 1
+                try SDSSerialization.insert(entity: legacyRecord, database: transaction.database)
+                memorySampler.sample()
+            }
+            Logger.info("completed with recordCount: \(recordCount)")
+        }
+    }
+
+    private func migrateInteractions(interactionFinder: LegacyInteractionFinder, transaction: GRDBWriteTransaction) throws {
         try Bench(title: "Migrate Interactions", memorySamplerRatio: 0.001) { memorySampler in
-            var i = 0
+            var recordCount = 0
             try interactionFinder.enumerateInteractions { legacyInteraction in
-                try SDSSerialization.insert(entity: legacyInteraction, database: modernDb)
-                i += 1
-                if (i % 500 == 0) {
-                    Logger.debug("saved \(i) interactions")
+                try SDSSerialization.insert(entity: legacyInteraction, database: transaction.database)
+                recordCount += 1
+                if (recordCount % 500 == 0) {
+                    Logger.debug("saved \(recordCount) interactions")
                 }
                 memorySampler.sample()
             }
+            Logger.info("completed with recordCount: \(recordCount)")
         }
     }
-
-    private func migrateThreads(threadFinder: LegacyThreadFinder, modernDb: Database) throws {
-        try Bench(title: "Migrate Threads", memorySamplerRatio: 0.02) { memorySampler in
-            try threadFinder.enumerateThreads { legacyThread in
-                try SDSSerialization.insert(entity: legacyThread, database: modernDb)
-                memorySampler.sample()
-            }
-        }
-    }
-
 }
 
-private class LegacyThreadFinder {
+private class LegacyUnorderedFinder<RecordType> where RecordType: TSYapDatabaseObject {
     // HACK: normally we don't want to retain transactions, as it allows them to escape their
     // closure. This is a work around since YapDB transactions want to be on their own sync queue
     // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
-    // on DB inside a GRDB transaction on another DB is currently not possible.
-    var transaction: YapDatabaseReadTransaction
+    // one DB inside a GRDB transaction on another DB is currently not possible.
+    let transaction: YapDatabaseReadTransaction
+
     init(transaction: YapDatabaseReadTransaction) {
         self.transaction = transaction
     }
 
-    public func enumerateThreads(block: @escaping (TSThread) throws -> Void ) throws {
-        try transaction.enumerateKeysAndObjects(inCollection: TSThread.collection()) { (_: String, yapObject: Any, _: UnsafeMutablePointer<ObjCBool>) throws -> Void in
-            guard let thread = yapObject as? TSThread else {
+    public func enumerateRecords(block: @escaping (RecordType) throws -> Void ) throws {
+        try transaction.enumerateKeysAndObjects(inCollection: RecordType.collection()) { (_: String, yapObject: Any, _: UnsafeMutablePointer<ObjCBool>) throws -> Void in
+            guard let thread = yapObject as? RecordType else {
                 owsFailDebug("unexpected yapObject: \(type(of: yapObject))")
                 return
             }
             try block(thread)
         }
     }
-
 }
 
 private class LegacyInteractionFinder {
@@ -129,7 +147,7 @@ private class LegacyInteractionFinder {
     // HACK: normally we don't want to retain transactions, as it allows them to escape their
     // closure. This is a work around since YapDB transactions want to be on their own sync queue
     // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
-    // on DB inside a GRDB transaction on another DB is currently not possible.
+    // one DB inside a GRDB transaction on another DB is currently not possible.
     var ext: YapDatabaseAutoViewTransaction
     init(transaction: YapDatabaseReadTransaction) {
         self.ext = transaction.extension(extensionName) as! YapDatabaseAutoViewTransaction
@@ -165,6 +183,49 @@ private class LegacyInteractionFinder {
                         stopPtr.pointee = true
                     }
                 }
+            }
+        }
+
+        if let errorToRaise = errorToRaise {
+            throw errorToRaise
+        }
+    }
+}
+
+private class LegacyJobRecordFinder {
+
+    let extensionName = YAPDBJobRecordFinder.dbExtensionName
+
+    // HACK: normally we don't want to retain transactions, as it allows them to escape their
+    // closure. This is a work around since YapDB transactions want to be on their own sync queue
+    // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
+    // one DB inside a GRDB transaction on another DB is currently not possible.
+    var ext: YapDatabaseSecondaryIndexTransaction
+    init(transaction: YapDatabaseReadTransaction) {
+        self.ext = transaction.extension(extensionName) as! YapDatabaseSecondaryIndexTransaction
+    }
+
+    public func enumerateJobRecords(block: @escaping (SSKJobRecord) throws -> Void) throws {
+        try enumerateJobRecords(ext: ext, block: block)
+    }
+
+    func enumerateJobRecords(ext: YapDatabaseSecondaryIndexTransaction, block: @escaping (SSKJobRecord) throws -> Void) throws {
+        let queryFormat = String(format: "ORDER BY %@", "sortId")
+        let query = YapDatabaseQuery(string: queryFormat, parameters: [])
+
+        var errorToRaise: Error?
+
+        ext.enumerateKeysAndObjects(matching: query) { _, _, object, stopPtr in
+            do {
+                guard let jobRecord = object as? SSKJobRecord else {
+                    owsFailDebug("expecting jobRecord but found: \(object)")
+                    return
+                }
+                try block(jobRecord)
+            } catch {
+                owsFailDebug("error: \(error)")
+                errorToRaise = error
+                stopPtr.pointee = true
             }
         }
 

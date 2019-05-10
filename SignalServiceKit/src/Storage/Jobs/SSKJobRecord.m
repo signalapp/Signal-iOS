@@ -80,6 +80,7 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    // This is *only* for Yap. For GRDB we get the sortId from the DB autoincrement column
     if (self.sortId == 0) {
         self.sortId = [SSKIncrementingIdFinder nextIdWithKey:self.class.collection transaction:transaction];
     }
@@ -88,7 +89,7 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
 
 #pragma mark -
 
-- (BOOL)saveAsStartedWithTransaction:(YapDatabaseReadWriteTransaction *)transaction error:(NSError **)outError
+- (BOOL)saveAsStartedWithTransaction:(SDSAnyWriteTransaction *)transaction error:(NSError **)outError
 {
     if (self.status != SSKJobRecordStatus_Ready) {
         *outError =
@@ -96,29 +97,29 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
         return NO;
     }
     self.status = SSKJobRecordStatus_Running;
-    [self saveWithTransaction:transaction];
+    [self anySaveWithTransaction:transaction];
 
     return YES;
 }
 
-- (void)saveAsPermanentlyFailedWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)saveAsPermanentlyFailedWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     self.status = SSKJobRecordStatus_PermanentlyFailed;
-    [self saveWithTransaction:transaction];
+    [self anySaveWithTransaction:transaction];
 }
 
-- (void)saveAsObsoleteWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)saveAsObsoleteWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     self.status = SSKJobRecordStatus_Obsolete;
-    [self saveWithTransaction:transaction];
+    [self anySaveWithTransaction:transaction];
 }
 
-- (BOOL)saveRunningAsReadyWithTransaction:(YapDatabaseReadWriteTransaction *)transaction error:(NSError **)outError
+- (BOOL)saveRunningAsReadyWithTransaction:(SDSAnyWriteTransaction *)transaction error:(NSError **)outError
 {
     switch (self.status) {
         case SSKJobRecordStatus_Running: {
             self.status = SSKJobRecordStatus_Ready;
-            [self saveWithTransaction:transaction];
+            [self anySaveWithTransaction:transaction];
             return YES;
         }
         case SSKJobRecordStatus_Ready:
@@ -133,12 +134,12 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
     }
 }
 
-- (BOOL)addFailureWithWithTransaction:(YapDatabaseReadWriteTransaction *)transaction error:(NSError **)outError
+- (BOOL)addFailureWithWithTransaction:(SDSAnyWriteTransaction *)transaction error:(NSError **)outError
 {
     switch (self.status) {
         case SSKJobRecordStatus_Running: {
             self.failureCount++;
-            [self saveWithTransaction:transaction];
+            [self anySaveWithTransaction:transaction];
             return YES;
         }
         case SSKJobRecordStatus_Ready:

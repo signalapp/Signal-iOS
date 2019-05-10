@@ -24,7 +24,6 @@ public struct JobRecordRecord: Codable, FetchableRecord, PersistableRecord, Tabl
     // Base class properties
     public let failureCount: UInt
     public let label: String
-    public let sortId: UInt64
     public let status: SSKJobRecordStatus
 
     // Subclass properties
@@ -40,7 +39,6 @@ public struct JobRecordRecord: Codable, FetchableRecord, PersistableRecord, Tabl
         case uniqueId
         case failureCount
         case label
-        case sortId
         case status
         case contactThreadId
         case invisibleMessage
@@ -80,7 +78,7 @@ extension SSKJobRecord {
             let uniqueId: String = record.uniqueId
             let failureCount: UInt = record.failureCount
             let label: String = record.label
-            let sortId: UInt64 = record.sortId
+            let sortId: UInt64 = record.id
             let status: SSKJobRecordStatus = record.status
             let contactThreadId: String = try SDSDeserialization.required(record.contactThreadId, name: "contactThreadId")
 
@@ -96,7 +94,7 @@ extension SSKJobRecord {
             let uniqueId: String = record.uniqueId
             let failureCount: UInt = record.failureCount
             let label: String = record.label
-            let sortId: UInt64 = record.sortId
+            let sortId: UInt64 = record.id
             let status: SSKJobRecordStatus = record.status
 
             return SSKJobRecord(uniqueId: uniqueId,
@@ -110,7 +108,7 @@ extension SSKJobRecord {
             let uniqueId: String = record.uniqueId
             let failureCount: UInt = record.failureCount
             let label: String = record.label
-            let sortId: UInt64 = record.sortId
+            let sortId: UInt64 = record.id
             let status: SSKJobRecordStatus = record.status
             let invisibleMessageSerialized: Data? = record.invisibleMessage
             let invisibleMessage: TSOutgoingMessage? = try SDSDeserialization.optionalUnarchive(invisibleMessageSerialized, name: "invisibleMessage")
@@ -167,14 +165,13 @@ extension SSKJobRecordSerializer {
     // Base class properties
     static let failureCountColumn = SDSColumnMetadata(columnName: "failureCount", columnType: .int64, columnIndex: 3)
     static let labelColumn = SDSColumnMetadata(columnName: "label", columnType: .unicodeString, columnIndex: 4)
-    static let sortIdColumn = SDSColumnMetadata(columnName: "sortId", columnType: .int64, columnIndex: 5)
-    static let statusColumn = SDSColumnMetadata(columnName: "status", columnType: .int, columnIndex: 6)
+    static let statusColumn = SDSColumnMetadata(columnName: "status", columnType: .int, columnIndex: 5)
     // Subclass properties
-    static let contactThreadIdColumn = SDSColumnMetadata(columnName: "contactThreadId", columnType: .unicodeString, isOptional: true, columnIndex: 7)
-    static let invisibleMessageColumn = SDSColumnMetadata(columnName: "invisibleMessage", columnType: .blob, isOptional: true, columnIndex: 8)
-    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 9)
-    static let removeMessageAfterSendingColumn = SDSColumnMetadata(columnName: "removeMessageAfterSending", columnType: .int, isOptional: true, columnIndex: 10)
-    static let threadIdColumn = SDSColumnMetadata(columnName: "threadId", columnType: .unicodeString, isOptional: true, columnIndex: 11)
+    static let contactThreadIdColumn = SDSColumnMetadata(columnName: "contactThreadId", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let invisibleMessageColumn = SDSColumnMetadata(columnName: "invisibleMessage", columnType: .blob, isOptional: true, columnIndex: 7)
+    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 8)
+    static let removeMessageAfterSendingColumn = SDSColumnMetadata(columnName: "removeMessageAfterSending", columnType: .int, isOptional: true, columnIndex: 9)
+    static let threadIdColumn = SDSColumnMetadata(columnName: "threadId", columnType: .unicodeString, isOptional: true, columnIndex: 10)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -184,7 +181,6 @@ extension SSKJobRecordSerializer {
         uniqueIdColumn,
         failureCountColumn,
         labelColumn,
-        sortIdColumn,
         statusColumn,
         contactThreadIdColumn,
         invisibleMessageColumn,
@@ -223,7 +219,7 @@ extension SSKJobRecordSerializer {
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let failureCount = UInt(try deserializer.int64(at: failureCountColumn.columnIndex))
             let label = try deserializer.string(at: labelColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let statusRaw = UInt(try deserializer.int(at: statusColumn.columnIndex))
             guard let status = SSKJobRecordStatus(rawValue: statusRaw) else {
                throw SDSError.invalidValue
@@ -242,7 +238,7 @@ extension SSKJobRecordSerializer {
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let failureCount = UInt(try deserializer.int64(at: failureCountColumn.columnIndex))
             let label = try deserializer.string(at: labelColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let statusRaw = UInt(try deserializer.int(at: statusColumn.columnIndex))
             guard let status = SSKJobRecordStatus(rawValue: statusRaw) else {
                throw SDSError.invalidValue
@@ -259,7 +255,7 @@ extension SSKJobRecordSerializer {
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
             let failureCount = UInt(try deserializer.int64(at: failureCountColumn.columnIndex))
             let label = try deserializer.string(at: labelColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: sortIdColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
             let statusRaw = UInt(try deserializer.int(at: statusColumn.columnIndex))
             guard let status = SSKJobRecordStatus(rawValue: statusRaw) else {
                throw SDSError.invalidValue
@@ -524,7 +520,6 @@ class SSKJobRecordSerializer: SDSSerializer {
         return [
             SSKJobRecordSerializer.failureCountColumn,
             SSKJobRecordSerializer.labelColumn,
-            SSKJobRecordSerializer.sortIdColumn,
             SSKJobRecordSerializer.statusColumn
             ].map { $0.columnName }
     }
@@ -533,7 +528,6 @@ class SSKJobRecordSerializer: SDSSerializer {
         let result: [DatabaseValueConvertible] = [
             self.model.failureCount,
             self.model.label,
-            self.model.sortId,
             self.model.status.rawValue
 
         ]

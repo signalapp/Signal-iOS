@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,7 +12,7 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     @objc(addContactThread:transaction:)
     public func add(contactThread: TSContactThread, transaction: YapDatabaseReadWriteTransaction) {
         let jobRecord = OWSSessionResetJobRecord(contactThread: contactThread, label: self.jobRecordLabel)
-        self.add(jobRecord: jobRecord, transaction: transaction)
+        self.add(jobRecord: jobRecord, transaction: transaction.asAnyWrite)
     }
 
     // MARK: JobQueue
@@ -39,7 +39,7 @@ public class SessionResetJobQueue: NSObject, JobQueue {
 
     public var isSetup: Bool = false
 
-    public func didMarkAsReady(oldJobRecord: JobRecordType, transaction: YapDatabaseReadWriteTransaction) {
+    public func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
         // no special handling
     }
 
@@ -54,8 +54,8 @@ public class SessionResetJobQueue: NSObject, JobQueue {
         return self.operationQueue
     }
 
-    public func buildOperation(jobRecord: OWSSessionResetJobRecord, transaction: YapDatabaseReadTransaction) throws -> SessionResetOperation {
-        guard let contactThread = TSThread.fetch(uniqueId: jobRecord.contactThreadId, transaction: transaction) as? TSContactThread else {
+    public func buildOperation(jobRecord: OWSSessionResetJobRecord, transaction: SDSAnyReadTransaction) throws -> SessionResetOperation {
+        guard let contactThread = TSThread.anyFetch(uniqueId: jobRecord.contactThreadId, transaction: transaction) as? TSContactThread else {
             throw JobError.obsolete(description: "thread for session reset no longer exists")
         }
 
@@ -142,7 +142,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
 
     override public func didSucceed() {
         self.dbConnection.readWrite { transaction in
-            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
+            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction.asAnyWrite)
         }
     }
 
@@ -150,7 +150,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         Logger.debug("remainingRetries: \(self.remainingRetries)")
 
         self.dbConnection.readWrite { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
+            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction.asAnyWrite)
         }
     }
 
@@ -174,7 +174,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
     override public func didFail(error: Error) {
         Logger.error("failed to send EndSessionMessage with error: \(error.localizedDescription)")
         self.dbConnection.readWrite { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
+            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction.asAnyWrite)
 
             // Even though this is the failure handler - which means probably the recipient didn't receive the message
             // there's a chance that our send did succeed and the server just timed out our repsonse or something.

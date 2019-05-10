@@ -53,7 +53,6 @@ class SSKMessageSenderJobRecordSerializer: SDSSerializer {
         return [
             SSKJobRecordSerializer.failureCountColumn,
             SSKJobRecordSerializer.labelColumn,
-            SSKJobRecordSerializer.sortIdColumn,
             SSKJobRecordSerializer.statusColumn,
             SSKJobRecordSerializer.invisibleMessageColumn,
             SSKJobRecordSerializer.messageIdColumn,
@@ -66,7 +65,6 @@ class SSKMessageSenderJobRecordSerializer: SDSSerializer {
         let result: [DatabaseValueConvertible] = [
             self.model.failureCount,
             self.model.label,
-            self.model.sortId,
             self.model.status.rawValue,
             SDSDeserializer.archive(self.model.invisibleMessage) ?? DatabaseValue.null,
             self.model.messageId ?? DatabaseValue.null,
