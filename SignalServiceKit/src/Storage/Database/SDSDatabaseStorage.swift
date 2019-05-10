@@ -23,7 +23,7 @@ public class SDSDatabaseStorage: NSObject {
     lazy var yapStorage = type(of: self).createYapStorage()
 
     @objc
-    public lazy var grdbStorage = type(of: self).createGrdbStorage()
+    public lazy var grdbStorage = createGrdbStorage()
 
     @objc
     override init() {
@@ -34,7 +34,7 @@ public class SDSDatabaseStorage: NSObject {
 
     private func addObservers() {
         // Cross process writes
-        if FeatureFlags.useGRDB {
+        if useGRDB {
             crossProcess.callback = { [weak self] in
                 DispatchQueue.main.async {
                     self?.handleCrossProcessWrite()
@@ -54,8 +54,8 @@ public class SDSDatabaseStorage: NSObject {
         NotificationCenter.default.removeObserver(self)
     }
 
-    class func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
-        assert(FeatureFlags.useGRDB)
+    func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
+        assert(self.useGRDB)
 
         let baseDir: URL
 
@@ -131,26 +131,88 @@ public class SDSDatabaseStorage: NSObject {
         self.notifyCrossProcessWrite()
     }
 
+    @objc
+    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
+        asyncRead(block: block, completion: { })
+    }
+
+    @objc
+    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completion: @escaping () -> Void) {
+        asyncRead(block: block, completionQueue: .main, completion: completion)
+    }
+
+    @objc
+    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
+        DispatchQueue.global().async {
+            if self.useGRDB {
+                do {
+                    try self.grdbStorage.read { transaction in
+                        block(transaction.asAnyRead)
+                    }
+                } catch {
+                    owsFail("error: \(error)")
+                }
+            } else {
+                self.yapStorage.read { transaction in
+                    block(transaction.asAnyRead)
+                }
+            }
+
+            completionQueue.async(execute: completion)
+        }
+    }
+
+    @objc
+    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+        asyncWrite(block: block, completion: { })
+    }
+
+    @objc
+    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completion: @escaping () -> Void) {
+        asyncWrite(block: block, completionQueue: .main, completion: completion)
+    }
+
+    @objc
+    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
+        DispatchQueue.global().async {
+            if self.useGRDB {
+                do {
+                    try self.grdbStorage.write { transaction in
+                        block(transaction.asAnyWrite)
+                    }
+                } catch {
+                    owsFail("error: \(error)")
+                }
+            } else {
+                self.yapStorage.write { transaction in
+                    block(transaction.asAnyWrite)
+                }
+            }
+
+            completionQueue.async(execute: completion)
+        }
+    }
+
     // MARK: - Value Methods
 
-    public func uiReadReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T?) -> T? {
-        var value: T?
+    public func uiReadReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
+        var value: T!
         uiRead { (transaction) in
             value = block(transaction)
         }
         return value
     }
 
-    public func readReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T?) -> T? {
-        var value: T?
+    public func readReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
+        var value: T!
         read { (transaction) in
             value = block(transaction)
         }
         return value
     }
 
-    public func writeReturningResult<T>(block: @escaping (SDSAnyWriteTransaction) -> T?) -> T? {
-        var value: T?
+    public func writeReturningResult<T>(block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
+        var value: T!
         write { (transaction) in
             value = block(transaction)
         }
@@ -354,7 +416,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
     @objc
-    func uiRead(block: @escaping (GRDBReadTransaction) -> Void) throws {
+    public func uiRead(block: @escaping (GRDBReadTransaction) -> Void) throws {
         AssertIsOnMainThread()
         latestSnapshot.read { database in
             block(GRDBReadTransaction(database: database))
@@ -362,14 +424,14 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     }
 
     @objc
-    func read(block: @escaping (GRDBReadTransaction) -> Void) throws {
+    public func read(block: @escaping (GRDBReadTransaction) -> Void) throws {
         try pool.read { database in
             block(GRDBReadTransaction(database: database))
         }
     }
 
     @objc
-    func write(block: @escaping (GRDBWriteTransaction) -> Void) throws {
+    public func write(block: @escaping (GRDBWriteTransaction) -> Void) throws {
         var transaction: GRDBWriteTransaction!
         try pool.write { database in
             transaction = GRDBWriteTransaction(database: database)
@@ -378,6 +440,30 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         for (queue, block) in transaction.completions {
             queue.async(execute: block)
         }
+    }
+
+    public func uiReadReturningResult<T>(block: @escaping (GRDBReadTransaction) -> T) -> T {
+        var value: T!
+        try! uiRead { (transaction) in
+            value = block(transaction)
+        }
+        return value
+    }
+
+    public func readReturningResult<T>(block: @escaping (GRDBReadTransaction) -> T) -> T {
+        var value: T!
+        try! read { (transaction) in
+            value = block(transaction)
+        }
+        return value
+    }
+
+    public func writeReturningResult<T>(block: @escaping (GRDBWriteTransaction) -> T) -> T {
+        var value: T!
+        try! write { (transaction) in
+            value = block(transaction)
+        }
+        return value
     }
 }
 

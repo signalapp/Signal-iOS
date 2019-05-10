@@ -136,7 +136,7 @@ public class SDSKeyValueStore: NSObject {
     public func allKeys() -> [String] {
         return databaseStorage.readReturningResult { (transaction) in
             return self.allKeys(transaction: transaction)
-        } ?? []
+        }
     }
 
     @objc
@@ -144,9 +144,15 @@ public class SDSKeyValueStore: NSObject {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.allKeys(inCollection: collection)
-        case .grdbRead:
-            owsFailDebug("Not yet supported.")
-            return []
+        case .grdbRead(let grdbRead):
+            let sql = """
+            SELECT \(SDSKeyValueStore.keyColumn.columnName)
+            FROM \(SDSKeyValueStore.table.tableName)
+            WHERE \(SDSKeyValueStore.collectionColumn.columnName) == ?
+            """
+            return try! String.fetchAll(grdbRead.database,
+                                        sql: sql,
+                                        arguments: [collection])
         }
     }
 
