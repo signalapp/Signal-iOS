@@ -39,7 +39,7 @@ class SSKMessageSenderJobRecordSerializer: SDSSerializer {
 
     public func insertColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            SDSRecordType.sSKMessageSenderJobRecord.rawValue
+            SDSRecordType.messageSenderJobRecord.rawValue
             ] + [uniqueIdColumnValue()] + updateColumnValues()
         if OWSIsDebugBuild() {
             if result.count != insertColumnNames().count {

@@ -41,5 +41,8 @@
 		"TSCall.read": "wasRead",
 		"OWSDisappearingMessagesConfiguration.enabled": "isEnabled",
 		"OWSDisappearingMessagesConfiguration.newRecord": "isNewRecord"
+	},
+	"custom_column_names": {
+		"TSInteraction.uniqueThreadId": "threadUniqueId"
 	}
 }

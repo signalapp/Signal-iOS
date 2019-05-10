@@ -262,6 +262,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns YES IFF the avatar view is appropriate and configured.
 - (BOOL)updateAvatarView
 {
+    OWSAssertDebug(self.viewItem.authorConversationColorName != nil);
+
     if (!self.viewItem.shouldShowSenderAvatar) {
         return NO;
     }

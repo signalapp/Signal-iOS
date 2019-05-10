@@ -80,19 +80,19 @@ struct GRDBThreadFinder: ThreadFinder {
             SELECT COUNT(*)
             FROM (
                 SELECT
-                    CASE maxInteractionId <= \(threadColumn: .archivedAsOfMessageSortId)
+                    CASE maxInteractionId <= \(columnForThread: .archivedAsOfMessageSortId)
                         WHEN 1 THEN 1
                         ELSE 0
                     END isArchived
                 FROM \(ThreadRecord.databaseTableName)
                 LEFT JOIN (
                     SELECT
-                        MAX(\(interactionColumn: .id)) as maxInteractionId,
-                        \(interactionColumn: .threadUniqueId)
+                        MAX(\(columnForInteraction: .id)) as maxInteractionId,
+                        \(columnForInteraction: .threadUniqueId)
                     FROM \(InteractionRecord.databaseTableName)
-                    GROUP BY \(interactionColumn: .threadUniqueId)
+                    GROUP BY \(columnForInteraction: .threadUniqueId)
                 ) latestInteractions
-                ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
+                ON latestInteractions.\(columnForInteraction: .threadUniqueId) = \(columnForThread: .uniqueId)
             )
             WHERE isArchived = ?
         """,
@@ -110,25 +110,25 @@ struct GRDBThreadFinder: ThreadFinder {
             FROM (
                 SELECT
                     \(ThreadRecord.databaseTableName).*,
-                    CASE maxInteractionId <= \(threadColumn: .archivedAsOfMessageSortId)
+                    CASE maxInteractionId <= \(columnForThread: .archivedAsOfMessageSortId)
                         WHEN 1 THEN 1
                         ELSE 0
                     END isArchived
                 FROM \(ThreadRecord.databaseTableName)
                 LEFT JOIN (
                     SELECT
-                        MAX(\(interactionColumn: .id)) as maxInteractionId,
-                        \(interactionColumn: .threadUniqueId)
+                        MAX(\(columnForInteraction: .id)) as maxInteractionId,
+                        \(columnForInteraction: .threadUniqueId)
                     FROM \(InteractionRecord.databaseTableName)
-                    GROUP BY \(interactionColumn: .threadUniqueId)
+                    GROUP BY \(columnForInteraction: .threadUniqueId)
                 ) latestInteractions
-                ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
+                ON latestInteractions.\(columnForInteraction: .threadUniqueId) = \(columnForThread: .uniqueId)
                 ORDER BY maxInteractionId DESC
             )
             WHERE isArchived = ?
         """,
                                      arguments: [isArchived]).forEach { threadRecord in
-                                        block(TSThread.fromRecord(threadRecord))
+                                        block(try TSThread.fromRecord(threadRecord))
         }
     }
 }

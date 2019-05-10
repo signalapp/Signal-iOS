@@ -113,10 +113,10 @@ public class ConversationViewDatabaseTransactionChanges: NSObject {
         let commaSeparatedRowIds = updatedRowIds.map { String($0) }.joined(separator: ", ")
         let rowIdsSQL = "(\(commaSeparatedRowIds))"
         let sql = """
-        SELECT \(interactionColumn: .uniqueId)
+        SELECT \(columnForInteraction: .uniqueId)
         FROM \(InteractionRecord.databaseTableName)
         WHERE rowid IN \(rowIdsSQL)
-        AND \(interactionColumn: .threadUniqueId) = ?
+        AND \(columnForInteraction: .threadUniqueId) = ?
         """
 
         let uniqueIds = try String.fetchAll(transaction.database, sql: sql, arguments: [threadUniqueId])
