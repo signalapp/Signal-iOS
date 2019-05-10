@@ -538,10 +538,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     OWSAssertIsOnMainThread();
     OWSAssertDebug(transaction != nil);
 
-    if (!transaction.transitional_yapReadTransaction) {
-        return;
-    }
-
     const NSUInteger currentMaxRangeSize = self.messageMapping.desiredLength;
     const NSUInteger maxRangeSize = MAX(kConversationInitialMaxRangeSize, currentMaxRangeSize);
 
@@ -553,7 +549,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                    lastUnreadIndicator:self.dynamicInteractions.unreadIndicator
                                         focusMessageId:self.focusMessageIdOnOpen
                                           maxRangeSize:maxRangeSize
-                                           transaction:transaction.transitional_yapReadTransaction];
+                                           transaction:transaction];
     BOOL didChange = ![NSObject isNullableObject:self.dynamicInteractions equalTo:dynamicInteractions];
     self.dynamicInteractions = dynamicInteractions;
 

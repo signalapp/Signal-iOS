@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessageSender;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
+@class SDSAnyReadTransaction;
 @class SignalAttachment;
 @class StickerInfo;
 @class TSContactThread;
@@ -115,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
                                               lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
                                                    focusMessageId:(nullable NSString *)focusMessageId
                                                      maxRangeSize:(int)maxRangeSize
-                                                      transaction:(YapDatabaseReadTransaction *)transaction;
+                                                      transaction:(SDSAnyReadTransaction *)transaction;
 
 + (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager;
 

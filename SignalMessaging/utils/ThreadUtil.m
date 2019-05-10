@@ -483,7 +483,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                               lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
                                                    focusMessageId:(nullable NSString *)focusMessageId
                                                      maxRangeSize:(int)maxRangeSize
-                                                      transaction:(YapDatabaseReadTransaction *)transaction
+                                                      transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(contactsManager);
@@ -492,13 +492,16 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     OWSAssertDebug(transaction);
 
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
+    if (!transaction.transitional_yapReadTransaction) {
+        return result;
+    }
 
     // Find any "dynamic" interactions and safety number changes.
     //
     // We use different views for performance reasons.
     NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
     NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
-    [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction]
+    [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction.transitional_yapReadTransaction]
         enumerateKeysAndObjectsInGroup:thread.uniqueId
                             usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
                                 if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
@@ -524,7 +527,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         firstUnseenSortId = @(lastUnreadIndicator.firstUnseenSortId);
     } else {
         TSInteraction *_Nullable firstUnseenInteraction =
-            [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:thread.uniqueId];
+            [[TSDatabaseView unseenDatabaseViewExtension:transaction.transitional_yapReadTransaction]
+                firstObjectInGroup:thread.uniqueId];
         if (firstUnseenInteraction) {
             firstUnseenSortId = @(firstUnseenInteraction.sortId);
         }
@@ -532,7 +536,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     [self ensureUnreadIndicator:result
                                 thread:thread
-                           transaction:transaction
+                           transaction:transaction.transitional_yapReadTransaction
                           maxRangeSize:maxRangeSize
            blockingSafetyNumberChanges:blockingSafetyNumberChanges
         nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
@@ -542,8 +546,9 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     // Determine the position of the focus message _after_ performing any mutations
     // around dynamic interactions.
     if (focusMessageId != nil) {
-        result.focusMessagePosition =
-            [self focusMessagePositionForThread:thread transaction:transaction focusMessageId:focusMessageId];
+        result.focusMessagePosition = [self focusMessagePositionForThread:thread
+                                                              transaction:transaction.transitional_yapReadTransaction
+                                                           focusMessageId:focusMessageId];
     }
 
     return result;
