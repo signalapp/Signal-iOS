@@ -262,8 +262,6 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns YES IFF the avatar view is appropriate and configured.
 - (BOOL)updateAvatarView
 {
-    OWSAssertDebug(self.viewItem.authorConversationColorName != nil);
-
     if (!self.viewItem.shouldShowSenderAvatar) {
         return NO;
     }
@@ -275,6 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"not an incoming message.");
         return NO;
     }
+    OWSAssertDebug(self.viewItem.authorConversationColorName != nil);
 
     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
     UIImage *_Nullable authorAvatarImage =
