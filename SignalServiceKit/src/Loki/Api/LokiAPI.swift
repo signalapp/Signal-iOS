@@ -54,20 +54,25 @@ import PromiseKit
             "pubKey" : OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey,
             "lastHash" : "" // TODO: Implement
         ]
-        return getRandomSnode().then { invoke(.getMessages, on: $0, with: parameters) }.map { rawResponse in
-            guard let json = rawResponse as? [String:Any] else { fatalError() } // TODO: Use JSON type; handle error
-            guard let messages = json["messages"] as? [[String:Any]] else { fatalError() } // TODO: Use JSON type; handle error
-            return messages.map { message in
-                guard let base64EncodedData = message["data"] as? String else { fatalError() } // TODO: Handle error
-                let data = Data(base64Encoded: base64EncodedData)! // TODO: Handle error
-                let webSocketMessage = try! WebSocketProtoWebSocketMessage.parseData(data)
-                let envelope = webSocketMessage.request!.body! // TODO: Handle error
-                return try! SSKProtoEnvelope.parseData(envelope) // TODO: Handle error
+        return getRandomSnode().then { invoke(.getMessages, on: $0, with: parameters) }.compactMap { rawResponse in
+            guard let json = rawResponse as? [String:Any], let messages = json["messages"] as? [[String:Any]] else { return nil }
+            return messages.compactMap { message in
+                guard let base64EncodedData = message["data"] as? String, let data = Data(base64Encoded: base64EncodedData) else {
+                    Logger.warn("LokiAPI - Failed to get data for message: \(message)")
+                    return nil
+                }
+                
+                guard let envelope = try? unwrap(data: data) else {
+                    Logger.warn("LokiAPI - Failed to unwrap data for message: \(message)")
+                    return nil
+                }
+                
+                return envelope
             }
         }
     }
     
-    public static func sendMessage(_ lokiMessage: LokiMessage) -> Promise<RawResponse> {
+    public static func sendMessage(_ lokiMessage: Message) -> Promise<RawResponse> {
         return getRandomSnode().then { invoke(.sendMessage, on: $0, with: lokiMessage.toJSON()) } // TODO: Use getSwarm()
     }
     
@@ -88,7 +93,7 @@ import PromiseKit
     }
     
     @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64, requiringPoW isPoWRequired: Bool) -> AnyPromise {
-        let promise = LokiMessage.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: isPoWRequired)
+        let promise = Message.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: isPoWRequired)
             .then(sendMessage)
             .recoverNetworkError(on: DispatchQueue.global())
         let anyPromise = AnyPromise(promise)
