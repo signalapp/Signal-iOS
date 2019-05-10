@@ -351,9 +351,13 @@ extension StickerPackViewController: StickerPackCollectionViewDelegate {
         Logger.verbose("")
     }
 
-    public func stickerHostView() -> UIView? {
+    public func stickerPreviewHostView() -> UIView? {
         AssertIsOnMainThread()
 
         return view
+    }
+
+    public func stickerPreviewHasOverlay() -> Bool {
+        return true
     }
 }

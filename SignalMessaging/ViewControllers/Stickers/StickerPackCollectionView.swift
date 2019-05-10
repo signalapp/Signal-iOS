@@ -8,7 +8,8 @@ import YYImage
 @objc
 public protocol StickerPackCollectionViewDelegate {
     func didTapSticker(stickerInfo: StickerInfo)
-    func stickerHostView() -> UIView?
+    func stickerPreviewHostView() -> UIView?
+    func stickerPreviewHasOverlay() -> Bool
 }
 
 // MARK: -
@@ -167,23 +168,41 @@ public class StickerPackCollectionView: UICollectionView {
             owsFailDebug("Couldn't load sticker for display")
             return
         }
-        guard let hostView = stickerDelegate?.stickerHostView() else {
+        guard let stickerDelegate = stickerDelegate else {
+            owsFailDebug("Missing stickerDelegate")
+            return
+        }
+        guard let hostView = stickerDelegate.stickerPreviewHostView() else {
             owsFailDebug("Missing host view.")
             return
         }
-        hostView.addSubview(stickerView)
+
+        if stickerDelegate.stickerPreviewHasOverlay() {
+            let overlayView = UIView()
+            overlayView.backgroundColor = Theme.backgroundColor.withAlphaComponent(0.5)
+            hostView.addSubview(overlayView)
+            overlayView.autoPinEdgesToSuperviewEdges()
+            overlayView.setContentHuggingLow()
+            overlayView.setCompressionResistanceLow()
+
+            overlayView.addSubview(stickerView)
+            previewView = overlayView
+        } else {
+            hostView.addSubview(stickerView)
+            previewView = stickerView
+        }
+
+        previewStickerInfo = stickerInfo
+
         stickerView.autoPinToSquareAspectRatio()
         stickerView.autoCenterInSuperview()
         let vMargin: CGFloat = 40
         let hMargin: CGFloat = 60
+        stickerView.autoSetDimension(.width, toSize: hostView.height() - vMargin * 2, relation: .lessThanOrEqual)
         stickerView.autoPinEdge(toSuperviewEdge: .top, withInset: vMargin, relation: .greaterThanOrEqual)
         stickerView.autoPinEdge(toSuperviewEdge: .bottom, withInset: vMargin, relation: .greaterThanOrEqual)
         stickerView.autoPinEdge(toSuperviewEdge: .leading, withInset: hMargin, relation: .greaterThanOrEqual)
         stickerView.autoPinEdge(toSuperviewEdge: .trailing, withInset: hMargin, relation: .greaterThanOrEqual)
-        stickerView.autoSetDimension(.width, toSize: hostView.height() - vMargin * 2, relation: .lessThanOrEqual)
-
-        previewView = stickerView
-        previewStickerInfo = stickerInfo
     }
 
     private func imageView(forStickerInfo stickerInfo: StickerInfo) -> UIView? {
