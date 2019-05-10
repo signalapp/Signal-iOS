@@ -1149,23 +1149,9 @@ static NSTimeInterval launchStartedAt;
 - (void)application:(UIApplication *)application
     performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
-    
-    UNMutableNotificationContent *notificationContent = [UNMutableNotificationContent new];
-    notificationContent.title = @"Background Fetch";
-    notificationContent.body = @"Fetching messages in the background...";
-    UNNotificationRequest *notificationRequest = [UNNotificationRequest requestWithIdentifier:[NSUUID UUID].UUIDString content:notificationContent trigger:nil];
-    [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:notificationRequest withCompletionHandler:nil];
-    
     OWSLogInfo(@"performing background fetch");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
-            
-            UNMutableNotificationContent *notificationContent = [UNMutableNotificationContent new];
-            notificationContent.title = @"New Messages";
-            notificationContent.body = @"You have new messages";
-            UNNotificationRequest *notificationRequest = [UNNotificationRequest requestWithIdentifier:[NSUUID UUID].UUIDString content:notificationContent trigger:nil];
-            [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:notificationRequest withCompletionHandler:nil];
-            
             // HACK: Call completion handler after n seconds.
             //
             // We don't currently have a convenient API to know when message fetching is *done* when
