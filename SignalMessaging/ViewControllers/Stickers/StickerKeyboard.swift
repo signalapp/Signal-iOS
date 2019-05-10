@@ -218,4 +218,10 @@ extension StickerKeyboard: StickerPackCollectionViewDelegate {
 
         delegate?.didSelectSticker(stickerInfo: stickerInfo)
     }
+
+    public func stickerHostView() -> UIView? {
+        AssertIsOnMainThread()
+
+        return stickerCollectionView
+    }
 }

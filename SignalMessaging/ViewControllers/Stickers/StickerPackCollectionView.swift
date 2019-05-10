@@ -8,6 +8,7 @@ import YYImage
 @objc
 public protocol StickerPackCollectionViewDelegate {
     func didTapSticker(stickerInfo: StickerInfo)
+    func stickerHostView() -> UIView?
 }
 
 // MARK: -
@@ -60,6 +61,9 @@ public class StickerPackCollectionView: UICollectionView {
         delegate = self
         dataSource = self
         register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
+
+        isUserInteractionEnabled = true
+        addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress)))
     }
 
     // MARK: Modes
@@ -109,6 +113,102 @@ public class StickerPackCollectionView: UICollectionView {
 
         reloadData()
     }
+
+    @objc
+    func handleLongPress(sender: UIGestureRecognizer) {
+
+        guard let indexPath = self.indexPathForItem(at: sender.location(in: self)) else {
+            hidePreview()
+            return
+        }
+        guard let stickerInfo = stickerInfos[safe: indexPath.row] else {
+            owsFailDebug("Invalid index path: \(indexPath)")
+            hidePreview()
+            return
+        }
+
+        switch sender.state {
+        case .began, .changed:
+            break
+        case .possible, .ended, .cancelled, .failed:
+            fallthrough
+        @unknown default:
+            hidePreview()
+            return
+        }
+
+        ensurePreview(stickerInfo: stickerInfo)
+    }
+
+    private var previewView: UIView?
+    private var previewStickerInfo: StickerInfo?
+
+    private func hidePreview() {
+        AssertIsOnMainThread()
+
+        previewView?.removeFromSuperview()
+        previewView = nil
+        previewStickerInfo = nil
+    }
+
+    private func ensurePreview(stickerInfo: StickerInfo) {
+        AssertIsOnMainThread()
+
+        if previewView != nil,
+            let previewStickerInfo = previewStickerInfo,
+            previewStickerInfo == stickerInfo {
+            // Already showing a preview for this sticker.
+            return
+        }
+
+        hidePreview()
+
+        guard let stickerView = imageView(forStickerInfo: stickerInfo) else {
+            owsFailDebug("Couldn't load sticker for display")
+            return
+        }
+        guard let hostView = stickerDelegate?.stickerHostView() else {
+            owsFailDebug("Missing host view.")
+            return
+        }
+        hostView.addSubview(stickerView)
+        stickerView.autoPinToSquareAspectRatio()
+        stickerView.autoCenterInSuperview()
+        let vMargin: CGFloat = 40
+        let hMargin: CGFloat = 60
+        stickerView.autoPinEdge(toSuperviewEdge: .top, withInset: vMargin, relation: .greaterThanOrEqual)
+        stickerView.autoPinEdge(toSuperviewEdge: .bottom, withInset: vMargin, relation: .greaterThanOrEqual)
+        stickerView.autoPinEdge(toSuperviewEdge: .leading, withInset: hMargin, relation: .greaterThanOrEqual)
+        stickerView.autoPinEdge(toSuperviewEdge: .trailing, withInset: hMargin, relation: .greaterThanOrEqual)
+        stickerView.autoSetDimension(.width, toSize: hostView.height() - vMargin * 2, relation: .lessThanOrEqual)
+
+        previewView = stickerView
+        previewStickerInfo = stickerInfo
+    }
+
+    private func imageView(forStickerInfo stickerInfo: StickerInfo) -> UIView? {
+
+        guard let stickerPackDataSource = stickerPackDataSource else {
+            owsFailDebug("Missing stickerPackDataSource.")
+            return nil
+        }
+        guard let filePath = stickerPackDataSource.filePath(forSticker: stickerInfo) else {
+            owsFailDebug("Missing sticker data file path.")
+            return nil
+        }
+        guard NSData.ows_isValidImage(atPath: filePath, mimeType: OWSMimeTypeImageWebp) else {
+            owsFailDebug("Invalid sticker.")
+            return nil
+        }
+        guard let stickerImage = YYImage(contentsOfFile: filePath) else {
+            owsFailDebug("Sticker could not be parsed.")
+            return nil
+        }
+
+        let stickerView = YYAnimatedImageView()
+        stickerView.image = stickerImage
+        return stickerView
+    }
 }
 
 // MARK: - UICollectionViewDelegate
@@ -151,25 +251,11 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
             owsFailDebug("Invalid index path: \(indexPath)")
             return cell
         }
-        guard let stickerPackDataSource = stickerPackDataSource else {
-            owsFailDebug("Missing stickerPackDataSource.")
-            return cell
-        }
-        guard let filePath = stickerPackDataSource.filePath(forSticker: stickerInfo) else {
-            owsFailDebug("Missing sticker data file path.")
-            return cell
-        }
-        guard NSData.ows_isValidImage(atPath: filePath, mimeType: OWSMimeTypeImageWebp) else {
-            owsFailDebug("Invalid sticker.")
-            return cell
-        }
-        guard let stickerImage = YYImage(contentsOfFile: filePath) else {
-            owsFailDebug("Sticker could not be parsed.")
+        guard let stickerView = imageView(forStickerInfo: stickerInfo) else {
+            owsFailDebug("Couldn't load sticker for display")
             return cell
         }
 
-        let stickerView = YYAnimatedImageView()
-        stickerView.image = stickerImage
         cell.contentView.addSubview(stickerView)
         stickerView.autoPinEdgesToSuperviewEdges()
 
