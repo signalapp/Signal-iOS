@@ -18,28 +18,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSPrimaryStorage (PreKeyStore)
 
-- (NSArray<PreKeyRecord *> *)generatePreKeyRecords;
+- (NSArray<PreKeyRecord *> *)generatePreKeyRecords:(int)batchSize
 {
     NSMutableArray *preKeyRecords = [NSMutableArray array];
-
+    
     @synchronized(self)
     {
-        int preKeyId = [self nextPreKeyId];
-
-        OWSLogInfo(@"building %d new preKeys starting from preKeyId: %d", BATCH_SIZE, preKeyId);
-        for (int i = 0; i < BATCH_SIZE; i++) {
+        int preKeyId = [self nextPreKeyId:batchSize];
+        
+        OWSLogInfo(@"building %d new preKeys starting from preKeyId: %d", batchSize, preKeyId);
+        for (int i = 0; i < batchSize; i++) {
             ECKeyPair *keyPair = [Curve25519 generateKeyPair];
             PreKeyRecord *record = [[PreKeyRecord alloc] initWithId:preKeyId keyPair:keyPair];
-
+            
             [preKeyRecords addObject:record];
             preKeyId++;
         }
-
+        
         [self.dbReadWriteConnection setInt:preKeyId
                                     forKey:TSNextPrekeyIdKey
                               inCollection:TSStorageInternalSettingsCollection];
     }
     return preKeyRecords;
+}
+
+- (NSArray<PreKeyRecord *> *)generatePreKeyRecords;
+{
+    return [self generatePreKeyRecords:BATCH_SIZE];
 }
 
 - (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords
@@ -83,15 +88,15 @@ NS_ASSUME_NONNULL_BEGIN
                                       inCollection:OWSPrimaryStoragePreKeyStoreCollection];
 }
 
-- (int)nextPreKeyId
+- (int)nextPreKeyId:(int)batchSize
 {
     int lastPreKeyId =
         [self.dbReadConnection intForKey:TSNextPrekeyIdKey inCollection:TSStorageInternalSettingsCollection];
 
     if (lastPreKeyId < 1) {
         // One-time prekey ids must be > 0 and < kPreKeyOfLastResortId.
-        lastPreKeyId = 1 + arc4random_uniform(kPreKeyOfLastResortId - (BATCH_SIZE + 1));
-    } else if (lastPreKeyId > kPreKeyOfLastResortId - BATCH_SIZE) {
+        lastPreKeyId = 1 + arc4random_uniform(kPreKeyOfLastResortId - (batchSize + 1));
+    } else if (lastPreKeyId > kPreKeyOfLastResortId - batchSize) {
         // We want to "overflow" to 1 when we reach the "prekey of last resort" id
         // to avoid biasing towards higher values.
         lastPreKeyId = 1;
