@@ -956,6 +956,11 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destination);
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
+    } else if (syncMessage.stickerPackOperation.count > 0) {
+        OWSLogInfo(@"Received sticker pack operation(s): %d", (int)syncMessage.stickerPackOperation.count);
+        for (SSKProtoSyncMessageStickerPackOperation *packOperationProto in syncMessage.stickerPackOperation) {
+            [StickerManager processIncomingStickerPackOperation:packOperationProto transaction:transaction.asAnyWrite];
+        }
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }

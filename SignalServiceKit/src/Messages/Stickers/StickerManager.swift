@@ -921,26 +921,6 @@ public class StickerManager: NSObject {
         installStickerPackContents(stickerPack: stickerPack, transaction: transaction, onlyInstallCover: onlyInstallCover)
     }
 
-    // TODO: We could also send a sticker sync message after we link a new device.
-    private class func enqueueStickerSyncMessage(operationType: StickerPackOperationType,
-                                                 packs: [StickerPackInfo],
-                                                 transaction: SDSAnyWriteTransaction) {
-        guard tsAccountManager.isRegisteredAndReady() else {
-            return
-        }
-
-        let message = OWSStickerPackSyncMessage(packs: packs, operationType: operationType)
-
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            self.messageSenderJobQueue.add(message: message, transaction: ydbTransaction)
-        case .grdbWrite:
-            // GRDB TODO: Support any transactions.
-//            owsFailDebug("GRDB not yet supported.")
-            break
-        }
-    }
-
     private class func cleanupOrphans() {
         DispatchQueue.global().async {
             databaseStorage.write { (transaction) in
@@ -971,6 +951,51 @@ public class StickerManager: NSObject {
                     self.uninstallSticker(stickerInfo: sticker.info, transaction: transaction)
                 }
             }
+        }
+    }
+
+    // MARK: - Sync Messages
+
+    // TODO: We could also send a sticker sync message after we link a new device.
+    private class func enqueueStickerSyncMessage(operationType: StickerPackOperationType,
+                                                 packs: [StickerPackInfo],
+                                                 transaction: SDSAnyWriteTransaction) {
+        guard tsAccountManager.isRegisteredAndReady() else {
+            return
+        }
+
+        let message = OWSStickerPackSyncMessage(packs: packs, operationType: operationType)
+
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            self.messageSenderJobQueue.add(message: message, transaction: ydbTransaction)
+        case .grdbWrite:
+            // GRDB TODO: Support any transactions.
+            //            owsFailDebug("GRDB not yet supported.")
+            break
+        }
+    }
+
+    @objc
+    public class func processIncomingStickerPackOperation(_ proto: SSKProtoSyncMessageStickerPackOperation,
+                                                           transaction: SDSAnyWriteTransaction) {
+        guard tsAccountManager.isRegisteredAndReady() else {
+            return
+        }
+
+        let packID: Data = proto.packID
+        let packKey: Data = proto.packKey
+        guard let stickerPackInfo = StickerPackInfo.parse(packId: packID, packKey: packKey) else {
+            owsFailDebug("Invalid pack info.")
+            return
+        }
+
+        switch proto.type {
+        case .install:
+            tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
+                                            installMode: .install)
+        case .remove:
+            uninstallStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
         }
     }
 

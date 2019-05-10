@@ -38,6 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable StickerPackInfo *)parsePackIdHex:(NSString *)packIdHex packKeyHex:(NSString *)packKeyHex;
 
++ (nullable StickerPackInfo *)parsePackId:(nullable NSData *)packId
+                                  packKey:(nullable NSData *)packKey NS_SWIFT_NAME(parse(packId:packKey:));
+
 - (NSString *)asKey;
 
 - (BOOL)isValid;
