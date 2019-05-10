@@ -323,7 +323,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 {
     OWSAssertIsOnMainThread();
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+    [self ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
 }
 
 - (void)profileWhitelistDidChange:(NSNotification *)notification
@@ -358,10 +358,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
     [self.primaryStorage updateUIDatabaseConnectionToLatest];
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self ensureDynamicInteractionsAndUpdateIfNecessary:NO transaction:transaction];
         [self createNewMessageMappingWithTransaction:transaction];
         if (![self reloadViewItemsWithTransaction:transaction]) {
             OWSFailDebug(@"failed to reload view items in configureForThread.");
@@ -525,7 +525,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     self.collapseCutoffDate = [NSDate new];
 }
 
-- (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary
+- (void)ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:(BOOL)updateIfNecessary
 {
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self ensureDynamicInteractionsAndUpdateIfNecessary:updateIfNecessary transaction:transaction];
@@ -590,7 +590,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     if (self.dynamicInteractions.unreadIndicator) {
         // If we've just cleared the "unread messages" indicator,
         // update the dynamic interactions.
-        [self ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+        [self ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
     }
 }
 
@@ -1091,7 +1091,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO transaction:transaction];
 
     if (![self reloadViewItemsWithTransaction:transaction]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");
@@ -1735,7 +1735,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO transaction:transaction];
 
     if (![self reloadViewItemsWithTransaction:transaction]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");
@@ -1764,7 +1764,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO transaction:transaction];
 
     if (![self reloadViewItemsWithTransaction:transaction]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");

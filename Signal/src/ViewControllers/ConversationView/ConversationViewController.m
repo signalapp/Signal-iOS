@@ -447,11 +447,11 @@ typedef enum : NSUInteger {
     NSString *_Nullable recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
     if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
-        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
     } else if (groupId.length > 0 && self.thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
         if ([groupThread.groupModel.groupId isEqualToData:groupId]) {
-            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
             [self ensureBannerState];
         }
     }
@@ -2632,7 +2632,7 @@ typedef enum : NSUInteger {
 
 - (void)contactsViewHelperDidUpdateContacts
 {
-    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
 }
 
 - (void)createConversationScrollButtons
@@ -2797,7 +2797,7 @@ typedef enum : NSUInteger {
     [self showApprovalDialogForAttachment:attachment];
 
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
 }
 
 - (void)messageWasSent:(TSOutgoingMessage *)message
@@ -3192,7 +3192,7 @@ typedef enum : NSUInteger {
             [self messageWasSent:message];
 
             if (didAddToProfileWhitelist) {
-                [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+                [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
             }
         }];
 }
@@ -3862,7 +3862,7 @@ typedef enum : NSUInteger {
         [self messageWasSent:message];
 
         if (didAddToProfileWhitelist) {
-            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
         }
     });
 }
@@ -4471,7 +4471,7 @@ typedef enum : NSUInteger {
     }];
 
     if (didAddToProfileWhitelist) {
-        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
     }
 }
 
