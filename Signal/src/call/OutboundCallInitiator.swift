@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -71,14 +71,14 @@ import SignalMessaging
             return false
         }
 
-        frontmostViewController.ows_ask(forMicrophonePermissions: { granted in
+        frontmostViewController.ows_askForMicrophonePermissions { granted in
             guard granted == true else {
                 Logger.warn("aborting due to missing microphone permissions.")
                 OWSAlerts.showNoMicrophonePermissionAlert()
                 return
             }
             callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: isVideo)
-        })
+        }
 
         return true
     }
