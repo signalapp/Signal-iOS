@@ -223,6 +223,12 @@
                                               }]];
 #endif
 
+    [section
+     addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"Share Public Key", @"")
+                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share_public_key")
+                                         selector:@selector(sharePublicKey)
+                                            color:[UIColor ows_materialBlueColor]]];
+    
     if (TSAccountManager.sharedInstance.isDeregistered) {
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON",
                                                                   @"Label for re-registration button.")
@@ -469,6 +475,13 @@
     } else {
         [SignalApp resetAppData];
     }
+}
+
+- (void)sharePublicKey
+{
+    NSString *publicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    UIActivityViewController *shareVC = [[UIActivityViewController alloc] initWithActivityItems:@[ publicKey ] applicationActivities:nil];
+    [self presentViewController:shareVC animated:YES completion:nil];
 }
 
 - (void)reregisterUser
