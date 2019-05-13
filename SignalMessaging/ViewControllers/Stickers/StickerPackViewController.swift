@@ -37,6 +37,7 @@ public class StickerPackViewController: OWSViewController {
 
         super.init(nibName: nil, bundle: nil)
 
+        stickerCollectionView.stickerDelegate = self
         stickerCollectionView.show(dataSource: dataSource)
         dataSource.add(delegate: self)
 
@@ -338,5 +339,25 @@ extension StickerPackViewController: StickerPackDataSourceDelegate {
         AssertIsOnMainThread()
 
         updateContent()
+    }
+}
+
+// MARK: -
+
+extension StickerPackViewController: StickerPackCollectionViewDelegate {
+    public func didTapSticker(stickerInfo: StickerInfo) {
+        AssertIsOnMainThread()
+
+        Logger.verbose("")
+    }
+
+    public func stickerPreviewHostView() -> UIView? {
+        AssertIsOnMainThread()
+
+        return view
+    }
+
+    public func stickerPreviewHasOverlay() -> Bool {
+        return true
     }
 }
