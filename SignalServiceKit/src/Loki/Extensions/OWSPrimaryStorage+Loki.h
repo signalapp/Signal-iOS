@@ -53,6 +53,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)pubKey;
 
+/**
+ Remove the PreKeyBundle for the given contact.
+
+ @param pubKey The hex encoded public key of the contact.
+ */
+- (void)removePreKeyBundleForContact:(NSString *)pubKey;
+
 @end
 
 NS_ASSUME_NONNULL_END

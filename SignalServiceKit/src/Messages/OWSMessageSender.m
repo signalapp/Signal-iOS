@@ -1665,6 +1665,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             @try {
                 [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
+                
+                // Loki: Discard the prekey bundle here since the session is initiated
+                [[OWSPrimaryStorage sharedManager] removePreKeyBundleForContact:recipientId];
             } @catch (NSException *caughtException) {
                 exception = caughtException;
             }

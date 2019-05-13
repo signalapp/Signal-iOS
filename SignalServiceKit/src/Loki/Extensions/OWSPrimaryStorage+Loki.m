@@ -91,4 +91,10 @@
                              inCollection:LokiPreKeyBundleCollection];
 }
 
+- (void)removePreKeyBundleForContact:(NSString *)pubKey
+{
+    [self.dbReadWriteConnection removeObjectForKey:pubKey
+                                      inCollection:LokiPreKeyBundleCollection];
+}
+
 @end
