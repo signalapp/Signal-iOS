@@ -49,7 +49,7 @@ extension AnyMediaGalleryFinder: MediaGalleryFinder {
         case .grdbRead(let grdbRead):
             return grdbAdapter.enumerateMediaAttachments(range: range, transaction: grdbRead, block: block)
         case .yapRead(let yapRead):
-            return yapAdapter.enumerateMediaAttachments(with: range, transaction: yapRead, block: block)
+            return yapAdapter.enumerateMediaAttachments(range: range, transaction: yapRead, block: block)
         }
     }
 
