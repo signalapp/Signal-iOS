@@ -39,6 +39,9 @@ public class FeatureFlags: NSObject {
         }
     }
 
+    @objc
+    public static let shouldPadAllOutgoingAttachments = false
+
     // Temporary flag helpful for development, where blowing away GRDB and re-running
     // the migration every launch is helpful.
     @objc

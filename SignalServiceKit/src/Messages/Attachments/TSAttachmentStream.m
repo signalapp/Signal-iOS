@@ -53,12 +53,13 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
                      albumMessageId:(nullable NSString *)albumMessageId
+                  isOutgoingSticker:(BOOL)isOutgoingSticker
 {
-    self = [super initWithContentType:contentType
-                            byteCount:byteCount
-                       sourceFilename:sourceFilename
-                              caption:caption
-                       albumMessageId:albumMessageId];
+    self = [super initAttachmentWithContentType:contentType
+                                      byteCount:byteCount
+                                 sourceFilename:sourceFilename
+                                        caption:caption
+                                 albumMessageId:albumMessageId];
     if (!self) {
         return self;
     }
@@ -69,6 +70,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     // attachments which haven't been uploaded yet.
     _isUploaded = NO;
     _creationTimestamp = [NSDate new];
+
+    _isOutgoingSticker = isOutgoingSticker;
 
     [self ensureFilePath];
 
@@ -888,7 +891,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                               byteCount:(uint32_t)thumbnailData.length
                                          sourceFilename:thumbnailName
                                                 caption:nil
-                                         albumMessageId:nil];
+                                         albumMessageId:nil
+                                      isOutgoingSticker:NO];
 
     NSError *error;
     BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];

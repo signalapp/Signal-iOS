@@ -26,7 +26,8 @@ typedef void (^OWSThumbnailFailure)(void);
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
-                     albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
+                     albumMessageId:(nullable NSString *)albumMessageId
+                  isOutgoingSticker:(BOOL)isOutgoingSticker NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
@@ -118,6 +119,8 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 
 // This method should only be invoked by OWSThumbnailService.
 - (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints;
+
+@property (nonatomic, readonly) BOOL isOutgoingSticker;
 
 #pragma mark - Validation
 

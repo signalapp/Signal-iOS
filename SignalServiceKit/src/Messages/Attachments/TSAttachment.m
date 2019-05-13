@@ -105,11 +105,11 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent new, un-uploaded outgoing attachments.
-- (instancetype)initWithContentType:(NSString *)contentType
-                          byteCount:(UInt32)byteCount
-                     sourceFilename:(nullable NSString *)sourceFilename
-                            caption:(nullable NSString *)caption
-                     albumMessageId:(nullable NSString *)albumMessageId
+- (instancetype)initAttachmentWithContentType:(NSString *)contentType
+                                    byteCount:(UInt32)byteCount
+                               sourceFilename:(nullable NSString *)sourceFilename
+                                      caption:(nullable NSString *)caption
+                               albumMessageId:(nullable NSString *)albumMessageId
 {
     if (contentType.length < 1) {
         OWSLogWarn(@"outgoing attachment has invalid content type");
