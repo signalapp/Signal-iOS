@@ -342,7 +342,7 @@ private class SignalCallData: NSObject {
         }
     }
 
-    weak var localCaptureSession: AVCaptureSession? {
+    var localCaptureSession: AVCaptureSession? {
         get {
             AssertIsOnMainThread()
 
@@ -357,6 +357,7 @@ private class SignalCallData: NSObject {
             return callData?.remoteVideoTrack
         }
     }
+
     var isRemoteVideoEnabled: Bool {
         get {
             AssertIsOnMainThread()
@@ -1404,7 +1405,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        frontmostViewController.ows_ask(forCameraPermissions: { [weak self] granted in
+        frontmostViewController.ows_askForCameraPermissions { [weak self] granted in
             guard let strongSelf = self else {
                 return
             }
@@ -1421,7 +1422,7 @@ private class SignalCallData: NSObject {
                 OWSAlerts.showAlert(title: NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized"),
                                     message: NSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body when camera is not authorized"))
             }
-        })
+        }
     }
 
     private func setHasLocalVideoWithCameraPermissions(hasLocalVideo: Bool) {
