@@ -39,6 +39,13 @@ public class StickerPackViewController: OWSViewController {
 
         stickerCollectionView.show(dataSource: dataSource)
         dataSource.add(delegate: self)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: UIApplication.didChangeStatusBarFrameNotification, object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     // MARK: - View Lifecycle
@@ -154,6 +161,7 @@ public class StickerPackViewController: OWSViewController {
 
     private func updateContent() {
         updateCover()
+        updateInsets()
 
         guard let stickerPack = dataSource.getStickerPack() else {
             installButton?.isHidden = true
@@ -202,6 +210,21 @@ public class StickerPackViewController: OWSViewController {
         coverView.isHidden = false
     }
 
+    private func updateInsets() {
+        UIView.setAnimationsEnabled(false)
+
+        if #available(iOS 11.0, *) {
+            if (!CurrentAppContext().isMainApp) {
+                self.additionalSafeAreaInsets = .zero
+            } else if (OWSWindowManager.shared().hasCall()) {
+                self.additionalSafeAreaInsets = UIEdgeInsets(top: 20, leading: 0, bottom: 0, trailing: 0)
+            } else {
+                self.additionalSafeAreaInsets = .zero
+            }
+        }
+        UIView.setAnimationsEnabled(true)
+    }
+
     override public func viewDidLoad() {
         super.viewDidLoad()
 
@@ -224,7 +247,7 @@ public class StickerPackViewController: OWSViewController {
         return true
     }
 
-    // MARK: Events
+    // - MARK: Events
 
     @objc
     private func didTapInstall(sender: UIButton) {
@@ -266,6 +289,20 @@ public class StickerPackViewController: OWSViewController {
     @objc
     func shareButtonPressed(sender: UIButton) {
         OWSWindowManager.shared().leaveCallView()
+    }
+
+    @objc
+    public func callDidChange() {
+        Logger.debug("")
+
+        updateContent()
+    }
+
+    @objc
+    public func didChangeStatusBarFrame() {
+        Logger.debug("")
+
+        updateContent()
     }
 }
 
