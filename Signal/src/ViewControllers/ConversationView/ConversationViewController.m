@@ -1185,7 +1185,7 @@ typedef enum : NSUInteger {
 - (void)startReadTimer
 {
     [self.readTimer invalidate];
-    self.readTimer = [NSTimer weakScheduledTimerWithTimeInterval:3.f
+    self.readTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
                                                           target:self
                                                         selector:@selector(readTimerDidFire)
                                                         userInfo:nil
