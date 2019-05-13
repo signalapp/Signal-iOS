@@ -18,7 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSPrimaryStorage (PreKeyStore)
 
-- (NSArray<PreKeyRecord *> *)generatePreKeyRecords:(int)batchSize
+- (NSArray<PreKeyRecord *> *)generatePreKeyRecords
+{
+    return [self generatePreKeyRecords:BATCH_SIZE];
+}
+
+- (NSArray<PreKeyRecord *> *)generatePreKeyRecords:(NSUInteger)batchSize
 {
     NSMutableArray *preKeyRecords = [NSMutableArray array];
 
@@ -40,11 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
                               inCollection:TSStorageInternalSettingsCollection];
     }
     return preKeyRecords;
-}
-
-- (NSArray<PreKeyRecord *> *)generatePreKeyRecords
-{
-    return [self generatePreKeyRecords:BATCH_SIZE];
 }
 
 - (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords
