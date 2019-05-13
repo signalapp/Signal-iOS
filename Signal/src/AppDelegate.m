@@ -608,21 +608,18 @@ static NSTimeInterval launchStartedAt;
                 return NO;
             }
             StickerPackViewController *packView =
-                [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo hasDismissButton:YES];
-            OWSNavigationController *navigationController =
-                [[OWSNavigationController alloc] initWithRootViewController:packView];
+                [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
             UIViewController *rootViewController = self.window.rootViewController;
             OWSAssertDebug([rootViewController isKindOfClass:[OWSNavigationController class]]);
             if (rootViewController.presentedViewController) {
                 [rootViewController dismissViewControllerAnimated:NO
                                                        completion:^{
-                                                           [rootViewController
-                                                               presentViewController:navigationController
-                                                                            animated:NO
-                                                                          completion:nil];
+                                                           [rootViewController presentViewController:packView
+                                                                                            animated:NO
+                                                                                          completion:nil];
                                                        }];
             } else {
-                [rootViewController presentViewController:navigationController animated:NO completion:nil];
+                [rootViewController presentViewController:packView animated:NO completion:nil];
             }
         } else {
             OWSFailDebug(@"Application opened with an unknown URL action: %@", url.host);

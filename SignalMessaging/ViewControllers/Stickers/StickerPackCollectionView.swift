@@ -60,7 +60,6 @@ public class StickerPackCollectionView: UICollectionView {
         delegate = self
         dataSource = self
         register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
-        backgroundColor = Theme.offBackgroundColor
     }
 
     // MARK: Modes

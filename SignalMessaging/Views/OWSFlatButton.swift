@@ -184,4 +184,9 @@ public class OWSFlatButton: UIView {
         button.titleLabel?.lineBreakMode = .byWordWrapping
         button.titleLabel?.textAlignment = .center
     }
+
+    @objc
+    public var font: UIFont? {
+        return button.titleLabel?.font
+    }
 }

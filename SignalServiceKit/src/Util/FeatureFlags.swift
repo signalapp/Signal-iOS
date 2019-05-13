@@ -55,4 +55,10 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let stickerSearch = true
+
+    @objc
+    public static let stickerPackSharing = false
+
+    @objc
+    public static let stickerPackOrdering = false
 }

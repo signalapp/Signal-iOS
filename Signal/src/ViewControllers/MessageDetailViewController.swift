@@ -802,8 +802,7 @@ extension MessageDetailViewController: MediaGalleryDataSourceDelegate {
 
 extension MessageDetailViewController: OWSMessageStickerViewDelegate {
     public func showStickerPack(_ stickerPackInfo: StickerPackInfo) {
-        let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo, hasDismissButton: true)
-        let navigationController = OWSNavigationController(rootViewController: packView)
+        let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
         present(packView, animated: true)
     }
 }

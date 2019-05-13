@@ -4,13 +4,14 @@
 
 import Foundation
 import SignalServiceKit
+import YYImage
 
 @objc
 public class StickerPackViewController: OWSViewController {
 
     // MARK: - Dependencies
 
-    private static var databaseStorage: SDSDatabaseStorage {
+    private var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
 
@@ -22,8 +23,6 @@ public class StickerPackViewController: OWSViewController {
 
     private let dataSource: StickerPackDataSource
 
-    private let hasDismissButton: Bool
-
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -32,15 +31,21 @@ public class StickerPackViewController: OWSViewController {
     }
 
     @objc
-    public required init(stickerPackInfo: StickerPackInfo, hasDismissButton: Bool) {
+    public required init(stickerPackInfo: StickerPackInfo) {
         self.stickerPackInfo = stickerPackInfo
-        self.hasDismissButton = hasDismissButton
         self.dataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPackInfo)
 
         super.init(nibName: nil, bundle: nil)
 
         stickerCollectionView.show(dataSource: dataSource)
         dataSource.add(delegate: self)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: UIApplication.didChangeStatusBarFrameNotification, object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     // MARK: - View Lifecycle
@@ -48,50 +53,176 @@ public class StickerPackViewController: OWSViewController {
     override public func loadView() {
         super.loadView()
 
+        if UIAccessibility.isReduceTransparencyEnabled {
+            view.backgroundColor = Theme.darkThemeBackgroundColor
+        } else {
+            view.backgroundColor = .clear
+
+            let blurEffect = Theme.darkThemeBarBlurEffect
+            let blurEffectView = UIVisualEffectView(effect: blurEffect)
+            view.addSubview(blurEffectView)
+            blurEffectView.autoPinEdgesToSuperviewEdges()
+        }
+
+        let hMargin: CGFloat = 16
+
+        dismissButton.setTemplateImageName("x-24", tintColor: Theme.darkThemePrimaryColor)
+        dismissButton.addTarget(self, action: #selector(dismissButtonPressed(sender:)), for: .touchUpInside)
+        dismissButton.contentEdgeInsets = UIEdgeInsets(top: 20, leading: hMargin, bottom: 20, trailing: hMargin)
+
+        coverView.autoSetDimensions(to: CGSize(width: 48, height: 48))
+        coverView.setCompressionResistanceHigh()
+        coverView.setContentHuggingHigh()
+
+        titleLabel.textColor = Theme.darkThemePrimaryColor
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_mediumWeight()
+
+        authorLabel.textColor = Theme.darkThemePrimaryColor
+        authorLabel.font = UIFont.ows_dynamicTypeBody
+
+        defaultPackIconView.setTemplateImageName("badge-filled-16", tintColor: UIColor.ows_signalBrandBlue)
+        defaultPackIconView.isHidden = true
+
+        shareButton.setTemplateImageName("forward-outline-24", tintColor: Theme.darkThemePrimaryColor)
+        shareButton.addTarget(self, action: #selector(shareButtonPressed(sender:)), for: .touchUpInside)
+
+        view.addSubview(dismissButton)
+        dismissButton.autoPinEdge(toSuperviewEdge: .leading)
+        dismissButton.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+
+        let bottomRowView = UIStackView(arrangedSubviews: [ defaultPackIconView, authorLabel ])
+        bottomRowView.axis = .horizontal
+        bottomRowView.alignment = .center
+        bottomRowView.spacing = 5
+        defaultPackIconView.setCompressionResistanceHigh()
+        defaultPackIconView.setContentHuggingHigh()
+
+        let textRowsView = UIStackView(arrangedSubviews: [ titleLabel, bottomRowView ])
+        textRowsView.axis = .vertical
+        textRowsView.alignment = .leading
+
+        let headerStack = UIStackView(arrangedSubviews: [ coverView, textRowsView, shareButton ])
+        headerStack.axis = .horizontal
+        headerStack.alignment = .center
+        headerStack.spacing = 10
+        headerStack.layoutMargins = UIEdgeInsets(top: 10, leading: hMargin, bottom: 10, trailing: hMargin)
+        headerStack.isLayoutMarginsRelativeArrangement = true
+        textRowsView.setCompressionResistanceHorizontalLow()
+        textRowsView.setContentHuggingHorizontalLow()
+
+        self.view.addSubview(headerStack)
+        headerStack.autoPinEdge(.top, to: .bottom, of: dismissButton)
+        headerStack.autoPinWidthToSuperview()
+
+        stickerCollectionView.backgroundColor = .clear
         self.view.addSubview(stickerCollectionView)
-        stickerCollectionView.autoPinEdgesToSuperviewEdges()
+        stickerCollectionView.autoPinWidthToSuperview()
+        stickerCollectionView.autoPinEdge(.top, to: .bottom, of: headerStack)
+        stickerCollectionView.autoPinEdge(toSuperviewMargin: .bottom)
 
-        // TODO: We probably want to surface the author and perhaps the cover.
-        //       design is pending.
+        installButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
+                                             font: UIFont.ows_dynamicTypeBody.ows_mediumWeight(),
+                                             titleColor: UIColor.ows_materialBlue,
+                                             backgroundColor: UIColor.white,
+                                             target: self,
+                                             selector: #selector(didTapInstall))
+        uninstallButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
+                                             font: UIFont.ows_dynamicTypeBody.ows_mediumWeight(),
+                                             titleColor: UIColor.ows_materialBlue,
+                                             backgroundColor: UIColor.white,
+                                             target: self,
+                                             selector: #selector(didTapUninstall))
+        for button in [installButton, uninstallButton] {
+            guard let button = button else {
+                owsFailDebug("Missing button.")
+                continue
+            }
+            view.addSubview(button)
+            button.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+            button.autoPinWidthToSuperview(withMargin: hMargin)
+            guard let buttonFont = button.font else {
+                owsFailDebug("Missing button font.")
+                continue
+            }
+            button.autoSetDimension(.height, toSize: buttonFont.lineHeight * 2.5)
+        }
 
-        updateNavigationBar()
+        updateContent()
     }
 
-    private func updateNavigationBar() {
-        AssertIsOnMainThread()
+    private let dismissButton = UIButton()
+    private let coverView = YYAnimatedImageView()
+    private let titleLabel = UILabel()
+    private let authorLabel = UILabel()
+    private let defaultPackIconView = UIImageView()
+    private let shareButton = UIButton()
+    private var installButton: OWSFlatButton?
+    private var uninstallButton: OWSFlatButton?
+
+    private func updateContent() {
+        updateCover()
+        updateInsets()
+
+        guard let stickerPack = dataSource.getStickerPack() else {
+            installButton?.isHidden = true
+            uninstallButton?.isHidden = true
+            return
+        }
 
         let defaultTitle = NSLocalizedString("STICKERS_PACK_VIEW_DEFAULT_TITLE", comment: "The default title for the 'sticker pack' view.")
-
-        if let stickerPack = dataSource.getStickerPack() {
-            if let title = stickerPack.title?.ows_stripped(),
-                title.count > 0 {
-                navigationItem.title = title
-            } else {
-                navigationItem.title = defaultTitle
-            }
-
-            // We need to consult StickerManager for the latest "isInstalled"
-            // state, since the data source may be caching stale state.
-            let isInstalled = StickerManager.isStickerPackInstalled(stickerPackInfo: stickerPack.info)
-            if isInstalled {
-                self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
-                                                                         style: .plain,
-                                                                         target: self,
-                                                                         action: #selector(didTapUninstall))
-            } else {
-                self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
-                                                                         style: .plain,
-                                                                         target: self,
-                                                                         action: #selector(didTapInstall))
-            }
+        if let title = stickerPack.title?.ows_stripped(),
+            title.count > 0 {
+            titleLabel.text = title
         } else {
-            navigationItem.title = defaultTitle
-            navigationItem.rightBarButtonItem = nil
+            titleLabel.text = defaultTitle
         }
 
-        if hasDismissButton {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didPressDismiss))
+        authorLabel.text = stickerPack.author
+
+        defaultPackIconView.isHidden = !StickerManager.isDefaultStickerPack(stickerPack)
+        shareButton.isHidden = !FeatureFlags.stickerPackSharing
+
+        // We need to consult StickerManager for the latest "isInstalled"
+        // state, since the data source may be caching stale state.
+        let isInstalled = StickerManager.isStickerPackInstalled(stickerPackInfo: stickerPack.info)
+        installButton?.isHidden = isInstalled
+        uninstallButton?.isHidden = !isInstalled
+    }
+
+    private func updateCover() {
+        guard let stickerPack = dataSource.getStickerPack() else {
+            coverView.isHidden = true
+            return
         }
+        let coverInfo = stickerPack.coverInfo
+        guard let filePath = dataSource.filePath(forSticker: coverInfo) else {
+            owsFailDebug("Missing sticker data file path.")
+            coverView.isHidden = true
+            return
+        }
+        guard let stickerImage = YYImage(contentsOfFile: filePath) else {
+            owsFailDebug("Sticker could not be parsed.")
+            coverView.isHidden = true
+            return
+        }
+
+        coverView.image = stickerImage
+        coverView.isHidden = false
+    }
+
+    private func updateInsets() {
+        UIView.setAnimationsEnabled(false)
+
+        if #available(iOS 11.0, *) {
+            if (!CurrentAppContext().isMainApp) {
+                self.additionalSafeAreaInsets = .zero
+            } else if (OWSWindowManager.shared().hasCall()) {
+                self.additionalSafeAreaInsets = UIEdgeInsets(top: 20, leading: 0, bottom: 0, trailing: 0)
+            } else {
+                self.additionalSafeAreaInsets = .zero
+            }
+        }
+        UIView.setAnimationsEnabled(true)
     }
 
     override public func viewDidLoad() {
@@ -116,7 +247,7 @@ public class StickerPackViewController: OWSViewController {
         return true
     }
 
-    // MARK: Events
+    // - MARK: Events
 
     @objc
     private func didTapInstall(sender: UIButton) {
@@ -131,7 +262,7 @@ public class StickerPackViewController: OWSViewController {
 
         StickerManager.saveStickerPack(stickerPack: stickerPack, installMode: .install)
 
-        updateNavigationBar()
+        updateContent()
     }
 
     @objc
@@ -140,21 +271,38 @@ public class StickerPackViewController: OWSViewController {
 
         Logger.verbose("")
 
-        StickerPackViewController.databaseStorage.write { (transaction) in
+        databaseStorage.write { (transaction) in
             StickerManager.uninstallStickerPack(stickerPackInfo: self.stickerPackInfo,
                                                 transaction: transaction)
         }
 
-        updateNavigationBar()
+        updateContent()
     }
 
     @objc
-    private func didPressDismiss(sender: UIButton) {
+    private func dismissButtonPressed(sender: UIButton) {
         AssertIsOnMainThread()
 
-        Logger.verbose("")
-
         dismiss(animated: true)
+    }
+
+    @objc
+    func shareButtonPressed(sender: UIButton) {
+        OWSWindowManager.shared().leaveCallView()
+    }
+
+    @objc
+    public func callDidChange() {
+        Logger.debug("")
+
+        updateContent()
+    }
+
+    @objc
+    public func didChangeStatusBarFrame() {
+        Logger.debug("")
+
+        updateContent()
     }
 }
 
@@ -164,6 +312,6 @@ extension StickerPackViewController: StickerPackDataSourceDelegate {
     public func stickerPackDataDidChange() {
         AssertIsOnMainThread()
 
-        updateNavigationBar()
+        updateContent()
     }
 }

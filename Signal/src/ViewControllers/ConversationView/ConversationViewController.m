@@ -2595,11 +2595,8 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    StickerPackViewController *packView =
-        [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo hasDismissButton:YES];
-    OWSNavigationController *navigationController =
-        [[OWSNavigationController alloc] initWithRootViewController:packView];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
+    [self presentViewController:packView animated:YES completion:nil];
 }
 
 #pragma mark - ContactEditingDelegate
