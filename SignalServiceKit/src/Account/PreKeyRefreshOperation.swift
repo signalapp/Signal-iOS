@@ -35,23 +35,26 @@ public class RefreshPreKeysOperation: OWSOperation {
             Logger.debug("skipping - not registered")
             return
         }
-
-        guard self.primaryStorage.currentSignedPrekeyId() == nil else {
-            Logger.debug("Already have a signed prekey set")
+        
+        // Loki: Doing this on the global queue because they do it at the bottom
+        DispatchQueue.global().async {
+            guard self.primaryStorage.currentSignedPrekeyId() == nil else {
+                Logger.debug("Already have a signed prekey set")
+                self.reportSuccess()
+                return
+            }
+            
+            let signedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
+            signedPreKeyRecord.markAsAcceptedByService()
+            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+            
+            TSPreKeyManager.clearPreKeyUpdateFailureCount()
+            TSPreKeyManager.clearSignedPreKeyRecords()
+            
+            Logger.debug("done")
             self.reportSuccess()
-            return
         }
-
-        let signedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
-        signedPreKeyRecord.markAsAcceptedByService()
-        self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-        self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
-        
-        TSPreKeyManager.clearPreKeyUpdateFailureCount()
-        TSPreKeyManager.clearSignedPreKeyRecords()
-        
-        Logger.debug("done")
-        self.reportSuccess()
         
         /* Loki: Original Code
          * =============
