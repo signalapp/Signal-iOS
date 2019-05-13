@@ -168,7 +168,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
             return
         }
         // Download any missing stickers.
-        StickerManager.ensureDownloadsAsync(forStickerPack: stickerPack)
+        StickerManager.ensureDownloadsAsync(forStickerPack: stickerPack).retainUntilComplete()
     }
 
     // MARK: Events
