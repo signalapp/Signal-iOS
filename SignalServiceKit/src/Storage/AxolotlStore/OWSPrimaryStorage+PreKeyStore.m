@@ -21,20 +21,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<PreKeyRecord *> *)generatePreKeyRecords:(int)batchSize
 {
     NSMutableArray *preKeyRecords = [NSMutableArray array];
-    
+
     @synchronized(self)
     {
         int preKeyId = [self nextPreKeyId:batchSize];
-        
+
         OWSLogInfo(@"building %d new preKeys starting from preKeyId: %d", batchSize, preKeyId);
         for (int i = 0; i < batchSize; i++) {
             ECKeyPair *keyPair = [Curve25519 generateKeyPair];
             PreKeyRecord *record = [[PreKeyRecord alloc] initWithId:preKeyId keyPair:keyPair];
-            
+
             [preKeyRecords addObject:record];
             preKeyId++;
         }
-        
+
         [self.dbReadWriteConnection setInt:preKeyId
                                     forKey:TSNextPrekeyIdKey
                               inCollection:TSStorageInternalSettingsCollection];
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
     return preKeyRecords;
 }
 
-- (NSArray<PreKeyRecord *> *)generatePreKeyRecords;
+- (NSArray<PreKeyRecord *> *)generatePreKeyRecords
 {
     return [self generatePreKeyRecords:BATCH_SIZE];
 }
