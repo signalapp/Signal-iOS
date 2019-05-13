@@ -26,6 +26,7 @@
 #import "OWSMessageUtils.h"
 #import "OWSOutgoingReceiptManager.h"
 #import "OWSPrimaryStorage+SessionStore.h"
+#import "OWSPrimaryStorage+Loki.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
@@ -411,6 +412,16 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
+        
+        // Loki: Handle PreKeyBundle message
+        if (contentProto.prekeyBundleMessage) {
+            OWSLogInfo(@"Received a prekey bundle message from: %@", envelope.source);
+            PreKeyBundle *_Nullable bundle = contentProto.prekeyBundleMessage.preKeyBundle;
+            if (!bundle) {
+                OWSFailDebug(@"Failed to create PreKeyBundle from message");
+            }
+            [[OWSPrimaryStorage sharedManager] setPreKeyBundle:bundle forContact:envelope.source];
+        }
 
         if (contentProto.syncMessage) {
             [self throws_handleIncomingEnvelope:envelope
