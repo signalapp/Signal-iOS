@@ -99,6 +99,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [[StickerPackInfo alloc] initWithPackId:packId packKey:packKey];
 }
 
+- (NSString *)shareUrl
+{
+    return [NSString stringWithFormat:@"https://signal.org/addstickers/#pack_id=%@&pack_key=%@",
+                     self.packId.hexadecimalString,
+                     self.packKey.hexadecimalString];
+}
+
 - (NSString *)asKey
 {
     return self.packId.hexadecimalString;

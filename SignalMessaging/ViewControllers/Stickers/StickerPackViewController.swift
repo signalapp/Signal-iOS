@@ -314,7 +314,14 @@ public class StickerPackViewController: OWSViewController {
 
     @objc
     func shareButtonPressed(sender: UIButton) {
-        OWSWindowManager.shared().leaveCallView()
+        AssertIsOnMainThread()
+
+        guard let stickerPack = dataSource.getStickerPack() else {
+            owsFailDebug("Missing sticker pack.")
+            return
+        }
+
+        StickerSharingViewController.shareStickerPack(stickerPack.info, from: self)
     }
 
     @objc

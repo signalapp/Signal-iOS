@@ -41,6 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable StickerPackInfo *)parsePackId:(nullable NSData *)packId
                                   packKey:(nullable NSData *)packKey NS_SWIFT_NAME(parse(packId:packKey:));
 
+- (NSString *)shareUrl;
+
 - (NSString *)asKey;
 
 - (BOOL)isValid;
