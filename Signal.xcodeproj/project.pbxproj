@@ -555,6 +555,8 @@
 		B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6B226961BE4B7D200860F4D /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		B6F509971AA53F760068F56A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */; };
+		B8162F0322891AD600D46544 /* FriendRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8162F0222891AD600D46544 /* FriendRequestView.swift */; };
+		B8162F0522892C5F00D46544 /* FriendRequestViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */; };
 		B821F2F82272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */; };
 		B821F2FA2272CEEE002C88C0 /* OnboardingKeyPairViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* OnboardingKeyPairViewController.swift */; };
 		B843951A228510FB000563FE /* Poller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8439519228510FB000563FE /* Poller.swift */; };
@@ -1340,6 +1342,8 @@
 		B6BC3D0C1AA544B100C2907F /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = translations/da.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6F509961AA53F760068F56A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = translations/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
+		B8162F0222891AD600D46544 /* FriendRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequestView.swift; sourceTree = "<group>"; };
+		B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequestViewDelegate.swift; sourceTree = "<group>"; };
 		B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingAccountDetailsViewController.swift; sourceTree = "<group>"; };
 		B821F2F92272CEEE002C88C0 /* OnboardingKeyPairViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingKeyPairViewController.swift; sourceTree = "<group>"; };
 		B8439519228510FB000563FE /* Poller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Poller.swift; path = Signal/src/Loki/Poller.swift; sourceTree = SOURCE_ROOT; };
@@ -1526,13 +1530,11 @@
 			children = (
 				3441FD9E21A3604F00BB9542 /* BackupRestoreViewController.swift */,
 				349ED98F221B0194008045B0 /* Onboarding2FAViewController.swift */,
-				B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */,
 				3448E1612213585C004B052E /* OnboardingBaseViewController.swift */,
 				3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */,
 				3448E15D221333F5004B052E /* OnboardingController.swift */,
 				3448E15B22133274004B052E /* OnboardingPermissionsViewController.swift */,
 				34A4C61F22175C5C0042EF2E /* OnboardingProfileViewController.swift */,
-				B821F2F92272CEEE002C88C0 /* OnboardingKeyPairViewController.swift */,
 				3448E15F22134C88004B052E /* OnboardingSplashViewController.swift */,
 				34A4C61D221613D00042EF2E /* OnboardingVerificationViewController.swift */,
 				346E9D5321B040B600562252 /* RegistrationController.swift */,
@@ -2599,6 +2601,10 @@
 		B8439518228510E9000563FE /* Loki */ = {
 			isa = PBXGroup;
 			children = (
+				B8162F0222891AD600D46544 /* FriendRequestView.swift */,
+				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
+				B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */,
+				B821F2F92272CEEE002C88C0 /* OnboardingKeyPairViewController.swift */,
 				B8439519228510FB000563FE /* Poller.swift */,
 			);
 			path = Loki;
@@ -3675,10 +3681,12 @@
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
+				B8162F0522892C5F00D46544 /* FriendRequestViewDelegate.swift in Sources */,
 				B821F2FA2272CEEE002C88C0 /* OnboardingKeyPairViewController.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
 				3448E16022134C89004B052E /* OnboardingSplashViewController.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
+				B8162F0322891AD600D46544 /* FriendRequestView.swift in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,

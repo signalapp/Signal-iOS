@@ -1,6 +1,6 @@
 import PromiseKit
 
-@objc public final class Poller : NSObject {
+@objc final class Poller : NSObject {
     private var isStarted = false
     private var currentJob: Promise<Void>?
 
@@ -8,12 +8,12 @@ import PromiseKit
     private static let interval: TimeInterval = 30
     
     // MARK: Initialization
-    @objc public static let shared = Poller()
+    @objc static let shared = Poller()
     
     private override init() { }
     
     // MARK: General
-    @objc public func startIfNeeded() {
+    @objc func startIfNeeded() {
         guard !isStarted else { return }
         Timer.scheduledTimer(timeInterval: Poller.interval, target: self, selector: #selector(poll), userInfo: nil, repeats: true)
         isStarted = true

@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageHeaderView *headerView;
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) AvatarImageView *avatarView;
+@property (nonatomic, nullable) FriendRequestView *friendRequestView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
@@ -164,6 +165,21 @@ NS_ASSUME_NONNULL_BEGIN
                                                      withInset:self.conversationStyle.gutterTrailing
                                                       relation:NSLayoutRelationGreaterThanOrEqual],
         ]];
+        
+        if ([self.viewItem.interaction isKindOfClass:TSIncomingMessage.class]) {
+            TSIncomingMessage *message = (TSIncomingMessage *)self.message;
+            if (YES) { // TODO: message.isFriendRequest
+                self.friendRequestView = [FriendRequestView new];
+                self.friendRequestView.message = message;
+                self.friendRequestView.delegate = self.friendRequestViewDelegate;
+                [self.contentView addSubview:self.friendRequestView];
+                [self.viewConstraints addObjectsFromArray:@[
+                    [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.conversationStyle.gutterLeading],
+                    [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.conversationStyle.gutterTrailing],
+                    [self.friendRequestView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.messageBubbleView withOffset:12.f]
+                ]];
+            }
+        }
     } else {
         if (self.shouldHaveSendFailureBadge) {
             self.sendFailureBadgeView = [UIImageView new];
@@ -339,6 +355,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.shouldHaveSendFailureBadge) {
         cellSize.width += self.sendFailureBadgeSize + self.sendFailureBadgeSpacing;
     }
+    
+    if (self.friendRequestView != nil) {
+        cellSize.height += 118.f; // TODO: Measure dynamically
+    }
 
     cellSize = CGSizeCeil(cellSize);
 
@@ -359,6 +379,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.headerView removeFromSuperview];
 
+    [self.friendRequestView removeFromSuperview];
+    self.friendRequestView = nil;
+    
     self.avatarView.image = nil;
     [self.avatarView removeFromSuperview];
 

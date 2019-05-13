@@ -123,6 +123,7 @@ typedef enum : NSUInteger {
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
     ConversationSearchControllerDelegate,
+    FriendRequestViewDelegate,
     LongTextViewDelegate,
     MessageActionsDelegate,
     MessageDetailViewDelegate,
@@ -4282,6 +4283,18 @@ typedef enum : NSUInteger {
                                         animated:YES];
 }
 
+#pragma mark - FriendRequestViewDelegate
+
+- (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
+{
+    [ThreadUtil enqueueFriendRequestAcceptMessageInThread:self.thread];
+}
+
+- (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
+{
+    OWSLogDebug(@"decline friend request button pressed"); // TODO: Implement
+}
+
 #pragma mark - ConversationViewLayoutDelegate
 
 - (NSArray<id<ConversationViewLayoutItem>> *)layoutItems
@@ -4567,6 +4580,7 @@ typedef enum : NSUInteger {
     if ([cell isKindOfClass:[OWSMessageCell class]]) {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
         messageCell.messageBubbleView.delegate = self;
+        messageCell.friendRequestViewDelegate = self;
     }
     cell.conversationStyle = self.conversationStyle;
 

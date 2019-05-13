@@ -91,7 +91,7 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
         self.userName = userName
     }
     
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.loadView()
         setUpViewHierarchy()
         handleModeChanged() // Perform initial update

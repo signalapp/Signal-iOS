@@ -65,7 +65,7 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
     }
     
-    public override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         userNameTextField.becomeFirstResponder()
     }
