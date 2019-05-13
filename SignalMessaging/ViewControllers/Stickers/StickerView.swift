@@ -36,7 +36,10 @@ public class StickerView: YYAnimatedImageView {
             Logger.warn("Sticker not yet installed.")
             return
         }
-
+        guard NSData.ows_isValidImage(atPath: filePath, mimeType: OWSMimeTypeImageWebp) else {
+            owsFailDebug("Invalid sticker.")
+            return
+        }
         // TODO: Asset to show while loading a sticker - if any.
         guard let stickerImage = YYImage(contentsOfFile: filePath) else {
             owsFailDebug("Sticker could not be parsed.")

@@ -159,6 +159,10 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
             owsFailDebug("Missing sticker data file path.")
             return cell
         }
+        guard NSData.ows_isValidImage(atPath: filePath, mimeType: OWSMimeTypeImageWebp) else {
+            owsFailDebug("Invalid sticker.")
+            return cell
+        }
         guard let stickerImage = YYImage(contentsOfFile: filePath) else {
             owsFailDebug("Sticker could not be parsed.")
             return cell
