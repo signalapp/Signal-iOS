@@ -1398,7 +1398,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
     }];
 }
 

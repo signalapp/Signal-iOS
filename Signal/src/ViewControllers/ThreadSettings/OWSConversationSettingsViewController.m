@@ -1056,7 +1056,7 @@ const CGFloat kIconViewLength = 24;
                 initWithConfiguration:self.disappearingMessagesConfiguration
                                thread:self.thread];
 
-            [self.messageSenderJobQueue addMessage:message transaction:transaction];
+            [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
         }];
     }
 }
@@ -1175,7 +1175,7 @@ const CGFloat kIconViewLength = 24;
         [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
         [gThread leaveGroupWithTransaction:transaction];
     }];
 

@@ -121,7 +121,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                               NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos,
                               YapDatabaseReadWriteTransaction *writeTransaction) {
                               if (attachmentInfos.count == 0) {
-                                  [self.messageSenderJobQueue addMessage:savedMessage transaction:writeTransaction];
+                                  [self.messageSenderJobQueue addMessage:savedMessage
+                                                             transaction:writeTransaction.asAnyWrite];
                               } else {
                                   [self.messageSenderJobQueue addMediaMessage:savedMessage
                                                               attachmentInfos:attachmentInfos
@@ -245,7 +246,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [message saveWithTransaction:transaction];
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
     }];
 
     return message;
@@ -301,7 +302,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
             [message saveWithMessageSticker:messageSticker transaction:transaction];
 
-            [self.messageSenderJobQueue addMessage:message transaction:transaction];
+            [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
         }];
     });
 
@@ -316,7 +317,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
     }];
 }
 

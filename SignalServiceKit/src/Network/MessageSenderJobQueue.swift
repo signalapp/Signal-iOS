@@ -31,16 +31,11 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             self.setup()
         }
     }
-    // MARK: Dependencies
-
-    var dbConnection: YapDatabaseConnection {
-        return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection
-    }
 
     // MARK: 
 
     @objc(addMessage:transaction:)
-    public func add(message: TSOutgoingMessage, transaction: YapDatabaseReadWriteTransaction) {
+    public func add(message: TSOutgoingMessage, transaction: SDSAnyWriteTransaction) {
         self.add(message: message, removeMessageAfterSending: false, transaction: transaction)
     }
 
@@ -56,18 +51,22 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                                                   inMessage: mediaMessage,
                                                   completionHandler: { error in
                                                     if let error = error {
-                                                        self.dbConnection.readWrite { transaction in
-                                                            mediaMessage.update(sendingError: error, transaction: transaction)
+                                                        self.databaseStorage.write { transaction in
+                                                            guard let transitional_yapWriteTransaction = transaction.transitional_yapWriteTransaction else {
+                                                                owsFailDebug("GRDB TODO")
+                                                                return
+                                                            }
+                                                            mediaMessage.update(sendingError: error, transaction: transitional_yapWriteTransaction)
                                                         }
                                                     } else {
-                                                        self.dbConnection.readWrite { transaction in
+                                                        self.databaseStorage.write { transaction in
                                                             self.add(message: mediaMessage, removeMessageAfterSending: isTemporaryAttachment, transaction: transaction)
                                                         }
                                                     }
         })
     }
 
-    private func add(message: TSOutgoingMessage, removeMessageAfterSending: Bool, transaction: YapDatabaseReadWriteTransaction) {
+    private func add(message: TSOutgoingMessage, removeMessageAfterSending: Bool, transaction: SDSAnyWriteTransaction) {
         assert(AppReadiness.isAppReady() || CurrentAppContext().isRunningTests)
 
         let jobRecord: SSKMessageSenderJobRecord
@@ -77,7 +76,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             owsFailDebug("failed to build job: \(error)")
             return
         }
-        self.add(jobRecord: jobRecord, transaction: transaction.asAnyWrite)
+        self.add(jobRecord: jobRecord, transaction: transaction)
     }
 
     // MARK: JobQueue
@@ -182,8 +181,8 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         return SSKEnvironment.shared.messageSender
     }
 
-    var dbConnection: YapDatabaseConnection {
-        return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     // MARK: OWSOperation
@@ -193,10 +192,10 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didSucceed() {
-        self.dbConnection.readWrite { transaction in
-            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction.asAnyWrite)
+        databaseStorage.write { transaction in
+            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
             if self.jobRecord.removeMessageAfterSending {
-                self.message.remove(with: transaction)
+                self.message.anyRemove(transaction: transaction)
             }
         }
     }
@@ -204,8 +203,8 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     override public func didReportError(_ error: Error) {
         Logger.debug("remainingRetries: \(self.remainingRetries)")
 
-        self.dbConnection.readWrite { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction.asAnyWrite)
+        databaseStorage.write { transaction in
+            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
         }
     }
 
@@ -226,12 +225,17 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didFail(error: Error) {
-        self.dbConnection.readWrite { transaction in
-            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction.asAnyWrite)
+        databaseStorage.write { transaction in
+            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
 
-            self.message.update(sendingError: error, transaction: transaction)
+            if let transitional_yapWriteTransaction = transaction.transitional_yapWriteTransaction {
+                self.message.update(sendingError: error, transaction: transitional_yapWriteTransaction)
+            } else {
+                owsFailDebug("GRDB TODO")
+            }
+
             if self.jobRecord.removeMessageAfterSending {
-                self.message.remove(with: transaction)
+                self.message.anyRemove(transaction: transaction)
             }
         }
     }

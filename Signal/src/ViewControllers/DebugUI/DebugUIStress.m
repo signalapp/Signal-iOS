@@ -44,6 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
 }
 
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 + (TSAccountManager *)tsAccountManager
 {
     return TSAccountManager.sharedInstance;
@@ -495,7 +500,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(message);
 
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
 }
