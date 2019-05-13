@@ -18,12 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Get the PreKeyRecord associated with the given contact.
- If the record doesn't exist then this will generate a new one.
+ If the record doesn't exist then this will create a new one.
 
  @param pubKey The hex encoded public key of the contact.
  @return The record associated with the contact.
  */
-- (PreKeyRecord *)getPreKeyForContact:(NSString *)pubKey;
+- (PreKeyRecord *)getOrCreatePreKeyForContact:(NSString *)pubKey;
 
 # pragma mark - PreKeyBundle
 

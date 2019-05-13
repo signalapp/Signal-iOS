@@ -20,12 +20,12 @@
     return preKeyId > 0;
 }
 
-- (PreKeyRecord *)getPreKeyForContact:(NSString *)pubKey {
+- (PreKeyRecord *)getOrCreatePreKeyForContact:(NSString *)pubKey {
     OWSAssertDebug(pubKey.length > 0);
     int preKeyId = [self.dbReadWriteConnection intForKey:pubKey inCollection:LokiPreKeyContactCollection];
     
     // If we don't have an id then generate and store a new one
-    if (preKeyId < 1) {
+    if (preKeyId <= 0) {
         return [self generateAndStorePreKeyForContact:pubKey];
     }
     
@@ -46,7 +46,7 @@
     [self storePreKeyRecords:records];
     
     OWSAssertDebug(records.count > 0);
-    PreKeyRecord *record = [records firstObject];
+    PreKeyRecord *record = records.firstObject;
     [self.dbReadWriteConnection setInt:record.Id forKey:pubKey inCollection:LokiPreKeyContactCollection];
     
     return record;
@@ -58,7 +58,7 @@
     // Check prekeys to make sure we have them for this function
     [TSPreKeyManager checkPreKeys];
     
-    ECKeyPair *_Nullable myKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
+    ECKeyPair *_Nullable myKeyPair = OWSIdentityManager.sharedManager.identityKeyPair;
     OWSAssertDebug(myKeyPair);
     
     SignedPreKeyRecord *_Nullable signedPreKey = [self currentSignedPreKey];
@@ -66,8 +66,8 @@
         OWSFailDebug(@"Signed prekey is null");
     }
     
-    PreKeyRecord *preKey = [self getPreKeyForContact:pubKey];
-    uint32_t registrationId = [[TSAccountManager sharedInstance] getOrGenerateRegistrationId];
+    PreKeyRecord *preKey = [self getOrCreatePreKeyForContact:pubKey];
+    uint32_t registrationId = [TSAccountManager.sharedInstance getOrGenerateRegistrationId];
     
     PreKeyBundle *bundle = [[PreKeyBundle alloc] initWithRegistrationId:registrationId
                                                                deviceId:OWSDevicePrimaryDeviceId

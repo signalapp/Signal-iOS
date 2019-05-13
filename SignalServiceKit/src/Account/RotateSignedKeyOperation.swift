@@ -37,7 +37,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
             TSPreKeyManager.clearSignedPreKeyRecords()
             
-            Logger.debug("done")
+            Logger.debug("[RotateSignedKeyOperation] done")
             self.reportSuccess()
         }
 
