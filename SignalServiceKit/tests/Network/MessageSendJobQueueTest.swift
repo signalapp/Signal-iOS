@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -9,6 +9,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
     override func setUp() {
         super.setUp()
+        self.databaseStorage.useGRDB = false
     }
 
     override func tearDown() {
@@ -30,7 +31,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let jobQueue = MessageSenderJobQueue()
         jobQueue.setup()
-        self.readWrite { transaction in
+        self.yapWrite { transaction in
             jobQueue.add(message: message, transaction: transaction)
         }
 
@@ -45,7 +46,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let jobQueue = MessageSenderJobQueue()
 
-        self.readWrite { transaction in
+        self.yapWrite { transaction in
             jobQueue.add(message: message, transaction: transaction)
         }
 
@@ -64,7 +65,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let message3: TSOutgoingMessage = OutgoingMessageFactory().create()
 
         let jobQueue = MessageSenderJobQueue()
-        self.readWrite { transaction in
+        self.yapWrite { transaction in
             jobQueue.add(message: message1, transaction: transaction)
             jobQueue.add(message: message2, transaction: transaction)
             jobQueue.add(message: message3, transaction: transaction)
@@ -97,7 +98,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let message = OutgoingMessageFactory().buildDeliveryReceipt()
         let expectation = sentExpectation(message: message)
-        self.readWrite { transaction in
+        self.yapWrite { transaction in
             jobQueue.add(message: message, transaction: transaction)
         }
 
@@ -108,14 +109,14 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let message: TSOutgoingMessage = OutgoingMessageFactory().create()
 
         let jobQueue = MessageSenderJobQueue()
-        self.readWrite { transaction in
+        self.yapWrite { transaction in
             jobQueue.add(message: message, transaction: transaction)
         }
 
-        let finder = JobRecordFinder()
+        let finder = AnyJobRecordFinder()
         var readyRecords: [SSKJobRecord] = []
-        self.readWrite { transaction in
-            readyRecords = finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction)
+        self.yapRead { transaction in
+            readyRecords = finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead)
         }
         XCTAssertEqual(1, readyRecords.count)
 
@@ -133,7 +134,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         jobQueue.setup()
         self.wait(for: [expectation], timeout: 0.1)
 
-        self.readWrite { transaction in
+        self.yapWrite { transaction in
             jobRecord.reload(with: transaction)
         }
 
@@ -157,7 +158,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         }
 
         // Verify one retry left
-        self.readWrite { transaction in
+        self.yapWrite { transaction in
             jobRecord.reload(with: transaction)
         }
         XCTAssertEqual(retryCount, jobRecord.failureCount)
@@ -168,7 +169,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         XCTAssertNotNil(jobQueue.runAnyQueuedRetry())
         self.wait(for: [expectedFinalResend], timeout: 0.1)
 
-        self.readWrite { transaction in
+        self.yapWrite { transaction in
             jobRecord.reload(with: transaction)
         }
 
@@ -183,14 +184,14 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let message: TSOutgoingMessage = OutgoingMessageFactory().create()
 
         let jobQueue = MessageSenderJobQueue()
-        self.readWrite { transaction in
+        self.yapWrite { transaction in
             jobQueue.add(message: message, transaction: transaction)
         }
 
-        let finder = JobRecordFinder()
+        let finder = AnyJobRecordFinder()
         var readyRecords: [SSKJobRecord] = []
-        self.readWrite { transaction in
-            readyRecords = finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction)
+        self.yapRead { transaction in
+            readyRecords = finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead)
         }
         XCTAssertEqual(1, readyRecords.count)
 
@@ -207,7 +208,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         jobQueue.setup()
         self.wait(for: [expectation], timeout: 0.1)
 
-        self.readWrite { transaction in
+        self.yapWrite { transaction in
             jobRecord.reload(with: transaction)
         }
 

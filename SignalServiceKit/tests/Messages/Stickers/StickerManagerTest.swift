@@ -10,10 +10,6 @@ import SignalMetadataKit
 
 class StickerManagerTest: SSKBaseTestSwift {
 
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     func testFirstEmoji() {
         XCTAssertNil(StickerManager.firstEmoji(inEmojiString: nil))
         XCTAssertEqual("🇨🇦", StickerManager.firstEmoji(inEmojiString: "🇨🇦"))

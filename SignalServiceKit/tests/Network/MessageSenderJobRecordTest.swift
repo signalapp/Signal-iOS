@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,7 +19,7 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
 
     func test_unsavedVisibleMessage() {
         var message: TSOutgoingMessage!
-        self.readWrite { transaction in
+        self.yapWrite { transaction in
             message = OutgoingMessageFactory().build(transaction: transaction)
         }
         message.uniqueId = nil

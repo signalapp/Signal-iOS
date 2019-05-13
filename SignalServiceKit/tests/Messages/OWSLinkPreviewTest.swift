@@ -35,7 +35,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
 
-        self.readWrite { (transaction) in
+        self.yapWrite { (transaction) in
             XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
                                                                      body: body,
                                                                      transaction: transaction))
@@ -50,7 +50,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
 
-        self.readWrite { (transaction) in
+        self.yapWrite { (transaction) in
             XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
                                                                      body: body,
                                                                      transaction: transaction))
@@ -68,7 +68,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
 
-        self.readWrite { (transaction) in
+        self.yapWrite { (transaction) in
             XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
                                                                      body: body,
                                                                      transaction: transaction))
@@ -82,7 +82,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
 
-        self.readWrite { (transaction) in
+        self.yapWrite { (transaction) in
             do {
                 _ = try OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
                                                                  body: body,
