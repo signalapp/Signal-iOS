@@ -106,6 +106,53 @@ NS_ASSUME_NONNULL_BEGIN
                      self.packKey.hexadecimalString];
 }
 
++ (BOOL)isStickerPackShareUrl:(NSURL *)url
+{
+    if (![url.scheme isEqualToString:@"https"]) {
+        return NO;
+    }
+    if (![url.host isEqualToString:@"signal.org"]) {
+        return NO;
+    }
+    if (![url.path isEqualToString:@"/addstickers"]) {
+        return NO;
+    }
+    return YES;
+}
+
++ (nullable StickerPackInfo *)parseStickerPackShareUrl:(NSURL *)url
+{
+    if (![self isStickerPackShareUrl:url]) {
+        OWSFailDebug(@"Invalid URL.");
+        return nil;
+    }
+
+    NSString *_Nullable packIdHex;
+    NSString *_Nullable packKeyHex;
+    NSURLComponents *components = [NSURLComponents componentsWithString:url.absoluteString];
+    NSString *_Nullable fragment = components.fragment;
+    for (NSString *fragmentSegment in [fragment componentsSeparatedByString:@"&"]) {
+        NSArray<NSString *> *fragmentSlices = [fragmentSegment componentsSeparatedByString:@"="];
+        if (fragmentSlices.count != 2) {
+            OWSFailDebug(@"Invalid fragment: %@", fragment);
+            continue;
+        }
+        NSString *fragmentName = fragmentSlices[0];
+        NSString *fragmentValue = fragmentSlices[1];
+        if ([fragmentName isEqualToString:@"pack_id"]) {
+            OWSAssertDebug(packIdHex == nil);
+            packIdHex = fragmentValue;
+        } else if ([fragmentName isEqualToString:@"pack_key"]) {
+            OWSAssertDebug(packKeyHex == nil);
+            packKeyHex = fragmentValue;
+        } else {
+            OWSLogWarn(@"Unknown query item: %@", fragmentName);
+        }
+    }
+
+    return [StickerPackInfo parsePackIdHex:packIdHex packKeyHex:packKeyHex];
+}
+
 - (NSString *)asKey
 {
     return self.packId.hexadecimalString;

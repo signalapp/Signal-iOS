@@ -43,6 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)shareUrl;
 
++ (BOOL)isStickerPackShareUrl:(NSURL *)url;
+
++ (nullable StickerPackInfo *)parseStickerPackShareUrl:(NSURL *)url;
+
 - (NSString *)asKey;
 
 - (BOOL)isValid;

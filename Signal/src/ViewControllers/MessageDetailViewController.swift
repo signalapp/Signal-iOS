@@ -695,6 +695,11 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
         contactShareViewHelper.showAddToContacts(contactShare: contactShare, fromViewController: self)
     }
 
+    func didTapStickerPack(_ stickerPackInfo: StickerPackInfo) {
+        let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
+        present(packView, animated: true)
+    }
+
     func didTapAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
         AssertIsOnMainThread()
 

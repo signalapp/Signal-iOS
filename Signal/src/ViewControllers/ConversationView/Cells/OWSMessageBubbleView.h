@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSContact;
 @class OWSLinkPreview;
 @class OWSQuotedReplyModel;
+@class StickerPackInfo;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSOutgoingMessage;
@@ -45,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
     NS_SWIFT_NAME(didTapSendInvite(toContactShare:));
 - (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
     NS_SWIFT_NAME(didTapShowAddToContactUI(forContactShare:));
+
+- (void)didTapStickerPack:(StickerPackInfo *)stickerPackInfo NS_SWIFT_NAME(didTapStickerPack(_:));
 
 @property (nonatomic, readonly, nullable) NSString *lastSearchedText;
 
