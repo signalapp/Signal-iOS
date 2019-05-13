@@ -940,6 +940,9 @@ NS_ASSUME_NONNULL_BEGIN
             [self.blockingManager syncBlockList];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeConfiguration) {
             [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
+
+            // We send _two_ responses to the "configuration request".
+            [StickerManager syncAllInstalledPacksWithTransaction:transaction.asAnyWrite];
         } else {
             OWSLogWarn(@"ignoring unsupported sync request message");
         }
@@ -956,6 +959,11 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destination);
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
+    } else if (syncMessage.stickerPackOperation.count > 0) {
+        OWSLogInfo(@"Received sticker pack operation(s): %d", (int)syncMessage.stickerPackOperation.count);
+        for (SSKProtoSyncMessageStickerPackOperation *packOperationProto in syncMessage.stickerPackOperation) {
+            [StickerManager processIncomingStickerPackOperation:packOperationProto transaction:transaction.asAnyWrite];
+        }
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
