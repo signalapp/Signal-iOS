@@ -70,13 +70,6 @@ public class StickerSharingViewController: SelectThreadViewController {
 }
 
 // MARK: -
-// <NSObject>
-//
-//    - (void)threadWasSelected:(TSThread *)thread;
-//
-//- (BOOL)canSelectBlockedContact;
-//
-//- (nullable UIView *)createHeaderWithSearchBar:(UISearchBar *)searchBar;
 
 extension StickerSharingViewController: SelectThreadViewControllerDelegate {
     public func threadWasSelected(_ thread: TSThread) {
