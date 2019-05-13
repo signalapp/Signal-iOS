@@ -371,7 +371,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (self.isIncomingFriendRequest) {
-        cellSize.height += 118; // TODO: Measure dynamically
+        cellSize.height += 98; // TODO: Measure dynamically
     }
     
     cellSize = CGSizeCeil(cellSize);
@@ -452,6 +452,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.delegate);
 
+    if (self.isIncomingFriendRequest) {
+        return;
+    }
+    
     if (sender.state != UIGestureRecognizerStateBegan) {
         return;
     }

@@ -36,10 +36,10 @@
         mainStackView.addArrangedSubview(buttonStackView)
         let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
         let buttonHeight = buttonFont.pointSize * 48 / 17
-        let acceptButton = OWSFlatButton.button(title: NSLocalizedString("Accept", comment: ""), font: buttonFont, titleColor: .ows_materialBlue, backgroundColor: .clear, target: self, selector: #selector(accept))
+        let acceptButton = OWSFlatButton.button(title: NSLocalizedString("Accept", comment: ""), font: buttonFont, titleColor: .ows_materialBlue, backgroundColor: .white, target: self, selector: #selector(accept))
         acceptButton.autoSetDimension(.height, toSize: buttonHeight)
         buttonStackView.addArrangedSubview(acceptButton)
-        let declineButton = OWSFlatButton.button(title: NSLocalizedString("Decline", comment: ""), font: buttonFont, titleColor: .ows_destructiveRed, backgroundColor: .clear, target: self, selector: #selector(decline))
+        let declineButton = OWSFlatButton.button(title: NSLocalizedString("Decline", comment: ""), font: buttonFont, titleColor: .ows_destructiveRed, backgroundColor: .white, target: self, selector: #selector(decline))
         declineButton.autoSetDimension(.height, toSize: buttonHeight)
         buttonStackView.addArrangedSubview(declineButton)
         addSubview(mainStackView)
