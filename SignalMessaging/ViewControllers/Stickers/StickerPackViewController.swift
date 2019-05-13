@@ -200,6 +200,11 @@ public class StickerPackViewController: OWSViewController {
             coverView.isHidden = true
             return
         }
+        guard NSData.ows_isValidImage(atPath: filePath, mimeType: OWSMimeTypeImageWebp) else {
+            owsFailDebug("Invalid sticker.")
+            coverView.isHidden = true
+            return
+        }
         guard let stickerImage = YYImage(contentsOfFile: filePath) else {
             owsFailDebug("Sticker could not be parsed.")
             coverView.isHidden = true
