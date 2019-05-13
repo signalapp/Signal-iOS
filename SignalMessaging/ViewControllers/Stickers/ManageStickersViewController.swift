@@ -107,7 +107,8 @@ public class ManageStickersViewController: OWSTableViewController {
     }
 
     private var installedStickerPacks = [StickerPack]()
-    private var availableStickerPacks = [StickerPack]()
+    private var availableBuiltInStickerPacks = [StickerPack]()
+    private var availableKnownStickerPacks = [StickerPack]()
 
     private func updateState() {
         self.databaseStorage.read { (transaction) in
@@ -119,23 +120,26 @@ public class ManageStickersViewController: OWSTableViewController {
             }
             // Sort sticker packs by "date saved, descending" so that we feature
             // packs that the user has just learned about.
-            let installedPacks = packsWithCovers.filter { $0.isInstalled }
-            let availablePacks = packsWithCovers.filter { !$0.isInstalled }
-            self.installedStickerPacks = installedPacks.sorted {
+            let installedStickerPacks = packsWithCovers.filter { $0.isInstalled }
+            let availableBuiltInStickerPacks = packsWithCovers.filter { !$0.isInstalled && StickerManager.isDefaultStickerPack($0) }
+            let availableKnownStickerPacks = packsWithCovers.filter { !$0.isInstalled && !StickerManager.isDefaultStickerPack($0) }
+            self.installedStickerPacks = installedStickerPacks.sorted {
                 $0.dateCreated > $1.dateCreated
             }
-            self.availableStickerPacks = availablePacks.sorted {
+            let sortAvailablePacks = { (pack0: StickerPack, pack1: StickerPack) -> Bool in
                 // Sort "default" packs before "known" packs.
-                let isDefault0 = StickerManager.isDefaultStickerPack($0)
-                let isDefault1 = StickerManager.isDefaultStickerPack($1)
+                let isDefault0 = StickerManager.isDefaultStickerPack(pack0)
+                let isDefault1 = StickerManager.isDefaultStickerPack(pack1)
                 if isDefault0 && !isDefault1 {
                     return true
                 }
                 if !isDefault0 && isDefault1 {
                     return false
                 }
-                return $0.dateCreated > $1.dateCreated
+                return pack0.dateCreated > pack1.dateCreated
             }
+            self.availableBuiltInStickerPacks = availableBuiltInStickerPacks.sorted(by: sortAvailablePacks)
+            self.availableKnownStickerPacks = availableKnownStickerPacks.sorted(by: sortAvailablePacks)
         }
 
         updateTableContents()
@@ -144,7 +148,6 @@ public class ManageStickersViewController: OWSTableViewController {
     private func updateTableContents() {
         let contents = OWSTableContents()
 
-        // TODO: Sort sticker packs.
         if installedStickerPacks.count > 0 {
             let section = OWSTableSection()
             section.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE", comment: "Title for the 'installed stickers' section of the 'manage stickers' view.")
@@ -163,21 +166,33 @@ public class ManageStickersViewController: OWSTableViewController {
             contents.addSection(section)
         }
 
-        // TODO: Sort sticker packs.
-        if availableStickerPacks.count > 0 {
+        let itemForAvailablePack = { (stickerPack: StickerPack) -> OWSTableItem in
+            OWSTableItem(customCellBlock: { [weak self] in
+                guard let self = self else {
+                    return UITableViewCell()
+                }
+                return self.buildTableCell(availableStickerPack: stickerPack)
+                },
+                         customRowHeight: UITableView.automaticDimension,
+                         actionBlock: { [weak self] in
+                            self?.show(stickerPack: stickerPack)
+            })
+        }
+
+        if availableBuiltInStickerPacks.count > 0 {
             let section = OWSTableSection()
-            section.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_PACKS_SECTION_TITLE", comment: "Title for the 'available stickers' section of the 'manage stickers' view.")
-            for stickerPack in availableStickerPacks {
-                section.add(OWSTableItem(customCellBlock: { [weak self] in
-                    guard let self = self else {
-                        return UITableViewCell()
-                    }
-                    return self.buildTableCell(availableStickerPack: stickerPack)
-                    },
-                                         customRowHeight: UITableView.automaticDimension,
-                                         actionBlock: { [weak self] in
-                                            self?.show(stickerPack: stickerPack)
-                }))
+            section.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE", comment: "Title for the 'available built-in stickers' section of the 'manage stickers' view.")
+            for stickerPack in availableBuiltInStickerPacks {
+                section.add(itemForAvailablePack(stickerPack))
+            }
+            contents.addSection(section)
+        }
+
+        if availableKnownStickerPacks.count > 0 {
+            let section = OWSTableSection()
+            section.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE", comment: "Title for the 'available known stickers' section of the 'manage stickers' view.")
+            for stickerPack in availableKnownStickerPacks {
+                section.add(itemForAvailablePack(stickerPack))
             }
             contents.addSection(section)
         }
@@ -190,7 +205,8 @@ public class ManageStickersViewController: OWSTableViewController {
         if FeatureFlags.stickerPackSharing {
             actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
         }
-        return buildTableCell(stickerInfo: stickerPack.coverInfo,
+        return buildTableCell(stickerPack: stickerPack,
+                              stickerInfo: stickerPack.coverInfo,
                               title: stickerPack.title,
                               authorName: stickerPack.author,
                               actionIconName: actionIconName) { [weak self] in
@@ -200,7 +216,8 @@ public class ManageStickersViewController: OWSTableViewController {
 
     private func buildTableCell(availableStickerPack stickerPack: StickerPack) -> UITableViewCell {
         let actionIconName = "download-filled-24"
-        return buildTableCell(stickerInfo: stickerPack.coverInfo,
+        return buildTableCell(stickerPack: stickerPack,
+                              stickerInfo: stickerPack.coverInfo,
                               title: stickerPack.title,
                               authorName: stickerPack.author,
                               actionIconName: actionIconName) { [weak self] in
@@ -208,7 +225,8 @@ public class ManageStickersViewController: OWSTableViewController {
         }
     }
 
-    private func buildTableCell(stickerInfo: StickerInfo,
+    private func buildTableCell(stickerPack: StickerPack,
+                                stickerInfo: StickerInfo,
                                 title titleValue: String?,
                                 authorName authorNameValue: String?,
                                 actionIconName: String?,
@@ -239,14 +257,34 @@ public class ManageStickersViewController: OWSTableViewController {
         textStack.setCompressionResistanceHorizontalLow()
 
         // TODO: Should we show a default author name?
+
+        let isDefaultStickerPack = StickerManager.isDefaultStickerPack(stickerPack)
+
+        var authorViews = [UIView]()
+        if isDefaultStickerPack {
+            let builtInPackView = UIImageView()
+            builtInPackView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_signalBrandBlue)
+            builtInPackView.setCompressionResistanceHigh()
+            builtInPackView.setContentHuggingHigh()
+            authorViews.append(builtInPackView)
+        }
+
         if let authorName = authorNameValue?.ows_stripped(),
             authorName.count > 0 {
             let authorLabel = UILabel()
             authorLabel.text = authorName
-            authorLabel.font = UIFont.ows_dynamicTypeCaption1
-            authorLabel.textColor = Theme.secondaryColor
+            authorLabel.font = isDefaultStickerPack ? UIFont.ows_dynamicTypeCaption1.ows_mediumWeight() : UIFont.ows_dynamicTypeCaption1
+            authorLabel.textColor = isDefaultStickerPack ? UIColor.ows_signalBlue : Theme.secondaryColor
             authorLabel.lineBreakMode = .byTruncatingTail
-            textStack.addArrangedSubview(authorLabel)
+            authorViews.append(authorLabel)
+        }
+
+        if authorViews.count > 0 {
+            let authorStack = UIStackView(arrangedSubviews: authorViews)
+            authorStack.axis = .horizontal
+            authorStack.alignment = .center
+            authorStack.spacing = 5
+            textStack.addArrangedSubview(authorStack)
         }
 
         var subviews: [UIView] = [
