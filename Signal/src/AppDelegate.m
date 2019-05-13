@@ -681,6 +681,9 @@ static NSTimeInterval launchStartedAt;
     // On every activation, clear old temp directories.
     ClearOldTemporaryDirectories();
 
+    // Ensure that all windows have the correct frame.
+    [self.windowManager updateWindowFrames];
+
     OWSLogInfo(@"applicationDidBecomeActive completed.");
 }
 
