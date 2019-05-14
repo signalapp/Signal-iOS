@@ -339,7 +339,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssertDebug(recipientIdsForIntersection.count > 0);
 
     dispatch_async(self.serialQueue, ^{
-        [self.dbReadConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [transaction setObject:recipientIdsForIntersection
                             forKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
                       inCollection:OWSContactsManagerCollection];
