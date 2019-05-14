@@ -36,7 +36,8 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             contactShare:(nullable OWSContact *)contact
-                             linkPreview:(nullable OWSLinkPreview *)linkPreview NS_UNAVAILABLE;
+                             linkPreview:(nullable OWSLinkPreview *)linkPreview
+                          messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
