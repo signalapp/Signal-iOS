@@ -1,7 +1,11 @@
 
 @objc final class FriendRequestView : UIView {
-    @objc var message: TSIncomingMessage! { didSet { handleMessageChanged() } }
+    @objc var message: TSMessage! { didSet { handleMessageChanged() } }
     @objc weak var delegate: FriendRequestViewDelegate?
+    private let kind: Kind
+    
+    // MARK: Types
+    enum Kind : String { case incoming, outgoing }
     
     // MARK: Components
     private lazy var buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
@@ -18,14 +22,22 @@
     }()
     
     // MARK: Initialization
+    init(kind: Kind) {
+        self.kind = kind
+        super.init(frame: CGRect.zero)
+    }
+    
+    @objc convenience init?(rawKind: String) {
+        guard let kind = Kind(rawValue: rawKind) else { return nil }
+        self.init(kind: kind)
+    }
+    
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        initialize()
+        fatalError("Using FriendRequestView.init(coder:) isn't allowed. Use FriendRequestView.init(kind:) instead.")
     }
     
     override init(frame: CGRect) {
-        super.init(frame: frame)
-        initialize()
+        fatalError("Using FriendRequestView.init(frame:) isn't allowed. Use FriendRequestView.init(kind:) instead.")
     }
     
     private func initialize() {
@@ -33,44 +45,71 @@
         mainStackView.axis = .vertical
         mainStackView.distribution = .fill
         mainStackView.addArrangedSubview(label)
-        let buttonStackView = UIStackView()
-        buttonStackView.axis = .horizontal
-        buttonStackView.distribution = .fillEqually
-        mainStackView.addArrangedSubview(buttonStackView)
-        let acceptButton = OWSFlatButton.button(title: NSLocalizedString("Accept", comment: ""), font: buttonFont, titleColor: .ows_materialBlue, backgroundColor: .white, target: self, selector: #selector(accept))
-        acceptButton.autoSetDimension(.height, toSize: buttonHeight)
-        buttonStackView.addArrangedSubview(acceptButton)
-        let declineButton = OWSFlatButton.button(title: NSLocalizedString("Decline", comment: ""), font: buttonFont, titleColor: .ows_destructiveRed, backgroundColor: .white, target: self, selector: #selector(decline))
-        declineButton.autoSetDimension(.height, toSize: buttonHeight)
-        buttonStackView.addArrangedSubview(declineButton)
+        switch kind {
+        case .incoming:
+            let buttonStackView = UIStackView()
+            buttonStackView.axis = .horizontal
+            buttonStackView.distribution = .fillEqually
+            mainStackView.addArrangedSubview(buttonStackView)
+            let acceptButton = OWSFlatButton.button(title: NSLocalizedString("Accept", comment: ""), font: buttonFont, titleColor: .ows_materialBlue, backgroundColor: .white, target: self, selector: #selector(accept))
+            acceptButton.autoSetDimension(.height, toSize: buttonHeight)
+            buttonStackView.addArrangedSubview(acceptButton)
+            let declineButton = OWSFlatButton.button(title: NSLocalizedString("Decline", comment: ""), font: buttonFont, titleColor: .ows_destructiveRed, backgroundColor: .white, target: self, selector: #selector(decline))
+            declineButton.autoSetDimension(.height, toSize: buttonHeight)
+            buttonStackView.addArrangedSubview(declineButton)
+        case .outgoing: break
+        }
         addSubview(mainStackView)
         mainStackView.autoPin(toEdgesOf: self)
     }
     
     // MARK: Updating
     private func handleMessageChanged() {
-        assert(message != nil)
-        label.text = String(format: NSLocalizedString("%@ sent you a friend request", comment: ""), message.authorId)
+        precondition(message != nil)
+        switch kind {
+        case .incoming:
+            guard let message = message as? TSIncomingMessage else { preconditionFailure() }
+            label.text = String(format: NSLocalizedString("%@ sent you a friend request", comment: ""), message.authorId)
+        case .outgoing:
+            guard let message = message as? TSOutgoingMessage else { preconditionFailure() }
+            label.text = String(format: NSLocalizedString("You've sent %@ a friend request", comment: ""), message.thread.contactIdentifier()!)
+        }
     }
     
     // MARK: Interaction
     @objc private func accept() {
+        guard let message = message as? TSIncomingMessage else { preconditionFailure() }
         delegate?.acceptFriendRequest(message)
     }
     
     @objc private func decline() {
+        guard let message = message as? TSIncomingMessage else { preconditionFailure() }
         delegate?.declineFriendRequest(message)
     }
     
     // MARK: Measuring
-    @objc static func calculateHeight(message: TSIncomingMessage, conversationStyle: ConversationStyle) -> CGFloat {
+    @objc static func calculateHeight(message: TSMessage, conversationStyle: ConversationStyle) -> CGFloat {
         let width = conversationStyle.contentWidth
         let topSpacing: CGFloat = 12
-        let dummyFriendRequestView = FriendRequestView()
+        let kind: Kind = {
+            switch (message) {
+            case is TSIncomingMessage: return .incoming
+            case is TSOutgoingMessage: return .outgoing
+            default: preconditionFailure()
+            }
+        }()
+        let dummyFriendRequestView = FriendRequestView(kind: kind)
         dummyFriendRequestView.message = message
         let messageHeight = dummyFriendRequestView.label.sizeThatFits(CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)).height
-        let buttonHeight = dummyFriendRequestView.buttonHeight
-        let totalHeight = topSpacing + messageHeight + buttonHeight
+        let totalHeight: CGFloat = {
+            switch kind {
+            case .incoming:
+                let buttonHeight = dummyFriendRequestView.buttonHeight
+                return topSpacing + messageHeight + buttonHeight
+            case .outgoing:
+                return topSpacing + messageHeight
+            }
+        }()
         return totalHeight.rounded(.up)
     }
 }

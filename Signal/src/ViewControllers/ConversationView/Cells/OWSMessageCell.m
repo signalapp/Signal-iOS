@@ -115,17 +115,14 @@ NS_ASSUME_NONNULL_BEGIN
     return self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage;
 }
 
-- (BOOL)isIncomingFriendRequest {
-    if ([self.viewItem.interaction isKindOfClass:TSIncomingMessage.class]) {
-        // TODO: Enable this when possible
-        // ========
-//        TSIncomingMessage *message = (TSIncomingMessage *)self.message;
-//        return message.isFriendRequest
-        // ========
-        return YES;
-    } else {
-        return NO;
-    }
+- (TSThreadFriendRequestState)friendRequestState {
+    return TSThreadFriendRequestStateRequestSent;
+//    return self.message.thread.friendRequestState;
+}
+
+- (BOOL)isFriendRequest {
+    return YES;
+    // return self.friendRequestState == TSThreadFriendRequestStateRequestSent || self.friendRequestState == TSThreadFriendRequestStateRequestReceived;
 }
 
 - (BOOL)shouldHaveSendFailureBadge
@@ -180,20 +177,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                      withInset:self.conversationStyle.gutterTrailing
                                                       relation:NSLayoutRelationGreaterThanOrEqual],
         ]];
-        
-        if (self.isIncomingFriendRequest) { // TODO: message.isFriendRequest
-            self.friendRequestView = [FriendRequestView new];
-            self.friendRequestView.message = (TSIncomingMessage *)self.message;
-            self.friendRequestView.delegate = self.friendRequestViewDelegate;
-            [self.contentView addSubview:self.friendRequestView];
-            [self.messageBubbleViewBottomConstraint setActive:NO];
-            [self.viewConstraints addObjectsFromArray:@[
-                [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.conversationStyle.gutterLeading],
-                [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.conversationStyle.gutterTrailing],
-                [self.friendRequestView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.messageBubbleView withOffset:12.f],
-                [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeBottom]
-            ]];
-        }
     } else {
         if (self.shouldHaveSendFailureBadge) {
             self.sendFailureBadgeView = [UIImageView new];
@@ -231,6 +214,29 @@ NS_ASSUME_NONNULL_BEGIN
                                                          withInset:self.conversationStyle.gutterTrailing],
             ]];
         }
+    }
+    
+    if (self.isFriendRequest) {
+        NSString *rawKind;
+        switch (self.friendRequestState) {
+            case TSThreadFriendRequestStateRequestReceived:
+                rawKind = @"incoming";
+                break;
+            case TSThreadFriendRequestStateRequestSent:
+                rawKind = @"outgoing";
+                break;
+        }
+        self.friendRequestView = [[FriendRequestView alloc] initWithRawKind:rawKind];
+        self.friendRequestView.message = self.message;
+        self.friendRequestView.delegate = self.friendRequestViewDelegate;
+        [self.contentView addSubview:self.friendRequestView];
+        [self.messageBubbleViewBottomConstraint setActive:NO];
+        [self.viewConstraints addObjectsFromArray:@[
+            [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.conversationStyle.gutterLeading],
+            [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.conversationStyle.gutterTrailing],
+            [self.friendRequestView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.messageBubbleView withOffset:12.f],
+            [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeBottom]
+        ]];
     }
 
     if ([self updateAvatarView]) {
@@ -370,8 +376,8 @@ NS_ASSUME_NONNULL_BEGIN
         cellSize.width += self.sendFailureBadgeSize + self.sendFailureBadgeSpacing;
     }
 
-    if (self.isIncomingFriendRequest) {
-        cellSize.height += [FriendRequestView calculateHeightWithMessage:(TSIncomingMessage *)self.viewItem.interaction conversationStyle:self.conversationStyle];
+    if (self.isFriendRequest) {
+        cellSize.height += [FriendRequestView calculateHeightWithMessage:(TSMessage *)self.viewItem.interaction conversationStyle:self.conversationStyle];
     }
     
     cellSize = CGSizeCeil(cellSize);
@@ -452,7 +458,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.delegate);
 
-    if (self.isIncomingFriendRequest) {
+    if (self.isFriendRequest) {
         return;
     }
     
