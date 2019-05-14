@@ -76,11 +76,11 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent new, un-uploaded outgoing attachments.
-- (instancetype)initWithContentType:(NSString *)contentType
-                          byteCount:(UInt32)byteCount
-                     sourceFilename:(nullable NSString *)sourceFilename
-                            caption:(nullable NSString *)caption
-                     albumMessageId:(nullable NSString *)albumMessageId;
+- (instancetype)initAttachmentWithContentType:(NSString *)contentType
+                                    byteCount:(UInt32)byteCount
+                               sourceFilename:(nullable NSString *)sourceFilename
+                                      caption:(nullable NSString *)caption
+                               albumMessageId:(nullable NSString *)albumMessageId;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent downloaded incoming attachments.

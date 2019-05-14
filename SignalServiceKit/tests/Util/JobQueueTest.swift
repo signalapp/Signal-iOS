@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -26,7 +26,7 @@ class TestJobQueue: JobQueue {
         defaultSetup()
     }
 
-    func didMarkAsReady(oldJobRecord: TestJobRecord, transaction: YapDatabaseReadWriteTransaction) {
+    func didMarkAsReady(oldJobRecord: TestJobRecord, transaction: SDSAnyWriteTransaction) {
         // no special handling
     }
 
@@ -38,7 +38,7 @@ class TestJobQueue: JobQueue {
         return self.operationQueue
     }
 
-    func buildOperation(jobRecord: TestJobRecord, transaction: YapDatabaseReadTransaction) throws -> TestDurableOperation {
+    func buildOperation(jobRecord: TestJobRecord, transaction: SDSAnyReadTransaction) throws -> TestDurableOperation {
         return TestDurableOperation(jobRecord: jobRecord, jobBlock: self.jobBlock)
     }
 
@@ -109,7 +109,7 @@ class JobQueueTest: SSKBaseTestSwift {
             dispatchGroup.leave()
         }
 
-        self.readWrite { transaction in
+        self.write { transaction in
             jobQueue.add(jobRecord: jobRecord1, transaction: transaction)
             jobQueue.add(jobRecord: jobRecord2, transaction: transaction)
             jobQueue.add(jobRecord: jobRecord3, transaction: transaction)
@@ -118,8 +118,8 @@ class JobQueueTest: SSKBaseTestSwift {
         dispatchGroup.enter()
         dispatchGroup.enter()
 
-        let finder = JobRecordFinder()
-        self.readWrite { transaction in
+        let finder = AnyJobRecordFinder()
+        self.write { transaction in
             XCTAssertEqual(3, finder.allRecords(label: kJobRecordLabel, status: .ready, transaction: transaction).count)
         }
 
@@ -135,7 +135,7 @@ class JobQueueTest: SSKBaseTestSwift {
         // For testing, the operations enqueued by the TestJobQueue do *not* delete themeselves upon
         // completion, simulating an operation which never compeleted.
 
-        self.readWrite { transaction in
+        self.write { transaction in
             XCTAssertEqual(0, finder.allRecords(label: kJobRecordLabel, status: .ready, transaction: transaction).count)
             XCTAssertEqual(3, finder.allRecords(label: kJobRecordLabel, status: .running, transaction: transaction).count)
         }
@@ -144,7 +144,7 @@ class JobQueueTest: SSKBaseTestSwift {
         jobQueue.isSetup = false
         jobQueue.setup()
 
-        self.readWrite { transaction in
+        self.write { transaction in
             XCTAssertEqual(3, finder.allRecords(label: kJobRecordLabel, status: .ready, transaction: transaction).count)
             XCTAssertEqual(0, finder.allRecords(label: kJobRecordLabel, status: .running, transaction: transaction).count)
         }

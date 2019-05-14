@@ -1884,6 +1884,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(outgoingMessage);
 
     dispatch_async([OWSDispatch attachmentsQueue], ^{
+        // Eventually we'll pad all outgoing attachments, but currently just stickers.
+        // Currently this method is only used to process "body" attachments, which
+        // cannot be sent along with stickers.
+        OWSAssertDebug(outgoingMessage.messageSticker == nil);
+
         NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
         for (OWSOutgoingAttachmentInfo *attachmentInfo in attachmentInfos) {
             TSAttachmentStream *attachmentStream =
@@ -1891,7 +1896,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                       byteCount:(UInt32)attachmentInfo.dataSource.dataLength
                                                  sourceFilename:attachmentInfo.sourceFilename
                                                         caption:attachmentInfo.caption
-                                                 albumMessageId:attachmentInfo.albumMessageId];
+                                                 albumMessageId:attachmentInfo.albumMessageId
+                                              isOutgoingSticker:NO];
             if (outgoingMessage.isVoiceMessage) {
                 attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
             }

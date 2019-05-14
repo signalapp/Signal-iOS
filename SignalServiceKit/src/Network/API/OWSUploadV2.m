@@ -325,8 +325,13 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
         return nil;
     }
 
+    BOOL shouldPad = SSKFeatureFlags.shouldPadAllOutgoingAttachments || self.attachmentStream.isOutgoingSticker;
+
     NSData *_Nullable encryptedAttachmentData =
-        [Cryptography encryptAttachmentData:attachmentData outKey:&encryptionKey outDigest:&digest];
+        [Cryptography encryptAttachmentData:attachmentData
+                                  shouldPad:shouldPad
+                                     outKey:&encryptionKey
+                                  outDigest:&digest];
     if (!encryptedAttachmentData) {
         OWSFailDebug(@"could not encrypt attachment data.");
         return nil;
@@ -348,15 +353,15 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self tryToAllocateUpload:resolve progressBlock:progressBlock skipWebsocket:NO];
+            [self uploadAttachmentToService:resolve progressBlock:progressBlock skipWebsocket:NO];
         });
     }];
     return promise;
 }
 
-- (void)tryToAllocateUpload:(PMKResolver)resolve
-              progressBlock:(UploadProgressBlock)progressBlock
-              skipWebsocket:(BOOL)skipWebsocket
+- (void)uploadAttachmentToService:(PMKResolver)resolve
+                    progressBlock:(UploadProgressBlock)progressBlock
+                    skipWebsocket:(BOOL)skipWebsocket
 {
     TSRequest *formRequest = [OWSRequestFactory allocAttachmentRequest];
 
@@ -391,7 +396,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                 OWSLogError(@"Websocket request failed: %d, %@", (int)statusCode, error);
 
                 // Try again without websocket.
-                [weakSelf tryToAllocateUpload:resolve progressBlock:progressBlock skipWebsocket:YES];
+                [weakSelf uploadAttachmentToService:resolve progressBlock:progressBlock skipWebsocket:YES];
             }];
     } else {
         [self.networkManager makeRequest:formRequest

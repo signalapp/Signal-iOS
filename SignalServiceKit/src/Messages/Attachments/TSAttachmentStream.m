@@ -53,12 +53,13 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
                      albumMessageId:(nullable NSString *)albumMessageId
+                  isOutgoingSticker:(BOOL)isOutgoingSticker
 {
-    self = [super initWithContentType:contentType
-                            byteCount:byteCount
-                       sourceFilename:sourceFilename
-                              caption:caption
-                       albumMessageId:albumMessageId];
+    self = [super initAttachmentWithContentType:contentType
+                                      byteCount:byteCount
+                                 sourceFilename:sourceFilename
+                                        caption:caption
+                                 albumMessageId:albumMessageId];
     if (!self) {
         return self;
     }
@@ -69,6 +70,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     // attachments which haven't been uploaded yet.
     _isUploaded = NO;
     _creationTimestamp = [NSDate new];
+
+    _isOutgoingSticker = isOutgoingSticker;
 
     [self ensureFilePath];
 
@@ -137,6 +140,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
                creationTimestamp:(NSDate *)creationTimestamp
                           digest:(nullable NSData *)digest
+               isOutgoingSticker:(BOOL)isOutgoingSticker
                       isUploaded:(BOOL)isUploaded
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
@@ -163,6 +167,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     _cachedImageWidth = cachedImageWidth;
     _creationTimestamp = creationTimestamp;
     _digest = digest;
+    _isOutgoingSticker = isOutgoingSticker;
     _isUploaded = isUploaded;
     _isValidImageCached = isValidImageCached;
     _isValidVideoCached = isValidVideoCached;
@@ -888,7 +893,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                               byteCount:(uint32_t)thumbnailData.length
                                          sourceFilename:thumbnailName
                                                 caption:nil
-                                         albumMessageId:nil];
+                                         albumMessageId:nil
+                                      isOutgoingSticker:NO];
 
     NSError *error;
     BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];

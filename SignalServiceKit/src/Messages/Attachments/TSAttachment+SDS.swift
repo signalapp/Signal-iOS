@@ -39,6 +39,7 @@ public struct AttachmentRecord: Codable, FetchableRecord, PersistableRecord, Tab
     public let cachedImageWidth: Double?
     public let creationTimestamp: Date?
     public let digest: Data?
+    public let isOutgoingSticker: Bool?
     public let isUploaded: Bool?
     public let isValidImageCached: Bool?
     public let isValidVideoCached: Bool?
@@ -68,6 +69,7 @@ public struct AttachmentRecord: Codable, FetchableRecord, PersistableRecord, Tab
         case cachedImageWidth
         case creationTimestamp
         case digest
+        case isOutgoingSticker
         case isUploaded
         case isValidImageCached
         case isValidVideoCached
@@ -194,6 +196,7 @@ extension TSAttachment {
             let cachedImageWidth: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageWidth, name: "cachedImageWidth", conversion: { NSNumber(value: $0) })
             let creationTimestamp: Date = try SDSDeserialization.required(record.creationTimestamp, name: "creationTimestamp")
             let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
+            let isOutgoingSticker: Bool = try SDSDeserialization.required(record.isOutgoingSticker, name: "isOutgoingSticker")
             let isUploaded: Bool = try SDSDeserialization.required(record.isUploaded, name: "isUploaded")
             let isValidImageCached: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.isValidImageCached, name: "isValidImageCached", conversion: { NSNumber(value: $0) })
             let isValidVideoCached: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.isValidVideoCached, name: "isValidVideoCached", conversion: { NSNumber(value: $0) })
@@ -215,6 +218,7 @@ extension TSAttachment {
                                       cachedImageWidth: cachedImageWidth,
                                       creationTimestamp: creationTimestamp,
                                       digest: digest,
+                                      isOutgoingSticker: isOutgoingSticker,
                                       isUploaded: isUploaded,
                                       isValidImageCached: isValidImageCached,
                                       isValidVideoCached: isValidVideoCached,
@@ -273,15 +277,16 @@ extension TSAttachmentSerializer {
     static let cachedImageWidthColumn = SDSColumnMetadata(columnName: "cachedImageWidth", columnType: .double, isOptional: true, columnIndex: 15)
     static let creationTimestampColumn = SDSColumnMetadata(columnName: "creationTimestamp", columnType: .int64, isOptional: true, columnIndex: 16)
     static let digestColumn = SDSColumnMetadata(columnName: "digest", columnType: .blob, isOptional: true, columnIndex: 17)
-    static let isUploadedColumn = SDSColumnMetadata(columnName: "isUploaded", columnType: .int, isOptional: true, columnIndex: 18)
-    static let isValidImageCachedColumn = SDSColumnMetadata(columnName: "isValidImageCached", columnType: .int, isOptional: true, columnIndex: 19)
-    static let isValidVideoCachedColumn = SDSColumnMetadata(columnName: "isValidVideoCached", columnType: .int, isOptional: true, columnIndex: 20)
-    static let lazyRestoreFragmentIdColumn = SDSColumnMetadata(columnName: "lazyRestoreFragmentId", columnType: .unicodeString, isOptional: true, columnIndex: 21)
-    static let localRelativeFilePathColumn = SDSColumnMetadata(columnName: "localRelativeFilePath", columnType: .unicodeString, isOptional: true, columnIndex: 22)
-    static let mediaSizeColumn = SDSColumnMetadata(columnName: "mediaSize", columnType: .blob, isOptional: true, columnIndex: 23)
-    static let mostRecentFailureLocalizedTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureLocalizedText", columnType: .unicodeString, isOptional: true, columnIndex: 24)
-    static let pointerTypeColumn = SDSColumnMetadata(columnName: "pointerType", columnType: .int, isOptional: true, columnIndex: 25)
-    static let stateColumn = SDSColumnMetadata(columnName: "state", columnType: .int, isOptional: true, columnIndex: 26)
+    static let isOutgoingStickerColumn = SDSColumnMetadata(columnName: "isOutgoingSticker", columnType: .int, isOptional: true, columnIndex: 18)
+    static let isUploadedColumn = SDSColumnMetadata(columnName: "isUploaded", columnType: .int, isOptional: true, columnIndex: 19)
+    static let isValidImageCachedColumn = SDSColumnMetadata(columnName: "isValidImageCached", columnType: .int, isOptional: true, columnIndex: 20)
+    static let isValidVideoCachedColumn = SDSColumnMetadata(columnName: "isValidVideoCached", columnType: .int, isOptional: true, columnIndex: 21)
+    static let lazyRestoreFragmentIdColumn = SDSColumnMetadata(columnName: "lazyRestoreFragmentId", columnType: .unicodeString, isOptional: true, columnIndex: 22)
+    static let localRelativeFilePathColumn = SDSColumnMetadata(columnName: "localRelativeFilePath", columnType: .unicodeString, isOptional: true, columnIndex: 23)
+    static let mediaSizeColumn = SDSColumnMetadata(columnName: "mediaSize", columnType: .blob, isOptional: true, columnIndex: 24)
+    static let mostRecentFailureLocalizedTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureLocalizedText", columnType: .unicodeString, isOptional: true, columnIndex: 25)
+    static let pointerTypeColumn = SDSColumnMetadata(columnName: "pointerType", columnType: .int, isOptional: true, columnIndex: 26)
+    static let stateColumn = SDSColumnMetadata(columnName: "state", columnType: .int, isOptional: true, columnIndex: 27)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -304,6 +309,7 @@ extension TSAttachmentSerializer {
         cachedImageWidthColumn,
         creationTimestampColumn,
         digestColumn,
+        isOutgoingStickerColumn,
         isUploadedColumn,
         isValidImageCachedColumn,
         isValidVideoCachedColumn,
@@ -438,6 +444,7 @@ extension TSAttachmentSerializer {
             let cachedImageWidth = try deserializer.optionalDoubleAsNSNumber(at: cachedImageWidthColumn.columnIndex)
             let creationTimestamp = try deserializer.date(at: creationTimestampColumn.columnIndex)
             let digest = try deserializer.optionalBlob(at: digestColumn.columnIndex)
+            let isOutgoingSticker = try deserializer.bool(at: isOutgoingStickerColumn.columnIndex)
             let isUploaded = try deserializer.bool(at: isUploadedColumn.columnIndex)
             let isValidImageCached = try deserializer.optionalBoolAsNSNumber(at: isValidImageCachedColumn.columnIndex)
             let isValidVideoCached = try deserializer.optionalBoolAsNSNumber(at: isValidVideoCachedColumn.columnIndex)
@@ -459,6 +466,7 @@ extension TSAttachmentSerializer {
                                       cachedImageWidth: cachedImageWidth,
                                       creationTimestamp: creationTimestamp,
                                       digest: digest,
+                                      isOutgoingSticker: isOutgoingSticker,
                                       isUploaded: isUploaded,
                                       isValidImageCached: isValidImageCached,
                                       isValidVideoCached: isValidVideoCached,

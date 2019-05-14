@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -27,12 +27,27 @@ public class SSKBaseTestSwift: XCTestCase {
     }
 
     @objc
-    public func read(_ block: @escaping (YapDatabaseReadTransaction) -> Swift.Void) {
+    public var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    @objc
+    public func read(_ block: @escaping (SDSAnyReadTransaction) -> Void) {
+        return databaseStorage.read(block: block)
+    }
+
+    @objc
+    public func write(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
+        return databaseStorage.write(block: block)
+    }
+
+    @objc
+    public func yapRead(_ block: @escaping (YapDatabaseReadTransaction) -> Void) {
         return OWSPrimaryStorage.shared().dbReadConnection.read(block)
     }
 
     @objc
-    public func readWrite(_ block: @escaping (YapDatabaseReadWriteTransaction) -> Swift.Void) {
+    public func yapWrite(_ block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
         return OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite(block)
     }
 }
