@@ -249,6 +249,7 @@ public class SDSKeyValueStore: NSObject {
             } else {
                 ydbTransaction.removeObject(forKey: key, inCollection: collection)
             }
+            return
         case .grdbWrite:
             break
         }
