@@ -136,39 +136,42 @@
                                                  [weakSelf showAdvanced];
                                              }]];
     } else {
-        [section addItem:[OWSTableItem
-                             itemWithCustomCellBlock:^{
-                                 UITableViewCell *cell = [OWSTableItem newCell];
-                                 cell.textLabel.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
-                                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                                 UILabel *accessoryLabel = [UILabel new];
-                                 if (TSAccountManager.sharedInstance.isDeregistered) {
-                                     accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_DEREGISTERED",
-                                         @"Error indicating that this device is no longer registered.");
-                                     accessoryLabel.textColor = [UIColor ows_redColor];
-                                 } else {
-                                     switch (TSSocketManager.shared.highestSocketState) {
-                                         case OWSWebSocketStateClosed:
-                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
-                                             accessoryLabel.textColor = [UIColor ows_redColor];
-                                             break;
-                                         case OWSWebSocketStateConnecting:
-                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
-                                             accessoryLabel.textColor = [UIColor ows_yellowColor];
-                                             break;
-                                         case OWSWebSocketStateOpen:
-                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
-                                             accessoryLabel.textColor = [UIColor ows_greenColor];
-                                             break;
-                                     }
-                                 }
-                                 [accessoryLabel sizeToFit];
-                                 cell.accessoryView = accessoryLabel;
-                                 cell.accessibilityIdentifier
-                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(AppSettingsViewController, @"network_status");
-                                 return cell;
-                             }
-                                         actionBlock:nil]];
+        // Loki: Original code
+        // ========
+//        [section addItem:[OWSTableItem
+//                             itemWithCustomCellBlock:^{
+//                                 UITableViewCell *cell = [OWSTableItem newCell];
+//                                 cell.textLabel.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
+//                                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
+//                                 UILabel *accessoryLabel = [UILabel new];
+//                                 if (TSAccountManager.sharedInstance.isDeregistered) {
+//                                     accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_DEREGISTERED",
+//                                         @"Error indicating that this device is no longer registered.");
+//                                     accessoryLabel.textColor = [UIColor ows_redColor];
+//                                 } else {
+//                                     switch (TSSocketManager.shared.highestSocketState) {
+//                                         case OWSWebSocketStateClosed:
+//                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
+//                                             accessoryLabel.textColor = [UIColor ows_redColor];
+//                                             break;
+//                                         case OWSWebSocketStateConnecting:
+//                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
+//                                             accessoryLabel.textColor = [UIColor ows_yellowColor];
+//                                             break;
+//                                         case OWSWebSocketStateOpen:
+//                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
+//                                             accessoryLabel.textColor = [UIColor ows_greenColor];
+//                                             break;
+//                                     }
+//                                 }
+//                                 [accessoryLabel sizeToFit];
+//                                 cell.accessoryView = accessoryLabel;
+//                                 cell.accessibilityIdentifier
+//                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(AppSettingsViewController, @"network_status");
+//                                 return cell;
+//                             }
+//                                         actionBlock:nil]];
+        // ========
     }
 
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
