@@ -19,6 +19,10 @@ class DefaultStickerPack {
     }
 
     private class func parseAll() -> [StickerPackInfo: DefaultStickerPack] {
+        guard OWSIsDebugBuild() else {
+            return [:]
+        }
+
         // TODO: Replace with production values.
         let packs = [
         DefaultStickerPack(packIdHex: "0123456789abcdef0123456789abcdef",
