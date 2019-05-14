@@ -7,9 +7,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class TestJobRecord: SSKJobRecord {
-
-}
+typealias TestJobRecord = SSKJobRecord
 
 let kJobRecordLabel = "TestJobRecord"
 class TestJobQueue: JobQueue {
