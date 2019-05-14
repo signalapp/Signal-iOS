@@ -253,6 +253,7 @@ public class ManageStickersViewController: OWSTableViewController {
             ])
         textStack.axis = .vertical
         textStack.alignment = .leading
+        textStack.spacing = 4
         textStack.setContentHuggingHorizontalLow()
         textStack.setCompressionResistanceHorizontalLow()
 
@@ -283,7 +284,7 @@ public class ManageStickersViewController: OWSTableViewController {
             let authorStack = UIStackView(arrangedSubviews: authorViews)
             authorStack.axis = .horizontal
             authorStack.alignment = .center
-            authorStack.spacing = 5
+            authorStack.spacing = 4
             textStack.addArrangedSubview(authorStack)
         }
 
