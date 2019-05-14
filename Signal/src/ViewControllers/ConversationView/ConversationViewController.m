@@ -627,6 +627,7 @@ typedef enum : NSUInteger {
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
+    [self updateIsInputToolbarInteractionEnabled];
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
@@ -1582,6 +1583,12 @@ typedef enum : NSUInteger {
     self.headerView.attributedSubtitle = subtitleText;
 }
 
+#pragma mark - Updating
+
+- (void)updateIsInputToolbarInteractionEnabled {
+    // TODO: Listen to friend request updates and call this accordingly
+    [self.inputToolbar setUserInteractionEnabled:!self.thread.isPendingFriendRequest];
+}
 
 #pragma mark - Identity
 

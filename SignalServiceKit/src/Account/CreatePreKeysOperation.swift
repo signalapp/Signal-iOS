@@ -39,8 +39,8 @@ public class CreatePreKeysOperation: OWSOperation {
         Logger.debug("[CreatePreKeysOperation] done")
         self.reportSuccess()
         
-        /* Loki: Original Code
-        * ==================
+        /* Loki: Original code
+        * ================
         let identityKey: Data = self.identityKeyManager.identityKeyPair()!.publicKey
         let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
         let preKeyRecords: [PreKeyRecord] = self.primaryStorage.generatePreKeyRecords()

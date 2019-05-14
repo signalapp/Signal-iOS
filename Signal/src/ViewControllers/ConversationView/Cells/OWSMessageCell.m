@@ -217,15 +217,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     if (self.isFriendRequest) {
-        NSString *rawKind;
-        switch (self.friendRequestState) {
-            case TSThreadFriendRequestStateRequestReceived:
-                rawKind = @"incoming";
-                break;
-            case TSThreadFriendRequestStateRequestSent:
-                rawKind = @"outgoing";
-                break;
-        }
+        // At this point, self.friendRequestState should be either TSThreadFriendRequestStateRequestReceived,
+        // TSThreadFriendRequestStatePendingSend or TSThreadFriendRequestStateRequestSent
+        NSString *rawKind = self.friendRequestState == TSThreadFriendRequestStateRequestReceived ? @"incoming" : @"outgoing";
         self.friendRequestView = [[FriendRequestView alloc] initWithRawKind:rawKind];
         self.friendRequestView.message = self.message;
         self.friendRequestView.delegate = self.friendRequestViewDelegate;

@@ -39,7 +39,7 @@
         return [self generateAndStorePreKeyForContact:pubKey];
     }
     
-    // Load the pre key otherwise just generate a new one
+    // Load the prekey otherwise just generate a new one
     @try {
         return [self throws_loadPreKey:preKeyId];
     } @catch (NSException *exception) {
@@ -71,7 +71,7 @@
     ECKeyPair *_Nullable keyPair = self.identityManager.identityKeyPair;
     OWSAssertDebug(keyPair);
     
-    SignedPreKeyRecord *_Nullable signedPreKey = [self currentSignedPreKey];
+    SignedPreKeyRecord *_Nullable signedPreKey = self.currentSignedPreKey;
     if (!signedPreKey) {
         OWSFailDebug(@"Signed prekey is null");
     }

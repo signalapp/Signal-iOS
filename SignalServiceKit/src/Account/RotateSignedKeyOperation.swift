@@ -41,8 +41,8 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             self.reportSuccess()
         }
 
-        /* Loki: Original Code
-         * =========
+        /* Loki: Original code
+         * ================
         let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
 
         self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)

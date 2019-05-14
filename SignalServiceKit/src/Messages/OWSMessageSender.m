@@ -1648,7 +1648,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (exception) {
         @throw exception;
     }
-    *============
+    * ================
     */
 
     if (!bundle) {

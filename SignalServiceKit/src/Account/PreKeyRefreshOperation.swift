@@ -56,8 +56,8 @@ public class RefreshPreKeysOperation: OWSOperation {
             self.reportSuccess()
         }
         
-        /* Loki: Original Code
-         * =============
+        /* Loki: Original code
+         * ================
         firstly {
             self.accountServiceClient.getPreKeysCount()
         }.then(on: DispatchQueue.global()) { preKeysCount -> Promise<Void> in

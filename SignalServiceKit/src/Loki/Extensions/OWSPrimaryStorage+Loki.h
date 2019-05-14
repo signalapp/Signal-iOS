@@ -30,11 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Generate a `PreKeyBundle` for the given contact.
- This doesn't store the pre key bundle, and you shouldn't store this bundle.
+ This doesn't store the prekey bundle, and you shouldn't store this bundle.
  It's used for generating bundles to send to other users.
 
  @param pubKey The hex encoded public key of the contact.
- @return A pre key bundle for the contact.
+ @return A prekey bundle for the contact.
  */
 - (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)pubKey;
 
@@ -42,14 +42,14 @@ NS_ASSUME_NONNULL_BEGIN
  Get the `PreKeyBundle` associated with the given contact.
 
  @param pubKey The hex encoded public key of the contact.
- @return The pre key bundle or `nil` if it doesn't exist.
+ @return The prekey bundle or `nil` if it doesn't exist.
  */
 - (PreKeyBundle *_Nullable)getPreKeyBundleForContact:(NSString *)pubKey;
 
 /**
  Set the `PreKeyBundle` for the given contact.
 
- @param bundle The pre key bundle.
+ @param bundle The prekey bundle.
  @param transaction A `YapDatabaseReadWriteTransaction`.
  @param pubKey The hex encoded public key of the contact.
  */

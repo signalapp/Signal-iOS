@@ -298,7 +298,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSLogVerbose(@"Updating local profile on service with no avatar.");
     tryToUpdateService(nil, nil);
 
-    /* ========== Original Code ===============
+    /* ========== Original code ===============
     if (avatarImage) {
         // If we have a new avatar image, we must first:
         //
@@ -538,7 +538,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     // Loki: We don't need to make any server calls so succeed automatically
     successBlock();
     
-    /* ============ Original Code ============
+    /* ============ Original code ============
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSData *_Nullable encryptedPaddedName = [self encryptProfileNameWithUnpaddedName:localProfileName];
 

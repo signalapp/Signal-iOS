@@ -79,9 +79,9 @@ public class ProfileFetcherJob: NSObject {
     public func run(recipientIds: [String]) {
         AssertIsOnMainThread()
 
-        /* Loki: Original Code
+        /* Loki: Original code
          * Disabled as we don't have an endpoint for fetching profiles
-         * =========================
+         * ================
         guard CurrentAppContext().isMainApp else {
             // Only refresh profiles in the MainApp to decrease the chance of missed SN notifications
             // in the AppExtension for our users who choose not to verify contacts.

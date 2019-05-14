@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable PreKeyBundle *)preKeyBundleForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    return [self objectForKey:key inCollection:collection ofExpectedType:[PreKeyBundle class]];
+    return [self objectForKey:key inCollection:collection ofExpectedType:PreKeyBundle.class];
 }
 
 - (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection
