@@ -25,6 +25,7 @@
     init(kind: Kind) {
         self.kind = kind
         super.init(frame: CGRect.zero)
+        initialize()
     }
     
     @objc convenience init?(rawKind: String) {

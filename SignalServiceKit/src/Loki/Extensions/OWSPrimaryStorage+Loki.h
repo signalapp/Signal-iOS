@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
  Set the `PreKeyBundle` for the given contact.
 
  @param bundle The pre key bundle.
- @param transaction A YapDatabaseReadWriteTransaction.
+ @param transaction A `YapDatabaseReadWriteTransaction`.
  @param pubKey The hex encoded public key of the contact.
  */
 - (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
  Remove the `PreKeyBundle` for the given contact.
 
  @param pubKey The hex encoded public key of the contact.
- @param transaction A YapDatabaseReadWriteTransaction.
+ @param transaction A `YapDatabaseReadWriteTransaction`.
  */
 - (void)removePreKeyBundleForContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
 

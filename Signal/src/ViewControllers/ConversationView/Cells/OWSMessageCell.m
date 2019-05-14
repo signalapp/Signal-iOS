@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (TSThreadFriendRequestState)friendRequestState {
-    return TSThreadFriendRequestStateRequestSent;
+    return self.isIncoming ? TSThreadFriendRequestStateRequestReceived : TSThreadFriendRequestStateRequestSent;
 //    return self.message.thread.friendRequestState;
 }
 

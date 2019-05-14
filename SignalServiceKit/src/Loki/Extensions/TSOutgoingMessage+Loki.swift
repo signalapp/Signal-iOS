@@ -1,4 +1,5 @@
-public extension TSOutgoingMessage {
+
+@objc public extension TSOutgoingMessage {
     
     /// Loki: This is a message used to establish sessions
     @objc public static func emptyOutgoingMessage(inThread thread: TSThread) -> TSOutgoingMessage {
