@@ -23,7 +23,7 @@
     return TSAccountManager.sharedInstance;
 }
 
-# pragma mark - Prekey for contacts
+# pragma mark - Prekey for Contact
 
 - (BOOL)hasPreKeyForContact:(NSString *)pubKey {
     int preKeyId = [self.dbReadWriteConnection intForKey:pubKey inCollection:LokiPreKeyContactCollection];
@@ -68,8 +68,8 @@
     // Check prekeys to make sure we have them for this function
     [TSPreKeyManager checkPreKeys];
     
-    ECKeyPair *_Nullable myKeyPair = self.identityManager.identityKeyPair;
-    OWSAssertDebug(myKeyPair);
+    ECKeyPair *_Nullable keyPair = self.identityManager.identityKeyPair;
+    OWSAssertDebug(keyPair);
     
     SignedPreKeyRecord *_Nullable signedPreKey = [self currentSignedPreKey];
     if (!signedPreKey) {
@@ -86,13 +86,12 @@
                                                      signedPreKeyPublic:signedPreKey.keyPair.publicKey.prependKeyType
                                                          signedPreKeyId:signedPreKey.Id
                                                   signedPreKeySignature:signedPreKey.signature
-                                                            identityKey:myKeyPair.publicKey.prependKeyType];
+                                                            identityKey:keyPair.publicKey.prependKeyType];
     return bundle;
 }
 
 - (PreKeyBundle *_Nullable)getPreKeyBundleForContact:(NSString *)pubKey {
-    PreKeyBundle *bundle = [self.dbReadWriteConnection preKeyBundleForKey:pubKey inCollection:LokiPreKeyBundleCollection];
-    return bundle;
+    return [self.dbReadWriteConnection preKeyBundleForKey:pubKey inCollection:LokiPreKeyBundleCollection];
 }
 
 - (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)pubKey {
@@ -101,10 +100,8 @@
                              inCollection:LokiPreKeyBundleCollection];
 }
 
-- (void)removePreKeyBundleForContact:(NSString *)pubKey
-{
-    [self.dbReadWriteConnection removeObjectForKey:pubKey
-                                      inCollection:LokiPreKeyBundleCollection];
+- (void)removePreKeyBundleForContact:(NSString *)pubKey {
+    [self.dbReadWriteConnection removeObjectForKey:pubKey inCollection:LokiPreKeyBundleCollection];
 }
 
 @end

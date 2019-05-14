@@ -8,7 +8,7 @@
 - (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient {
     SSKProtoContentBuilder *contentBuilder = [super contentBuilder:recipient];
     
-    PreKeyBundle *bundle = [[OWSPrimaryStorage sharedManager] generatePreKeyBundleForContact:recipient.recipientId];
+    PreKeyBundle *bundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
     SSKProtoPrekeyBundleMessageBuilder *preKeyBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:bundle];
     
     // Build the pre key bundle message
