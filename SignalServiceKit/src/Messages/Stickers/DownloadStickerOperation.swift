@@ -4,7 +4,7 @@
 
 import Foundation
 
-class DownloadStickerOperation: OWSOperation {
+class DownloadStickerOperation: CDNDownloadOperation {
 
     private let stickerInfo: StickerInfo
     private let success: (Data) -> Void
@@ -21,14 +21,6 @@ class DownloadStickerOperation: OWSOperation {
         self.failure = failure
 
         super.init()
-
-        self.remainingRetries = 4
-    }
-
-    // MARK: Dependencies
-
-    private var cdnSessionManager: AFHTTPSessionManager {
-        return OWSSignalService.sharedInstance().cdnSessionManager
     }
 
     override public func run() {
@@ -49,66 +41,38 @@ class DownloadStickerOperation: OWSOperation {
 
         // https://cdn.signal.org/stickers/<pack_id>/full/<sticker_id>
         let urlPath = "stickers/\(stickerInfo.packId.hexadecimalString)/full/\(stickerInfo.stickerId)"
-        cdnSessionManager.get(urlPath,
-                              parameters: nil,
-                              progress: { (_) in
-                                // Do nothing.
-        },
-                              success: { [weak self] (_, response) in
-                                guard let self = self else {
-                                    return
-                                }
-                                guard let data = response as? Data else {
-                                    owsFailDebug("Unexpected response: \(type(of: response))")
-                                    return
-                                }
 
-                                do {
-                                    let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerInfo.packKey)
+        tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerDownloadSize)
+            .done(on: DispatchQueue.global()) { [weak self] data in
+                guard let self = self else {
+                    return
+                }
 
-                                    self.success(plaintext)
-                                    self.reportSuccess()
-                                } catch let error as NSError {
-                                    owsFailDebug("Decryption failed: \(error)")
+                do {
+                    let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerInfo.packKey)
 
-                                    // Fail immediately; do not retry.
-                                    error.isRetryable = false
-                                    return self.reportError(error)
-                                }
-            },
-                              failure: { [weak self] (_, error) in
-                                guard let self = self else {
-                                    return
-                                }
-                                Logger.error("Download failed: \(error)")
+                    self.success(plaintext)
+                    self.reportSuccess()
+                } catch let error as NSError {
+                    owsFailDebug("Decryption failed: \(error)")
 
-                                let errorCopy = error as NSError
+                    self.markUrlPathAsCorrupt(urlPath)
 
-                                errorCopy.isRetryable = !errorCopy.hasFatalResponseCode()
-
-                                self.reportError(errorCopy)
-        })
+                    // Fail immediately; do not retry.
+                    error.isRetryable = false
+                    return self.reportError(error)
+                }
+            }.catch(on: DispatchQueue.global()) { [weak self] error in
+                guard let self = self else {
+                    return
+                }
+                return self.reportError(error)
+            }.retainUntilComplete()
     }
 
     override public func didFail(error: Error) {
         Logger.error("Download exhausted retries: \(error)")
 
         failure(error)
-    }
-
-    override public func retryInterval() -> TimeInterval {
-        // Arbitrary backoff factor...
-        // With backOffFactor of 1.9
-        // try  1 delay:  0.00s
-        // try  2 delay:  0.19s
-        // ...
-        // try  5 delay:  1.30s
-        // ...
-        // try 11 delay: 61.31s
-        let backoffFactor = 1.9
-        let maxBackoff = kHourInterval
-
-        let seconds = 0.1 * min(maxBackoff, pow(backoffFactor, Double(self.errorCount)))
-        return seconds
     }
 }
