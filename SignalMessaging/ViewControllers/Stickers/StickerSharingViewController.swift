@@ -13,6 +13,10 @@ public class StickerSharingViewController: SelectThreadViewController {
         return SSKEnvironment.shared.primaryStorage
     }
 
+    var linkPreviewManager: OWSLinkPreviewManager {
+        return SSKEnvironment.shared.linkPreviewManager
+    }
+
     // MARK: -
 
     private let stickerPackInfo: StickerPackInfo
@@ -52,8 +56,29 @@ public class StickerSharingViewController: SelectThreadViewController {
 
         let packUrl = stickerPackInfo.shareUrl()
 
+        // Try to include a link preview of the sticker pack.
+        linkPreviewManager.tryToBuildPreviewInfo(previewUrl: packUrl)
+            .done { (linkPreviewDraft) in
+                self.shareAndDismiss(thread: thread,
+                                     packUrl: packUrl,
+                                     linkPreviewDraft: linkPreviewDraft)
+            }.catch { error in
+                owsFailDebug("Could not build link preview: \(error)")
+
+                self.shareAndDismiss(thread: thread,
+                                     packUrl: packUrl,
+                                     linkPreviewDraft: nil)
+            }
+            .retainUntilComplete()
+    }
+
+    private func shareAndDismiss(thread: TSThread,
+                                 packUrl: String,
+                                 linkPreviewDraft: OWSLinkPreviewDraft?) {
+        AssertIsOnMainThread()
+
         primaryStorage.dbReadConnection.read { (transaction) in
-            ThreadUtil.enqueueMessage(withText: packUrl, in: thread, quotedReplyModel: nil, linkPreviewDraft: nil, transaction: transaction)
+            ThreadUtil.enqueueMessage(withText: packUrl, in: thread, quotedReplyModel: nil, linkPreviewDraft: linkPreviewDraft, transaction: transaction)
         }
 
         self.dismiss(animated: true)

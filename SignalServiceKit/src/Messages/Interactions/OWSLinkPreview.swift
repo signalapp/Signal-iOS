@@ -892,37 +892,46 @@ public class OWSLinkPreviewManager: NSObject {
 
         // tryToDownloadStickerPack will use locally saved data if possible.
         return StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
-        .then { (stickerPack) -> Promise<OWSLinkPreviewDraft> in
-            let coverInfo = stickerPack.coverInfo
-            // tryToDownloadSticker will use locally saved data if possible.
-            return StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: coverInfo).map(on: DispatchQueue.global()) { (coverData) -> OWSLinkPreviewDraft in
-                // Try to build thumbnail from cover webp.
-                var jpegImageData: Data?
-                if let stillImage = (coverData as NSData).stillForWebpData() {
-                    var stillThumbnail = stillImage
-                    let maxImageSize: CGFloat = 1024
-                    let imageSize = stillImage.size
-                    let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
-                    if shouldResize {
-                        if let resizedImage = stillImage.resized(withMaxDimensionPoints: maxImageSize) {
-                            stillThumbnail = resizedImage
-                        } else {
-                            owsFailDebug("Could not resize image.")
-                        }
-                    }
-
-                    if let stillData = stillThumbnail.jpegData(compressionQuality: 0.85) {
-                        jpegImageData = stillData
-                    } else {
-                        owsFailDebug("Could not encode as JPEG.")
-                    }
-                } else {
-                    owsFailDebug("Could not extract still.")
+            .then { (stickerPack) -> Promise<OWSLinkPreviewDraft> in
+                let coverInfo = stickerPack.coverInfo
+                // tryToDownloadSticker will use locally saved data if possible.
+                return StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: coverInfo).map(on: DispatchQueue.global()) { (coverData) -> OWSLinkPreviewDraft in
+                    return OWSLinkPreviewManager.linkPreviewDraft(forStickerPack: stickerPack,
+                                                                  coverData: coverData)
                 }
-
-                return OWSLinkPreviewDraft(urlString: url.absoluteString, title: stickerPack.title, jpegImageData: jpegImageData)
-            }
         }
+    }
+
+    public class func linkPreviewDraft(forStickerPack stickerPack: StickerPack,
+                                       coverData: Data) -> OWSLinkPreviewDraft {
+
+        let url = stickerPack.info.shareUrl()
+
+        // Try to build thumbnail from cover webp.
+        var jpegImageData: Data?
+        if let stillImage = (coverData as NSData).stillForWebpData() {
+            var stillThumbnail = stillImage
+            let maxImageSize: CGFloat = 1024
+            let imageSize = stillImage.size
+            let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
+            if shouldResize {
+                if let resizedImage = stillImage.resized(withMaxDimensionPoints: maxImageSize) {
+                    stillThumbnail = resizedImage
+                } else {
+                    owsFailDebug("Could not resize image.")
+                }
+            }
+
+            if let stillData = stillThumbnail.jpegData(compressionQuality: 0.85) {
+                jpegImageData = stillData
+            } else {
+                owsFailDebug("Could not encode as JPEG.")
+            }
+        } else {
+            owsFailDebug("Could not extract still.")
+        }
+
+        return OWSLinkPreviewDraft(urlString: url, title: stickerPack.title, jpegImageData: jpegImageData)
     }
 }
 
