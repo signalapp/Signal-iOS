@@ -265,12 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
                       initWithThread:thread
                              groupId:[Randomness generateRandomBytes:kGroupIdLength]];
                   [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-                      if (transaction.transitional_yapWriteTransaction) {
-                          [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage
-                                                     transaction:transaction.transitional_yapWriteTransaction];
-                      } else {
-                          OWSFailDebug(@"not yet implemented for GRDB");
-                      }
+                      [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage transaction:transaction];
                   }];
               }],
         [OWSTableItem itemWithTitle:@"Message with stalled timer"
@@ -3995,7 +3990,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)
                              transaction:transaction.transitional_yapWriteTransaction];
 
-        [self.messageSenderJobQueue addMessage:message transaction:transaction.transitional_yapWriteTransaction];
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{

@@ -35,8 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enumerateMediaAttachmentsWithRange:(NSRange)range
                                transaction:(YapDatabaseReadTransaction *)transaction
                                      block:(void (^)(TSAttachment *))attachmentBlock
-    NS_SWIFT_NAME(enumerateMediaAttachments(range:transaction:block
-:));
+    NS_SWIFT_NAME(enumerateMediaAttachments(range:transaction:block:));
 
 - (BOOL)hasMediaChangesInNotifications:(NSArray<NSNotification *> *)notifications
                           dbConnection:(YapDatabaseConnection *)dbConnection;

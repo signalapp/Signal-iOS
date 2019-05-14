@@ -234,7 +234,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithReadReceipts:readReceiptsForLinkedDevices];
 
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [self.messageSenderJobQueue addMessage:message transaction:transaction];
+                [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
             }];
         }
 

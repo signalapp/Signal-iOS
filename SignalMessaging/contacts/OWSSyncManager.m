@@ -248,7 +248,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                         sendLinkPreviews:sendLinkPreviews];
 
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction];
+        [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction.asAnyWrite];
     }];
 }
 

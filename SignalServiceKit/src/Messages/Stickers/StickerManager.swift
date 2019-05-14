@@ -973,15 +973,7 @@ public class StickerManager: NSObject {
         }
 
         let message = OWSStickerPackSyncMessage(packs: packs, operationType: operationType)
-
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            self.messageSenderJobQueue.add(message: message, transaction: ydbTransaction)
-        case .grdbWrite:
-            // GRDB TODO: Support any transactions.
-            //            owsFailDebug("GRDB not yet supported.")
-            break
-        }
+        self.messageSenderJobQueue.add(message: message, transaction: transaction)
     }
 
     @objc

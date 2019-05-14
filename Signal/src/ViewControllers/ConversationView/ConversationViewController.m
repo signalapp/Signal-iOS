@@ -1845,16 +1845,15 @@ typedef enum : NSUInteger {
                                                                 }];
     [actionSheet addAction:deleteMessageAction];
 
-    UIAlertAction *resendMessageAction = [UIAlertAction
-                actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
-        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
-                          style:UIAlertActionStyleDefault
-                        handler:^(UIAlertAction *action) {
-                            [self.editingDatabaseConnection
-                                asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                    [self.messageSenderJobQueue addMessage:message transaction:transaction];
-                                }];
-                        }];
+    UIAlertAction *resendMessageAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *action) {
+                                   [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                       [self.messageSenderJobQueue addMessage:message transaction:transaction];
+                                   }];
+                               }];
 
     [actionSheet addAction:resendMessageAction];
 
