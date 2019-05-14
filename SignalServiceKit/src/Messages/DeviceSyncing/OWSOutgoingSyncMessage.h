@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview NS_UNAVAILABLE;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 @end
