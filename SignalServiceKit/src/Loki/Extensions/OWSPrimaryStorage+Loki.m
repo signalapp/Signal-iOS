@@ -13,6 +13,16 @@
 
 @implementation OWSPrimaryStorage (Loki)
 
+# pragma mark - Dependencies
+
+- (OWSIdentityManager *)identityManager {
+    return OWSIdentityManager.sharedManager;
+}
+
+- (TSAccountManager *)accountManager {
+    return TSAccountManager.sharedInstance;
+}
+
 # pragma mark - Prekey for contacts
 
 - (BOOL)hasPreKeyForContact:(NSString *)pubKey {
@@ -58,7 +68,7 @@
     // Check prekeys to make sure we have them for this function
     [TSPreKeyManager checkPreKeys];
     
-    ECKeyPair *_Nullable myKeyPair = OWSIdentityManager.sharedManager.identityKeyPair;
+    ECKeyPair *_Nullable myKeyPair = self.identityManager.identityKeyPair;
     OWSAssertDebug(myKeyPair);
     
     SignedPreKeyRecord *_Nullable signedPreKey = [self currentSignedPreKey];
@@ -67,7 +77,7 @@
     }
     
     PreKeyRecord *preKey = [self getOrCreatePreKeyForContact:pubKey];
-    uint32_t registrationId = [TSAccountManager.sharedInstance getOrGenerateRegistrationId];
+    uint32_t registrationId = [self.accountManager getOrGenerateRegistrationId];
     
     PreKeyBundle *bundle = [[PreKeyBundle alloc] initWithRegistrationId:registrationId
                                                                deviceId:OWSDevicePrimaryDeviceId
