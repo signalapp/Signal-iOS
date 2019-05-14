@@ -62,7 +62,8 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         }.catch { error in
             self.reportError(error)
         }.retainUntilComplete()
-        */
+         * ================
+         */
     }
 
     override public func didFail(error: Error) {

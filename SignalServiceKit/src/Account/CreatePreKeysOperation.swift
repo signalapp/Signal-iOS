@@ -27,10 +27,10 @@ public class CreatePreKeysOperation: OWSOperation {
             self.identityKeyManager.generateNewIdentityKey()
         }
         
-        /// Loki: We don't generate PreKeyRecords here.
-        /// This is because we need the records to be linked to a contact since we don't have a central server.
-        /// It is done automatically when we generate a PreKeyBundle to send to a contact (`generatePreKeyBundleForContact:`).
-        /// You can use `getOrCreatePreKeyForContact:` to generate one if needed.
+        // Loki: We don't generate PreKeyRecords here.
+        // This is because we need the records to be linked to a contact since we don't have a central server.
+        // It is done automatically when we generate a PreKeyBundle to send to a contact (`generatePreKeyBundleForContact:`).
+        // You can use `getOrCreatePreKeyForContact:` to generate one if needed.
         let signedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
         signedPreKeyRecord.markAsAcceptedByService()
         self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
@@ -40,7 +40,7 @@ public class CreatePreKeysOperation: OWSOperation {
         self.reportSuccess()
         
         /* Loki: Original code
-        * ================
+         * ================
         let identityKey: Data = self.identityKeyManager.identityKeyPair()!.publicKey
         let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
         let preKeyRecords: [PreKeyRecord] = self.primaryStorage.generatePreKeyRecords()
@@ -60,6 +60,7 @@ public class CreatePreKeysOperation: OWSOperation {
         }.catch { error in
             self.reportError(error)
         }.retainUntilComplete()
-        */
+         * ================
+         */
     }
 }

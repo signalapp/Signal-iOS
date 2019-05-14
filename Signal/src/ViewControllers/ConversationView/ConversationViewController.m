@@ -4294,7 +4294,7 @@ typedef enum : NSUInteger {
 
 - (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
 {
-    [ThreadUtil enqueueFriendRequestAcceptMessageInThread:self.thread];
+    [ThreadUtil enqueueAcceptFriendRequestMessageInThread:self.thread];
 }
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest

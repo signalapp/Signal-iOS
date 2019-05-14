@@ -260,7 +260,10 @@ const CGFloat kIconViewLength = 24;
 
 - (void)contactsViewHelperDidUpdateContacts
 {
-    [self updateTableContents];
+    // Loki: Original code
+    // ========
+    // [self updateTableContents];
+    // ========
 }
 
 #pragma mark - View Lifecycle

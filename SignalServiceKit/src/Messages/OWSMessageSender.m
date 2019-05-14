@@ -1066,7 +1066,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             hasValidMessageType = [validMessageTypes containsObject:messageType];
 
             /* Loki: Original code:
-             * ================
             hasValidMessageType = ([messageType isEqualToNumber:@(TSEncryptedWhisperMessageType)] ||
                                    [messageType isEqualToNumber:@(TSPreKeyWhisperMessageType)]);
              */
@@ -1620,7 +1619,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     __block NSException *_Nullable exception;
 
     /** Loki: Original code
-     * ==================
+     * ================
     __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     __block PreKeyBundle *_Nullable bundle;
     __block NSException *_Nullable exception;

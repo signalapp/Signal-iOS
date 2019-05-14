@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self generatePreKeyRecords:BATCH_SIZE];
 }
 
-- (NSArray<PreKeyRecord *> *)generatePreKeyRecords:(NSUInteger)batchSize
+- (NSArray<PreKeyRecord *> *)generatePreKeyRecords:(int)batchSize
 {
     NSMutableArray *preKeyRecords = [NSMutableArray array];
 

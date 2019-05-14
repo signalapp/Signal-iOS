@@ -86,9 +86,9 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 #pragma mark - Durable Message Enqueue
 
 // Loki: TODO We may change this?
-+ (TSOutgoingMessage *)enqueueFriendRequestAcceptMessageInThread:(TSThread *)thread
++ (TSOutgoingMessage *)enqueueAcceptFriendRequestMessageInThread:(TSThread *)thread
 {
-    TSOutgoingMessage *message = [TSOutgoingMessage emptyOutgoingMessageInThread:thread];
+    TSOutgoingMessage *message = [TSOutgoingMessage createEmptyOutgoingMessageInThread:thread];
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
@@ -186,8 +186,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     
     // Loki: If we're not friends then always set the message to a friend request message
     // If we're friends then the assumption is that we have the other user's pre-key bundle
-    NSString *messageClassString = [thread isFriend] ? @"TSOutgoingMessage" : @"OWSFriendRequestMessage";
-    Class messageClass = NSClassFromString(messageClassString);
+    NSString *messageClassAsString = thread.isFriend ? @"TSOutgoingMessage" : @"OWSFriendRequestMessage";
+    Class messageClass = NSClassFromString(messageClassAsString);
     
     TSOutgoingMessage *message =
         [[messageClass alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]

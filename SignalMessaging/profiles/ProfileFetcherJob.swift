@@ -106,7 +106,8 @@ public class ProfileFetcherJob: NSObject {
                 self.getAndUpdateProfile(recipientId: recipientId)
             }
         }
-        */
+         * ================
+         */
     }
 
     enum ProfileFetcherJobError: Error {
