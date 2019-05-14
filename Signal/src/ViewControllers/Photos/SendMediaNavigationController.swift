@@ -67,9 +67,16 @@ class SendMediaNavigationController: OWSNavigationController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         DispatchQueue.main.async {
-            // pre-layout collectionPicker for snappier response should we use it
-            self.mediaLibraryViewController.view.layoutIfNeeded()
-            self.captureViewController.view.layoutIfNeeded()
+            // pre-layout views for snappier response should the user
+            // decide to switch
+
+            if PHPhotoLibrary.authorizationStatus() == .authorized {
+                self.mediaLibraryViewController.view.layoutIfNeeded()
+            }
+
+            if AVCaptureDevice.authorizationStatus(for: .video) == .authorized {
+                self.captureViewController.view.layoutIfNeeded()
+            }
         }
     }
 
@@ -168,13 +175,21 @@ class SendMediaNavigationController: OWSNavigationController {
     }
 
     private func didTapCameraModeButton() {
-        BenchEventStart(title: "Show-Camera", eventId: "Show-Camera")
-        fadeTo(viewControllers: [captureViewController])
+        self.ows_askForCameraPermissions { isGranted in
+            guard isGranted else { return }
+
+            BenchEventStart(title: "Show-Camera", eventId: "Show-Camera")
+            self.fadeTo(viewControllers: [self.captureViewController])
+        }
     }
 
     private func didTapMediaLibraryModeButton() {
-        BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
-        fadeTo(viewControllers: [mediaLibraryViewController])
+        self.ows_askForMediaLibraryPermissions { isGranted in
+            guard isGranted else { return }
+
+            BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
+            self.fadeTo(viewControllers: [self.mediaLibraryViewController])
+        }
     }
 
     // MARK: Views
