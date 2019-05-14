@@ -101,6 +101,12 @@ public class StickerKeyboard: UIStackView {
         // If there are no recents, default to showing the first sticker pack.
         if stickerCollectionView.stickerCount < 1 {
             stickerPack = stickerPacks.first
+
+            if stickerPack == nil {
+                // If the keyboard is presented and no stickers are
+                // installed, show the manage stickers view.                
+                delegate?.presentManageStickersView()
+            }
         }
     }
 
