@@ -42,7 +42,7 @@ class DownloadStickerOperation: CDNDownloadOperation {
         // https://cdn.signal.org/stickers/<pack_id>/full/<sticker_id>
         let urlPath = "stickers/\(stickerInfo.packId.hexadecimalString)/full/\(stickerInfo.stickerId)"
 
-        tryToDownload(urlPath: urlPath)
+        tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerDownloadSize)
             .done(on: DispatchQueue.global()) { [weak self] data in
                 guard let self = self else {
                     return
@@ -55,6 +55,8 @@ class DownloadStickerOperation: CDNDownloadOperation {
                     self.reportSuccess()
                 } catch let error as NSError {
                     owsFailDebug("Decryption failed: \(error)")
+
+                    self.markUrlPathAsCorrupt(urlPath)
 
                     // Fail immediately; do not retry.
                     error.isRetryable = false

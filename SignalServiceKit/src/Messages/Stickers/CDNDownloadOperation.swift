@@ -27,7 +27,15 @@ class CDNDownloadOperation: OWSOperation {
         task?.cancel()
     }
 
-    func tryToDownload(urlPath: String) -> Promise<Data> {
+    let kMaxStickerDownloadSize: UInt = 100 * 1000
+
+    func tryToDownload(urlPath: String, maxDownloadSize: UInt) -> Promise<Data> {
+        guard !isCorrupt(urlPath: urlPath) else {
+            Logger.warn("Skipping download of corrupt data.")
+            var error = StickerError.corruptData
+            error.isRetryable = false
+            return Promise(error: error)
+        }
         guard let baseUrl = cdnSessionManager.baseURL else {
             owsFailDebug("Missing baseUrl.")
             var error = StickerError.assertionFailure
@@ -57,7 +65,6 @@ class CDNDownloadOperation: OWSOperation {
         let tempFilePath = (tempDirPath as NSString).appendingPathComponent(UUID().uuidString)
         let tempFileURL = URL(fileURLWithPath: tempFilePath)
 
-        let kMaxDownloadSize: UInt = 100 * 1000
         var hasCheckedContentLength = false
         let (promise, resolver) = Promise<Data>.pending()
         let task = cdnSessionManager.downloadTask(with: request as URLRequest,
@@ -88,8 +95,8 @@ class CDNDownloadOperation: OWSOperation {
                                                     //
                                                     // If the current downloaded bytes or the expected total byes
                                                     // exceed the max download size, abort the download.
-                                                    guard progress.totalUnitCount <= kMaxDownloadSize,
-                                                        progress.completedUnitCount <= kMaxDownloadSize else {
+                                                    guard progress.totalUnitCount <= maxDownloadSize,
+                                                        progress.completedUnitCount <= maxDownloadSize else {
                                                         return abortDownload("Attachment download exceed expected content length: \(progress.totalUnitCount), \(progress.completedUnitCount).")
                                                     }
 
@@ -116,7 +123,7 @@ class CDNDownloadOperation: OWSOperation {
                                                     guard let contentLength = Int64(contentLengthString) else {
                                                         return abortDownload("Invalid content length.")
                                                     }
-                                                    guard contentLength < kMaxDownloadSize else {
+                                                    guard contentLength < maxDownloadSize else {
                                                         return abortDownload("Content length exceeds max download size.")
                                                     }
 
@@ -149,7 +156,7 @@ class CDNDownloadOperation: OWSOperation {
                                                         error.isRetryable = false
                                                         return resolver.reject(error)
                                                     }
-                                                    guard fileSize.uint64Value <= kMaxDownloadSize else {
+                                                    guard fileSize.uint64Value <= maxDownloadSize else {
                                                         owsFailDebug("Download length exceeds max size.")
                                                         var error = StickerError.assertionFailure
                                                         error.isRetryable = false
@@ -186,5 +193,27 @@ class CDNDownloadOperation: OWSOperation {
 
         let seconds = 0.1 * min(maxBackoff, pow(backoffFactor, Double(self.errorCount)))
         return seconds
+    }
+
+    // MARK: - Corrupt Data
+
+    // We track corrupt downloads, to avoid retrying them more than once per launch.
+    //
+    // TODO: We could persist this state.
+    private static let serialQueue = DispatchQueue(label: "org.signal.cdnDownloadOperation")
+    private var corruptDataKeys = Set<String>()
+
+    func markUrlPathAsCorrupt(_ urlPath: String) {
+        CDNDownloadOperation.serialQueue.sync {
+            corruptDataKeys.insert(urlPath)
+        }
+    }
+
+    func isCorrupt(urlPath: String) -> Bool {
+        var result = false
+        CDNDownloadOperation.serialQueue.sync {
+            result = corruptDataKeys.contains(urlPath)
+        }
+        return result
     }
 }
