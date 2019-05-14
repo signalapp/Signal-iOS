@@ -63,7 +63,7 @@ class UserNotificationConfig {
 }
 
 @available(iOS 10.0, *)
-class UserNotificationPresenterAdaptee: NSObject, UNUserNotificationCenterDelegate {
+class UserNotificationPresenterAdaptee: NSObject {
 
     private let notificationCenter: UNUserNotificationCenter
     private var notifications: [String: UNNotificationRequest] = [:]
@@ -71,7 +71,6 @@ class UserNotificationPresenterAdaptee: NSObject, UNUserNotificationCenterDelega
     override init() {
         self.notificationCenter = UNUserNotificationCenter.current()
         super.init()
-        notificationCenter.delegate = self
         SwiftSingletons.register(self)
     }
 }
