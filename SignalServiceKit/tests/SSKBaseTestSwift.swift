@@ -3,7 +3,7 @@
 //
 
 import XCTest
-import SignalServiceKit
+@testable import SignalServiceKit
 import CocoaLumberjack
 
 @objc
@@ -19,6 +19,7 @@ public class SSKBaseTestSwift: XCTestCase {
         SetCurrentAppContext(TestAppContext())
 
         MockSSKEnvironment.activate()
+        SDSDatabaseStorage.shared.clearGRDBStorageForTests()
     }
 
     @objc

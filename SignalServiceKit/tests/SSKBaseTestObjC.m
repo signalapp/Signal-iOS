@@ -8,6 +8,7 @@
 #import "TestAppContext.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     ClearCurrentAppContextForTests();
     SetCurrentAppContext([TestAppContext new]);
+    [SDSDatabaseStorage.shared clearGRDBStorageForTests];
 
     [MockSSKEnvironment activate];
 }
