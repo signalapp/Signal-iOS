@@ -30,19 +30,19 @@ extern ConversationColorName const ConversationColorNameSteel;
 extern ConversationColorName const kConversationColorName_Default;
 
 // Loki: Friend request state
-typedef NS_ENUM(NSInteger, TSThreadFriendRequestState) {
+typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
     // New conversation, no messages sent or received
-    TSThreadFriendRequestStateNone,
+    TSThreadFriendRequestStatusNone,
     // This state is used to lock the input early while sending
-    TSThreadFriendRequestStatePendingSend,
+    TSThreadFriendRequestStatusPendingSend,
     // Friend request sent, awaiting response
-    TSThreadFriendRequestStateRequestSent,
+    TSThreadFriendRequestStatusRequestSent,
     // Friend request received, awaiting user input
-    TSThreadFriendRequestStateRequestReceived,
+    TSThreadFriendRequestStatusRequestReceived,
     // We are friends with the user of this thread
-    TSThreadFriendRequestStateFriends,
+    TSThreadFriendRequestStatusFriends,
     // Friend request sent but it timed out (user didn't accept within x time)
-    TSThreadFriendRequestStateRequestExpired,
+    TSThreadFriendRequestStatusRequestExpired
 };
 
 /**
@@ -53,9 +53,7 @@ typedef NS_ENUM(NSInteger, TSThreadFriendRequestState) {
 @property (nonatomic) BOOL shouldThreadBeVisible;
 @property (nonatomic, readonly) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
-
-// Loki: The current friend request state with this thread
-@property (atomic, readonly) TSThreadFriendRequestState friendRequestState;
+@property (atomic, readonly) TSThreadFriendRequestStatus friendRequestStatus; // Loki
 
 /**
  *  Whether the object is a group thread or not.
