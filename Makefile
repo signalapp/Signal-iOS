@@ -23,6 +23,8 @@ setup:
 
 dependencies:
 	cd $(WORKING_DIR) && \
+		git submodule foreach --recursive git clean -xfd && \
+		git submodule foreach --recursive git reset --hard && \
 		git submodule update --init
 		cd $(THIRD_PARTY_DIR) && \
 			carthage build --platform iOS
