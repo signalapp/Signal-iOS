@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalBaseTest.h"
 #import "Environment.h"
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TestAppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
     [SSKEnvironment clearSharedForTests];
 
     SetCurrentAppContext([TestAppContext new]);
-
+    [SDSDatabaseStorage.shared clearGRDBStorageForTests];
     [MockSSKEnvironment activate];
     [MockEnvironment activate];
 }

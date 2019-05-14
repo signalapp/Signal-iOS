@@ -35,7 +35,8 @@ public class SDSDatabaseStorage: NSObject {
         }
     }
 
-    internal func clearGRDBStorage() {
+    @objc
+    internal func clearGRDBStorageForTests() {
         _grdbStorage = nil
     }
 
