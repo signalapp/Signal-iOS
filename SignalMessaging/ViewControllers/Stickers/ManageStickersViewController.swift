@@ -285,7 +285,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
         Logger.verbose("")
 
-        // TODO:
+        StickerSharingViewController.shareStickerPack(stickerPack.info, from: self)
     }
 
     private func install(stickerPack: StickerPack) {

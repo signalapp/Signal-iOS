@@ -2342,6 +2342,12 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "None";
 
+/* Label for the 'share to contacts' section in sticker views. */
+"STICKER_PACK_SHARE_TO_CONTACT_SECTION" = "Share to Contact";
+
+/* Label for the 'share to phone number' section in sticker views. */
+"STICKER_PACK_SHARE_TO_PHONE_NUMBER_SECTION" = "Share to Phone Number";
+
 /* Label for a sticker that failed to download. */
 "STICKERS_FAILED_DOWNLOAD" = "Sticker";
 
@@ -2363,8 +2369,14 @@
 /* Error message shown when a sticker pack failed to install. */
 "STICKERS_PACK_INSTALL_FAILED" = "Sticker pack install failed.";
 
+/* Title of the 'share sticker pack' view. */
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
+
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Sticker Pack";
+
+/* Label for the 'Share' button in sticker views. */
+"STICKERS_SHARE_BUTTON" = "Share";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Uninstall";

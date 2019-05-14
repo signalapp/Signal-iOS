@@ -336,6 +336,9 @@ public class OWSLinkPreviewManager: NSObject {
             owsFailDebug("Invalid url.")
             return nil
         }
+        if StickerPackInfo.isStickerPackShare(url) {
+            return stickerPackShareDomain(forUrl: url)
+        }
         guard let result = whitelistedDomain(forUrl: url,
                                              domainWhitelist: linkDomainWhitelist,
                                              allowSubdomains: false) else {
@@ -347,6 +350,9 @@ public class OWSLinkPreviewManager: NSObject {
 
     @objc
     public class func isValidLink(url: URL) -> Bool {
+        if StickerPackInfo.isStickerPackShare(url) {
+            return true
+        }
         return whitelistedDomain(forUrl: url,
                                  domainWhitelist: linkDomainWhitelist,
                                  allowSubdomains: false) != nil
@@ -384,6 +390,17 @@ public class OWSLinkPreviewManager: NSObject {
             }
         }
         return nil
+    }
+
+    private class func stickerPackShareDomain(forUrl url: URL) -> String? {
+        guard let domain = url.host?.lowercased() else {
+            return nil
+        }
+        guard url.path.count > 1 else {
+            // URL must have non-empty path.
+            return nil
+        }
+        return domain
     }
 
     // MARK: - Serial Queue
@@ -537,6 +554,22 @@ public class OWSLinkPreviewManager: NSObject {
             Logger.verbose("Link preview info cache hit.")
             return Promise.value(cachedInfo)
         }
+        guard let url = URL(string: previewUrl) else {
+            Logger.error("Could not parse URL.")
+            return Promise(error: LinkPreviewError.invalidInput)
+        }
+        if StickerPackInfo.isStickerPackShare(url) {
+            return linkPreviewDraft(forStickerShare: url)
+                .map(on: DispatchQueue.global()) { (linkPreviewDraft) -> OWSLinkPreviewDraft in
+                    guard linkPreviewDraft.isValid() else {
+                        throw LinkPreviewError.noPreview
+                    }
+                    self.setCachedLinkPreview(linkPreviewDraft, forPreviewUrl: previewUrl)
+
+                    return linkPreviewDraft
+            }
+        }
+
         return downloadLink(url: previewUrl)
             .then(on: DispatchQueue.global()) { (data) -> Promise<OWSLinkPreviewDraft> in
                 return self.parseLinkDataAndBuildDraft(linkData: data, linkUrlString: previewUrl)
@@ -846,7 +879,54 @@ public class OWSLinkPreviewManager: NSObject {
 
         return attributedString.string
     }
+
+    // MARK: - Stickers
+
+    func linkPreviewDraft(forStickerShare url: URL) -> Promise<OWSLinkPreviewDraft> {
+        Logger.verbose("url: \(url)")
+
+        guard let stickerPackInfo = StickerPackInfo.parseStickerPackShare(url) else {
+            Logger.error("Could not parse URL.")
+            return Promise(error: LinkPreviewError.invalidInput)
+        }
+
+        // tryToDownloadStickerPack will use locally saved data if possible.
+        return StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
+        .then { (stickerPack) -> Promise<OWSLinkPreviewDraft> in
+            let coverInfo = stickerPack.coverInfo
+            // tryToDownloadSticker will use locally saved data if possible.
+            return StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: coverInfo).map(on: DispatchQueue.global()) { (coverData) -> OWSLinkPreviewDraft in
+                // Try to build thumbnail from cover webp.
+                var jpegImageData: Data?
+                if let stillImage = (coverData as NSData).stillForWebpData() {
+                    var stillThumbnail = stillImage
+                    let maxImageSize: CGFloat = 1024
+                    let imageSize = stillImage.size
+                    let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
+                    if shouldResize {
+                        if let resizedImage = stillImage.resized(withMaxDimensionPoints: maxImageSize) {
+                            stillThumbnail = resizedImage
+                        } else {
+                            owsFailDebug("Could not resize image.")
+                        }
+                    }
+
+                    if let stillData = stillThumbnail.jpegData(compressionQuality: 0.85) {
+                        jpegImageData = stillData
+                    } else {
+                        owsFailDebug("Could not encode as JPEG.")
+                    }
+                } else {
+                    owsFailDebug("Could not extract still.")
+                }
+
+                return OWSLinkPreviewDraft(urlString: url.absoluteString, title: stickerPack.title, jpegImageData: jpegImageData)
+            }
+        }
+    }
 }
+
+// MARK: -
 
 extension OWSLinkPreviewManager: ProxiedContentDownloaderDelegate {
     func proxiedContentDownloader(willPerformHTTPRedirection response: HTTPURLResponse, newRequest: URLRequest) -> URLRequest? {

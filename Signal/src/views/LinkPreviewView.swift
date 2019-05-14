@@ -530,8 +530,24 @@ public class LinkPreviewView: UIStackView {
     private let sentHeroVMargin: CGFloat = 7
 
     private func sentIsHero(state: LinkPreviewSent) -> Bool {
+        if isSticker(state: state) {
+            return false
+        }
+
         let imageSize = state.imageSize
         return imageSize.width >= sentMinimumHeroSize && imageSize.height >= sentMinimumHeroSize
+    }
+
+    private func isSticker(state: LinkPreviewSent) -> Bool {
+        guard let urlString = state.urlString() else {
+            owsFailDebug("Link preview is missing url.")
+            return false
+        }
+        guard let url = URL(string: urlString) else {
+            owsFailDebug("Could not parse URL.")
+            return false
+        }
+        return StickerPackInfo.isStickerPackShare(url)
     }
 
     private let sentTitleLineCount: Int = 2

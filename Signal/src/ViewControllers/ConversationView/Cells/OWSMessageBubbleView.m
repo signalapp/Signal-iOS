@@ -21,7 +21,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareButtonsViewDelegate>
+@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate,
+    OWSContactShareButtonsViewDelegate,
+    UITextViewDelegate>
 
 @property (nonatomic) OWSBubbleView *bubbleView;
 
@@ -62,6 +64,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSAttachmentDownloads *)attachmentDownloads
 {
     return SSKEnvironment.shared.attachmentDownloads;
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
 }
 
 #pragma mark -
@@ -122,6 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
     textView.contentInset = UIEdgeInsetsZero;
     textView.textContainer.lineFragmentPadding = 0;
     textView.scrollEnabled = NO;
+    textView.delegate = self;
     return textView;
 }
 
@@ -1592,6 +1602,40 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(contactShare);
 
     [self.delegate didTapShowAddToContactUIForContactShare:contactShare];
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView *)textView
+    shouldInteractWithURL:(NSURL *)url
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction
+{
+    return [self shouldInteractWithURL:url];
+}
+
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)url inRange:(NSRange)characterRange
+{
+    return [self shouldInteractWithURL:url];
+}
+
+- (BOOL)shouldInteractWithURL:(NSURL *)url
+{
+    if (![self.tsAccountManager isRegistered]) {
+        return YES;
+    }
+    if (![StickerPackInfo isStickerPackShareUrl:url]) {
+        return YES;
+    }
+    StickerPackInfo *_Nullable stickerPackInfo = [StickerPackInfo parseStickerPackShareUrl:url];
+    if (stickerPackInfo == nil) {
+        OWSFailDebug(@"Invalid URL: %@", url);
+        return YES;
+    }
+
+    [self.delegate didTapStickerPack:stickerPackInfo];
+
+    return NO;
 }
 
 @end
