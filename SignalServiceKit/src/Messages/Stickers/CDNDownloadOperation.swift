@@ -17,6 +17,8 @@ class CDNDownloadOperation: OWSOperation {
 
     private var task: URLSessionDownloadTask?
 
+    private var tempFilePath: String?
+
     public override init() {
         super.init()
 
@@ -25,6 +27,12 @@ class CDNDownloadOperation: OWSOperation {
 
     deinit {
         task?.cancel()
+
+        if let tempFilePath = tempFilePath {
+            DispatchQueue.global(qos: .background).async {
+                OWSFileSystem.deleteFileIfExists(tempFilePath)
+            }
+        }
     }
 
     let kMaxStickerDownloadSize: UInt = 100 * 1000
@@ -63,6 +71,7 @@ class CDNDownloadOperation: OWSOperation {
 
         let tempDirPath = OWSTemporaryDirectoryAccessibleAfterFirstAuth()
         let tempFilePath = (tempDirPath as NSString).appendingPathComponent(UUID().uuidString)
+        self.tempFilePath = tempFilePath
         let tempFileURL = URL(fileURLWithPath: tempFilePath)
 
         var hasCheckedContentLength = false
