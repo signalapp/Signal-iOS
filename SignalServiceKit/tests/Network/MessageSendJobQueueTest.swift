@@ -31,7 +31,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let jobQueue = MessageSenderJobQueue()
         jobQueue.setup()
-        self.yapWrite { transaction in
+        self.write { transaction in
             jobQueue.add(message: message, transaction: transaction)
         }
 
@@ -46,7 +46,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let jobQueue = MessageSenderJobQueue()
 
-        self.yapWrite { transaction in
+        self.write { transaction in
             jobQueue.add(message: message, transaction: transaction)
         }
 
@@ -65,7 +65,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let message3: TSOutgoingMessage = OutgoingMessageFactory().create()
 
         let jobQueue = MessageSenderJobQueue()
-        self.yapWrite { transaction in
+        self.write { transaction in
             jobQueue.add(message: message1, transaction: transaction)
             jobQueue.add(message: message2, transaction: transaction)
             jobQueue.add(message: message3, transaction: transaction)
@@ -98,7 +98,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let message = OutgoingMessageFactory().buildDeliveryReceipt()
         let expectation = sentExpectation(message: message)
-        self.yapWrite { transaction in
+        self.write { transaction in
             jobQueue.add(message: message, transaction: transaction)
         }
 
@@ -109,14 +109,14 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let message: TSOutgoingMessage = OutgoingMessageFactory().create()
 
         let jobQueue = MessageSenderJobQueue()
-        self.yapWrite { transaction in
+        self.write { transaction in
             jobQueue.add(message: message, transaction: transaction)
         }
 
         let finder = AnyJobRecordFinder()
         var readyRecords: [SSKJobRecord] = []
-        self.yapRead { transaction in
-            readyRecords = finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead)
+        self.read { transaction in
+            readyRecords = finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction)
         }
         XCTAssertEqual(1, readyRecords.count)
 
@@ -134,8 +134,12 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         jobQueue.setup()
         self.wait(for: [expectation], timeout: 0.1)
 
-        self.yapWrite { transaction in
-            jobRecord.reload(with: transaction)
+        self.read { transaction in
+            guard let transitional_yapReadTransaction = transaction.transitional_yapReadTransaction else {
+                XCTFail("GRDB TODO")
+                return
+            }
+            jobRecord.reload(with: transitional_yapReadTransaction)
         }
 
         XCTAssertEqual(1, jobRecord.failureCount)
@@ -158,8 +162,12 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         }
 
         // Verify one retry left
-        self.yapWrite { transaction in
-            jobRecord.reload(with: transaction)
+        self.read { transaction in
+            guard let transitional_yapReadTransaction = transaction.transitional_yapReadTransaction else {
+                XCTFail("GRDB TODO")
+                return
+            }
+            jobRecord.reload(with: transitional_yapReadTransaction)
         }
         XCTAssertEqual(retryCount, jobRecord.failureCount)
         XCTAssertEqual(.running, jobRecord.status)
@@ -169,8 +177,12 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         XCTAssertNotNil(jobQueue.runAnyQueuedRetry())
         self.wait(for: [expectedFinalResend], timeout: 0.1)
 
-        self.yapWrite { transaction in
-            jobRecord.reload(with: transaction)
+        self.read { transaction in
+            guard let transitional_yapReadTransaction = transaction.transitional_yapReadTransaction else {
+                XCTFail("GRDB TODO")
+                return
+            }
+            jobRecord.reload(with: transitional_yapReadTransaction)
         }
 
         XCTAssertEqual(retryCount + 1, jobRecord.failureCount)
@@ -184,14 +196,14 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let message: TSOutgoingMessage = OutgoingMessageFactory().create()
 
         let jobQueue = MessageSenderJobQueue()
-        self.yapWrite { transaction in
+        self.write { transaction in
             jobQueue.add(message: message, transaction: transaction)
         }
 
         let finder = AnyJobRecordFinder()
         var readyRecords: [SSKJobRecord] = []
-        self.yapRead { transaction in
-            readyRecords = finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead)
+        self.read { transaction in
+            readyRecords = finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction)
         }
         XCTAssertEqual(1, readyRecords.count)
 
@@ -208,8 +220,12 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         jobQueue.setup()
         self.wait(for: [expectation], timeout: 0.1)
 
-        self.yapWrite { transaction in
-            jobRecord.reload(with: transaction)
+        self.read { transaction in
+            guard let transitional_yapReadTransaction = transaction.transitional_yapReadTransaction else {
+                XCTFail("GRDB TODO")
+                return
+            }
+            jobRecord.reload(with: transitional_yapReadTransaction)
         }
 
         XCTAssertEqual(1, jobRecord.failureCount)
