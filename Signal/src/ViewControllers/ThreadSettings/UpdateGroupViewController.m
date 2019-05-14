@@ -248,15 +248,17 @@ NS_ASSUME_NONNULL_BEGIN
     section.headerTitle = NSLocalizedString(
         @"EDIT_GROUP_MEMBERS_SECTION_TITLE", @"a title for the members section of the 'new/update group' view.");
 
-    [section addItem:[OWSTableItem
-                         disclosureItemWithText:NSLocalizedString(@"EDIT_GROUP_MEMBERS_ADD_MEMBER",
-                                                    @"Label for the cell that lets you add a new member to a group.")
-                                customRowHeight:UITableViewAutomaticDimension
-                                    actionBlock:^{
-                                        AddToGroupViewController *viewController = [AddToGroupViewController new];
-                                        viewController.addToGroupDelegate = weakSelf;
-                                        [weakSelf.navigationController pushViewController:viewController animated:YES];
-                                    }]];
+    [section
+        addItem:[OWSTableItem
+                     disclosureItemWithText:NSLocalizedString(@"EDIT_GROUP_MEMBERS_ADD_MEMBER",
+                                                @"Label for the cell that lets you add a new member to a group.")
+                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(UpdateGroupViewController, @"add_member")
+                            customRowHeight:UITableViewAutomaticDimension
+                                actionBlock:^{
+                                    AddToGroupViewController *viewController = [AddToGroupViewController new];
+                                    viewController.addToGroupDelegate = weakSelf;
+                                    [weakSelf.navigationController pushViewController:viewController animated:YES];
+                                }]];
 
     NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
     [memberRecipientIds removeObject:[contactsViewHelper localNumber]];

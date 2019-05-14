@@ -61,7 +61,39 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidAppear:animated];
 
     self.shouldAnimateBottomLayout = YES;
+
+#ifdef DEBUG
+    [self ensureNavbarAccessibilityIds];
+#endif
 }
+
+#ifdef DEBUG
+- (void)ensureNavbarAccessibilityIds
+{
+    UINavigationBar *_Nullable navigationBar = self.navigationController.navigationBar;
+    if (!navigationBar) {
+        return;
+    }
+    // There isn't a great way to assign accessibilityIdentifiers to default
+    // navbar buttons, e.g. the back button.  As a (DEBUG-only) hack, we
+    // assign accessibilityIds to any navbar controls which don't already have
+    // one.  This should offer a reliable way for automated scripts to find
+    // these controls.
+    //
+    // UINavigationBar often discards and rebuilds new contents, e.g. between
+    // presentations of the view, so we need to do this every time the view
+    // appears.  We don't do any checking for accessibilityIdentifier collisions
+    // so we're counting on the fact that navbar contents are short-lived.
+    __block int accessibilityIdCounter = 0;
+    [navigationBar traverseViewHierarchyWithVisitor:^(UIView *view) {
+        if ([view isKindOfClass:[UIControl class]] && view.accessibilityIdentifier == nil) {
+            // The view should probably be an instance of _UIButtonBarButton or _UIModernBarButton.
+            view.accessibilityIdentifier = [NSString stringWithFormat:@"navbar-%d", accessibilityIdCounter];
+            accessibilityIdCounter++;
+        }
+    }];
+}
+#endif
 
 - (void)viewDidDisappear:(BOOL)animated
 {

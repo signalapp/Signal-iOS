@@ -126,6 +126,14 @@ public extension UIView {
         layer.shadowOffset = offset
         layer.shadowColor = color
     }
+
+    class func accessibilityIdentifier(in container: NSObject, name: String) -> String {
+        return "\(type(of: container)).\(name)"
+    }
+
+    func setAccessibilityIdentifier(in container: NSObject, name: String) {
+        self.accessibilityIdentifier = UIView.accessibilityIdentifier(in: container, name: name)
+    }
 }
 
 // MARK: -
@@ -467,5 +475,19 @@ public extension UIImageView {
         let imageView = UIImageView()
         imageView.setTemplateImageName(imageName, tintColor: tintColor)
         return imageView
+    }
+}
+
+// MARK: -
+
+@objc
+public extension UISearchBar {
+    @objc
+    var textField: UITextField? {
+        guard let textField = self.value(forKey: "_searchField") as? UITextField else {
+            owsFailDebug("Couldn't find UITextField.")
+            return nil
+        }
+        return textField
     }
 }

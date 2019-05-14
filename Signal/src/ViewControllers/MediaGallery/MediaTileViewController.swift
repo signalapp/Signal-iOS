@@ -69,7 +69,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
     lazy var deleteButton: UIBarButtonItem = {
         let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash,
                                            target: self,
-                                           action: #selector(didPressDelete))
+                                           action: #selector(didPressDelete),
+                                           accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_button"))
         deleteButton.tintColor = Theme.darkThemeNavbarIconColor
 
         return deleteButton
@@ -520,12 +521,14 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
     func updateSelectButton() {
         if isInBatchSelectMode {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didCancelSelect))
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didCancelSelect),
+                                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "cancel_select_button"))
         } else {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("BUTTON_SELECT", comment: "Button text to enable batch selection mode"),
                                                                      style: .plain,
                                                                      target: self,
-                                                                     action: #selector(didTapSelect))
+                                                                     action: #selector(didTapSelect),
+                                                                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "select_button"))
         }
     }
 

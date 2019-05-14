@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSystemMessageCell.h"
@@ -24,6 +24,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
 @property (nonatomic) NSString *title;
 @property (nonatomic) SystemMessageActionBlock block;
+@property (nonatomic) NSString *accessibilityIdentifier;
 
 @end
 
@@ -31,11 +32,14 @@ typedef void (^SystemMessageActionBlock)(void);
 
 @implementation SystemMessageAction
 
-+ (SystemMessageAction *)actionWithTitle:(NSString *)title block:(SystemMessageActionBlock)block
++ (SystemMessageAction *)actionWithTitle:(NSString *)title
+                                   block:(SystemMessageActionBlock)block
+                 accessibilityIdentifier:(NSString *)accessibilityIdentifier
 {
     SystemMessageAction *action = [SystemMessageAction new];
     action.title = title;
     action.block = block;
+    action.accessibilityIdentifier = accessibilityIdentifier;
     return action;
 }
 
@@ -192,8 +196,10 @@ typedef void (^SystemMessageActionBlock)(void);
         UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
         self.button.titleLabel.font = buttonFont;
         self.button.hidden = NO;
+        self.button.accessibilityIdentifier = self.action.accessibilityIdentifier;
     } else {
         self.button.hidden = YES;
+        self.button.accessibilityIdentifier = nil;
     }
     CGSize buttonSize = [self.button sizeThatFits:CGSizeZero];
 
@@ -413,19 +419,23 @@ typedef void (^SystemMessageActionBlock)(void);
             return nil;
         case TSErrorMessageNonBlockingIdentityChange:
             return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
-                                    @"Label for button to verify a user's safety number.")
-                          block:^{
-                              [weakSelf.delegate tappedNonBlockingIdentityChangeForRecipientId:message.recipientId];
-                          }];
+                        actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
+                                            @"Label for button to verify a user's safety number.")
+                                  block:^{
+                                      [weakSelf.delegate
+                                          tappedNonBlockingIdentityChangeForRecipientId:message.recipientId];
+                                  }
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"verify_safety_number")];
         case TSErrorMessageWrongTrustedIdentityKey:
             return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
-                                    @"Label for button to verify a user's safety number.")
-                          block:^{
-                              [weakSelf.delegate
-                                  tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)message];
-                          }];
+                        actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
+                                            @"Label for button to verify a user's safety number.")
+                                  block:^{
+                                      [weakSelf.delegate
+                                          tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)
+                                                                                   message];
+                                  }
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"verify_safety_number")];
         case TSErrorMessageMissingKeyId:
         case TSErrorMessageNoSession:
             return nil;
@@ -433,7 +443,8 @@ typedef void (^SystemMessageActionBlock)(void);
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
                                                   block:^{
                                                       [weakSelf.delegate tappedCorruptedMessage:message];
-                                                  }];
+                                                  }
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reset_session")];
         case TSErrorMessageDuplicateMessage:
         case TSErrorMessageInvalidVersion:
             return nil;
@@ -444,7 +455,8 @@ typedef void (^SystemMessageActionBlock)(void);
             return [SystemMessageAction actionWithTitle:CommonStrings.retryButton
                                                   block:^{
                                                       [weakSelf.delegate resendGroupUpdateForErrorMessage:message];
-                                                  }];
+                                                  }
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"retry")];
     }
 
     OWSLogWarn(@"Unhandled tap for error message:%@", message);
@@ -480,19 +492,22 @@ typedef void (^SystemMessageActionBlock)(void);
         case TSInfoMessageTypeGroupQuit:
             return nil;
         case TSInfoMessageTypeDisappearingMessagesUpdate:
-            return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_TAP_TO_CHANGE",
-                                                            @"Label for button that opens conversation settings.")
-                                                  block:^{
-                                                      [weakSelf.delegate showConversationSettings];
-                                                  }];
+            return [SystemMessageAction
+                        actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_TAP_TO_CHANGE",
+                                            @"Label for button that opens conversation settings.")
+                                  block:^{
+                                      [weakSelf.delegate showConversationSettings];
+                                  }
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_conversation_settings")];
         case TSInfoMessageVerificationStateChange:
             return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
-                          block:^{
-                              [weakSelf.delegate
-                                  showFingerprintWithRecipientId:((OWSVerificationStateChangeMessage *)message)
-                                                                     .recipientId];
-                          }];
+                        actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
+                                  block:^{
+                                      [weakSelf.delegate
+                                          showFingerprintWithRecipientId:((OWSVerificationStateChangeMessage *)message)
+                                                                             .recipientId];
+                                  }
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_safety_number")];
     }
 
     OWSLogInfo(@"Unhandled tap for info message: %@", message);
@@ -513,14 +528,16 @@ typedef void (^SystemMessageActionBlock)(void);
                 [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALLBACK_BUTTON_TITLE", @"notification action")
                                                block:^{
                                                    [weakSelf.delegate handleCallTap:call];
-                                               }];
+                                               }
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")];
         case RPRecentCallTypeOutgoing:
         case RPRecentCallTypeOutgoingMissed:
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALL_AGAIN_BUTTON_TITLE",
                                                             @"Label for button that lets users call a contact again.")
                                                   block:^{
                                                       [weakSelf.delegate handleCallTap:call];
-                                                  }];
+                                                  }
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_again")];
         case RPRecentCallTypeOutgoingIncomplete:
         case RPRecentCallTypeIncomingIncomplete:
             return nil;
