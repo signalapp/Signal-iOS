@@ -210,18 +210,18 @@ class CDNDownloadOperation: OWSOperation {
     //
     // TODO: We could persist this state.
     private static let serialQueue = DispatchQueue(label: "org.signal.cdnDownloadOperation")
-    private var corruptDataKeys = Set<String>()
+    private static var corruptDataKeys = Set<String>()
 
     func markUrlPathAsCorrupt(_ urlPath: String) {
-        CDNDownloadOperation.serialQueue.sync {
-            corruptDataKeys.insert(urlPath)
+        _ = CDNDownloadOperation.serialQueue.sync {
+            CDNDownloadOperation.corruptDataKeys.insert(urlPath)
         }
     }
 
     func isCorrupt(urlPath: String) -> Bool {
         var result = false
         CDNDownloadOperation.serialQueue.sync {
-            result = corruptDataKeys.contains(urlPath)
+            result = CDNDownloadOperation.corruptDataKeys.contains(urlPath)
         }
         return result
     }
