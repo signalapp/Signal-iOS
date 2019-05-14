@@ -664,12 +664,12 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         destination:^(NSURL *targetPath, NSURLResponse *response) {
             return tempFileURL;
         }
-        completionHandler:^(NSURLResponse *response, NSURL *_Nullable filePath, NSError *_Nullable error) {
+        completionHandler:^(NSURLResponse *response, NSURL *_Nullable completionUrl, NSError *_Nullable error) {
             if (error) {
                 failureHandler(error);
                 return;
             }
-            if (![tempFileURL isEqual:filePath]) {
+            if (![tempFileURL isEqual:completionUrl]) {
                 OWSLogError(@"Unexpected temp file path.");
                 NSError *error = [OWSAttachmentDownloads buildError];
                 return failureHandler(error);
