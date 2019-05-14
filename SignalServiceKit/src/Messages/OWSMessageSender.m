@@ -1616,7 +1616,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSRaiseException(NoSessionForTransientMessageException, @"No session for transient message.");
     }
     
-    PreKeyBundle *_Nullable bundle = [[OWSPrimaryStorage sharedManager] getPreKeyBundleForContact:recipientId];
+    PreKeyBundle *_Nullable bundle = [storage getPreKeyBundleForContact:recipientId];
     __block NSException *_Nullable exception;
 
     /** Loki: Original code
@@ -1667,7 +1667,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
                 
                 // Loki: Discard the prekey bundle here since the session is initiated
-                [[OWSPrimaryStorage sharedManager] removePreKeyBundleForContact:recipientId];
+                [storage removePreKeyBundleForContact:recipientId transaction:transaction];
             } @catch (NSException *caughtException) {
                 exception = caughtException;
             }

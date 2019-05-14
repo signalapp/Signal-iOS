@@ -91,17 +91,17 @@
 }
 
 - (PreKeyBundle *_Nullable)getPreKeyBundleForContact:(NSString *)pubKey {
-    return [self.dbReadWriteConnection preKeyBundleForKey:pubKey inCollection:LokiPreKeyBundleCollection];
+    return [self.dbReadConnection preKeyBundleForKey:pubKey inCollection:LokiPreKeyBundleCollection];
 }
 
-- (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)pubKey {
-    [self.dbReadWriteConnection setObject:bundle
-                                   forKey:pubKey
-                             inCollection:LokiPreKeyBundleCollection];
+- (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    [transaction setObject:bundle
+                    forKey:pubKey
+              inCollection:LokiPreKeyBundleCollection];
 }
 
-- (void)removePreKeyBundleForContact:(NSString *)pubKey {
-    [self.dbReadWriteConnection removeObjectForKey:pubKey inCollection:LokiPreKeyBundleCollection];
+- (void)removePreKeyBundleForContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    [transaction removeObjectForKey:pubKey inCollection:LokiPreKeyBundleCollection];
 }
 
 @end

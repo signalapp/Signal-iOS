@@ -4,6 +4,7 @@
 
 #import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/PreKeyRecord.h>
+#import <AxolotlKit/PreKeyBundle.h>
 #import <AxolotlKit/SignedPrekeyRecord.h>
 #import <Curve25519Kit/Curve25519.h>
 
@@ -67,6 +68,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(collection.length > 0);
 
     return [self objectForKey:key inCollection:collection ofExpectedType:[PreKeyRecord class]];
+}
+
+- (nullable PreKeyBundle *)preKeyBundleForKey:(NSString *)key inCollection:(NSString *)collection
+{
+    return [self objectForKey:key inCollection:collection ofExpectedType:[PreKeyBundle class]];
 }
 
 - (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection

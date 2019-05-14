@@ -1,6 +1,7 @@
 #import "OWSPrimaryStorage.h"
 #import "PreKeyRecord.h"
 #import "PreKeyBundle.h"
+#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -49,16 +50,18 @@ NS_ASSUME_NONNULL_BEGIN
  Set the `PreKeyBundle` for the given contact.
 
  @param bundle The pre key bundle.
+ @param transaction A YapDatabaseReadWriteTransaction.
  @param pubKey The hex encoded public key of the contact.
  */
-- (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)pubKey;
+- (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
  Remove the `PreKeyBundle` for the given contact.
 
  @param pubKey The hex encoded public key of the contact.
+ @param transaction A YapDatabaseReadWriteTransaction.
  */
-- (void)removePreKeyBundleForContact:(NSString *)pubKey;
+- (void)removePreKeyBundleForContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

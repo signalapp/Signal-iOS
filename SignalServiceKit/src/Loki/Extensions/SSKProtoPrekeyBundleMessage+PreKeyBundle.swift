@@ -1,16 +1,7 @@
-
 @objc public extension SSKProtoPrekeyBundleMessage {
     
-    @objc public var preKeyBundle: PreKeyBundle? {
-        let registrationId = TSAccountManager.sharedInstance().getOrGenerateRegistrationId()
-        return PreKeyBundle(registrationId: Int32(registrationId),
-                            deviceId: Int32(deviceID),
-                            preKeyId: Int32(prekeyID),
-                            preKeyPublic: prekey,
-                            signedPreKeyPublic: signedKey,
-                            signedPreKeyId: Int32(signedKeyID),
-                            signedPreKeySignature: signature,
-                            identityKey: identityKey)
+    private var accountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
     }
     
     @objc public class func builder(fromPreKeyBundle preKeyBundle: PreKeyBundle) -> SSKProtoPrekeyBundleMessageBuilder {
@@ -24,5 +15,17 @@
         builder.setSignature(preKeyBundle.signedPreKeySignature)
         
         return builder
+    }
+    
+    @objc public func preKeyBundle(withTransaction transaction: YapDatabaseReadWriteTransaction) -> PreKeyBundle? {
+        let registrationId = accountManager.getOrGenerateRegistrationId(transaction)
+        return PreKeyBundle(registrationId: Int32(registrationId),
+                            deviceId: Int32(deviceID),
+                            preKeyId: Int32(prekeyID),
+                            preKeyPublic: prekey,
+                            signedPreKeyPublic: signedKey,
+                            signedPreKeyId: Int32(signedKeyID),
+                            signedPreKeySignature: signature,
+                            identityKey: identityKey)
     }
 }
