@@ -22,8 +22,22 @@ public class SDSDatabaseStorage: NSObject {
 
     lazy var yapStorage = type(of: self).createYapStorage()
 
+    private var _grdbStorage: GRDBDatabaseStorageAdapter?
+
     @objc
-    public lazy var grdbStorage = createGrdbStorage()
+    public var grdbStorage: GRDBDatabaseStorageAdapter {
+        if let storage = _grdbStorage {
+            return storage
+        } else {
+            let storage = createGrdbStorage()
+            _grdbStorage = storage
+            return storage
+        }
+    }
+
+    internal func clearGRDBStorage() {
+        _grdbStorage = nil
+    }
 
     @objc
     override init() {
