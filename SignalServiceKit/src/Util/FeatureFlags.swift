@@ -60,7 +60,7 @@ public class FeatureFlags: NSObject {
     public static let stickerSearch = false
 
     @objc
-    public static let stickerPackSharing = false
+    public static let stickerPackSharing = true
 
     @objc
     public static let stickerPackOrdering = false
