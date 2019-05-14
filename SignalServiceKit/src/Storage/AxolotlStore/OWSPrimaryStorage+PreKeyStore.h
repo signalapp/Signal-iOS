@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSPrimaryStorage (PreKeyStore) <PreKeyStore>
 
 - (NSArray<PreKeyRecord *> *)generatePreKeyRecords;
-- (NSArray<PreKeyRecord *> *)generatePreKeyRecords:(int)amount;
+- (NSArray<PreKeyRecord *> *)generatePreKeyRecords:(NSUInteger)batchSize;
 - (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords NS_SWIFT_NAME(storePreKeyRecords(_:));
 
 @end

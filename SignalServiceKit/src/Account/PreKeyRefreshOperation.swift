@@ -52,7 +52,7 @@ public class RefreshPreKeysOperation: OWSOperation {
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
             TSPreKeyManager.clearSignedPreKeyRecords()
             
-            Logger.debug("done")
+            Logger.debug("[PreKeyRefreshOperation] done")
             self.reportSuccess()
         }
         
