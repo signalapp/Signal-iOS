@@ -88,18 +88,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 // Loki: TODO We may change this?
 + (TSOutgoingMessage *)enqueueFriendRequestAcceptMessageInThread:(TSThread *)thread
 {
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                  inThread:thread
-                                               messageBody:@""
-                                             attachmentIds:[NSMutableArray new]
-                                          expiresInSeconds:0
-                                           expireStartedAt:0
-                                            isVoiceMessage:NO
-                                          groupMetaMessage:TSGroupMetaMessageUnspecified
-                                             quotedMessage:nil
-                                              contactShare:nil
-                                               linkPreview:nil];
+    TSOutgoingMessage *message = [TSOutgoingMessage emptyOutgoingMessageInThread:thread];
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
