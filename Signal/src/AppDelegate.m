@@ -715,6 +715,8 @@ static NSTimeInterval launchStartedAt;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
+            
+            // Loki: Fetch immediately
             [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
             
             // Loki: Start poller
@@ -1025,10 +1027,6 @@ static NSTimeInterval launchStartedAt;
         OWSLogInfo(@"Ignoring remote notification; app not ready.");
         return;
     }
-
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
-    }];
 }
 
 - (void)application:(UIApplication *)application
@@ -1044,13 +1042,6 @@ static NSTimeInterval launchStartedAt;
         OWSLogInfo(@"Ignoring remote notification; app not ready.");
         return;
     }
-
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            completionHandler(UIBackgroundFetchResultNewData);
-        });
-    }];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
@@ -1220,11 +1211,6 @@ static NSTimeInterval launchStartedAt;
 
     if ([self.tsAccountManager isRegistered]) {
         OWSLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
-
-        // Fetch messages as soon as possible after launching. In particular, when
-        // launching from the background, without this, we end up waiting some extra
-        // seconds before receiving an actionable push notification.
-        [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
 
         // This should happen at any launch, background or foreground.
         __unused AnyPromise *pushTokenpromise =
