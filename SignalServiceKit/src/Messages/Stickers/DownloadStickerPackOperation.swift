@@ -4,7 +4,7 @@
 
 import Foundation
 
-class DownloadStickerPackOperation: OWSOperation {
+class DownloadStickerPackOperation: CDNDownloadOperation {
 
     private let stickerPackInfo: StickerPackInfo
     private let success: (StickerPack) -> Void
@@ -21,14 +21,6 @@ class DownloadStickerPackOperation: OWSOperation {
         self.failure = failure
 
         super.init()
-
-        self.remainingRetries = 4
-    }
-
-    // MARK: Dependencies
-
-    private var cdnSessionManager: AFHTTPSessionManager {
-        return OWSSignalService.sharedInstance().cdnSessionManager
     }
 
     override public func run() {
@@ -44,48 +36,34 @@ class DownloadStickerPackOperation: OWSOperation {
 
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
         let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)/manifest.proto"
-        cdnSessionManager.get(urlPath,
-                              parameters: nil,
-                              progress: { (_) in
-                                // Do nothing.
-        },
-                              success: { [weak self] (_, response) in
-                                guard let self = self else {
-                                    return
-                                }
-                                guard let data = response as? Data else {
-                                    owsFailDebug("Unexpected response: \(type(of: response))")
-                                    return
-                                }
 
-                                do {
-                                    let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerPackInfo.packKey)
+        tryToDownload(urlPath: urlPath)
+            .done(on: DispatchQueue.global()) { [weak self] data in
+                guard let self = self else {
+                    return
+                }
 
-                                    let stickerPack = try self.parseStickerPackManifest(stickerPackInfo: self.stickerPackInfo,
-                                                                                        manifestData: plaintext)
+                do {
+                    let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerPackInfo.packKey)
 
-                                    self.success(stickerPack)
-                                    self.reportSuccess()
-                                } catch let error as NSError {
-                                    owsFailDebug("Decryption failed: \(error)")
+                    let stickerPack = try self.parseStickerPackManifest(stickerPackInfo: self.stickerPackInfo,
+                                                                        manifestData: plaintext)
 
-                                    // Fail immediately; do not retry.
-                                    error.isRetryable = false
-                                    return self.reportError(error)
-                                }
-            },
-                              failure: { [weak self] (_, error) in
-                                guard let self = self else {
-                                    return
-                                }
-                                Logger.error("Download failed: \(error)")
+                    self.success(stickerPack)
+                    self.reportSuccess()
+                } catch let error as NSError {
+                    owsFailDebug("Decryption failed: \(error)")
 
-                                let errorCopy = error as NSError
-
-                                errorCopy.isRetryable = !errorCopy.hasFatalResponseCode()
-
-                                self.reportError(errorCopy)
-        })
+                    // Fail immediately; do not retry.
+                    error.isRetryable = false
+                    return self.reportError(error)
+                }
+            }.catch(on: DispatchQueue.global()) { [weak self] error in
+                guard let self = self else {
+                    return
+                }
+                return self.reportError(error)
+            }.retainUntilComplete()
     }
 
     private func parseStickerPackManifest(stickerPackInfo: StickerPackInfo,
@@ -138,21 +116,5 @@ class DownloadStickerPackOperation: OWSOperation {
         Logger.error("Download exhausted retries: \(error)")
 
         failure(error)
-    }
-
-    override public func retryInterval() -> TimeInterval {
-        // Arbitrary backoff factor...
-        // With backOffFactor of 1.9
-        // try  1 delay:  0.00s
-        // try  2 delay:  0.19s
-        // ...
-        // try  5 delay:  1.30s
-        // ...
-        // try 11 delay: 61.31s
-        let backoffFactor = 1.9
-        let maxBackoff = kHourInterval
-
-        let seconds = 0.1 * min(maxBackoff, pow(backoffFactor, Double(self.errorCount)))
-        return seconds
     }
 }
