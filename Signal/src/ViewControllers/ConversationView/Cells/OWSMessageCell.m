@@ -371,7 +371,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (self.isIncomingFriendRequest) {
-        cellSize.height += 98; // TODO: Measure dynamically
+        cellSize.height += [FriendRequestView calculateHeightWithMessage:(TSIncomingMessage *)self.viewItem.interaction conversationStyle:self.conversationStyle];
     }
     
     cellSize = CGSizeCeil(cellSize);
