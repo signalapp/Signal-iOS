@@ -701,13 +701,14 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 - (void)updateFriendRequestStatusWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSLogInfo(@"[Loki] updateFriendRequestStatus");
-    NSUInteger numberOfInteractions = self.numberOfInteractions;
-    if (numberOfInteractions == 0) {
+    YapDatabaseViewTransaction *interactions = [transaction ext:TSMessageDatabaseViewExtensionName];
+    NSUInteger interactionCount = [interactions numberOfItemsInGroup:self.uniqueId];
+    if (interactionCount == 0) {
         _friendRequestStatus = TSThreadFriendRequestStatusNone;
-    } else if (numberOfInteractions == 1) {
-        YapDatabaseViewTransaction *interactions = [transaction ext:TSMessageDatabaseViewExtensionName];
+    } else if (interactionCount == 1) {
         TSInteraction *interaction = [interactions firstObjectInGroup:self.uniqueId];
-        _friendRequestStatus = interaction.interactionType == OWSInteractionType_IncomingMessage ? TSThreadFriendRequestStatusRequestReceived : TSThreadFriendRequestStatusRequestSent;
+        BOOL isIncomingMessage = interaction.interactionType == OWSInteractionType_IncomingMessage;
+        _friendRequestStatus = isIncomingMessage ? TSThreadFriendRequestStatusRequestReceived : TSThreadFriendRequestStatusRequestSent;
     } else {
         _friendRequestStatus = TSThreadFriendRequestStatusFriends;
     }
