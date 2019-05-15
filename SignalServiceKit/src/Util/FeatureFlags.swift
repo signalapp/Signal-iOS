@@ -64,4 +64,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let stickerPackOrdering = false
+
+    @objc
+    public static let strictSyncTranscriptTimestamps = false
 }

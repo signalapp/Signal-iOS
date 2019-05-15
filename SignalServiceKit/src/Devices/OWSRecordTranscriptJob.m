@@ -89,6 +89,26 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    if (transcript.timestamp < 1) {
+        OWSFailDebug(@"Transcript is missing timestamp.");
+        // This transcript is invalid, discard it.
+        return;
+    } else if (transcript.dataMessageTimestamp < 1) {
+        OWSLogError(@"Transcript is missing data message timestamp.");
+        // Legacy desktop doesn't supply data message timestamp;
+        // ignore until desktop are in production.
+        if (SSKFeatureFlags.strictSyncTranscriptTimestamps) {
+            OWSFailDebug(@"Transcript timestamps do not match, discarding message.");
+            return;
+        }
+    } else if (transcript.timestamp != transcript.dataMessageTimestamp) {
+        OWSLogVerbose(
+            @"Transcript timestamps do not match: %llu != %llu", transcript.timestamp, transcript.dataMessageTimestamp);
+        OWSFailDebug(@"Transcript timestamps do not match, discarding message.");
+        // This transcript is invalid, discard it.
+        return;
+    }
+
     // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
     TSOutgoingMessage *outgoingMessage =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:transcript.timestamp
