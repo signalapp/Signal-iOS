@@ -16,12 +16,12 @@ public class AppPreferences: NSObject {
     private static let hasDimissedFirstConversationCueKey = "hasDimissedFirstConversationCue"
 
     @objc
-    public static var hasDimissedFirstConversationCue: Bool {
-        get {
-            return store.getBool(hasDimissedFirstConversationCueKey)
-        }
-        set {
-            store.setBool(newValue, key: hasDimissedFirstConversationCueKey)
-        }
+    public static func hasDimissedFirstConversationCue(transaction: SDSAnyReadTransaction) -> Bool {
+        return store.getBool(hasDimissedFirstConversationCueKey, transaction: transaction)
+    }
+
+    @objc
+    public static func setHasDimissedFirstConversationCue(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        store.setBool(newValue, key: hasDimissedFirstConversationCueKey, transaction: transaction)
     }
 }

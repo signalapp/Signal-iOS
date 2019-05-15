@@ -477,7 +477,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     OWSLogInfo(@"");
 
-    AppPreferences.hasDimissedFirstConversationCue = YES;
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [AppPreferences setHasDimissedFirstConversationCue:YES transaction:transaction];
+    }];
 
     [self updateViewState];
 }
@@ -1636,9 +1638,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (BOOL)shouldShowFirstConversationCue
 {
+    __block BOOL hasDimissedFirstConversationCue;
+    __block BOOL hasSavedThread;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        hasDimissedFirstConversationCue = [AppPreferences hasDimissedFirstConversationCueWithTransaction:transaction];
+        hasSavedThread = [SSKPreferences hasSavedThreadWithTransaction:transaction];
+    }];
+
     return (self.homeViewMode == HomeViewMode_Inbox && self.numberOfInboxThreads == 0
-        && self.numberOfArchivedThreads == 0 && !AppPreferences.hasDimissedFirstConversationCue
-        && !SSKPreferences.hasSavedThread);
+        && self.numberOfArchivedThreads == 0 && !hasDimissedFirstConversationCue && !hasSavedThread);
 }
 
 // We want to delay asking for a review until an opportune time.

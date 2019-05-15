@@ -54,6 +54,10 @@ public class StickerManager: NSObject {
         return SDSDatabaseStorage.shared
     }
 
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
     private static var primaryStorage: OWSPrimaryStorage {
         return OWSPrimaryStorage.shared()
     }
@@ -870,7 +874,10 @@ public class StickerManager: NSObject {
     }
 
     private func updateIsStickerSendEnabled() {
-        let value = StickerManager.store.getBool(kHasReceivedStickersKey, defaultValue: false)
+        let value = databaseStorage.readReturningResult { transaction in
+            return StickerManager.store.getBool(self.kHasReceivedStickersKey, defaultValue: false, transaction: transaction)
+        }
+
         StickerManager.serialQueue.sync {
             isStickerSendEnabledCached = value
         }
@@ -1068,7 +1075,7 @@ extension SDSKeyValueStore {
                            maxCount: Int? = nil) {
         // Prepend value to ensure descending order of recency.
         var stringSet = [value]
-        if let storedValue = getObject(key) as? [String] {
+        if let storedValue = getObject(key, transaction: transaction) as? [String] {
             stringSet += storedValue.filter {
                 $0 != value
             }
@@ -1083,7 +1090,7 @@ extension SDSKeyValueStore {
                              value: String,
                              transaction: SDSAnyWriteTransaction) {
         var stringSet = [String]()
-        if let storedValue = getObject(key) as? [String] {
+        if let storedValue = getObject(key, transaction: transaction) as? [String] {
             guard storedValue.contains(value) else {
                 // No work to do.
                 return

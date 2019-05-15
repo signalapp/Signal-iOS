@@ -14,10 +14,6 @@ import SignalCoreKit
 @objc
 public class SDSKeyValueStore: NSObject {
 
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     // By default, all reads/writes use this collection.
     public let collection: String
 
@@ -42,17 +38,17 @@ public class SDSKeyValueStore: NSObject {
     // MARK: - String
 
     @objc
-    public func getString(_ key: String) -> String? {
-        return read(key)
+    public func getString(_ key: String, transaction: SDSAnyReadTransaction) -> String? {
+        return read(key, transaction: transaction)
     }
 
     @objc
-    public func setString(_ value: String?, key: String) {
+    public func setString(_ value: String?, key: String, transaction: SDSAnyWriteTransaction) {
         guard let value = value else {
-            write(nil, forKey: key)
+            write(nil, forKey: key, transaction: transaction)
             return
         }
-        write(value as NSString, forKey: key)
+        write(value as NSString, forKey: key, transaction: transaction)
     }
 
     // MARK: - Bool
@@ -67,53 +63,27 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
-    public func getBool(_ key: String, defaultValue: Bool = false) -> Bool {
-        return databaseStorage.readReturningResult { (transaction) in
-            return self.getBool(key, defaultValue: defaultValue, transaction: transaction)
-        } ?? defaultValue
-    }
-
-    @objc
-    public func setBool(_ value: Bool, key: String) {
-        databaseStorage.write { (transaction) in
-            self.setBool(value, key: key, transaction: transaction)
-        }
-    }
-
-    @objc
     public func setBool(_ value: Bool, key: String, transaction: SDSAnyWriteTransaction) {
         write(NSNumber(booleanLiteral: value), forKey: key, transaction: transaction)
     }
 
     // MARK: - Data
 
-    public func getData(_ key: String) -> Data? {
-        return readData(key)
+    @objc
+    public func getData(_ key: String, transaction: SDSAnyReadTransaction) -> Data? {
+        return readData(key, transaction: transaction)
     }
 
     @objc
-    public func setData(_ value: Data?, key: String) {
-        writeData(value, forKey: key)
+    public func setData(_ value: Data?, key: String, transaction: SDSAnyWriteTransaction) {
+        writeData(value, forKey: key, transaction: transaction)
     }
 
     // MARK: - Object
 
     @objc
-    public func getObject(_ key: String) -> Any? {
-        return read(key)
-    }
-
-    @objc
-    public func getObject(_ key: String,
-                          transaction: SDSAnyReadTransaction) -> Any? {
+    public func getObject(_ key: String, transaction: SDSAnyReadTransaction) -> Any? {
         return read(key, transaction: transaction)
-    }
-
-    @objc
-    public func setObject(_ anyValue: Any?, key: String) {
-        databaseStorage.write { (transaction) in
-            self.setObject(anyValue, key: key, transaction: transaction)
-        }
     }
 
     @objc
@@ -131,13 +101,6 @@ public class SDSKeyValueStore: NSObject {
     }
 
     // MARK: - Debugging
-
-    @objc
-    public func allKeys() -> [String] {
-        return databaseStorage.readReturningResult { (transaction) in
-            return self.allKeys(transaction: transaction)
-        }
-    }
 
     @objc
     public func allKeys(transaction: SDSAnyReadTransaction) -> [String] {
@@ -158,12 +121,6 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: - Internal Methods
 
-    private func read<T>(_ key: String) -> T? {
-        return databaseStorage.readReturningResult { (transaction) in
-            return self.read(key, transaction: transaction)
-        }
-    }
-
     private func read<T>(_ key: String, transaction: SDSAnyReadTransaction) -> T? {
         // YDB values are serialized by YDB.
         // GRDB values are serialized to data by this class.
@@ -178,28 +135,20 @@ public class SDSKeyValueStore: NSObject {
             }
             return object
         case .grdbRead:
-            break
-        }
-
-        guard let encoded = readData(key, transaction: transaction) else {
-            return nil
-        }
-
-        do {
-            guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
-                owsFailDebug("Could not decode value.")
+            guard let encoded = readData(key, transaction: transaction) else {
                 return nil
             }
-            return decoded
-        } catch {
-            owsFailDebug("Decode failed.")
-            return nil
-        }
-    }
 
-    private func readData(_ key: String) -> Data? {
-        return databaseStorage.readReturningResult { (transaction) in
-            return self.readData(key, transaction: transaction)
+            do {
+                guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
+                    owsFailDebug("Could not decode value.")
+                    return nil
+                }
+                return decoded
+            } catch {
+                owsFailDebug("Decode failed.")
+                return nil
+            }
         }
     }
 
@@ -232,12 +181,6 @@ public class SDSKeyValueStore: NSObject {
         }
     }
 
-    private func write(_ value: NSCoding?, forKey key: String) {
-        databaseStorage.write { (transaction) in
-            self.write(value, forKey: key, transaction: transaction)
-        }
-    }
-
     // TODO: Codable? NSCoding? Other serialization?
     private func write(_ value: NSCoding?, forKey key: String, transaction: SDSAnyWriteTransaction) {
         // YDB values are serialized by YDB.
@@ -249,22 +192,13 @@ public class SDSKeyValueStore: NSObject {
             } else {
                 ydbTransaction.removeObject(forKey: key, inCollection: collection)
             }
-            return
         case .grdbWrite:
-            break
-        }
-
-        if let value = value {
-            let encoded = NSKeyedArchiver.archivedData(withRootObject: value)
-            writeData(encoded, forKey: key, transaction: transaction)
-        } else {
-            writeData(nil, forKey: key, transaction: transaction)
-        }
-    }
-
-    private func writeData(_ data: Data?, forKey key: String) {
-        databaseStorage.write { (transaction) in
-            self.writeData(data, forKey: key, transaction: transaction)
+            if let value = value {
+                let encoded = NSKeyedArchiver.archivedData(withRootObject: value)
+                writeData(encoded, forKey: key, transaction: transaction)
+            } else {
+                writeData(nil, forKey: key, transaction: transaction)
+            }
         }
     }
 
