@@ -2574,3 +2574,5 @@
 "%@ sent you a friend request" = "%@ sent you a friend request";
 "Accept" = "Accept";
 "Decline" = "Decline";
+"Pending Friend Request..." = "Pending Friend Request...";
+"New Message" = "New Message";

@@ -51,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)messageText;
 - (void)setMessageText:(NSString *_Nullable)value animated:(BOOL)isAnimated;
+- (void)setPlaceholderText:(NSString *)placeholderText;
 - (void)clearTextMessageAnimated:(BOOL)isAnimated;
 - (void)toggleDefaultKeyboard;
 

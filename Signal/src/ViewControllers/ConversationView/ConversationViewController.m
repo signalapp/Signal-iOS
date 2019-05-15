@@ -627,6 +627,7 @@ typedef enum : NSUInteger {
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
+    [self updateInputToolbar];
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
@@ -1584,11 +1585,13 @@ typedef enum : NSUInteger {
 
 #pragma mark - Updating
 
-- (void)updateIsInputToolbarInteractionEnabled {
+- (void)updateInputToolbar {
     TSThreadFriendRequestStatus friendRequestStatus = [self.thread getFriendRequestStatus];
     BOOL isFriendRequest = friendRequestStatus == TSThreadFriendRequestStatusPendingSend || friendRequestStatus == TSThreadFriendRequestStatusRequestSent
         || friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
     [self.inputToolbar setUserInteractionEnabled:!isFriendRequest];
+    NSString *placeholderText = isFriendRequest ? NSLocalizedString(@"Pending Friend Request...", "") : NSLocalizedString(@"New Message", "");
+    [self.inputToolbar setPlaceholderText:placeholderText];
 }
 
 #pragma mark - Identity
@@ -4891,7 +4894,7 @@ typedef enum : NSUInteger {
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
     [self dismissMenuActionsIfNecessary];
-    [self updateIsInputToolbarInteractionEnabled];
+    [self updateInputToolbar];
 
     if (self.isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {

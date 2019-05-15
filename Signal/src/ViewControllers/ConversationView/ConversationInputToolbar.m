@@ -313,6 +313,11 @@ const CGFloat kMaxTextViewHeight = 98;
     [self ensureShouldShowVoiceMemoButtonAnimated:isAnimated doLayout:YES];
 }
 
+- (void)setPlaceholderText:(NSString *)placeholderText
+{
+    [self.inputTextView setPlaceholderText:placeholderText];
+}
+
 - (void)ensureTextViewHeight
 {
     [self updateHeightWithTextView:self.inputTextView];

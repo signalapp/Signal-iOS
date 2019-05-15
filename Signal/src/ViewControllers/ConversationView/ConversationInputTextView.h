@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) id<ConversationTextViewToolbarDelegate> textViewToolbarDelegate;
 
 - (NSString *)trimmedText;
+- (void)setPlaceholderText:(NSString *)placeholderText;
 
 @end
 

@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.text = nil;
 
         self.placeholderView = [UILabel new];
-        self.placeholderView.text = NSLocalizedString(@"new_message", @"");
+        self.placeholderView.text = NSLocalizedString(@"New Message", @"");
         self.placeholderView.textColor = Theme.placeholderColor;
         self.placeholderView.userInteractionEnabled = NO;
         [self addSubview:self.placeholderView];
@@ -174,6 +174,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)trimmedText
 {
     return [self.text ows_stripped];
+}
+
+- (void)setPlaceholderText:(NSString *)placeholderText
+{
+    [self.placeholderView setText:placeholderText];
 }
 
 #pragma mark - UITextViewDelegate
