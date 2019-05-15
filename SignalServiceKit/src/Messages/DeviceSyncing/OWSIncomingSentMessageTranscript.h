@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto
                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-@property (nonatomic, readonly) SSKProtoDataMessage *dataMessage;
 @property (nonatomic, readonly) NSString *recipientId;
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t dataMessageTimestamp;

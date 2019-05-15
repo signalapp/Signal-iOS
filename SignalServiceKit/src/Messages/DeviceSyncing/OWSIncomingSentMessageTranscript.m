@@ -16,6 +16,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSIncomingSentMessageTranscript ()
+
+@property (nonatomic, readonly) SSKProtoDataMessage *dataMessage;
+
+@end
+
+#pragma mark -
+
 @implementation OWSIncomingSentMessageTranscript
 
 - (instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto
