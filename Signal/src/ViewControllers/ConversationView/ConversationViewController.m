@@ -627,7 +627,6 @@ typedef enum : NSUInteger {
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
-    [self updateIsInputToolbarInteractionEnabled];
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
@@ -1586,10 +1585,10 @@ typedef enum : NSUInteger {
 #pragma mark - Updating
 
 - (void)updateIsInputToolbarInteractionEnabled {
-    // TODO: Listen to friend request updates and call this accordingly
-    /* TODO: Disabled temporarily
-    [self.inputToolbar setUserInteractionEnabled:!self.thread.isPendingFriendRequest];
-     */
+    TSThreadFriendRequestStatus friendRequestStatus = [self.thread getFriendRequestStatus];
+    BOOL isFriendRequest = friendRequestStatus == TSThreadFriendRequestStatusPendingSend || friendRequestStatus == TSThreadFriendRequestStatusRequestSent
+        || friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
+    [self.inputToolbar setUserInteractionEnabled:!isFriendRequest];
 }
 
 #pragma mark - Identity
@@ -4892,6 +4891,7 @@ typedef enum : NSUInteger {
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
     [self dismissMenuActionsIfNecessary];
+    [self updateIsInputToolbarInteractionEnabled];
 
     if (self.isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
