@@ -611,8 +611,11 @@
 /* Label for button to mute a thread for a minute. */
 "CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mute for one minute";
 
-/* Label for button to mute a thread for a week. */
+/* Label for button to mute a thread for a week.*/
 "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Mute for one week";
+
+/* Label for button to mute a thread for a month. */
+"CONVERSATION_SETTINGS_MUTE_ONE_MONTH_ACTION" = "Mute for one month";
 
 /* Label for button to mute a thread for a year. */
 "CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
@@ -2345,25 +2348,25 @@
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ days";
 
-/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@ hours";
 
-/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ minutes";
 
-/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5min' not '5 min'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@min";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ seconds";
 
-/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
@@ -2381,8 +2384,26 @@
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ weeks";
 
-/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+
+/* {{1 month}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 month}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_MONTH" = "%@ month";
+
+/* {{number of months}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 months}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MONTHS" = "%@ months";
+
+/* Label text below navbar button, embeds {{number of months}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5mth' not '5 mth'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MONTHS_SHORT_FORMAT" = "%@mth";
+
+/* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
+
+/* {{number of years}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_YEARS" = "%@ years";
+
+/* Label text below navbar button, embeds {{number of years}}. Must be very short, like 1 to 3 characters. If two units of time use the same letter, use more than one letter on BOTH of those units to keep a clear distinction. (e.g. 'min' and 'mth') The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5y' not '5 y'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_YEARS_SHORT_FORMAT" = "%@y";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Cancel";
