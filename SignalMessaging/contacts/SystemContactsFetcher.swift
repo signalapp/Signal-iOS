@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -123,6 +123,11 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
                 result = contact
             }
         } catch let error as NSError {
+            if error.domain == CNErrorDomain && error.code == CNError.communicationError.rawValue {
+                // These errors are transient and can be safely ignored.
+                Logger.error("Communication error: \(error)")
+                return nil
+            }
             owsFailDebug("Failed to fetch contact with error:\(error)")
             return nil
         }
