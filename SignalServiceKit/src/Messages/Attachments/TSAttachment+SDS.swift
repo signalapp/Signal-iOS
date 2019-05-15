@@ -546,19 +546,31 @@ extension TSAttachment {
 
 @objc
 public class TSAttachmentCursor: NSObject {
-    private let cursor: SDSCursor<TSAttachment>
+    private let cursor: RecordCursor<AttachmentRecord>?
 
-    init(cursor: SDSCursor<TSAttachment>) {
+    init(cursor: RecordCursor<AttachmentRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> TSAttachment? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try TSAttachment.fromRecord(record)
     }
 
     public func all() throws -> [TSAttachment] {
-        return try cursor.all()
+        var result = [TSAttachment]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -575,9 +587,14 @@ public class TSAttachmentCursor: NSObject {
 @objc
 extension TSAttachment {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSAttachmentCursor {
-        return TSAttachmentCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: TSAttachmentSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: TSAttachmentSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try AttachmentRecord.fetchCursor(database)
+            return TSAttachmentCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return TSAttachmentCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -644,14 +661,21 @@ extension TSAttachment {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return TSAttachmentCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return TSAttachmentCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: TSAttachmentSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try AttachmentRecord.fetchCursor(statement, arguments: statementArguments)
+            return TSAttachmentCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return TSAttachmentCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

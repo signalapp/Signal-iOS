@@ -219,19 +219,31 @@ extension SignalRecipient {
 
 @objc
 public class SignalRecipientCursor: NSObject {
-    private let cursor: SDSCursor<SignalRecipient>
+    private let cursor: RecordCursor<SignalRecipientRecord>?
 
-    init(cursor: SDSCursor<SignalRecipient>) {
+    init(cursor: RecordCursor<SignalRecipientRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> SignalRecipient? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try SignalRecipient.fromRecord(record)
     }
 
     public func all() throws -> [SignalRecipient] {
-        return try cursor.all()
+        var result = [SignalRecipient]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -248,9 +260,14 @@ public class SignalRecipientCursor: NSObject {
 @objc
 extension SignalRecipient {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> SignalRecipientCursor {
-        return SignalRecipientCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: SignalRecipientSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: SignalRecipientSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try SignalRecipientRecord.fetchCursor(database)
+            return SignalRecipientCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return SignalRecipientCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -317,14 +334,21 @@ extension SignalRecipient {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return SignalRecipientCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return SignalRecipientCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: SignalRecipientSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try SignalRecipientRecord.fetchCursor(statement, arguments: statementArguments)
+            return SignalRecipientCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return SignalRecipientCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

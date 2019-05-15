@@ -1307,22 +1307,34 @@ extension %s {
 
 @objc
 public class %sCursor: NSObject {
-    private let cursor: SDSCursor<%s>
-    
-    init(cursor: SDSCursor<%s>) {
+    private let cursor: RecordCursor<%s>?
+
+    init(cursor: RecordCursor<%s>?) {
         self.cursor = cursor
     }
-    
-    // TODO: Revisit error handling in this class.
+
     public func next() throws -> %s? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try %s.fromRecord(record)
     }
     
     public func all() throws -> [%s] {
-        return try cursor.all()
+        var result = [%s]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
-''' % ( ( str(clazz.name), ) * 6 )
+''' % ( str(clazz.name), str(clazz.name), record_name, record_name, str(clazz.name), str(clazz.name), str(clazz.name), str(clazz.name), )
 
         # ---- Fetch ----
 
@@ -1340,11 +1352,16 @@ public class %sCursor: NSObject {
 @objc
 extension %s {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> %sCursor {
-        return %sCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: %sSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: %sSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try %s.fetchCursor(database)
+            return %sCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return %sCursor(cursor: nil)
+        }
     }
-''' % ( ( str(clazz.name), ) * 5 )
+''' % ( str(clazz.name), str(clazz.name), record_name, str(clazz.name), str(clazz.name), )
 
         swift_body += '''
     // Fetches a single model by "unique id".
@@ -1417,17 +1434,24 @@ extension %s {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return %sCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return %sCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: %sSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try %s.fetchCursor(statement, arguments: statementArguments)
+            return %sCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return %sCursor(cursor: nil)
+        }
     }
 
-''' % ( ( str(clazz.name), ) * 4 )
+''' % ( str(clazz.name), str(clazz.name), str(clazz.name), record_name, str(clazz.name), str(clazz.name), )
 
 
         string_interpolation_name = remove_prefix_from_class_name(clazz.name)

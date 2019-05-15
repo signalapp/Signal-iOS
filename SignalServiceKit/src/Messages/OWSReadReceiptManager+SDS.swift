@@ -227,19 +227,31 @@ extension TSRecipientReadReceipt {
 
 @objc
 public class TSRecipientReadReceiptCursor: NSObject {
-    private let cursor: SDSCursor<TSRecipientReadReceipt>
+    private let cursor: RecordCursor<RecipientReadReceiptRecord>?
 
-    init(cursor: SDSCursor<TSRecipientReadReceipt>) {
+    init(cursor: RecordCursor<RecipientReadReceiptRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> TSRecipientReadReceipt? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try TSRecipientReadReceipt.fromRecord(record)
     }
 
     public func all() throws -> [TSRecipientReadReceipt] {
-        return try cursor.all()
+        var result = [TSRecipientReadReceipt]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -256,9 +268,14 @@ public class TSRecipientReadReceiptCursor: NSObject {
 @objc
 extension TSRecipientReadReceipt {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSRecipientReadReceiptCursor {
-        return TSRecipientReadReceiptCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: TSRecipientReadReceiptSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: TSRecipientReadReceiptSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try RecipientReadReceiptRecord.fetchCursor(database)
+            return TSRecipientReadReceiptCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return TSRecipientReadReceiptCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -325,14 +342,21 @@ extension TSRecipientReadReceipt {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return TSRecipientReadReceiptCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return TSRecipientReadReceiptCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: TSRecipientReadReceiptSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try RecipientReadReceiptRecord.fetchCursor(statement, arguments: statementArguments)
+            return TSRecipientReadReceiptCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return TSRecipientReadReceiptCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

@@ -253,6 +253,8 @@ public class SDSKeyValueStore: NSObject {
     // MARK: - Internal Methods
 
     private func read<T>(_ key: String, transaction: SDSAnyReadTransaction) -> T? {
+        return nil
+
         // YDB values are serialized by YDB.
         // GRDB values are serialized to data by this class.
         switch transaction.readTransaction {

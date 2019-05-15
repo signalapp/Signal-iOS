@@ -227,19 +227,31 @@ extension InstalledSticker {
 
 @objc
 public class InstalledStickerCursor: NSObject {
-    private let cursor: SDSCursor<InstalledSticker>
+    private let cursor: RecordCursor<InstalledStickerRecord>?
 
-    init(cursor: SDSCursor<InstalledSticker>) {
+    init(cursor: RecordCursor<InstalledStickerRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> InstalledSticker? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try InstalledSticker.fromRecord(record)
     }
 
     public func all() throws -> [InstalledSticker] {
-        return try cursor.all()
+        var result = [InstalledSticker]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -256,9 +268,14 @@ public class InstalledStickerCursor: NSObject {
 @objc
 extension InstalledSticker {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> InstalledStickerCursor {
-        return InstalledStickerCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: InstalledStickerSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: InstalledStickerSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try InstalledStickerRecord.fetchCursor(database)
+            return InstalledStickerCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return InstalledStickerCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -325,14 +342,21 @@ extension InstalledSticker {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return InstalledStickerCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return InstalledStickerCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: InstalledStickerSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try InstalledStickerRecord.fetchCursor(statement, arguments: statementArguments)
+            return InstalledStickerCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return InstalledStickerCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

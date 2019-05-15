@@ -225,19 +225,31 @@ extension OWSMessageDecryptJob {
 
 @objc
 public class OWSMessageDecryptJobCursor: NSObject {
-    private let cursor: SDSCursor<OWSMessageDecryptJob>
+    private let cursor: RecordCursor<MessageDecryptJobRecord>?
 
-    init(cursor: SDSCursor<OWSMessageDecryptJob>) {
+    init(cursor: RecordCursor<MessageDecryptJobRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> OWSMessageDecryptJob? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try OWSMessageDecryptJob.fromRecord(record)
     }
 
     public func all() throws -> [OWSMessageDecryptJob] {
-        return try cursor.all()
+        var result = [OWSMessageDecryptJob]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -254,9 +266,14 @@ public class OWSMessageDecryptJobCursor: NSObject {
 @objc
 extension OWSMessageDecryptJob {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSMessageDecryptJobCursor {
-        return OWSMessageDecryptJobCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSMessageDecryptJobSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: OWSMessageDecryptJobSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try MessageDecryptJobRecord.fetchCursor(database)
+            return OWSMessageDecryptJobCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return OWSMessageDecryptJobCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -323,14 +340,21 @@ extension OWSMessageDecryptJob {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return OWSMessageDecryptJobCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return OWSMessageDecryptJobCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: OWSMessageDecryptJobSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try MessageDecryptJobRecord.fetchCursor(statement, arguments: statementArguments)
+            return OWSMessageDecryptJobCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return OWSMessageDecryptJobCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

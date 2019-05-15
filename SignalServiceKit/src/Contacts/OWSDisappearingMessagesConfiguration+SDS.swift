@@ -225,19 +225,31 @@ extension OWSDisappearingMessagesConfiguration {
 
 @objc
 public class OWSDisappearingMessagesConfigurationCursor: NSObject {
-    private let cursor: SDSCursor<OWSDisappearingMessagesConfiguration>
+    private let cursor: RecordCursor<DisappearingMessagesConfigurationRecord>?
 
-    init(cursor: SDSCursor<OWSDisappearingMessagesConfiguration>) {
+    init(cursor: RecordCursor<DisappearingMessagesConfigurationRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> OWSDisappearingMessagesConfiguration? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try OWSDisappearingMessagesConfiguration.fromRecord(record)
     }
 
     public func all() throws -> [OWSDisappearingMessagesConfiguration] {
-        return try cursor.all()
+        var result = [OWSDisappearingMessagesConfiguration]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -254,9 +266,14 @@ public class OWSDisappearingMessagesConfigurationCursor: NSObject {
 @objc
 extension OWSDisappearingMessagesConfiguration {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSDisappearingMessagesConfigurationCursor {
-        return OWSDisappearingMessagesConfigurationCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSDisappearingMessagesConfigurationSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: OWSDisappearingMessagesConfigurationSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try DisappearingMessagesConfigurationRecord.fetchCursor(database)
+            return OWSDisappearingMessagesConfigurationCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return OWSDisappearingMessagesConfigurationCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -323,14 +340,21 @@ extension OWSDisappearingMessagesConfiguration {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return OWSDisappearingMessagesConfigurationCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return OWSDisappearingMessagesConfigurationCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: OWSDisappearingMessagesConfigurationSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try DisappearingMessagesConfigurationRecord.fetchCursor(statement, arguments: statementArguments)
+            return OWSDisappearingMessagesConfigurationCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return OWSDisappearingMessagesConfigurationCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

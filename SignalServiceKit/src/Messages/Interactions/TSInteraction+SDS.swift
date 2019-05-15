@@ -2068,19 +2068,31 @@ extension TSInteraction {
 
 @objc
 public class TSInteractionCursor: NSObject {
-    private let cursor: SDSCursor<TSInteraction>
+    private let cursor: RecordCursor<InteractionRecord>?
 
-    init(cursor: SDSCursor<TSInteraction>) {
+    init(cursor: RecordCursor<InteractionRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> TSInteraction? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try TSInteraction.fromRecord(record)
     }
 
     public func all() throws -> [TSInteraction] {
-        return try cursor.all()
+        var result = [TSInteraction]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -2097,9 +2109,14 @@ public class TSInteractionCursor: NSObject {
 @objc
 extension TSInteraction {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSInteractionCursor {
-        return TSInteractionCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: TSInteractionSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: TSInteractionSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try InteractionRecord.fetchCursor(database)
+            return TSInteractionCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return TSInteractionCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -2166,14 +2183,21 @@ extension TSInteraction {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return TSInteractionCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return TSInteractionCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: TSInteractionSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try InteractionRecord.fetchCursor(statement, arguments: statementArguments)
+            return TSInteractionCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return TSInteractionCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

@@ -404,19 +404,31 @@ extension TSThread {
 
 @objc
 public class TSThreadCursor: NSObject {
-    private let cursor: SDSCursor<TSThread>
+    private let cursor: RecordCursor<ThreadRecord>?
 
-    init(cursor: SDSCursor<TSThread>) {
+    init(cursor: RecordCursor<ThreadRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> TSThread? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try TSThread.fromRecord(record)
     }
 
     public func all() throws -> [TSThread] {
-        return try cursor.all()
+        var result = [TSThread]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -433,9 +445,14 @@ public class TSThreadCursor: NSObject {
 @objc
 extension TSThread {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSThreadCursor {
-        return TSThreadCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: TSThreadSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: TSThreadSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try ThreadRecord.fetchCursor(database)
+            return TSThreadCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return TSThreadCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -502,14 +519,21 @@ extension TSThread {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return TSThreadCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return TSThreadCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: TSThreadSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try ThreadRecord.fetchCursor(statement, arguments: statementArguments)
+            return TSThreadCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return TSThreadCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

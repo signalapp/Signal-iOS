@@ -395,19 +395,31 @@ extension SSKJobRecord {
 
 @objc
 public class SSKJobRecordCursor: NSObject {
-    private let cursor: SDSCursor<SSKJobRecord>
+    private let cursor: RecordCursor<JobRecordRecord>?
 
-    init(cursor: SDSCursor<SSKJobRecord>) {
+    init(cursor: RecordCursor<JobRecordRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> SSKJobRecord? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try SSKJobRecord.fromRecord(record)
     }
 
     public func all() throws -> [SSKJobRecord] {
-        return try cursor.all()
+        var result = [SSKJobRecord]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -424,9 +436,14 @@ public class SSKJobRecordCursor: NSObject {
 @objc
 extension SSKJobRecord {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> SSKJobRecordCursor {
-        return SSKJobRecordCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: SSKJobRecordSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: SSKJobRecordSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try JobRecordRecord.fetchCursor(database)
+            return SSKJobRecordCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return SSKJobRecordCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -493,14 +510,21 @@ extension SSKJobRecord {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return SSKJobRecordCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return SSKJobRecordCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: SSKJobRecordSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try JobRecordRecord.fetchCursor(statement, arguments: statementArguments)
+            return SSKJobRecordCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return SSKJobRecordCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

@@ -252,19 +252,31 @@ extension OWSRecipientIdentity {
 
 @objc
 public class OWSRecipientIdentityCursor: NSObject {
-    private let cursor: SDSCursor<OWSRecipientIdentity>
+    private let cursor: RecordCursor<RecipientIdentityRecord>?
 
-    init(cursor: SDSCursor<OWSRecipientIdentity>) {
+    init(cursor: RecordCursor<RecipientIdentityRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> OWSRecipientIdentity? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try OWSRecipientIdentity.fromRecord(record)
     }
 
     public func all() throws -> [OWSRecipientIdentity] {
-        return try cursor.all()
+        var result = [OWSRecipientIdentity]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -281,9 +293,14 @@ public class OWSRecipientIdentityCursor: NSObject {
 @objc
 extension OWSRecipientIdentity {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSRecipientIdentityCursor {
-        return OWSRecipientIdentityCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSRecipientIdentitySerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: OWSRecipientIdentitySerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try RecipientIdentityRecord.fetchCursor(database)
+            return OWSRecipientIdentityCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return OWSRecipientIdentityCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -350,14 +367,21 @@ extension OWSRecipientIdentity {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return OWSRecipientIdentityCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return OWSRecipientIdentityCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: OWSRecipientIdentitySerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try RecipientIdentityRecord.fetchCursor(statement, arguments: statementArguments)
+            return OWSRecipientIdentityCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return OWSRecipientIdentityCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

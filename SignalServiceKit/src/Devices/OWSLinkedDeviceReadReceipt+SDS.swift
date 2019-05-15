@@ -233,19 +233,31 @@ extension OWSLinkedDeviceReadReceipt {
 
 @objc
 public class OWSLinkedDeviceReadReceiptCursor: NSObject {
-    private let cursor: SDSCursor<OWSLinkedDeviceReadReceipt>
+    private let cursor: RecordCursor<LinkedDeviceReadReceiptRecord>?
 
-    init(cursor: SDSCursor<OWSLinkedDeviceReadReceipt>) {
+    init(cursor: RecordCursor<LinkedDeviceReadReceiptRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> OWSLinkedDeviceReadReceipt? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try OWSLinkedDeviceReadReceipt.fromRecord(record)
     }
 
     public func all() throws -> [OWSLinkedDeviceReadReceipt] {
-        return try cursor.all()
+        var result = [OWSLinkedDeviceReadReceipt]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -262,9 +274,14 @@ public class OWSLinkedDeviceReadReceiptCursor: NSObject {
 @objc
 extension OWSLinkedDeviceReadReceipt {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSLinkedDeviceReadReceiptCursor {
-        return OWSLinkedDeviceReadReceiptCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSLinkedDeviceReadReceiptSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: OWSLinkedDeviceReadReceiptSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try LinkedDeviceReadReceiptRecord.fetchCursor(database)
+            return OWSLinkedDeviceReadReceiptCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return OWSLinkedDeviceReadReceiptCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -331,14 +348,21 @@ extension OWSLinkedDeviceReadReceipt {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return OWSLinkedDeviceReadReceiptCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return OWSLinkedDeviceReadReceiptCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: OWSLinkedDeviceReadReceiptSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try LinkedDeviceReadReceiptRecord.fetchCursor(statement, arguments: statementArguments)
+            return OWSLinkedDeviceReadReceiptCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return OWSLinkedDeviceReadReceiptCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

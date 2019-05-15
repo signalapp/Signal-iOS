@@ -257,19 +257,31 @@ extension OWSBackupFragment {
 
 @objc
 public class OWSBackupFragmentCursor: NSObject {
-    private let cursor: SDSCursor<OWSBackupFragment>
+    private let cursor: RecordCursor<BackupFragmentRecord>?
 
-    init(cursor: SDSCursor<OWSBackupFragment>) {
+    init(cursor: RecordCursor<BackupFragmentRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> OWSBackupFragment? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try OWSBackupFragment.fromRecord(record)
     }
 
     public func all() throws -> [OWSBackupFragment] {
-        return try cursor.all()
+        var result = [OWSBackupFragment]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -286,9 +298,14 @@ public class OWSBackupFragmentCursor: NSObject {
 @objc
 extension OWSBackupFragment {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSBackupFragmentCursor {
-        return OWSBackupFragmentCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSBackupFragmentSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: OWSBackupFragmentSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try BackupFragmentRecord.fetchCursor(database)
+            return OWSBackupFragmentCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return OWSBackupFragmentCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -355,14 +372,21 @@ extension OWSBackupFragment {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return OWSBackupFragmentCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return OWSBackupFragmentCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: OWSBackupFragmentSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try BackupFragmentRecord.fetchCursor(statement, arguments: statementArguments)
+            return OWSBackupFragmentCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return OWSBackupFragmentCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,
