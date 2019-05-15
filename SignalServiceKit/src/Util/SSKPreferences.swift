@@ -16,15 +16,14 @@ public class SSKPreferences: NSObject {
     private static let areLinkPreviewsEnabledKey = "areLinkPreviewsEnabled"
 
     @objc
-    public static var areLinkPreviewsEnabled: Bool {
-        get {
-            return store.getBool(areLinkPreviewsEnabledKey, defaultValue: true)
-        }
-        set {
-            store.setBool(newValue, key: areLinkPreviewsEnabledKey)
+    public static func areLinkPreviewsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
+        return store.getBool(areLinkPreviewsEnabledKey, defaultValue: true, transaction: transaction)
+    }
 
-            SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
-        }
+    @objc
+    public static func setAreLinkPreviewsEnabled(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        store.setBool(newValue, key: areLinkPreviewsEnabledKey, transaction: transaction)
+        SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
     }
 
     // MARK: -
@@ -32,19 +31,12 @@ public class SSKPreferences: NSObject {
     private static let hasSavedThreadKey = "hasSavedThread"
 
     @objc
-    public static var hasSavedThread: Bool {
-        get {
-            return store.getBool(hasSavedThreadKey)
-        }
-        set {
-            store.setBool(newValue, key: hasSavedThreadKey)
-        }
+    public static func hasSavedThread(transaction: SDSAnyReadTransaction) -> Bool {
+        return store.getBool(hasSavedThreadKey, defaultValue: false, transaction: transaction)
     }
 
     @objc
-    public class func setHasSavedThread(value: Bool, transaction: YapDatabaseReadWriteTransaction) {
-        transaction.setBool(value,
-                            forKey: hasSavedThreadKey,
-                            inCollection: store.collection)
+    public static func setHasSavedThread(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        store.setBool(newValue, key: hasSavedThreadKey, transaction: transaction)
     }
 }

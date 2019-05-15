@@ -178,7 +178,7 @@ public class OWSLinkPreview: MTLModel {
     @objc
     public class func buildValidatedLinkPreview(fromInfo info: OWSLinkPreviewDraft,
                                                 transaction: YapDatabaseReadWriteTransaction) throws -> OWSLinkPreview {
-        guard SSKPreferences.areLinkPreviewsEnabled else {
+        guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction.asAnyRead) else {
             throw LinkPreviewError.noPreview
         }
         let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(jpegImageData: info.jpegImageData,
@@ -259,6 +259,16 @@ public class OWSLinkPreview: MTLModel {
 
 @objc
 public class OWSLinkPreviewManager: NSObject {
+
+    // MARK: - Dependencies
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    class var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
 
     // MARK: - Whitelists
 
@@ -426,9 +436,12 @@ public class OWSLinkPreviewManager: NSObject {
     public func previewUrl(forMessageBodyText body: String?, selectedRange: NSRange?) -> String? {
         AssertIsOnMainThread()
 
+        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+            SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        }
         // Exit early if link previews are not enabled in order to avoid
         // tainting the cache.
-        guard SSKPreferences.areLinkPreviewsEnabled else {
+        guard areLinkPreviewsEnabled else {
             return nil
         }
 
@@ -477,7 +490,10 @@ public class OWSLinkPreviewManager: NSObject {
     }
 
     class func allPreviewUrlMatches(forMessageBodyText body: String) -> [URLMatchResult] {
-        guard SSKPreferences.areLinkPreviewsEnabled else {
+        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+            SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        }
+        guard areLinkPreviewsEnabled else {
             return []
         }
 
@@ -527,9 +543,12 @@ public class OWSLinkPreviewManager: NSObject {
                                             forPreviewUrl previewUrl: String) {
         assert(previewUrl == linkPreviewDraft.urlString)
 
+        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+            SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        }
         // Exit early if link previews are not enabled in order to avoid
         // tainting the cache.
-        guard SSKPreferences.areLinkPreviewsEnabled else {
+        guard areLinkPreviewsEnabled else {
             return
         }
 
@@ -544,7 +563,10 @@ public class OWSLinkPreviewManager: NSObject {
     }
 
     public func tryToBuildPreviewInfo(previewUrl: String?) -> Promise<OWSLinkPreviewDraft> {
-        guard SSKPreferences.areLinkPreviewsEnabled else {
+        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+            SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        }
+        guard areLinkPreviewsEnabled else {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
         guard let previewUrl = previewUrl else {

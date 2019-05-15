@@ -195,7 +195,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 {
     [super saveWithTransaction:transaction];
 
-    [SSKPreferences setHasSavedThreadWithValue:YES transaction:transaction];
+    [SSKPreferences setHasSavedThread:YES transaction:transaction.asAnyWrite];
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction

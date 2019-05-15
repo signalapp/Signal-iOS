@@ -74,6 +74,11 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     return SSKEnvironment.shared.typingIndicators;
 }
 
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark - Table Contents
 
 - (void)updateTableContents
@@ -387,7 +392,16 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                      @"Setting for enabling & disabling link previews.")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"link_previews"]
                     isOnBlock:^{
-                        return [SSKPreferences areLinkPreviewsEnabled];
+                        if (!weakSelf) {
+                            return NO;
+                        }
+                        PrivacySettingsTableViewController *strongSelf = weakSelf;
+
+                        __block BOOL areLinkPreviewsEnabled;
+                        [strongSelf.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                            areLinkPreviewsEnabled = [SSKPreferences areLinkPreviewsEnabledWithTransaction:transaction];
+                        }];
+                        return areLinkPreviewsEnabled;
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -513,7 +527,9 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 - (void)didToggleLinkPreviewsEnabled:(UISwitch *)sender
 {
     OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
-    SSKPreferences.areLinkPreviewsEnabled = sender.isOn;
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [SSKPreferences setAreLinkPreviewsEnabled:sender.isOn transaction:transaction];
+    }];
 }
 
 - (void)show2FASettings
