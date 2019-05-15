@@ -1587,7 +1587,9 @@ typedef enum : NSUInteger {
 
 - (void)updateIsInputToolbarInteractionEnabled {
     // TODO: Listen to friend request updates and call this accordingly
+    /* TODO: Disabled temporarily
     [self.inputToolbar setUserInteractionEnabled:!self.thread.isPendingFriendRequest];
+     */
 }
 
 #pragma mark - Identity

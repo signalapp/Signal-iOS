@@ -115,14 +115,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage;
 }
 
-- (TSThreadFriendRequestStatus)friendRequestStatus {
-    return self.message.thread.friendRequestStatus;
-}
-
-- (BOOL)isFriendRequest {
-    return self.friendRequestStatus == TSThreadFriendRequestStatusRequestSent || self.friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
-}
-
 - (BOOL)shouldHaveSendFailureBadge
 {
     if (![self.viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
@@ -130,6 +122,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
     TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
     return outgoingMessage.messageState == TSOutgoingMessageStateFailed;
+}
+
+- (TSThreadFriendRequestStatus)friendRequestStatus
+{
+    return [self.message.thread getFriendRequestStatus];
+}
+
+- (BOOL)isFriendRequest
+{
+    TSThreadFriendRequestStatus friendRequestStatus = self.friendRequestStatus;
+    return friendRequestStatus == TSThreadFriendRequestStatusPendingSend || friendRequestStatus == TSThreadFriendRequestStatusRequestSent
+        || friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
 }
 
 #pragma mark - Load
@@ -369,7 +373,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (self.isFriendRequest) {
-        cellSize.height += [FriendRequestView calculateHeightWithMessage:(TSMessage *)self.viewItem.interaction conversationStyle:self.conversationStyle];
+        cellSize.height += [FriendRequestView calculateHeightWithMessage:self.message conversationStyle:self.conversationStyle];
     }
     
     cellSize = CGSizeCeil(cellSize);

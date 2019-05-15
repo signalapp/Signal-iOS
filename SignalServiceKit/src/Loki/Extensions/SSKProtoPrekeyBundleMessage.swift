@@ -18,7 +18,7 @@
         return builder
     }
     
-    @objc public func preKeyBundle(withTransaction transaction: YapDatabaseReadWriteTransaction) -> PreKeyBundle? {
+    @objc public func createPreKeyBundle(withTransaction transaction: YapDatabaseReadWriteTransaction) -> PreKeyBundle? {
         let registrationId = accountManager.getOrGenerateRegistrationId(transaction)
         return PreKeyBundle(registrationId: Int32(registrationId),
                             deviceId: Int32(deviceID),

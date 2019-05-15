@@ -155,8 +155,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 {
     [super saveWithTransaction:transaction];
     
-    [self updateFriendRequestStatusWithTransaction:transaction];
-
     [SSKPreferences setHasSavedThreadWithValue:YES transaction:transaction];
 }
 
@@ -698,43 +696,24 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 # pragma mark - Loki Friend Request Handling
 
-- (void)updateFriendRequestStatusWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (TSThreadFriendRequestStatus)getFriendRequestStatus
 {
-    OWSLogInfo(@"[Loki] updateFriendRequestStatus");
+    __block TSThreadFriendRequestStatus friendRequestStatus;
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        friendRequestStatus = [self getFriendRequestStatusWithTransaction:transaction];
+    }];
+    return friendRequestStatus;
+}
+
+- (TSThreadFriendRequestStatus)getFriendRequestStatusWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
     YapDatabaseViewTransaction *interactions = [transaction ext:TSMessageDatabaseViewExtensionName];
     NSUInteger interactionCount = [interactions numberOfItemsInGroup:self.uniqueId];
-    if (interactionCount == 0) {
-        _friendRequestStatus = TSThreadFriendRequestStatusNone;
-    } else if (interactionCount == 1) {
-        TSInteraction *interaction = [interactions firstObjectInGroup:self.uniqueId];
-        BOOL isIncomingMessage = interaction.interactionType == OWSInteractionType_IncomingMessage;
-        _friendRequestStatus = isIncomingMessage ? TSThreadFriendRequestStatusRequestReceived : TSThreadFriendRequestStatusRequestSent;
-    } else {
-        _friendRequestStatus = TSThreadFriendRequestStatusFriends;
-    }
-}
-
-- (BOOL)isFriend
-{
-    return self.friendRequestStatus == TSThreadFriendRequestStatusFriends;
-}
-
-- (BOOL)isPendingFriendRequest
-{
-    return self.friendRequestStatus == TSThreadFriendRequestStatusPendingSend ||
-        self.friendRequestStatus == TSThreadFriendRequestStatusRequestSent ||
-        self.friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
-}
-
-- (BOOL)hasSentFriendRequest
-{
-    return self.friendRequestStatus == TSThreadFriendRequestStatusRequestSent ||
-        self.friendRequestStatus == TSThreadFriendRequestStatusRequestExpired;
-}
-
-- (BOOL)hasReceivedFriendRequest
-{
-    return self.friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
+    if (interactionCount == 0) { return TSThreadFriendRequestStatusNone; }
+    if (interactionCount >= 2) { return TSThreadFriendRequestStatusFriends; }
+    TSInteraction *interaction = [interactions firstObjectInGroup:self.uniqueId];
+    BOOL isIncomingMessage = interaction.interactionType == OWSInteractionType_IncomingMessage;
+    return isIncomingMessage ? TSThreadFriendRequestStatusRequestReceived : TSThreadFriendRequestStatusRequestSent;
 }
 
 @end

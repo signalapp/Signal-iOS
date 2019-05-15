@@ -53,7 +53,6 @@ typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
 @property (nonatomic) BOOL shouldThreadBeVisible;
 @property (nonatomic, readonly) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
-@property (atomic, readonly) TSThreadFriendRequestStatus friendRequestStatus; // Loki
 
 /**
  *  Whether the object is a group thread or not.
@@ -187,19 +186,11 @@ typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
 
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-#pragma mark - Loki Friend Request
+#pragma mark - Loki Friend Request Handling
 
-/// Check if this thread is a friend
-- (BOOL)isFriend;
+- (TSThreadFriendRequestStatus)getFriendRequestStatus;
 
-/// Check if a friend request is pending
-- (BOOL)isPendingFriendRequest;
-
-/// Check if a friend request has been sent to this thread
-- (BOOL)hasSentFriendRequest;
-
-/// Check if a friend request has been received from this thread
-- (BOOL)hasReceivedFriendRequest;
+- (TSThreadFriendRequestStatus)getFriendRequestStatusWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

@@ -186,7 +186,9 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     
     // Loki: If we're not friends then always set the message to a friend request message
     // If we're friends then the assumption is that we have the other user's pre-key bundle
-    NSString *messageClassAsString = thread.isFriend ? @"TSOutgoingMessage" : @"OWSFriendRequestMessage";
+    TSThreadFriendRequestStatus friendRequestStatus = [thread getFriendRequestStatusWithTransaction:transaction];
+    BOOL isFriend = friendRequestStatus == TSThreadFriendRequestStatusFriends;
+    NSString *messageClassAsString = isFriend ? @"TSOutgoingMessage" : @"OWSFriendRequestMessage";
     Class messageClass = NSClassFromString(messageClassAsString);
     
     TSOutgoingMessage *message =

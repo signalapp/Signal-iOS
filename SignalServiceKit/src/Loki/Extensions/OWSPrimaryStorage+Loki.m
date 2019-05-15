@@ -43,7 +43,7 @@
     @try {
         return [self throws_loadPreKey:preKeyId];
     } @catch (NSException *exception) {
-        OWSLogWarn(@"[Loki] New prekey had to be generated for %@", pubKey);
+        OWSLogWarn(@"[Loki] New prekey had to be generated for %@.", pubKey);
         return [self generateAndStorePreKeyForContact:pubKey];
     }
 }
