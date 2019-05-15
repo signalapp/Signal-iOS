@@ -65,6 +65,7 @@ public class FeatureFlags: NSObject {
     @objc
     public static let stickerPackOrdering = false
 
+    // Don't enable this flag until the Desktop changes have been in production for a while.
     @objc
     public static let strictSyncTranscriptTimestamps = false
 }
