@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUISessionState.h"
@@ -54,17 +54,16 @@ NS_ASSUME_NONNULL_BEGIN
                                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                     [[OWSPrimaryStorage sharedManager]
                                         deleteAllSessionsForContact:thread.contactIdentifier
-                                                    protocolContext:transaction];
+                                                        transaction:transaction];
                                 }];
                             }],
             [OWSTableItem itemWithTitle:@"Archive all sessions"
                             actionBlock:^{
-                                [self.dbConnection
-                                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                        [[OWSPrimaryStorage sharedManager]
-                                            archiveAllSessionsForContact:thread.contactIdentifier
-                                                         protocolContext:transaction];
-                                    }];
+                                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                    [[OWSPrimaryStorage sharedManager]
+                                        archiveAllSessionsForContact:thread.contactIdentifier
+                                                         transaction:transaction];
+                                }];
                             }],
             [OWSTableItem itemWithTitle:@"Send session reset"
                             actionBlock:^{
