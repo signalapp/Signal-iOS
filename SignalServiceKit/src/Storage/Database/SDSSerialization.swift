@@ -149,46 +149,4 @@ public class SDSSerialization: NSObject {
         statement.unsafeSetArguments(arguments)
         try statement.execute()
     }
-
-    // MARK: - Fetch (Read)
-
-    public class func fetchCursor<T>(tableMetadata: SDSTableMetadata,
-                                     transaction: GRDBReadTransaction,
-                                     deserialize: @escaping (SelectStatement) throws -> T) -> SDSCursor<T> {
-        let columnNames: [String] = tableMetadata.selectColumnNames
-        let columnsSQL: String = columnNames.map { $0.quotedDatabaseIdentifier }.joined(separator: ", ")
-        let tableName: String = tableMetadata.tableName
-        // TODO: ORDER BY?
-        let sql: String = "SELECT \(columnsSQL) FROM \(tableName.quotedDatabaseIdentifier)"
-
-        return fetchCursor(sql: sql, arguments: nil, transaction: transaction, deserialize: deserialize)
-    }
-
-    public class func fetchCursor<T>(sql: String,
-                                     arguments: StatementArguments?,
-                                     transaction: GRDBReadTransaction,
-                                     deserialize: @escaping (SelectStatement) throws -> T) -> SDSCursor<T> {
-        Logger.verbose("")
-
-        let database = transaction.database
-
-        // TODO: This assumes the table has already been made.
-
-        do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-
-            if let arguments = arguments {
-                statement.unsafeSetArguments(arguments)
-            }
-
-            let sqliteStatement: SQLiteStatement = statement.sqliteStatement
-
-            let cursor = SDSCursor<T>(statement: statement, sqliteStatement: sqliteStatement, deserialize: deserialize)
-            return cursor
-        } catch {
-            // TODO:
-            //            throw DatabaseError(resultCode: code, message: statement.database.lastErrorMessage, sql: statement.sql, arguments: statement.arguments)
-            owsFail("Read failed: \(error)")
-        }
-    }
 }
