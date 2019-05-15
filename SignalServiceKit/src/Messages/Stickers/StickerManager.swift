@@ -867,7 +867,9 @@ public class StickerManager: NSObject {
         if FeatureFlags.stickerSend {
             return true
         }
-
+        guard FeatureFlags.stickerAutoEnable else {
+            return false
+        }
         return StickerManager.serialQueue.sync {
             return isStickerSendEnabledCached
         }
