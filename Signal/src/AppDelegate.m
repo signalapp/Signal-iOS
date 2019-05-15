@@ -45,6 +45,7 @@
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
+#import <UserNotifications/UserNotifications.h>
 #import <WebRTC/WebRTC.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/utsname.h>
@@ -265,7 +266,7 @@ static NSTimeInterval launchStartedAt;
     mainWindow.rootViewController = [LoadingViewController new];
     [mainWindow makeKeyAndVisible];
 
-    if (@available(iOS 11, *)) {
+    if (@available(iOS 10, *)) {
         // This must happen in appDidFinishLaunching or earlier to ensure we don't
         // miss notifications.
         // Setting the delegate also seems to prevent us from getting the legacy notification
