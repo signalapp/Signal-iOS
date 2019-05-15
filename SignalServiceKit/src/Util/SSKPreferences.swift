@@ -32,7 +32,7 @@ public class SSKPreferences: NSObject {
 
     @objc
     public static func hasSavedThread(transaction: SDSAnyReadTransaction) -> Bool {
-        return store.getBool(hasSavedThreadKey, transaction: transaction)
+        return store.getBool(hasSavedThreadKey, defaultValue: false, transaction: transaction)
     }
 
     @objc

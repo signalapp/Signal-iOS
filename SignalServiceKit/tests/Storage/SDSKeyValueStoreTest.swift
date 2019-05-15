@@ -12,46 +12,36 @@ class SDSKeyValueStoreTest: SSKBaseTestSwift {
         let store = SDSKeyValueStore(collection: "test")
 
         self.write { transaction in
-            XCTAssertFalse(store.getBool("boolA", transaction: transaction))
             XCTAssertFalse(store.getBool("boolA", defaultValue: false, transaction: transaction))
             XCTAssertTrue(store.getBool("boolA", defaultValue: true, transaction: transaction))
-            XCTAssertFalse(store.getBool("boolB", transaction: transaction))
             XCTAssertFalse(store.getBool("boolB", defaultValue: false, transaction: transaction))
             XCTAssertTrue(store.getBool("boolB", defaultValue: true, transaction: transaction))
 
             store.setBool(false, key: "boolA", transaction: transaction)
 
-            XCTAssertFalse(store.getBool("boolA", transaction: transaction))
             XCTAssertFalse(store.getBool("boolA", defaultValue: false, transaction: transaction))
             XCTAssertFalse(store.getBool("boolA", defaultValue: true, transaction: transaction))
-            XCTAssertFalse(store.getBool("boolB", transaction: transaction))
             XCTAssertFalse(store.getBool("boolB", defaultValue: false, transaction: transaction))
             XCTAssertTrue(store.getBool("boolB", defaultValue: true, transaction: transaction))
 
             store.setBool(true, key: "boolA", transaction: transaction)
 
-            XCTAssertTrue(store.getBool("boolA", transaction: transaction))
             XCTAssertTrue(store.getBool("boolA", defaultValue: false, transaction: transaction))
             XCTAssertTrue(store.getBool("boolA", defaultValue: true, transaction: transaction))
-            XCTAssertFalse(store.getBool("boolB", transaction: transaction))
             XCTAssertFalse(store.getBool("boolB", defaultValue: false, transaction: transaction))
             XCTAssertTrue(store.getBool("boolB", defaultValue: true, transaction: transaction))
 
             store.setBool(false, key: "boolB", transaction: transaction)
 
-            XCTAssertTrue(store.getBool("boolA", transaction: transaction))
             XCTAssertTrue(store.getBool("boolA", defaultValue: false, transaction: transaction))
             XCTAssertTrue(store.getBool("boolA", defaultValue: true, transaction: transaction))
-            XCTAssertFalse(store.getBool("boolB", transaction: transaction))
             XCTAssertFalse(store.getBool("boolB", defaultValue: false, transaction: transaction))
             XCTAssertFalse(store.getBool("boolB", defaultValue: true, transaction: transaction))
 
             store.setBool(true, key: "boolB", transaction: transaction)
 
-            XCTAssertTrue(store.getBool("boolA", transaction: transaction))
             XCTAssertTrue(store.getBool("boolA", defaultValue: false, transaction: transaction))
             XCTAssertTrue(store.getBool("boolA", defaultValue: true, transaction: transaction))
-            XCTAssertTrue(store.getBool("boolB", transaction: transaction))
             XCTAssertTrue(store.getBool("boolB", defaultValue: false, transaction: transaction))
             XCTAssertTrue(store.getBool("boolB", defaultValue: true, transaction: transaction))
         }

@@ -17,7 +17,7 @@ public class AppPreferences: NSObject {
 
     @objc
     public static func hasDimissedFirstConversationCue(transaction: SDSAnyReadTransaction) -> Bool {
-        return store.getBool(hasDimissedFirstConversationCueKey, transaction: transaction)
+        return store.getBool(hasDimissedFirstConversationCueKey, defaultValue: false, transaction: transaction)
     }
 
     @objc
