@@ -569,8 +569,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             }
             case OWSVerificationStateNoLongerVerified: {
                 OWSLogInfo(@"marked recipient: %@ as default verification status.", recipientId);
-                NSData *identityKey = [[OWSIdentityManager sharedManager] identityKeyForRecipientId:recipientId
-                                                                                    protocolContext:transaction];
+                NSData *identityKey =
+                    [[OWSIdentityManager sharedManager] identityKeyForRecipientId:recipientId transaction:transaction];
                 OWSAssertDebug(identityKey);
                 [[OWSIdentityManager sharedManager] setVerificationState:OWSVerificationStateDefault
                                                              identityKey:identityKey

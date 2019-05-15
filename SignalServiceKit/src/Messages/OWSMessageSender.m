@@ -1349,7 +1349,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 for (NSNumber *extraDeviceId in extraDevices) {
                     [self.primaryStorage deleteSessionForContact:recipient.uniqueId
                                                         deviceId:extraDeviceId.intValue
-                                                 protocolContext:transaction];
+                                                     transaction:transaction];
                 }
             }
 
@@ -1530,7 +1530,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     __block BOOL hasSession;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        hasSession = [storage containsSession:recipientId deviceId:[deviceId intValue] protocolContext:transaction];
+        hasSession = [storage containsSession:recipientId deviceId:[deviceId intValue] transaction:transaction];
     }];
     if (hasSession) {
         return;
@@ -1668,7 +1668,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(recipientId.length > 0);
 
     // This may throw an exception.
-    if (![storage containsSession:recipientId deviceId:[deviceId intValue] protocolContext:transaction]) {
+    if (![storage containsSession:recipientId deviceId:[deviceId intValue] transaction:transaction]) {
         NSString *missingSessionException = @"missingSessionException";
         OWSRaiseException(missingSessionException,
             @"Unexpectedly missing session for recipient: %@, device: %@",
@@ -1791,7 +1791,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 int deviceNumber = [devices[i] intValue];
                 [[OWSPrimaryStorage sharedManager] deleteSessionForContact:identifier
                                                                   deviceId:deviceNumber
-                                                           protocolContext:transaction];
+                                                               transaction:transaction];
             }
         }];
         completionHandler();
