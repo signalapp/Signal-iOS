@@ -1587,10 +1587,10 @@ typedef enum : NSUInteger {
 
 - (void)updateInputToolbar {
     TSThreadFriendRequestStatus friendRequestStatus = [self.thread getFriendRequestStatus];
-    BOOL isFriendRequest = friendRequestStatus == TSThreadFriendRequestStatusPendingSend || friendRequestStatus == TSThreadFriendRequestStatusRequestSent
+    BOOL isFriendRequestPending = friendRequestStatus == TSThreadFriendRequestStatusPendingSend || friendRequestStatus == TSThreadFriendRequestStatusRequestSent
         || friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
-    [self.inputToolbar setUserInteractionEnabled:!isFriendRequest];
-    NSString *placeholderText = isFriendRequest ? NSLocalizedString(@"Pending Friend Request...", "") : NSLocalizedString(@"New Message", "");
+    [self.inputToolbar setUserInteractionEnabled:!isFriendRequestPending];
+    NSString *placeholderText = isFriendRequestPending ? NSLocalizedString(@"Pending Friend Request...", "") : NSLocalizedString(@"New Message", "");
     [self.inputToolbar setPlaceholderText:placeholderText];
 }
 
