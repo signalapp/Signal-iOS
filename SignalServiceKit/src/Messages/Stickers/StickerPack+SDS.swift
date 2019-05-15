@@ -62,8 +62,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension StickerPack {
     // This method defines how to deserialize a model, given a
@@ -148,59 +146,6 @@ extension StickerPackSerializer {
         itemsColumn,
         titleColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension StickerPackSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> StickerPack {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .stickerPack:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let author = try deserializer.optionalString(at: authorColumn.columnIndex)
-            let coverSerialized: Data = try deserializer.blob(at: coverColumn.columnIndex)
-            let cover: StickerPackItem = try SDSDeserializer.unarchive(coverSerialized)
-            let dateCreated = try deserializer.date(at: dateCreatedColumn.columnIndex)
-            let infoSerialized: Data = try deserializer.blob(at: infoColumn.columnIndex)
-            let info: StickerPackInfo = try SDSDeserializer.unarchive(infoSerialized)
-            let isInstalled = try deserializer.bool(at: isInstalledColumn.columnIndex)
-            let itemsSerialized: Data = try deserializer.blob(at: itemsColumn.columnIndex)
-            let items: [StickerPackItem] = try SDSDeserializer.unarchive(itemsSerialized)
-            let title = try deserializer.optionalString(at: titleColumn.columnIndex)
-
-            return StickerPack(uniqueId: uniqueId,
-                               author: author,
-                               cover: cover,
-                               dateCreated: dateCreated,
-                               info: info,
-                               isInstalled: isInstalled,
-                               items: items,
-                               title: title)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update

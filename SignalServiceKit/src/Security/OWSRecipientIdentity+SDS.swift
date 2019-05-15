@@ -58,8 +58,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension OWSRecipientIdentity {
     // This method defines how to deserialize a model, given a
@@ -133,55 +131,6 @@ extension OWSRecipientIdentitySerializer {
         recipientIdColumn,
         verificationStateColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension OWSRecipientIdentitySerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> OWSRecipientIdentity {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .recipientIdentity:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let createdAt = try deserializer.date(at: createdAtColumn.columnIndex)
-            let identityKey = try deserializer.blob(at: identityKeyColumn.columnIndex)
-            let isFirstKnownKey = try deserializer.bool(at: isFirstKnownKeyColumn.columnIndex)
-            let recipientId = try deserializer.string(at: recipientIdColumn.columnIndex)
-            let verificationStateRaw = UInt(try deserializer.int(at: verificationStateColumn.columnIndex))
-            guard let verificationState = OWSVerificationState(rawValue: verificationStateRaw) else {
-               throw SDSError.invalidValue
-            }
-
-            return OWSRecipientIdentity(uniqueId: uniqueId,
-                                        createdAt: createdAt,
-                                        identityKey: identityKey,
-                                        isFirstKnownKey: isFirstKnownKey,
-                                        recipientId: recipientId,
-                                        verificationState: verificationState)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update

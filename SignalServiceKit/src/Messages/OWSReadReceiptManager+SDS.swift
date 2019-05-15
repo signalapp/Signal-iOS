@@ -52,8 +52,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension TSRecipientReadReceipt {
     // This method defines how to deserialize a model, given a
@@ -116,47 +114,6 @@ extension TSRecipientReadReceiptSerializer {
         recipientMapColumn,
         sentTimestampColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension TSRecipientReadReceiptSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> TSRecipientReadReceipt {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .recipientReadReceipt:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let recipientMapSerialized: Data = try deserializer.blob(at: recipientMapColumn.columnIndex)
-            let recipientMap: [String: NSNumber] = try SDSDeserializer.unarchive(recipientMapSerialized)
-            let sentTimestamp = try deserializer.uint64(at: sentTimestampColumn.columnIndex)
-
-            return TSRecipientReadReceipt(uniqueId: uniqueId,
-                                          recipientMap: recipientMap,
-                                          sentTimestamp: sentTimestamp)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update

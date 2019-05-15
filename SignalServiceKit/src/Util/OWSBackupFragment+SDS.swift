@@ -60,8 +60,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension OWSBackupFragment {
     // This method defines how to deserialize a model, given a
@@ -139,54 +137,6 @@ extension OWSBackupFragmentSerializer {
         relativeFilePathColumn,
         uncompressedDataLengthColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension OWSBackupFragmentSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> OWSBackupFragment {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .backupFragment:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let attachmentId = try deserializer.optionalString(at: attachmentIdColumn.columnIndex)
-            let downloadFilePath = try deserializer.optionalString(at: downloadFilePathColumn.columnIndex)
-            let encryptionKey = try deserializer.blob(at: encryptionKeyColumn.columnIndex)
-            let recordName = try deserializer.string(at: recordNameColumn.columnIndex)
-            let relativeFilePath = try deserializer.optionalString(at: relativeFilePathColumn.columnIndex)
-            let uncompressedDataLength = try deserializer.optionalUInt64AsNSNumber(at: uncompressedDataLengthColumn.columnIndex)
-
-            return OWSBackupFragment(uniqueId: uniqueId,
-                                     attachmentId: attachmentId,
-                                     downloadFilePath: downloadFilePath,
-                                     encryptionKey: encryptionKey,
-                                     recordName: recordName,
-                                     relativeFilePath: relativeFilePath,
-                                     uncompressedDataLength: uncompressedDataLength)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update

@@ -56,8 +56,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension OWSDevice {
     // This method defines how to deserialize a model, given a
@@ -127,50 +125,6 @@ extension OWSDeviceSerializer {
         lastSeenAtColumn,
         nameColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension OWSDeviceSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> OWSDevice {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .device:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let createdAt = try deserializer.date(at: createdAtColumn.columnIndex)
-            let deviceId = Int(try deserializer.int64(at: deviceIdColumn.columnIndex))
-            let lastSeenAt = try deserializer.date(at: lastSeenAtColumn.columnIndex)
-            let name = try deserializer.optionalString(at: nameColumn.columnIndex)
-
-            return OWSDevice(uniqueId: uniqueId,
-                             createdAt: createdAt,
-                             deviceId: deviceId,
-                             lastSeenAt: lastSeenAt,
-                             name: name)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update

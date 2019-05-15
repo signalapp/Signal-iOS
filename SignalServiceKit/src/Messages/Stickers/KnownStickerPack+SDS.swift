@@ -52,8 +52,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension KnownStickerPack {
     // This method defines how to deserialize a model, given a
@@ -116,47 +114,6 @@ extension KnownStickerPackSerializer {
         infoColumn,
         referenceCountColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension KnownStickerPackSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> KnownStickerPack {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .knownStickerPack:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let infoSerialized: Data = try deserializer.blob(at: infoColumn.columnIndex)
-            let info: StickerPackInfo = try SDSDeserializer.unarchive(infoSerialized)
-            let referenceCount = Int(try deserializer.int64(at: referenceCountColumn.columnIndex))
-
-            return KnownStickerPack(uniqueId: uniqueId,
-                                    info: info,
-                                    referenceCount: referenceCount)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update

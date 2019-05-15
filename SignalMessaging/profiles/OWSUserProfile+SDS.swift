@@ -58,8 +58,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension OWSUserProfile {
     // This method defines how to deserialize a model, given a
@@ -134,53 +132,6 @@ extension OWSUserProfileSerializer {
         profileNameColumn,
         recipientIdColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension OWSUserProfileSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> OWSUserProfile {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .userProfile:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let avatarFileName = try deserializer.optionalString(at: avatarFileNameColumn.columnIndex)
-            let avatarUrlPath = try deserializer.optionalString(at: avatarUrlPathColumn.columnIndex)
-            let profileKeySerialized: Data? = try deserializer.optionalBlob(at: profileKeyColumn.columnIndex)
-            let profileKey: OWSAES256Key? = try SDSDeserializer.optionalUnarchive(profileKeySerialized)
-            let profileName = try deserializer.optionalString(at: profileNameColumn.columnIndex)
-            let recipientId = try deserializer.string(at: recipientIdColumn.columnIndex)
-
-            return OWSUserProfile(uniqueId: uniqueId,
-                                  avatarFileName: avatarFileName,
-                                  avatarUrlPath: avatarUrlPath,
-                                  profileKey: profileKey,
-                                  profileName: profileName,
-                                  recipientId: recipientId)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -251,19 +202,31 @@ extension OWSUserProfile {
 
 @objc
 public class OWSUserProfileCursor: NSObject {
-    private let cursor: SDSCursor<OWSUserProfile>
+    private let cursor: RecordCursor<UserProfileRecord>?
 
-    init(cursor: SDSCursor<OWSUserProfile>) {
+    init(cursor: RecordCursor<UserProfileRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> OWSUserProfile? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try OWSUserProfile.fromRecord(record)
     }
 
     public func all() throws -> [OWSUserProfile] {
-        return try cursor.all()
+        var result = [OWSUserProfile]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -280,9 +243,14 @@ public class OWSUserProfileCursor: NSObject {
 @objc
 extension OWSUserProfile {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSUserProfileCursor {
-        return OWSUserProfileCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSUserProfileSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: OWSUserProfileSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try UserProfileRecord.fetchCursor(database)
+            return OWSUserProfileCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return OWSUserProfileCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -349,14 +317,21 @@ extension OWSUserProfile {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return OWSUserProfileCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return OWSUserProfileCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: OWSUserProfileSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try UserProfileRecord.fetchCursor(statement, arguments: statementArguments)
+            return OWSUserProfileCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return OWSUserProfileCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

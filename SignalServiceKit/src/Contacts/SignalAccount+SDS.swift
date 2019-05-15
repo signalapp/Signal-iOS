@@ -56,8 +56,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension SignalAccount {
     // This method defines how to deserialize a model, given a
@@ -128,51 +126,6 @@ extension SignalAccountSerializer {
         multipleAccountLabelTextColumn,
         recipientIdColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension SignalAccountSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> SignalAccount {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .signalAccount:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let contactSerialized: Data? = try deserializer.optionalBlob(at: contactColumn.columnIndex)
-            let contact: Contact? = try SDSDeserializer.optionalUnarchive(contactSerialized)
-            let hasMultipleAccountContact = try deserializer.bool(at: hasMultipleAccountContactColumn.columnIndex)
-            let multipleAccountLabelText = try deserializer.string(at: multipleAccountLabelTextColumn.columnIndex)
-            let recipientId = try deserializer.string(at: recipientIdColumn.columnIndex)
-
-            return SignalAccount(uniqueId: uniqueId,
-                                 contact: contact,
-                                 hasMultipleAccountContact: hasMultipleAccountContact,
-                                 multipleAccountLabelText: multipleAccountLabelText,
-                                 recipientId: recipientId)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update

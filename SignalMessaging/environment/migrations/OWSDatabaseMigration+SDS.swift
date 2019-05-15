@@ -46,8 +46,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension OWSDatabaseMigration {
     // This method defines how to deserialize a model, given a
@@ -190,102 +188,6 @@ extension OWSDatabaseMigrationSerializer {
         idColumn,
         uniqueIdColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension OWSDatabaseMigrationSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> OWSDatabaseMigration {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case ._100RemoveTSRecipientsMigration:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWS100RemoveTSRecipientsMigration(uniqueId: uniqueId)
-
-        case ._101ExistingUsersBlockOnIdentityChange:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWS101ExistingUsersBlockOnIdentityChange(uniqueId: uniqueId)
-
-        case ._102MoveLoggingPreferenceToUserDefaults:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWS102MoveLoggingPreferenceToUserDefaults(uniqueId: uniqueId)
-
-        case ._103EnableVideoCalling:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWS103EnableVideoCalling(uniqueId: uniqueId)
-
-        case ._104CreateRecipientIdentities:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWS104CreateRecipientIdentities(uniqueId: uniqueId)
-
-        case ._105AttachmentFilePaths:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWS105AttachmentFilePaths(uniqueId: uniqueId)
-
-        case ._107LegacySounds:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWS107LegacySounds(uniqueId: uniqueId)
-
-        case ._108CallLoggingPreference:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWS108CallLoggingPreference(uniqueId: uniqueId)
-
-        case ._109OutgoingMessageState:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWS109OutgoingMessageState(uniqueId: uniqueId)
-
-        case .databaseMigration:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWSDatabaseMigration(uniqueId: uniqueId)
-
-        case .resaveCollectionDBMigration:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-
-            return OWSResaveCollectionDBMigration(uniqueId: uniqueId)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -356,19 +258,31 @@ extension OWSDatabaseMigration {
 
 @objc
 public class OWSDatabaseMigrationCursor: NSObject {
-    private let cursor: SDSCursor<OWSDatabaseMigration>
+    private let cursor: RecordCursor<DatabaseMigrationRecord>?
 
-    init(cursor: SDSCursor<OWSDatabaseMigration>) {
+    init(cursor: RecordCursor<DatabaseMigrationRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> OWSDatabaseMigration? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try OWSDatabaseMigration.fromRecord(record)
     }
 
     public func all() throws -> [OWSDatabaseMigration] {
-        return try cursor.all()
+        var result = [OWSDatabaseMigration]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -385,9 +299,14 @@ public class OWSDatabaseMigrationCursor: NSObject {
 @objc
 extension OWSDatabaseMigration {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSDatabaseMigrationCursor {
-        return OWSDatabaseMigrationCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSDatabaseMigrationSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: OWSDatabaseMigrationSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try DatabaseMigrationRecord.fetchCursor(database)
+            return OWSDatabaseMigrationCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return OWSDatabaseMigrationCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -454,14 +373,21 @@ extension OWSDatabaseMigration {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return OWSDatabaseMigrationCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return OWSDatabaseMigrationCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: OWSDatabaseMigrationSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try DatabaseMigrationRecord.fetchCursor(statement, arguments: statementArguments)
+            return OWSDatabaseMigrationCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return OWSDatabaseMigrationCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,
