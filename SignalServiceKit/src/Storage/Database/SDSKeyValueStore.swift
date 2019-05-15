@@ -119,12 +119,12 @@ public class SDSKeyValueStore: NSObject {
     @objc
     public func setObject(_ anyValue: Any?, key: String, transaction: SDSAnyWriteTransaction) {
         guard let anyValue = anyValue else {
-            write(nil, forKey: key)
+            write(nil, forKey: key, transaction: transaction)
             return
         }
         guard let codingValue = anyValue as? NSCoding else {
             owsFailDebug("Invalid value.")
-            write(nil, forKey: key)
+            write(nil, forKey: key, transaction: transaction)
             return
         }
         write(codingValue, forKey: key, transaction: transaction)
