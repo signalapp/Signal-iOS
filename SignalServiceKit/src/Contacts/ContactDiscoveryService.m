@@ -414,11 +414,6 @@ NSError *ContactDiscoveryServiceErrorMakeWithReason(NSInteger code, NSString *re
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     NSArray<NSHTTPCookie *> *cookies =
         [NSHTTPCookie cookiesWithResponseHeaderFields:httpResponse.allHeaderFields forURL:httpResponse.URL];
-    if (cookies.count < 1) {
-        *error = ContactDiscoveryServiceErrorMakeWithReason(
-            ContactDiscoveryServiceErrorAssertionError, @"couldn't parse cookie.");
-        return nil;
-    }
 
     if (![responseJson isKindOfClass:[NSDictionary class]]) {
         *error = ContactDiscoveryServiceErrorMakeWithReason(
