@@ -42,7 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithOutgoingMessage:(TSOutgoingMessage *)message isRecipientUpdate:(BOOL)isRecipientUpdate
 {
-    self = [super init];
+    OWSAssertDebug(message);
+
+    // The sync message's timestamp must match the original outgoing message's timestamp.
+    self = [super initWithTimestamp:message.timestamp];
 
     if (!self) {
         return self;
@@ -64,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSent builder];
-    [sentBuilder setTimestamp:self.message.timestamp];
+    [sentBuilder setTimestamp:self.timestamp];
     [sentBuilder setDestination:self.sentRecipientId];
     [sentBuilder setIsRecipientUpdate:self.isRecipientUpdate];
 

@@ -40,6 +40,28 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+{
+    self = [super initOutgoingMessageWithTimestamp:timestamp
+                                          inThread:nil
+                                       messageBody:nil
+                                     attachmentIds:[NSMutableArray new]
+                                  expiresInSeconds:0
+                                   expireStartedAt:0
+                                    isVoiceMessage:NO
+                                  groupMetaMessage:TSGroupMetaMessageUnspecified
+                                     quotedMessage:nil
+                                      contactShare:nil
+                                       linkPreview:nil
+                                    messageSticker:nil];
+
+    if (!self) {
+        return self;
+    }
+
+    return self;
+}
+
 - (BOOL)shouldBeSaved
 {
     return NO;
