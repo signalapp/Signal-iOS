@@ -1102,7 +1102,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [error setIsRetryable:NO];
         return messageSend.failure(error);
     }
-    
+
+    // Update the thread's friend request status if needed
+    if (messageType == TSFriendRequestMessageType) {
+        message.thread.friendRequestStatus = TSThreadFriendRequestStatusPendingSend;
+    }
+
     // Update the state to show that proof of work is being calculated
     [self setIsCalculatingProofOfWorkForMessage:messageSend];
 
@@ -1111,6 +1116,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     BOOL isPoWRequired = YES; // TODO: Base on message type
     [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId timestamp:message.timestamp requiringPoW:isPoWRequired]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
+
+            // Update the thread's friend request status if needed
+            if (messageType == TSFriendRequestMessageType) {
+                message.thread.friendRequestStatus = TSThreadFriendRequestStatusSent;
+            }
+
             [self messageSendDidSucceed:messageSend
                          deviceMessages:deviceMessages
                             wasSentByUD:false

@@ -75,6 +75,7 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/OWSPrimaryStorage+Loki.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -4303,7 +4304,14 @@ typedef enum : NSUInteger {
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
 {
-    OWSLogDebug(@"decline friend request button pressed"); // TODO: Implement
+    // Reset friend request status
+    self.thread.friendRequestStatus = TSThreadFriendRequestStatusNone;
+    // Delete prekeys
+    NSString *contactID = self.thread.recipientIdentifiers.firstObject;
+    OWSPrimaryStorage *primaryStorage = SSKEnvironment.shared.primaryStorage;
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [primaryStorage removePreKeyBundleForContact:contactID transaction:transaction];
+    }];
 }
 
 #pragma mark - ConversationViewLayoutDelegate
