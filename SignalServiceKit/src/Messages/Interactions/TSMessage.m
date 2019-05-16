@@ -438,6 +438,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                              }];
 }
 
+#pragma mark - Loki Friend Request Handling
+
 @end
 
 NS_ASSUME_NONNULL_END

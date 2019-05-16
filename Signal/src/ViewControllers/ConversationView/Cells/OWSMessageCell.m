@@ -124,18 +124,6 @@ NS_ASSUME_NONNULL_BEGIN
     return outgoingMessage.messageState == TSOutgoingMessageStateFailed;
 }
 
-- (TSThreadFriendRequestStatus)friendRequestStatus
-{
-    return [self.message.thread getFriendRequestStatus];
-}
-
-- (BOOL)isFriendRequest
-{
-    TSThreadFriendRequestStatus friendRequestStatus = self.friendRequestStatus;
-    return friendRequestStatus == TSThreadFriendRequestStatusPendingSend || friendRequestStatus == TSThreadFriendRequestStatusRequestSent
-        || friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
-}
-
 #pragma mark - Load
 
 - (void)loadForDisplay
@@ -218,10 +206,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     
-    if (self.isFriendRequest) {
-        // At this point, self.friendRequestStatus should be either TSThreadFriendRequestStatusRequestReceived,
+    if (self.message.isFriendRequest) {
+        // At this point, self.message.thread.friendRequestStatus should be either TSThreadFriendRequestStatusRequestReceived,
         // TSThreadFriendRequestStatusPendingSend or TSThreadFriendRequestStatusRequestSent
-        NSString *rawKind = self.friendRequestStatus == TSThreadFriendRequestStatusRequestReceived ? @"incoming" : @"outgoing";
+        NSString *rawKind = self.message.interactionType == OWSInteractionType_IncomingMessage ? @"incoming" : @"outgoing";
         self.friendRequestView = [[FriendRequestView alloc] initWithRawKind:rawKind];
         self.friendRequestView.message = self.message;
         self.friendRequestView.delegate = self.friendRequestViewDelegate;
@@ -372,7 +360,7 @@ NS_ASSUME_NONNULL_BEGIN
         cellSize.width += self.sendFailureBadgeSize + self.sendFailureBadgeSpacing;
     }
 
-    if (self.isFriendRequest) {
+    if (self.message.isFriendRequest) {
         cellSize.height += [FriendRequestView calculateHeightWithMessage:self.message conversationStyle:self.conversationStyle];
     }
     
@@ -454,7 +442,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.delegate);
 
-    if (self.isFriendRequest) {
+    if (self.message.isFriendRequest) {
         return;
     }
     

@@ -1587,11 +1587,9 @@ typedef enum : NSUInteger {
 #pragma mark - Updating
 
 - (void)updateInputToolbar {
-    TSThreadFriendRequestStatus friendRequestStatus = [self.thread getFriendRequestStatus];
-    BOOL isFriendRequestPending = friendRequestStatus == TSThreadFriendRequestStatusPendingSend || friendRequestStatus == TSThreadFriendRequestStatusRequestSent
-        || friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
-    [self.inputToolbar setUserInteractionEnabled:!isFriendRequestPending];
-    NSString *placeholderText = isFriendRequestPending ? NSLocalizedString(@"Pending Friend Request...", "") : NSLocalizedString(@"New Message", "");
+    BOOL hasPendingFriendRequest = self.thread.hasPendingFriendRequest;
+    [self.inputToolbar setUserInteractionEnabled:!hasPendingFriendRequest];
+    NSString *placeholderText = hasPendingFriendRequest ? NSLocalizedString(@"Pending Friend Request...", "") : NSLocalizedString(@"New Message", "");
     [self.inputToolbar setPlaceholderText:placeholderText];
 }
 
@@ -4306,6 +4304,7 @@ typedef enum : NSUInteger {
 {
     // Reset friend request status
     self.thread.friendRequestStatus = TSThreadFriendRequestStatusNone;
+    [self.thread save];
     // Delete prekeys
     NSString *contactID = self.thread.recipientIdentifiers.firstObject;
     OWSPrimaryStorage *primaryStorage = SSKEnvironment.shared.primaryStorage;

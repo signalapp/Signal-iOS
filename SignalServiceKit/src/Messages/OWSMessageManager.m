@@ -1442,6 +1442,15 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
+        thread.friendRequestStatus = TSThreadFriendRequestStatusRequestReceived;
+        [thread saveWithTransaction:transaction];
+        incomingMessage.isFriendRequest = YES;
+    } else if (incomingMessage.body == @"") { // Assumed to be an accept friend request message
+        thread.friendRequestStatus = TSThreadFriendRequestStatusFriends;
+        [thread saveWithTransaction:transaction];
+    }
+
     [incomingMessage saveWithTransaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.

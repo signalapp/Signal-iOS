@@ -696,11 +696,12 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
                              }];
 }
 
-- (void)setFriendRequestStatus:(TSThreadFriendRequestStatus)friendRequestStatus
+#pragma mark - Loki Friend Request Handling
+
+- (BOOL)hasPendingFriendRequest
 {
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        _friendRequestStatus = friendRequestStatus;
-    }];
+    return self.friendRequestStatus == TSThreadFriendRequestStatusPendingSend || self.friendRequestStatus == TSThreadFriendRequestStatusRequestSent
+        || self.friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
 }
 
 @end

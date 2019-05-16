@@ -4,6 +4,11 @@
     @objc weak var delegate: FriendRequestViewDelegate?
     private let kind: Kind
 
+    private var didAcceptRequest: Bool {
+        guard let message = message as? TSIncomingMessage else { preconditionFailure() }
+        return message.thread.friendRequestStatus == .friends
+    }
+
     private var didDeclineRequest: Bool {
         guard let message = message as? TSIncomingMessage else { preconditionFailure() }
         return message.thread.friendRequestStatus == .none
@@ -81,7 +86,9 @@
             guard let message = message as? TSIncomingMessage else { preconditionFailure() }
             buttonStackView.isHidden = didDeclineRequest
             let text: String = {
-                if didDeclineRequest {
+                if didAcceptRequest {
+                    return String(format: NSLocalizedString("You've accepted %@'s friend request", comment: ""), message.authorId)
+                } else if didDeclineRequest {
                     return String(format: NSLocalizedString("You've declined %@'s friend request", comment: ""), message.authorId)
                 } else {
                     return String(format: NSLocalizedString("%@ sent you a friend request", comment: ""), message.authorId)
