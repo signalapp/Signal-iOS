@@ -74,7 +74,7 @@ public class StickerTooltip: UIView {
         shapeLayer.shadowColor = UIColor.black.cgColor
         shapeLayer.shadowOffset = CGSize(width: 0, height: 40)
         shapeLayer.shadowRadius = 40
-        shapeLayer.shadowOpacity = 0.65
+        shapeLayer.shadowOpacity = 0.33
         shapeLayer.fillColor = Theme.backgroundColor.cgColor
         bubbleView.layer.addSublayer(shapeLayer)
         addSubview(bubbleView)
