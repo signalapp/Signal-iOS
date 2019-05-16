@@ -130,7 +130,7 @@
         let totalHeight: CGFloat = {
             switch kind {
             case .incoming:
-                let buttonHeight = dummyFriendRequestView.buttonHeight
+                let buttonHeight = dummyFriendRequestView.buttonStackView.isHidden ? 0 : dummyFriendRequestView.buttonHeight
                 return topSpacing + messageHeight + buttonHeight
             case .outgoing:
                 return topSpacing + messageHeight

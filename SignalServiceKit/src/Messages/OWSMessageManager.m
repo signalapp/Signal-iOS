@@ -1443,12 +1443,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
-        thread.friendRequestStatus = TSThreadFriendRequestStatusRequestReceived;
-        [thread saveWithTransaction:transaction];
+        [thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestReceived withTransaction:transaction];
         incomingMessage.isFriendRequest = YES;
     } else if (incomingMessage.body == @"") { // Assumed to be an accept friend request message
-        thread.friendRequestStatus = TSThreadFriendRequestStatusFriends;
-        [thread saveWithTransaction:transaction];
+        [thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
     }
 
     [incomingMessage saveWithTransaction:transaction];

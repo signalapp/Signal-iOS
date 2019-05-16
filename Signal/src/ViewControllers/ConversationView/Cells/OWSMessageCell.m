@@ -207,8 +207,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     if (self.message.isFriendRequest) {
-        // At this point, self.message.thread.friendRequestStatus should be either TSThreadFriendRequestStatusRequestReceived,
-        // TSThreadFriendRequestStatusPendingSend or TSThreadFriendRequestStatusRequestSent
         NSString *rawKind = self.message.interactionType == OWSInteractionType_IncomingMessage ? @"incoming" : @"outgoing";
         self.friendRequestView = [[FriendRequestView alloc] initWithRawKind:rawKind];
         self.friendRequestView.message = self.message;

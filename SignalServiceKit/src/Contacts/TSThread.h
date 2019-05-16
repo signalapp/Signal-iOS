@@ -189,6 +189,8 @@ typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
 
 #pragma mark - Loki Friend Request Handling
 
+- (void)setFriendRequestStatus:(TSThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+
 /// Shorthand for checking that `friendRequestStatus` is `TSThreadFriendRequestStatusPendingSend`, `TSThreadFriendRequestStatusRequestSent` or `TSThreadFriendRequestStatusRequestReceived`.
 - (BOOL)hasPendingFriendRequest;
 

@@ -4303,8 +4303,7 @@ typedef enum : NSUInteger {
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
 {
     // Reset friend request status
-    self.thread.friendRequestStatus = TSThreadFriendRequestStatusNone;
-    [self.thread save];
+    [self.thread setFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:nil];
     // Delete prekeys
     NSString *contactID = self.thread.recipientIdentifiers.firstObject;
     OWSPrimaryStorage *primaryStorage = SSKEnvironment.shared.primaryStorage;

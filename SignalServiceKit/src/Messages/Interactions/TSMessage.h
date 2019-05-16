@@ -69,6 +69,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+#pragma mark - Loki Friend Request Handling
+
+- (void)setIsFriendRequest:(BOOL)isFriendRequest withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

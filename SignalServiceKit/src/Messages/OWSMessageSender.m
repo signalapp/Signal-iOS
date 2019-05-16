@@ -1111,21 +1111,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // Update the thread's friend request status if needed
     NSInteger *messageType = ((NSNumber *)signalMessage[@"type"]).integerValue;
     if (messageType == TSFriendRequestMessageType) {
-        message.thread.friendRequestStatus = TSThreadFriendRequestStatusPendingSend;
-        [message.thread save];
-        message.isFriendRequest = YES;
-        [message save];
+        [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusPendingSend withTransaction:nil];
+        [message setIsFriendRequest:YES withTransaction:nil];
     }
     BOOL isPoWRequired = YES; // TODO: Base on message type
     [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId timestamp:message.timestamp requiringPoW:isPoWRequired]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             // Update the thread's friend request status if needed
             if (messageType == TSFriendRequestMessageType) {
-                message.thread.friendRequestStatus = TSThreadFriendRequestStatusRequestSent;
-                [message.thread save];
+                [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:nil];
             } else if (message.body == @"") { // Assumed to be an accept friend request message
-                message.thread.friendRequestStatus = TSThreadFriendRequestStatusFriends;
-                [message.thread save];
+                [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:nil];
             }
             // Invoke the completion handler
             [self messageSendDidSucceed:messageSend
@@ -1136,8 +1132,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
             // Update the thread's friend request status if needed
             if (messageType == TSFriendRequestMessageType) {
-                message.thread.friendRequestStatus = TSThreadFriendRequestStatusNone;
-                [message.thread save];
+                [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:nil];
             }
             // Handle the error
             NSUInteger statusCode = 0;

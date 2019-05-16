@@ -440,6 +440,16 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Loki Friend Request Handling
 
+- (void)setIsFriendRequest:(BOOL)isFriendRequest withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    self.isFriendRequest = isFriendRequest;
+    if (transaction == nil) {
+        [self save];
+    } else {
+        [self saveWithTransaction:transaction];
+    }
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
