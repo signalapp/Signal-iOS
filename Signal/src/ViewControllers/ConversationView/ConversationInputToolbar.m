@@ -113,6 +113,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic) BOOL wasLinkPreviewCancelled;
 @property (nonatomic, nullable, weak) LinkPreviewView *linkPreviewView;
 @property (nonatomic) BOOL isStickerKeyboardActive;
+@property (nonatomic, nullable, weak) UIView *stickerTooltip;
 
 @end
 
@@ -517,11 +518,13 @@ const CGFloat kMaxTextViewHeight = 98;
                                                        block:^{
                                                            [weakSelf activateStickerKeyboard];
                                                        }];
-    
-//    const CGFloat tooltipDurationSeconds = 5.f;
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(tooltipDurationSeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        [tooltip removeFromSuperview];
-//    });
+    self.stickerTooltip = tooltip;
+
+    //    const CGFloat tooltipDurationSeconds = 5.f;
+    //    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(tooltipDurationSeconds * NSEC_PER_SEC)),
+    //    dispatch_get_main_queue(), ^{
+    //        [tooltip removeFromSuperview];
+    //    });
     return YES;
 }
 
@@ -1357,6 +1360,21 @@ const CGFloat kMaxTextViewHeight = 98;
 
     [self clearTextMessageAnimated:YES];
     [self.inputToolbarDelegate sendSticker:stickerInfo];
+}
+
+// stickerTooltip lies outside this view's bounds, so we
+// need to special-case the hit testing so that it can
+// intercept touches within its bounds.
+- (BOOL)pointInside:(CGPoint)point withEvent:(nullable UIEvent *)event
+{
+    UIView *_Nullable stickerTooltip = self.stickerTooltip;
+    if (stickerTooltip != nil) {
+        CGRect stickerTooltipFrame = [self convertRect:stickerTooltip.bounds fromView:stickerTooltip];
+        if (CGRectContainsPoint(stickerTooltipFrame, point)) {
+            return YES;
+        }
+    }
+    return [super pointInside:point withEvent:event];
 }
 
 @end
