@@ -2069,8 +2069,8 @@
 /* Label for 'cancel backup' button in the backup settings view. */
 "SETTINGS_BACKUP_CANCEL_BACKUP" = "Cancel Creating Backup";
 
-/* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Enabled";
+/* Label for switch in settings that controls whether or not backup is enabled. When enabled, Signal will also start making automated periodic backups. The keyword "Let" indicates "giving control out of hand" which suggest the user gives Signal permission to make backups as Signal sees fit. */
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Let Signal Create Backups";
 
 /* Label for iCloud status row in the in the backup settings view. */
 "SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
