@@ -1065,7 +1065,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSArray *validMessageTypes = @[ @(TSEncryptedWhisperMessageType), @(TSPreKeyWhisperMessageType), @(TSFriendRequestMessageType) ];
             hasValidMessageType = [validMessageTypes containsObject:messageType];
 
-            /* Loki: Original code:
+            /* Loki: Original code
             hasValidMessageType = ([messageType isEqualToNumber:@(TSEncryptedWhisperMessageType)] ||
                                    [messageType isEqualToNumber:@(TSPreKeyWhisperMessageType)]);
              */
@@ -1552,7 +1552,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // Loki: Since we don't support multi-device sending yet, just send it to the primary device
     NSMutableArray<NSNumber *> *deviceIds = [NSMutableArray arrayWithObject:@(OWSDevicePrimaryDeviceId)];
 
-    /* Loki: Original code:
+    /* Loki: Original code
     NSMutableArray<NSNumber *> *deviceIds = [recipient.devices mutableCopy];
      */
 

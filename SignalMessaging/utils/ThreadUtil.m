@@ -85,11 +85,11 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
 #pragma mark - Durable Message Enqueue
 
-// Loki: TODO We may change this?
 + (TSOutgoingMessage *)enqueueAcceptFriendRequestMessageInThread:(TSThread *)thread
 {
     TSOutgoingMessage *message = [TSOutgoingMessage createEmptyOutgoingMessageInThread:thread];
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [message saveWithTransaction:transaction];
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
     return message;
