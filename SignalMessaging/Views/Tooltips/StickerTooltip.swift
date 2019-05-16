@@ -93,12 +93,9 @@ public class StickerTooltip: UIView {
             bezierPath.append(UIBezierPath(roundedRect: bubbleBounds, cornerRadius: self.bubbleRounding))
 
             // Tail
+            //
+            // The tail should _try_ to point to the "tail reference view".
             let tailReferenceFrame = self.convert(tailReferenceView.bounds, from: tailReferenceView)
-//            Logger.verbose("---- tailReferenceView.frame: \(tailReferenceView.frame)")
-//            Logger.verbose("---- tailReferenceFrame: \(tailReferenceFrame)")
-//            Logger.verbose("---- bubbleBounds: \(bubbleBounds)")
-//            bezierPath.append(UIBezierPath(roundedRect: tailReferenceFrame, cornerRadius: self.bubbleRounding))
-
             let tailHalfWidth = self.tailWidth * 0.5
             let tailHCenterMin = self.bubbleRounding + tailHalfWidth
             let tailHCenterMax = bubbleBounds.width - tailHCenterMin
@@ -142,7 +139,15 @@ public class StickerTooltip: UIView {
 
         fromView.addSubview(self)
         autoPinEdge(.bottom, to: .top, of: tailReferenceView, withOffset: -0)
-        autoAlignAxis(.vertical, toSameAxisOf: tailReferenceView)
+        // Insist on the tooltip fitting within the margins of the widthReferenceView.
+        autoPinEdge(.left, to: .left, of: widthReferenceView, withOffset: 20, relation: .greaterThanOrEqual)
+        autoPinEdge(.right, to: .right, of: widthReferenceView, withOffset: -20, relation: .lessThanOrEqual)
+        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {
+            // Prefer that the tooltip's tail is as far as possible.
+            // It should point at the center of the "tail reference view".
+            let edgeOffset = bubbleRounding + tailWidth * 0.5 - tailReferenceView.width() * 0.5
+            autoPinEdge(.right, to: .right, of: tailReferenceView, withOffset: edgeOffset)
+        }
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
