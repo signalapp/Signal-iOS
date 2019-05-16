@@ -16,6 +16,7 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -138,6 +139,11 @@ const CGFloat kMaxTextViewHeight = 98;
 - (OWSLinkPreviewManager *)linkPreviewManager
 {
     return SSKEnvironment.shared.linkPreviewManager;
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
 }
 
 #pragma mark -
@@ -493,6 +499,32 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 }
 
+- (BOOL)tryToShowStickerTooltip
+{
+    __block StickerPack *_Nullable stickerPack;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        stickerPack = [StickerManager installedStickerPacksWithTransaction:transaction].firstObject;
+    }];
+    if (stickerPack == nil) {
+        return NO;
+    }
+
+    __weak ConversationInputToolbar *weakSelf = self;
+    UIView *tooltip = [StickerTooltip presentTooltipFromView:self
+                                          widthReferenceView:self
+                                           tailReferenceView:self.stickerButton
+                                             stickerPack:stickerPack
+                                                       block:^{
+                                                           [weakSelf activateStickerKeyboard];
+                                                       }];
+    
+//    const CGFloat tooltipDurationSeconds = 5.f;
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(tooltipDurationSeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        [tooltip removeFromSuperview];
+//    });
+    return YES;
+}
+
 - (void)endEditingMessage
 {
     [self.inputTextView resignFirstResponder];
@@ -554,6 +586,13 @@ const CGFloat kMaxTextViewHeight = 98;
         [UIView animateWithDuration:0.1 animations:updateBlock];
     } else {
         updateBlock();
+    }
+    
+    static BOOL hasShowStickerTooltip = NO;
+    if (!hasShowStickerTooltip) {
+        if ([self tryToShowStickerTooltip]) {
+            hasShowStickerTooltip = YES;
+        }
     }
 }
 
@@ -1015,9 +1054,14 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)stickerButtonPressed
 {
-    OWSAssertDebug(self.inputToolbarDelegate);
-
     OWSLogVerbose(@"");
+    
+    [self activateStickerKeyboard];
+}
+
+- (void)activateStickerKeyboard
+{
+    OWSAssertDebug(self.inputToolbarDelegate);
 
     self.isStickerKeyboardActive = !self.isStickerKeyboardActive;
     if (self.isStickerKeyboardActive) {
