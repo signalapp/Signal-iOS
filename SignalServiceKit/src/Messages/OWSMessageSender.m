@@ -1121,7 +1121,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // ========
             if (messageType == TSFriendRequestMessageType) {
                 [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:nil];
-            } else if (thread.hasCurrentUserReceivedFriendRequest) {
+            } else if (message.thread.hasCurrentUserReceivedFriendRequest) {
                 // If the thread's current friend request state is TSThreadFriendRequestStatusRequestReceived, and we're sending a message,
                 // that means we're accepting the request. Declining a friend request doesn't send a message.
                 [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:nil];
