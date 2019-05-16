@@ -1442,12 +1442,19 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // Loki:
+    // ========
     if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
-        [thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestReceived withTransaction:transaction];
-        incomingMessage.isFriendRequest = YES;
-    } else if (incomingMessage.body == @"") { // Assumed to be an accept friend request message
+        if (thread.hasCurrentUserSentFriendRequest) {
+            [thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
+        } else {
+            [thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestReceived withTransaction:transaction];
+            incomingMessage.isFriendRequest = YES; // Saved below
+        }
+    } else if (!thread.isContactFriend) {
         [thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
     }
+    // ========
 
     [incomingMessage saveWithTransaction:transaction];
 

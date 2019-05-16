@@ -714,6 +714,21 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         || self.friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
 }
 
+- (BOOL)isContactFriend
+{
+    return self.friendRequestStatus == TSThreadFriendRequestStatusFriends;
+}
+
+- (BOOL)hasCurrentUserSentFriendRequest
+{
+    return self.friendRequestStatus == TSThreadFriendRequestStatusRequestSent;
+}
+
+- (BOOL)hasCurrentUserReceivedFriendRequest
+{
+    return self.friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

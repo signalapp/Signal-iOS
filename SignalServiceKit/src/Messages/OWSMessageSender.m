@@ -1117,12 +1117,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     BOOL isPoWRequired = YES; // TODO: Base on message type
     [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId timestamp:message.timestamp requiringPoW:isPoWRequired]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
-            // Update the thread's friend request status if needed
+            // Loki
+            // ========
             if (messageType == TSFriendRequestMessageType) {
                 [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:nil];
-            } else if (message.body == @"") { // Assumed to be an accept friend request message
+            } else if (thread.hasCurrentUserReceivedFriendRequest) {
+                // If the thread's current friend request state is TSThreadFriendRequestStatusRequestReceived, and we're sending a message,
+                // that means we're accepting the request. Declining a friend request doesn't send a message.
                 [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:nil];
             }
+            // ========
             // Invoke the completion handler
             [self messageSendDidSucceed:messageSend
                          deviceMessages:deviceMessages
