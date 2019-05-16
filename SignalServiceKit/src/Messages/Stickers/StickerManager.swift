@@ -81,6 +81,8 @@ public class StickerManager: NSObject {
 
     private static let store = SDSKeyValueStore(collection: "recentStickers")
     private static let emojiMapStore = SDSKeyValueStore(collection: "emojiMap")
+    
+    private static let serialQueue = DispatchQueue(label: "org.signal.stickers")
 
     @objc
     public enum InstallMode: Int {
@@ -846,8 +848,8 @@ public class StickerManager: NSObject {
     // MARK: - Auto-Enable
 
     private let kHasReceivedStickersKey = "hasReceivedStickersKey"
+    // This property should only be accessed on serialQueue.
     private var isStickerSendEnabledCached = false
-    private static let serialQueue = DispatchQueue(label: "org.signal.stickers")
 
     @objc
     public func setHasUsedStickers(transaction: SDSAnyWriteTransaction) {
@@ -899,6 +901,7 @@ public class StickerManager: NSObject {
     }
 
     private let kShouldShowTooltipKey = "shouldShowTooltip"
+    // This property should only be accessed on serialQueue.
     private var tooltipState = TooltipState.unknown
 
     private func stickerPackWasInstalled(transaction: SDSAnyWriteTransaction) {
