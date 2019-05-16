@@ -141,11 +141,7 @@ public class StickerPackViewController: OWSViewController {
             view.addSubview(button)
             button.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
             button.autoPinWidthToSuperview(withMargin: hMargin)
-            guard let buttonFont = button.font else {
-                owsFailDebug("Missing button font.")
-                continue
-            }
-            button.autoSetDimension(.height, toSize: buttonFont.lineHeight * 2.5)
+            button.autoSetHeightUsingFont()
         }
 
         updateContent()

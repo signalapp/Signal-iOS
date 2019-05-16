@@ -962,9 +962,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     NSArray<ExperienceUpgrade *> *unseenUpgrades = [self unseenUpgradeExperiences];
 
     if (unseenUpgrades.count > 0) {
-        ExperienceUpgradesPageViewController *experienceUpgradeViewController =
-            [[ExperienceUpgradesPageViewController alloc] initWithExperienceUpgrades:unseenUpgrades];
-        [self presentViewController:experienceUpgradeViewController animated:YES completion:nil];
+        ExperienceUpgrade *firstUpgrade = unseenUpgrades[0];
+        UIViewController *_Nullable viewController =
+            [ExperienceUpgradeViewController viewControllerForExperienceUpgrade:firstUpgrade];
+        if (viewController == nil) {
+            OWSFailDebug(@"Could not display experience upgrade.");
+            return;
+        }
+        [self presentViewController:viewController animated:YES completion:nil];
     } else {
         [OWSAlerts showIOSUpgradeNagIfNecessary];
     }
