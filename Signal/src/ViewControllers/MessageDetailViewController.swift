@@ -696,6 +696,10 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
     }
 
     func didTapStickerPack(_ stickerPackInfo: StickerPackInfo) {
+        guard FeatureFlags.stickerAutoEnable else {
+            return
+        }
+
         let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
         present(packView, animated: true)
     }

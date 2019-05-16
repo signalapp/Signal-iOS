@@ -608,6 +608,9 @@ static NSTimeInterval launchStartedAt;
                 }
             }
         } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
+            if (!SSKFeatureFlags.stickerAutoEnable) {
+                return NO;
+            }
             StickerPackInfo *_Nullable stickerPackInfo = [self parseAddStickersUrl:url];
             if (stickerPackInfo == nil) {
                 OWSFailDebug(@"Invalid URL: %@", url);
@@ -627,6 +630,7 @@ static NSTimeInterval launchStartedAt;
             } else {
                 [rootViewController presentViewController:packView animated:NO completion:nil];
             }
+            return YES;
         } else {
             OWSFailDebug(@"Application opened with an unknown URL action: %@", url.host);
         }

@@ -2464,6 +2464,10 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
+    if (!SSKFeatureFlags.stickerAutoEnable) {
+        return;
+    }
+
     StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
     [self presentViewController:packView animated:YES completion:nil];
 }
@@ -2601,6 +2605,10 @@ typedef enum : NSUInteger {
 - (void)showStickerPack:(StickerPackInfo *)stickerPackInfo
 {
     OWSAssertIsOnMainThread();
+
+    if (!SSKFeatureFlags.stickerAutoEnable) {
+        return;
+    }
 
     StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
     [self presentViewController:packView animated:YES completion:nil];
