@@ -101,7 +101,9 @@ public class StickerManager: NSObject {
 
         // Resume sticker and sticker pack downloads when app is ready.
         AppReadiness.runNowOrWhenAppWillBecomeReady {
-            StickerManager.shared.updateIsStickerSendEnabled()
+            // Warm the caches.
+            StickerManager.shared.warmIsStickerSendEnabled()
+            StickerManager.shared.warmTooltipState()
         }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             if TSAccountManager.sharedInstance().isRegisteredAndReady() {
@@ -323,6 +325,8 @@ public class StickerManager: NSObject {
             } else {
                 stickerPack.anySave(transaction: transaction)
             }
+
+            self.shared.stickerPackWasInstalled(transaction: transaction)
 
             enqueueStickerSyncMessage(operationType: .install,
                                       packs: [stickerPack.info],
@@ -875,13 +879,74 @@ public class StickerManager: NSObject {
         }
     }
 
-    private func updateIsStickerSendEnabled() {
+    private func warmIsStickerSendEnabled() {
         let value = databaseStorage.readReturningResult { transaction in
             return StickerManager.store.getBool(self.kHasReceivedStickersKey, defaultValue: false, transaction: transaction)
         }
 
         StickerManager.serialQueue.sync {
             isStickerSendEnabledCached = value
+        }
+    }
+
+    // MARK: - Tooltips
+
+    @objc
+    public enum TooltipState: UInt {
+        case unknown = 1
+        case shouldShowTooltip = 2
+        case hasShownTooltip = 3
+    }
+
+    private let kShouldShowTooltipKey = "shouldShowTooltip"
+    private var tooltipState = TooltipState.unknown
+
+    private func stickerPackWasInstalled(transaction: SDSAnyWriteTransaction) {
+        setTooltipState(.shouldShowTooltip, transaction: transaction)
+    }
+
+    @objc
+    public func stickerTooltipWasShown(transaction: SDSAnyWriteTransaction) {
+        setTooltipState(.hasShownTooltip, transaction: transaction)
+    }
+
+    @objc
+    public func setTooltipState(_ value: TooltipState, transaction: SDSAnyWriteTransaction) {
+        var shouldSet = false
+        StickerManager.serialQueue.sync {
+            // Don't "downgrade" this state; only raise to higher values.
+            guard self.tooltipState.rawValue < value.rawValue else {
+                return
+            }
+            self.tooltipState = value
+            shouldSet = true
+        }
+        guard shouldSet else {
+            return
+        }
+
+        StickerManager.store.setUInt(value.rawValue, key: kShouldShowTooltipKey, transaction: transaction)
+    }
+
+    @objc
+    public var shouldShowStickerTooltip: Bool {
+        guard isStickerSendEnabled else {
+            return false
+        }
+        return StickerManager.serialQueue.sync {
+            return self.tooltipState == .shouldShowTooltip
+        }
+    }
+
+    private func warmTooltipState() {
+        let value = databaseStorage.readReturningResult { transaction in
+            return StickerManager.store.getUInt(self.kShouldShowTooltipKey, defaultValue: TooltipState.unknown.rawValue, transaction: transaction)
+        }
+
+        StickerManager.serialQueue.sync {
+            if let tooltipState = TooltipState(rawValue: value) {
+                self.tooltipState = tooltipState
+            }
         }
     }
 

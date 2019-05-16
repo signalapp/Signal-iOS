@@ -67,6 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateLayoutWithSafeAreaInsets:(UIEdgeInsets)safeAreaInsets;
 - (void)ensureTextViewHeight;
 
+- (void)viewDidAppear;
+
 #pragma mark - Voice Memo
 
 - (void)lockVoiceMemoUI;

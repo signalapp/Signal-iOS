@@ -509,6 +509,9 @@ const CGFloat kMaxTextViewHeight = 98;
     if (stickerPack == nil) {
         return NO;
     }
+    if (self.stickerTooltip != nil) {
+        return YES;
+    }
     if (self.isStickerKeyboardActive) {
         // The intent of this tooltip is to prod users to activate the
         // sticker keyboard.  If it's already active, we can skip the
@@ -536,7 +539,7 @@ const CGFloat kMaxTextViewHeight = 98;
     return YES;
 }
 
-- (BOOL)removeStickerTooltip
+- (void)removeStickerTooltip
 {
     [self.stickerTooltip removeFromSuperview];
     self.stickerTooltip = nil;
@@ -608,11 +611,12 @@ const CGFloat kMaxTextViewHeight = 98;
     } else {
         updateBlock();
     }
-    
-    static BOOL hasShowStickerTooltip = NO;
-    if (!hasShowStickerTooltip) {
+
+    if (StickerManager.shared.shouldShowStickerTooltip) {
         if ([self tryToShowStickerTooltip]) {
-            hasShowStickerTooltip = YES;
+            [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                [StickerManager.shared stickerTooltipWasShownWithTransaction:transaction];
+            }];
         }
     }
 }
@@ -1393,6 +1397,11 @@ const CGFloat kMaxTextViewHeight = 98;
         }
     }
     return [super pointInside:point withEvent:event];
+}
+
+- (void)viewDidAppear
+{
+    [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
 }
 
 @end
