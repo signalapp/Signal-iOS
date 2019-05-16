@@ -69,7 +69,7 @@ public class FeatureFlags: NSObject {
     public static let stickerPackOrdering = false
 
     @objc
-    public static let testBuiltInStickerPacks = false
+    public static let testBuiltInStickerPacks = true
 
     // Don't enable this flag until the Desktop changes have been in production for a while.
     @objc
