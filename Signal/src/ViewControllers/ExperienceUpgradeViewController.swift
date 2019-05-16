@@ -111,9 +111,6 @@ public class ExperienceUpgradeViewController: OWSViewController {
 
     // MARK: -
 
-    var bodyLabel: UILabel!
-    let bodyMargin = ScaleFromIPhone5To7Plus(12, 24)
-
     private let experienceUpgrade: ExperienceUpgrade
 
     init(experienceUpgrade: ExperienceUpgrade) {
