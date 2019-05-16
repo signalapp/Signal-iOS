@@ -2464,7 +2464,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    if (!SSKFeatureFlags.stickerAutoEnable) {
+    if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
         return;
     }
 
@@ -2606,7 +2606,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    if (!SSKFeatureFlags.stickerAutoEnable) {
+    if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
         return;
     }
 

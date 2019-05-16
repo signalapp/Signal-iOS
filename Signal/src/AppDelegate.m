@@ -608,7 +608,7 @@ static NSTimeInterval launchStartedAt;
                 }
             }
         } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
-            if (!SSKFeatureFlags.stickerAutoEnable) {
+            if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
                 return NO;
             }
             StickerPackInfo *_Nullable stickerPackInfo = [self parseAddStickersUrl:url];
