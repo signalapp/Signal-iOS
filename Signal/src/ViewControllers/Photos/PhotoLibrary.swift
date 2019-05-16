@@ -145,7 +145,7 @@ class PhotoCollectionContents {
             let options: PHImageRequestOptions = PHImageRequestOptions()
             options.isNetworkAccessAllowed = true
 
-            _ = imageManager.requestImageData(for: asset, options: options) { imageData, dataUTI, orientation, info in
+            _ = imageManager.requestImageData(for: asset, options: options) { imageData, dataUTI, _, _ in
 
                 guard let imageData = imageData else {
                     resolver.reject(PhotoLibraryError.assertionError(description: "imageData was unexpectedly nil"))
@@ -173,7 +173,7 @@ class PhotoCollectionContents {
             let options: PHVideoRequestOptions = PHVideoRequestOptions()
             options.isNetworkAccessAllowed = true
 
-            _ = imageManager.requestExportSession(forVideo: asset, options: options, exportPreset: AVAssetExportPresetMediumQuality) { exportSession, foo in
+            _ = imageManager.requestExportSession(forVideo: asset, options: options, exportPreset: AVAssetExportPresetMediumQuality) { exportSession, _ in
 
                 guard let exportSession = exportSession else {
                     resolver.reject(PhotoLibraryError.assertionError(description: "exportSession was unexpectedly nil"))
@@ -220,6 +220,10 @@ class PhotoCollectionContents {
 
 class PhotoCollection {
     private let collection: PHAssetCollection
+
+    // The user never sees this collection, but we use it for a null object pattern
+    // when the user has denied photos access.
+    static let empty = PhotoCollection(collection: PHAssetCollection())
 
     init(collection: PHAssetCollection) {
         self.collection = collection
@@ -277,7 +281,9 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
 
     func defaultPhotoCollection() -> PhotoCollection {
         guard let photoCollection = allPhotoCollections().first else {
-            owsFail("Could not locate Camera Roll.")
+            Logger.info("Using empty photo collection.")
+            assert(PHPhotoLibrary.authorizationStatus() == .denied)
+            return PhotoCollection.empty
         }
         return photoCollection
     }
