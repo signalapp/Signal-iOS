@@ -346,7 +346,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
-        play(sound: OWSSound.callFailure)
+        play(sound: .callEnded)
         handleCallEnded(call: call)
     }
 
@@ -354,6 +354,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
+        play(sound: .callEnded)
         handleCallEnded(call: call)
     }
 
@@ -363,6 +364,7 @@ protocol CallAudioServiceDelegate: class {
 
         vibrate()
 
+        play(sound: .callEnded)
         handleCallEnded(call: call)
     }
 

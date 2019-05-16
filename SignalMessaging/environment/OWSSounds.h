@@ -32,7 +32,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_CallConnecting,
     OWSSound_CallOutboundRinging,
     OWSSound_CallBusy,
-    OWSSound_CallFailure,
+    OWSSound_CallEnded,
 
     // Other
     OWSSound_MessageSent,
