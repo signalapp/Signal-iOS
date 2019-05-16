@@ -962,7 +962,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     NSArray<ExperienceUpgrade *> *unseenUpgrades = [self unseenUpgradeExperiences];
 
     if (unseenUpgrades.count > 0) {
-        ExperienceUpgrade *firstUpgrade = unseenUpgrades[0];
+        ExperienceUpgrade *firstUpgrade = unseenUpgrades.firstObject;
         UIViewController *_Nullable viewController =
             [ExperienceUpgradeViewController viewControllerForExperienceUpgrade:firstUpgrade];
         if (viewController == nil) {

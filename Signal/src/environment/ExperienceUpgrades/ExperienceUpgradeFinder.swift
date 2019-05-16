@@ -29,6 +29,9 @@ enum ExperienceUpgradeId: String {
     // Keep these ordered by increasing uniqueId.
     @objc
     public var allExperienceUpgrades: [ExperienceUpgrade] {
+        guard FeatureFlags.stickerSend else {
+            return []
+        }
         return [
             stickers
         ].compactMap { $0 }

@@ -14,7 +14,7 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
         self.view.backgroundColor = Theme.backgroundColor
 
         let heroImageView = UIImageView()
-        heroImageView.setImageName("introducing-link-previews-dark")
+        heroImageView.setImage(imageName: "introducing-link-previews-dark")
         if let heroImage = heroImageView.image {
             heroImageView.autoPinToAspectRatio(with: heroImage.size)
         } else {
@@ -146,7 +146,10 @@ public class ExperienceUpgradeViewController: OWSViewController {
 
     // MARK: - View lifecycle
 
-    @objc public override func viewDidLoad() {
+    @objc
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
         addDismissGesture()
     }
 
@@ -171,12 +174,14 @@ public class ExperienceUpgradeViewController: OWSViewController {
         super.dismiss(animated: flag, completion: completion)
     }
 
-    @objc func didTapDismissButton(sender: UIButton) {
+    @objc
+    func didTapDismissButton(sender: UIButton) {
         Logger.debug("")
         self.dismiss(animated: true)
     }
 
-    @objc func handleDismissGesture(sender: AnyObject) {
+    @objc
+    func handleDismissGesture(sender: AnyObject) {
         Logger.debug("")
         self.dismiss(animated: true)
     }

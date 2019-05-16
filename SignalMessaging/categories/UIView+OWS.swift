@@ -445,7 +445,7 @@ public extension UIButton {
 @objc
 public extension UIImageView {
     @objc
-    func setImageName(_ imageName: String) {
+    func setImage(imageName: String) {
         guard let image = UIImage(named: imageName) else {
             owsFailDebug("Couldn't load image: \(imageName)")
             return
