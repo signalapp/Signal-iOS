@@ -138,7 +138,7 @@
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes content which is not supported or content which is not formatted correctly.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes content which is not supported or not formatted correctly.";
 
 /* Attachment error message for attachments with an invalid file format */
 "ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has a file format which is not supported.";
@@ -988,7 +988,7 @@
 "GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
 
 /* Shown when selected GIF couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "There is a problem with this GIF, unable to use this GIF.";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to use this GIF.";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
@@ -2103,7 +2103,7 @@
 "SETTINGS_BACKUP_STATUS_IDLE" = "Waiting";
 
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Creating a Back Up";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Creating Backup";
 
 /* Indicates that the last backup succeeded. */
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Backup Created Successfully";
