@@ -24,8 +24,6 @@ public class StickerTooltip: UIView {
 
         super.init(frame: .zero)
 
-//        toastView.delegate = self
-
         createContents(fromView: fromView,
                        widthReferenceView: widthReferenceView,
                        tailReferenceView: tailReferenceView)
@@ -118,9 +116,9 @@ public class StickerTooltip: UIView {
         updateIconView()
 
         let label = UILabel()
-        // TODO:
-        label.text = "Test"
-        label.font = UIFont.ows_dynamicTypeBody
+        label.text = NSLocalizedString("STICKER_PACK_INSTALLED_TOOLTIP",
+                                       comment: "Tooltip indicating that a sticker pack was installed.")
+        label.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         label.textColor = Theme.primaryColor
 
         let stackView = UIStackView(arrangedSubviews: [

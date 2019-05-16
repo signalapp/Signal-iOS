@@ -509,6 +509,12 @@ const CGFloat kMaxTextViewHeight = 98;
     if (stickerPack == nil) {
         return NO;
     }
+    if (self.isStickerKeyboardActive) {
+        // The intent of this tooltip is to prod users to activate the
+        // sticker keyboard.  If it's already active, we can skip the
+        // tooltip.
+        return YES;
+    }
 
     __weak ConversationInputToolbar *weakSelf = self;
     UIView *tooltip = [StickerTooltip presentTooltipFromView:self
@@ -516,16 +522,24 @@ const CGFloat kMaxTextViewHeight = 98;
                                            tailReferenceView:self.stickerButton
                                              stickerPack:stickerPack
                                                        block:^{
+                                                           [weakSelf removeStickerTooltip];
                                                            [weakSelf activateStickerKeyboard];
                                                        }];
     self.stickerTooltip = tooltip;
 
-    //    const CGFloat tooltipDurationSeconds = 5.f;
-    //    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(tooltipDurationSeconds * NSEC_PER_SEC)),
-    //    dispatch_get_main_queue(), ^{
-    //        [tooltip removeFromSuperview];
-    //    });
+    const CGFloat tooltipDurationSeconds = 5.f;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(tooltipDurationSeconds * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{
+                       [weakSelf removeStickerTooltip];
+                   });
+    
     return YES;
+}
+
+- (BOOL)removeStickerTooltip
+{
+    [self.stickerTooltip removeFromSuperview];
+    self.stickerTooltip = nil;
 }
 
 - (void)endEditingMessage
@@ -580,6 +594,10 @@ const CGFloat kMaxTextViewHeight = 98;
 
         [self updateSuggestedStickers];
 
+        if (self.stickerButton.hidden || self.isStickerKeyboardActive) {
+            [self removeStickerTooltip];
+        }
+        
         if (doLayout) {
             [self layoutIfNeeded];
         }

@@ -2345,6 +2345,15 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "None";
 
+/* Label for the 'share to contacts' section in sticker views. */
+"STICKER_PACK_SHARE_TO_CONTACT_SECTION" = "Share to Contact";
+
+/* Label for the 'share to phone number' section in sticker views. */
+"STICKER_PACK_SHARE_TO_PHONE_NUMBER_SECTION" = "Share to Phone Number";
+
+/* Tooltip indicating that a sticker pack was installed. */
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Sticker pack installed";
+
 /* Label for a sticker that failed to download. */
 "STICKERS_FAILED_DOWNLOAD" = "Sticker";
 
