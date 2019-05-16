@@ -75,6 +75,7 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/OWSPrimaryStorage+Loki.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -1586,11 +1587,9 @@ typedef enum : NSUInteger {
 #pragma mark - Updating
 
 - (void)updateInputToolbar {
-    TSThreadFriendRequestStatus friendRequestStatus = [self.thread getFriendRequestStatus];
-    BOOL isFriendRequest = friendRequestStatus == TSThreadFriendRequestStatusPendingSend || friendRequestStatus == TSThreadFriendRequestStatusRequestSent
-        || friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
-    [self.inputToolbar setUserInteractionEnabled:!isFriendRequest];
-    NSString *placeholderText = isFriendRequest ? NSLocalizedString(@"Pending Friend Request...", "") : NSLocalizedString(@"New Message", "");
+    BOOL hasPendingFriendRequest = self.thread.hasPendingFriendRequest;
+    [self.inputToolbar setUserInteractionEnabled:!hasPendingFriendRequest];
+    NSString *placeholderText = hasPendingFriendRequest ? NSLocalizedString(@"Pending Friend Request...", "") : NSLocalizedString(@"New Message", "");
     [self.inputToolbar setPlaceholderText:placeholderText];
 }
 
@@ -4303,7 +4302,14 @@ typedef enum : NSUInteger {
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
 {
-    OWSLogDebug(@"decline friend request button pressed"); // TODO: Implement
+    // Reset friend request status
+    [self.thread setFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:nil];
+    // Delete prekeys
+    NSString *contactID = self.thread.recipientIdentifiers.firstObject;
+    OWSPrimaryStorage *primaryStorage = SSKEnvironment.shared.primaryStorage;
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [primaryStorage removePreKeyBundleForContact:contactID transaction:transaction];
+    }];
 }
 
 #pragma mark - ConversationViewLayoutDelegate

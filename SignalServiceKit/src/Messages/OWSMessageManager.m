@@ -1442,6 +1442,20 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // Loki:
+    // ========
+    if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
+        if (thread.hasCurrentUserSentFriendRequest) {
+            [thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
+        } else {
+            [thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestReceived withTransaction:transaction];
+            incomingMessage.isFriendRequest = YES; // Saved below
+        }
+    } else if (!thread.isContactFriend) {
+        [thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
+    }
+    // ========
+
     [incomingMessage saveWithTransaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.

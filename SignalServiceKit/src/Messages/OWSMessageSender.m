@@ -1102,21 +1102,43 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [error setIsRetryable:NO];
         return messageSend.failure(error);
     }
-    
+
     // Update the state to show that proof of work is being calculated
     [self setIsCalculatingProofOfWorkForMessage:messageSend];
 
     // Convert the message to a Loki message and send it using the Loki messaging API
     NSDictionary *signalMessage = deviceMessages.firstObject;
+    // Update the thread's friend request status if needed
+    NSInteger *messageType = ((NSNumber *)signalMessage[@"type"]).integerValue;
+    if (messageType == TSFriendRequestMessageType) {
+        [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusPendingSend withTransaction:nil];
+        [message setIsFriendRequest:YES withTransaction:nil];
+    }
     BOOL isPoWRequired = YES; // TODO: Base on message type
     [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId timestamp:message.timestamp requiringPoW:isPoWRequired]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
+            // Loki
+            // ========
+            if (messageType == TSFriendRequestMessageType) {
+                [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:nil];
+            } else if (message.thread.hasCurrentUserReceivedFriendRequest) {
+                // If the thread's current friend request state is TSThreadFriendRequestStatusRequestReceived, and we're sending a message,
+                // that means we're accepting the request. Declining a friend request doesn't send a message.
+                [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:nil];
+            }
+            // ========
+            // Invoke the completion handler
             [self messageSendDidSucceed:messageSend
                          deviceMessages:deviceMessages
                             wasSentByUD:false
                      wasSentByWebsocket:false];
         })
         .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
+            // Update the thread's friend request status if needed
+            if (messageType == TSFriendRequestMessageType) {
+                [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:nil];
+            }
+            // Handle the error
             NSUInteger statusCode = 0;
             NSData *_Nullable responseData = nil;
             if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
