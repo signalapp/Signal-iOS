@@ -85,13 +85,13 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
 #pragma mark - Durable Message Enqueue
 
-+ (TSOutgoingMessage *)enqueueAcceptFriendRequestMessageInThread:(TSThread *)thread
++ (OWSEphemeralMessage *)enqueueAcceptFriendRequestMessageInThread:(TSThread *)thread
 {
-    TSOutgoingMessage *message = [TSOutgoingMessage createEmptyOutgoingMessageInThread:thread];
+    OWSEphemeralMessage *emptyMessage = [OWSEphemeralMessage createEmptyOutgoingMessageInThread:thread];
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
     }];
-    return message;
+    return emptyMessage;
 }
 
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText

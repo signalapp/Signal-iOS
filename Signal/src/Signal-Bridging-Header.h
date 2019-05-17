@@ -90,6 +90,7 @@
 #import <SignalServiceKit/OWSContactsOutputStream.h>
 #import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>
+#import <SignalServiceKit/OWSEphemeralMessage.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSFriendRequestMessage.h>
