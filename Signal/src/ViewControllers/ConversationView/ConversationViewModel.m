@@ -1227,7 +1227,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             shouldHaveAddToProfileWhitelistOffer = NO;
         }
 
-        if ([self.contactsManager hasSignalAccountForRecipientId:recipientId]) {
+        if ([self.contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
             // Only create "add to contacts" offers for non-contacts.
             shouldHaveAddToContactsOffer = NO;
             // Only create block offers for non-contacts.
