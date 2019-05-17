@@ -5,7 +5,6 @@
     private let kind: Kind
 
     private var didAcceptRequest: Bool {
-        guard let message = message as? TSIncomingMessage else { preconditionFailure() }
         return message.thread.friendRequestStatus == .friends
     }
 
@@ -97,6 +96,7 @@
             label.text = text
         case .outgoing:
             guard let message = message as? TSOutgoingMessage else { preconditionFailure() }
+            label.isHidden = didAcceptRequest
             label.text = String(format: NSLocalizedString("You've sent %@ a friend request", comment: ""), message.thread.contactIdentifier()!)
         }
     }
@@ -133,6 +133,7 @@
                 let buttonHeight = dummyFriendRequestView.buttonStackView.isHidden ? 0 : dummyFriendRequestView.buttonHeight
                 return topSpacing + messageHeight + buttonHeight
             case .outgoing:
+                let messageHeight = dummyFriendRequestView.label.isHidden ? 0 : messageHeight
                 return topSpacing + messageHeight
             }
         }()
