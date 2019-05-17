@@ -2946,6 +2946,124 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageEphemeralMessage
+
+@objc public class SSKProtoDataMessageEphemeralMessage: NSObject {
+
+    // MARK: - SSKProtoDataMessageEphemeralMessageBuilder
+
+    @objc public class func builder(expireTimer: UInt32, data: [SSKProtoAttachmentPointer]) -> SSKProtoDataMessageEphemeralMessageBuilder {
+        return SSKProtoDataMessageEphemeralMessageBuilder(expireTimer: expireTimer, data: data)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoDataMessageEphemeralMessageBuilder {
+        let builder = SSKProtoDataMessageEphemeralMessageBuilder(expireTimer: expireTimer, data: data)
+        return builder
+    }
+
+    @objc public class SSKProtoDataMessageEphemeralMessageBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.EphemeralMessage()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(expireTimer: UInt32, data: [SSKProtoAttachmentPointer]) {
+            super.init()
+
+            setExpireTimer(expireTimer)
+            setData(data)
+        }
+
+        @objc public func setExpireTimer(_ valueParam: UInt32) {
+            proto.expireTimer = valueParam
+        }
+
+        @objc public func addData(_ valueParam: SSKProtoAttachmentPointer) {
+            var items = proto.data
+            items.append(valueParam.proto)
+            proto.data = items
+        }
+
+        @objc public func setData(_ wrappedItems: [SSKProtoAttachmentPointer]) {
+            proto.data = wrappedItems.map { $0.proto }
+        }
+
+        @objc public func build() throws -> SSKProtoDataMessageEphemeralMessage {
+            return try SSKProtoDataMessageEphemeralMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageEphemeralMessage.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.EphemeralMessage
+
+    @objc public let expireTimer: UInt32
+
+    @objc public let data: [SSKProtoAttachmentPointer]
+
+    private init(proto: SignalServiceProtos_DataMessage.EphemeralMessage,
+                 expireTimer: UInt32,
+                 data: [SSKProtoAttachmentPointer]) {
+        self.proto = proto
+        self.expireTimer = expireTimer
+        self.data = data
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageEphemeralMessage {
+        let proto = try SignalServiceProtos_DataMessage.EphemeralMessage(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.EphemeralMessage) throws -> SSKProtoDataMessageEphemeralMessage {
+        guard proto.hasExpireTimer else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: expireTimer")
+        }
+        let expireTimer = proto.expireTimer
+
+        guard proto.hasData else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: data")
+        }
+        let data = try SSKProtoAttachmentPointer.parseProto(proto.data)
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessageEphemeralMessage -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessageEphemeralMessage -
+
+        let result = SSKProtoDataMessageEphemeralMessage(proto: proto,
+                                                         expireTimer: expireTimer,
+                                                         data: data)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessageEphemeralMessage {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessageBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoDataMessageEphemeralMessage? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessage
 
 @objc public class SSKProtoDataMessage: NSObject {
@@ -3009,6 +3127,9 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         builder.setPreview(preview)
         if let _value = sticker {
             builder.setSticker(_value)
+        }
+        if let _value = ephemeralMessage {
+            builder.setEphemeralMessage(_value)
         }
         return builder
     }
@@ -3081,6 +3202,10 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
             proto.sticker = valueParam.proto
         }
 
+        @objc public func setEphemeralMessage(_ valueParam: SSKProtoDataMessageEphemeralMessage) {
+            proto.ephemeralMessage = valueParam.proto
+        }
+
         @objc public func build() throws -> SSKProtoDataMessage {
             return try SSKProtoDataMessage.parseProto(proto)
         }
@@ -3103,6 +3228,8 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
     @objc public let preview: [SSKProtoDataMessagePreview]
 
     @objc public let sticker: SSKProtoDataMessageSticker?
+
+    @objc public let ephemeralMessage: SSKProtoDataMessageEphemeralMessage?
 
     @objc public var body: String? {
         guard proto.hasBody else {
@@ -3151,7 +3278,8 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
                  quote: SSKProtoDataMessageQuote?,
                  contact: [SSKProtoDataMessageContact],
                  preview: [SSKProtoDataMessagePreview],
-                 sticker: SSKProtoDataMessageSticker?) {
+                 sticker: SSKProtoDataMessageSticker?,
+                 ephemeralMessage: SSKProtoDataMessageEphemeralMessage?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -3159,6 +3287,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         self.contact = contact
         self.preview = preview
         self.sticker = sticker
+        self.ephemeralMessage = ephemeralMessage
     }
 
     @objc
@@ -3196,6 +3325,11 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
             sticker = try SSKProtoDataMessageSticker.parseProto(proto.sticker)
         }
 
+        var ephemeralMessage: SSKProtoDataMessageEphemeralMessage? = nil
+        if proto.hasEphemeralMessage {
+            ephemeralMessage = try SSKProtoDataMessageEphemeralMessage.parseProto(proto.ephemeralMessage)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -3206,7 +3340,8 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
                                          quote: quote,
                                          contact: contact,
                                          preview: preview,
-                                         sticker: sticker)
+                                         sticker: sticker,
+                                         ephemeralMessage: ephemeralMessage)
         return result
     }
 
