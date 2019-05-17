@@ -273,6 +273,8 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageAddGroupToProfileWhitelistOffer:
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
+            case TSInfoMessageTypeLokiSessionResetProgress:
+            case TSInfoMessageTypeLokiSessionResetDone:
                 return nil;
             case TSInfoMessageTypeDisappearingMessagesUpdate: {
                 BOOL areDisappearingMessagesEnabled = YES;
@@ -459,6 +461,8 @@ typedef void (^SystemMessageActionBlock)(void);
     switch (message.messageType) {
         case TSInfoMessageUserNotRegistered:
         case TSInfoMessageTypeSessionDidEnd:
+        case TSInfoMessageTypeLokiSessionResetProgress:
+        case TSInfoMessageTypeLokiSessionResetDone:
             return nil;
         case TSInfoMessageTypeUnsupportedMessage:
             // Unused.

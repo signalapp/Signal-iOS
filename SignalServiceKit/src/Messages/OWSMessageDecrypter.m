@@ -15,6 +15,7 @@
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "OWSPrimaryStorage.h"
+#import "SessionCipher+Loki.h"
 #import "SSKEnvironment.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
@@ -435,7 +436,13 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
                 // plaintextData may be nil for some envelope types.
                 NSData *_Nullable plaintextData =
+                    [[cipher throws_lokiDecrypt:cipherMessage protocolContext:transaction] removePadding];
+                
+                /* Loki original code
+                 * =================
+                NSData *_Nullable plaintextData =
                     [[cipher throws_decrypt:cipherMessage protocolContext:transaction] removePadding];
+                 */
                 OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                                                     plaintextData:plaintextData
                                                                                            source:envelope.source

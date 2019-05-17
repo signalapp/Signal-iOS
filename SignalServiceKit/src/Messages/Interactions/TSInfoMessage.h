@@ -21,6 +21,8 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageVerificationStateChange,
     TSInfoMessageAddUserToProfileWhitelistOffer,
     TSInfoMessageAddGroupToProfileWhitelistOffer,
+    TSInfoMessageTypeLokiSessionResetProgress,
+    TSInfoMessageTypeLokiSessionResetDone,
 };
 
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread recipientId:(NSString *)recipientId;
