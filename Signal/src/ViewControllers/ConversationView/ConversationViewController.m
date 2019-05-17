@@ -406,7 +406,7 @@ typedef enum : NSUInteger {
                                                  name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(resetContentAndLayout)
+                                             selector:@selector(handleThreadFriendRequestStatusChangedNotification:)
                                                  name:@"threadFriendRequestStatusChanged"
                                                object:nil];
 }
@@ -470,6 +470,14 @@ typedef enum : NSUInteger {
 
     [self updateNavigationBarSubtitleLabel];
     [self ensureBannerState];
+}
+
+- (void)handleThreadFriendRequestStatusChangedNotification:(NSNotification *)notification
+{
+    [self.thread reload];
+    [self.viewItems.lastObject clearCachedLayoutState]; // Presumably a cell with a friend request view
+    [self resetContentAndLayout];
+    [self updateInputToolbar];
 }
 
 - (void)peekSetup

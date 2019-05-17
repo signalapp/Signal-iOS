@@ -402,11 +402,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         && previousLayoutItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
         TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousLayoutItem.interaction;
-        if ([incomingMessage.authorId isEqualToString:previousIncomingMessage.authorId]) {
+        if ([incomingMessage.authorId isEqualToString:previousIncomingMessage.authorId] && !previousIncomingMessage.isFriendRequest) {
             return 2.f;
         }
     } else if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage
-        && previousLayoutItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        && previousLayoutItem.interaction.interactionType == OWSInteractionType_OutgoingMessage
+        && !([previousLayoutItem.interaction isKindOfClass:TSOutgoingMessage.class] && ((TSOutgoingMessage *)previousLayoutItem.interaction).isFriendRequest)) {
         return 2.f;
     }
 
