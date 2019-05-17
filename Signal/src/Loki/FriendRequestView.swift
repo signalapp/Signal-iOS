@@ -84,7 +84,7 @@
         switch kind {
         case .incoming:
             guard let message = message as? TSIncomingMessage else { preconditionFailure() }
-            buttonStackView.isHidden = didDeclineRequest
+            buttonStackView.isHidden = didAcceptRequest || didDeclineRequest
             let text: String = {
                 if didAcceptRequest {
                     return String(format: NSLocalizedString("You've accepted %@'s friend request", comment: ""), message.authorId)
