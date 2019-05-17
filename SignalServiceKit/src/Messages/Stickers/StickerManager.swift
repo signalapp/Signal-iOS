@@ -260,6 +260,7 @@ public class StickerManager: NSObject {
 
         Logger.verbose("Installing sticker pack: \(stickerPack.info).")
 
+        // TODO:
         stickerPack.update(withIsInstalled: true, transaction: transaction)
 
         if !isDefaultStickerPack(stickerPack) {
@@ -322,7 +323,7 @@ public class StickerManager: NSObject {
             if let oldCopy = oldCopy {
                 stickerPack.update(withIsInstalled: oldCopy.isInstalled, transaction: transaction)
             } else {
-                stickerPack.anySave(transaction: transaction)
+                stickerPack.anyInsert(transaction: transaction)
             }
 
             self.shared.stickerPackWasInstalled(transaction: transaction)
@@ -549,7 +550,7 @@ public class StickerManager: NSObject {
 
             let installedSticker = InstalledSticker(info: stickerInfo, emojiString: emojiString)
             databaseStorage.write { (transaction) in
-                installedSticker.anySave(transaction: transaction)
+                installedSticker.anyInsert(transaction: transaction)
 
                 #if DEBUG
                 guard self.isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction) else {
@@ -713,19 +714,21 @@ public class StickerManager: NSObject {
     public class func addKnownStickerInfo(_ stickerInfo: StickerInfo,
                                           transaction: SDSAnyWriteTransaction) {
         let packInfo = stickerInfo.packInfo
-        let pack: KnownStickerPack
         let uniqueId = KnownStickerPack.uniqueId(for: packInfo)
         if let existing = KnownStickerPack.anyFetch(uniqueId: uniqueId, transaction: transaction) {
-            pack = existing
+            let pack = existing
+            pack.anyUpdate(transaction: transaction) { pack in
+                pack.referenceCount += 1
+            }
         } else {
-            pack = KnownStickerPack(info: packInfo)
+            let pack = KnownStickerPack(info: packInfo)
+            pack.referenceCount += 1
+            pack.anyInsert(transaction: transaction)
 
             DispatchQueue.global().async {
                 self.tryToDownloadStickerPacks(stickerPacks: [packInfo], installMode: .doNotInstall)
             }
         }
-        pack.referenceCount += 1
-        pack.anySave(transaction: transaction)
     }
 
     @objc
@@ -737,8 +740,7 @@ public class StickerManager: NSObject {
             owsFailDebug("Missing known sticker pack.")
             return
         }
-        pack.referenceCount -= 1
-        if pack.referenceCount < 1 {
+        if pack.referenceCount <= 1 {
             pack.anyRemove(transaction: transaction)
 
             // Clean up the pack metadata unless either:
@@ -757,7 +759,9 @@ public class StickerManager: NSObject {
             uninstallStickerPack(stickerPackInfo: packInfo,
                                  transaction: transaction)
         } else {
-            pack.anySave(transaction: transaction)
+            pack.anyUpdate(transaction: transaction) { (pack) in
+                pack.referenceCount -= 1
+            }
         }
     }
 

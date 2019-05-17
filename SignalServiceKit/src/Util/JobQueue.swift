@@ -129,7 +129,7 @@ public extension JobQueue {
     func add(jobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
         assert(jobRecord.status == .ready)
 
-        jobRecord.anySave(transaction: transaction)
+        jobRecord.anyInsert(transaction: transaction)
 
         transaction.addCompletion(queue: .global()) {
             self.startWorkWhenAppIsReady()

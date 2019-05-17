@@ -933,7 +933,7 @@ NS_ASSUME_NONNULL_BEGIN
     // This is a hack to "back-date" the message.
     [message setReceivedAtTimestamp:timestamp];
 
-    [message anySaveWithTransaction:transaction];
+    [message anyInsertWithTransaction:transaction];
 }
 
 #pragma mark - Fake Incoming Media
@@ -2974,7 +2974,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         ephemeralMessage:nil
                                                              transaction:transaction];
             [message setReceivedAtTimestamp:(uint64_t)((int64_t)[NSDate ows_millisecondTimeStamp] + dateOffset)];
-            [message anySaveWithTransaction:transaction];
+            [message anyInsertWithTransaction:transaction];
         }];
 }
 
@@ -3046,7 +3046,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                           messageSticker:nil
                                                         ephemeralMessage:nil
                                                              transaction:transaction];
-            [message anySaveWithTransaction:transaction];
+            [message anyInsertWithTransaction:transaction];
         }];
 }
 
@@ -3699,7 +3699,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     NSArray<TSInteraction *> *messages = [self unsavedSystemMessagesInThread:thread];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         for (TSInteraction *message in messages) {
-            [message anySaveWithTransaction:transaction];
+            [message anyInsertWithTransaction:transaction];
         }
     }];
 }
@@ -3711,7 +3711,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     NSArray<TSInteraction *> *messages = [self unsavedSystemMessagesInThread:thread];
     TSInteraction *message = messages[(NSUInteger)arc4random_uniform((uint32_t)messages.count)];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [message anySaveWithTransaction:transaction];
+        [message anyInsertWithTransaction:transaction];
     }];
 }
 
@@ -3872,7 +3872,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                   transaction:transaction.transitional_yapWriteTransaction];
                 } else {
                     OWSLogWarn(@"GRDB TODO: not yet implemented");
-                    [message anySaveWithTransaction:transaction];
+                    [message anyInsertWithTransaction:transaction];
                 }
                 break;
             }
@@ -3906,7 +3906,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                    attachmentType:TSAttachmentTypeDefault
                                                         mediaSize:CGSizeZero];
                 pointer.state = TSAttachmentPointerStateFailed;
-                [pointer anySaveWithTransaction:transaction];
+                [pointer anyInsertWithTransaction:transaction];
                 // MJK - should be safe to remove this senderTimestamp
                 TSIncomingMessage *message =
                     [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -3930,7 +3930,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                   transaction:transaction.transitional_yapWriteTransaction];
                 } else {
                     OWSLogWarn(@"GRDB TODO: not yet implemented");
-                    [message anySaveWithTransaction:transaction];
+                    [message anyInsertWithTransaction:transaction];
                 }
                 break;
             }
@@ -3948,7 +3948,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 NSError *error;
                 BOOL success = [attachmentStream writeData:[self createRandomNSDataOfSize:filesize] error:&error];
                 OWSAssertDebug(success && !error);
-                [attachmentStream anySaveWithTransaction:transaction];
+                [attachmentStream anyInsertWithTransaction:transaction];
 
                 [self createFakeOutgoingMessage:thread
                                     messageBody:nil
@@ -4260,7 +4260,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     for (TSOutgoingMessage *message in messages) {
-        [message anySaveWithTransaction:transaction];
+        [message anyInsertWithTransaction:transaction];
     }
     for (TSOutgoingMessage *message in messages) {
         [message anyRemoveWithTransaction:transaction];
@@ -4295,7 +4295,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     for (TSOutgoingMessage *message in messages) {
-        [message anySaveWithTransaction:initialTransaction];
+        [message anyInsertWithTransaction:initialTransaction];
     }
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -4305,7 +4305,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 [message anyRemoveWithTransaction:transaction];
             }
             for (TSOutgoingMessage *message in messages) {
-                [message anySaveWithTransaction:transaction];
+                [message anyInsertWithTransaction:transaction];
             }
         }];
     });
@@ -4350,7 +4350,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     for (TSOutgoingMessage *message in messages) {
         [message updateWithFakeMessageState:TSOutgoingMessageStateSending transaction:initialTransaction];
-        [message anySaveWithTransaction:initialTransaction];
+        [message anyInsertWithTransaction:initialTransaction];
     }
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -4364,7 +4364,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             OWSLogInfo(@"resurrectNewOutgoingMessages2.3: %zd", count);
             [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                 for (TSOutgoingMessage *message in messages) {
-                    [message anySaveWithTransaction:transaction];
+                    [message anyInsertWithTransaction:transaction];
                 }
             }];
         });
@@ -4438,7 +4438,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                     linkPreview:nil
                                                                  messageSticker:nil
                                                                ephemeralMessage:nil];
-                [message anySaveWithTransaction:transaction];
+                [message anyInsertWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
                 if (transaction.transitional_yapWriteTransaction) {
                     [message updateWithSentRecipient:recipientId
@@ -4788,7 +4788,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         message.attachmentFilenameMap[attachmentId] = filename;
     }
 
-    [message anySaveWithTransaction:transaction];
+    [message anyInsertWithTransaction:transaction];
     [message updateWithFakeMessageState:messageState transaction:transaction];
     if (isDelivered) {
         NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;
@@ -4917,7 +4917,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         NSError *error;
         BOOL success = [attachmentStream writeData:dataSource.data error:&error];
         OWSAssertDebug(success && !error);
-        [attachmentStream anySaveWithTransaction:transaction];
+        [attachmentStream anyInsertWithTransaction:transaction];
         return attachmentStream;
     } else {
         UInt32 filesize = 64;
@@ -4933,7 +4933,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                            attachmentType:TSAttachmentTypeDefault
                                                 mediaSize:CGSizeZero];
         attachmentPointer.state = TSAttachmentPointerStateFailed;
-        [attachmentPointer anySaveWithTransaction:transaction];
+        [attachmentPointer anyInsertWithTransaction:transaction];
         return attachmentPointer;
     }
 }

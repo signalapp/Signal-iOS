@@ -45,7 +45,7 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
 
         storage.write { (transaction) in
             XCTAssertEqual(0, TSThread.anyFetchAll(transaction: transaction).count)
-            contactThread.anySave(transaction: transaction)
+            contactThread.anyInsert(transaction: transaction)
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
         }
 
@@ -60,7 +60,7 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
 
         storage.write { (transaction) in
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
-            groupThread.anySave(transaction: transaction)
+            groupThread.anyInsert(transaction: transaction)
             XCTAssertEqual(2, TSThread.anyFetchAll(transaction: transaction).count)
         }
 
@@ -70,6 +70,27 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
             XCTAssertEqual(2, TSThread.anyFetchAll(transaction: transaction).count)
             contactThread.anyRemove(transaction: transaction)
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
+        }
+
+        XCTAssertEqual(1, TSThread.anyFetchAll(databaseStorage: storage).count)
+
+        // Update
+        storage.write { (transaction) in
+            let threads = TSThread.anyFetchAll(transaction: transaction)
+            guard let firstThread = threads.first else {
+                XCTFail("Missing model.")
+                return
+            }
+            XCTAssertNil(firstThread.messageDraft)
+            firstThread.update(withDraft: "Some draft", transaction: transaction)
+        }
+        storage.read { (transaction) in
+            let threads = TSThread.anyFetchAll(transaction: transaction)
+            guard let firstThread = threads.first else {
+                XCTFail("Missing model.")
+                return
+            }
+            XCTAssertEqual(firstThread.messageDraft, "Some draft")
         }
 
         XCTAssertEqual(1, TSThread.anyFetchAll(databaseStorage: storage).count)
@@ -94,7 +115,7 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
 
         storage.write { (transaction) in
             XCTAssertEqual(0, TSThread.anyFetchAll(transaction: transaction).count)
-            contactThread.anySave(transaction: transaction)
+            contactThread.anyInsert(transaction: transaction)
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
         }
 
@@ -106,7 +127,7 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
         storage.write { (transaction) in
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
             XCTAssertEqual(0, TSInteraction.anyFetchAll(transaction: transaction).count)
-            message1.anySave(transaction: transaction)
+            message1.anyInsert(transaction: transaction)
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
             XCTAssertEqual(1, TSInteraction.anyFetchAll(transaction: transaction).count)
         }
@@ -119,19 +140,7 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
         storage.write { (transaction) in
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
             XCTAssertEqual(1, TSInteraction.anyFetchAll(transaction: transaction).count)
-            message2.anySave(transaction: transaction)
-            XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
-            XCTAssertEqual(2, TSInteraction.anyFetchAll(transaction: transaction).count)
-        }
-
-        XCTAssertEqual(1, TSThread.anyFetchAll(databaseStorage: storage).count)
-        XCTAssertEqual(2, TSInteraction.anyFetchAll(databaseStorage: storage).count)
-
-        // Re-saving a model should have no effect.
-        storage.write { (transaction) in
-            XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
-            XCTAssertEqual(2, TSInteraction.anyFetchAll(transaction: transaction).count)
-            message2.anySave(transaction: transaction)
+            message2.anyInsert(transaction: transaction)
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
             XCTAssertEqual(2, TSInteraction.anyFetchAll(transaction: transaction).count)
         }

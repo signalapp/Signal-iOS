@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel+NSCoding.h>
@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class YapDatabaseReadWriteTransaction;
 
 @interface TSYapDatabaseObject : MTLModel
+
+@property (nonatomic, nullable) NSNumber *grdbId;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

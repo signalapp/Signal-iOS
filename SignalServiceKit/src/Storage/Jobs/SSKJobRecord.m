@@ -89,6 +89,14 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
 
 #pragma mark -
 
+- (void)updateStatus:(SSKJobRecordStatus)status transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(SSKJobRecord *record) {
+                                 record.status = status;
+                             }];
+}
+
 - (BOOL)saveAsStartedWithTransaction:(SDSAnyWriteTransaction *)transaction error:(NSError **)outError
 {
     if (self.status != SSKJobRecordStatus_Ready) {
@@ -96,30 +104,26 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
             [NSError errorWithDomain:SSKJobRecordErrorDomain code:JobRecordError_IllegalStateTransition userInfo:nil];
         return NO;
     }
-    self.status = SSKJobRecordStatus_Running;
-    [self anySaveWithTransaction:transaction];
+    [self updateStatus:SSKJobRecordStatus_Running transaction:transaction];
 
     return YES;
 }
 
 - (void)saveAsPermanentlyFailedWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    self.status = SSKJobRecordStatus_PermanentlyFailed;
-    [self anySaveWithTransaction:transaction];
+    [self updateStatus:SSKJobRecordStatus_PermanentlyFailed transaction:transaction];
 }
 
 - (void)saveAsObsoleteWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    self.status = SSKJobRecordStatus_Obsolete;
-    [self anySaveWithTransaction:transaction];
+    [self updateStatus:SSKJobRecordStatus_Obsolete transaction:transaction];
 }
 
 - (BOOL)saveRunningAsReadyWithTransaction:(SDSAnyWriteTransaction *)transaction error:(NSError **)outError
 {
     switch (self.status) {
         case SSKJobRecordStatus_Running: {
-            self.status = SSKJobRecordStatus_Ready;
-            [self anySaveWithTransaction:transaction];
+            [self updateStatus:SSKJobRecordStatus_Ready transaction:transaction];
             return YES;
         }
         case SSKJobRecordStatus_Ready:
@@ -138,8 +142,10 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
 {
     switch (self.status) {
         case SSKJobRecordStatus_Running: {
-            self.failureCount++;
-            [self anySaveWithTransaction:transaction];
+            [self anyUpdateWithTransaction:transaction
+                                     block:^(SSKJobRecord *record) {
+                                         record.failureCount++;
+                                     }];
             return YES;
         }
         case SSKJobRecordStatus_Ready:

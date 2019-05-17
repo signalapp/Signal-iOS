@@ -206,11 +206,6 @@ class TypeInfo:
         self.should_use_blob = should_use_blob
         self.is_codable = is_codable
         self.is_enum = is_enum
-    # def objc_type_safe(self):
-    #     return self.type_info().objc_type()
-    #     if self.objc_type is None:
-    #         fail("Don't know Obj-C type for:", self.name)
-    #     return self.objc_type
 
     def swift_type(self):
         return self._swift_type
@@ -266,87 +261,16 @@ class TypeInfo:
         if self._swift_type in ('Bool', 'Int64', 'UInt64',):
             return False
         return self.is_numeric()
-                  
-    # This defines how to deserialize database column values to Swift values, using SDSDeserializer.
-    #
-    # TODO: Remove this method.
-    def deserializer_invocation(self, column_index_name, value_name, is_optional):
         
-        # Special case this oddball type.
-        if value_name == 'conversationColorName':
-            accessor_name = 'optionalString' if is_optional else 'string'
-        elif self.should_use_blob or self.is_codable:
-            accessor_name = 'optionalBlob' if is_optional else 'blob'
-        elif self.is_enum:
-            accessor_name = 'optionalInt' if is_optional else 'int'
-        elif self._swift_type == 'String':
-            accessor_name = 'optionalString' if is_optional else 'string'
-        elif self._swift_type == 'Date':
-            accessor_name = 'optionalDate' if is_optional else 'date'
-        elif self._swift_type == 'Data':
-            accessor_name = 'optionalBlob' if is_optional else 'blob'
-        elif self._swift_type == 'Bool':
-            # TODO: We'll want to use Bool? for Swift models.
-            accessor_name = 'optionalBoolAsNSNumber' if is_optional else 'bool'
-        elif self._swift_type == 'Int64':
-            accessor_name = 'optionalInt64AsNSNumber' if is_optional else 'int64'
-        elif self._swift_type == 'UInt64':
-            accessor_name = 'optionalUInt64AsNSNumber' if is_optional else 'uint64'
-        elif self._swift_type in ('Double', 'Float'):
-            accessor_name = 'optionalDoubleAsNSNumber' if is_optional else 'double'
-        elif self.is_numeric():
-            accessor_name = 'optionalInt64' if is_optional else 'int64'
-        else:
-            fail('Unknown type(2):', self._swift_type)
-            
-        value_expr = 'try deserializer.%s(at: %s)' % ( accessor_name, str(column_index_name), )
-        if self.should_cast_to_swift() and not is_optional:
-            value_expr = str(self._swift_type) + '(' + value_expr + ')'
-
-        # Special case this oddball type.
-        if value_name == 'conversationColorName':
-            value_statement = 'let %s = ConversationColorName(rawValue: %s)' % ( value_name, value_expr, )
-        elif self.should_use_blob or self.is_codable:
-            blob_name = '%sSerialized' % ( str(value_name), )
-            if is_optional:
-                serialized_statement = 'let %s: Data? = %s' % ( blob_name, value_expr, )
-                value_statement = 'let %s: %s? = try SDSDeserializer.optionalUnarchive(%s)' % ( value_name, self._swift_type, blob_name, )
-            else:
-                serialized_statement = 'let %s: Data = %s' % ( blob_name, value_expr, )
-                value_statement = 'let %s: %s = try SDSDeserializer.unarchive(%s)' % ( value_name, self._swift_type, blob_name, )
-            return [ serialized_statement, value_statement,]
-        elif self.is_enum:
-            # print 'self._swift_type', self._swift_type
-            enum_type = swift_type_for_enum(self._swift_type)
-            raw_name = '%sRaw' % ( str(value_name), )
-            return [ 
-                    'let %s = %s(%s)' % ( raw_name, str(enum_type), value_expr, ),
-                    'guard let %s = %s(rawValue: %s) else {' % ( value_name, self._swift_type, raw_name, ),
-                    '   throw SDSError.invalidValue',
-                    '}',
-                ]
-        elif is_optional and self._objc_type == 'NSNumber *':
-            return [ 
-                    'let %s = %s' % ( value_name, value_expr, ),
-                    # 'let %sRaw = %s' % ( value_name, value_expr, ),
-                    # 'var %s : NSNumber?' % ( value_name, ),
-                    # 'if let value = %sRaw {' % ( value_name, ),
-                    # '   %s = NSNumber(value: value)' % ( value_name, ),
-                    # '}',
-                ]
-        else:
-            value_statement = 'let %s = %s' % ( value_name, value_expr, )
-        return [value_statement,]
-        
-
+    
     def deserialize_record_invocation(self, property, value_name, is_optional, did_force_optional):
-        
+    
         custom_column_name = custom_column_name_for_property(property)
         if custom_column_name is not None:
             value_expr = 'record.%s' % ( custom_column_name, )
         else:
             value_expr = 'record.%s' % ( value_name, )
-        
+    
         deserialization_optional = None
         deserialization_not_optional = None
         deserialization_conversion = ''
@@ -363,7 +287,7 @@ class TypeInfo:
             deserialization_optional = 'optionalNumericAsNSNumber'
             deserialization_not_optional = 'required'
             deserialization_conversion = ', conversion: { NSNumber(value: $0) }'
-            
+        
         if is_optional:
             if deserialization_optional is not None:
                 value_expr = 'SDSDeserialization.%s(%s, name: "%s"%s)' % ( deserialization_optional, value_expr, value_name, deserialization_conversion)
@@ -373,15 +297,22 @@ class TypeInfo:
         else:
             # Do nothing; we don't need to unpack this non-optional.
             pass
-        
+    
         initializer_param_type = self.swift_type()
         if is_optional:
             initializer_param_type = initializer_param_type + '?'
-            
+        
         # Special case this oddball type.
         if property.has_custom_column_source():
             value_expr = property.column_source()
-            value_statement = 'let %s: %s = record.%s' % ( value_name, initializer_param_type, value_expr, )
+            value_expr = 'record.%s' % ( value_expr, )
+            
+            # Special-case the unpacking of the auto-incremented 
+            # primary key.
+            if value_expr == 'record.id':
+                value_expr = 'recordId'
+            
+            value_statement = 'let %s: %s = %s(%s)' % ( value_name, initializer_param_type, initializer_param_type, value_expr, )
         elif value_name == 'conversationColorName':
             value_statement = 'let %s: %s = ConversationColorName(rawValue: %s)' % ( value_name, "ConversationColorName", value_expr, )
         elif self.is_codable:
@@ -415,7 +346,50 @@ class TypeInfo:
         else:
             value_statement = 'let %s: %s = %s' % ( value_name, initializer_param_type, value_expr, )
         return [value_statement,]
-        
+    
+    
+    def serialize_record_invocation(self, property, value_name, is_optional, did_force_optional):
+    
+        value_expr = value_name
+    
+        if value_name == 'model.conversationColorName':
+            return '%s.rawValue' % ( value_expr, )
+        elif self.is_codable:
+            pass
+        elif self.should_use_blob:
+            # blob_name = '%sSerialized' % ( str(value_name), )
+            if is_optional or did_force_optional:
+                return 'optionalArchive(%s)' % ( value_expr, )
+            else:
+                return 'requiredArchive(%s)' % ( value_expr, )
+        elif self._objc_type == 'NSNumber *':
+        # elif self.is_numeric():
+            conversion_map = {
+                    'Int8': 'int8Value',
+                    'UInt8': 'uint8Value',
+                    'Int16': 'int16Value',
+                    'UInt16': 'uint16Value',
+                    'Int32': 'int32Value',
+                    'UInt32': 'uint32Value',
+                    'Int64': 'int64Value',
+                    'UInt64': 'uint64Value',
+                    'Float': 'floatValue',
+                    'Double': 'doubleValue',
+                    'Bool': 'boolValue',
+                    'Int': 'intValue',
+                    'UInt': 'uintValue',
+            }
+            conversion_method = conversion_map[self.swift_type()]
+            if conversion_method is None:
+                fail('Could not convert:', self.swift_type())
+            serialization_conversion = '{ $0.%s }' % ( conversion_method, )
+            if is_optional or did_force_optional:
+                return 'archiveOptionalNSNumber(%s, conversion: %s)' % ( value_expr, serialization_conversion, )
+            else:
+                return 'archiveNSNumber(%s, conversion: %s)' % ( value_expr, serialization_conversion, )
+
+        return value_expr
+    
 
     def record_field_type(self, value_name):
         # Special case this oddball type.
@@ -613,12 +587,11 @@ class ParsedProperty:
     def has_custom_column_source(self):
         return custom_property_column_source(self) is not None
 
-    # TODO: Remove this method.
-    def deserializer_invocation(self, column_index_name, value_name):
-        return self.type_info().deserializer_invocation(column_index_name, value_name, self.is_optional)
-
     def deserialize_record_invocation(self, value_name, did_force_optional):
         return self.type_info().deserialize_record_invocation(self, value_name, self.is_optional, did_force_optional)
+
+    def serialize_record_invocation(self, value_name, did_force_optional):
+        return self.type_info().serialize_record_invocation(self, value_name, self.is_optional, did_force_optional)
 
     def record_field_type(self):
         return self.type_info().record_field_type(self.name)
@@ -700,10 +673,10 @@ import SignalCoreKit
 
         record_name = remove_prefix_from_class_name(clazz.name) + 'Record'
         swift_body += '''
-public struct %s: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct %s: SDSRecord {
     public static let databaseTableName: String = %sSerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -763,9 +736,23 @@ public struct %s: Codable, FetchableRecord, PersistableRecord, TableRecord {
     public static func columnName(_ column: %s.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 ''' % ( record_name, )
- 
+
+#         swift_body += '''
+#     var insertState: SDSInsertState {
+#         let state = SDSInsertState()
+#
+# '''
+#         for property in (base_properties + subclass_properties):
+#             custom_column_name = custom_column_name_for_property(property)
+#             coding_key_name = custom_column_name if custom_column_name is not None else property.name
+#             swift_body += '''        state.append(columnName: %s.columnName(.%s), value: %s)
+# ''' % ( record_name, coding_key_name, coding_key_name)
+#         swift_body += '''
+#         return state
+#     }
+# '''
+
         swift_body += '''}
 
 // MARK: - StringInterpolation
@@ -792,6 +779,10 @@ extension %s {
     class func fromRecord(_ record: %s) throws -> %s {
 ''' % ( str(clazz.name), record_name, str(clazz.name), )
         swift_body += '''
+        
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
         
         switch record.recordType {
 '''
@@ -928,10 +919,18 @@ extension %s {
 
             # --- Invoke Initializer
             
-            initializer_invocation = '            return %s(' % str(deserialize_class.name)
+            initializer_invocation = '            let model = %s(' % str(deserialize_class.name)
             swift_body += initializer_invocation
             swift_body += (',\n' + ' ' * len(initializer_invocation)).join(initializer_params)
-            swift_body += ')\n\n'
+            swift_body += ')'
+            swift_body += '''
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
+
+'''
 
             # TODO: We could generate a comment with the Obj-C (or Swift) model initializer 
             #       that this deserialization code expects.
@@ -982,6 +981,27 @@ extension %s: SDSSerializable {
         swift_body += '''
         default:
             return %sSerializer(model: self)
+        }
+    }
+    
+    public func asRecord(forUpdate: Bool) throws -> %s {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        switch self {''' % ( str(clazz.name), record_name, )
+
+        for subclass in reversed(all_descendents_of_class(clazz)):
+            if should_ignore_class(subclass):
+                continue
+            
+            swift_body += '''
+        case let model as %s:
+            assert(type(of: model) == %s.self)
+            return try %sSerializer(model: model).toRecord(forUpdate: forUpdate)''' % ( str(subclass.name), str(subclass.name), str(subclass.name), )
+
+        swift_body += '''
+        default:
+            return try %sSerializer(model: self).toRecord(forUpdate: forUpdate)
         }
     }
 }
@@ -1059,12 +1079,43 @@ extension %sSerializer {
 
 @objc
 extension %s {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
+            do {
+                let database = grdbTransaction.database
+                var record = try asRecord(forUpdate: false)
+                try record.insert(database)
+
+                guard self.grdbId == nil else {
+                    owsFailDebug("Model unexpectedly already has grdbId.")
+                    return
+                }
+                guard let grdbId = record.id else {
+                    owsFailDebug("Record missing grdbId.")
+                    return
+                }
+                self.grdbId = NSNumber(value: grdbId)
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
+        }
+    }
+    
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            save(with: ydbTransaction)
+        case .grdbWrite(let grdbTransaction):
+            do {
+                let database = grdbTransaction.database
+                let record = try asRecord(forUpdate: true)
+                try record.update(database, columns: serializer.updateColumnNames())
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
         }
     }
     
@@ -1092,21 +1143,22 @@ extension %s {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (%s) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (%s) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
         
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
             
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -1305,7 +1357,7 @@ extension %s {
     has_serializable_superclass = table_superclass.name != clazz.name
     
     override_keyword = ''
-    
+
     swift_body += '''
 // MARK: - SDSSerializer
 
@@ -1318,6 +1370,100 @@ class %sSerializer: SDSSerializer {
         self.model = model
     }
 ''' % ( str(clazz.name), str(clazz.name), str(clazz.name), )
+    
+    
+    # --- To Record
+    
+    
+    root_class = clazz.table_superclass()
+    root_record_name = remove_prefix_from_class_name(root_class.name) + 'Record'
+    
+
+    serialize_record_type = get_record_type_enum_name(clazz.name)
+    swift_body += '''
+    // MARK: - Record
+
+    func toRecord(forUpdate: Bool) throws -> %s {
+        var id: Int64?
+        if forUpdate {
+            guard let grdbId: NSNumber = model.grdbId else {
+                owsFailDebug("Model is missing grdbId.")
+                throw SDSError.missingRequiredField
+            }
+            id = grdbId.int64Value
+        }
+
+        let recordType: SDSRecordType = .%s
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
+        }
+''' % ( root_record_name, serialize_record_type, )
+    
+    initializer_args = ['id', 'recordType', 'uniqueId', ]
+    
+    # If a property has a custom column source, we don't redundantly create a column for that column 
+    root_base_properties = [property for property in root_class.properties() if not property.has_custom_column_source()]
+    # If a property has a custom column source, we don't redundantly create a column for that column 
+    root_subclass_properties = [property for property in root_class.database_subclass_properties() if not property.has_custom_column_source()]
+    root_base_property_names = set()
+    for property in root_base_properties:
+        root_base_property_names.add(property.name)
+
+    # record_name = remove_prefix_from_class_name(clazz.name) + 'Record'
+
+    initializer_value_names = []
+    for property in properties_and_inherited_properties(clazz):
+        initializer_value_names.append(property.name)
+    # print 'initializer_value_names', initializer_value_names
+
+    def write_record_property(property, force_optional=False):
+        column_name = to_swift_identifier_name(property.name)
+
+        optional_value = ''
+        if column_name in initializer_value_names:
+            did_force_optional = (property.name not in root_base_property_names) and (not property.is_optional)
+            model_accessor = accessor_name_for_property(property)
+            value_expr = property.serialize_record_invocation('model.%s' % ( model_accessor, ), did_force_optional)
+            optional_value = ' = %s' % ( value_expr, )
+        else:
+            optional_value = ' = nil'
+                    
+        # print 'property', property.swift_type_safe()
+        record_field_type = property.record_field_type()
+
+        is_optional = property.is_optional or force_optional
+        optional_split = '?' if is_optional else ''
+
+        custom_column_name = custom_column_name_for_property(property)
+        if custom_column_name is not None:
+            column_name = custom_column_name
+        
+        initializer_args.append(str(column_name))
+    
+        return '''        let %s: %s%s%s
+''' % ( str(column_name), record_field_type, optional_split, optional_value, )
+
+    if len(root_base_properties) > 0:
+        swift_body += '\n        // Base class properties \n'
+        for property in root_base_properties:
+            # print 'base_properties:', property.name
+            swift_body += write_record_property(property)
+
+    if len(root_subclass_properties) > 0:
+        swift_body += '\n        // Subclass properties \n'
+        for property in root_subclass_properties:
+            # print 'subclass_properties:', property.name
+            swift_body += write_record_property(property, force_optional=True)
+
+
+
+    initializer_args = ['%s: %s' % ( arg, arg, ) for arg in initializer_args]
+    serialize_record_type = get_record_type_enum_name(clazz.name)
+    swift_body += '''
+        return %s(%s)
+    }
+''' % ( root_record_name, ', '.join(initializer_args), )
 
     swift_body += '''
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
@@ -1326,36 +1472,6 @@ class %sSerializer: SDSSerializer {
 ''' % ( table_class_name, )
 
     swift_body += '''
-    public%s func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.        
-        return [
-            %sSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
-        
-    }
-    
-    public%s func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-''' % ( override_keyword, table_class_name, override_keyword, )
-
-    serialize_record_type = get_record_type_enum_name(clazz.name)
-    swift_body += '''            SDSRecordType.%s.rawValue''' % ( str(serialize_record_type), )
-
-    swift_body += '''
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
-        }
-        return result
-    }
-    
     public%s func updateColumnNames() -> [String] {
 ''' % ( override_keyword, )
 
@@ -1363,7 +1479,8 @@ class %sSerializer: SDSSerializer {
     serialize_properties = [property for property in properties_and_inherited_properties(clazz) if not property.has_custom_column_source()]
     if len(serialize_properties) > 1:
         swift_body += '''        return [
-'''
+            %sSerializer.idColumn,
+''' % ( str(table_class_name), )
         for property in serialize_properties:
             if property.name == 'uniqueId':
                 continue
@@ -1377,38 +1494,6 @@ class %sSerializer: SDSSerializer {
         swift_body += '''        return []'''
 
     swift_body += '''
-    }
-    
-    public%s func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-''' % ( override_keyword, )
-            # self.body,
-            # self.author ?? DatabaseValue.null,
-    for property in serialize_properties:
-        if property.name == 'uniqueId':
-            continue
-        property_accessor = accessor_name_for_property(property)
-        # column_name = to_swift_identifier_name(property.name)
-        insert_value = 'self.model.%s' % str(property_accessor)
-
-        if property.type_info().is_enum:
-            insert_value = insert_value + '.rawValue'
-
-        if property.type_info().should_use_blob:
-            insert_value = 'SDSDeserializer.archive(%s) ?? DatabaseValue.null' % ( insert_value, )
-        elif property.is_optional:
-            insert_value = insert_value + ' ?? DatabaseValue.null'
-        swift_body += '''            %s,
-''' % ( insert_value, )
-
-    swift_body += '''
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
     }
 '''
 
