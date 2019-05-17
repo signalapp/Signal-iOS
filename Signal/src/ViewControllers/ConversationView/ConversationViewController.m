@@ -405,6 +405,10 @@ typedef enum : NSUInteger {
                                              selector:@selector(keyboardDidChangeFrame:)
                                                  name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(resetContentAndLayout)
+                                                 name:@"threadFriendRequestStatusChanged"
+                                               object:nil];
 }
 
 - (BOOL)isGroupConversation

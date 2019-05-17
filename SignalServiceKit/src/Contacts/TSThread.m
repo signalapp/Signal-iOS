@@ -706,6 +706,9 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     } else {
         [self saveWithTransaction:transaction];
     }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [NSNotificationCenter.defaultCenter postNotificationName:@"threadFriendRequestStatusChanged" object:self.uniqueId];
+    });
 }
 
 - (BOOL)hasPendingFriendRequest
